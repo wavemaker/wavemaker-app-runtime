@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.server;
 
 import java.beans.Introspector;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -26,6 +27,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -75,15 +82,22 @@ public class CleanupListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent event) {
         try {
+            /**
+             * Deregistering drivers has the side effect of registering driver classes
+             * which are there in other class loaders but not yet loaded in the current class loader.
+             *
+             * De registering it at the start so that preceding clean up tasks may clean any references created by loading unwanted classes by this call.
+             */
+            deregisterDrivers();
             //Release references that are not being closed automatically by libraries
             shutDownHSQLTimerThreadIfAny();
             shutDownMySQLThreadIfAny();
+            deRegisterOracleDiagnosabilityMBean();
             typeFactoryClearTypeCache();
             resourceManagerClearPropertiesCache();
             clearReaderArrCatalogManager();
             clearCacheSourceAbstractClassGenerator();
             clearThreadConnections();
-            deregisterDrivers();
 
             //Release all open references for logging
             LogFactory.release(this.getClass().getClassLoader());
@@ -139,6 +153,39 @@ public class CleanupListener implements ServletContextListener {
         } catch (Throwable e) {
             logger.warn("Failed to shutdown mysql thread {}", className, e);
         }
+    }
+
+    /**
+     * De Registers the mbean registered by the oracle driver
+     */
+    private void deRegisterOracleDiagnosabilityMBean() {
+        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        String mBeanName = cl.getClass().getName() + "@" + Integer.toHexString(cl.hashCode());
+        try {
+            try {
+                deRegisterOracleDiagnosabilityMBean(mBeanName);
+            } catch (InstanceNotFoundException e) {
+                logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
+                //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
+                mBeanName = cl.getClass().getName() + "@" + Integer.toHexString(cl.hashCode()).toLowerCase();
+                try {
+                    deRegisterOracleDiagnosabilityMBean(mBeanName);
+                } catch (InstanceNotFoundException e1) {
+                    logger.debug("Oracle OracleDiagnosabilityMBean {} also not found", mBeanName, e);
+                }
+            }
+        } catch (Throwable e) {
+            logger.error("Oracle JMX unregistration error", e);
+        }
+    }
+
+    private void deRegisterOracleDiagnosabilityMBean(String nameValue) throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        final Hashtable<String, String> keys = new Hashtable<String, String>();
+        keys.put("type", "diagnosability");
+        keys.put("name", nameValue);
+        mbs.unregisterMBean(new ObjectName("com.oracle.jdbc", keys));
+        logger.info("Deregistered OracleDiagnosabilityMBean {}", nameValue);
     }
 
     /**
