@@ -1389,7 +1389,7 @@ WM.module('wm.widgets.grid')
 
             /*Function to enable page navigation for the grid.*/
             $scope.enablePageNavigation = function () {
-                if ($scope.dataset && _.get($scope.dataset, 'dataValue') !== '') {
+                if ($scope.dataset && _.get($scope.dataset, 'dataValue') !== '' && !_.isEmpty($scope.dataset)) {
                     /*Check for sanity*/
                     if ($scope.dataNavigator) {
 
@@ -1531,7 +1531,7 @@ WM.module('wm.widgets.grid')
                     isPageable = true;
                 }
 
-                if (newVal) {
+                if (newVal && _.get(newVal, 'dataValue') !== '' && !_.isEmpty(newVal)) {
                     if ($scope.shownavigation && !$scope.dataNavigatorWatched) {
                         $scope.enablePageNavigation();
                         return;
