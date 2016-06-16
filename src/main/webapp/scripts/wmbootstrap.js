@@ -84,7 +84,8 @@ Application
                     NG_LOCALE_PATH  = 'resources/ngLocale/',
                     APP_LOCALE_PATH = 'resources/i18n/',
                     appVariablesLoaded = false,
-                    SSO_URL = '/services/security/ssologin';
+                    SSO_URL = '/services/security/ssologin',
+                    landingPageName = '';
 
                 function defaultPageLoadSuccessHandler(pageName, response, isPartial) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
@@ -352,6 +353,7 @@ Application
                                 }
                                 $location.path(page);
                             }
+                            landingPageName = page;
                             deferred.resolve();
                         }, deferred.resolve);
                     }
@@ -407,6 +409,17 @@ Application
                 }
 
                 $rs.$on('app-logout-success', clearPagesCache);
+
+                // On back button click, if activePage is landingPage then exit the app
+                if (CONSTANTS.hasCordova && Utils.isAndroidPhone()) {
+                    $document.on('backbutton', function () {
+                        if (landingPageName === $rs.activePageName) {
+                            $window.navigator.app.exitApp();
+                        } else {
+                            $window.history.back();
+                        }
+                    });
+                }
 
                 this.loadPage                           = loadPage;
                 this.loadPartial                        = loadPartial;
