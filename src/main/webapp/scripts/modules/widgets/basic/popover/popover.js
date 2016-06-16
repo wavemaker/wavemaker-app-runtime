@@ -56,11 +56,7 @@ WM.module('wm.widgets.basic')
                 scope.iconsrc = Utils.getImageUrl(newVal);
                 break;
             case 'caption':
-                if (WM.isObject(newVal)) {
-                    element.find('>span.anchor-caption').text(JSON.stringify(newVal));
-                } else {
-                    element.find('>span.anchor-caption').html(($sce.trustAs($sce.HTML, (WM.isDefined(newVal) ? newVal : '').toString()).toString()));
-                }
+                Utils.setNodeContent(element.find('>span.anchor-caption'), newVal);
                 break;
             }
         }

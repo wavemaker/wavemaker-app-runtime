@@ -17,7 +17,7 @@ WM.module('wm.layouts.containers')
                         '</a>' +
                         '<div class="panel-actions">' +
                             '<span ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
-                            '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
+                            '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                             '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" ng-if="helptext" ng-click="toggleHelp()"></button>' +
                             '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
                             '<button type="button" class="app-icon wi panel-action" ng-if="enablefullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" ng-class="fullscreen ? \'wi-fullscreen-exit\': \'wi-fullscreen\'" ng-click="toggleFullScreen($event);"></button>' +
@@ -37,24 +37,13 @@ WM.module('wm.layouts.containers')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
             notifyFor = {
-                'height': true,
                 'actions': true
             };
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case 'height':
-                if (newVal && CONSTANTS.isStudioMode) {
-                    scope.minheight = 0;
-                }
-                if (newVal) {
-                    scope.overflow = 'auto';
-                }
-                break;
             case 'actions':
-                if (CONSTANTS.isStudioMode) {
-                    scope.itemlabel = scope.itemlabel || scope.displayfield;
-                }
+                scope.itemlabel = scope.itemlabel || scope.displayfield;
                 break;
             }
         }
@@ -100,7 +89,7 @@ WM.module('wm.layouts.containers')
                         }
                         /* Expand Collapse the panel */
                         scope.expandCollapsePanel = function ($event) {
-                            if (scope.collapsible && CONSTANTS.isRunMode) {
+                            if (scope.collapsible) {
                                 if (scope.expanded) {
                                     if (scope.onCollapse) {
                                         scope.onCollapse({$event: $event, $scope: this});
@@ -119,7 +108,7 @@ WM.module('wm.layouts.containers')
                         };
                         /* Toggle FullScreen the panel */
                         scope.toggleFullScreen = function ($event) {
-                            if (scope.enablefullscreen && CONSTANTS.isRunMode) {
+                            if (scope.enablefullscreen) {
                                 if (scope.fullscreen) {
                                     if (scope.onExitfullscreen) {
                                         scope.onExitfullscreen({$event: $event, $scope: this});
@@ -136,10 +125,8 @@ WM.module('wm.layouts.containers')
 
                         /* toggle the state of the panel */
                         scope.toggleHelp = function () {
-                            if (scope.helptext && CONSTANTS.isRunMode) {
-                                /* flip the active flag */
-                                scope.helpClass = scope.helpClass ? null : 'show-help';
-                            }
+                            /* flip the active flag */
+                            scope.helpClass = scope.helpClass ? null : 'show-help';
                         };
                         /* Close the panel */
                         scope.closePanel = function () {

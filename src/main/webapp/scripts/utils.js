@@ -1843,6 +1843,16 @@ WM.module('wm.utils', [])
             });
         }
 
+        // Based on the type of content, sets it as text or html.
+        // Usage: Used for setting the caption for widgets.
+        function setNodeContent(nodeRef, content) {
+            if (WM.isObject(content)) {
+                nodeRef.text(JSON.stringify(content));
+            } else {
+                nodeRef.html(($sce.trustAs($sce.HTML, (WM.isDefined(content) ? content : '').toString()).toString()));
+            }
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -1950,4 +1960,5 @@ WM.module('wm.utils', [])
         this.triggerCustomEvents        = triggerCustomEvents;
         this.simulateFileDownload       = simulateFileDownload;
         this.getWidgetRolesArrayFromStr = getWidgetRolesArrayFromStr;
+        this.setNodeContent             = setNodeContent ;
     }]);

@@ -5,28 +5,22 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/htmlTemplate.html',
-            '<div class="app-html-container" init-widget title="{{hint}}" apply-styles>' +
-                '<div class="html-content"></div>' +
-            ' </div>'
+            '<div class="app-html-container" init-widget title="{{hint}}" apply-styles="scrollable-container">' +
+            '</div>'
             );
     }])
     .directive('wmHtml', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.html', ['wm.base', 'wm.base.editors', 'wm.containers', 'wm.containers.borderstyle', 'wm.base.events']),
             notifyFor = {
-                'content': true,
-                'autoscroll': true
+                'content': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, targetEl, key, newVal) {
+        function propertyChangeHandler(element, key, newVal) {
             switch (key) {
             case 'content':
-                targetEl.html(newVal);
-                break;
-            case 'autoscroll':
-                newVal = newVal === true || newVal === 'true';
-                element.css('overflow', newVal ? 'auto' : 'hidden');
+                element.html(newVal);
                 break;
             }
         }
@@ -43,19 +37,17 @@ WM.module('wm.widgets.basic')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-                        var targetElement = element.children().first(),
-                            content = tElement.context.innerHTML;
+                        var content = tElement.context.innerHTML;
 
                         /* if content is provided as an attribute, give it preference */
                         scope.content = attrs.content || content;
 
                         /* set the html content*/
-                        targetElement.html(scope.content);
+                        element.html(scope.content);
 
-                        element.css('overflow', 'hidden');
 
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, targetElement), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
@@ -96,9 +88,6 @@ WM.module('wm.widgets.basic')
  *                  This property will be used to show/hide the html-widget on the web page. <br>
  *                  This is a bindable property. <br>
  *                  Default value: `true`. <br>
- * @param {boolean=} autoscroll
- *                  This property defines if the html-widget should be allowed to scroll automatically. <br>
- *                  Default value: `false`. <br>
  * @param {string=} on-click
  *                  Callback function which will be triggered when the widget is clicked.
  * @param {string=} on-dblclick

@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
             '<label class="app-label" title="{{hint}}" init-widget apply-styles ng-class="{required:required}"></label>'
             );
     }])
-    .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {
+    .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.label', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events']),
             notifyFor = {
@@ -19,11 +19,7 @@ WM.module('wm.widgets.basic')
         function propertyChangeHandler(element, key, newVal) {
             switch (key) {
             case 'caption':
-                if (WM.isObject(newVal)) {
-                    element.text(JSON.stringify(newVal));
-                } else {
-                    element.html(($sce.trustAs($sce.HTML, (WM.isDefined(newVal) ? newVal : '').toString()).toString()));
-                }
+                Utils.setNodeContent(element, newVal);
                 break;
             }
         }
@@ -59,7 +55,7 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
- * @requires $sce
+ * @requires Utils
  *
  * @param {string=} name
  *                  Name of the label widget.

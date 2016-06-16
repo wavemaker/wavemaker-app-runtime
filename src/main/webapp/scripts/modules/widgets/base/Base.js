@@ -244,7 +244,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.html": {
                         "content": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
-                        "autoscroll": {"type": "boolean"}
+                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align", "show": false},
                     },
                     "wm.icon": {
                         "hint": {"type": "string", "bindable": "in-bound"},

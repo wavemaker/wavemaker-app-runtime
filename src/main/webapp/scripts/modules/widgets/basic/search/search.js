@@ -13,21 +13,7 @@ WM.module('wm.widgets.basic')
             );
         $templateCache.put('template/widget/form/search.html',
             '<div class="app-search input-group" init-widget has-model listen-property="dataset"' +
-                ' ng-style="{' +
-                ' color: color, ' +
-                ' height: height, ' +
-                ' width: width, ' +
-                ' cursor: cursor, ' +
-                ' fontFamily: fontfamily, ' +
-                ' fontSize: fontsize, ' +
-                ' fontWeight: fontweight, ' +
-                ' fontStyle: fontstyle, ' +
-                ' opacity: opacity, ' +
-                ' textDecoration: textdecoration, ' +
-                ' whiteSpace: whitespace, ' +
-                ' wordBreak: wordbreak, ' +
-                ' zIndex: zindex' +
-                ' }">' +
+                '>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
@@ -115,7 +101,9 @@ WM.module('wm.widgets.basic')
                     'dataset'        : true,
                     'displayimagesrc': true,
                     'active'         : true,
-                    'type'           : true
+                    'type'           : true,
+                    'width'          : true,
+                    'height'         : true
                 };
 
             // This function updates the query value.
@@ -296,7 +284,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 // assign all the keys to the options of the search widget
-                if (CONSTANTS.isStudioMode && WM.isDefined(dataset) && dataset !== null) {
+                if ( WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
                     if (isServiceVariable($is, element.scope())) {
                         updatePropertyOptions($is); //update searchkey options in case of service variables
@@ -341,11 +329,6 @@ WM.module('wm.widgets.basic')
 
             //Toggles search icon based on the type of search and dataset type
             function toggleSearchIcon($is, type) {
-                if (CONSTANTS.isRunMode) {
-                    $is.showSearchIcon = _.includes([type, $is.type], 'search');
-                    return;
-                }
-
                 $is.showSearchIcon = type === 'search';
             }
 
@@ -365,6 +348,10 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'type':
                     toggleSearchIcon($is, newVal);
+                    break;
+                case 'width':
+                case 'height':
+                    element.css(key, newVal);
                     break;
                 }
             }
@@ -587,17 +574,15 @@ WM.module('wm.widgets.basic')
                     },
                     'post': function ($is, element, attrs) {
                         var wp, searchItem;
-                        // In Studio mode aways display the input box
-                        if (CONSTANTS.isStudioMode) {
-                            //Hiding the events as there is no support for them.
-                            if ($is.widgetid) {
-                                wp                   = $is.widgetProps;
-                                wp.onClick.show      = false;
-                                wp.onTap.show        = false;
-                                wp.onMouseenter.show = false;
-                                wp.onMouseleave.show = false;
-                                wp.onChange.show     = false;
-                            }
+
+                        //Hiding the events as there is no support for them.
+                        if ($is.widgetid) {
+                            wp                   = $is.widgetProps;
+                            wp.onClick.show      = false;
+                            wp.onTap.show        = false;
+                            wp.onMouseenter.show = false;
+                            wp.onMouseleave.show = false;
+                            wp.onChange.show     = false;
                         }
 
                         // register the property change handler

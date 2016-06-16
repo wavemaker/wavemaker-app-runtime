@@ -6,7 +6,7 @@ WM.module('wm.widgets.basic')
         'use strict';
 
         $templateCache.put('template/widget/iframe.html',
-                '<div class="embed-responsive app-iframe" init-widget ng-style="{width: width,height: height}">' +
+                '<div class="embed-responsive app-iframe" init-widget >' +
                     '<iframe class="embed-responsive-item iframe-content" scrolling="auto" marginheight="0" marginwidth="0" frameborder="0" ' +
                         'title="{{hint}}" seamless="seamless">' +
                     '</iframe>' +
@@ -14,12 +14,14 @@ WM.module('wm.widgets.basic')
                 '</div>'
             );
     }])
-    .directive('wmIframe', ['PropertiesFactory', '$rootScope', 'WidgetUtilService', '$sce', 'CONSTANTS', 'Utils', '$location', function (PropertiesFactory, $rootScope, WidgetUtilService, $sce, CONSTANTS, Utils, $location) {
+    .directive('wmIframe', ['PropertiesFactory', '$rootScope', 'WidgetUtilService', '$sce', 'Utils', '$location', function (PropertiesFactory, $rootScope, WidgetUtilService, $sce, Utils, $location) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.iframe', ['wm.base']),
             notifyFor = {
-                'iframesrc': true
+                'iframesrc': true,
+                'width': true,
+                'height': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -44,6 +46,10 @@ WM.module('wm.widgets.basic')
                     element.children('iframe').attr('src', scope._iframesrc);
                 }
                 break;
+                case 'width':
+                case 'height':
+                    element.css(key, newVal);
+                    break;
             }
         }
 
@@ -88,7 +94,6 @@ WM.module('wm.widgets.basic')
  * @requires $templateCache
  * @requires WidgetUtilService
  * @requires $sce
- * @requires CONSTANTS
  * @requires $location
  *
  * @param {string=} name
