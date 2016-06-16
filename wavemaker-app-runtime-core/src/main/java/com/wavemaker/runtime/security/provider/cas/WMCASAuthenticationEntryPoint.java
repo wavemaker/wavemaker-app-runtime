@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.core.AuthenticationException;
 
-import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 5/16/16.
@@ -23,15 +23,9 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     @Qualifier("casServiceProperties")
     private ServiceProperties serviceProperties;
 
-    @Autowired
-    @Qualifier("WMAppSecurityConfig")
-    private WMAppSecurityConfig wmAppSecurityConfig;
-
-    private String loginUrl;
-
     protected String createServiceUrl(HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isBlank(serviceProperties.getService())) {
-            String serviceUrl = CASUtils.getServiceUrl(request);
+            String serviceUrl = HttpRequestUtils.getServiceUrl(request);
             serviceProperties.setService(serviceUrl + "/j_spring_cas_security_check");
         }
         return CommonUtils.constructServiceUrl(null, response, this.serviceProperties.getService(), null,
@@ -40,7 +34,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
 
     public final void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
                                final AuthenticationException authenticationException) throws IOException, ServletException {
-        if (isAjaxRequest(servletRequest)) {
+        if (HttpRequestUtils.isAjaxRequest(servletRequest)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             final String urlEncodedService = createServiceUrl(servletRequest, response);
@@ -50,8 +44,5 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
         }
     }
 
-    private boolean isAjaxRequest(HttpServletRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-    }
 
 }

@@ -1,12 +1,12 @@
-package com.wavemaker.runtime.security.provider.cas;
+package com.wavemaker.runtime.util;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by ArjunSahasranam on 9/6/16.
  */
-public class CASUtils {
-    private CASUtils(){
+public class HttpRequestUtils {
+    private HttpRequestUtils(){
 
     }
 
