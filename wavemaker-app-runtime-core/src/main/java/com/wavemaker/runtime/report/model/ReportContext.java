@@ -9,7 +9,7 @@ import java.util.Properties;
 public class ReportContext {
 
     private String reportName;
-    private ExportType exportType;
+    private ReportExportType reportExportType;
     private String dataSourceType;
 
     private Properties properties;
@@ -26,12 +26,12 @@ public class ReportContext {
         this.reportName = reportName;
     }
 
-    public ExportType getExportType() {
-        return exportType;
+    public ReportExportType getReportExportType() {
+        return reportExportType;
     }
 
-    public void setExportType(final ExportType exportType) {
-        this.exportType = exportType;
+    public void setReportExportType(ReportExportType reportExportType) {
+        this.reportExportType = reportExportType;
     }
 
     public String getDataSourceType() {

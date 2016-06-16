@@ -2,7 +2,6 @@ package com.wavemaker.runtime.report.model;
 
 import com.wavemaker.runtime.report.export.CsvReportExporter;
 import com.wavemaker.runtime.report.export.DocxReportExporter;
-import com.wavemaker.runtime.report.export.OdsReportExporter;
 import com.wavemaker.runtime.report.export.PdfReportExporter;
 import com.wavemaker.runtime.report.export.ReportExporter;
 import com.wavemaker.runtime.report.export.XmlReportExporter;
@@ -10,15 +9,14 @@ import com.wavemaker.runtime.report.export.XmlReportExporter;
 /**
  * Created by kishorer on 18/5/16.
  */
-public enum ExportType {
+public enum ReportExportType {
 
     CSV("csv", ".csv", new CsvReportExporter()),
     DOCX("docx", ".docx", new DocxReportExporter()),
-    ODS("ods", ".ods", new OdsReportExporter()),
     PDF("pdf", ".pdf", new PdfReportExporter()),
     XML("xml", ".xml", new XmlReportExporter());
 
-    ExportType(String value, String extension, ReportExporter reportExporter) {
+    ReportExportType(String value, String extension, ReportExporter reportExporter) {
         this.value = value;
         this.extension = extension;
         this.reportExporter = reportExporter;
@@ -40,10 +38,10 @@ public enum ExportType {
         return reportExporter;
     }
 
-    public static ExportType getExportTypeByValue(String value) {
-        for (ExportType exportType : ExportType.values()) {
-            if (exportType.getValue().equals(value)) {
-                return exportType;
+    public static ReportExportType getExportTypeByValue(String value) {
+        for (ReportExportType reportExportType : ReportExportType.values()) {
+            if (reportExportType.getValue().equals(value)) {
+                return reportExportType;
             }
         }
         throw new IllegalArgumentException("Export type [" + value + "] not supported");

@@ -8,12 +8,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.wavemaker.runtime.report.export.ReportExporter;
-import com.wavemaker.runtime.report.model.ExportType;
+import com.wavemaker.runtime.report.model.ReportExportType;
 import com.wavemaker.runtime.report.model.ReportContext;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
@@ -61,7 +59,7 @@ public class JasperReportHelper {
 
     public InputStream exportAsStream(ReportContext reportContext) {
         try {
-            ExportType reportExportType = reportContext.getExportType();
+            ReportExportType reportExportType = reportContext.getReportExportType();
             String reportName = reportContext.getReportName();
             JasperReport jasperReport = compileReport(reportName);
             JasperPrint jasperPrint = fillTheReport(jasperReport, reportContext.getParameters());
