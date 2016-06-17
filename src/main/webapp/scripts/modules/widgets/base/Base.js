@@ -1716,7 +1716,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "pollinterval": {"type": "number"},
                         "displayformat": {"type": "list", "options": ["percentage", "absolute"], "value": "percentage"},
-                        "captionplacement": {"type": "list", "options": ["inside", "hidden"], "value": "inside"},
+                        "captionplacement": {"type": "list", "options": ["inside", "hidden"], "value": "hidden"},
                         "type": {"type": "list", "options": ["default", "default-striped", "success", "success-striped", "info", "info-striped", "warning", "warning-striped", "danger", "danger-striped"], "value": "default", "bindable": "in-bound"},
 
                         "width": {"type": "string", "pattern": dimensionRegex},
