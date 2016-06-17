@@ -1490,6 +1490,8 @@ WM.module('wm.widgets.grid')
                     isBoundToQueryServiceVariable,
                     isBoundToProcedureServiceVariable,
                     isBoundToFilter,
+                    gridSortString,
+                    variableSortString,
                     columns,
                     isPageable = false,
                     widgetBindingDetails,
@@ -1527,6 +1529,7 @@ WM.module('wm.widgets.grid')
 
                 /*If the data is a pageable object, then display the content.*/
                 if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                    variableSortString = Utils.getOrderByExpr(newVal.sort);
                     newVal = newVal.content;
                     isPageable = true;
                 }
@@ -1620,6 +1623,17 @@ WM.module('wm.widgets.grid')
                             isBoundToQueryServiceVariable     = variableObj.controller === 'QueryExecution';
                         }
 
+                        if (isBoundToLiveVariable || isBoundToQueryServiceVariable) {
+                            if ($scope.sortInfo) {
+                                gridSortString = $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
+                                variableSortString = _.get(variableObj, ['_options', 'orderBy']) || variableSortString;
+                                if (gridSortString !== variableSortString) {
+                                    element.find('i.sort-icon.active').removeClass('active');
+                                    $scope.sortInfo = {};
+                                    $scope.setDataGridOption('sortInfo', {});
+                                }
+                            }
+                        }
                         if (isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
                             $scope.setDataGridOption('sortHandler', sortHandler);

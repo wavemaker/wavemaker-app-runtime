@@ -1852,6 +1852,23 @@ WM.module('wm.utils', [])
                 nodeRef.html(($sce.trustAs($sce.HTML, (WM.isDefined(content) ? content : '').toString()).toString()));
             }
         }
+        /**
+         * Returns the orderBy Expression based on the 'sort 'option in pageable object
+         * returned by backend
+         * @param pageableObj
+         * @returns {string}
+         */
+        function getOrderByExpr(pageableObj) {
+            pageableObj = pageableObj || [];
+            var expr              = '',
+                KEY_VAL_SEPARATOR = ' ',
+                FIELD_SEPARATOR   = ',';
+            _.forEach(pageableObj, function (obj, index) {
+                expr += obj.property + KEY_VAL_SEPARATOR + obj.direction.toLowerCase() + (index > 0 && index < pageableObj.length - 1 ? FIELD_SEPARATOR : '');
+            });
+
+            return expr;
+        }
 
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
@@ -1961,4 +1978,5 @@ WM.module('wm.utils', [])
         this.simulateFileDownload       = simulateFileDownload;
         this.getWidgetRolesArrayFromStr = getWidgetRolesArrayFromStr;
         this.setNodeContent             = setNodeContent ;
+        this.getOrderByExpr             = getOrderByExpr ;
     }]);

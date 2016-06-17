@@ -73,24 +73,6 @@ WM.module("wm.widgets.basic")
             'replace': true,
             'controller': function ($scope) {
 
-                /**
-                 * Returns the orderBy Expression based on the 'sort 'option in pageable object
-                 * returned by backend
-                 * @param object
-                 * @returns {string}
-                 */
-                function getOrderByExpr(object) {
-                    object = object || [];
-                    var expr = '',
-                        KEY_VAL_SEPARATOR = ' ',
-                        FIELD_SEPARATOR = ',';
-                    WM.forEach(object, function (obj, index) {
-                        expr += obj.property + KEY_VAL_SEPARATOR + obj.direction.toLowerCase() + (index > 0 && index < object.length - 1 ? FIELD_SEPARATOR : '');
-                    });
-
-                    return expr;
-                }
-
                 $scope.pageCount = 0;
 
                 /*Function to reset the paging values to default.*/
@@ -197,7 +179,7 @@ WM.module("wm.widgets.basic")
                             if ($scope.isVariableHasPaging()) {
                                 /*If "filterFields" and "sortOptions" have been set, then set them so that the filters can be retained while fetching data upon page navigation.*/
                                 $scope.filterFields = variableOptions.filterFields || {};
-                                $scope.sortOptions = variableOptions.orderBy || (WM.isArray(newVal.sort) ? getOrderByExpr(newVal.sort) : '');
+                                $scope.sortOptions = variableOptions.orderBy || (WM.isArray(newVal.sort) ? Utils.getOrderByExpr(newVal.sort) : '');
                                 if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                                     dataSize = newVal.totalElements;
                                     $scope.checkDataSize(dataSize);
