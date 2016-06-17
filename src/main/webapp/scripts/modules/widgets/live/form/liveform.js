@@ -106,14 +106,19 @@ WM.module('wm.widgets.live')
                 return defaultTemplate;
             },
             controller: function ($scope, $attrs, DialogService) {
-                var formController;
+                var prevformFields,
+                    prevDataObject = {},
+                    isDeleteInProgress,
+                    formController,
+                    onResult,
+                    onVariableUpdate;
                 function resetFormState() {
-                    if (!$scope.ngform || !$scope.ngform[$scope.name]) {
+                    if (!$scope.ngform) {
                         return;
                     }
                     //Reset the form to original state on cancel/ save
-                    $scope.ngform[$scope.name].$setUntouched();
-                    $scope.ngform[$scope.name].$setPristine();
+                    $scope.ngform.$setUntouched();
+                    $scope.ngform.$setPristine();
                 }
                 /*
                  * Extend the properties from the form controller exposed to end user in page script
@@ -129,29 +134,26 @@ WM.module('wm.widgets.live')
                 $scope.__compileWithIScope = true;
                 /* when the service call ended this function will be called */
                 /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
-                var prevformFields,
-                    prevDataObject = {},
-                    isDeleteInProgress,
-                    onResult = function (data, status, event) {
-                        /* whether service call success or failure call this method*/
-                        $scope.onResult({$event: event, $operation: $scope.operationType, $data: data});
-                        if (status) {
-                            /*if service call is success call this method */
-                            Utils.triggerFn($scope.onSuccess, {$event: event, $operation: $scope.operationType, $data: data});
-                        } else {
-                            /* if service call fails call this method */
-                            Utils.triggerFn($scope.onError, {$event: event, $operation: $scope.operationType, $data: data});
-                        }
+                onResult = function (data, status, event) {
+                    /* whether service call success or failure call this method*/
+                    $scope.onResult({$event: event, $operation: $scope.operationType, $data: data});
+                    if (status) {
+                        /*if service call is success call this method */
+                        Utils.triggerFn($scope.onSuccess, {$event: event, $operation: $scope.operationType, $data: data});
+                    } else {
+                        /* if service call fails call this method */
+                        Utils.triggerFn($scope.onError, {$event: event, $operation: $scope.operationType, $data: data});
+                    }
 
-                    },
-                    onVariableUpdate = function (response, newForm, updateMode) {
-                        if (newForm) {
-                            $scope.new();
-                        } else {
-                            $scope.changeDataObject(response);
-                        }
-                        $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
-                    };
+                };
+                onVariableUpdate = function (response, newForm, updateMode) {
+                    if (newForm) {
+                        $scope.new();
+                    } else {
+                        $scope.changeDataObject(response);
+                    }
+                    $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
+                };
                 $scope.prevDataValues = {};
                 $scope.findOperationType = function () {
                     var operation;
@@ -544,12 +546,13 @@ WM.module('wm.widgets.live')
                         formData = new FormData();
                     }
                     formFields.forEach(function (field) {
-                        var files;
+                        var files,
+                            dateTime;
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
                             if (field.value) {
-                                var dateTime = Utils.getValidDateObject(field.value);
+                                dateTime = Utils.getValidDateObject(field.value);
                                 if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
                                     dataObject[field.key] = field.value ? dateTime.getTime() : null;
                                 } else if (field.outputformat) {
@@ -719,8 +722,7 @@ WM.module('wm.widgets.live')
                     },
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
-                        scope.ngform = {};
-                        scope.ngform[scope.name] = scope[scope.name];
+                        scope.ngform = scope[scope.name];
                         if (attrs.formlayout !== 'dialog') {
                             scope.formElement = element;
                         } else {
@@ -1054,10 +1056,9 @@ WM.module('wm.widgets.live')
                             relatedDataWatchHandler,
                             elScope = element.scope(),
                             defaultObj,
-                            dataSetWatchHandler,
-                            variable,
                             isLayoutDialog,
-                            externalform = element.closest('form.app-form');
+                            externalForm = element.closest('form.app-form'),
+                            parentEle    = element.parent();
                         function setDefaultValue() {
                             if (parentIsolateScope._widgettype === 'wm-liveform') {
                                 parentIsolateScope.setDefaultValueToValue(columnDef);
@@ -1066,9 +1067,14 @@ WM.module('wm.widgets.live')
                             }
                         }
                         function setValidity(name, val) {
-                            parentIsolateScope.ngform[columnDef.parentForm][name + '_formWidget'].$setValidity('custom', val);
+                            parentIsolateScope.ngform[name + '_formWidget'].$setValidity('custom', val);
                         }
-                        parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
+                        if (parentEle.length) {
+                            parentIsolateScope = externalForm.length ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;
+                        } else {
+                            parentIsolateScope = scope.$parent;
+                        }
+                        scope.parentIsolateScope = parentIsolateScope;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key'    : attrs.key || attrs.binding || attrs.name,
@@ -1092,15 +1098,6 @@ WM.module('wm.widgets.live')
                             parentIsolateScope.isUpdateMode = true;
                         }
 
-                        if (externalform.length) {
-                            parentIsolateScope.isUpdateMode                 = true;
-                            columnDef.parentForm                            = externalform.attr('name');
-                            parentIsolateScope.ngform                       = parentIsolateScope.ngform || {};
-                            parentIsolateScope.ngform[columnDef.parentForm] = externalform.isolateScope()[columnDef.parentForm];
-                        } else {
-                            columnDef.parentForm = parentIsolateScope.name;
-                        }
-
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultvalue) {
                             if (Utils.stringStartsWith(attrs.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
@@ -1118,30 +1115,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        if (attrs.dataset) {
-                            if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = attrs.dataset.replace('bind:', '');
-                                /*Watch on the bound variable. dataset will be set after variable is populated.*/
-                                dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                    variable = elScope.Variables[expr.split('.')[1]];
-                                    if (WM.isObject(variable)) {
-                                        if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                                            parentIsolateScope.formFields[index].dataset = newVal.content;
-                                        } else if (variable.category === "wm.LiveVariable") {
-                                            parentIsolateScope.formFields[index].dataset = newVal.data;
-                                        } else {
-                                            parentIsolateScope.formFields[index].dataset = newVal;
-                                        }
-                                        /* fallback to set datafield to 'All Fields' for backward compatibility */
-                                        if (!attrs.datafield) {
-                                            parentIsolateScope.formFields[index].datafield = "All Fields";
-                                        }
-                                    }
-                                });
-                            } else {
-                                columnDef.dataset = attrs.dataset;
-                            }
-                        } else if (attrs.isRelated && CONSTANTS.isRunMode) {
+                        if (!attrs.dataset && attrs.isRelated && CONSTANTS.isRunMode) {
                             relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function (newVal) {
                                 if (!newVal) {
                                     return;
@@ -1168,16 +1142,9 @@ WM.module('wm.widgets.live')
                                 });
                             });
                         }
-                        if (attrs.extensions) {
-                            columnDef.extensions = attrs.extensions;
-                        }
-                        if (attrs.filetype) {
-                            columnDef.filetype = attrs.filetype;
-                        }
 
                         if (isLayoutDialog) {
-                            parentIsolateScope.ngform                          = parentIsolateScope.ngform || {};
-                            parentIsolateScope.ngform[parentIsolateScope.name] = parentIsolateScope[parentIsolateScope.name];
+                            parentIsolateScope.ngform = parentIsolateScope[parentIsolateScope.name];
                             defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
                                 return obj.key === columnDef.key;
                             });
@@ -1194,7 +1161,7 @@ WM.module('wm.widgets.live')
                         }
 
                         scope.fieldDefConfig = columnDef;
-                        parentIsolateScope.formFields = parentIsolateScope.formFields || [];
+                        parentIsolateScope.formFields = _.isArray(parentIsolateScope.formFields) ?  parentIsolateScope.formFields : [];
                         index = parentIsolateScope.formFields.push(columnDef) - 1;
                         if (isLayoutDialog) {
                             parentIsolateScope.setPrevDataValues();
@@ -1217,7 +1184,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition || element.parent().closest('.app-form').isolateScope().captionposition);
+                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition);
                             element.html(template);
                             $compile(element.contents())(parentIsolateScope);
                         } else {
@@ -1240,9 +1207,6 @@ WM.module('wm.widgets.live')
                             }
                             if (relatedDataWatchHandler) {
                                 relatedDataWatchHandler();
-                            }
-                            if (dataSetWatchHandler) {
-                                dataSetWatchHandler();
                             }
                         });
                         // when the form-field element is removed, remove the corresponding entry from parentIScope.formFields
@@ -1297,6 +1261,7 @@ WM.module('wm.widgets.live')
                         var parentIsolateScope,
                             template,
                             index,
+                            parentEle = element.parent(),
                             buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
                                 'iconname': attrs.iconname,
@@ -1307,7 +1272,7 @@ WM.module('wm.widgets.live')
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
                         } else {
-                            parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentIsolateScope = scope.parentIsolateScope = (parentEle && parentEle.length > 0) ? parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
 
                         parentIsolateScope.buttonArray = parentIsolateScope.buttonArray || [];
