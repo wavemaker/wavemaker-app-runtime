@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model role="input" apply-styles>' +
-                '<input class="form-control app-textbox app-dateinput" focus-target uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} datepicker-options="_dateOptions" ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} datepicker-options="_dateOptions" ' +
                     ' title="{{hint}}" ' +
                     ' is-open=isOpen' +
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             ' ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
     }])
-    .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils) {
+    .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', '$timeout', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -216,6 +216,10 @@ WM.module('wm.widgets.form')
                     if (attrs.datavalue && !_.startsWith(attrs.datavalue, 'bind:')) {
                         scope._model_ = attrs.datavalue;
                     }
+                    //Add app-date class to the wrapper that are appended to body
+                    $timeout(function () {
+                        WM.element('body').find('> [uib-datepicker-popup-wrap]').addClass('app-date');
+                    });
                 }
             }
         };

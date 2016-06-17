@@ -4,6 +4,20 @@
   height: @height;
 }
 
+//For fixed time input inside a scrollable container
+.app-fixed-time() {
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    .dropdown-menu {
+      position: fixed;
+      max-width: 13em;
+      top: initial;
+      left: initial;
+    }
+  }
+}
+
 /*To show ellipsis for longer text*/
 .ellipsis(@width) {
   width: @width;
@@ -814,9 +828,6 @@ html, body {
 .app-timeinput.input-group {
   max-width: 13em;
   position: relative;
-  .dropdown {
-    position: static;
-  }
   .dropdown-menu {
     width: auto;
    text-align: center;
@@ -824,25 +835,25 @@ html, body {
       display: inline-table;
     }
   }
+  .app-fixed-time();
 }
 
 .app-datetime.input-group {
   max-width: 21em;
   position: relative;
+  .app-fixed-time();
   .dropdown {
-    position: static;
-  }
-  .dropdown-menu {
-    top: 100% !important;
-    text-align: center;
-    width: auto;
-    table {
-      display: inline-table;
+    .dropdown-menu {
+      text-align: center;
+      max-width: 23em;
+      table {
+        display: inline-table;
+      }
+      li:last-child {
+        overflow: visible !important;
+      }
+      padding: 0.5em;
     }
-    li:last-child {
-      overflow: visible !important;
-    }
-    padding: 0.5em;
   }
   button.btn.btn-default.btn-date {
     border-right: 0px white;
@@ -2577,6 +2588,19 @@ If the height and width are not specified the video takes the height of the post
   .progress-bar {
     .app-progress-label[data-caption-placement="hidden"] {
       display: none;
+    }
+  }
+}
+
+.wm-app {
+  .app-datetime {
+    &.input-group {
+      .app-dateinput {
+        &.form-control {
+          position: absolute;
+          z-index: -1;
+        }
+      }
     }
   }
 }

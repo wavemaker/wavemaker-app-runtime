@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" ng-change="selectDate($event)" ng-model="_dateModel" ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
@@ -374,6 +374,10 @@ WM.module('wm.widgets.form')
                     }
                     scope.$on('$destroy', function () {
                         setTimeInterval(true);
+                    });
+                    //Add app-date class to the wrapper that are appended to body
+                    $timeout(function () {
+                        WM.element('body').find('> [uib-datepicker-popup-wrap]').addClass('app-date');
                     });
                 }
             }
