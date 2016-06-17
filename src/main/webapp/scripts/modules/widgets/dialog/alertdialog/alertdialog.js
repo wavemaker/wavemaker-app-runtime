@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/alertdialog.html",
-            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget ng-style="{width: dialogWidth}">' +
+            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget>' +
                 '<div class="modal-content">' +
                     '<wm-dialogheader iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
                     '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
@@ -43,22 +43,13 @@ WM.module('wm.widgets.dialog')
                 break;
             case "message":
                 /*handling default values for notification alert dialog in studio*/
-                if (attrs.notificationdialog && !CONSTANTS.isRunMode) {
+                if (attrs.notificationdialog) {
                     scope.message = "Alert Notification Message";
                 }
                 break;
-            case "oktext":
-                /*handling default values for notification alert dialog in studio */
-                if (attrs.notificationdialog && !CONSTANTS.isRunMode) {
-                    scope.oktext = "OK";
-                }
-                break;
             case "width":
-                if (scope.width && CONSTANTS.isRunMode) {
-                    //update the modal element in the UI for getting shadow and width set
+                if(newVal){
                     element.closest('.modal-dialog').css('width', newVal);
-                } else if (CONSTANTS.isStudioMode) {
-                    scope.dialogWidth = newVal;
                 }
                 break;
             }

@@ -258,23 +258,21 @@ WM.module('wm.widgets.basic')
             }
 
             function defineDatavalueGetterSetter($is, val) {
-                if (CONSTANTS.isStudioMode) {
-                    var DEFAULTS = ['', 'FirstNode', 'LastNode'];
-                    Object.defineProperty($is, 'datavalue', {
-                        'get': function () {
-                            return val;
-                        },
-                        'set': function (nv) {
-                            if (_.includes(DEFAULTS, nv)) {
-                                $is.binddatavalue = undefined;
-                                val = nv;
-                            } else {
-                                $is.binddatavalue = nv;
-                                val = undefined;
-                            }
+                var DEFAULTS = ['', 'FirstNode', 'LastNode'];
+                Object.defineProperty($is, 'datavalue', {
+                    'get': function () {
+                        return val;
+                    },
+                    'set': function (nv) {
+                        if (_.includes(DEFAULTS, nv)) {
+                            $is.binddatavalue = undefined;
+                            val = nv;
+                        } else {
+                            $is.binddatavalue = nv;
+                            val = undefined;
                         }
-                    });
-                }
+                    }
+                });
             }
 
             return {
@@ -286,10 +284,11 @@ WM.module('wm.widgets.basic')
                     'pre': function ($is) {
                         if (CONSTANTS.isStudioMode) {
                             $is.widgetProps = Utils.getClonedObject(widgetProps);
+                            defineDatavalueGetterSetter($is);
                         } else {
                             $is.widgetProps = widgetProps;
                         }
-                        defineDatavalueGetterSetter($is);
+
                     },
                     'post': function ($is, $el, attrs) {
 

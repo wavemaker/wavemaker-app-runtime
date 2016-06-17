@@ -6,14 +6,14 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/anchor.html',
                 '<a data-identifier="anchor" class="app-anchor" init-widget title="{{hint}}" apply-styles role="button" accesskey="{{::shortcutkey}}">' +
-                    '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="showimage" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                    '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass"></i>' +
                     ' <span class="anchor-caption"></span>' +
                     '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>'
             );
 
-    }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
+    }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.anchor', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events', 'wm.base.events.focus']),
             notifyFor = {
@@ -32,33 +32,20 @@ WM.module('wm.widgets.basic')
                 attrs.$set('target', newVal);
                 break;
             case 'iconposition':
-                element.attr('icon-position', newVal);
+                attrs.$set('icon-position', newVal);
                 break;
             case 'hyperlink':
                 attrs.$set('href', newVal);
-                /* if hyperlink starts with 'www.' append 'http://' in the beginning */
-                if (CONSTANTS.isRunMode && Utils.stringStartsWith(newVal, 'www.')) {
-                    scope.hyperlink =  'http://' + newVal;
+                /* if hyperlink starts with 'www.' append '//' in the beginning */
+                if (Utils.stringStartsWith(newVal, 'www.')) {
+                    scope.hyperlink =  '//' + newVal;
                 }
                 break;
-            case 'iconclass':
-                /*showing icon when iconurl is not set*/
-                scope.showicon = scope.iconclass !== '_none_' && newVal !== '' && !scope.iconurl;
-                break;
             case 'iconurl':
-                /*hiding icon when iconurl is set*/
-                /*showing icon when iconurl is not set*/
-                var showIcon = newVal === '';
-                scope.showicon = showIcon;
-                scope.showimage = !showIcon;
                 scope.iconsrc = Utils.getImageUrl(newVal);
                 break;
             case 'caption':
-                if (WM.isObject(newVal)) {
-                    element.children('.anchor-caption').text(JSON.stringify(newVal));
-                } else {
-                    element.children('.anchor-caption').html(($sce.trustAs($sce.HTML, (WM.isDefined(newVal) ? newVal : '').toString()).toString()));
-                }
+                Utils.setNodeContent(element.children('.anchor-caption'), newVal);
                 break;
             }
 
@@ -77,7 +64,6 @@ WM.module('wm.widgets.basic')
                             WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
                             attrs.iconclass = 'wi wi-' + attrs.iconname;
                         }
-                        scope.showicon = !scope.iconurl;
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
@@ -106,9 +92,7 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
- * @requires $sce
  * @requires Utils
- * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the anchor.

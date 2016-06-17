@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/confirmdialog.html",
-                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget ng-style="{width: dialogWidth}">' +
+                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget>' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
@@ -44,28 +44,13 @@ WM.module('wm.widgets.dialog')
                 break;
             case "message":
                 /*handling default values for notification confirm dialog in studio*/
-                if (attrs.notificationdialog && !CONSTANTS.isRunMode) {
+                if (attrs.notificationdialog) {
                     scope.message = "Confirm Notification Message";
                 }
                 break;
-            case "oktext":
-                /*handling default values for notification confirm dialog in studio*/
-                if (attrs.notificationdialog && !CONSTANTS.isRunMode) {
-                    scope.oktext = "OK";
-                }
-                break;
-            case "canceltext":
-                /*handling default values for notification confirm dialog in studio*/
-                if (attrs.notificationdialog && !CONSTANTS.isRunMode) {
-                    scope.canceltext = "CANCEL";
-                }
-                break;
             case "width":
-                if (scope.width && CONSTANTS.isRunMode) {
-                    //update the modal element in the UI for getting shadow and width set
+                if (newVal) {
                     element.closest('.modal-dialog').css('width', newVal);
-                } else if (CONSTANTS.isStudioMode) {
-                    scope.dialogWidth = newVal;
                 }
                 break;
             }

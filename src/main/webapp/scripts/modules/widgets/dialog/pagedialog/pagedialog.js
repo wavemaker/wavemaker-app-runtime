@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/pagedialog.html",
-            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget page-container ng-style="{width: dialogWidth}">' +
+            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget page-container>' +
                 '<div class="modal-content">' +
                     '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                     '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target></div>' +
@@ -37,11 +37,9 @@ WM.module('wm.widgets.dialog')
                 }
                 break;
             case "width":
-                if (scope.width && CONSTANTS.isRunMode) {
+                if (newVal) {
                     //update the modal element in the UI for getting shadow and width set
                     element.closest('.modal-dialog').css('width', newVal);
-                } else if (CONSTANTS.isStudioMode) {
-                    scope.dialogWidth = newVal;
                 }
                 break;
             }

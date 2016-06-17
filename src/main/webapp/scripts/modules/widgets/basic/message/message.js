@@ -5,13 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/message.html',
-            '<p class="alert app-message" init-widget apply-styles ' +
-                'ng-class=\'{' +
-                '"alert-success":messageType.isSuccess, ' +
-                '"alert-danger":messageType.isError, ' +
-                '"alert-warning":messageType.isWarning, ' +
-                '"alert-info":messageType.isInfo, ' +
-                '"alert-info alert-loading":messageType.isLoading}\' ' +
+            '<p init-widget apply-styles class="alert app-message" ng-class="messageClass" ' +
                 '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
                 '<span ng-bind-html="messageContent"></span>' +
                 '<button title="Close" type="button" class="btn-transparent close" ng-hide="hideclose">&times;</button>' +
@@ -42,35 +36,29 @@ WM.module('wm.widgets.basic')
         function propertyChangeHandler(scope, attrs, key, newVal) {
             switch (key) {
             case 'type':
-                if (newVal === 'success') {
-                    scope.messageType = {
-                        isSuccess: true
-                    };
-                    scope.messageIcon = 'wi wi-done';
-                } else if (newVal === 'error') {
-                    scope.messageType = {
-                        isError: true
-                    };
-                    scope.messageIcon = 'wi wi-cancel';
-                } else if (newVal === 'warning') {
-                    scope.messageType = {
-                        isWarning: true
-                    };
-                    scope.messageIcon = 'wi wi-bell';
-                } else if (newVal === 'warn') {/*Fallback to support old projects with type as "warn"*/
-                    scope.type = 'warning';
-                } else if (newVal === 'info') {
-                    scope.messageType = {
-                        isInfo: true
-                    };
-                    scope.messageIcon = 'wi wi-info';
-                } else if (newVal === 'loading') {
-                    scope.messageType = {
-                        isLoading: true
-                    };
-                    scope.messageIcon = 'fa fa-spinner fa-spin';
+                switch (newVal) {
+                case 'success':
+                    scope.messageClass = 'alert-success';
+                    scope.messageIconClass = 'wi wi-done';
+                    break;
+                case 'error':
+                    scope.messageClass = 'alert-danger';
+                    scope.messageIconClass = 'wi wi-cancel';
+                    break;
+                case 'warn':  /*To support old projects with type as "warn"*/
+                case 'warning':
+                    scope.messageClass = 'alert-warning';
+                    scope.messageIconClass = 'wi wi-bell';
+                    break;
+                case 'info':
+                    scope.messageClass = 'alert-info';
+                    scope.messageIconClass = 'wi wi-info';
+                    break;
+                case 'loading':
+                    scope.messageClass = 'alert-info alert-loading';
+                    scope.messageIconClass = 'fa fa-spinner fa-spin';
+                    break;
                 }
-                break;
             case 'dataset':
                 if (attrs.dataset) {
                     setDataSet(newVal, scope);
