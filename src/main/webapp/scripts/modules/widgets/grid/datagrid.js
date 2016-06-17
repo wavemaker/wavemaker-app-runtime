@@ -776,7 +776,7 @@ $.widget('wm.datagrid', {
             this.gridHeaderElement.find('th').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
-                    width   = $header.outerWidth(),
+                    width   = $header.width(),
                     id      = $header.attr('data-col-id'),
                     colDef  = self.preparedHeaderData[id];
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
