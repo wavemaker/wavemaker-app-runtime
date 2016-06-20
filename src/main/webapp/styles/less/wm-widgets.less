@@ -1196,6 +1196,12 @@ body.modal-open {
       display: inline-block;
     }
   }
+  &.Inline {
+    > .panel-heading {
+      display: table-caption;
+      background-color: inherit;
+    }
+  }
   > ul {
     display: block;
     padding-bottom: 1px; //Fix for unnecessary vertical scrollbar on the list
