@@ -1482,6 +1482,26 @@ WM.module('wm.widgets.live')
                     }
                 }, true);
             }
+            function getRowOperationsColumn() {
+                return {
+                    'field'         : 'rowOperations',
+                    'type'          : 'custom',
+                    'displayName'   : 'Actions',
+                    'width'         : '120px',
+                    'readonly'      : true,
+                    'sortable'      : false,
+                    'searchable'    : false,
+                    'resizable'     : false,
+                    'selectable'    : false,
+                    'show'          : true,
+                    'operations'    : [],
+                    'opConfig'      : {},
+                    'pcDisplay'     : true,
+                    'mobileDisplay' : true,
+                    'include'       : true,
+                    'isRowOperation': true
+                };
+            }
 
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -1503,6 +1523,7 @@ WM.module('wm.widgets.live')
             this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
             this.fetchDynamicData           = fetchDynamicData;
             this.fetchReferenceDetails      = fetchReferenceDetails;
+            this.getRowOperationsColumn     = getRowOperationsColumn;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
