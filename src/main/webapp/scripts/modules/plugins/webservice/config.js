@@ -123,7 +123,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
 /*Defining the constants for the web services module*/
 wm.plugins.webServices.constant('WS_CONSTANTS', {
     WEBSERVICE_WORKSPACE_TYPE: "ws",
-    HTTP_METHODS: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE", "TRACE", "OPTIONS"],
+    HTTP_METHODS: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE"],
     NON_BODY_HTTP_METHODS: ["GET", "HEAD"],
     PRIMITIVE_DATA_TYPES: ["number", "integer", "string", "boolean", "file"],
     OPERATION_NAME_KEY: "x-WM-METHOD_NAME",
