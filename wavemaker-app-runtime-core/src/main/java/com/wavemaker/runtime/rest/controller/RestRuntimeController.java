@@ -49,6 +49,8 @@ public class RestRuntimeController extends AbstractController {
     @Autowired
     private RestRuntimeService restRuntimeService;
 
+    private static final String WM_HEADER_PREFIX = "X-WM-";
+
     public RestRuntimeController() {
         setSupportedMethods(null);//This is to support all http methods instead of default supported methods get,post and head
     }
@@ -74,7 +76,7 @@ public class RestRuntimeController extends AbstractController {
         RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
         for (String responseHeaderKey : responseHeaders.keySet()) {
-            String updatedResponseHeaderKey = "X-WM-"+ responseHeaderKey;
+            String updatedResponseHeaderKey = WM_HEADER_PREFIX+ responseHeaderKey;
             List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
             for (String responseHeaderValue : responseHeaderValueList) {
                 httpServletResponse.setHeader(updatedResponseHeaderKey, responseHeaderValue);
@@ -99,7 +101,15 @@ public class RestRuntimeController extends AbstractController {
         Enumeration headerNames = httpServletRequest.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = (String) headerNames.nextElement();
-            updateParams(params, headerName, httpServletRequest.getHeader(headerName));
+            String key = headerName;
+            if (headerName.toUpperCase().startsWith(WM_HEADER_PREFIX)) {
+                key = headerName.substring(5);
+            } else if (httpServletRequest.getHeader(WM_HEADER_PREFIX + headerName) != null || httpServletRequest.getHeader(WM_HEADER_PREFIX.toLowerCase() + headerName) != null) {
+                //Ignoring the header as its corresponding wmHeader is present in the request
+                continue;
+            }
+            String value = httpServletRequest.getHeader(headerName);
+            updateParams(params, key, value);
         }
     }
 

@@ -47,7 +47,7 @@ wm.variables.services.$servicevariable = ['Variables',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
-            AUTH_HDR_KEY = "Authorization",
+            AUTH_HDR_KEY = "X-WM-Authorization",
             isPrimitiveType = function (type) {
                 return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1);
             },
