@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/form/searchlist.html',
             '<a>' +
                 '<img ng-src="{{match.model.wmImgSrc}}" ng-if="match.model.wmImgSrc" width="16">' +
-                '<span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>' +
+                '<span ng-bind-html="match.label | uibTypeaheadHighlight:query" title="{{match.label}}"></span>' +
             '</a>'
             );
         $templateCache.put('template/widget/form/search.html',
