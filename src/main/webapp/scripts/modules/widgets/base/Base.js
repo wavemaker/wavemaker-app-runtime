@@ -2528,6 +2528,72 @@ WM.module('wm.widgets.base', [])
                 }
                 return obj;
             }
+
+            /**
+             * Returns the parsed, updated bound expression
+             * if the expression is $[data[$i][firstName]] + '--' + $[lastName] + '--' + $['@ID@']
+             *    returns __1.firstName + '--' + lastName + '--' + __1['@ID@']
+             */
+            function getUpdatedExpr(expr) {
+                var updated = '', ch, next, i, j, matchCh, matchCount, isQuotedStr, subStr, isQuotedStrEvaluated;
+
+                expr = expr.replace(/\$\[data\[\$i\]/g, '$[__1');
+
+                for (i = 0; i < expr.length - 1; i++) {
+                    ch   = expr[i];
+                    next = expr[i + 1];
+
+                    /**
+                     * if the expression starts with $[, check the next(ch) character,
+                     *    if ch is a quote(', ") change the expr to __[
+                     *    if ch is a whiteSpace, remove it
+                     *    else remove $[
+                     */
+                    if (ch === '$' && next === '[') {
+                        matchCount  = 1;
+                        subStr      = '';
+                        isQuotedStrEvaluated = false;
+                        isQuotedStr = false;
+
+                        for (j = i + 2; j < expr.length; j++) {
+
+                            matchCh = expr[j];
+
+                            if (matchCh === ' ') {
+                                continue;
+                            }
+
+                            if (!isQuotedStrEvaluated) {
+                                isQuotedStr = expr[j] === '"' || expr[j] === "'";
+                                isQuotedStrEvaluated = true;
+                            }
+
+                            if (matchCh === '[') {
+                                matchCount++;
+                            } else if (matchCh === ']') {
+                                matchCount--;
+                            }
+
+                            if (!matchCount) {
+                                subStr = expr.substring(i + 2, j);
+                                if (isQuotedStr) {
+                                    updated += '__1[' + subStr + ']';
+                                } else {
+                                    updated += subStr;
+                                }
+
+                                break;
+                            }
+                        }
+                        i = j;
+                    } else {
+                        updated += ch;
+                    }
+                }
+
+                return updated;
+            }
+
             /*
             * Function evaluates passed key(expression/bound expression) and returns corresponding value of dataObj
             * @params: {dataObj} object from which values are extracted
@@ -2537,31 +2603,26 @@ WM.module('wm.widgets.base', [])
             * Priority : boundExpressionName >> expressionName >> value >> fieldName
             * */
             function getEvaluatedData(scope, dataObj, propertyObj, value) {
-                var boundExpressionName = propertyObj ? ("bind" + propertyObj.expressionName) : undefined,
-                    expressionValue;
-                /* if key is bound expression*/
+                var boundExpressionName = propertyObj ? ('bind' + propertyObj.expressionName) : undefined,
+                    expressionValue,
+                    keyForUpdatedExpr;
+
+                // if key is bound expression
                 if (scope[boundExpressionName]) {
-                    /*remove 'bind:' prefix from the boundExpressionName*/
-                    expressionValue = scope[boundExpressionName].replace("bind:", "");
-                    /* parse the expressionValue for replacing all the expressions with values in the object */
-                    return scope.$eval(expressionValue.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
-                        var val;
-                        /*remove '$[' prefix & ']' suffix from each expression pattern */
-                        expr = expr.replace(/[\$\[\]]/gi, '');
-                        /*split to get all keys in the expr*/
-                        expr.split('.').forEach(function (key) {
-                            /* get the value for the 'key' from the dataObj first & then value itself,
-                             * as it will be the object to scan
-                             * */
-                            val = (val && val[key]) || dataObj[key];
-                            /*if val is a string, append single quotes to it */
-                            if (WM.isString(val)) {
-                                val = "'" + val + "'";
-                            }
-                        });
-                        /* return val to the original string*/
-                        return val;
-                    }));
+                    keyForUpdatedExpr = '__' + boundExpressionName;
+                    // if the updated expression is not available, prepare and save as __boundExpressionName
+                    // if the updated expression is available, use it.
+                    if (!scope[keyForUpdatedExpr]) {
+                        // remove 'bind:' prefix from the boundExpressionName
+                        expressionValue = scope[boundExpressionName].replace('bind:', '');
+                        // parse the expressionValue for replacing all the expressions with values in the object
+                        expressionValue = getUpdatedExpr(expressionValue);
+
+                        scope[keyForUpdatedExpr] = expressionValue;
+                    }
+
+                    // evaluate the expression in the given scope and return the value
+                    return scope.$eval(scope[keyForUpdatedExpr], _.assign({}, dataObj, {'__1': dataObj}));
                 }
                 /*If key is expression*/
                 if (propertyObj && scope[propertyObj.expressionName]) {
