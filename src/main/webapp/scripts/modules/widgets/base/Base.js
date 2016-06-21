@@ -2694,7 +2694,7 @@ WM.module('wm.widgets.base', [])
                     options,
                     fieldObjects,
                     ALLFIELDS               = 'All Fields',
-                    checkboxsetTypeWidgets  = ['multiselect', 'selectall', 'list-typeahead', 'order-by'],
+                    checkboxsetTypeWidgets  = ['multiselect', 'select-all', 'list-typeahead', 'order-by'],
                     dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset';
 
                 bindExpr        = scope['bind' + dataSetProp];
