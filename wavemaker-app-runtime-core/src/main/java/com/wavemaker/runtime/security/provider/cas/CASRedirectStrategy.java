@@ -12,6 +12,8 @@ import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
 import com.wavemaker.runtime.util.HttpRequestUtils;
+import com.wavemaker.studio.common.json.JSONUtils;
+import com.wavemaker.studio.common.wrapper.StringWrapper;
 
 /**
  * Created by ArjunSahasranam on 1/6/16.
@@ -37,7 +39,7 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
             String casRedirectUrl = stringBuilder.toString();
             if (HttpRequestUtils.isAjaxRequest(request)) {
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(casRedirectUrl);
+                response.getWriter().write(JSONUtils.toJSON(new StringWrapper(casRedirectUrl)));
                 response.getWriter().flush();
             } else {
                 super.sendRedirect(request, response, casRedirectUrl);

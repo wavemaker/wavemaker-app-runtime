@@ -43,6 +43,7 @@ public class SSLSecureFilter extends GenericFilterBean {
             this.sslConfig.setSslPort(sslConfig.getSslPort());
             this.sslConfig.setExcludedUrls(sslConfig.getExcludedUrls());
             excludedUrlsList = CoreFilterUtil.extractExcludedUrlsList(this.sslConfig.getExcludedUrls());
+            logger.info("SSLConfig set in filter {}", sslConfig);
         }
     }
 
@@ -56,7 +57,7 @@ public class SSLSecureFilter extends GenericFilterBean {
             if (request.isSecure()) {
                 filterChain.doFilter(request, response);
             } else if (CoreFilterUtil.isExcluded(request, excludedUrlsList)) {
-                logger.debug("RequestURI {} is a excluded external request or request on SSL {}", requestUri, request.isSecure());
+                logger.debug("RequestURI {} is a excluded external request {}", request.getRequestURI());
                 filterChain.doFilter(request, response);
             } else {
                 String requestUri = request.getRequestURI();
