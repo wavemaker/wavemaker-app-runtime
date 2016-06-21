@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
+import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.studio.common.CommonConstants;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -34,10 +35,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
-        if (!isAjaxRequest(request)) {
-            super.onAuthenticationSuccess(request, response, authentication);
-            return;
-        } else {
+        if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
             response.setContentType("text/plain;charset=utf-8");
             response.setHeader("Cache-Control", "no-cache");
@@ -45,12 +43,9 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             response.setHeader("Pragma", "no-cache");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().flush();
+        } else {
+            super.onAuthenticationSuccess(request, response, authentication);
         }
     }
-
-    private boolean isAjaxRequest(HttpServletRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-    }
-
 }
 

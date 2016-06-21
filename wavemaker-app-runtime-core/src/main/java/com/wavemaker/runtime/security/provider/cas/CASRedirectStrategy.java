@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
+import com.wavemaker.runtime.util.HttpRequestUtils;
+
 /**
  * Created by ArjunSahasranam on 1/6/16.
  */
@@ -27,18 +29,18 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
         if ("/".equals(url)) {
             super.sendRedirect(request, response, url);
         } else {
-            String serviceUrl = CASUtils.getServiceUrl(request);
+            String serviceUrl = HttpRequestUtils.getServiceUrl(request);
             StringBuilder stringBuilder = new StringBuilder(url);
             stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl);
 
             LOGGER.info("CAS logout redirect url is {}", url);
             String casRedirectUrl = stringBuilder.toString();
-            if (!CASUtils.isAjaxRequest(request)) {
-                super.sendRedirect(request, response, casRedirectUrl);
-            } else {
+            if (HttpRequestUtils.isAjaxRequest(request)) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(casRedirectUrl);
                 response.getWriter().flush();
+            } else {
+                super.sendRedirect(request, response, casRedirectUrl);
             }
         }
     }

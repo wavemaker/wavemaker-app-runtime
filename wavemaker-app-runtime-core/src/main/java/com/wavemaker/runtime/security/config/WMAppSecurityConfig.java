@@ -20,6 +20,7 @@ import java.util.Map;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RememberMeConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
+import com.wavemaker.studio.common.model.security.SSLConfig;
 
 /**
  * @author Ed Callahan
@@ -36,6 +37,8 @@ public class WMAppSecurityConfig {
     private Map<String, RoleConfig> roleMap;
 
     private RememberMeConfig rememberMeConfig;
+
+    private SSLConfig sslConfig;
 
     public boolean isEnforceSecurity() {
         return enforceSecurity;
@@ -69,13 +72,22 @@ public class WMAppSecurityConfig {
         this.rememberMeConfig = rememberMeConfig;
     }
 
+    public SSLConfig getSslConfig() {
+        return sslConfig;
+    }
+
+    public void setSslConfig(final SSLConfig sslConfig) {
+        this.sslConfig = sslConfig;
+    }
+
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
                 "enforceSecurity=" + enforceSecurity +
                 ", loginConfig=" + loginConfig +
                 ", roleMap=" + roleMap +
-                ", rememberMe=" + rememberMeConfig +
+                ", rememberMeConfig=" + rememberMeConfig +
+                ", sslConfig=" + sslConfig +
                 '}';
     }
 }
