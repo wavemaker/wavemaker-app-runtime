@@ -6,7 +6,7 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/message.html',
             '<p init-widget apply-styles class="alert app-message" ng-class="messageClass" ' +
-                '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
+                '><i title="{{type}} Alert" class="{{type}} icon {{messageIconClass}}"></i>' +
                 '<span ng-bind-html="messageContent"></span>' +
                 '<button title="Close" type="button" class="btn-transparent close" ng-hide="hideclose">&times;</button>' +
             '</p>'

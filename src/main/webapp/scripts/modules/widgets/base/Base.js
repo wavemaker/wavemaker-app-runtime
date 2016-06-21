@@ -19,7 +19,7 @@ WM.module('wm.widgets.base', [])
      *  - another property, e.g. for grid, 'selecteditem' property's type is dependent on the 'dataset' property
      *  - an expression, can be defined and evaluated in the isolateScope of widget.
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', function (WIDGET_CONSTANTS, CONSTANTS, Utils) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', '$rootScope', function (WIDGET_CONSTANTS, CONSTANTS, Utils, $rs) {
         "use strict";
 
         var widgetEventOptions = Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
@@ -464,6 +464,11 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "showbuttonbar": {"type": "boolean", "value": true}
                     },
+                    "wm.date.mobile":{
+                        "datepattern": {"show": false},
+                        "excludedays": {"show": false},
+                        "excludedates": {"show": false}
+                    },
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -501,6 +506,10 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
+                    "wm.time.mobile": {
+                        "hourstep": {"show": false},
+                        "minutestep": {"show": false}
+                    },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -522,6 +531,11 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "showbuttonbar": {"type": "boolean", "value": true}
+                    },
+                    "wm.datetime.mobile":{
+                        "datepattern": {"show": false},
+                        "hourstep": {"show": false},
+                        "minutestep": {"show": false}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -1331,6 +1345,9 @@ WM.module('wm.widgets.base', [])
                         "onProgress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onAbort": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
+                    'wm.fileupload.mobile': {
+                        "contenttype": {"widget" : "list", "options": ['image', 'audio', 'video', 'files']}
+                    },
                     'wm.youtube': {
                         "width": { "value": "800px", "pattern": dimensionRegex},
                         "height": {"value": "125px", "pattern": dimensionRegex},
@@ -1824,7 +1841,8 @@ WM.module('wm.widgets.base', [])
          else return only the properties of the widget.
          */
         function getPropertiesOf(widget, parents) {
-            var widgetProps, parentsArr;
+            var widgetProps, parentsArr,
+                mobileProps;
 
             if (!parents) {
                 /* This widget doesn't inherit from other widgets. Fetch the properties of only this widget */
@@ -1852,6 +1870,12 @@ WM.module('wm.widgets.base', [])
                             });
                         });
                 });
+            }
+            if ($rs.isMobileApplicationType) {
+                mobileProps = properties[widget + '.mobile'];
+                if (mobileProps) {
+                   _.assign(widgetProps, mobileProps);
+                }
             }
 
             /* Inject show and disabled fields into each property object */

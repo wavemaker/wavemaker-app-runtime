@@ -38,10 +38,6 @@ WM.module('wm.widgets.form')
                 'timepattern' : true
             };
 
-        if ($rs.isMobileApplicationType) {
-            widgetProps.hourstep.show   = false;
-            widgetProps.minutestep.show = false;
-        }
 
         function setTimeModel(scope) {
             if (scope.timepattern === 'timestamp') {
