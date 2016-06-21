@@ -912,7 +912,7 @@ WM.module('wm.widgets.base', [])
                         "itemlink": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itembadge": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
-                        "addchild": {"label": "Add", "hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
@@ -1383,7 +1383,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
-                        "addchild": {"label": "Add", "hidelabel": true, "options": [{"label": "Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "string", "value": "0"}
@@ -1418,7 +1418,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
-                        "addchild": {"label": "Add", "hidelabel": true, "options": [{"label": "Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tab-order", "dataset": []},
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"},
@@ -1459,7 +1459,7 @@ WM.module('wm.widgets.base', [])
                         "onSkip": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.carousel" : {
-                        "addchild": {"label": "Add", "hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
