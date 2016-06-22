@@ -44,7 +44,7 @@ public class DBJasperReportGenerator extends AbstractJasperReportGenerator {
 
         public static QueryType getQueryType(String type) {
             for (QueryType queryType : QueryType.values()) {
-                if (queryType.getValue().equals(type)) {
+                if (queryType.getValue().equalsIgnoreCase(type)) {
                     return queryType;
                 }
             }
