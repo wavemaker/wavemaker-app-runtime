@@ -78,19 +78,21 @@ WM.module('wm.widgets.live')
                     "onError": "&"
                 },
                 controller: function ($scope, $attrs) {
+                    var onResult,
+                        filterController;
                     /*
                      * Extend the properties from the form controller exposed to end user in page script
                      * Kept in try/catch as the controller may not be available sometimes
                      */
                     if (CONSTANTS.isRunMode) {
                         try {
-                            var filterController = $attrs.name + "Controller";
+                            filterController = $attrs.name + "Controller";
                             $controller(filterController, {$scope: $scope});
                         } catch (ignore) {
                         }
                     }
                     /* when the service call ended this function will be called */
-                    var onResult = function (data, status) {
+                    onResult = function (data, status) {
                         /* whether service call success or failure call this method*/
                         if (status) {
                             /*if service call is success call this method */
@@ -153,9 +155,10 @@ WM.module('wm.widgets.live')
                         /* Copy the values to be sent to the user as '$data' before servicecall */
                         _.forEach($scope.formFields, function (field) {
                             var fieldSelector = 'div[name=' + field.name + '] input',
-                                $el     = $scope.$element;
+                                $el     = $scope.$element,
+                                fieldEle;
                             if ((field.widget === 'typeahead' || field.widget === 'autocomplete') && $el) {
-                                var fieldEle = $el.find(fieldSelector);
+                                fieldEle = $el.find(fieldSelector);
                                 if (!field.isRange) {
                                     dataModel[field.field] = {
                                         'value': fieldEle.val()
@@ -774,15 +777,13 @@ WM.module('wm.widgets.live')
                         scope.FilterField.prototype = new wm.baseClasses.FieldDef();
                         var expr,
                             exprWatchHandler,
-                            dataSetWatchHandler,
-                            variable,
                             template,
                             index,
                             defaultVal,
                             parentIsolateScope = scope.parentIsolateScope,
                             columnsDef = new scope.FilterField(),
                             columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                                'field'             : attrs.field || attrs.binding ||attrs.name,
+                                'field'             : attrs.field || attrs.binding || attrs.name,
                                 'filterOn'          : attrs.filterOn,
                                 'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
@@ -806,24 +807,15 @@ WM.module('wm.widgets.live')
                             /*If the default value is bound variable, keep watch on the expression*/
                             if (Utils.stringStartsWith(columnsDef.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = columnsDef.defaultvalue.replace('bind:', '');
-                                if (parentIsolateScope.Variables && !Utils.isEmptyObject(parentIsolateScope.Variables) && parentIsolateScope.$eval(expr)) {
-                                    defaultVal = scope.$eval(expr);
-                                    columnsDef.value = defaultVal;
+                                exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
+                                    parentIsolateScope.formFields[index].value = newVal;
                                     if (columnsDef.isRange) {
-                                        columnsDef.minValue = defaultVal;
-                                        columnsDef.maxValue = defaultVal;
+                                        parentIsolateScope.formFields[index].minValue = newVal;
+                                        parentIsolateScope.formFields[index].maxValue = newVal;
                                     }
-                                } else {
-                                    exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
-                                        parentIsolateScope.formFields[index].value = newVal;
-                                        if (columnsDef.isRange) {
-                                            parentIsolateScope.formFields[index].minValue = newVal;
-                                            parentIsolateScope.formFields[index].maxValue = newVal;
-                                        }
-                                        /*Apply the filter after the default value change*/
-                                        parentIsolateScope.filterOnDefault();
-                                    }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
-                                }
+                                    /*Apply the filter after the default value change*/
+                                    parentIsolateScope.filterOnDefault();
+                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                             } else {
                                 defaultVal = columnsDef.defaultvalue;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
@@ -840,28 +832,6 @@ WM.module('wm.widgets.live')
                         if (attrs.dataset) {
                             /*Store the dataset in tempdataset. If tempdataset is undefined, fetch the default values for field*/
                             columnsDef.tempDataset = attrs.dataset;
-                            if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = attrs.dataset.replace('bind:', '');
-                                /*Watch on the bound variable. dataset will be set after variable is populated.*/
-                                dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                    variable = parentIsolateScope.Variables[expr.split('.')[1]];
-                                    if (WM.isObject(variable)) {
-                                        if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                                            parentIsolateScope.formFields[index].dataset = newVal.content;
-                                        } else if (variable.category === "wm.LiveVariable") {
-                                            parentIsolateScope.formFields[index].dataset = newVal.data;
-                                        } else {
-                                            parentIsolateScope.formFields[index].dataset = newVal;
-                                        }
-                                        /* fallback to set datafield to 'All Fields' for backward compatibility */
-                                        if (!attrs.datafield) {
-                                            parentIsolateScope.formFields[index].datafield = "All Fields";
-                                        }
-                                    }
-                                });
-                            } else {
-                                columnsDef.dataset = attrs.dataset;
-                            }
                         }
                         scope.fieldDefConfig = columnsDef;
                         parentIsolateScope.formFields = parentIsolateScope.formFields || [];
@@ -895,9 +865,6 @@ WM.module('wm.widgets.live')
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();
-                            }
-                            if (dataSetWatchHandler) {
-                                dataSetWatchHandler();
                             }
                         });
 

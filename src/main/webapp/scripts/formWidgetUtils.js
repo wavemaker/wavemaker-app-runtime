@@ -587,4 +587,46 @@ WM.module('wm.widgets.form')
             this.getOrderedDataSet              = getOrderedDataSet;
             this.disableDates                   = disableDates;
         }
-    ]);
+    ])
+    .constant('FIELD_TYPE', {
+        'INTEGER'     : 'integer',
+        'BIG_INTEGER' : 'big_integer',
+        'SHORT'       : 'short',
+        'FLOAT'       : 'float',
+        'BIG_DECIMAL' : 'big_decimal',
+        'DOUBLE'      : 'double',
+        'LONG'        : 'long',
+        'BYTE'        : 'byte',
+        'STRING'      : 'string',
+        'CHARACTER'   : 'character',
+        'TEXT'        : 'text',
+        'DATE'        : 'date',
+        'TIME'        : 'time',
+        'TIMESTAMP'   : 'timestamp',
+        'DATETIME'    : 'datetime',
+        'BOOLEAN'     : 'boolean',
+        'LIST'        : 'list',
+        'CLOB'        : 'clob',
+        'BLOB'        : 'blob'
+    })
+    .constant('FIELD_WIDGET', {
+        'TEXT'         : 'text',
+        'NUMBER'       : 'number',
+        'TEXTAREA'     : 'textarea',
+        'PASSWORD'     : 'password',
+        'CHECKBOX'     : 'checkbox',
+        'SLIDER'       : 'slider',
+        'RICHTEXT'     : 'richtext',
+        'CURRENCY'     : 'currency',
+        'SWITCH'       : 'switch',
+        'SELECT'       : 'select',
+        'CHECKBOXSET'  : 'checkboxset',
+        'RADIOSET'     : 'radioset',
+        'DATE'         : 'date',
+        'TIME'         : 'time',
+        'TIMESTAMP'    : 'timestamp',
+        'UPLOAD'       : 'upload',
+        'RATING'       : 'rating',
+        'DATETIME'     : 'datetime',
+        'AUTOCOMPLETE' : 'autocomplete'
+    });

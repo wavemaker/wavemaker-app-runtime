@@ -17,30 +17,97 @@ WM.module('wm.layouts.containers')
                     '</div>' +
                     '<div class="form-body panel-body" apply-styles="inner-shell">' +
                         '<wm-message scopedataset="statusMessage"></wm-message>' +
-                        '<div wmtransclude></div>' +
+                        '<div class="form-elements" wmtransclude>' +
+                            '<div class="overlay" ng-if="showNoFieldsMsg">' +
+                                '<span>{{:: $root.locale.MESSAGE_CANNOT_GENERATE_FIELDS_IN_STUDIO}}</span>' +
+                            '</div>' +
+                        '</div>' +
                     '</div>' +
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
-                'captionsize': true,
-                'novalidate': true,
-                'autocomplete': true,
-                'submitbutton': true,
-                'resetbutton': true,
-                'captionalign': true,
-                'captionposition': true,
-                'method': true,
-                'action': true
+                'captionsize'     : true,
+                'novalidate'      : true,
+                'autocomplete'    : true,
+                'submitbutton'    : true,
+                'resetbutton'     : true,
+                'captionalign'    : true,
+                'captionposition' : true,
+                'method'          : true,
+                'action'          : true,
+                'metadata'        : true,
+                'formdata'        : true
             },
             submitBtnTemplate = '<wm-button class="form-submit" type="submit" caption="submit"></wm-button>';
+        //Function to set the default values on the form fields
+        function setDefaultValues(scope) {
+            //If form fields are not available, return here
+            if (!scope.formdata || !scope.elScope.formFields || _.isEmpty(scope.elScope.formFields)) {
+                return;
+            }
+            _.forEach(scope.elScope.formFields, function (field) {
+                field.value = scope.formdata[field.key || field.name];
+            });
+        }
+        //Generate the form field with given field definition. Add a grid column wrapper around the form field.
+        function setMarkupForFormField(field, columnWidth) {
+            var template = '',
+                widget   = '<wm-form-field';
+            _.forEach(field, function (value, key) {
+                widget = widget + ' ' + key + '="' + value + '"';
+            });
+            widget   += '></wm-form-field>';
+            template +=  '<wm-gridcolumn columnwidth="' + columnWidth + '">' + widget + '</wm-gridcolumn>';
+            return template;
+        }
+        //Function to generate and compile the form fields from the metadata
+        function generateFormFields(scope, element) {
+            var fields        = scope.metadata ? scope.metadata.data || scope.metadata : [],
+                fieldTemplate = '',
+                $gridLayout   = element.find('.form-elements .app-grid-layout:first'),
+                noOfColumns   = Number($gridLayout.attr('columns')) || 1,
+                colCount      = 0,
+                columnWidth   = 12 / noOfColumns,
+                $fieldsMarkup,
+                index,
+                userFields;
+            scope.elScope.formFields = []; //empty the form fields
+            $gridLayout.empty(); //Remove any elements from the grid
+            if (_.isEmpty(fields)) {
+                return;
+            }
+            if (scope.onBeforerender) {
+                userFields = scope.onBeforerender({$metadata: fields, $scope: scope});
+                if (userFields) {
+                    fields = userFields;
+                }
+            }
+            if (!_.isArray(fields)) {
+                return;
+            }
+            while (fields[colCount]) {
+                fieldTemplate += '<wm-gridrow>';
+                for (index = 0; index < noOfColumns; index++) {
+                    if (fields[colCount]) {
+                        fieldTemplate += setMarkupForFormField(fields[colCount], columnWidth);
+                    }
+                    colCount++;
+                }
+                fieldTemplate += '</wm-gridrow>';
+            }
+            $fieldsMarkup = WM.element(fieldTemplate);
+            $gridLayout.prepend($fieldsMarkup);
+            $compile($fieldsMarkup)(scope.elScope);
+            setDefaultValues(scope);
+        }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
-            var value, resetBtnTemplate;
+            var value, resetBtnTemplate, $gridLayout;
             switch (key) {
             case 'captionsize':
                 element.find('.form-group .app-label.ng-isolate-scope').each(function () {
@@ -84,6 +151,26 @@ WM.module('wm.layouts.containers')
                 break;
             case 'action':
                 attrs.$set('action', newVal);
+                break;
+            case 'metadata':
+                if (CONSTANTS.isRunMode) {
+                    generateFormFields(scope, element);
+                } else {
+                    //As form fields are not generated in studio mode, show a message
+                    $gridLayout = element.find('.form-elements .app-grid-layout:first');
+                    if (newVal) {
+                        $gridLayout.hide();
+                        scope.showNoFieldsMsg = true;
+                    } else {
+                        $gridLayout.show();
+                        scope.showNoFieldsMsg = false;
+                    }
+                }
+                break;
+            case 'formdata':
+                if (CONSTANTS.isRunMode) {
+                    setDefaultValues(scope);
+                }
                 break;
             }
         }
@@ -134,7 +221,7 @@ WM.module('wm.layouts.containers')
                         var fieldName;
                         field       = WM.element(this).isolateScope().fieldDefConfig;
                         fieldTarget = _.split(field.target, '.');
-                        fieldName   = fieldTarget[0] || field.name;
+                        fieldName   = fieldTarget[0] || field.key || field.name;
                         if (fieldTarget.length === 1 && !formData[fieldName]) {
                             formData[fieldName] = field.value;
                         } else {
@@ -198,8 +285,11 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
-                'pre': function (scope) {
+                'pre': function (scope, element) {
                     scope.widgetProps = widgetProps;
+                    scope.elScope = element.scope().$new();
+                    scope.elScope.formFields   = [];
+                    scope.elScope.isUpdateMode = true;
                 },
                 'post': function (scope, element, attrs) {
                     scope.statusMessage = undefined;
@@ -210,6 +300,7 @@ WM.module('wm.layouts.containers')
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
                     }
+                    scope.elScope.ngform  = scope[scope.name];
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }

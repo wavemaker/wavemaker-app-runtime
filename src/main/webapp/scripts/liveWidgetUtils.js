@@ -273,8 +273,8 @@ WM.module('wm.widgets.live')
             function getColumnDef(attrs) {
                 var columnDef    = {},
                     widgetType   = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
-                    excludeKeys  = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'],
-                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled'];
+                    excludeKeys  = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value'],
+                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled', 'primaryKey'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
                     if (_.includes(booleanAttrs, key)) {
@@ -287,14 +287,12 @@ WM.module('wm.widgets.live')
                     }
                 });
                 /*Handle special cases properties*/
-                columnDef.displayname   = attrs.displayname || attrs.caption;
+                columnDef.displayname   = attrs.displayname || attrs.caption || Utils.prettifyLabel(columnDef.key || columnDef.field || columnDef.name);
                 columnDef.pcDisplay     = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === 'true') : true;
                 columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === 'true') : true;
                 columnDef.type          = attrs.type || 'text';
-                columnDef.class         = attrs.class || '';
                 columnDef.widget        = widgetType; /*Widget type support for older projects*/
-                columnDef.primaryKey    = attrs.primaryKey === 'true' || attrs.primaryKey === true;
-                columnDef.show          = attrs.show === 'false' ? false : (attrs.show === 'true' || attrs.show);
+                columnDef.show          = WM.isDefined(attrs.show) ? (attrs.show === 'false' ? false : (attrs.show === 'true' || attrs.show)) : true;
                 columnDef.name          = columnDef.name || columnDef.key || columnDef.field;
                 return columnDef;
             }
@@ -400,6 +398,21 @@ WM.module('wm.widgets.live')
                 });
                 return fields;
             }
+
+            function getDataSetFields(fieldDef, index) {
+                var template;
+                if (fieldDef.widget === 'autocomplete' || fieldDef.widget === 'typeahead') {
+                    template = ' datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" displaylabel="{{formFields[' + index + '].displaylabel}}"';
+                } else {
+                    template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                }
+                if (!fieldDef.dataset) {
+                    template = template + ' scopedataset="formFields[' + index + '].dataset" dataset="" ';
+                } else {
+                    template = template + ' dataset="{{formFields[' + index + '].dataset}}" ';
+                }
+                return template;
+            }
             /*Returns the default template*/
             function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
                 var template = '',
@@ -466,13 +479,13 @@ WM.module('wm.widgets.live')
 
             /*Returns radioset template */
             function getRadiosetTemplate(fieldDef, index) {
-                var additionalFields = ' scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""';
+                var additionalFields = getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('radioset', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns checkboxset template */
             function getCheckboxsetTemplate(fieldDef, index) {
-                var additionalFields = ' scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""';
+                var additionalFields = getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('checkboxset', fieldDef, index, '', '', '', additionalFields);
             }
 
@@ -484,7 +497,7 @@ WM.module('wm.widgets.live')
 
             /*Returns select template */
             function getSelectTemplate(fieldDef, index) {
-                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                var additionalFields = getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('select', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
             }
 
@@ -502,7 +515,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSwitchTemplate(fieldDef, index) {
-                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" dataset="" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                var additionalFields = getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('switch', fieldDef, index, '', '', '', additionalFields);
             }
 
@@ -512,7 +525,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSearchTemplate(fieldDef, index) {
-                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" type="autocomplete" displaylabel="{{formFields[' + index + '].displaylabel}}"';
+                var additionalFields = ' type="autocomplete"' +  getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
             }
             /**
@@ -565,7 +578,7 @@ WM.module('wm.widgets.live')
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
@@ -627,8 +640,8 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
-                template = template + '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
+                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
+                template = template + '<p ng-if="ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></wm-composite>';
                 return template;
             }
@@ -1023,7 +1036,7 @@ WM.module('wm.widgets.live')
                     widgetProps.inputtype = WM.copy(widgetProps.type);
                     delete widgetProps.type;
                 }
-                if (widgetType === 'switch') {
+                if (isDataSetWidgets[widgetType]) {
                     widgetProps.dataset.value   = '';
                     widgetProps.datafield.value = '';
                 }
