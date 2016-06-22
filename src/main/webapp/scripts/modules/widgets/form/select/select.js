@@ -251,7 +251,10 @@ WM.module('wm.widgets.form')
                 }
             }
             _modelChangedManually[scope.$id] = true;
-            scope._onChange({$event: args.$event, $scope: args.$scope});
+
+            if (WM.isFunction(scope._onChange)) {
+                scope._onChange({$event: args.$event, $scope: args.$scope});
+            }
         }
 
         /* function which will be triggered on change of scopedataset */
