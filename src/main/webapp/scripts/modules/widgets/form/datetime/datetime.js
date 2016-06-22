@@ -46,13 +46,6 @@ WM.module('wm.widgets.form')
                 'datepattern'  : true
             };
 
-        if ($rs.isMobileApplicationType) {
-            /*date pattern is not supported for native date widget*/
-            widgetProps.datepattern.show = false;
-            widgetProps.hourstep.show = false;
-            widgetProps.minutestep.show = false;
-        }
-
         function _formatDateTime(scope) {
             var date,
                 time,

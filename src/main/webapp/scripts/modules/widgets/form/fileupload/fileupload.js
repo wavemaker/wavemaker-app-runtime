@@ -419,12 +419,6 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                         scope._isMobileType = $rootScope.isMobileApplicationType;
                         scope._isCordova = CONSTANTS.hasCordova;
-
-                        // contenttype options specific to mobile application.
-                        if (scope._isMobileType && CONSTANTS.isStudioMode) {
-                            scope.widgetProps.contenttype.options = ['image', 'audio', 'video', 'files'];
-                            scope.widgetProps.contenttype.widget  = 'list';
-                        }
                     },
 
                     post: function (scope, element, attrs) {

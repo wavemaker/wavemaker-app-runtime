@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
 
         $templateCache.put('template/widget/form/button.html',
             '<button class="btn app-button" init-widget title="{{hint}}" apply-styles ng-disabled="disabled" role="input" accesskey="{{::shortcutkey}}">' +
-                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}"  ng-if="showimage" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}"  ng-if="iconSrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +
                 '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
@@ -37,18 +37,11 @@ WM.module('wm.widgets.form')
                 break;
             case 'iconurl':
                 /*hiding icon when iconurl is set*/
-                /*showing icon when iconurl is not set*/
-                var showIcon = newVal === '';
-                scope.showicon = showIcon;
-                scope.showimage = !showIcon;
+                scope.showicon = newVal === '';
                 scope.iconsrc = Utils.getImageUrl(newVal);
                 break;
             case 'caption':
-                if (WM.isObject(newVal)) {
-                    element.children('.btn-caption').text(JSON.stringify(newVal));
-                } else {
-                    element.children('.btn-caption').html(($sce.trustAs($sce.HTML, (WM.isDefined(newVal) ? newVal : '').toString()).toString()));
-                }
+                Utils.setNodeContent(element.children('.btn-caption'), newVal);
                 break;
             }
         }

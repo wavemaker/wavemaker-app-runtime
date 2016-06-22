@@ -45,13 +45,6 @@ WM.module('wm.widgets.form')
                 'excludedates': true
             };
 
-        if ($rs.isMobileApplicationType) {
-            /*date pattern is not supported for native date widget*/
-            widgetProps.datepattern.show = false;
-            widgetProps.excludedates.show = false;
-            widgetProps.excludedays.show = false;
-        }
-
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             switch (key) {
             case 'readonly':
