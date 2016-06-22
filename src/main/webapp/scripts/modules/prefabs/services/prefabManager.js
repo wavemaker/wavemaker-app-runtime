@@ -339,7 +339,24 @@ WM.module('wm.prefabs')
 
                     _.forEach(modules, function (module) {
                         $ocLazyLoad.jsLoader(module.files, function () {
-                            $ocLazyLoad.inject(module.name).then(resolveFn);
+                            var isModuleAlreadyLoaded = true;
+
+                            /**
+                             * Instantiating a module multiple time will result in un desirable effect.
+                             * To avoid this, try to retrieve the module with the given name. Exception will be thrown if the module doesn't exist.
+                             * Instantiate the module only if required.
+                             */
+
+                            try {
+                                WM.module(module.name);
+                            } catch (e) {
+                                isModuleAlreadyLoaded = false;
+                            }
+                            if (!isModuleAlreadyLoaded) {
+                                $ocLazyLoad.inject(module.name).then(resolveFn);
+                            } else {
+                                resolveFn();
+                            }
                         }, {});
                     });
                 }

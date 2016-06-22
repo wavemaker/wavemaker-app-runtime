@@ -1202,7 +1202,7 @@ WM.module('wm.utils', [])
                 return false;
             }
             try {
-                var parsedIntValue = parseInt(content);
+                var parsedIntValue = parseInt(content, 10);
                 /*obtaining json from editor content string*/
                 return WM.isObject(content) || !isNaN(parsedIntValue) ? content : JSON.parse(content);
             } catch (e) {
@@ -1977,6 +1977,6 @@ WM.module('wm.utils', [])
         this.triggerCustomEvents        = triggerCustomEvents;
         this.simulateFileDownload       = simulateFileDownload;
         this.getWidgetRolesArrayFromStr = getWidgetRolesArrayFromStr;
-        this.setNodeContent             = setNodeContent ;
-        this.getOrderByExpr             = getOrderByExpr ;
+        this.setNodeContent             = setNodeContent;
+        this.getOrderByExpr             = getOrderByExpr;
     }]);
