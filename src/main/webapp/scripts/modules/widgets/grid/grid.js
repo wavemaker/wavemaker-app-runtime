@@ -689,25 +689,7 @@ WM.module('wm.widgets.grid')
         "DialogService",
         function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
             'use strict';
-            var columnObj = {
-                    rowOperationsColumn: {
-                        'field'         : 'rowOperations',
-                        'type'          : 'custom',
-                        'displayName'   : 'Actions',
-                        'width'         : '120px',
-                        'readonly'      : true,
-                        'sortable'      : false,
-                        'searchable'    : false,
-                        'resizable'     : false,
-                        'selectable'    : false,
-                        'show'          : true,
-                        'operations'    : [],
-                        'opConfig'      : {},
-                        'pcDisplay'     : true,
-                        'mobileDisplay' : true
-                    }
-                },
-                rowOperations = {
+            var rowOperations = {
                     'update': {
                         'config': {
                             'label': 'Update',
@@ -1209,7 +1191,8 @@ WM.module('wm.widgets.grid')
                 var rowActionCol,
                     opConfig = {},
                     operations = [],
-                    insertPosition;
+                    insertPosition,
+                    rowOperationsColumn = LiveWidgetUtils.getRowOperationsColumn();
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {
                     return;
@@ -1231,12 +1214,12 @@ WM.module('wm.widgets.grid')
                         insertPosition = rowActionCol.rowactionsposition ? _.toNumber(rowActionCol.rowactionsposition) : $scope.fieldDefs.length;
                         $scope.fieldDefs.splice(insertPosition, 0, rowActionCol);
                     } else {
-                        $scope.fieldDefs.push(columnObj.rowOperationsColumn);
+                        $scope.fieldDefs.push(rowOperationsColumn);
                     }
                 } else if (!fromDesigner && operations.length) {
-                    columnObj.rowOperationsColumn.operations = operations;
-                    columnObj.rowOperationsColumn.opConfig = opConfig;
-                    $scope.fieldDefs.push(columnObj.rowOperationsColumn);
+                    rowOperationsColumn.operations = operations;
+                    rowOperationsColumn.opConfig = opConfig;
+                    $scope.fieldDefs.push(rowOperationsColumn);
                 }
             };
 
