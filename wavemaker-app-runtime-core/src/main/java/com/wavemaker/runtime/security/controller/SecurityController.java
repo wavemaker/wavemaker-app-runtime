@@ -96,12 +96,6 @@ public class SecurityController {
         return WMUtils.wrapString(String.valueOf(securityService.getLoginTime()));
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    @ApiOperation(value = "Logout the current user from the application.")
-    public void logout() {
-        securityService.logout();
-    }
-
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ApiOperation(value = "Returns security information")
     public SecurityInfo getSecurityInfo() {
