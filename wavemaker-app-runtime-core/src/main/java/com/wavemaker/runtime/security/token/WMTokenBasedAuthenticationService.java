@@ -92,7 +92,7 @@ public class WMTokenBasedAuthenticationService {
 
         int tokenLifetime = calculateLoginLifetime();
         long expiryTime = System.currentTimeMillis();
-        expiryTime += 1000L * (tokenLifetime < 0 ? tokenValiditySeconds : tokenLifetime);
+        expiryTime += 1000L * (tokenLifetime < 0 ? DEFAULT_VALIDITY_SECONDS : tokenLifetime);
 
         String signatureValue = makeTokenSignature(expiryTime, username);
 
