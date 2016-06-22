@@ -98,13 +98,6 @@ public class SecurityService {
         return getAuthenticatedAuthentication() != null;
     }
 
-    /**
-     * Logs the current principal out. The principal is the one in the security context.
-     */
-    public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     private WMUserDetails getWMUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {

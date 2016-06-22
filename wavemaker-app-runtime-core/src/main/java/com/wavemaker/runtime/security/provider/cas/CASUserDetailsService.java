@@ -1,15 +1,11 @@
 package com.wavemaker.runtime.security.provider.cas;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.wavemaker.runtime.security.WMUser;
-
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.wavemaker.runtime.security.WMUser;
 
 /**
  * Created by ArjunSahasranam on 5/16/16.
