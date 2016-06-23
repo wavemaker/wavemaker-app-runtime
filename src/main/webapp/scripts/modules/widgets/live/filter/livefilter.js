@@ -872,7 +872,7 @@ WM.module('wm.widgets.live')
                         element.on('$destroy', function () {
                             _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnsDef));
                         });
-                        WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
+                        WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);
 
                         if (!scope.hasOwnProperty('datavalue')) {
                             Object.defineProperty(scope, 'datavalue', {

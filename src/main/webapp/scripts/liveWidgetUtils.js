@@ -354,47 +354,38 @@ WM.module('wm.widgets.live')
                 return '{{' + caption + '}}';
             }
 
-            function getFormFields(fieldDef, index, type) {
+            function getFormFields(fieldDef) {
                 var fields    = '',
-                    dateTypes = ['date', 'datetime'],
-                    textTypes = ['text', 'password', 'textarea'],
                     evtTypes  = _.pull(getEventTypes(), focusEvents),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'onFocus', 'onBlur'];
-                Object.keys(fieldDef).forEach(function (field) {
-                    if (_.includes(excludeProperties, field)) {
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'onFocus', 'onBlur', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted'],
+                    fieldKeys = _.pullAll(_.keys(fieldDef), excludeProperties);
+                _.forEach(fieldKeys, function (field) {
+                    if (!fieldDef[field]) {
                         return;
                     }
-                    if (fieldDef[field]) {
-                        if (field === 'name') {
-                            fields += ' name="' + fieldDef[field] + '_formWidget"';
-                        } else if (field === 'widgetid') {
-                            fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
-                        } else if (field === 'permitted') {
-                            fields += ' accept="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (_.includes(dateTypes, type) && (field === 'minvalue' || field === 'maxvalue')) {
-                            //For date, datetime, timestamp special cases
-                            if (field === 'minvalue') {
-                                fields += ' mindate="{{formFields[' + index + '].' + field + '}}"';
-                            } else if (field === 'maxvalue') {
-                                fields += ' maxdate="{{formFields[' + index + '].' + field + '}}"';
-                            }
-                        } else if (_.includes(textTypes, type) && field === 'maxvalue' && fieldDef.inputtype === 'text') {
-                            fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (_.includes(evtTypes, field)) {
-                            fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'textAlignment') {
-                            fields += ' textalign="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'ngclass') {
-                            fields += ' data-ng-class="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'checkedvalue' || field === 'uncheckedvalue') {
-                            fields += ' ' + field + '="' + fieldDef[field] + '"';
+                    switch (field) {
+                    case 'name':
+                        fields += ' name="' + fieldDef[field] + '_formWidget"';
+                        break;
+                    case 'widgetid':
+                        fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
+                        break;
+                    case 'textAlignment':
+                        fields += ' textalign="' + fieldDef[field] + '"';
+                        break;
+                    case 'ngclass':
+                        fields += ' ng-class="' + fieldDef[field] + '"';
+                        break;
+                    default:
+                        if (_.includes(evtTypes, field)) {
+                            fields += ' ' + Utils.hyphenate(field) + '="' + fieldDef[field] + '"';
                         } else {
-                            fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
+                            fields += ' ' + field + '="' + fieldDef[field] + '"';
                         }
                     }
                 });
                 _.forEach(focusEvents, function (evt) {
-                    fields += ' ' + Utils.hyphenate(evt) + '="' + evt + 'Field($event, $scope);{{formFields[' + index + '].' + evt + '}}"';
+                    fields += ' ' + Utils.hyphenate(evt) + '="' + evt + 'Field($event, $scope);' + fieldDef[evt] + '"';
                 });
                 return fields;
             }
