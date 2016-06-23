@@ -122,14 +122,9 @@ WM.module('wm.widgets.advanced')
                     break;
                 case 'controls':
                 case 'calendartype':
-                    if (!isMobile) {
-                        updateCalendarOptions($is);
-                    }
+                    updateCalendarOptions($is);
                     break;
                 case 'view':
-                    if (isMobile) {
-                        return;
-                    }
                     if (newVal !== 'month') {
                         calendar.defaultView = $is.calendartype + _.capitalize(newVal);
                     } else {
@@ -303,8 +298,6 @@ WM.module('wm.widgets.advanced')
 
                         if (isMobile) {
                             $is.eventData = {};
-                            wp.view.options = ['day', 'month', 'year'];
-                            wp.controls.show = wp.multiselect.show = wp.calendartype.show = wp.onEventdrop.show = wp.onEventresize.show = false;
                             //prepare calendar Events
                             $is.prepareCalendarEvents = function () {
                                 var eventDay;

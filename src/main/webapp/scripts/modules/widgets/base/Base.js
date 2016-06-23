@@ -490,6 +490,14 @@ WM.module('wm.widgets.base', [])
                         "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"}
                     },
+                    "wm.calendar.mobile": {
+                        "view": {"options": ["day", "month", "year"]},
+                        "controls": {"show": false},
+                        "multiselect": {"show": false},
+                        "calendartype": {"show": false},
+                        "onEventdrop": {"show": false},
+                        "onEventresize": {"show": false}
+                    },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time"},
                         "autofocus": {"type": "boolean"},

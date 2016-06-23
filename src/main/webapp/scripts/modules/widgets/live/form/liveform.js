@@ -50,34 +50,34 @@ WM.module('wm.widgets.live')
 
                 var expr = (attrs.onBackbtnclick ? ('on-backbtnclick="' + attrs.onBackbtnclick + '"') : '');
 
-                pageTemplate = '<form data-identifier="liveform" init-widget role="form" data-ng-show="show" class="app-device-liveform panel liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" apply-styles="shell">' +
+                pageTemplate = '<form data-identifier="liveform" init-widget role="form" ng-show="show" class="app-device-liveform panel liveform-inline align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
-                                    '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
+                                    '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
-                                '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
-                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
+                                '<div ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                                '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
                                 '<div class="hidden-form-elements"></div>' +
                         '</form>';
 
-                defaultTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel app-panel liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" apply-styles="shell">' +
-                                    '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                defaultTemplate = '<form data-identifier="liveform" init-widget ng-show="show" role="form" class="app-liveform panel app-panel liveform-inline align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
+                                    '<div ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                     '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
                                         '<h3 class="panel-title">' +
-                                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
+                                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                                             '<div class="pull-left">' +
                                                 '<div class="heading">{{title}}</div>' +
                                                 '<div class="description">{{subheading}}</div>' +
                                             '</div>' +
                                         '</h3>' +
                                     '</div>' +
-                                    '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
-                                        '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
+                                    '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
+                                        '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                         template.context.innerHTML +
                                     '</div>' +
                                     '<div class="hidden-form-elements"></div>' +
-                                    '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
+                                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-hide="isLayoutDialog"></div>' +
                                 '</form>';
 
                 if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
@@ -87,8 +87,8 @@ WM.module('wm.widgets.live')
                                 '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
                                     '<wm-dialogheader iconclass="{{iconclass}}"></wm-dialogheader>' +
                                     '<wm-dialogcontent class="noscroll">' +
-                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" apply-styles="shell">' +
-                                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
+                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
+                                            '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
                                                 '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                             '</div>' +
                                             '<div class="hidden-form-elements"></div>' +

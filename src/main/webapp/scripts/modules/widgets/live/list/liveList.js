@@ -21,8 +21,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
-                    '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
-                             'ng-style="{height: height, overflow: overflow}">' +
+                    '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
@@ -747,7 +746,7 @@ WM.module('wm.widgets.live')
                 switch (key) {
                 case 'height':
                     if (nv) {
-                        $is.overflow = 'auto';
+                        $el.find('> .app-livelist-container').css({'height': nv, 'overflow': 'auto'});
                     }
                     break;
                 case 'dataset':
@@ -758,21 +757,17 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'itemsperrow':
-                    if (CONSTANTS.isStudioMode) {
-                        oldClass = ov && 'col-md-' + 12 / (+ov);
-                        newClass = nv && 'col-md-' + 12 / (+nv);
-                        $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
-                    }
+                    oldClass = ov && 'col-md-' + 12 / (+ov);
+                    newClass = nv && 'col-md-' + 12 / (+nv);
+                    $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
                     break;
                 case 'navigation':
                     if (nv === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
                         $is.navigation = 'Classic';
                         return;
                     }
-                    if (CONSTANTS.isStudioMode) {
-                        wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None'], nv);
-                        onNavigationTypeChange($is, nv);
-                    }
+                    wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None'], nv);
+                    onNavigationTypeChange($is, nv);
                     break;
                 case 'groupby':
                     selectedVariable = eleScope.Variables[variable];
@@ -793,9 +788,7 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'match':
-                    if ($is.widgetid) {
-                        wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
-                    }
+                    wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
                     break;
                 case 'padding':
                     $rs.$emit('apply-box-model-property', $el.find('> .app-livelist-container'), 'padding', nv);
