@@ -107,6 +107,12 @@ WM.module('wm.widgets.base')
                 scope.$emit('on-pagecontainer-ready');
             }
 
+            function _compilePartialAndUpdateVariables(iScope, element, partialName, partialMarkup) {
+                $timeout(function () {
+                    compilePartialAndUpdateVariables(iScope, element, partialName, partialMarkup);
+                });
+            }
+
             /* This function handles the change in content property of the page-container */
             function onPageIncludeChange(iScope, element, attrs, newVal) {
                 var target = iScope.target,
@@ -123,7 +129,7 @@ WM.module('wm.widgets.base')
                     /*get individual file contents like - html/js/css */
                     loadedPartials[newVal] = content;
                     /* to compile the partial page*/
-                    compilePartialAndUpdateVariables(iScope, element, newVal, el);
+                    _compilePartialAndUpdateVariables(iScope, element, newVal, el);
                 }
                 function onPageFetchError() {
                     if (element[0].hasAttribute('page-container-target')) {
@@ -179,7 +185,7 @@ WM.module('wm.widgets.base')
                         }
                     } else {
                         /* to compile the partial page*/
-                        compilePartialAndUpdateVariables(iScope, element, newVal, el);
+                        _compilePartialAndUpdateVariables(iScope, element, newVal, el);
                     }
                 } else {
                     if (CONSTANTS.isStudioMode) {
