@@ -24,7 +24,7 @@ wm.plugins.security.services.SecurityService = [
             _lastUser,
             _config,
             loggedInUser,
-            serviceOperationsMap = {},
+            _serviceMap = {},
             getConfig = function (successCallback, failureCallback) {
                 if (!_config) {
                     BaseService.send({
@@ -615,6 +615,12 @@ wm.plugins.security.services.SecurityService = [
                 }
             },
 
+            clearInterceptUrls: function (serviceName) {
+                _.remove(_interceptUrls, function (interceptUrl) {
+                    return _.includes(interceptUrl.urlPattern, _serviceMap[serviceName]);
+                });
+            },
+
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#setSecurityInterceptURLs
@@ -1085,6 +1091,10 @@ wm.plugins.security.services.SecurityService = [
              *
              * @param {object} rolesConfig array of roles config objects
              */
-            setConfig: setConfig
+            setConfig: setConfig,
+
+            setServices: function (serviceMap) {
+                _serviceMap = serviceMap;
+            }
         };
     }];
