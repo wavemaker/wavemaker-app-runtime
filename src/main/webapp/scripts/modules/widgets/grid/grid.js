@@ -331,7 +331,7 @@ WM.module('wm.widgets.grid')
 
                         scope.$on('$destroy', function () {
                             handlers.forEach(Utils.triggerFn);
-                            Utils.triggerFn(scope.toggleVariableStateHandler);
+                            Object.defineProperty(scope, 'selecteditem', {'get': _.noop, 'set': _.noop});
                         });
 
                         WM.element(element).css({'position': 'relative'});
@@ -641,7 +641,22 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }));
-
+                        handlers.push($rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
+                            var variableName = scope.variableName || Utils.getVariableName(scope);
+                            /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
+                            if (boundVariableName === variableName) {
+                                scope.variableInflight = active;
+                                if (active) {
+                                    scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
+                                } else {
+                                    if (scope.gridData && scope.gridData.length === 0) {
+                                        scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
+                                    } else {
+                                        scope.datagridElement.datagrid('setStatus', 'ready');
+                                    }
+                                }
+                            }
+                        }));
                         defineSelectedItemProp(scope, []);
                         scope.shownavigation = scope.navigation !== 'None';
                         $timeout(function () {
@@ -680,14 +695,12 @@ WM.module('wm.widgets.grid')
         "$scope",
         "$timeout",
         "$compile",
-        "Variables",
         "CONSTANTS",
         "Utils",
         "wmToaster",
         "$servicevariable",
         "LiveWidgetUtils",
-        "DialogService",
-        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
+        function ($rootScope, $scope, $timeout, $compile, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils) {
             'use strict';
             var rowOperations = {
                     'update': {
@@ -1039,16 +1052,18 @@ WM.module('wm.widgets.grid')
                     return $compile(el)($scope);
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
+                    var isDelConfirmed,
+                        variable;
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         $scope.$root.$safeApply($scope);
                         return;
                     }
                     // Know if user wants to delete the row
-                    var isDelConfirmed = $scope.confirmdelete ? confirm($scope.confirmdelete) : true;
+                    isDelConfirmed = $scope.confirmdelete ? confirm($scope.confirmdelete) : true;
                     /* delete if user confirm to delete*/
                     if (isDelConfirmed) {
-                        var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                        variable = $scope.gridElement.scope().Variables[$scope.variableName];
                         if (!variable) {
                             return;
                         }
@@ -1227,7 +1242,6 @@ WM.module('wm.widgets.grid')
             $scope.fullFieldDefs = [];
             /* This is the array which contains all the selected items */
             $scope.selectedItems = [];
-            $scope.toggleVariableHandlerAttached = false;
 
             $scope.$watch('gridData', function (newValue) {
                 var startRowIndex,
@@ -1572,15 +1586,6 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }
-                    }
-                    if (variableName && !$scope.toggleVariableHandlerAttached) {
-                        $scope.toggleVariableStateHandler = $rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
-                            /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
-                            if (boundVariableName === variableName) {
-                                $scope.variableInflight = active;
-                            }
-                        });
-                        $scope.toggleVariableHandlerAttached = true;
                     }
                     elScope = element.scope();
 
