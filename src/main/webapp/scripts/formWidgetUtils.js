@@ -66,7 +66,7 @@ WM.module('wm.widgets.form')
                 var datavalueObj = widgetProps.datavalue || widgetProps.defaultvalue;
                 widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
                 widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
-                datavalueObj.type = (newVal === 'number' || newVal === 'date') ? newVal : 'string';
+                datavalueObj.type = (newVal === 'date') ? newVal : 'string';
                 switch (newVal) {
                 case 'number':
                     widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;

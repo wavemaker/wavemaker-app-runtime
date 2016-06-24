@@ -1063,7 +1063,7 @@ WM.module('wm.widgets.live')
                             if (parentIsolateScope._widgettype === 'wm-liveform') {
                                 parentIsolateScope.setDefaultValueToValue(columnDef);
                             } else {
-                                columnDef.value = columnDef.defaultvalue;
+                                columnDef.value =  LiveWidgetUtils.getDefaultValue(columnDef.defaultvalue, undefined, columnDef.widget);
                             }
                         }
                         function setValidity(name, val) {

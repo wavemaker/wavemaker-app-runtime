@@ -80,7 +80,16 @@ WM.module('wm.widgets.live')
              * @param {string} value value to be formatted
              * @param {string} type column type of the value
              */
-            function getDefaultValue(value, type) {
+            function getDefaultValue(value, type, widget) {
+                if (widget) {
+                    if (widget === 'number' || widget === 'slider' || widget === 'currency') {
+                        return isNaN(Number(value)) ? null : Number(value);
+                    }
+                    if (widget === 'checkbox' || widget === 'toggle') {
+                        return formatBooleanValue(value);
+                    }
+                    return value;
+                }
                 if (Utils.isNumberType(type)) {
                     return isNaN(Number(value)) ? null : Number(value);
                 }
@@ -335,19 +344,20 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function getCaptionByWidget(type, index) {
-                var caption = 'formFields[' + index + '].value';
+            function getCaptionByWidget(type, index, isRelated) {
+                if (isRelated) {
+                    return '{{getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield)}}';
+                }
                 if (type === 'password') {
                     return '********';
                 }
+                var caption = 'formFields[' + index + '].value';
                 if (type === 'datetime' || type === 'timestamp') {
                     caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd hh:mm:ss a\'';
                 } else if (type === 'time') {
                     caption += ' | date:formFields[' + index + '].timepattern ||  \'hh:mm a\'';
                 } else if (type === 'date') {
                     caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MM-dd\'';
-                } else if (isDataSetWidgets[type]) {
-                    caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating' || type === 'upload') {
                     caption = '';
                 }
@@ -571,7 +581,7 @@ WM.module('wm.widgets.live')
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
                     '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
-                    '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
+                    '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
                 case 'number':

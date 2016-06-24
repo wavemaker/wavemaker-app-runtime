@@ -107,7 +107,7 @@ WM.module('wm.widgets.form')
             var dataSet,
                 isBoundToServiceVariable;
 
-            dataSet = scope.dataset;
+            dataSet = scope.dataset || scope.scopedataset;
 
             /*Checking if widget is bound to service variable*/
             if (CONSTANTS.isStudioMode && scope.binddataset) {
