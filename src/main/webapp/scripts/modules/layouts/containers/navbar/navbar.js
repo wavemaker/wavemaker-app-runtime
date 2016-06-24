@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                             '</button>' +
                             '<a class="navbar-brand" href="#/" ng-if="title || imagesrc">' +
                                 '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" ng-if="imgsrc" ng-src="{{imagesrc}}"/>' +
-                                '{{title}}' +
+                                ' <span class="title">{{title}}</span>' +
                             '</a>' +
                         '</div>' +
                         /* Collect the nav links, forms, and other content for toggling */

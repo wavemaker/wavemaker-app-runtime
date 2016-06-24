@@ -48,7 +48,7 @@ WM.module('wm.widgets.dialog')
                 }
                 break;
             case "width":
-                if(newVal){
+                if (newVal) {
                     element.closest('.modal-dialog').css('width', newVal);
                 }
                 break;

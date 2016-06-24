@@ -14,8 +14,8 @@ WM.module('wm.widgets.form')
                         ' ng-disabled="disabled" ' +
                         ' accesskey="{{::shortcutkey}}"' +
                         ' ng-change="_onChange({$event: $event, $scope: this})">' +
-                '<span class="caption">{{caption || "&nbsp;"}}</span>' +
-                '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
+                    '<span class="caption">{{caption || "&nbsp;"}}</span>' +
+                    '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
                 '</label>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input type="hidden" class="ng-hide model-holder" ng-disabled="disabled" value="{{_model_}}">' +
