@@ -15,84 +15,12 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
-    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout) {
+    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout, ChartService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.chart', ['wm.base']),
-            themes = {
-                'Terrestrial': {
-                    colors: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
-                    tooltip: {
-                        'backgroundColor': '#de7d28',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Annabelle': {
-                    colors: ['#393b79', '#5254a3', '#6b6ecf', '#9c9ede', '#637939', '#8ca252', '#b5cf6b', '#cedb9c', '#8c6d31', '#bd9e39', '#e7ba52', '#e7cb94', '#843c39', '#ad494a', '#d6616b', '#e7969c', '#7b4173', '#a55194', '#ce6dbd', '#de9ed6'],
-                    tooltip: {
-                        'backgroundColor': '#2e306f',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Azure': {
-                    colors: ['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#e6550d', '#fd8d3c', '#fdae6b', '#fdd0a2', '#31a354', '#74c476', '#a1d99b', '#c7e9c0', '#756bb1', '#9e9ac8', '#bcbddc', '#dadaeb', '#636363', '#969696', '#bdbdbd', '#d9d9d9'],
-                    tooltip: {
-                        'backgroundColor': '#3182bd',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Retro': {
-                    colors: ['#0ca7a1', '#ffa615', '#334957', '#acc5c2', '#988f90', '#8accc9', '#515151', '#f27861', '#36c9fd', '#794668', '#0f709d', '#0d2738', '#44be78', '#4a1839', '#6a393f', '#557d8b', '#6c331c', '#1c1c1c', '#861500', '#09562a'],
-                    tooltip: {
-                        'backgroundColor': '#80513a',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Mellow': {
-                    colors: ['#f0dcbf', '#88c877', '#aeb918', '#2e2c23', '#ddddd2', '#dfe956', '#4c963b', '#5d3801', '#e1eec3', '#cd8472', '#fcfab3', '#9a4635', '#9295ad', '#2e3f12', '#565677', '#557d8b', '#4f4d02', '#0c0c1b', '#833324', '#24120e'],
-                    tooltip: {
-                        'backgroundColor': '#7c9e73',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Orient': {
-                    colors: ['#a80000', '#cc6c3c', '#f0e400', '#000084', '#fccc6c', '#009c6c', '#cc309c', '#78cc00', '#fc84e4', '#48e4fc', '#4878d8', '#186c0c', '#606060', '#a8a8a8', '#000000', '#d7d7d7', '#75a06e', '#190d0b', '#888888', '#694b84'],
-                    tooltip: {
-                        'backgroundColor': '#c14242',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'GrayScale': {
-                    colors: ['#141414', '#353535', '#5b5b5b', '#848484', '#a8a8a8', '#c3c3c3', '#e0e0e0', '#c8c8c8', '#a5a5a5', '#878787', '#656565', '#4e4e4e', '#303030', '#1c1c1c', '#4f4f4f', '#3b3b3b', '#757575', '#606060', '#868686', '#c1c1c1'],
-                    tooltip: {
-                        'backgroundColor': '#575757',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Flyer': {
-                    colors: ['#3f454c', '#5a646e', '#848778', '#cededf', '#74c4dd', '#0946ed', '#380bb1', '#000ff0', '#f54a23', '#1db262', '#bca3aa', '#ffa500', '#a86b32', '#63a18c', '#56795e', '#934343', '#b75f5f', '#752d2d', '#4e1111', '#920606'],
-                    tooltip: {
-                        'backgroundColor': '#47637c',
-                        'textColor': '#FFFFFF'
-                    }
-                },
-                'Luminosity': {
-                    colors: ['#FFFFFF', '#e4e4e4', '#00bcd4', '#f0dd2f', '#00aabf', '#018376', '#e91e63', '#39e5d4', '#ff6d6d', '#00ff76', '#ff9800', '#969696', '#ff4200', '#e00000', '#95cbe5', '#5331ff', '#fff4a7', '#e7a800', '#0061e4', '#d5e7ff'],
-                    tooltip: {
-                        'backgroundColor': '#47637c',
-                        'textColor': '#FFFFFF'
-                    }
-                }
-            },
            // properties of the respective chart type
             options = {
-                'Column'         : ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'xdomain', 'ydomain'],
-                'Line'           : ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
-                'Area'           : ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'xdomain', 'ydomain'],
-                'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
-                'Bar'            : ['barspacing', 'showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Pie'            : ['showlabels', 'labeltype', 'showlabelsoutside'],
-                'Donut'          : ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
-                'Bubble'         : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
+                'Bubble'         : ['bubblesize', 'shape']
             },
             //XPaths to get actual data of data points in charts
             chartDataPointXpath = {
@@ -106,8 +34,7 @@ WM.module('wm.widgets.basic')
                 'Bubble'         : '.nv-scatterChart .nv-point-paths path'
             },
             //all properties of the chart
-            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title', 'highlightpoints', 'linethickness', 'xdomain', 'ydomain'],
-            advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
+            allOptions = ['bubblesize', 'shape'],
             chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
             styleProps = {
                 'fontunit'      : 'font-size',
@@ -118,25 +45,7 @@ WM.module('wm.widgets.basic')
                 'fontstyle'     : 'font-style',
                 'textdecoration': 'text-decoration'
             },
-            tickformats = {
-                'Round to Thousand': {
-                    'prefix': 'K',
-                    'divider': 1000
-                },
-                'Round to Million' : {
-                    'prefix': 'M',
-                    'divider': 1000000
-                },
-                'Round to Billion' : {
-                    'prefix': 'B',
-                    'divider': 1000000000
-                }
-            },
-            dataTypeJSON = ['Column', 'Line', 'Pie', 'Bar', 'Donut', 'Bubble'],     //Charts that supports the data to be JSON
-            dataTypeArray = ['Cumulative Line', 'Area'],     //Charts that supports the data to be Array
-            lineTypeCharts = ['Line', 'Area', 'Cumulative Line'],   //Charts that does not supports the string type of data in the xaxis in the nvd3
             allShapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down'],
-            sampleData = {},
             notifyFor = {
                 'dataset'           : true,
                 'xaxisdatakey'      : true,
@@ -145,37 +54,6 @@ WM.module('wm.widgets.basic')
                 'height'            : true,
                 'width'             : true,
                 'show'              : true,
-                'xaxislabel'        : true,
-                'yaxislabel'        : true,
-                'xunits'            : true,
-                'yunits'            : true,
-                'xnumberformat'     : true,
-                'xdigits'           : true,
-                'xdateformat'       : true,
-                'ynumberformat'     : true,
-                'ydigits'           : true,
-                'ydateformat'       : true,
-                'showlegend'        : true,
-                'showvalues'        : true,
-                'showlabels'        : true,
-                'showcontrols'      : true,
-                'staggerlabels'     : true,
-                'reducexticks'      : true,
-                'offsettop'         : true,
-                'offsetbottom'      : true,
-                'offsetright'       : true,
-                'offsetleft'        : true,
-                'barspacing'        : true,
-                'xaxislabeldistance': true,
-                'yaxislabeldistance': true,
-                'theme'             : true,
-                'labeltype'         : true,
-                'donutratio'        : true,
-                'showlabelsoutside' : true,
-                'aggregation'       : true,
-                'aggregationcolumn' : true,
-                'groupby'           : true,
-                'orderby'           : true,
                 'fontsize'          : true,
                 'fontunit'          : true,
                 'color'             : true,
@@ -183,150 +61,10 @@ WM.module('wm.widgets.basic')
                 'fontweight'        : true,
                 'fontstyle'         : true,
                 'textdecoration'    : true,
-                'legendposition'    : true,
                 'shape'             : true,
-                'nodatamessage'     : true,
-                'captions'          : true,
-                'showxaxis'         : true,
-                'showyaxis'         : true,
-                'title'             : true,
-                'customcolors'      : true,
-                'legendtype'        : true,
-                'highlightpoints'   : true,
-                'linethickness'     : true,
                 'selecteditem'      : true,
-                'xdomain'           : true,
-                'ydomain'           : true
+                'bubblesize'        : true
             };
-
-        // returns true if chart type is pie
-        function isPieChart(type) {
-            return (type === 'Pie');
-        }
-
-        // returns true if chart type is bar
-        function isBarChart(type) {
-            return (type === 'Bar');
-        }
-
-        // returns true if chart type is donut
-        function isDonutChart(type) {
-            return (type === 'Donut');
-        }
-
-        // returns true if chart type is bubble
-        function isBubbleChart(type) {
-            return (type === 'Bubble');
-        }
-
-        // returns true if chart type is column
-        function isColumnChart(type) {
-            return (type === 'Column');
-        }
-
-        // returns true if chart type is area
-        function isAreaChart(type) {
-            return (type === 'Area');
-        }
-
-        // returns true if chart type is pie or donut
-        function isPieType(type) {
-            return (isPieChart(type) || isDonutChart(type));
-        }
-
-        // The format of chart data is array of json objects in case of the following types of chart
-        function isChartDataJSON(type) {
-            return (dataTypeJSON.indexOf(type) > -1 || chartTypes.indexOf(type) === -1);
-        }
-
-        // The format of chart data is array of objects in case of the following types of chart
-        function isChartDataArray(type) {
-            return (dataTypeArray.indexOf(type) > -1);
-        }
-
-        // returns true is the chart type is 'line', 'area' or 'cumulative line' else false
-        function isLineTypeChart(type) {
-            return (lineTypeCharts.indexOf(type) > -1);
-        }
-
-        //X/Y Domain properties are supported only for Column and Area charts
-        function isAxisDomainSupported(type) {
-            return isColumnChart(type) || isAreaChart(type);
-        }
-
-        // Formatting the data based on the data-type
-        function formatData(scope, d, dataType, options) {
-            var datakey = (options.isXaxis && options.xDataKeyArr && options.xDataKeyArr.length) ? options.xDataKeyArr[d] : d,
-                formattedData,
-                divider,
-                prefix;
-            switch (dataType) {
-            case 'date':
-                return !isLineTypeChart(scope.type) ? d3.time.format(options.dateFormat)(new Date(d)) : datakey;
-            case 'string':
-            case 'year':
-                return datakey;
-            default:
-                formattedData = d3.format(options.format)(d);
-                //formating the data based on number format selected
-                if (options.numberFormat && dataType) {
-                    //Getting the respective divider[1000,1000000,1000000000] based on the number format choosen
-                    divider = (tickformats[options.numberFormat] && tickformats[options.numberFormat].divider) || 0;
-                    prefix = tickformats[options.numberFormat] && tickformats[options.numberFormat].prefix;
-                    if (prefix && divider !== 0) {
-                        formattedData = d3.format('.2f')(d / divider) + prefix;
-                    }
-                } else if (!options.numberFormat) {
-                    //Auto formatting the data when no formating option is chosen
-                    formattedData = d3.format('.1s')(d);
-                }
-                return formattedData;
-            }
-        }
-
-        //Construct the sample data
-        function constructSampleData(scope) {
-            var i,
-                jsonFormatData = [],
-                pieChartData = [],
-                arrayFormatData = [],
-                pieName = 'Group',
-                dataPoint;
-
-            for (i = 1; i < 5; i += 1) {
-                dataPoint = {};
-                pieChartData.push({x: pieName + i, y: i});
-                dataPoint.x = i;
-                dataPoint.y = i;
-                //Only bubble type of the chart has the size attribute
-                if (isBubbleChart(scope.type)) {
-                    dataPoint.size =  (i + 1) * 2;
-                    dataPoint.shape =  scope.shape || 'circle';
-                }
-                jsonFormatData.push(dataPoint);
-                arrayFormatData.push([i, i]);
-
-            }
-            sampleData.jsonFormat = jsonFormatData;
-            sampleData.arrayFormat = arrayFormatData;
-            sampleData.pieChartFormat = pieChartData;
-        }
-
-
-        // Sample data to populate when no data is bound
-        function getSampleData(scope) {
-            var dataType;
-            if (Utils.isEmptyObject(sampleData) ||  isBubbleChart(scope.type)) {
-                constructSampleData(scope);
-            }
-
-            if (isPieType(scope.type)) {
-                return sampleData.pieChartFormat;
-            }
-
-            dataType = isChartDataJSON(scope.type) ? 'jsonFormat' : 'arrayFormat';
-            return [{values: sampleData[dataType], key: 'Default'}];
-        }
 
         // get the data type for the service variable type
         function getDataType(key, data) {
@@ -373,25 +111,14 @@ WM.module('wm.widgets.basic')
             return type || null;
         }
 
-        // Hide the properties that are passed to it
-        function hideOrShowProperties(properties, scope, show) {
-            // sanity check
-            show = WM.isDefined(show) ? show : false;
-
-            var _widgetProps = scope.widgetProps;
-            properties.forEach(function (prop) {
-                _widgetProps[prop].show = show;
-            });
-        }
-
         // Configuring the properties panel based on the type of the chart chosen
         function togglePropertiesByChartType(scope) {
             // Initially hiding all the properties
-            hideOrShowProperties(allOptions, scope, false);
+            ChartService.hideOrShowProperties(allOptions, scope, false);
             // Showing the properties based on the type of the chart
-            hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options.Column : options[scope.type], scope, true);
+            ChartService.hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options.Column : options[scope.type], scope, true);
 
-            if (isPieType(scope.type)) {
+            if (ChartService.isPieType(scope.type)) {
                 // If pie chart, set the display key for x and y axis datakey and subgroups
                 scope.widgetProps.xaxisdatakey.displayKey = 'LABEL_PROPERTY_LABEL';
                 scope.widgetProps.yaxisdatakey.displayKey = 'LABEL_PROPERTY_VALUES';
@@ -425,8 +152,7 @@ WM.module('wm.widgets.basic')
             var type,
                 key = axis + 'axisdatakey',
                 numFormat = axis + 'numberformat',
-                digits = axis + 'digits',
-                dateFormat = axis + 'dateformat';
+                dateFormat = 'xdateformat';
 
             // get column type
             if (scope.dataset && scope.dataset.propertiesMap) {
@@ -435,27 +161,26 @@ WM.module('wm.widgets.basic')
             switch (type) {
             case 'integer':
             case 'float':
-                hideOrShowProperties([numFormat, digits], scope, true);
-                hideOrShowProperties([dateFormat], scope, false);
+                ChartService.hideOrShowProperties([numFormat], scope, true);
+                if (axis === 'x') {
+                    ChartService.hideOrShowProperties([dateFormat], scope, false);
+                }
                 break;
             case 'string':
-                hideOrShowProperties([numFormat, digits, dateFormat], scope, false);
+                ChartService.hideOrShowProperties([numFormat, dateFormat], scope, false);
                 break;
             case 'date':
-                hideOrShowProperties([numFormat, digits], scope, false);
-                hideOrShowProperties([dateFormat], scope, true);
+                ChartService.hideOrShowProperties([numFormat], scope, false);
+                if (axis === 'x') {
+                    ChartService.hideOrShowProperties([dateFormat], scope, true);
+                }
                 break;
             }
         }
 
-        // Checks if the yaxisdatakey is a singleselect or multiselect based on chart type
-        function isSingleYAxis(type) {
-            return isPieType(type) ? true : false;
-        }
-
         // Based on the chart type, sets the options for the yaxisdatakey
         function setYAxisDataKey(scope, options, dataSet) {
-            if (isSingleYAxis(scope.type)) {
+            if (ChartService.isPieType(scope.type)) {
                 scope.widgetProps.yaxisdatakey.widget = 'list';
                 scope.widgetProps.yaxisdatakey.options = options;
             } else {
@@ -465,22 +190,6 @@ WM.module('wm.widgets.basic')
 
         function isGroupByEnabled(groupby) {
             return (groupby && groupby !== 'none');
-        }
-
-        // enables/disables the aggregation column property
-        function toggleAggregationColumnState(scope) {
-            scope.widgetProps.aggregationcolumn.disabled = !(isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none');
-        }
-
-        // enables/disables the aggregation function property
-        function toggleAggregationState(scope) {
-            var isGroupByChecked = isGroupByEnabled(scope.groupby);
-            scope.widgetProps.aggregation.disabled = !isGroupByEnabled;
-            if (!isGroupByChecked) {
-                scope.isVisuallyGrouped = false; //resetting isVisuallyGrouped flag to false when groupby property is empty
-            }
-            // enables/disables the aggregation column property
-            toggleAggregationColumnState(scope);
         }
 
         // Displaying options for x and y axis based on the columns chosen in aggregation column and groupby
@@ -512,13 +221,13 @@ WM.module('wm.widgets.basic')
                     setYAxisDataKey(scope, yAxisOptions, '');
                     setYAxisDataKey(scope, yAxisOptions, yAxisOptions);
                     //Setting the bubble size and tooltip columns to be shown
-                    if (isBubbleChart(scope.type)) {
+                    if (ChartService.isBubbleChart(scope.type)) {
                         scope.widgetProps.bubblesize.options = options;
                     }
                 } else {
                     scope.widgetProps.xaxisdatakey.options = options;
                     setYAxisDataKey(scope, options, '');
-                    if (isBubbleChart(scope.type)) {
+                    if (ChartService.isBubbleChart(scope.type)) {
                         scope.widgetProps.bubblesize.options = options;
                     }
                 }
@@ -580,7 +289,7 @@ WM.module('wm.widgets.basic')
         function getxAxisVal(scope, dataObj, xKey, index) {
             var value = getLeafNodeVal(xKey, dataObj);
             //If x axis is other than number type then add indexes
-            if (isLineTypeChart(scope.type) && !Utils.isNumberType(scope.xAxisDataType)) {
+            if (ChartService.isLineTypeChart(scope.type) && !Utils.isNumberType(scope.xAxisDataType)) {
                 //Verification to get the unique data keys
                 scope.xDataKeyArr.push(value);
                 return index;
@@ -664,18 +373,17 @@ WM.module('wm.widgets.basic')
                 value = getLeafNodeVal(yKey, dataObj),
                 yVal = parseFloat(value) || value,
                 dataPoint = {},
-                size = parseFloat(dataObj[scope.bubblesize]) || 2,
-                type = scope.type;
+                size = parseFloat(dataObj[scope.bubblesize]) || 2;
 
-            if (isChartDataJSON(type)) {
+            if (ChartService.isChartDataJSON(scope.type)) {
                 dataPoint.x = xVal;
                 dataPoint.y = yVal;
                 //only Bubble chart has the third dimension
-                if (isBubbleChart(type)) {
+                if (ChartService.isBubbleChart(scope.type)) {
                     dataPoint.size = size;
                     dataPoint.shape = shape || 'circle';
                 }
-            } else if (isChartDataArray(type)) {
+            } else if (ChartService.isChartDataArray(scope.type)) {
                 dataPoint = [xVal, yVal];
             }
             //Adding actual unwrapped data to chart data to use at the time of selected data point of chart event
@@ -697,7 +405,7 @@ WM.module('wm.widgets.basic')
                 setErrMsg(scope, 'MESSAGE_INVALID_AXIS');
                 return [];
             }
-            scope.sampleData = getSampleData(scope);
+            scope.sampleData = ChartService.getSampleData(scope);
             // scope variables used to keep the actual key values for x-axis
             scope.xDataKeyArr = [];
             //Plotting the chart with sample data when the chart dataset is not bound
@@ -748,13 +456,13 @@ WM.module('wm.widgets.basic')
             }
 
             if (WM.isArray(dataSet)) {
-                if (isPieType(scope.type)) {
+                if (ChartService.isPieType(scope.type)) {
                     yAxisKey = yAxisKeys[0];
                     datum = _.map(dataSet, function (dataObj, index) {
                         return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey);
                     });
                 } else {
-                    if (isBubbleChart(scope.type)) {
+                    if (ChartService.isBubbleChart(scope.type)) {
                         shapes =  scope.shape === 'random' ? allShapes : scope.shape;
                     }
                     yAxisKeys.forEach(function (yAxisKey, series) {
@@ -826,6 +534,7 @@ WM.module('wm.widgets.basic')
             return chartData;
         }
 
+        //Construct orderby expression
         function getOrderbyExpression(orderby) {
             var orderbyCols = (orderby ? orderby.replace(/:/g, ' ') : '').split(','),
                 trimmedCols = '';
@@ -1019,55 +728,6 @@ WM.module('wm.widgets.basic')
             charttext.style(properties);
         }
 
-        function modifyLegendPosition(scope) {
-            var chartId = 'wmChart' + scope.$id,
-                legendWrap = d3.select('#' + chartId + ' .nv-legendWrap'),
-                legendWrapHeight,
-                legendWrapTransform,
-                coordinates,
-                y,
-                getChartHeight = function () {
-                    var chartHeight = $('#' + chartId + ' svg>.nvd3.nv-wrap')[0].getBoundingClientRect().height;
-                    if (chartHeight === 0) { //fix for IE
-                        chartHeight = ($('#' + chartId + ' svg')[0].getBoundingClientRect().height - (legendWrapHeight + 15));
-                    }
-                    return chartHeight;
-                },
-                getAxisLabelHeight = function (axis) {
-                    var axisLabel = d3.select('#' + chartId + ' .nv-' + axis + '.nv-axis .nv-axislabel')[0][0];
-                    return axisLabel ? axisLabel.getBoundingClientRect().height : 0;
-                };
-
-            if (!legendWrap[0][0]) {
-                return;
-            }
-
-            legendWrapHeight = legendWrap[0][0].getBoundingClientRect().height;
-            legendWrapTransform = (legendWrap && legendWrap.attr('transform')) ? legendWrap.attr('transform').replace(/, /g, ',') : '';
-            coordinates = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(legendWrapTransform);
-
-            switch (scope.legendposition) {
-            case 'Top':
-                y = -(legendWrapHeight + 15);
-                break;
-            case 'Bottom':
-                if (scope.offsetbottom > legendWrapHeight) {
-                    y = getChartHeight() - (legendWrapHeight + 15);
-
-                    if (scope.type !== 'Bar') {
-                        y = y - getAxisLabelHeight('x');
-                    } else if (scope.type === 'Bar') {
-                        y = y - getAxisLabelHeight('y');
-                    }
-                }
-                break;
-            default:
-                y = +coordinates[2];
-            }
-
-            legendWrap.attr('transform', 'translate(' + coordinates[1] + ', ' + y + ')');
-        }
-
         function angle(d) {
             var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90;
             return a > 90 ? a - 180 : a;
@@ -1085,7 +745,7 @@ WM.module('wm.widgets.basic')
                 nthElement,
                 labelsAvailableWidth,
                 fontsize = parseInt(scope.fontsize, 10) || 12,
-                isBarchart = isBarChart(scope.type),
+                isBarchart = ChartService.isBarChart(scope.type),
                 barWrapper,
                 yAxisWrapper,
                 svgWrapper;
@@ -1175,43 +835,13 @@ WM.module('wm.widgets.basic')
             }
             //Other than bubble chart x: string type y: number type
             //Bubble chart x: number type y: number type
-            if (stringColumn && defaultColumns.length > 0 && !isBubbleChart(scope.type)) {
+            if (stringColumn && defaultColumns.length > 0 && !ChartService.isBubbleChart(scope.type)) {
                 temp = defaultColumns[0];
                 defaultColumns[0] = stringColumn;
                 defaultColumns[1] = temp;
             }
 
             return defaultColumns;
-        }
-
-        //Creating a formatter based on the number format and no of digits chosen
-        function getFormatOptions(numberformat, digits) {
-            var formater,
-                nodigits = WM.isDefined(digits) ? digits.toString() : '';
-            switch (numberformat) {
-            case 'Display Digits':
-                formater = nodigits + 'f';
-                break;
-            case 'Decimal Digits':
-                formater = '.' + nodigits + 'f';
-                break;
-            case 'Precision':
-                formater = '.' + nodigits + 'g';
-                break;
-            case 'Exponential':
-                formater = '.' + nodigits + 'e';
-                break;
-            case 'Percentage':
-                formater = '.' + nodigits + '%';
-                break;
-            case 'Round':
-                formater = ',' + nodigits + 'r';
-                break;
-            case 'Round Percentage':
-                formater = '.' + nodigits + 'p';
-                break;
-            }
-            return formater;
         }
 
         //Call user defined javascript function when user links it to click event of the widget.
@@ -1243,22 +873,6 @@ WM.module('wm.widgets.basic')
             });
         }
 
-        //Check whether X/Y Domain was set to Min and is supported for the present chart
-        function isAxisDomainValid(scope, axis) {
-            if (scope[axis + 'domain'] === 'Min' && (isAxisDomainSupported(scope.type))) {
-                return true;
-            }
-            return false;
-        }
-
-        //Check whether min and max values are finite or not
-        function areMinMaxValuesValid(values) {
-            if (_.isFinite(values.min) && _.isFinite(values.max)) {
-                return true;
-            }
-            return false;
-        }
-
         /*  Returns Y Scale min value
             Ex: Input   : 8.97
                 Output  : 8.87
@@ -1266,191 +880,6 @@ WM.module('wm.widgets.basic')
                 Input   : 8
                 Output  : 7
         */
-
-        function getYScaleMinValue(value) {
-            var _min = Math.floor(value);
-            /* If the number has a) decimal part returning floor value - 0.1
-                                 b) no decimal part returning floor value - 1 */
-            return Math.abs(value) - _min > 0 ? value - 0.1 : _min - 1;
-        }
-
-        // intializes the chart obejct
-        function initChart(scope, xDomainValues, yDomainValues) {
-            var chart, theme, xValue = {}, yValue = {}, colors = [];
-            switch (scope.type) {
-            case 'Column':
-                chart = nv.models.multiBarChart()
-                    .x(function (d) {
-                        return d.x;
-                    })
-                    .y(function (d) {
-                        return d.y;
-                    })
-                    .staggerLabels(scope.staggerlabels)
-                    .reduceXTicks(scope.reducexticks)
-                    .rotateLabels(0)
-                    .showControls(scope.showcontrols)
-                    .groupSpacing(scope.barspacing);
-                break;
-            case 'Cumulative Line':
-                chart = nv.models.cumulativeLineChart()
-                    .x(function (d) {
-                        return d[0];
-                    })
-                    .y(function (d) {
-                        return d[1] / 100;
-                    })
-                    .useInteractiveGuideline(true)
-                    .showControls(scope.showcontrols);
-                break;
-            case 'Line':
-                chart = nv.models.lineChart()
-                    .useInteractiveGuideline(true);
-                break;
-            case 'Area':
-                chart = nv.models.stackedAreaChart()
-                    .x(function (d) {
-                        return d[0];
-                    })
-                    .y(function (d) {
-                        return d[1];
-                    })
-                    .clipEdge(true)
-                    .showControls(scope.showcontrols)
-                    .useInteractiveGuideline(true);
-                break;
-            case 'Bar':
-                chart = nv.models.multiBarHorizontalChart()
-                    .x(function (d) {
-                        return d.x;
-                    })
-                    .y(function (d) {
-                        return d.y;
-                    })
-                    .showControls(scope.showcontrols)
-                    .showValues(scope.showvalues)
-                    .groupSpacing(scope.barspacing);
-                break;
-            case 'Pie':
-            case 'Donut':
-                chart = nv.models.pieChart()
-                    .x(function (d) {
-                        return d.x;
-                    })
-                    .y(function (d) {
-                        return d.y;
-                    })
-                    .showLabels(scope.showlabels)
-                    .labelType(scope.labeltype)
-                    .valueFormat(d3.format('%'))
-                    .title(scope.title)
-                    .labelThreshold(0.04)
-                    .labelsOutside(scope.showlabelsoutside);
-                if (isDonutChart(scope.type)) {
-                    chart.donut(true)
-                        .donutRatio(scope.donutratio);
-                }
-                break;
-            case 'Bubble':
-                chart = nv.models.scatterChart()
-                    .x(function (d) {
-                        return d.x;
-                    })
-                    .y(function (d) {
-                        return d.y;
-                    })
-                    .showDistX(scope.showxdistance)
-                    .showDistY(scope.showydistance);
-                break;
-            }
-
-            if (isAxisDomainValid(scope, 'x') && xDomainValues) {
-                xValue.min = xDomainValues.min.x || xDomainValues.min[0];
-                xValue.max = xDomainValues.max.x || xDomainValues.max[0];
-                //If the values on the x axis are string then min max values gives Infinity
-                if (areMinMaxValuesValid(xValue)) {
-                    //Reducing the min value to 0.1 so the min value is not missed out
-                    xValue.min = getYScaleMinValue(xValue.min);
-                    chart.xDomain([xValue.min, xValue.max]);
-                }
-            }
-
-            if (isAxisDomainValid(scope, 'y') && yDomainValues) {
-                //Reducing the min value to 1 so the min value is not missed out
-                yValue.min = yDomainValues.min.y || yDomainValues.min[1];
-                yValue.max = yDomainValues.max.y || yDomainValues.max[1];
-                //If the values on the y axis are string or invalid then min max values gives Infinity
-                if (areMinMaxValuesValid(yValue)) {
-                    //Reducing the min value to 1 so the min value is not missed out
-                    yValue.min = getYScaleMinValue(yValue.min);
-                    chart.yDomain([yValue.min, yValue.max]);
-                }
-            }
-
-            //Setting the legend type choosen by user or default it will be furious
-            chart.legend.vers((scope.legendtype && scope.legendtype.toLowerCase()) || 'furious');
-
-            if (chartTypes.indexOf(scope.type) === -1) {
-                chart = nv.models.multiBarChart()
-                    .x(function (d) {
-                        return d.x;
-                    })
-                    .y(function (d) {
-                        return d.y;
-                    });
-            }
-
-            //Default theme for pie/donut is Azure and for other it is Terrestrial
-            if (isPieType(scope.type)) {
-                theme = scope.theme || 'Azure';
-            } else {
-                theme = scope.theme || 'Terrestrial';
-                chart.showXAxis(scope.showxaxis)
-                    .showYAxis(scope.showyaxis);
-            }
-
-            if (CONSTANTS.isStudioMode) {
-                //Updating the markup with the theme
-                scope.theme = theme;
-                scope.$root.$emit('set-markup-attr', scope.widgetid, {'theme': theme});
-            }
-
-            //Support for custom colors if user gives direct string of colors in text box
-            if (WM.isString(scope.customcolors) && scope.customcolors) {
-                colors = scope.customcolors.split(',');
-            }
-            if (WM.isArray(scope.customcolors)) {
-                colors = scope.customcolors;
-            }
-
-            chart.showLegend(scope.showlegend)
-                .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
-                .color(colors.length ? colors : themes[theme].colors);
-
-            chart.tooltip.enabled(scope.tooltips);
-            scope.message = scope.nodatamessage || 'No data found';
-            //setting the no data message
-            chart.noData(scope.message);
-            return chart;
-        }
-
-        //Chooses the data points of line/cumulative line/area chart and highlights them
-        function highlightPoints(id, highlightpoints) {
-            var chartSvg = d3.select('#wmChart' + id + ' svg');
-            if (highlightpoints) {
-                chartSvg.selectAll('.nv-point').style({'stroke-width': '6px', 'fill-opacity': '.95', 'stroke-opacity': '.95'});
-            } else {
-                chartSvg.selectAll('.nv-point').style({'stroke-width': '0px', 'fill-opacity': '0'});
-            }
-        }
-
-        //Chooses the line of line/cumulative line and increases the thickness of it
-        function setLineThickness(id, thickness) {
-            var chartSvg = d3.select('#wmChart' + id + ' svg');
-            if (thickness) {
-                chartSvg.selectAll('.nv-line').style({'stroke-width': thickness});
-            }
-        }
 
         function postPlotProcess(scope, element, chart) {
             var chartSvg,
@@ -1460,12 +889,12 @@ WM.module('wm.widgets.basic')
                 styleObj = {};
 
             //If user sets to highlight the data points and increase the thickness of the line
-            if (isLineTypeChart(scope.type)) {
-                setLineThickness(scope.$id, scope.linethickness);
-                highlightPoints(scope.$id, scope.highlightpoints);
+            if (ChartService.isLineTypeChart(scope.type)) {
+                ChartService.setLineThickness(scope.$id, scope.linethickness);
+                ChartService.highlightPoints(scope.$id, scope.highlightpoints);
             }
 
-            if (!isPieType(scope.type)) {
+            if (!ChartService.isPieType(scope.type)) {
                 setLabelsMaxWidth(scope);
             } else if (!scope.showlabelsoutside) {
                 /** Nvd3 has a issue in rotating text. So we will use this as a temp fix.
@@ -1498,8 +927,8 @@ WM.module('wm.widgets.basic')
             });
             setTextStyle(styleObj, scope.$id);
             //Modifying the legend position only when legend is shown
-            if (scope.showlegend) {
-                modifyLegendPosition(scope);
+            if (scope.showlegend && scope.legendposition) {
+                ChartService.modifyLegendPosition(scope, scope.legendposition, scope.$id);
             }
 
             /*
@@ -1510,7 +939,7 @@ WM.module('wm.widgets.basic')
                 nv.utils.windowResize(function () {
                     if (element[0].getBoundingClientRect().height) {
                         chart.update();
-                        if (!isPieType(scope.type)) {
+                        if (!ChartService.isPieType(scope.type)) {
                             setLabelsMaxWidth(scope);
                         }
                     } else {
@@ -1531,22 +960,15 @@ WM.module('wm.widgets.basic')
                 xDomainValues,
                 yDomainValues,
                 chart,
-                xFormat,
-                yFormat,
-                xnumberformat = scope.xnumberformat,
-                ynumberformat = scope.ynumberformat,
-                xaxislabel,
-                yaxislabel,
-                xformatOptions = {},
                 yformatOptions = {};
-            if (isAxisDomainValid(scope, 'x')) {
+            if (ChartService.isAxisDomainValid(scope, 'x')) {
                 xDomainValues = scope.binddataset ? getXMinMaxValues(datum[0]) : { 'min' : {'x': 1},  'max' : {'x' : 5}};
             }
-            if (isAxisDomainValid(scope, 'y')) {
+            if (ChartService.isAxisDomainValid(scope, 'y')) {
                 yDomainValues = scope.binddataset ? getYMinMaxValues(datum) : { 'min' : {'y' : 1}, 'max' : {'y' : 5}};
             }
 
-            if (isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
+            if (ChartService.isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
                 chartData = Utils.getClonedObject(scope.scopedataset || datum);
             }
             // checking the parent container before plotting the chart
@@ -1554,86 +976,20 @@ WM.module('wm.widgets.basic')
                 return;
             }
 
-            if (scope.xnumberformat && scope.xdigits) {
-                xFormat = getFormatOptions(scope.xnumberformat, scope.xdigits);
-            }
-            if (scope.ynumberformat && scope.ydigits) {
-                yFormat = getFormatOptions(scope.ynumberformat, scope.ydigits);
-            } else if (scope.type === 'Cumulative Line') {
-                yFormat = getFormatOptions('Percentage', '2');
-            }
-
             //empty svg to add-new chart
             element.find('svg').empty();
 
             // get the chart obejct
-            chart = initChart(scope, xDomainValues, yDomainValues);
-
-            xformatOptions =  {
-                'dateFormat'  : scope.xdateformat,
-                'numberFormat': xnumberformat,
-                'format'      : xFormat,
-                'isXaxis'     : true,
-                'xDataKeyArr' : scope.xDataKeyArr
-            };
-
-            yformatOptions =  {
-                'dateFormat'  : scope.ydateformat,
-                'numberFormat': ynumberformat,
-                'format'      : yFormat,
-                'isXaxis'     : false,
-                'xDataKeyArr' : scope.xDataKeyArr
-            };
-
-            if (!isPieType(scope.type)) {
-                //Setting the labels if they are specified explicitly or taking the axiskeys chosen
-                xaxislabel = scope.xaxislabel || scope.xaxisdatakey || 'x caption';
-                yaxislabel = scope.yaxislabel || scope.yaxisdatakey || 'y caption';
-                //Adding the units to the captions if they are specified
-                xaxislabel += scope.xunits ? '(' + scope.xunits + ')' : '';
-                yaxislabel += scope.yunits ? '(' + scope.yunits + ')' : '';
-
-                if (scope.captions) {
-                    chart.xAxis.axisLabel(Utils.prettifyLabels(xaxislabel));
-                    chart.yAxis.axisLabel(Utils.prettifyLabels(yaxislabel));
-                }
-
-
-                chart.xAxis
-                    .axisLabelDistance(scope.xaxislabeldistance)
-                    .tickFormat(function (d) {
-                        return formatData(scope, d, scope.xAxisDataType, xformatOptions);
-                    });
-                chart.yAxis
-                    .axisLabelDistance(scope.yaxislabeldistance)
-                    .tickFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                    });
-                if (isBarChart(scope.type)) {
-                    chart.valueFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                    });
-                }
-            } else {
-                //In case of pie/donut chart formatting the values of it
-                if (scope.labeltype === 'percent') {
-                    chart.valueFormat(d3.format('%'));
-                } else {
-                    chart.valueFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                    });
-                }
-            }
-
+            chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
             //Customizing the tooltips in case of the pie and donut when labelType is value
-            if (isPieType(scope.type)) {
+            if (ChartService.isPieType(scope.type)) {
                 chart.tooltip.contentGenerator(function (key) {
                     var yValue;
                     if (scope.labeltype === 'percent') {
                         yValue = d3.format('.3s')(key.data.y);
                     } else if (scope.labeltype === 'value') {
-                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                        yValue = ChartService.formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
                     }
                     return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
                                 '<table>' +
@@ -1653,8 +1009,9 @@ WM.module('wm.widgets.basic')
             d3.select('#wmChart' + scope.$id + ' svg')
                 .datum(chartData)
                 .call(chart);
-
-            postPlotProcess(scope, element, chart);
+            chart.dispatch.renderEnd = function () {
+                postPlotProcess(scope, element, chart);
+            };
             return chart;
         }
 
@@ -1665,7 +1022,7 @@ WM.module('wm.widgets.basic')
             scope.chartData = (scope.onTransform && scope.onTransform({$scope: scope})) || scope.chartData;
 
             //Getting the order by data only in run mode. The order by applies for all the charts other than pie and donut charts
-            if (scope.isVisuallyGrouped && !isPieType(scope.type)) {
+            if (scope.isVisuallyGrouped && !ChartService.isPieType(scope.type)) {
                 datum = scope.chartData;
             } else {
                 datum = getChartData(scope);
@@ -1747,35 +1104,6 @@ WM.module('wm.widgets.basic')
             scope.widgetProps.aggregationcolumn.options = scope.aggregation === 'count' ? scope.axisoptions : scope.numericColumns;
         }
 
-        //Sets the groupby columns to the non primary key columns and other than aggregation column if chosen
-        function setGroupByColumns(scope) {
-            var index,
-                columns = Utils.getClonedObject(scope.nonPrimaryColumns),
-                choosenColumn = scope.widgetProps.groupby && scope.widgetProps.groupby.selectedvalues ?  scope.widgetProps.groupby.selectedvalues.split(',')[0] : '';
-            //Removing the aggregation column out of the non primary columns
-            if (scope.nonPrimaryColumns && scope.aggregationcolumn) {
-                index = scope.nonPrimaryColumns.indexOf(scope.aggregationcolumn);
-                if (index >= 0) {
-                    columns.splice(index, 1);
-                }
-            }
-            //Making groupby as single select when chart is of pie type
-            if (isPieType(scope.type)) {
-                scope.widgetProps.groupby.widget = 'list';
-                //Adding the none option to the groupby columns
-                if (columns && columns.length > 0 && columns.indexOf('none') === -1) {
-                    columns.push('none');
-                }
-                scope.widgetProps.groupby.options = columns;
-                if (scope.widgetid && scope.active) {
-                    $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
-                }
-            } else {
-                scope.widgetProps.groupby.widget = 'multi-select';
-                scope.widgetDataset.groupby = columns || [];
-            }
-        }
-
         // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var variableName,
@@ -1807,7 +1135,7 @@ WM.module('wm.widgets.basic')
                     //Updating the numeric and non primary columns when dataset is changed
                     setNumericandNonPrimaryColumns(scope);
                     setAggregationColumns(scope);
-                    setGroupByColumns(scope);
+                    ChartService.setGroupByColumns(scope);
                 }
                 scope.isServiceVariable = variableObj && variableObj.category === 'wm.ServiceVariable';
 
@@ -1827,8 +1155,6 @@ WM.module('wm.widgets.basic')
                         scope.newcolumns = false;
                     }
                     WidgetUtilService.updatePropertyPanelOptions(scope);
-                    //hiding the aggregation,group by and order by upon binding to the service variable
-                    hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
                     modifyAxesOptions(scope);
                 }
 
@@ -1841,34 +1167,18 @@ WM.module('wm.widgets.basic')
                     plotChartProxy(scope, element);
                 }
                 break;
-            case 'xaxisdatakey':
-                if (scope.chartReady) {
-                    //Showing the formatting options for x axis based on the type of it
-                    if (CONSTANTS.isStudioMode) {
-                        displayFormatOptions(scope, 'x');
-                    }
-                    plotChartProxy(scope, element);
-                }
-                break;
-            case 'yaxisdatakey':
-                if (scope.chartReady) {
-                    //Showing the formatting options for y axis based on the type of it
-                    if (CONSTANTS.isStudioMode) {
-                        displayFormatOptions(scope, 'y');
-                    }
-                    plotChartProxy(scope, element);
-                }
-                break;
             case 'type':
                 //setting group by columns based on the chart type
-                setGroupByColumns(scope);
+                if (CONSTANTS.isStudioMode) {
+                    ChartService.setGroupByColumns(scope);
+                }
                 //Based on the change in type deciding the default margins
-                if (isPieType(newVal)) {
+                if (ChartService.isPieType(scope.type)) {
                     scope.offsettop = 0;
                     scope.offsetright = 0;
                     scope.offsetbottom = 0;
                     scope.offsetleft = 0;
-                } else if (isPieType(oldVal)) {
+                } else if (oldVal === 'Pie' || oldVal === 'Donut') {
                     scope.offsettop = 25;
                     scope.offsetright = 25;
                     scope.offsetbottom = 55;
@@ -1884,101 +1194,15 @@ WM.module('wm.widgets.basic')
                     plotChartProxy(scope, element);
                 }
                 break;
-            case 'showlegend':
-                //Disabling and enabling the legend position and legend type when show legend is changed
-                scope.widgetProps.legendposition.disabled = !newVal;
-                scope.widgetProps.legendtype.disabled = !newVal;
-                if (scope.chartReady) {
-                    plotChartProxy(scope, element);
-                }
-                break;
+            case 'xaxisdatakey':
+            case 'yaxisdatakey':
             case 'height':
             case 'width':
             case 'show':
-            case 'xaxislabel':
-            case 'yaxislabel':
-            case 'xunits':
-            case 'yunits':
-            case 'xnumberformat':
-            case 'xdigits':
-            case 'xdateformat':
-            case 'ynumberformat':
-            case 'ydigits':
-            case 'ydateformat':
-            case 'showvalues':
-            case 'showlabels':
-            case 'showcontrols':
-            case 'staggerlabels':
-            case 'reducexticks':
-            case 'offsettop':
-            case 'offsetbottom':
-            case 'offsetright':
-            case 'offsetleft':
-            case 'barspacing':
-            case 'xaxislabeldistance':
-            case 'yaxislabeldistance':
-            case 'theme':
-            case 'labeltype':
-            case 'donutratio':
-            case 'showlabelsoutside':
-            case 'showxdistance':
-            case 'showydistance':
             case 'bubblesize':
             case 'shape':
-            case 'orderby':
-            case 'nodatamessage':
-            case 'captions':
-            case 'showxaxis':
-            case 'showyaxis':
-            case 'title':
-            case 'customcolors':
-            case 'legendtype':
-            case 'xdomain':
-            case 'ydomain':
                     //In RunMode, the plotchart method will not be called for all property change
                 if (scope.chartReady) {
-                    plotChartProxy(scope, element);
-                }
-                break;
-            case 'aggregation':
-                //In case of studio mode setting the aggregation columns
-                if (CONSTANTS.isStudioMode) {
-                    toggleAggregationColumnState(scope);
-                    modifyAxesOptions(scope);
-                    //Plot the chart when a valid aggregation function and column are chosen
-                    if (scope.aggregation !== 'none') {
-                        //Setting the aggregation columns based on the aggregation function chosen
-                        setAggregationColumns(scope);
-                    }
-                }
-                //In case of run mode plotting the chart if valid columns are chosen
-                if (scope.aggregation !== 'none' && scope.aggregationcolumn && scope.groupby) {
-                    plotChartProxy(scope, element);
-                }
-                break;
-            case 'aggregationcolumn':
-                //In case of studio mode setting the x,y,group by columns
-                if (scope.chartReady) {
-                    if (CONSTANTS.isStudioMode) {
-                        modifyAxesOptions(scope);
-                        //Setting the group by columns when aggregation column is changed
-                        setGroupByColumns(scope);
-                    }
-                    //Plot the chart when a valid aggregation column are chosen
-                    if (scope.aggregation !== 'none' && scope.groupby) {
-                        plotChartProxy(scope, element);
-                    }
-                }
-                break;
-            case 'groupby':
-                //In case of studio mode setting the x,y columns
-                if (scope.chartReady) {
-                    if (CONSTANTS.isStudioMode) {
-                        toggleAggregationState(scope);
-                        scope.widgetProps.groupby.selectedvalues = newVal;
-                        modifyAxesOptions(scope);
-                    }
-                    //Re-plot the chart when the group by columns are chosen
                     plotChartProxy(scope, element);
                 }
                 break;
@@ -1992,22 +1216,6 @@ WM.module('wm.widgets.basic')
                 if (scope.chartReady) {
                     styleObj[styleProps[key]] = (key === 'fontsize' || key === 'fontunit') ? scope.fontsize + scope.fontunit : newVal;
                     setTextStyle(styleObj, scope.$id);
-                }
-                break;
-            case 'legendposition':
-                //Modifying the legend position only when legend is shown
-                if (scope.chartReady && scope.showlegend) {
-                    modifyLegendPosition(scope);
-                }
-                break;
-            case 'linethickness':
-                if (scope.chartReady) {
-                    setLineThickness(scope.$id, scope.linethickness);
-                }
-                break;
-            case 'highlightpoints':
-                if (scope.chartReady) {
-                    highlightPoints(scope.$id, scope.highlightpoints);
                 }
                 break;
             }
@@ -2051,6 +1259,18 @@ WM.module('wm.widgets.basic')
 
                         //Executing WidgetUtilService method to initialize the widget with the essential configurations.
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        if (scope.widgetid) {
+                            //replot the chart after made changes in preview dialog
+                            handlers.push($rootScope.$on('replot-chart', function (event, activeChartScope) {
+                                if (activeChartScope.$id === scope.$id) {
+                                    if (isAggregationEnabled(scope)) {
+                                        modifyAxesOptions(scope);
+                                    }
+                                    plotChartProxy(scope, element);
+                                }
+                            }));
+                        }
 
                         /* Note:  The below code has to be called only after postWidgetCreate
                          * During initial load the plot chart will be called only once. During load time, 'plotChart' should not

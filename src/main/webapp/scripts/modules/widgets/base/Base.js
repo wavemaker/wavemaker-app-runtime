@@ -47,11 +47,45 @@ WM.module('wm.widgets.base', [])
             zindexRegex    = '(^$|auto|initial|inherit|^[0-9]+$)',
             maxRatingRegex = '^(?:10|[1-9])$|^bind.*$',
             roles = [],
+            numberFormatOptions = [
+                {
+                    "name" : "Decimal Digits",
+                    "groupOptions" : {
+                        ".f" :  "9.999 >> 9",
+                        ".1f" : "9.999 >> 9.9",
+                        ".2f" : "9.999 >> 9.99",
+                        ".3f" : "9.999 >> 9.999"
+                    }
+                },
+                {
+                    "name" : "Precision",
+                    "groupOptions" : {
+                        ".1g" : "42347637.87087 >> 4e+7",
+                        ".2g" : "42347637.87087 >> 4.2e+7",
+                        ".3g" : "42347637.87087 >> 4.23e+7"
+                    }
+                },
+                {
+                    "name" : "Percentage",
+                    "groupOptions" : {
+                        "%" : "0.42 >> 42%"
+                    }
+                },
+                {
+                    "name" : "Round Options",
+                    "groupOptions" : {
+                        ",r"    : "99,999,999",
+                        "Thousand" : "9K (Thousand)",
+                        "Million"  : "9M (Million)",
+                        "Billion"  : "9B (Billion)"
+                    }
+                }
+            ],
             dateOptions = [
                 {
                     "name" : "Date",
                     "groupOptions" : {
-                        "%x" : "Date(%m/%d/%Y)",
+                        "%x" : "mm/dd/yyyy",
                         "%c" : "Date and Time"
                     }
                 },
@@ -59,46 +93,46 @@ WM.module('wm.widgets.base', [])
                     "name" : "Time",
                     "groupOptions" : {
                         "%X" : "Time(%H:%M:%S)",
-                        "%H" : "In 24 hours",
-                        "%I" : "In 12 hours",
-                        "%M" : "Mintues",
-                        "%S" : "Seconds",
-                        "%L" : "MilliSeconds",
-                        "%p" : "AM or PM",
+                        "%H" : "In 24 hours [00-23]",
+                        "%I" : "In 12 hours [01-12]",
+                        "%M" : "Mintues [00-59]",
+                        "%S" : "Seconds [00-59]",
+                        "%L" : "MilliSeconds [000, 999]",
+                        "%p" : "either AM or PM",
                         "%Z" : "Time zone offset"
                     }
                 },
                 {
                     "name" : "Day",
                     "groupOptions" : {
-                        "%d" : "Zero padded day of month",
-                        "%e" : "Space padded day of month",
-                        "%j" : "Day of the year"
+                        "%d" : "Zero padded day of month (Eg: 01)",
+                        "%e" : "Space padded day of month (Eg:  1)",
+                        "%j" : "Day of the year (Eg: 01-31-2016 >> 031)"
                     }
                 },
                 {
                     "name" : "Week",
                     "groupOptions" : {
-                        "%a" : "Abbreviated weekday name",
-                        "%A" : "Full weekday name",
-                        "%U" : "Week number of the year(Sunday first day)",
-                        "%W" : "Week number of the year(Monday first day)",
-                        "%w" : "Week day[0(Sunday),6]"
+                        "%a" : "Abbreviated weekday name (Eg: Wed)",
+                        "%A" : "Full weekday name (Eg: Wednesday)",
+                        "%U" : "Week number of the year(Sunday first day) (Eg: 01-31-2016 >> 05)",
+                        "%W" : "Week number of the year(Monday first day) (Eg: 01-31-2016 >> 04)",
+                        "%w" : "Week day[0(Sunday),6]  (Eg: 01-30-2016 >> 6)"
                     }
                 },
                 {
                     "name" : "Month",
                     "groupOptions" : {
-                        "%b" : "Abbreviated month name",
-                        "%B" : "Full month name",
-                        "%m" : "Month number"
+                        "%b" : "Abbreviated month name (Eg: Mar)",
+                        "%B" : "Full month name  (Eg: March)",
+                        "%m" : "Month number  (Eg: 02) [01-12]"
                     }
                 },
                 {
                     "name" : "Year",
                     "groupOptions" : {
-                        "%y" : "without century",
-                        "%Y" : "with century"
+                        "%y" : "yy (Eg: 16)",
+                        "%Y" : "yyyy (Eg: 2016)"
                     }
                 }
             ],
@@ -1622,40 +1656,35 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     "wm.chart": {
-                        "hint": {"type": "string", "bindable": "in-bound"},
+                        "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "type": {"type": "string", "widget": "list", "options": ["Area", "Bar", "Bubble", "Column", "Cumulative Line", "Donut", "Line", "Pie"], "bindable": "in-out-bound"},
+                        "type": {"type": "string", "widget": "list", "options": ["Area", "Bar", "Bubble", "Column", "Cumulative Line", "Donut", "Line", "Pie"], "bindable": "in-out-bound", "show": false},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "xaxisdatakey": {"type": "list", "widget": "list"},
                         "xaxislabel": {"type": "string"},
                         "xunits": {"type": "string"},
-                        "xnumberformat": {"type": "list", "show": false, "options": ["Decimal Digits", "Precision", "Exponential", "Percentage", "Round", "Round Percentage", "Round to Thousand", "Round to Million", "Round to Billion"]},
-                        "xdigits": {"type": "number", "show": false, "value": 1},
-                        "xdateformat": {"type": "list-group", "show": false, "options": dateOptions, "value": "%x"},
+                        "xnumberformat": {"type": "list-group", "options": numberFormatOptions},
+                        "xdateformat": {"type": "list-group", "options": dateOptions, "value": "%x"},
                         "yaxisdatakey": {"type": "list", "widget": "multi-select"},
                         "yaxislabel": {"type": "string"},
                         "yunits": {"type": "string"},
-                        "ynumberformat": {"type": "list", "show": false, "options": ["Decimal Digits", "Precision", "Exponential", "Percentage", "Round", "Round Percentage", "Round to Thousand", "Round to Million", "Round to Billion"]},
-                        "ydigits": {"type": "number", "show": false, "value": 1},
-                        "ydateformat": {"type": "list-group", "show": false, "options": dateOptions, "value": "%x"},
+                        "ynumberformat": {"type": "list-group", "options": numberFormatOptions},
                         "bubblesize": {"type": "string", "widget": "list"},
                         "shape": {"type": "string", "widget": "list", "options": ["circle", "cross", "diamond", "random", "square", "triangle-down", "triangle-up"], value: "circle"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "highlightpoints": {"type": "boolean"},
                         "linethickness": {"type": "string"},
                         "tooltips": {"type": "boolean", "value": true},
-                        "showlegend": {"type": "boolean", "value": true},
-                        "captions": {"type": "boolean", "value": true},
+                        "showlegend": {"type": "list", "options": ["Hide Legend", "Show Top", "Show Bottom"], "value": "Show Top"},
                         "showxaxis": {"type": "boolean", "value": true},
                         "showyaxis": {"type": "boolean", "value": true},
-                        "legendposition": {"type": "list", "options": ["Top", "Bottom"], "value": "Top", "disabled": false},
-                        "legendtype": {"type": "list", "options": ["classic", "furious"], "value": "furious", "disabled": false},
+                        "legendtype": {"type": "list", "options": ["classic", "furious"], "value": "furious", "disabled": false, "show": false},
                         "showvalues": {"type": "boolean", "value": false},
-                        "showlabels": {"type": "boolean", "value": true},
-                        "showcontrols": {"type": "boolean", "value": false},
-                        "useinteractiveguideline": {"type": "boolean", "value": false},
+                        "showlabels": {"type": "list", "options":  ['Hide Labels', 'Show Labels Inside', 'Show Labels Outside'], "value": "Show Labels Outside"},
+                        "viewtype": {"type": "list", "options":  ['Grouped', 'Stacked'], "value": "Grouped"},
+                        "areaviewtype": {"type": "list", "options":  ['stack', 'stream', 'expand'], "value": "stack"},
                         "staggerlabels": {"type": "boolean", "value": false},
                         "reducexticks": {"type": "boolean", "value": true},
                         "labeltype": {"type": "list", "options": ["key", "value", "percent"], "value": "percent"},
@@ -1664,21 +1693,21 @@ WM.module('wm.widgets.base', [])
                         "offsetbottom": {"type": "number", "value": 55, "pattern": numberRegex},
                         "offsetleft": {"type": "number", "value": 75, "pattern": numberRegex},
                         "offsetright": {"type": "number", "value": 25, "pattern": numberRegex},
-                        "barspacing": {"type": "number", "value": 0.5, "min": "0.1", "max": "0.9", "step": "0.1"},
-                        "donutratio": {"type": "number", "value": 0.6, "min": "0.1", "max": "1", "step": "0.1"},
-                        "title": {"type": "string", "bindable": "in-out-bound"},
+                        "barspacing": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
+                        "donutratio": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
+                        "title": {"type": "string", "bindable": "in-out-bound", "show": false},
                         "showlabelsoutside": {"type": "boolean", "value": true},
-                        "xaxislabeldistance": {"type": "number", "value": 12, "show": false},
-                        "yaxislabeldistance": {"type": "number", "value": 12, "show": false},
+                        "xaxislabeldistance": {"type": "number", "value": 12},
+                        "yaxislabeldistance": {"type": "number", "value": 12},
                         "showxdistance": {"type": "boolean", "value": false},
                         "showydistance": {"type": "boolean", "value": false},
-                        "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none"},
-                        "aggregationcolumn": {"type": "list", "widget": "list"},
-                        "groupby": {"type": "list", "widget": "multi-select"},
-                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
+                        "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none", "disabled" : true, "show": false},
+                        "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "show": false},
+                        "groupby": {"type": "list", "widget": "multi-select", "show": false},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals", "show": false},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
-                        "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound"},
+                        "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound", "show": false},
                         "xdomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         "ydomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         /**Style**/
@@ -1690,8 +1719,7 @@ WM.module('wm.widgets.base', [])
                         "color": {"type": "string", "hidelabel": true, "widget": "color"},
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.datanavigator": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1782,6 +1810,7 @@ WM.module('wm.widgets.base', [])
             },
             properties,
             propertyGroups,
+            advancedPropertyGroups,
             ignoreList;
 
         if (CONSTANTS.isStudioMode) {
@@ -1794,7 +1823,7 @@ WM.module('wm.widgets.base', [])
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
@@ -1805,16 +1834,15 @@ WM.module('wm.widgets.base', [])
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "dataset", "properties": ["service", "operation", "options",  "hyperlink", "formfield", "method", "enctype", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "itembadge", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "thumbnailurl", "mediaurl"], "parent": "properties"},
                 {"name": "actions", "properties": ["scopedataset", "dataset", "selectedvalues", "actions", "itemlabel", "itemicon", "itemlink", "itemchildren", "orderby"], "parent": "properties"},
-                {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
-                {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
+                {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
+                {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "behavior", "properties": ["target", "defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
                     "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
-                    "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
+                    "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "captionplacement", "updateon", "updatedelay"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
@@ -1825,7 +1853,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "postmessage"], "parent": "properties"},
-                {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
+                {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
                 {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},
@@ -1842,11 +1870,49 @@ WM.module('wm.widgets.base', [])
                 {"name": "devicesize", "properties": ["showindevice"], "parent": "device"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
             ];
+            result.advancedPropertyGroups = [
+                {"name": "chart", "show": true},
+                {"name": "datafiltering", "show": true, "icon": 'wi wi-filter'},
+                {"name": "xaxis", "show": true, "icon": 'wi wi-border-bottom'},
+                {"name": "yaxis", "show": true, "icon": 'wi wi-border-left'},
+                {"name": "value", "show": true, "icon": 'wi wi-data-usage'},
+                //chart groups
+                {"name": "", "properties": ["title"], "parent": "chart"},
+                {"name": "colors", "properties": ["theme", "customcolors"], "parent": "chart"},
+                {"name": "message", "properties": ["nodatamessage"], "parent": "chart"},
+                {"name": "layout", "properties": ["offset"], "parent": "chart"},
+                {"name": "legend", "properties": ["showlegend"], "parent": "chart"},
+                {"name": "behavior", "properties": ["tooltips", "viewtype", "areaviewtype", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},
+                //x axis groups
+                {"name": "", "properties": ["showxaxis", "xaxislabel", "xunits", "xaxislabeldistance", "xdomain", "showvalues", "staggerlabels", "reducexticks", 'barspacing', 'showxdistance'], "parent": "xaxis"},
+                {"name": "xaxisformat", "properties": ["xnumberformat", "xdateformat"], "parent": "xaxis"},
+                //y axis groups
+                {"name": "", "properties": ["showyaxis", "yaxislabel", "yunits", "yaxislabeldistance", "ydomain", 'showydistance'], "parent": "yaxis"},
+                {"name": "yaxisformat", "properties": ["ynumberformat"], "parent": "yaxis"},
+                //value groups
+                {"name": "value", "properties": ['showlabels', 'labeltype'], "parent": "value"},
+                {"name": "valueformat", "properties": ["ynumberformat"], "parent": "value"},
+                {"name": "datafiltering", "properties": ["groupby", "aggregation", "aggregationcolumn", "orderby"], "parent" : "datafiltering"}
+            ];
         }
         properties = result.properties;
         propertyGroups = result.propertyGroups;
+        advancedPropertyGroups = result.advancedPropertyGroups;
 
         ignoreList = CONSTANTS.isRunMode ? {'accessroles': true, 'updateon': true, 'updatedelay': true} : {};
+
+        //gives all the advanced properties list
+        function getAdvancedProperties() {
+            var advancedProperties = [];
+            _.forEach(advancedPropertyGroups, function (group) {
+                if (group.parent) {
+                    _.forEach(group.properties, function (prop) {
+                        advancedProperties.push(prop);
+                    });
+                }
+            });
+            return advancedProperties;
+        }
 
         /**
          * @ngdoc function
@@ -1869,7 +1935,12 @@ WM.module('wm.widgets.base', [])
          */
         function getPropertiesOf(widget, parents) {
             var widgetProps, parentsArr,
-                mobileProps;
+                mobileProps,
+                advancedProperties;
+
+            if (widget === 'wm.chart') {
+                advancedProperties = getAdvancedProperties();
+            }
 
             if (!parents) {
                 /* This widget doesn't inherit from other widgets. Fetch the properties of only this widget */
@@ -1913,6 +1984,9 @@ WM.module('wm.widgets.base', [])
                         if (!property.hasOwnProperty('show')) {
                             property.show = true;
                         }
+                        if (advancedProperties && _.includes(advancedProperties, key) && !property.hasOwnProperty('showindesigner')) {
+                            property.showindesigner = true;
+                        }
                         property.disabled = property.disabled || false;
                     });
             } else {
@@ -1927,6 +2001,10 @@ WM.module('wm.widgets.base', [])
 
         function getPropertyGroups() {
             return propertyGroups;
+        }
+
+        function getAdvancedPropertyGroups() {
+            return advancedPropertyGroups;
         }
 
         function getPrimaryPropertyGroups() {
@@ -1974,13 +2052,14 @@ WM.module('wm.widgets.base', [])
         }
 
         return {
-            getPropertiesOf          : getPropertiesOf,
-            getPropertyGroups        : getPropertyGroups,
-            getPrimaryPropertyGroups : getPrimaryPropertyGroups,
-            getGroupProperties       : getGroupProperties,
-            getPropertyGroup         : getPropertyGroup,
-            getRoles                 : getRoles,
-            setRoles                 : setRoles
+            getPropertiesOf             : getPropertiesOf,
+            getPropertyGroups           : getPropertyGroups,
+            getAdvancedPropertyGroups   : getAdvancedPropertyGroups,
+            getPrimaryPropertyGroups    : getPrimaryPropertyGroups,
+            getGroupProperties          : getGroupProperties,
+            getPropertyGroup            : getPropertyGroup,
+            getRoles                    : getRoles,
+            setRoles                    : setRoles
         };
     }])
 
