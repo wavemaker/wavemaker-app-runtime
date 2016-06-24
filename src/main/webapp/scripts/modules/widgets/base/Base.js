@@ -273,6 +273,7 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.rating": {
+                        "hint":  {"show": false},
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
@@ -1197,6 +1198,25 @@ WM.module('wm.widgets.base', [])
                         "metadata": {"type": "array, object",  "bindable": "in-bound", "widget": "string"},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
+                        "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onBeforerender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "tabindex": {"type": "string", "value": "0"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "backgroundgradient": {"type": "string"},
+                        "backgroundimage": {"type": "string", "bindable": "in-bound"},
+                        "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"]},
+                        "backgroundsize": {"type": "string", "hint": "width, height"},
+                        "backgroundposition": {"type": "string", "hint": "top, left"},
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
+                        "margin": {"type": "string", "widget": "box-model"}
+                    },
+                    'wm.layouts.login': {
+                        "title": {"type": "string",  "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "width": {"type": "string", "pattern": dimensionRegex},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforerender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},

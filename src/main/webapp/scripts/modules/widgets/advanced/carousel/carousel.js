@@ -64,10 +64,12 @@ WM.module('wm.widgets.advanced')
                 CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
 
             widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
-            notifyFor   = {
-                'dataset' : true,
-                'type'    : true
-            };
+            notifyFor = CONSTANTS.isStudioMode ? {
+                'dataset': true,
+                'type': true
+            } : {
+                'dataset': true
+            },
 
             slideTemplateWrapper =
                 '<uib-carousel interval="interval" active="active" no-wrap="noWrapSlides"> ' +
@@ -137,10 +139,8 @@ WM.module('wm.widgets.advanced')
                     }
                     break;
                 case 'type':
-                    if ($is.widgetid) {
-                        widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
-                        widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
-                    }
+                    widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
+                    widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
                     break;
                 }
             }

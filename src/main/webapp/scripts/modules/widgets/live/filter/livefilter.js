@@ -14,15 +14,15 @@ WM.module('wm.widgets.live')
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
                             '<div class="panel-actions">' +
-                                '<button type="button" class="app-icon wi panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'wi-minus\': \'wi-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
+                                '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
-                    '<div data-ng-show="expanded" class="panel-body" apply-styles="inner-shell">' +
+                    '<div ng-show="expanded" class="panel-body" apply-styles="inner-shell">' +
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
                         '<div class="hidden-filter-elements"></div>' +
                     '</div>' +
-                    '<div data-ng-show="expanded" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                    '<div ng-show="expanded" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
@@ -404,7 +404,7 @@ WM.module('wm.widgets.live')
                         }
                     };
                     $scope.expandCollapsePanel = function ($event) {
-                        if ($scope.collapsible && CONSTANTS.isRunMode) {
+                        if ($scope.collapsible) {
                             if ($scope.expanded) {
                                 if ($scope.onCollapse) {
                                     $scope.onCollapse({$event: $event, $scope: this});
@@ -765,7 +765,8 @@ WM.module('wm.widgets.live')
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
-                        scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
+                        var parent = element.parent();
+                        scope.parentIsolateScope = (parent && parent.length > 0) ? parent.closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
                         /*
                          * Class : FilterField
@@ -902,7 +903,8 @@ WM.module('wm.widgets.live')
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
-                        scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
+                        var parent = element.parent();
+                        scope.parentIsolateScope = (parent && parent.length > 0) ? parent.closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
                         var buttonTemplate, index, buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                             /*iconame support for old projects*/

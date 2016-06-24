@@ -14,7 +14,7 @@ WM.module('wm.widgets.advanced')
     }])
     .directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.login', ['wm.base', 'wm.layouts.form', 'wm.base.events.successerror']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.login', ['wm.base', 'wm.layouts.login', 'wm.base.events.successerror']);
 
         return {
             'restrict'  : 'E',

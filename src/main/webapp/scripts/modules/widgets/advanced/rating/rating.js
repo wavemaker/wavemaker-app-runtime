@@ -15,7 +15,7 @@ WM.module('wm.widgets.advanced')
                 '<div ng-if="readonly" ng-style="{\'font-size\':iconsize}" class="ratings-container disabled" >' +
                     '<div class="ratings active" ng-style="{width: ratingsWidth(), color: iconcolor}"></div>' +
                 '</div>' +
-            '<label ng-show="showcaptions" class="caption" ng-bind="caption"></label>' +
+            '<label ng-if="showcaptions" class="caption" ng-bind="caption"></label>' +
             '</div>'
             );
     }])
