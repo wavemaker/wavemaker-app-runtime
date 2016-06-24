@@ -184,10 +184,12 @@ WM.module('wm.widgets.base')
              * @param $el
              * @param newVal
              */
-            function onWatchExprValueChange($is, $s, key, watchExpr, $el, newVal) {
-                var value;
+            function onWatchExprValueChange($is, $s, key, propDetails, watchExpr, $el, newVal) {
+                var value,
+                    dataAttrKey = 'data-evaluated-' + key;
+
                 //removing the data-evaluated attribute. If the evaluation value is correct this property is not required in design mode.
-                $el.removeAttr('data-evaluated');
+                $el.removeAttr(dataAttrKey);
                 $is[key + '__updateFromWatcher'] = true;
                 if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
                     //Check if "newVal" is a Pageable object.
@@ -202,7 +204,7 @@ WM.module('wm.widgets.base')
                     } else {
                         value = newVal;
                     }
-                } else if (CONSTANTS.isStudioMode && key !== 'dataset') {
+                } else if (CONSTANTS.isStudioMode && propDetails.showPrettyExprInDesigner) {
                     // In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.
                     watchExpr = watchExpr.replace('.data[$i]', '');
                     /*
@@ -213,9 +215,9 @@ WM.module('wm.widgets.base')
                      */
                     value = ($is.widgetid || $s.partialcontainername || $s.prefabname) ? watchExpr : '';
                     // Checking if the property is caption and value is not evaluated in the design mode
-                    if (value === watchExpr && key === 'caption') {
+                    if (value === watchExpr) {
                         //Adding the data-evaluated attribute to identify the unevaluated expression against the current widget
-                        $el.attr('data-evaluated', 'false');
+                        $el.attr(dataAttrKey, '');
                         //setting the widget name instead of the binding expression
                         value = $is.name;
                     }
@@ -421,10 +423,13 @@ WM.module('wm.widgets.base')
                                 $is.show = true;
                             } else {
                                 watchExpr = nv.replace('bind:', '');
-                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, watchExpr, $el);
+                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, propDetails, watchExpr, $el);
                                 _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray});
                             }
                         } else {
+                            if ($is.widgetid) {
+                                $el.removeAttr('data-evaluated-' + key);
+                            }
                             _watchers[key] = undefined;
                         }
 

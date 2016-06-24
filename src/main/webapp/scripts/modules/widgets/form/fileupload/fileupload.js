@@ -13,11 +13,11 @@ WM.module('wm.widgets.form')
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)" apply-styles>' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
-                                '<label ng-bind="caption"></label>' +
-                                    '<form class="form-horizontal" name="{{scope.formName}}">' +
-                                        '<input class="file-input" focus-target type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
-                                        '<a href="javascript:void(0);" class="app-anchor" ng-bind="fileuploadmessage"></a>' +
-                                    '</form>' +
+                                '<label ng-bind="caption" class="caption"></label>' +
+                                '<form class="form-horizontal" name="{{scope.formName}}">' +
+                                    '<input class="file-input" focus-target type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
+                                    '<a href="javascript:void(0);" class="app-anchor" ng-bind="fileuploadmessage"></a>' +
+                                '</form>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
@@ -30,7 +30,7 @@ WM.module('wm.widgets.form')
                                 '<input class="file-input" type="file" name="files" ng-if="!multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled">' +
                                 '<button focus-target class="app-button btn btn-default" apply-styles>' +
                                     '<i class="{{iconclass}}"></i> ' +
-                                    '<span>{{caption}}</span>' +
+                                    '<span class="caption">{{caption}}</span>' +
                                 '</button>' +
                             '</form>' +
                         '</div>' +
@@ -39,7 +39,7 @@ WM.module('wm.widgets.form')
                     /* support for file upload in Mobile Application (device) */
                     '<button ng-if="_isCordova" focus-target class="app-button btn btn-default" ng-click="openFileSelector()" ng-disabled="disabled" apply-styles>' +
                         '<i class="{{iconclass}}"></i> ' +
-                        '<span>{{caption}}</span>' +
+                        '<span class="caption">{{caption}}</span>' +
                     '</button>' +
                     /* list of selectedfiles UI */
                     '<ul class="list-group file-upload" ng-style="{height: filelistheight, overflow: overflow}" ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
