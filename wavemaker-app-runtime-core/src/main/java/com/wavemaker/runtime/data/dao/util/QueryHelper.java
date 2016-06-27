@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2016 WaveMaker, Inc.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,13 +26,13 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.data.transform.AliasToEntityLinkedHashMapTransformer;
 import com.wavemaker.runtime.system.SystemPropertiesUnit;
 import com.wavemaker.studio.common.CommonConstants;
 
@@ -118,13 +118,13 @@ public class QueryHelper {
 
     public static void setResultTransformer(Query query) {
         if (query instanceof SQLQuery) {
-            query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            query.setResultTransformer(AliasToEntityLinkedHashMapTransformer.INSTANCE);
         } else {
             String[] returnAliases = query.getReturnAliases();
             if (returnAliases != null) {
                 LOGGER.debug("return aliases : {}", Arrays.asList(returnAliases));
 
-                query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+                query.setResultTransformer(AliasToEntityLinkedHashMapTransformer.INSTANCE);
             } else {
                 LOGGER.debug("return aliases is null");
             }
