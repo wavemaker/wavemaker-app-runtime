@@ -1188,8 +1188,6 @@ $.widget('wm.datagrid', {
             multipartData,
             firstEditableEle,
             isValid;
-        this.disableActions(true);
-        $deleteButton.prop('disabled', false);
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1198,7 +1196,8 @@ $.widget('wm.datagrid', {
             if (!this.options.allowInlineEditing) {
                 return;
             }
-
+            this.disableActions(true);
+            $deleteButton.prop('disabled', false);
             if ($.isFunction(this.options.setGridEditMode)) {
                 this.options.setGridEditMode(true);
             }
