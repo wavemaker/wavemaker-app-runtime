@@ -458,7 +458,7 @@ WM.module('wm.widgets.live')
                             scope.primaryKey = null;
 
                             scope.getActiveLayout = function () {
-                                return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
+                                return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout, +element.find('.app-grid-layout:first').attr('columns'));
                             };
                             /*Function to set the dataSet of the fields */
                             function setFieldDataSet(filterField, data, aliasColumn) {

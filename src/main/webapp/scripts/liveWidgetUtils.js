@@ -729,14 +729,17 @@ WM.module('wm.widgets.live')
              *
              * @param {object} layout layout type
              */
-            function getColumnCountByLayoutType(layout) {
-                var layoutObj = {
-                    'One Column': 1,
-                    'Two Column': 2,
-                    'Three Column': 3,
-                    'Four Column': 4
-                };
-                return layoutObj[layout] || 1;
+            function getColumnCountByLayoutType(layout, numOfColumns) {
+                if (layout) {
+                    var layoutObj = {
+                        'One Column'   : 1,
+                        'Two Column'   : 2,
+                        'Three Column' : 3,
+                        'Four Column'  : 4
+                    };
+                    return layoutObj[layout] || 1;
+                }
+                return numOfColumns || 1;
             }
 
             /**

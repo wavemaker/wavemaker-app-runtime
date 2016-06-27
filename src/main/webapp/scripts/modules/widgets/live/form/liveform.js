@@ -736,7 +736,7 @@ WM.module('wm.widgets.live')
                         var handlers = [];
 
                         scope.getActiveLayout = function () {
-                            return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
+                            return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout, +scope.element.find('.app-grid-layout:first').attr('columns'));
                         };
 
                         // returns the grid object when dataset is empty
