@@ -1163,6 +1163,11 @@ $.widget('wm.datagrid', {
         });
         return isDataChanged;
     },
+    disableActions: function (val) {
+        //Disable edit and delete actions while editing a row
+        this.gridBody.find('.edit-row-button').prop('disabled', val);
+        this.gridBody.find('.delete-row-button').prop('disabled', val);
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e, options) {
         e.stopPropagation();
@@ -1171,6 +1176,7 @@ $.widget('wm.datagrid', {
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
             $saveButton = $row.find('.save-edit-row-button'),
+            $deleteButton = $row.find('.delete-row-button'),
             rowData = this.options.data[$row.attr('data-row-id')] || {},
             self = this,
             rowId = parseInt($row.attr('data-row-id'), 10),
@@ -1182,6 +1188,8 @@ $.widget('wm.datagrid', {
             multipartData,
             firstEditableEle,
             isValid;
+        this.disableActions(true);
+        $deleteButton.prop('disabled', false);
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1325,6 +1333,7 @@ $.widget('wm.datagrid', {
                 }
             } else {
                 if (isNewRow) {
+                    this.disableActions(false);
                     $row.remove();
                     if (!this.preparedData.length) {
                         this.setStatus('nodata', this.dataStatus.nodata);
@@ -1346,6 +1355,7 @@ $.widget('wm.datagrid', {
     },
     cancelEdit: function ($editableElements) {
         var self = this;
+        this.disableActions(false);
         $editableElements.each(function () {
             var $el   = $(this),
                 value = $el.data('originalValue'),
@@ -1374,6 +1384,7 @@ $.widget('wm.datagrid', {
             $cancelButton     = $row.find('.cancel-edit-row-button'),
             $saveButton       = $row.find('.save-edit-row-button'),
             self              = this;
+        this.disableActions(false);
         if ($.isFunction(this.options.setGridEditMode)) {
             this.options.setGridEditMode(false);
         }
@@ -1421,6 +1432,7 @@ $.widget('wm.datagrid', {
             return;
         }
         if (isNewRow) {
+            this.disableActions(false);
             $row.remove();
             this.addOrRemoveScroll();
             return;
@@ -1736,7 +1748,8 @@ $.widget('wm.datagrid', {
                 //Adding 'edit' class if at least one of the action is 'editRow()'
                 if (_.includes(def.action, 'editRow()')) {
                     clsAttr += ' edit edit-row-button ';
-
+                } else if (_.includes(def.action, 'deleteRow()')) {
+                    clsAttr += ' delete delete-row-button ';
                 }
 
                 actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + '>'
