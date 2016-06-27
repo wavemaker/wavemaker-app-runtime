@@ -1820,7 +1820,7 @@ WM.module('wm.utils', [])
                 paramElement = WM.element('<input type="hidden">');
                 paramElement.attr({
                     'name'  : param[0],
-                    'value' : _.join(_.slice(param, 1), '=')
+                    'value' : decodeURIComponent(_.join(_.slice(param, 1), '='))
                 });
                 formEl.append(paramElement);
             });
