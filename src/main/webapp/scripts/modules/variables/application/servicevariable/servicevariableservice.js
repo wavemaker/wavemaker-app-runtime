@@ -206,7 +206,17 @@ wm.variables.services.$servicevariable = ['Variables',
                     method,
                     isFormDataSupported = Utils.isFileUploadSupported(),
                     formData,
-                    formDataContentType;
+                    formDataContentType,
+                    isDirectCall;
+
+                /**
+                 * returns true if the url starts with 'http(s)://' or '//'
+                 * @param url
+                 * @returns {boolean}
+                 */
+                function isDirectUrl(url) {
+                    return (/^(http[s]?:)?\/\//).test(url);
+                }
 
                 if (isFormDataSupported) {
                     formData = new FormData();
@@ -282,16 +292,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                     };
                 }
-                url = $rootScope.project.deployedUrl;
 
-                if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
-                    /* if it is a prefab variable (used in a normal project), modify the url */
-                    url += "/prefabs/" + variable.prefabName;
-                    target = "invokePrefabRestService";
-                }
-
-                method = operationInfo.httpMethod || operationInfo.methodType;
-                url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
                 /*Setting appropriate content-Type*/
                 if (!_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
                     /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
@@ -302,6 +303,23 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                 }
 
+                /* for direct hit, simply use the url */
+                if (isDirectUrl(endPointRelativePath)) {
+                    url = endPointRelativePath;
+                    isDirectCall = true;
+                } else {
+                    url = $rootScope.project.deployedUrl;
+                    if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
+                        /* if it is a prefab variable (used in a normal project), modify the url */
+                        url += "/prefabs/" + variable.prefabName;
+                        target = "invokePrefabRestService";
+                    } else if (!variable.prefabName) {
+                        url += '/services';
+                    }
+                    url += endPointRelativePath;
+                }
+
+                method = operationInfo.httpMethod || operationInfo.methodType;
                 // if the consumes has application/x-www-form-urlencoded and
                 // if the http request of given method type can have body send the queryParams as Form Data
                 if (_.includes(operationInfo.consumes, WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED)
@@ -323,7 +341,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     "method": method,
                     "headers": headers,
                     "dataParams": requestBody,
-                    "authType": authType
+                    "authType": authType,
+                    "isDirectCall": isDirectCall
                 };
 
                 return invokeParams;
@@ -450,9 +469,16 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
-                    variable.promise = WebService.invokeJavaService(params, function (response) {
-                        processSuccessResponse(response, variable, callBackScope, options, success, error);
-                    }, function (errorMsg) {
+                    variable.promise = WebService.invokeJavaService(params, function (response, details) {
+                        if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
+                            processErrorResponse('Possible CORS Failure, try disabling Same-Origin Policy on the browser.', variable, callBackScope, error);
+                        } else {
+                            processSuccessResponse(response, variable, callBackScope, options, success, error);
+                        }
+                    }, function (errorMsg, details) {
+                        if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
+                            errorMsg = 'Possible CORS Failure, try disabling Same-Origin Policy on the browser.';
+                        }
                         processErrorResponse(errorMsg, variable, callBackScope, error);
                     });
                 } else if (serviceType === SERVICE_TYPE_REST) {
