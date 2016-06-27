@@ -44,12 +44,17 @@ WM.module('wm.widgets.dialog')
             case "message":
                 /*handling default values for notification alert dialog in studio*/
                 if (attrs.notificationdialog) {
-                    scope.message = "Alert Notification Message";
+                    scope.message = attrs.message || "Alert Notification Message";
                 }
                 break;
             case "width":
                 if (newVal) {
                     element.closest('.modal-dialog').css('width', newVal);
+                }
+                break;
+            case 'title':
+                if (attrs.notificationdialog) {
+                    scope.title = attrs.title || "Alert";
                 }
                 break;
             }
