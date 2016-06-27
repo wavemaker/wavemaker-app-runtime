@@ -62,28 +62,33 @@ wm.variables.services.LogoutVariableService = ['Variables',
 
                 SecurityService.isAuthenticated(function (isAuthenticated) {
                     if (isAuthenticated) {
-                        variable.promise = SecurityService.appLogout(function () {
+                        variable.promise = SecurityService.appLogout(function (redirectUrl) {
+                            //In case of CAS response will be the redirectUrl
+                            if (redirectUrl) {
+                                $window.location.href = redirectUrl;
+                            } else {
+                                if (variable.useDefaultSuccessHandler) {
+                                    redirectPage = variable.redirectTo;
+                                    /* backward compatibility (index.html/login.html may be present in older projects) */
+                                    if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
+                                        redirectPage = "";
+                                    }
+                                    $location.url(redirectPage);
+                                    $window.location.reload();
+                                } else if (CONSTANTS.isRunMode) {
+                                    appManager = Utils.getService("AppManager");
+                                    appManager.resetSecurityConfig().
+                                        then(function () {
+                                            WM.forEach(variableEvents, function (event) {
+                                                if (event !== "onError") {
+                                                    initiateCallback(event, variable, callBackScope);
+                                                }
+                                            });
+                                        });
+                                }
+                            }
                             $rootScope.isUserAuthenticated = false;
                             Utils.triggerFn(success);
-                            if (variable.useDefaultSuccessHandler) {
-                                redirectPage = variable.redirectTo;
-                                /* backward compatibility (index.html/login.html may be present in older projects) */
-                                if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
-                                    redirectPage = "";
-                                }
-                                $location.url(redirectPage);
-                                $window.location.reload();
-                            } else if (CONSTANTS.isRunMode) {
-                                appManager = Utils.getService("AppManager");
-                                appManager.resetSecurityConfig().
-                                    then(function () {
-                                        WM.forEach(variableEvents, function (event) {
-                                            if (event !== "onError") {
-                                                initiateCallback(event, variable, callBackScope);
-                                            }
-                                        });
-                                    });
-                            }
                         }, handleError);
                     } else {
                         handleError();
