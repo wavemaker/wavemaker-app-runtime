@@ -45,7 +45,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "editJson": {"hide": true, "required": false},
                     "dataSet": {"type": "string", "value": [], "hide": true},
                     "type": {"hide": true, "required": false},
-                    "firstRow": {"type": "number", "value": 0, "disabled": true, "hide": true},
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
                     "designMaxResults": {"type": "number", "value": 10, "disabled": true, "hide": true},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": true},
@@ -77,7 +76,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read"},
                     "liveSource": {"type": "list", "required": true},
                     "type": {"hide": false, "options": {}, value: "", "required": true},
-                    "firstRow": {"disabled": false, "hide": false},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"disabled": false, "hide": false},
                     "ignoreCase": {"type": "boolean", "value": false},
@@ -90,7 +88,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.LoginVariable": {
                     "transformationRequired": {"hide": true},
                     "isList": {value: ""},
-                    "firstRow": {value: ""},
                     "maxResults": {value: ""},
                     "designMaxResults": {value: ""},
                     "operation": {"hide": true, "required": false},
@@ -104,7 +101,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.LogoutVariable": {
                     "transformationRequired": {"hide": true},
                     "isList": {value: ""},
-                    "firstRow": {value: ""},
                     "maxResults": {value: ""},
                     "designMaxResults": {value: ""},
                     "operation": {"hide": true, "required": false},
@@ -168,7 +164,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
 
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
-                {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "firstRow", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
+                {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
