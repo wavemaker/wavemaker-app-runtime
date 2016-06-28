@@ -1310,8 +1310,7 @@ wm.variables.services.$liveVariable = [
                 getRelatedTableData: function (variable, columnName, options, success, error) {
                     var projectID = $rootScope.project.id || $rootScope.projectName,
                         resultProperties = {
-                            "firstResult": 0,
-                            "maxResults": options.maxResults || 100
+                            'firstResult' : 0
                         },
                         relatedTable = _.find(variable.relatedTables, function (table) {
                             return table.relationName === columnName || table.columnName === columnName; //Comparing column name to support the old projects

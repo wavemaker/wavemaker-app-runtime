@@ -236,7 +236,7 @@ WM.module('wm.widgets.form')
             }
 
             /* assign the modelProxy to the model when the selected datafield isn't all-fields*/
-            if (scope.datafield !== ALLFIELDS || _.isString(scope.dataset)) {
+            if (scope.datafield !== ALLFIELDS) {
                 scope._model_ = scope.modelProxy;
             } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
                 if (scope.multiple) {
