@@ -108,9 +108,6 @@ public class RestConnector {
                 .build();
 
         HttpMethod httpMethod = HttpMethod.valueOf(restRequestInfo.getMethod());
-        if (httpMethod == null) {
-            throw new IllegalArgumentException("Invalid method value [" + restRequestInfo.getMethod() + "]");
-        }
 
         // Creating HttpClientBuilder and setting Request Config.
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
@@ -151,7 +148,8 @@ public class RestConnector {
         wmRestTemplate.setRequestFactory(factory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;
-        if (HttpMethod.GET != httpMethod) {
+        com.wavemaker.studio.common.web.http.HttpMethod wmHttpMethod = com.wavemaker.studio.common.web.http.HttpMethod.valueOf(restRequestInfo.getMethod());
+        if (wmHttpMethod.isRequestBodySupported()) {
             requestEntity = new HttpEntity(restRequestInfo.getRequestBody(), headersMap);
         } else {
             requestEntity = new HttpEntity(headersMap);
