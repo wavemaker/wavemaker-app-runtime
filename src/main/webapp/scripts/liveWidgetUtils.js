@@ -323,7 +323,7 @@ WM.module('wm.widgets.live')
                     'iconclass'     :   attrs.iconclass,
                     'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
                     'action'        :   attrs.action,
-                    'accessroles'   :   attrs.accessroles || ''
+                    'accessroles'   :   attrs.accessroles
                 };
             }
 
