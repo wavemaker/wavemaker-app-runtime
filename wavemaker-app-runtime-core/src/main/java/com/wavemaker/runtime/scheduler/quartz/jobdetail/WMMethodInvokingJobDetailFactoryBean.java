@@ -94,7 +94,9 @@ public class WMMethodInvokingJobDetailFactoryBean  extends ArgumentConvertingMet
                 long startTime = System.currentTimeMillis();
                 context.setResult(methodInvoker.invoke());
                 long endTime = System.currentTimeMillis();
-                logger.info("Task {} took {} seconds to complete.", methodInvoker.getTargetMethod(), (endTime-startTime)/1000);
+                String jobDetailName = context.getJobDetail().getKey().getName();
+                String jobName = jobDetailName.substring(0, jobDetailName.lastIndexOf("JobDetail"));
+                logger.info("Job {} took {} seconds to complete.", jobName, (endTime-startTime)/1000);
             } catch (InvocationTargetException ex) {
                 if (ex.getTargetException() instanceof JobExecutionException) {
                     // -> JobExecutionException, to be logged at info level by Quartz
