@@ -19,7 +19,7 @@ $.widget('wm.datagrid', {
         isMobile: false,
         enableSort: true,
         enableSearch: false,
-        height: 100,
+        height: '100%',
         showHeader: true,
         selectFirstRow: false,
         allowAddNewRow: true,
@@ -677,6 +677,9 @@ $.widget('wm.datagrid', {
             },
             compiledCellTemplates: {}
         });
+        this._setStatus = _.debounce(function () {
+            this.__setStatus();
+        }, 100);
         this._prepareHeaderData();
         this._prepareData();
         this._render();
@@ -1838,11 +1841,9 @@ $.widget('wm.datagrid', {
         }
         this._renderGrid();
     },
-
-    setStatus: function (state, message) {
-        var loadingIndicator = this.dataStatusContainer.find('.fa');
-        this.dataStatus.state = state;
-        this.dataStatus.message = message || this.options.dataStates[state];
+    __setStatus: function () {
+        var loadingIndicator = this.dataStatusContainer.find('.fa'),
+            state            = this.dataStatus.state;
         this.dataStatusContainer.find('.message').text(this.dataStatus.message);
         if (state === 'loading') {
             loadingIndicator.show();
@@ -1855,9 +1856,27 @@ $.widget('wm.datagrid', {
             this.dataStatusContainer.show();
         }
         if (state === 'nodata' || state === 'loading' || state === 'error') {
+            if (this.options.height === '100%' || this.options.height === 'auto') { //If height is auto or 100%, Set the loading overlay height as present grid content height
+                this.dataStatus.height        = this.dataStatus.height ||  this.dataStatusContainer.outerHeight();
+                this.dataStatus.contentHeight = this.gridElement.outerHeight() || this.dataStatus.contentHeight;
+                this.dataStatusContainer.css('height', this.dataStatus.height > this.dataStatus.contentHeight ? 'auto' : this.dataStatus.contentHeight);
+            }
             this.gridContainer.addClass('show-msg');
         } else {
             this.gridContainer.removeClass('show-msg');
+        }
+        this.addOrRemoveScroll();
+    },
+    //This method is used to show or hide data loading/ no data found overlay
+    setStatus: function (state, message) {
+        this.dataStatus.state   = state;
+        this.dataStatus.message = message || this.options.dataStates[state];
+        //First time call the status function, afterwards use debounce with 100 ms wait
+        if (this._setStatusCalled) {
+            this._setStatus();
+        } else {
+            this.__setStatus();
+            this._setStatusCalled = true;
         }
     },
 

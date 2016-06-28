@@ -1530,8 +1530,8 @@ WM.module('wm.widgets.grid')
                     newVal = newVal.content;
                     isPageable = true;
                 }
-
-                if (newVal && _.get(newVal, 'dataValue') !== '' && !_.isEmpty(newVal)) {
+                //If value is empty or in studio mode, dont enable the navigation
+                if (CONSTANTS.isRunMode && newVal && _.get(newVal, 'dataValue') !== '' && !_.isEmpty(newVal)) {
                     if ($scope.shownavigation && !$scope.dataNavigatorWatched) {
                         $scope.enablePageNavigation();
                         return;
