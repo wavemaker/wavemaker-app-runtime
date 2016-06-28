@@ -827,7 +827,8 @@ wm.plugins.security.services.SecurityService = [
             appLogout: function (successCallback, failureCallback) {
                 return BaseService.send({
                     target: 'Security',
-                    action: 'appLogout'
+                    action: 'appLogout',
+                    byPassResult: true
                 }, successCallback, failureCallback);
             },
 

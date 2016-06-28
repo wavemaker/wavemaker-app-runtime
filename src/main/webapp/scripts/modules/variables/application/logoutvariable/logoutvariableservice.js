@@ -63,9 +63,10 @@ wm.variables.services.LogoutVariableService = ['Variables',
                 SecurityService.isAuthenticated(function (isAuthenticated) {
                     if (isAuthenticated) {
                         variable.promise = SecurityService.appLogout(function (redirectUrl) {
+                            redirectUrl = Utils.getValidJSON(redirectUrl);
                             //In case of CAS response will be the redirectUrl
                             if (redirectUrl) {
-                                $window.location.href = redirectUrl;
+                                $window.location.href = redirectUrl.result;
                             } else {
                                 if (variable.useDefaultSuccessHandler) {
                                     redirectPage = variable.redirectTo;
