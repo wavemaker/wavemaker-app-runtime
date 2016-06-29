@@ -1131,7 +1131,7 @@ WM.module('wm.widgets.live')
                                     if (primaryKeys.length > 0) {
                                         displayField = primaryKeys[0];
                                     } else {
-                                        displayField = _.head(_.keys(_.get({}, '[0]')));
+                                        displayField = _.head(_.keys(_.get(response, '[0]')));
                                     }
                                     if (relatedFormField.widget === 'typeahead' || relatedFormField.widget === 'autocomplete') { //For search widget, set search key and display label
                                         relatedFormField.searchkey    = relatedFormField.searchkey || displayField;

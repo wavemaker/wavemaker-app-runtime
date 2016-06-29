@@ -47,12 +47,13 @@ $.widget('wm.datagrid', {
         },
         startRowIndex: 1,
         searchHandler: function (searchObj) {
-            var searchText = searchObj.value,
-                searchTextRegEx,
-                field = searchObj.field,
-                hasField = field.length,
-                $rows = this.gridElement.find('tbody tr'),
-                self = this;
+            var searchTextRegEx,
+                searchText  = searchObj.value,
+                field       = searchObj.field,
+                hasField    = field.length,
+                $rows       = this.gridElement.find('tbody tr'),
+                self        = this,
+                noDataFound = true;
             if (!searchText) {
                 $rows.show();
                 return;
@@ -69,9 +70,15 @@ $.widget('wm.datagrid', {
                 if (text === null || text.toString().search(searchTextRegEx) === -1) {
                     $row.hide();
                 } else {
+                    noDataFound = false;
                     $row.show();
                 }
             });
+            if (noDataFound) { //If no records found, show no data message
+                this.setStatus('nodata', this.dataStatus.nodata);
+            } else {
+                this.setStatus('ready', this.dataStatus.ready);
+            }
         },
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
@@ -854,6 +861,8 @@ $.widget('wm.datagrid', {
         switch (key) {
         case 'showHeader':
             this._toggleHeader();
+            this.setColGroupWidths();
+            this.addOrRemoveScroll();
             break;
         case 'enableSearch':
             this._toggleSearch();
