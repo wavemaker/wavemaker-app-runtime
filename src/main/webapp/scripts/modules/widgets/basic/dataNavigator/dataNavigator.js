@@ -109,7 +109,7 @@ WM.module("wm.widgets.basic")
                 };
 
                 /*Function to check the dataSize and manipulate the navigator accordingly.*/
-                $scope.checkDataSize = function (dataSize) {
+                $scope.checkDataSize = function (dataSize, numberOfElements, size) {
                     /*If the dataSize is -1 or Integer.MAX_VALUE( which is 2147483647), then the total number of records is not known.
                      * Hence,
                      * 1. Hide the "Total Record Count".
@@ -119,11 +119,15 @@ WM.module("wm.widgets.basic")
                          * TODO: to remove the 'prevshowrecordcount' and handle the dataSize = -1 case
                          */
                         $scope.prevshowrecordcount = $scope.showrecordcount;
-                        $scope.isDisableLast = true;
-                        $scope.isDisableCount = true;
-                        $scope.showrecordcount = false;
+                        $scope.isDisableLast       = true;
+                        $scope.isDisableCount      = true;
+                        $scope.showrecordcount     = false;
+                        //If number of records in current page is less than the max records size, this is the last page. So disable next button.
+                        if (numberOfElements < size) {
+                            $scope.isDisableNext = true;
+                        }
                     } else {
-                        $scope.isDisableCount = false;
+                        $scope.isDisableCount  = false;
                         $scope.showrecordcount = $scope.prevshowrecordcount || $scope.showrecordcount;
                     }
                 };
@@ -182,8 +186,6 @@ WM.module("wm.widgets.basic")
                                 $scope.sortOptions = variableOptions.orderBy || (WM.isArray(newVal.sort) ? Utils.getOrderByExpr(newVal.sort) : '');
                                 if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                                     dataSize = newVal.totalElements;
-                                    $scope.checkDataSize(dataSize);
-
                                     maxResults = newVal.size;
                                     if (newVal.numberOfElements > 0) {
                                         if (WM.isDefined(newVal.number)) { // number is page number received from backend
@@ -196,7 +198,7 @@ WM.module("wm.widgets.basic")
                                     /* Sending pageCount undefined to calculate it again for query.*/
                                     $scope.setDefaultPagingValues(dataSize, maxResults, currentPage, pageCount);
                                     $scope.disableNavigation();
-                                    $scope.isDisableLast = (dataSize === -1 || dataSize === CONSTANTS.INT_MAX_VALUE);
+                                    $scope.checkDataSize(dataSize, newVal.numberOfElements, newVal.size);
                                 }
                                 /*Re-compute the paging values in the following cases.
                                 1. Paging values have not been computed.
