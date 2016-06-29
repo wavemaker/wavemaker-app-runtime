@@ -1424,7 +1424,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Accordion Pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "string", "value": "0"}
@@ -1459,7 +1459,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Add Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Tab Pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tab-order", "dataset": []},
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"},
