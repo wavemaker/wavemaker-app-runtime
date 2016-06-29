@@ -45,7 +45,7 @@ WM.module('wm.widgets.dialog')
             case "message":
                 /*handling default values for notification confirm dialog in studio*/
                 if (attrs.notificationdialog) {
-                    scope.message = "Confirm Notification Message";
+                    scope.message = attrs.message || "Confirm Notification Message";
                 }
                 break;
             case "width":

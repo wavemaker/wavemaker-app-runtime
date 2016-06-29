@@ -74,6 +74,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                             dialogParams: function () {
                                 return {
                                     notificationDetails: {
+                                        'title': variable.dataBinding.title,
                                         'text': variable.dataBinding.text,
                                         'okButtonText': variable.dataBinding.okButtonText,
                                         'cancelButtonText': variable.dataBinding.cancelButtonText,
@@ -108,16 +109,25 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.text;
             },
             setMessage: function (variable, text) {
-                if (typeof text === 'string') {
+                if (WM.isString(text)) {
                     variable.dataBinding.text = text;
                 }
                 return variable.dataBinding.text;
+            },
+            getTitle: function (variable) {
+                return variable.dataBinding.title;
+            },
+            setTitle: function (variable, text) {
+                if (WM.isString(text)) {
+                    variable.dataBinding.title = text;
+                }
+                return variable.dataBinding.title;
             },
             getOkButtonText: function (variable) {
                 return variable.dataBinding.okButtonText;
             },
             setOkButtonText: function (variable, text) {
-                if (typeof text === 'string') {
+                if (WM.isString(text)) {
                     variable.dataBinding.okButtonText = text;
                 }
                 return variable.dataBinding.okButtonText;
@@ -134,7 +144,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.class;
             },
             setToasterClass: function (variable, type) {
-                if (typeof type === 'string') {
+                if (WM.isString(text)) {
                     variable.dataBinding.class = type;
                 }
                 return variable.dataBinding.class;
@@ -143,7 +153,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.class;
             },
             setToasterPosition: function (variable, position) {
-                if (typeof position === 'string') {
+                if (WM.isString(position)) {
                     variable.dataBinding.position = position;
                 }
                 return variable.dataBinding.position;
@@ -153,7 +163,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.alerttype;
             },
             setAlertType: function (variable, alerttype) {
-                if (typeof alerttype === 'string') {
+                if (WM.isString(alerttype)) {
                     variable.dataBinding.alerttype = alerttype;
                 }
                 return variable.dataBinding.alerttype;
@@ -163,7 +173,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.cancelButtonText;
             },
             setCancelButtonText: function (variable, text) {
-                if (typeof text === 'string') {
+                if (WM.isString(text)) {
                     variable.dataBinding.cancelButtonText = text;
                 }
                 return variable.dataBinding.cancelButtonText;

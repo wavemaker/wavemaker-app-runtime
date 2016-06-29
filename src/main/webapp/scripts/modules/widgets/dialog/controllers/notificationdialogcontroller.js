@@ -9,10 +9,11 @@ WM.module('wm.widgets.dialog')
         'use strict';
         $scope.notification = {};
         if (dialogParams.notificationDetails) {
-            $scope.notification.text = dialogParams.notificationDetails.text;
-            $scope.notification.okButtonText = dialogParams.notificationDetails.okButtonText || "OK";
+            $scope.notification.text             = dialogParams.notificationDetails.text;
+            $scope.notification.title            = dialogParams.notificationDetails.title;
+            $scope.notification.okButtonText     = dialogParams.notificationDetails.okButtonText || "OK";
             $scope.notification.cancelButtonText = dialogParams.notificationDetails.cancelButtonText || "CANCEL";
-            $scope.notification.alerttype = dialogParams.notificationDetails.alerttype || "information";
+            $scope.notification.alerttype        = dialogParams.notificationDetails.alerttype || "information";
         }
         /*called in case an onOk event is associated with the notification variable*/
         $scope.variableOnOk = function () {
