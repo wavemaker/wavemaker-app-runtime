@@ -1817,6 +1817,9 @@ $.widget('wm.datagrid', {
         this._findAndReplaceCompiledTemplates();
         this._appendRowActions($htm);
         this.attachEventHandlers($htm);
+        if (this.preparedData.length && $.isFunction(this.options.onDataRender)) {
+            this.options.onDataRender();
+        }
     },
 
     /* Renders the table container. */

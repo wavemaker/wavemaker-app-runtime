@@ -167,7 +167,8 @@ WM.module('wm.widgets.grid')
                 "onColumndeselect": "&",
                 "onEnterkeypress": "&",
                 "onSetrecord": "&",
-                "onPaginationchange": "&"
+                "onPaginationchange": "&",
+                "onDatarender": "&"
             },
             "replace": true,
             "transclude": false,
@@ -1279,6 +1280,9 @@ WM.module('wm.widgets.grid')
                 data: Utils.getClonedObject($scope.gridData),
                 colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
+                onDataRender: function () {
+                    $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
+                },
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
                     $scope.onSelect({$data: rowData, $event: e});
