@@ -697,7 +697,11 @@ $.widget('wm.datagrid', {
         this.gridHeader.find('.sort-button').off('click');
         this.gridHeader.find('.sort-buttons-container').remove();
     },
-
+    _setGridEditMode: function (val) {
+        if ($.isFunction(this.options.setGridEditMode)) {
+            this.options.setGridEditMode(val);
+        }
+    },
     /* Re-renders the whole grid. */
     _refreshGrid: function () {
         this._prepareHeaderData();
@@ -705,6 +709,7 @@ $.widget('wm.datagrid', {
         this._render();
         this.setColGroupWidths();
         this.addOrRemoveScroll();
+        this._setGridEditMode(false);
     },
 
     refreshGrid: function () {
@@ -719,6 +724,7 @@ $.widget('wm.datagrid', {
         this._renderGrid();
         this._reselectColumns();
         this.addOrRemoveScroll();
+        this._setGridEditMode(false);
     },
 
     /* Inserts a new blank row in the table. */
@@ -1208,11 +1214,9 @@ $.widget('wm.datagrid', {
             if (!this.options.allowInlineEditing) {
                 return;
             }
+            this._setGridEditMode(true);
             this.disableActions(true);
             $deleteButton.prop('disabled', false);
-            if ($.isFunction(this.options.setGridEditMode)) {
-                this.options.setGridEditMode(true);
-            }
 
             $originalElements.each(function () {
                 var $el = $(this),
@@ -1345,15 +1349,13 @@ $.widget('wm.datagrid', {
             } else {
                 if (isNewRow) {
                     this.disableActions(false);
+                    this._setGridEditMode(false);
                     $row.remove();
                     if (!this.preparedData.length) {
                         this.setStatus('nodata', this.dataStatus.nodata);
                     }
                     this.addOrRemoveScroll();
                     return;
-                }
-                if ($.isFunction(this.options.setGridEditMode)) {
-                    this.options.setGridEditMode(false);
                 }
                 // Cancel edit.
                 this.cancelEdit($editableElements);
@@ -1367,6 +1369,7 @@ $.widget('wm.datagrid', {
     cancelEdit: function ($editableElements) {
         var self = this;
         this.disableActions(false);
+        this._setGridEditMode(false);
         $editableElements.each(function () {
             var $el   = $(this),
                 value = $el.data('originalValue'),
@@ -1385,9 +1388,6 @@ $.widget('wm.datagrid', {
                 }
             }
         });
-        if ($.isFunction(this.options.setGridEditMode)) {
-            this.options.setGridEditMode(false);
-        }
     },
     hideRowEditMode: function ($row) {
         var $editableElements = $row.find('td.cell-editing'),
@@ -1396,9 +1396,7 @@ $.widget('wm.datagrid', {
             $saveButton       = $row.find('.save-edit-row-button'),
             self              = this;
         this.disableActions(false);
-        if ($.isFunction(this.options.setGridEditMode)) {
-            this.options.setGridEditMode(false);
-        }
+        this._setGridEditMode(false);
         $editableElements.each(function () {
             var $el   = $(this),
                 value = $el.data('originalValue'),
@@ -1444,6 +1442,7 @@ $.widget('wm.datagrid', {
         }
         if (isNewRow) {
             this.disableActions(false);
+            this._setGridEditMode(false);
             $row.remove();
             this.addOrRemoveScroll();
             return;
