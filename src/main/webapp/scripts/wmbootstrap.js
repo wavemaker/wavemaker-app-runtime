@@ -94,6 +94,19 @@ Application
                     }
                 }
 
+                // If the Common Page is not loaded by this time, wait for it load and then display the login dialog
+                function showLoginDialog() {
+                    if ($rs.isCommonPageLoaded) {
+                        BaseService.handleSessionTimeOut();
+                    } else {
+                        $rs.$watch(':: isCommonPageLoaded', function (nv) {
+                            if (nv) {
+                                BaseService.handleSessionTimeOut();
+                            }
+                        });
+                    }
+                }
+
                 /**
                  * Handles the app when a XHR request returns 401 response
                  * If no user was logged in before 401 occurred, First time Login is simulated
@@ -114,6 +127,7 @@ Application
                             'SSO'    : 'SSO'
                         },
                         ssoUrl;
+
                     SecurityService.getConfig(function (config) {
                         // if no user found, 401 was thrown for first time login
                         if (config.userInfo && config.userInfo.userName) {
@@ -125,7 +139,8 @@ Application
                                         _load(page, onSuccess, onError);
                                     }, WM.noop);
                                 }
-                                BaseService.handleSessionTimeOut();
+                                showLoginDialog();
+
                             } else if (sessionTimeoutMethod === LOGIN_METHOD.PAGE) {
                                 if (!page) {
                                     page = $location.path().replace('/', '');
@@ -138,15 +153,15 @@ Application
                             loginMethod = loginConfig.type.toUpperCase();
                             switch (loginMethod) {
                             case LOGIN_METHOD.DIALOG:
-                                BaseService.handleSessionTimeOut();
-                            // Through loginDialog, user will be redirected to respective landing page as it is a first time login
+                                // Through loginDialog, user will be redirected to respective landing page as it is a first time login
+                                showLoginDialog();
                                 break;
                             case LOGIN_METHOD.PAGE:
                                 $location.path(loginConfig.pageName);
                                 break;
                             case LOGIN_METHOD.SSO:
                                 //showing a redirecting message
-                                document.write('Redirecting to sso login...');
+                                document.body.textContent = 'Redirecting to sso login...';
                                 ssoUrl = $rs.project.deployedUrl + SSO_URL;
                                 //In case of CAS redirecting to the sso login page
                                 $window.location.href = ssoUrl;
@@ -246,15 +261,35 @@ Application
                     return d.promise;
                 }
 
+                // Compile the contents of the common page
+                function compileCommonPageContent($s, pageName, content) {
+                    Variables.setPageVariables(pageName, content.variables);
+                    var $html = WM.element(Utils.processMarkup(content.html));
+                    WM.element('#wm-common-content').append($html);
+                    $compile($html)($s);
+
+                    $rs.isCommonPageLoaded = true;
+                }
+
+                // Load the Common Page, wait for the appVariables to compile the common page
                 function loadCommonPage($s) {
                     var pageName = 'Common',
                         deferred = $q.defer();
+
                     loadPage(pageName)
                         .then(function (content) {
-                            Variables.setPageVariables(pageName, content.variables);
-                            var $html = WM.element(Utils.processMarkup(content.html));
-                            WM.element('#wm-common-content').append($html);
-                            $compile($html)($s);
+                            var deRegister;
+
+                            if (appVariablesLoaded) {
+                                compileCommonPageContent($s, pageName, content);
+                            } else {
+                                deRegister = $rs.$watch(function () {
+                                    return appVariablesLoaded;
+                                }, function () {
+                                    deRegister();
+                                    compileCommonPageContent($s, pageName, content);
+                                });
+                            }
                             deferred.resolve();
                         }, deferred.resolve);
 
@@ -456,11 +491,16 @@ Application
 
                                 // for the prefab/template bundle type do not wait for the app variables.
                                 if ($rs.isApplicationType) {
-                                    $rs.$watch(':: Variables', function (nv) {
-                                        if (nv) {
-                                            deferred.resolve();
-                                        }
-                                    });
+                                    if ($rs.Variables) {
+                                        deferred.resolve();
+                                    } else {
+                                        $rs.$watch(':: Variables', function (nv) {
+                                            if (nv) {
+                                                deferred.resolve();
+                                            }
+                                        });
+                                    }
+
                                 } else {
                                     /* tempalteBundle project will not have variables,
                                      * widgets having code like scope.Variables[variableName] will throw console errors.
@@ -477,13 +517,18 @@ Application
                             'appLocale': ['$q', '$rootScope', function ($q, $rs) {
                                 var deferred = $q.defer();
 
-                                // for the prefab/template bundle type do not wait for the app locale.
-                                if ($rs.isApplicationType) {
-                                    $rs.$watch(':: selectedLocale', function (nv) {
-                                        if (nv) {
-                                            deferred.resolve();
-                                        }
-                                    });
+                                // for the template bundle type do not wait for the app locale.
+                                if ($rs.isApplicationType || $rs.isPrefabType) {
+                                    if ($rs.selectedLocale) {
+                                        deferred.resolve();
+                                    } else {
+                                        $rs.$watch(':: selectedLocale', function (nv) {
+                                            if (nv) {
+                                                deferred.resolve();
+                                            }
+                                        });
+                                    }
+
                                 } else {
                                     deferred.resolve();
                                 }
@@ -497,15 +542,20 @@ Application
                     .when('/', routeConfig)
                     .when('/:name', {
                         'template': initText,
-                        'resolve' : WM.extend({
-                            'pageContent': function (AppManager, $route, $rootScope) {
-                                var pageName = $route.current.params.name;
-                                return AppManager.loadPage(pageName).
-                                    then(function () {
-                                        $rootScope.activePageName = pageName;
-                                    });
-                            }
-                        }, routeConfig.resolve)
+                        'resolve' : WM.extend({}, routeConfig.resolve, {
+                            'pageContent': [
+                                'AppManager',
+                                '$route',
+                                '$rootScope',
+                                function (AppManager, $route, $rs) {
+                                    var pageName = $route.current.params.name;
+                                    return AppManager.loadPage(pageName)
+                                        .then(function () {
+                                            $rs.activePageName = pageName;
+                                        });
+                                }
+                            ]
+                        })
                     });
             }
         ]
@@ -557,8 +607,10 @@ Application
                     i18nService.setSelectedLocale($is.datavalue);
                 };
 
-                // load the language bundle
-                AppManager.initI18nService(_.split(_WM_APP_PROPERTIES.supportedLanguages, ',') || ['en'], _WM_APP_PROPERTIES.defaultLanguage);
+                if ($rs.isApplicationType || $rs.isPrefabType) {
+                    // load the language bundle
+                    AppManager.initI18nService(_.split(_WM_APP_PROPERTIES.supportedLanguages, ',') || ['en'], _WM_APP_PROPERTIES.defaultLanguage);
+                }
 
 
                 /*
@@ -602,8 +654,7 @@ Application
                             return MetaDataFactory.load();
                         })
                         .then(function () {
-                            return AppManager.loadCommonPage($s);
-                        }).then(function () {
+                            AppManager.loadCommonPage($s);
                             SecurityService.getConfig(function () {
                                 AppManager.initAppVariablesAndDependencies();
                             });
