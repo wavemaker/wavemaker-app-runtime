@@ -323,7 +323,7 @@ WM.module('wm.widgets.form')
                 }
             }
             /*content type and the uploaded file extension should be same*/
-            if (_.includes(contentTypes, '.' + extensionName)) {
+            if (_.includes(_.toLower(contentTypes), '.' + _.toLower(extensionName))) {
                 isValid = true;
             }
             return isValid;
