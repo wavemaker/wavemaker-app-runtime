@@ -194,7 +194,7 @@ WM.module('wm.widgets.grid')
                             '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" data-ng-if="actions.length">' +
-                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
+                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
                                 ' on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
@@ -1348,10 +1348,11 @@ WM.module('wm.widgets.grid')
                 },
                 setGridEditMode: function (val) {
                     $scope.isGridEditMode = val;
+                    $rootScope.$safeApply($scope);
                 },
                 noChangesDetected: function () {
                     wmToaster.show('info', '', 'No changes detected');
-                    $scope.$root.$safeApply($scope);
+                    $rootScope.$safeApply($scope);
                 },
                 afterSort: function (e) {
                     $rootScope.$safeApply($scope);
