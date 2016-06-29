@@ -299,7 +299,7 @@ WM.module('wm.widgets.form')
             if (!contenttype) {
                 return true;
             }
-            contentTypes = contenttype.split(',');
+            contentTypes = _.toLower(contenttype).split(',');
 
             if (_.includes(contentTypes, 'image/*') || (_.includes(contentTypes, 'image') && isMobileType)) {
                 isValid = Utils.isImageFile(filename);
@@ -323,7 +323,7 @@ WM.module('wm.widgets.form')
                 }
             }
             /*content type and the uploaded file extension should be same*/
-            if (_.includes(_.toLower(contentTypes), '.' + _.toLower(extensionName))) {
+            if (_.includes(contentTypes, '.' + _.toLower(extensionName))) {
                 isValid = true;
             }
             return isValid;
