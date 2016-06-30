@@ -180,7 +180,9 @@ body {
 .app-card {
   position: relative;
   &.card {
-    margin: .2rem;
+    margin-bottom: 1em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 0.2rem 0.3rem 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
@@ -574,18 +576,25 @@ body {
     width: 100%;
     position: relative;
     empty-cells: show;
-    .app-grid-row {
-      width: 100%;
-      position: relative;
+    &.condensed {
+    }
+    &.standard {
       .app-grid-column {
-        position: relative;
-        padding: 0;
-        vertical-align: top;
-        height: 100%;
-        overflow: inherit;
-        border-width: 0;
+        padding:0 1em;
       }
     }
+  }
+  .app-grid-row {
+    width: 100%;
+    position: relative;
+  }
+  .app-grid-column {
+    padding: 0;
+    position: relative;
+    vertical-align: top;
+    height: 100%;
+    overflow: inherit;
+    border-width: 0;
   }
 
   /***********************************Form styles***********************************************************************/
@@ -1421,12 +1430,6 @@ body {
   }
   .h1,.h2,.h3,.h4,.h5,.h6 {
     word-wrap: break-word;
-  }
-  // (Reduce width by left and right margin) Fix for horizontal scroll in android devices
-  .app-card {
-    &.card {
-      .calc('width', ~"calc(100% - .4rem)");
-    }
   }
 
   //Angular UI bootstrap 1.1.0 related styles.
