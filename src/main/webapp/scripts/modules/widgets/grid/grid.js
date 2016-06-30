@@ -177,25 +177,27 @@ WM.module('wm.widgets.grid')
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
                 return '<div data-identifier="grid" init-widget title="{{hint}}" class="app-grid app-panel panel" apply-styles="shell">' +
-                    '<div class="panel-heading" ng-if="title || subheading || iconclass || exportOptions.length">' +
+                    '<div class="panel-heading" ng-if="title || subheading || iconclass || exportOptions.length || _actions.header.length">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
-                            '<div class="panel-actions" ng-if="exportOptions.length">' +
-                                '<wm-menu caption="Export" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
+                            '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
+                                '<wm-button ng-repeat="btn in _actions.header" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
+                                 ' on-click="{{btn.action}}"></wm-button>' +
+                                '<wm-menu caption="Export" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
                     '<div class="app-datagrid"></div>' +
-                    '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
+                    '<div class="panel-footer clearfix" ng-show="shownavigation || _actions.footer.length">' +
                         '<div class="app-datagrid-paginator" data-ng-show="show && shownavigation">' +
                             '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
-                        '<div class="app-datagrid-actions" data-ng-if="actions.length">' +
-                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
+                        '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
+                            '<wm-button ng-repeat="btn in _actions.footer" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
                                 ' on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
@@ -355,6 +357,7 @@ WM.module('wm.widgets.grid')
 
                         scope.actions = [];
                         scope.rowActions = [];
+                        scope._actions = {};
 
                         /* event emitted on building new markup from canvasDom */
                         handlers.push($rootScope.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
@@ -2250,7 +2253,7 @@ WM.module('wm.widgets.grid')
                                 /*iconame support for old projects*/
                                 'icon': attrs.icon
                             });
-
+                        buttonDef.position = attrs.position || 'footer';
                         if (CONSTANTS.isRunMode) {
                             parentIsolateScope = scope;
                         } else {
@@ -2258,6 +2261,17 @@ WM.module('wm.widgets.grid')
                         }
                         parentIsolateScope.actions = parentIsolateScope.actions || [];
                         parentIsolateScope.actions.push(buttonDef);
+
+                        parentIsolateScope._actions.header = [];
+                        parentIsolateScope._actions.footer = [];
+                        _.forEach(scope.actions, function (action) {
+                            if (_.includes(action.position, 'header')) {
+                                parentIsolateScope._actions.header.push(action);
+                            }
+                            if (_.includes(action.position, 'footer')) {
+                                parentIsolateScope._actions.footer.push(action);
+                            }
+                        });
                     }
                 };
             }
