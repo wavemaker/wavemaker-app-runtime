@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
+                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
@@ -299,12 +299,13 @@ WM.module('wm.widgets.form')
                     };
 
                     /*update the model when changed manually*/
-                    scope.updateDateTimeModel = function () {
+                    scope.updateDateTimeModel = function (e) {
                         if (!isNaN(Date.parse(scope._displayModel))) {
                             setModels(scope._displayModel);
                         } else {
                             this._proxyModel = undefined;
                         }
+                        scope._onChange({$event: e, $scope: scope});
                     };
 
                     /*Called from form reset when users clicks on form reset*/
