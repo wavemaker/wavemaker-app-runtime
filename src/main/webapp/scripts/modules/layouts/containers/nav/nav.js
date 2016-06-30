@@ -136,17 +136,6 @@ WM.module('wm.layouts.containers')
                         }
                         $compile($li)($is);
                     });
-
-                    $el.on('click.on-select', '.app-anchor', function (e) {
-                        var $target = WM.element(this),
-                            $li     = $target.closest('.app-nav-item');
-                        $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
-                        $li.addClass('active');
-                        $rs.$safeApply($is, function () {
-                            $is.selecteditem = $li.data('node-data');
-                            Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
-                        });
-                    });
                 }
             }
 
@@ -234,6 +223,16 @@ WM.module('wm.layouts.containers')
                                 onPropertyChange('scopedataset', nv);
                             });
                         }
+                        $el.on('click.on-select', '.app-anchor', function (e) {
+                            var $target = WM.element(this),
+                                $li     = $target.closest('.app-nav-item');
+                            $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
+                            $li.addClass('active');
+                            $rs.$safeApply($is, function () {
+                                $is.selecteditem = $li.data('node-data');
+                                Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
+                            });
+                        });
                     }
                 }
             };
