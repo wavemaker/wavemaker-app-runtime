@@ -423,7 +423,7 @@ WM.module('wm.widgets.live')
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? minPlaceholderDefault : fieldDef.placeholder);
-                    fieldDef.maxPlaceholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.maxPlaceholder) ? '' : fieldDef.maxPlaceholder);
+                    fieldDef.maxPlaceholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.maxPlaceholder) ? maxPlaceholderDefault : fieldDef.maxPlaceholder);
                     template = template +
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
