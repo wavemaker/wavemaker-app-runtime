@@ -22,9 +22,11 @@ public class EntityValueReplacer {
 
     public boolean apply(ListenerContext context) {
         boolean applied = false;
-        for (final FieldValueReplacer overrider : phaseVsOverridersMap.get(context.getPhase())) {
-            overrider.apply(context);
-            applied = true;
+        if (!phaseVsOverridersMap.get(context.getPhase()).isEmpty()) {
+            for (final FieldValueReplacer overrider : phaseVsOverridersMap.get(context.getPhase())) {
+                overrider.apply(context);
+                applied = true;
+            }
         }
         return applied;
     }

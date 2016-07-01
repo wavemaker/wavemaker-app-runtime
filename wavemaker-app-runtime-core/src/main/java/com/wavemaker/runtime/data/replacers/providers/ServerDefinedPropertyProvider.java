@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import com.wavemaker.runtime.data.annotations.ServerSideProperty;
+import com.wavemaker.runtime.data.annotations.ServerDefinedProperty;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;
 import com.wavemaker.runtime.data.replacers.ValueProvider;
@@ -17,12 +17,12 @@ import com.wavemaker.runtime.data.replacers.ValueProviderBuilder;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 23/6/16
  */
-public class ServerSidePropertyProvider implements ValueProvider {
+public class ServerDefinedPropertyProvider implements ValueProvider {
 
     private final Set<Scope> scopes;
     private final VariableType type;
 
-    public ServerSidePropertyProvider(final VariableType type, final Set<Scope> scopes) {
+    public ServerDefinedPropertyProvider(final VariableType type, final Set<Scope> scopes) {
         this.scopes = scopes;
         this.type = type;
     }
@@ -44,8 +44,8 @@ public class ServerSidePropertyProvider implements ValueProvider {
         public ValueProvider build(
                 final Field field, final Map<Field, PropertyDescriptor> fieldDescriptorMap,
                 final Annotation annotation) {
-            ServerSideProperty variable = ((ServerSideProperty) annotation);
-            return new ServerSidePropertyProvider(variable.value(), Sets.newHashSet(variable.scopes()));
+            ServerDefinedProperty variable = ((ServerDefinedProperty) annotation);
+            return new ServerDefinedPropertyProvider(variable.value(), Sets.newHashSet(variable.scopes()));
         }
     }
 }

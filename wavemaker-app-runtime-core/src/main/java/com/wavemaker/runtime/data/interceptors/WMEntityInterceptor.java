@@ -38,10 +38,10 @@ public class WMEntityInterceptor extends EmptyInterceptor {
             final Object entity, final Serializable id, final Object[] currentState, final Object[] previousState,
             final String[] propertyNames,
             final Type[] types) {
-        final EntityValueReplacer valueOverrider = context.getEntityValueOverrider(entity.getClass());
-        final boolean applied = valueOverrider.apply(new ListenerContext(entity, Scope.UPDATE));
+        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
+        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.UPDATE));
         if (applied) {
-            updateState(entity, currentState, propertyNames, valueOverrider.getPropertyDescriptorMap());
+            updateState(entity, currentState, propertyNames, valueReplacer.getPropertyDescriptorMap());
         }
 
         return applied;
@@ -51,8 +51,8 @@ public class WMEntityInterceptor extends EmptyInterceptor {
     public boolean onLoad(
             final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
             final Type[] types) {
-        final EntityValueReplacer valueOverrider = context.getEntityValueOverrider(entity.getClass());
-        final Map<String, PropertyDescriptor> descriptorMap = valueOverrider.getPropertyDescriptorMap();
+        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
+        final Map<String, PropertyDescriptor> descriptorMap = valueReplacer.getPropertyDescriptorMap();
         try {
             for (int i = 0; i < propertyNames.length; i++) {
                 final String propertyName = propertyNames[i];
@@ -62,7 +62,7 @@ public class WMEntityInterceptor extends EmptyInterceptor {
             throw new WMRuntimeException("Error while loading entity", e);
         }
 
-        final boolean applied = valueOverrider.apply(new ListenerContext(entity, Scope.READ));
+        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.READ));
         if (applied) {
             updateState(entity, state, propertyNames, descriptorMap);
         }
@@ -73,10 +73,10 @@ public class WMEntityInterceptor extends EmptyInterceptor {
     public boolean onSave(
             final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
             final Type[] types) {
-        final EntityValueReplacer valueOverrider = context.getEntityValueOverrider(entity.getClass());
-        final boolean applied = valueOverrider.apply(new ListenerContext(entity, Scope.INSERT));
+        final EntityValueReplacer valueReplacer = context.getEntityValueOverrider(entity.getClass());
+        final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.INSERT));
         if (applied) {
-            updateState(entity, state, propertyNames, valueOverrider.getPropertyDescriptorMap());
+            updateState(entity, state, propertyNames, valueReplacer.getPropertyDescriptorMap());
         }
         return applied;
     }

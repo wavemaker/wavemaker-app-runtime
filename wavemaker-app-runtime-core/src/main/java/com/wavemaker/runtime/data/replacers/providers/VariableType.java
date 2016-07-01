@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.replacers.providers;
 
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.joda.time.LocalDateTime;
@@ -23,25 +25,19 @@ public enum VariableType {
             return SystemDefinedPropertiesBean.getInstance().getCurrentUserName();
         }
     },
-    CURRENT_TIMESTAMP {
+    DATE {
         @Override
-        public Object getValue() {
-            return new Date();
+        public Object getValue() { // TODO verify return type
+            return new Date(Calendar.getInstance().getTime().getTime());
         }
     },
-    CURRENT_DATE {
+    TIME {
         @Override
         public Object getValue() {
-            return new Date();
+            return new Time(Calendar.getInstance().getTime().getTime());
         }
     },
-    CURRENT_TIME {
-        @Override
-        public Object getValue() {
-            return new Date();
-        }
-    },
-    CURRENT_DATE_TIME {
+    DATE_TIME {
         @Override
         public Object getValue() {
             return new LocalDateTime();

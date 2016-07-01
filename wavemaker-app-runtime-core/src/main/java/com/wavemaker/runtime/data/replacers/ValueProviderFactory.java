@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.wavemaker.runtime.data.annotations.Encrypted;
-import com.wavemaker.runtime.data.annotations.ServerSideProperty;
+import com.wavemaker.runtime.data.annotations.ServerDefinedProperty;
 import com.wavemaker.runtime.data.replacers.providers.EncryptedValueProviderBuilder;
-import com.wavemaker.runtime.data.replacers.providers.ServerSidePropertyProvider;
+import com.wavemaker.runtime.data.replacers.providers.ServerDefinedPropertyProvider;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -21,7 +21,7 @@ public class ValueProviderFactory {
         annotationValueProviderBuilderMap = new HashMap<>();
 
         annotationValueProviderBuilderMap.put(Encrypted.class, new EncryptedValueProviderBuilder());
-        annotationValueProviderBuilderMap.put(ServerSideProperty.class, new ServerSidePropertyProvider
+        annotationValueProviderBuilderMap.put(ServerDefinedProperty.class, new ServerDefinedPropertyProvider
                 .SystemVariableProviderBuilder());
     }
 
