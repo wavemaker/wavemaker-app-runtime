@@ -16,7 +16,7 @@ import com.wavemaker.runtime.data.replacers.providers.VariableType;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ServerSideProperty {
+public @interface ServerDefinedProperty {
 
     VariableType value();
 
