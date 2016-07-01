@@ -612,6 +612,23 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "property": "Current Username",
             "value": "CURRENT_USER_NAME"
         }
+    },
+    "COLUMN_VALUE_TYPES": {
+        "user-defined"      : "User Defined",
+        "server-defined"    : "Server Defined",
+        "database-defined"  : "Database Defined"
+    },
+    "COLUMN_VALUE_OPERATIONS": {
+        "BOTH"  : "Insert and Update",
+        "INSERT": "Insert Only",
+        "UPDATE": "Update Only"
+    },
+    "COLUMN_SERVER_PROPERTIES": {
+        "DATE"      : "Current Date",
+        "TIME"      : "Current Time",
+        "DATE_TIME" : "Current Datetime",
+        "USER_ID"   : "Logged in Userid",
+        "USER_NAME" : "Logged in Username"
     }
 });
 
