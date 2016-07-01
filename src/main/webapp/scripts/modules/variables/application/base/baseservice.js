@@ -1220,7 +1220,7 @@ wm.variables.services.Variables = [
                 }
 
                 /* create the variable object with its basic properties and return it */
-                WM.extend(variableObj, BaseVariablePropertyFactory.getProperties(type), {name: defaultName}, options);
+                WM.extend(variableObj, BaseVariablePropertyFactory.getProperties(type), {name: defaultName, category: type}, options);
                 return variableObj;
             },
         /*function to store a variable to the collection*/
