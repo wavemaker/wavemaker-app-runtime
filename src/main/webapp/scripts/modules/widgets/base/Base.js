@@ -1117,7 +1117,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.layoutgrid': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "class": {"type": "string", "pattern": classRegex},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "condensed", "options": ["condensed", "standard"]},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
