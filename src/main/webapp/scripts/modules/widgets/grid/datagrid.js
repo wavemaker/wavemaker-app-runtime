@@ -55,6 +55,7 @@ $.widget('wm.datagrid', {
                 self        = this,
                 noDataFound = true;
             if (!searchText) {
+                this.setStatus('ready', this.dataStatus.ready);
                 $rows.show();
                 return;
             }
@@ -1609,12 +1610,6 @@ $.widget('wm.datagrid', {
         $searchBox = this.gridSearch.find('[data-element="dgSearchText"]');
         this.gridSearch.find('.app-search-button').on('click', search);
         this.gridSearch.find('[data-element="dgFilterValue"]').on('change', function (e) {
-            var colDefIndex = $htm.find('option:selected').attr('data-coldef-index'),
-                colDef = self.options.colDefs[colDefIndex];
-            if (colDef) {
-                placeholder = colDef.searchPlaceholder || 'Search';
-                $htm.find('[data-element="dgSearchText"]').attr('placeholder', placeholder);
-            }
             // If "No data found" message is shown, and user changes the selection, then fetch all data.
             if (self.dataStatusContainer.find('.status').text() === self.options.dataStates.nodata) {
                 search(e);
@@ -1868,9 +1863,14 @@ $.widget('wm.datagrid', {
         }
         if (state === 'nodata' || state === 'loading' || state === 'error') {
             if (this.options.height === '100%' || this.options.height === 'auto') { //If height is auto or 100%, Set the loading overlay height as present grid content height
-                this.dataStatus.height        = this.dataStatus.height ||  this.dataStatusContainer.outerHeight();
-                this.dataStatus.contentHeight = this.gridElement.outerHeight() || this.dataStatus.contentHeight;
-                this.dataStatusContainer.css('height', this.dataStatus.height > this.dataStatus.contentHeight ? 'auto' : this.dataStatus.contentHeight);
+                if (state === 'nodata') {
+                    this.dataStatusContainer.css('height', 'auto');
+                    this.dataStatus.contentHeight = 0;
+                } else {
+                    this.dataStatus.height = this.dataStatus.height || this.dataStatusContainer.outerHeight();
+                    this.dataStatus.contentHeight = this.gridElement.outerHeight() || this.dataStatus.contentHeight;
+                    this.dataStatusContainer.css('height', this.dataStatus.height > this.dataStatus.contentHeight ? 'auto' : this.dataStatus.contentHeight);
+                }
             }
             this.gridContainer.addClass('show-msg');
         } else {
