@@ -1195,7 +1195,7 @@ WM.module('wm.widgets.base', [])
                         "postmessage": {"type": "string", "value": "Data posted successfully", "bindable": "in-out-bound", "showindesigner": true},
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons-align"},
                         "enctype": {"type": "list", "options": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], "showindesigner": true},
-                        "metadata": {"type": "array, object",  "bindable": "in-bound", "widget": "string"},
+                        "metadata": {"type": "array, object",  "bindable": "in-bound", "widget": "string", "show": false},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
