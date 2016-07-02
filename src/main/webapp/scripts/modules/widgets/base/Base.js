@@ -272,7 +272,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.html": {
                         "content": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
-                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align", "show": false},
+                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align", "show": false}
                     },
                     "wm.icon": {
                         "hint": {"type": "string", "bindable": "in-bound"},
@@ -1573,7 +1573,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
-                        "itemsperrow": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"], "value": "1"},
+                        "itemsperrow": {"type": "string", "widget": "device-config"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1823,7 +1823,7 @@ WM.module('wm.widgets.base', [])
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
@@ -1867,7 +1867,7 @@ WM.module('wm.widgets.base', [])
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onPaginationchange", "onActionsclick",
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onDatarender"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
-                {"name": "devicesize", "properties": ["showindevice"], "parent": "device"},
+                {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
             ];
             result.advancedPropertyGroups = [

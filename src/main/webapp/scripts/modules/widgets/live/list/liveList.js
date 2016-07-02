@@ -90,16 +90,6 @@ WM.module('wm.widgets.live')
                     'PAGER'    : 'Pager'
                 };
 
-            // to return the bootstrap classes for the <li> w.r.t no. of items per row
-            function getRowClass(itemsperrow) {
-                if (!itemsperrow) {
-                    return undefined;
-                }
-                var col = itemsperrow && 12 / (+itemsperrow);
-
-                return $rs.isMobileApplicationType ?  ' col-xs-' + col : 'col-sm-' + col;
-            }
-
             function getVariable($is, variableName) {
 
                 if (!variableName) {
@@ -713,8 +703,6 @@ WM.module('wm.widgets.live')
             function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
                 var doNotRemoveTemplate,
                     selectedVariable,
-                    oldClass,
-                    newClass,
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
                     wp          = $is.widgetProps,
@@ -755,11 +743,6 @@ WM.module('wm.widgets.live')
                     if ($is.widgetid) {
                         showOrHideMatchProperty();
                     }
-                    break;
-                case 'itemsperrow':
-                    oldClass = ov && 'col-md-' + 12 / (+ov);
-                    newClass = nv && 'col-md-' + 12 / (+nv);
-                    $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
                     break;
                 case 'navigation':
                     if (nv === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
@@ -832,7 +815,7 @@ WM.module('wm.widgets.live')
                     'onSetrecord'        : $is.onSetrecord,
                     'onPaginationchange' : $is.onPaginationchange,
                     'itemclass'          : $is.itemclass,
-                    'itemsPerRowClass'   : getRowClass(attrs.itemsperrow),
+                    'itemsPerRowClass'   : '',
                     'addRow'             : $is.addRow,
                     'updateRow'          : $is.updateRow,
                     'deleteRow'          : $is.deleteRow
@@ -1156,15 +1139,31 @@ WM.module('wm.widgets.live')
                 handlers.forEach(Utils.triggerFn);
             }
 
+            function setListClass($is, $liScope) {
+                var itemClass = '';
+                if (isNaN(parseInt($is.itemsperrow))) {
+                    _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
+                        var keys = _.split(cls, '-');
+                        cls  = keys[0] + '-' + (12 / parseInt(keys[1]));
+                        itemClass += ' ' + 'col-' + cls;
+                    });
+                    $liScope.itemclass = itemClass.trim();
+                } else {
+                    $liScope.itemclass = 'col-xs-' + $is.itemsperrow;
+                }
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
                     variable,
                     _onDestroy,
-                    handlers = [];
+                    handlers = [],
+                    itemsPerRowClass = $rs.isMobileApplicationType ? 'col-xs-1' : 'col-md-3';
 
                 variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
+                setListClass($is, $liScope);
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
 
@@ -1204,6 +1203,8 @@ WM.module('wm.widgets.live')
                     _onDestroy = onDestroy.bind(undefined, $is, handlers);
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
+                } else {
+                    $el.find('.app-listtemplate').addClass(itemsPerRowClass);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
