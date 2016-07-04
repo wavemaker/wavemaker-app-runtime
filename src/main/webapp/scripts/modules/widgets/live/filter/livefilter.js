@@ -698,8 +698,8 @@ WM.module('wm.widgets.live')
                             handlers.push($rootScope.$on('compile-filters', function (event, scopeId, markup, filterObj, variableName, fromDesigner) {
 
                                 if (scope.$id === scopeId) {
-                                    var markupObj = WM.element('<div>' + markup + '</div>'),
-                                        fieldsObj = markupObj.find('wm-layoutgrid'),
+                                    var markupObj  = WM.element('<div>' + markup + '</div>'),
+                                        fieldsObj  = markupObj.find('> :not(wm-filter-action)'),
                                         actionsObj = markupObj.find('wm-filter-action');
 
                                     scope.filterConstructed = fromDesigner;

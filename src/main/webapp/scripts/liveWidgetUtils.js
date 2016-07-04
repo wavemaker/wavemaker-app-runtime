@@ -868,13 +868,12 @@ WM.module('wm.widgets.live')
                     template = '',
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {
-                        if (!scope.widgetid && key !== 'show') { //No need to compile widget again in runmode except for show property
-                            return;
+                        if (CONSTANTS.isRunMode) {
+                            /*On changing of a property in studio mode, generate the template again so that change is reflected*/
+                            template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
+                            element.html(template);
+                            $compile(element.contents())(parentScope);
                         }
-                        /*On changing of a property in studio mode, generate the template again so that change is reflected*/
-                        template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
-                        element.html(template);
-                        $compile(element.contents())(parentScope);
                     },
                     formWidget = parentScope.Widgets[scope.name + '_formWidget'];
                 if (formWidget) {
@@ -894,11 +893,9 @@ WM.module('wm.widgets.live')
                         }
                         WidgetUtilService.updatePropertyPanelOptions(scope);
                     }
-                    compileField();
                     break;
                 case 'inputtype':
                     FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, newVal);
-                    compileField();
                     break;
                 case 'show':
                     if (CONSTANTS.isStudioMode && newVal) {
@@ -913,16 +910,12 @@ WM.module('wm.widgets.live')
                 case 'required':
                 case 'validationmessage':
                     parentScope.formFields[index][key] = newVal;
-                    compileField();
                     break;
                 case 'active':
                     if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
                         FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
-                        compileField();
                     }
                     break;
-                default:
-                    compileField();
                 }
             }
             /**
