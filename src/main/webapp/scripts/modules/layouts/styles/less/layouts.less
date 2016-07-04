@@ -271,8 +271,16 @@ body {
     .app-card-footer {
       position: relative;
       padding: 0.5rem 1.25rem;
-      background-color: rgba(0,0,0,0.05);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
+      .btn-group {
+        box-shadow: none;
+        .btn {
+          color: inherit;
+          &:hover {
+            color: initial;
+          }
+        }
+      }
     }
     .card-title {
       margin-bottom: .75rem;
@@ -1284,11 +1292,12 @@ body {
   }
 
   /********button classes ***/
-  .btn.btn-transparent {
+  .btn.btn-transparent , .btn-transparent{
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     padding: 0;
+    text-align: center;
     &:hover {
       color: initial;
     }

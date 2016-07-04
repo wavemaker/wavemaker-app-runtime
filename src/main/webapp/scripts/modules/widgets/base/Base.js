@@ -1084,7 +1084,6 @@ WM.module('wm.widgets.base', [])
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturetitle": {"type": "string", "bindable": "in-bound"},
                         "imagewidth": {"type": "string", "value": "100%"},
-                        "imageheight": {"type": "string", "value": "200"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         /*Events*/

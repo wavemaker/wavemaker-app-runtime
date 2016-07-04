@@ -1149,7 +1149,7 @@ WM.module('wm.widgets.live')
                     });
                     $liScope.itemclass = itemClass.trim();
                 } else {
-                    $liScope.itemclass = 'col-xs-' + $is.itemsperrow;
+                    $liScope.itemclass = 'col-sm-' + (12 / parseInt($is.itemsperrow));
                 }
             }
 
@@ -1158,8 +1158,7 @@ WM.module('wm.widgets.live')
                     $liTemplate,
                     variable,
                     _onDestroy,
-                    handlers = [],
-                    itemsPerRowClass = $rs.isMobileApplicationType ? 'col-xs-1' : 'col-md-3';
+                    handlers = [];
 
                 variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
@@ -1204,7 +1203,7 @@ WM.module('wm.widgets.live')
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 } else {
-                    $el.find('.app-listtemplate').addClass(itemsPerRowClass);
+                    $el.find('.app-listtemplate').addClass($liScope.itemclass);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
