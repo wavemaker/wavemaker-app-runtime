@@ -4,8 +4,7 @@
 WM.module('wm.widgets.basic')
     .service('ChartService', [
         'Utils',
-        "CONSTANTS",
-        function (Utils, CONSTANTS) {
+        function (Utils) {
             'use strict';
             var chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
                 themes = {
@@ -204,28 +203,8 @@ WM.module('wm.widgets.basic')
                 return labelsConfig;
             }
 
-            //Returns Legend Config
-            function getLegendConfig(value) {
-                var legendConfig = {};
-                switch (value) {
-                case 'Hide Legend':
-                    legendConfig.showlegend = false;
-                    break;
-                case 'Show Legend Top':
-                    legendConfig.showlegend = true;
-                    legendConfig.legendposition = false;
-                    break;
-                case 'Show Legend Bottom':
-                    legendConfig.showlegend = true;
-                    legendConfig.legendposition = true;
-                    break;
-                }
-                return legendConfig;
-            }
-
             function setValues(shawdowProperties, prop) {
-                var labelsConfig,
-                    legendConfig;
+                var labelsConfig;
                 if (shawdowProperties.barspacing) {
                     shawdowProperties.barspacing = getBarSpacingValue(shawdowProperties.barspacing, prop);
                 }
@@ -236,11 +215,6 @@ WM.module('wm.widgets.basic')
                     labelsConfig = getLabelValues(shawdowProperties.showlabels);
                     shawdowProperties.showlabels = labelsConfig.showlabels;
                     shawdowProperties.showlabelsoutside = labelsConfig.showlabelsoutside;
-                }
-                if (shawdowProperties.showlegend) {
-                    legendConfig = getLegendConfig(shawdowProperties.showlegend);
-                    shawdowProperties.showlegend = legendConfig.showlegend;
-                    shawdowProperties.legendposition = legendConfig.legendposition;
                 }
             }
 
@@ -259,19 +233,19 @@ WM.module('wm.widgets.basic')
                 switch (dataType) {
                 case 'jsonFormat':
                     first_series = [
-                        {"x": '01-01-2001', "y": 4000000},
-                        {"x": '01-01-2002', "y": 1000000},
-                        {"x": '01-01-2003', "y": 5000000}
+                        {'x': '01-01-2001', 'y': 4000000},
+                        {'x': '01-01-2002', 'y': 1000000},
+                        {'x': '01-01-2003', 'y': 5000000}
                     ];
                     second_series = [
-                        {"x": '01-01-2001', "y": 3000000},
-                        {"x": '01-01-2002', "y": 4000000},
-                        {"x": '01-01-2003', "y": 7000000}
+                        {'x': '01-01-2001', 'y': 3000000},
+                        {'x': '01-01-2002', 'y': 4000000},
+                        {'x': '01-01-2003', 'y': 7000000}
                     ];
                     third_series = [
-                        {"x": '01-01-2001', "y": 2000000},
-                        {"x": '01-01-2002', "y": 8000000},
-                        {"x": '01-01-2003', "y": 6000000}
+                        {'x': '01-01-2001', 'y': 2000000},
+                        {'x': '01-01-2002', 'y': 8000000},
+                        {'x': '01-01-2003', 'y': 6000000}
                     ];
                     data[0] = {
                         values: first_series,
@@ -292,19 +266,19 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'lineChartFormat':
                     first_series = [
-                        {"x": 1, "y": 4000000},
-                        {"x": 2, "y": 1000000},
-                        {"x": 3, "y": 5000000}
+                        {'x': 1, 'y': 4000000},
+                        {'x': 2, 'y': 1000000},
+                        {'x': 3, 'y': 5000000}
                     ];
                     second_series = [
-                        {"x": 1, "y": 3000000},
-                        {"x": 2, "y": 4000000},
-                        {"x": 3, "y": 7000000}
+                        {'x': 1, 'y': 3000000},
+                        {'x': 2, 'y': 4000000},
+                        {'x': 3, 'y': 7000000}
                     ];
                     third_series = [
-                        {"x": 1, "y": 2000000},
-                        {"x": 2, "y": 8000000},
-                        {"x": 3, "y": 6000000}
+                        {'x': 1, 'y': 2000000},
+                        {'x': 2, 'y': 8000000},
+                        {'x': 3, 'y': 6000000}
                     ];
                     data[0] = {
                         values: first_series,
@@ -358,19 +332,19 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'bubbleFormat':
                     first_series_bubble = [
-                        {"x": 80.66, "y": 33739900,  'size': 78},
-                        {"x": 79.84, "y": 81902300,  'size': 90},
-                        {"x": 78.6,  "y": 5523100,   'size': 45}
+                        {'x': 80.66, 'y': 33739900,  'size': 78},
+                        {'x': 79.84, 'y': 81902300,  'size': 90},
+                        {'x': 78.6,  'y': 5523100,   'size': 45}
                     ];
                     second_series_bubble = [
-                        {"x": 72.73, "y": 79716200,  'size': 98},
-                        {"x": 80.05, "y": 61801600,  'size': 20},
-                        {"x": 72.49, "y": 73137200,  'size': 34}
+                        {'x': 72.73, 'y': 79716200,  'size': 98},
+                        {'x': 80.05, 'y': 61801600,  'size': 20},
+                        {'x': 72.49, 'y': 73137200,  'size': 34}
                     ];
                     third_series_bubble = [
-                        {"x": 68.09, "y": 33739900,  'size': 45},
-                        {"x": 81.55, "y": 7485600,   'size': 78},
-                        {"x": 68.60, "y": 141850000, 'size': 56}
+                        {'x': 68.09, 'y': 33739900,  'size': 45},
+                        {'x': 81.55, 'y': 7485600,   'size': 78},
+                        {'x': 68.60, 'y': 141850000, 'size': 56}
                     ];
                     data[0] = {
                         values: first_series_bubble,
@@ -391,10 +365,10 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'pieChartFormat':
                     data = [
-                        {"x": 'Group 1', "y": 1000000},
-                        {"x": 'Group 2', "y": 2000000},
-                        {"x": 'Group 3', "y": 3000000},
-                        {"x": 'Group 4', "y": 4000000}
+                        {'x': 'Group 1', 'y': 1000000},
+                        {'x': 'Group 2', 'y': 2000000},
+                        {'x': 'Group 3', 'y': 3000000},
+                        {'x': 'Group 4', 'y': 4000000}
                     ];
                     break;
                 }
@@ -599,10 +573,23 @@ WM.module('wm.widgets.basic')
                 legendWrap.attr('transform', 'translate(' + coordinates[1] + ', ' + y + ')');
             }
 
+            //Returns value if legend need to shown or not
+            function isShowLegend(value) {
+                //Old projects will have either true or false
+                if (value === 'false') {
+                    return false;
+                }
+                if (value === 'true') {
+                    return true;
+                }
+                //New projects will have either 'Hide Legend', 'Show Top', 'Show Bottom'
+                return value === 'Hide Legend' ? false : true;
+            }
+
             // intializes the chart obejct
             function initChart(scope, xDomainValues, yDomainValues, propertyValueMap, isPreview) {
                 propertyValueMap =  initProperties(scope, propertyValueMap);
-                var chart, theme, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing, xformatOptions, yformatOptions,
+                var chart, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing, xformatOptions, yformatOptions,
                     showLegend;
                 switch (scope.type) {
                 case 'Column':
@@ -732,11 +719,7 @@ WM.module('wm.widgets.basic')
                         });
                 }
 
-                //Default theme for pie/donut is Azure and for other it is Terrestrial
-                if (isPieType(scope.type)) {
-                    theme = propertyValueMap.theme || 'Azure';
-                } else {
-                    theme = propertyValueMap.theme || 'Terrestrial';
+                if (!isPieType(scope.type)) {
                     chart.showXAxis(propertyValueMap.showxaxis)
                         .showYAxis(propertyValueMap.showyaxis);
 
@@ -757,24 +740,18 @@ WM.module('wm.widgets.basic')
                         .staggerLabels(propertyValueMap.staggerlabels);
                 }
 
-                if (CONSTANTS.isStudioMode) {
-                    //Updating the markup with the theme
-                    propertyValueMap.theme = theme;
-                    scope.$root.$emit('set-markup-attr', scope.widgetid, {'theme': theme});
-                }
-
                 //Support for custom colors if user gives direct string of colors in text box
-                if (WM.isString(scope.customcolors) && scope.customcolors) {
-                    colors = scope.customcolors.split(',');
+                if (WM.isString(propertyValueMap.customcolors) && propertyValueMap.customcolors) {
+                    colors = _.split(propertyValueMap.customcolors, ',');
                 }
                 if (WM.isArray(scope.customcolors)) {
                     colors = scope.customcolors;
                 }
 
-                showLegend = propertyValueMap.showlegend === 'Hide Legend' ? false : true;
+                showLegend = isShowLegend(propertyValueMap.showlegend);
                 chart.showLegend(showLegend)
                     .margin({top: propertyValueMap.offsettop, right: propertyValueMap.offsetright, bottom: propertyValueMap.offsetbottom, left: propertyValueMap.offsetleft})
-                    .color(colors.length ? colors : themes[theme].colors);
+                    .color(colors.length ? colors : themes[propertyValueMap.theme].colors);
 
                 chart.tooltip.enabled(propertyValueMap.tooltips);
                 scope.message = propertyValueMap.nodatamessage || 'No data found';

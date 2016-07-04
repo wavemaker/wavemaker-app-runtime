@@ -1245,6 +1245,11 @@ WM.module('wm.widgets.basic')
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 
+                        if (!scope.theme) {
+                            //Default theme for pie/donut is Azure and for other it is Terrestrial
+                            scope.theme = ChartService.isPieType(scope.type) ? 'Azure' : 'Terrestrial';
+                        }
+
                         function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
                             handlers = [];
@@ -1262,11 +1267,9 @@ WM.module('wm.widgets.basic')
 
                         if (scope.widgetid) {
                             //replot the chart after made changes in preview dialog
-                            handlers.push($rootScope.$on('replot-chart', function (event, activeChartScope) {
+                            handlers.push($rootScope.$on('wms:replot-chart', function (event, activeChartScope) {
                                 if (activeChartScope.$id === scope.$id) {
-                                    if (isAggregationEnabled(scope)) {
-                                        modifyAxesOptions(scope);
-                                    }
+                                    modifyAxesOptions(scope);
                                     plotChartProxy(scope, element);
                                 }
                             }));
