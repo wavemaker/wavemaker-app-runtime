@@ -851,7 +851,7 @@ WM.module('wm.widgets.base', [])
                         "show": {"type": "boolean", "value": false},
                         "caption": {"type": "string", "value": "Loading...", "maxlength": 256},
                         "servicevariabletotrack": {"type": "list", "options": []},
-                        "iconclass": {"type": "string", "value": "fa fa-spinner", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconclass": {"type": "string", "value": "fa fa-circle-o-notch", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "image": {"type": "string", "bindable": "in-bound"},
                         "imagewidth": {"type": "string", "value": "20px"},
