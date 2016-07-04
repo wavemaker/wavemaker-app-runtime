@@ -30,10 +30,10 @@ WM.module('wm.widgets.base', [])
                 'name': 'Mobile',
                 'value': 'xs'
             }, {
-                'name': 'Tab',
+                'name': 'Tab Portrait',
                 'value': 'sm'
             }, {
-                'name': 'Laptop',
+                'name': 'Laptop\\Tab Landscape',
                 'value': 'md'
             }, {
                 'name': 'Large Screen',
