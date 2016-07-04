@@ -17,12 +17,15 @@ package com.wavemaker.runtime.security;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CsrfToken;
 
+import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.studio.common.CommonConstants;
 
@@ -35,6 +38,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
+        addCsrfCookie(request, response);
         if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
             response.setContentType("text/plain;charset=utf-8");
@@ -45,6 +49,15 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             response.getWriter().flush();
         } else {
             super.onAuthenticationSuccess(request, response, authentication);
+        }
+    }
+
+    private void addCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        if (csrfToken != null) {
+            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
+            cookie.setPath("/");
+            response.addCookie(cookie);
         }
     }
 }

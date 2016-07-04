@@ -53,11 +53,11 @@ public class WMObjectMapper extends ObjectMapper {
     private static WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
 
     private WMObjectReadMapper readMapper = null;
-    private WMObjectwriteMapper writeMapper = null;
+    private WMObjectWriteMapper writeMapper = null;
 
-    private WMObjectMapper() {
+    protected WMObjectMapper() {
         readMapper = new WMObjectReadMapper();
-        writeMapper = new WMObjectwriteMapper();
+        writeMapper = new WMObjectWriteMapper();
     }
 
     public static WMObjectMapper getInstance() {
@@ -252,9 +252,9 @@ public class WMObjectMapper extends ObjectMapper {
         }
     }
 
-    private static class WMObjectwriteMapper extends ObjectMapper {
+    private static class WMObjectWriteMapper extends ObjectMapper {
 
-        WMObjectwriteMapper() {
+        WMObjectWriteMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // we are handling self references using @JsonIgnoreProperties
             configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);

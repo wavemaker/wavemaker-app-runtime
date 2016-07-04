@@ -24,7 +24,7 @@
             <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
-                    <bean class="com.wavemaker.runtime.WMObjectMapper"/>
+                    <bean class="com.wavemaker.runtime.WMAppObjectMapper"/>
                 </property>
             </bean>
         </mvc:message-converters>
