@@ -1559,7 +1559,7 @@ WM.module('wm.widgets.grid')
                         variableName = variableName.substr(0, variableName.indexOf('.'));
                     } else if (isBoundToWidget) {
                         widgetName = $scope.binddataset.replace('bind:Widgets.', '').split(".")[0];
-                        isBoundToFilter = $scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || $scope.Widgets[widgetName].widgettype === 'wm-livefilter';
+                        isBoundToFilter = $scope.Widgets[widgetName] && ($scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || $scope.Widgets[widgetName].widgettype === 'wm-livefilter');
 
                         $scope.isBoundToFilter = isBoundToFilter;
                         $scope.widgetName = widgetName;

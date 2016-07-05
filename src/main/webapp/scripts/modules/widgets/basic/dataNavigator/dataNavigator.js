@@ -213,7 +213,7 @@ WM.module("wm.widgets.basic")
                                     $scope.checkDataSize(dataSize);
                                 }
                             } else if (!WM.isString(newVal)) {
-                                dataSize = WM.isArray(newVal) ? newVal.length : 1;
+                                dataSize = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : 1);
                                 maxResults = ($scope.pagingOptions && $scope.pagingOptions.maxResults) || dataSize;
                                 currentPage = 1;
 
