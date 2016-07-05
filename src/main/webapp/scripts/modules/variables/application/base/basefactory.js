@@ -115,7 +115,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
+                    "operation": {"type": "list", "required": true, "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
                     "dataBinding": {"type": "string", "value": [], "hide": true},
                     "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true},
                     "dataSet": {"hide": true, "value": []}
@@ -123,7 +123,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
+                    "operation": {"type": "list", "required": true, "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
                     "onCancel": {"type": "list", "options": variableEventOptions, "disabled": true, "hide": true},
                     "onClose": {"type": "list", "options": variableEventOptions},
                     "onOk": {"type": "list", "options": variableEventOptions},
@@ -144,8 +144,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
                     "dataBinding": {"type": "object", "value": [], "hide": true},
-                    "service": {"type": "list", "options": []},
-                    "operation": {"type": "list", "hide": true, "options": []},
+                    "service": {"type": "list", "options": [], "required": true},
+                    "operation": {"type": "list", "hide": true, "options": [], "required": true},
                     "autoUpdate": {"type": "boolean", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
                     /*events*/
