@@ -167,6 +167,8 @@ WM.module('wm.widgets.grid')
                 "onColumndeselect": "&",
                 "onEnterkeypress": "&",
                 "onSetrecord": "&",
+                "onBeforerowupdate": "&",
+                "onRowupdate": "&",
                 "onPaginationchange": "&",
                 "onDatarender": "&"
             },
@@ -1055,7 +1057,7 @@ WM.module('wm.widgets.grid')
                     var el = WM.element(htm);
                     return $compile(el)($scope);
                 },
-                deleteRecord = function (row, cancelRowDeleteCallback) {
+                deleteRecord = function (row, cancelRowDeleteCallback, evt) {
                     var isDelConfirmed,
                         variable;
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
@@ -1091,7 +1093,7 @@ WM.module('wm.widgets.grid')
                                 wmToaster.show("success", "SUCCESS", $scope.deletemessage);
                             }
                             /*custom EventHandler for row deleted event*/
-                            $scope.onRowdeleted({$data: row});
+                            $scope.onRowdeleted({$event: evt, $data: row});
 
                         }, function (error) {
                             wmToaster.show("error", "ERROR", error);
@@ -1103,12 +1105,6 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 insertRecord = function (options) {
-                    /*TODO To be uncommented after onRowinsert gets the right value i.e., onRowinsert should have the value defined from the widget events.*/
-                    /*if (WM.isDefined($scope.onRowinsert)) {
-                        $scope.onRowinsert(rowData);
-                        return;
-                    }*/
-
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
                         dataObject = {
                             "row": options.row,
@@ -1134,6 +1130,7 @@ WM.module('wm.widgets.grid')
                             $scope.initiateSelectItem('last', response, $scope.primaryKey);
                             $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
+                            $scope.onRowinsert({$event: options.event, $data: response});
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
@@ -1174,6 +1171,7 @@ WM.module('wm.widgets.grid')
                             $scope.initiateSelectItem('current', response, $scope.primaryKey);
                             $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
+                            $scope.onRowupdate({$event: options.event, $data: response});
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
@@ -1269,12 +1267,9 @@ WM.module('wm.widgets.grid')
             });
 
             $scope.addNewRow = function () {
-                var shouldInsert = $scope.onBeforerowinsert();
-                if (WM.isUndefined(shouldInsert) || shouldInsert) {
-                    $scope.datagridElement.datagrid('addNewRow');
-                    $scope.$emit('add-new-row');
-                    $rootScope.$emit("wm-event", $scope.widgetid, "create");
-                }
+                $scope.datagridElement.datagrid('addNewRow');
+                $scope.$emit('add-new-row');
+                $rootScope.$emit("wm-event", $scope.widgetid, "create");
             };
 
             $scope.isGridEditMode = false;
@@ -1321,7 +1316,7 @@ WM.module('wm.widgets.grid')
                     $scope.onHeaderclick({$event: e, $data: col});
                 },
                 onRowDelete: function (rowData, cancelRowDeleteCallback, e) {
-                    deleteRecord(rowData, cancelRowDeleteCallback);
+                    deleteRecord(rowData, cancelRowDeleteCallback, e);
                 },
                 onRowInsert: function (rowData, e, multipartData) {
                     insertRecord({'row': rowData, 'multipartData': multipartData, event: e});
@@ -1338,8 +1333,11 @@ WM.module('wm.widgets.grid')
                 afterRowUpdate: function (rowData, e, multipartData) {
                     updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData});
                 },
-                onSetRecord: function (rowData, e) {
-                    $scope.onSetrecord({$data: rowData, $event: e});
+                onBeforeRowUpdate: function (rowData, e) {
+                    $scope.onBeforerowupdate({$event: e, $data: rowData});
+                },
+                onBeforeRowInsert: function (rowData, e) {
+                    $scope.onBeforerowinsert({$event: e, $data: rowData});
                 },
                 allowDeleteRow: true,
                 allowInlineEditing: true,

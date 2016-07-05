@@ -339,10 +339,10 @@ WM.module("wm.widgets.basic")
                 $scope.invokeSetRecord = function (event, data) {
                     /*Trigger the event handler if exists.
                      * Check in the dataNavigator scope and also in the parent (i.e., grid/live-list) scope.*/
-                    if ($scope.onSetrecord) {
-                        $scope.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.dn.currentPage});
-                    } else if ($scope.$parent.onSetrecord) {
+                    if ($scope.$parent.onSetrecord) {
                         $scope.$parent.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.dn.currentPage});
+                    } else if ($scope.onSetrecord) {
+                        $scope.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.dn.currentPage});
                     }
                 };
                 /*Function to validate the page input.

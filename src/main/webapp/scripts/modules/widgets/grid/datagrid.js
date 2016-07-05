@@ -1329,15 +1329,21 @@ $.widget('wm.datagrid', {
                         }));
                         rowData = formData;
                     }
-                    if ($.isFunction(this.options.onSetRecord)) {
-                        isValid = this.options.onSetRecord(rowData, e);
-                        if (isValid === false) {
-                            return;
-                        }
-                    }
                     if (isNewRow) {
+                        if ($.isFunction(this.options.onBeforeRowInsert)) {
+                            isValid = this.options.onBeforeRowInsert(rowData, e);
+                            if (isValid === false) {
+                                return;
+                            }
+                        }
                         this.options.onRowInsert(rowData, e, multipartData);
                     } else {
+                        if ($.isFunction(this.options.onBeforeRowUpdate)) {
+                            isValid = this.options.onBeforeRowUpdate(rowData, e);
+                            if (isValid === false) {
+                                return;
+                            }
+                        }
                         this.options.afterRowUpdate(rowData, e, multipartData);
                     }
                 } else {
