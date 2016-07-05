@@ -1147,9 +1147,9 @@ WM.module('wm.widgets.live')
                         cls  = keys[0] + '-' + (12 / parseInt(keys[1]));
                         itemClass += ' ' + 'col-' + cls;
                     });
-                    $liScope.itemclass = itemClass.trim();
+                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + itemClass.trim()).trim();
                 } else {
-                    $liScope.itemclass = 'col-sm-' + (12 / parseInt($is.itemsperrow));
+                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-sm-' + (12 / parseInt($is.itemsperrow))).trim();
                 }
             }
 
