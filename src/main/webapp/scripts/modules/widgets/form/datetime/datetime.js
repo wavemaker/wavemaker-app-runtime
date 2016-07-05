@@ -223,10 +223,12 @@ WM.module('wm.widgets.form')
                                 $interval.cancel(timeInterval); //Cancel the existing timer
                                 return;
                             }
+                            scope.disabled = true;
                             //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
                             if (!timeInterval || timeInterval.$$state.value === 'canceled') {
                                 timeInterval = $interval(function () {
                                     scope._model_ = CURRENT_DATETIME; //Update the model every 1 sec
+                                    scope._onChange();
                                 }, 1000);
                             }
                         },

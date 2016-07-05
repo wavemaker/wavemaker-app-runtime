@@ -175,6 +175,7 @@ WM.module('wm.widgets.form')
                             isCurrentDate = val === CURRENT_DATE;
                             if (isCurrentDate) {
                                 this._proxyModel = new Date();
+                                scope._onChange();
                             } else if (val) {
                                 timestamp = getTimeStamp(val);
                                 this._proxyModel = new Date(timestamp);
