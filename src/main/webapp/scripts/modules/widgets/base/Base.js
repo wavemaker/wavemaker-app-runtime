@@ -1084,7 +1084,7 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"},
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturetitle": {"type": "string", "bindable": "in-bound"},
-                        "imagewidth": {"type": "string", "value": "100%"},
+                        "imageheight": {"type": "string", "value": ""},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         /*Events*/

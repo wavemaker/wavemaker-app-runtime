@@ -1233,13 +1233,22 @@ body.modal-open {
     .app-list-item-value {
      word-break: break-all;
     }
+    .app-menu {
+      .caret {
+        display: none;
+      }
+    }
     &.active {
       z-index: auto !important;/***fix for popover in the list item getting hidden***/
-      a {
+      .app-anchor {
         color: inherit;
       }
       .panel {
         color: @app-label-text-color;
+      }
+      .text-muted {
+        color: inherit;
+        opacity: 0.7;
       }
     }
    }
