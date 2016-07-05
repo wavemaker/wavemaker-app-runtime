@@ -902,7 +902,11 @@ WM.module('wm.widgets.live')
 
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
-
+                        Object.defineProperty(scope, 'mode', {
+                            'get': function () {
+                                return scope.operationType || scope.findOperationType();
+                            }
+                        });
                         if (scope.widgetid) {
                             /* event emitted on building new markup from canvasDom */
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup, newVal, fromDesigner) {
