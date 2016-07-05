@@ -773,7 +773,9 @@ WM.module('wm.utils', [])
                 'type'                : prop.type,
                 'isPrimaryKey'        : prop.isPrimaryKey,
                 'generator'           : prop.generator,
-                'isRelatedPk'         : prop.isRelatedPk
+                'isRelatedPk'         : prop.isRelatedPk,
+                'systemUpdated'       : prop.systemUpdated,
+                'systemInserted'      : prop.systemInserted
             };
         }
 

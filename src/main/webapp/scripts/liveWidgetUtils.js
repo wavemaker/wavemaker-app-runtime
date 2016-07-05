@@ -671,6 +671,9 @@ WM.module('wm.widgets.live')
                     scope.primaryKey = scope.primaryKey || [];
                 }
                 _.each(columnArray, function (fieldObj) {
+                    if (fieldObj.systemInserted || fieldObj.systemUpdated) {
+                        return;
+                    }
                     var column;
                     if (!_.includes(fieldNames, fieldObj.fieldName) && !fieldObj.readonly) {
                         fieldNames.push(fieldObj.fieldName);

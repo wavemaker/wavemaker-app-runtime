@@ -303,9 +303,13 @@ wm.variables.services.$liveVariable = [
                                     'scale'              : relatedCol.scale,
                                     'generator'          : relatedCol.generator,
                                     'isRelated'          : true,
-                                    'defaultValue'       : relatedCol.defaultValue,
+                                    'defaultValue'       : _.get(relatedCol, ['columnValue', 'defaultValue']),
                                     'targetTable'        : relation.targetTable
                                 };
+                                if (_.get(relatedCol, ['columnValue', 'type']) !== 'user-defined') {
+                                    newColumn.systemInserted = relatedCol.columnValue.insertable;
+                                    newColumn.systemUpdated  = relatedCol.columnValue.updatable;
+                                }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
                                     return _.isUndefined(value) || _.isNull(value);
@@ -341,8 +345,12 @@ wm.variables.services.$liveVariable = [
                                         "scale"             : column.scale,
                                         "generator"         : column.generator,
                                         "isRelated"         : isForeignKey,
-                                        "defaultValue"      : column.defaultValue
+                                        "defaultValue"      : _.get(column, ['columnValue', 'defaultValue'])
                                     };
+                                if (_.get(column, ['columnValue', 'type']) !== 'user-defined') {
+                                    newColumn.systemInserted = column.columnValue.insertable;
+                                    newColumn.systemUpdated  = column.columnValue.updatable;
+                                }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
                                     return _.isUndefined(value) || _.isNull(value);
