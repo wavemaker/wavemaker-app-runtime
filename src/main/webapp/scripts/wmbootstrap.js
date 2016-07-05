@@ -560,6 +560,13 @@ Application
             }
         ]
     )
+    .run(function ($http) {
+        'use strict';
+
+        //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
+        $http.defaults.xsrfCookieName = 'wm_csrf_token';
+        $http.defaults.xsrfHeaderName = 'X-WM-CSRF-TOKEN';
+    })
     .controller('AppController',
         [
             '$scope',
