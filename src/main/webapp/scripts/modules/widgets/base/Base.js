@@ -837,6 +837,7 @@ WM.module('wm.widgets.base', [])
                         "showactions": {"type": "boolean", "value": true}
                     },
                     "wm.logindialog": {
+                        "tabindex": {"show": false},
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "closable": {"type": "boolean", "value": true},
                         "modal": {"type": "boolean", "value": true},
@@ -1245,22 +1246,11 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.login': {
-                        "title": {"type": "string",  "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforerender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
-                        "backgroundcolor": {"type": "string", "widget": "color"},
-                        "backgroundgradient": {"type": "string"},
-                        "backgroundimage": {"type": "string", "bindable": "in-bound"},
-                        "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"]},
-                        "backgroundsize": {"type": "string", "hint": "width, height"},
-                        "backgroundposition": {"type": "string", "hint": "top, left"},
-                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker"},
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.liveform': {
