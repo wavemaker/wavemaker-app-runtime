@@ -17,6 +17,7 @@
     <properties>
         <main.basedir>${basedir}/..</main.basedir>
         <jasperreports.version>6.2.2</jasperreports.version>
+        <antisamy.version>1.4</antisamy.version>
     </properties>
 
     <dependencies>
@@ -194,6 +195,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.owasp</groupId>
+            <artifactId>antisamy</artifactId>
+            <version>${antisamy.version}</version>
+        </dependency>
         <!-- Provided -->
         <dependency>
             <groupId>javax.servlet</groupId>

@@ -21,6 +21,7 @@ import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RememberMeConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
 import com.wavemaker.studio.common.model.security.SSLConfig;
+import com.wavemaker.studio.common.model.security.XSSConfig;
 
 /**
  * @author Ed Callahan
@@ -39,6 +40,8 @@ public class WMAppSecurityConfig {
     private RememberMeConfig rememberMeConfig;
 
     private SSLConfig sslConfig;
+
+    private XSSConfig xssConfig;
 
     public boolean isEnforceSecurity() {
         return enforceSecurity;
@@ -80,6 +83,14 @@ public class WMAppSecurityConfig {
         this.sslConfig = sslConfig;
     }
 
+    public XSSConfig getXssConfig() {
+        return xssConfig;
+    }
+
+    public void setXssConfig(final XSSConfig xssConfig) {
+        this.xssConfig = xssConfig;
+    }
+
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
@@ -88,6 +99,7 @@ public class WMAppSecurityConfig {
                 ", roleMap=" + roleMap +
                 ", rememberMeConfig=" + rememberMeConfig +
                 ", sslConfig=" + sslConfig +
+                ", xssConfig=" + xssConfig +
                 '}';
     }
 }
