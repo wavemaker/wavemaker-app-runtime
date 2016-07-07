@@ -544,7 +544,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_GENERATORS": {
         "assigned": "assigned",
         "identity": "auto increment",
-        "newid"   : "unique id",
+        "uniqueid": "unique id",
         "sequence": "sequence"
     },
     "DATABASE_MATCH_MODES": {
