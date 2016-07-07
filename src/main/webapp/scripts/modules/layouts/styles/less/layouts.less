@@ -1221,13 +1221,16 @@ body {
   .app-header-action {
     float: right;
   }
+
   /**********************************************************************/
   /********************Overrides for the content classes**************************/
   /**********************************************************************/
   /***override the chart tooltip style***/
   .app-page-content {
     padding: 1em;
-
+    &.login { // for login page remove the paddings
+      padding: 0;
+    }
     .btn-group, .btn-group-vertical {
       margin: 0;
       .btn {
