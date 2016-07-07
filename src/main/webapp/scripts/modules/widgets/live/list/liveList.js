@@ -1140,7 +1140,8 @@ WM.module('wm.widgets.live')
             }
 
             function setListClass($is, $liScope) {
-                var itemClass = '';
+                var itemClass = '',
+                    oldClass  = $rs.isMobileApplicationType ? 'xs' : 'sm';
                 if (isNaN(parseInt($is.itemsperrow))) {
                     _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
                         var keys = _.split(cls, '-');
@@ -1149,7 +1150,7 @@ WM.module('wm.widgets.live')
                     });
                     $liScope.itemclass = (($liScope.itemclass || '') + ' ' + itemClass.trim()).trim();
                 } else {
-                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-sm-' + (12 / parseInt($is.itemsperrow))).trim();
+                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow))).trim();
                 }
             }
 

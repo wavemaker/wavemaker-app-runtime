@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
                     '</div>' +
                 '</div>' +
-                '<div class="app-card-image" ng-if="bindpicturesource" ng-style="{\'height\':imageheight}">' +
+                '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'height\':imageheight}">' +
                     '<wm-picture class="card-image" picturesource="{{picturesource}}"></wm-picture>' +
                 '</div>' +
                 '<div ng-transclude="content"></div>' +
