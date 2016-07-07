@@ -646,6 +646,7 @@ WM.module('wm.widgets.basic')
                         })
                         .showControls(false)
                         .stacked(propertyValueMap.viewtype === 'Stacked' ?  true : false)
+                        .showValues(propertyValueMap.showvalues)
                         .groupSpacing(barSpacing);
                     break;
                 case 'Pie':
