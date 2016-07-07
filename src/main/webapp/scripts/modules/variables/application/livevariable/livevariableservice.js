@@ -309,8 +309,7 @@ wm.variables.services.$liveVariable = [
                                 };
                                 columnValue = relatedCol.columnValue;
                                 if (columnValue && columnValue.type !== 'user-defined') {
-                                    newColumn.systemInserted = columnValue.insertable;
-                                    newColumn.systemUpdated  = columnValue.updatable;
+                                    newColumn.systemInserted = newColumn.systemUpdated = true;
                                 }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
@@ -351,8 +350,7 @@ wm.variables.services.$liveVariable = [
                                     },
                                     columnValue = column.columnValue;
                                 if (columnValue && columnValue.type !== 'user-defined') {
-                                    newColumn.systemInserted = columnValue.insertable;
-                                    newColumn.systemUpdated  = columnValue.updatable;
+                                    newColumn.systemInserted = newColumn.systemUpdated = true;
                                 }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
