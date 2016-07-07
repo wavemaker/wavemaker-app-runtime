@@ -7,7 +7,7 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                '<div class="app-livelist panel app-panel" ng-class="navigation" init-widget live-actions apply-styles="shell" listen-property="dataset">' +
+                '<div class="app-livelist" ng-class="navigation" init-widget live-actions apply-styles="shell" listen-property="dataset">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
