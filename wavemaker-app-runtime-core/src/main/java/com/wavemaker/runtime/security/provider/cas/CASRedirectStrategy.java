@@ -33,7 +33,7 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
         } else {
             String serviceUrl = HttpRequestUtils.getServiceUrl(request);
             StringBuilder stringBuilder = new StringBuilder(url);
-            stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl);
+            stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl + "/");
 
             LOGGER.info("CAS logout redirect url is {}", url);
             String casRedirectUrl = stringBuilder.toString();
