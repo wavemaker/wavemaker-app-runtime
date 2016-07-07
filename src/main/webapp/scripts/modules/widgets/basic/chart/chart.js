@@ -1009,9 +1009,7 @@ WM.module('wm.widgets.basic')
             d3.select('#wmChart' + scope.$id + ' svg')
                 .datum(chartData)
                 .call(chart);
-            chart.dispatch.renderEnd = function () {
-                postPlotProcess(scope, element, chart);
-            };
+            postPlotProcess(scope, element, chart);
             return chart;
         }
 
