@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             ' ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
     }])
-    .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', '$timeout', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout) {
+    .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', '$timeout', 'CONSTANTS', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -175,7 +175,9 @@ WM.module('wm.widgets.form')
                             isCurrentDate = val === CURRENT_DATE;
                             if (isCurrentDate) {
                                 this._proxyModel = new Date();
-                                scope._onChange();
+                                if (CONSTANTS.isRunMode) {
+                                    scope._onChange();
+                                }
                             } else if (val) {
                                 timestamp = getTimeStamp(val);
                                 this._proxyModel = new Date(timestamp);

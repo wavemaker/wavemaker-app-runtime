@@ -223,13 +223,15 @@ WM.module('wm.widgets.form')
                                 $interval.cancel(timeInterval); //Cancel the existing timer
                                 return;
                             }
-                            scope.disabled = true;
-                            //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
-                            if (!timeInterval || timeInterval.$$state.value === 'canceled') {
-                                timeInterval = $interval(function () {
-                                    scope._model_ = CURRENT_DATETIME; //Update the model every 1 sec
-                                    scope._onChange();
-                                }, 1000);
+                            if (CONSTANTS.isRunMode) {
+                                scope.disabled = true;
+                                //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
+                                if (!timeInterval || timeInterval.$$state.value === 'canceled') {
+                                    timeInterval = $interval(function () {
+                                        scope._model_ = CURRENT_DATETIME; //Update the model every 1 sec
+                                        scope._onChange();
+                                    }, 1000);
+                                }
                             }
                         },
                         setModels = function (val) {
@@ -363,8 +365,7 @@ WM.module('wm.widgets.form')
                     /*Set the model if datavalue exists*/
                     if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
                         scope._model_ = attrs.datavalue;
-                        if (attrs.datavalue === CURRENT_DATETIME && CONSTANTS.isRunMode) {
-                            scope.disabled = true;
+                        if (attrs.datavalue === CURRENT_DATETIME) {
                             setTimeInterval();
                         }
                     }

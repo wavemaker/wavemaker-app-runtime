@@ -283,7 +283,8 @@ wm.variables.services.$liveVariable = [
                                     isPrimaryKey = _.intersection(sourceCols, primaryKeys).length > 0,
                                     newColumn,
                                     relatedCol,
-                                    javaType;
+                                    javaType,
+                                    columnValue;
                                 /*Find out the foreign keys from the relations*/
                                 foreignKeys = foreignKeys.concat(sourceCols);
                                 /*Find the related column*/
@@ -306,9 +307,10 @@ wm.variables.services.$liveVariable = [
                                     'defaultValue'       : _.get(relatedCol, ['columnValue', 'defaultValue']),
                                     'targetTable'        : relation.targetTable
                                 };
-                                if (_.get(relatedCol, ['columnValue', 'type']) !== 'user-defined') {
-                                    newColumn.systemInserted = relatedCol.columnValue.insertable;
-                                    newColumn.systemUpdated  = relatedCol.columnValue.updatable;
+                                columnValue = relatedCol.columnValue;
+                                if (columnValue && columnValue.type !== 'user-defined') {
+                                    newColumn.systemInserted = columnValue.insertable;
+                                    newColumn.systemUpdated  = columnValue.updatable;
                                 }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
@@ -346,10 +348,11 @@ wm.variables.services.$liveVariable = [
                                         "generator"         : column.generator,
                                         "isRelated"         : isForeignKey,
                                         "defaultValue"      : _.get(column, ['columnValue', 'defaultValue'])
-                                    };
-                                if (_.get(column, ['columnValue', 'type']) !== 'user-defined') {
-                                    newColumn.systemInserted = column.columnValue.insertable;
-                                    newColumn.systemUpdated  = column.columnValue.updatable;
+                                    },
+                                    columnValue = column.columnValue;
+                                if (columnValue && columnValue.type !== 'user-defined') {
+                                    newColumn.systemInserted = columnValue.insertable;
+                                    newColumn.systemUpdated  = columnValue.updatable;
                                 }
                                 /*Removing properties with undefined or null values*/
                                 newColumn = _.omitBy(newColumn, function (value) {
