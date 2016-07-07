@@ -1011,6 +1011,9 @@ WM.module('wm.widgets.grid')
                     } else {
                         currentSort = searchSortObj;
                     }
+                    if (WM.isObject(data) && !WM.isArray(data)) {
+                        data = [data];
+                    }
                     /*Both the functions return same 'data' if arguments are undefined*/
                     data = getSearchResult(data, currentSearch);
                     data = getSortResult(data, currentSort);
