@@ -1213,7 +1213,7 @@ WM.module('wm.widgets.live')
                 var widgetType = column.widgetType,
                     field = column.field,
                     val = column.widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}",
-                    defaultModel = "row." + field,
+                    defaultModel = "row['" + field + "']",
                     widgetNgClasses = [Utils.getClonedObject(defaultNgClassesConfig)];
                 /* Not storing widget config, it is only on for UI display. Only customExpression will be saved. */
                 column.widgetConfig = {};
