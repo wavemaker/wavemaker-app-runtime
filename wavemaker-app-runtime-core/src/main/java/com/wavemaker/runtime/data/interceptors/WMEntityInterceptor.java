@@ -56,7 +56,10 @@ public class WMEntityInterceptor extends EmptyInterceptor {
         try {
             for (int i = 0; i < propertyNames.length; i++) {
                 final String propertyName = propertyNames[i];
-                descriptorMap.get(propertyName).getWriteMethod().invoke(entity, state[i]);
+                final PropertyDescriptor descriptor = descriptorMap.get(propertyName);
+                if (descriptor != null && descriptor.getWriteMethod() != null) {
+                    descriptor.getWriteMethod().invoke(entity, state[i]);
+                }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new WMRuntimeException("Error while loading entity", e);
@@ -86,8 +89,11 @@ public class WMEntityInterceptor extends EmptyInterceptor {
             descriptorMap) {
         try {
             for (int i = 0; i < propertyNames.length; i++) {
-                final Object value = descriptorMap.get(propertyNames[i]).getReadMethod().invoke(entity);
-                state[i] = value;
+                final PropertyDescriptor descriptor = descriptorMap.get(propertyNames[i]);
+                if (descriptor != null && descriptor.getReadMethod() != null) {
+                    final Object value = descriptor.getReadMethod().invoke(entity);
+                    state[i] = value;
+                }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new WMRuntimeException("Error while updating state parameters", e);
