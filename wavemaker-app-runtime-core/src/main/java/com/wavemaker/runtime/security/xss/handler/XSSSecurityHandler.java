@@ -28,6 +28,9 @@ public class XSSSecurityHandler {
     private XSSSanitizer xssSanitizer;
     private XSSConfig xssConfig;
 
+    private XSSSecurityHandler() {
+    }
+
     public static XSSSecurityHandler getInstance() {
         return instance;
     }

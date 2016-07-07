@@ -1,15 +1,18 @@
 package com.wavemaker.runtime.security.csrf;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import com.wavemaker.studio.common.model.security.CSRFConfig;
 
 /**
  * Created by kishorer on 25/8/15.
@@ -18,6 +21,8 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
 
     private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTION)$");
     private List<RegexRequestMatcher> unprotectedMatchers;
+
+    private WMAppSecurityConfig wmAppSecurityConfig;
 
     public CsrfSecurityRequestMatcher() {
     }
@@ -29,8 +34,16 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
         }
     }
 
+    public void setWmAppSecurityConfig(WMAppSecurityConfig wmAppSecurityConfig) {
+        this.wmAppSecurityConfig = wmAppSecurityConfig;
+    }
+
     @Override
     public boolean matches(HttpServletRequest httpServletRequest) {
+        CSRFConfig csrfConfig = wmAppSecurityConfig.getCsrfConfig();
+        if (csrfConfig == null || !csrfConfig.isEnforceCsrfSecurity()) {
+            return false;
+        }
         if(allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
             return false;
         }

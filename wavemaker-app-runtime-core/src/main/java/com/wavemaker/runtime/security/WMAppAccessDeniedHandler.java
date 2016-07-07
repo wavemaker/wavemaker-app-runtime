@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.security.csrf;
+package com.wavemaker.runtime.security;
 
 import java.io.IOException;
 import java.io.PrintWriter;
