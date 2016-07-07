@@ -29,7 +29,7 @@
         "moment": "2.13.0",
         "ngCordova":"v0.1.26-alpha",
         "ng-cordova-oauth":"0.2.3",
-        "ng-websocket": "v0.2.1",
+        "angular-websocket": "v1.0.9",
         "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.5",
         "angular-ui-mask": "1.8.3"
     },
