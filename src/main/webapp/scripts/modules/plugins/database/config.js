@@ -616,6 +616,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     },
     "COLUMN_VALUE_TYPES": {
         "user-defined"      : "User Defined",
+        "server-defined"    : "Server Defined",
         "database-defined"  : "Database Defined"
     },
     "COLUMN_VALUE_OPERATIONS": {
@@ -626,9 +627,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "COLUMN_SERVER_PROPERTIES": {
         "DATE"      : "Current Date",
         "TIME"      : "Current Time",
-        "DATE_TIME" : "Current Datetime",
-        "USER_ID"   : "Logged in Userid",
-        "USER_NAME" : "Logged in Username"
+        "DATE_TIME" : "Current Datetime"
     }
 });
 
