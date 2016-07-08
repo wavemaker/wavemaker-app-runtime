@@ -576,7 +576,7 @@ WM.module('wm.widgets.live')
 
                 if ($is.navControls || $is.infScroll) {
 
-                    _.set($is, '$liScope.fieldDefs', undefined);
+                    $is.clear();
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
@@ -1217,6 +1217,10 @@ WM.module('wm.widgets.live')
                 // deselect the given item
                 $is.deselectItem = function (item) {
                     toggleSelectedItem($el, item, false);
+                };
+                //Empty the livelist content on clear
+                $is.clear = function () {
+                    _.set($is, '$liScope.fieldDefs', undefined);
                 };
 
                 // in the run mode navigation can not be changed dynamically
