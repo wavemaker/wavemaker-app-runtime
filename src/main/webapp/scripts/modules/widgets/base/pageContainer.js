@@ -25,7 +25,9 @@ WM.module('wm.widgets.base')
                 PARTIAL_PARAM_SUBSCRIPT = 'partialparam',
 
             // to hold the whether the content of partials is loaded or not
-                loadedPartials = {};
+                loadedPartials = {},
+                listPartials   = [],
+                filteredPartials;
 
             function evtHandler(e) {
                 // Do not allow the drop event when this widgets content is set to other page.
@@ -98,8 +100,17 @@ WM.module('wm.widgets.base')
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    /*reset loaded partials, as they contain the htmlMarkup & variables*/
-                    loadedPartials[partialName] = undefined;
+                    // Check if the partial is been used multiple times. If so, then do not clear the loadedPartials as it is used in next iteration.
+                    filteredPartials = _.filter(listPartials, function (partial) {
+                        return (partial === partialName);
+                    });
+                    listPartials.splice(_.indexOf(listPartials, partialName), 1);
+
+                    if (filteredPartials.length === 1) {
+                        /*reset loaded partials, as they contain the htmlMarkup & variables*/
+                        loadedPartials[partialName] = undefined;
+                    }
+
                     iScope.toolbar = target.find('button.wm-included-page-heading').first();
                     iScope.overlay = target.find('div.content-overlay').first();
                     $rootScope.$safeApply(iScope);
@@ -128,6 +139,8 @@ WM.module('wm.widgets.base')
                 function onPageFetchSuccess(content) {
                     /*get individual file contents like - html/js/css */
                     loadedPartials[newVal] = content;
+                    listPartials.push(newVal);
+
                     /* to compile the partial page*/
                     _compilePartialAndUpdateVariables(iScope, element, newVal, el);
                 }
