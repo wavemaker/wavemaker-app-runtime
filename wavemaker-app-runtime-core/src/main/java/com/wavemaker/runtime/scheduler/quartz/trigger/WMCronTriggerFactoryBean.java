@@ -2,10 +2,11 @@ package com.wavemaker.runtime.scheduler.quartz.trigger;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.joda.time.LocalDateTime;
+import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -13,19 +14,18 @@ import org.quartz.Scheduler;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * Created by saddhamp on 24/5/16.
  */
 public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanNameAware, InitializingBean {
+    private static String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private String name;
     private String group;
     private JobDetail jobDetail;
     private JobDataMap jobDataMap = new JobDataMap();
-    private Date startTime;
-    private Date endTime;
-    private long startDelay = 0;
+    private String startTime;
+    private String endTime;
     private String cronExpression;
     private TimeZone timeZone;
     private String calendarName;
@@ -33,6 +33,7 @@ public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanN
     private String description;
     private String beanName;
     private int repeatCount = WMCronTriggerImpl.REPEAT_INDEFINITELY;
+    private int misfireInstruction = CalendarIntervalTrigger.MISFIRE_INSTRUCTION_DO_NOTHING;
     private CronTrigger cronTrigger;
 
     public void setName(String name) {
@@ -55,33 +56,20 @@ public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanN
         this.jobDataMap.putAll(jobDataAsMap);
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setStartTime(String startTimeStr){
-        this.startTime = Timestamp.valueOf(startTimeStr);
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public void setEndTime(String endTimeStr) {
-        this.endTime = Timestamp.valueOf(endTimeStr);
-    }
-
-    public void setStartDelay(long startDelay) {
-        Assert.isTrue(startDelay >= 0, "Start delay cannot be negative");
-        this.startDelay = startDelay;
-    }
-
     public void setCronExpression(String cronExpression) {
         this.cronExpression = cronExpression;
     }
 
-    public void setTimeZone(TimeZone timeZone) {
-        this.timeZone = timeZone;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setTimeZone(String timeZoneId) {
+        this.timeZone = TimeZone.getTimeZone(timeZoneId);
     }
 
     public void setCalendarName(String calendarName) {
@@ -104,37 +92,46 @@ public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanN
         this.repeatCount = repeatCount;
     }
 
+    public void setMisfireInstruction(int misfireInstruction) {
+        this.misfireInstruction = misfireInstruction;
+    }
+
     @Override
     public void afterPropertiesSet() throws ParseException {
-        if (this.name == null) {
-            this.name = this.beanName;
+        if (name == null) {
+            name = this.beanName;
         }
-        if (this.group == null) {
-            this.group = Scheduler.DEFAULT_GROUP;
+        if (group == null) {
+            group = Scheduler.DEFAULT_GROUP;
         }
-        if (this.jobDetail != null) {
-            this.jobDataMap.put("jobDetail", this.jobDetail);
+        if (jobDetail != null) {
+            jobDataMap.put("jobDetail", this.jobDetail);
         }
-        if (this.startDelay > 0 || this.startTime == null) {
-            this.startTime = new Date(System.currentTimeMillis() + this.startDelay);
+        if (timeZone == null) {
+            timeZone = TimeZone.getDefault();
         }
-        if (this.timeZone == null) {
-            this.timeZone = TimeZone.getDefault();
+
+        Timestamp startTimestamp = Timestamp.valueOf(LocalDateTime.parse(startTime).toString(DEFAULT_TIMESTAMP_FORMAT));
+
+        Timestamp endTimestamp = null;
+        if(endTime != null){
+            endTimestamp = Timestamp.valueOf(LocalDateTime.parse(endTime).toString(DEFAULT_TIMESTAMP_FORMAT));
         }
 
         WMCronTriggerImpl wmCronTriggerImpl = new WMCronTriggerImpl();
-        wmCronTriggerImpl.setName(this.name);
-        wmCronTriggerImpl.setGroup(this.group);
-        wmCronTriggerImpl.setJobKey(this.jobDetail.getKey());
-        wmCronTriggerImpl.setJobDataMap(this.jobDataMap);
-        wmCronTriggerImpl.setStartTime(this.startTime);
-        wmCronTriggerImpl.setCronExpression(this.cronExpression);
-        wmCronTriggerImpl.setTimeZone(this.timeZone);
-        wmCronTriggerImpl.setCalendarName(this.calendarName);
-        wmCronTriggerImpl.setPriority(this.priority);
-        wmCronTriggerImpl.setDescription(this.description);
+        wmCronTriggerImpl.setName(name);
+        wmCronTriggerImpl.setGroup(group);
+        wmCronTriggerImpl.setJobKey(jobDetail.getKey());
+        wmCronTriggerImpl.setJobDataMap(jobDataMap);
+        wmCronTriggerImpl.setStartTime(startTimestamp);
+        wmCronTriggerImpl.setCronExpression(cronExpression);
+        wmCronTriggerImpl.setTimeZone(timeZone);
+        wmCronTriggerImpl.setCalendarName(calendarName);
+        wmCronTriggerImpl.setPriority(priority);
+        wmCronTriggerImpl.setDescription(description);
         wmCronTriggerImpl.setRepeatCount(repeatCount);
-        wmCronTriggerImpl.setEndTime(endTime);
+        wmCronTriggerImpl.setMisfireInstruction(misfireInstruction);
+        wmCronTriggerImpl.setEndTime(endTimestamp);
         this.cronTrigger = wmCronTriggerImpl;
     }
 
@@ -152,5 +149,4 @@ public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanN
     public boolean isSingleton() {
         return true;
     }
-
 }
