@@ -220,7 +220,7 @@ WM.module('wm.widgets.live')
                         prevData,
                         requestData = {},
                         elScope = $scope.element.scope(),
-                        variableName = $scope.variableName || Utils.getVariableNameFromExpr($scope.binddataset),
+                        variableName = $scope.variableName || Utils.getVariableName($scope),
                         variable = elScope.Variables[variableName],
                         isValid;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
@@ -777,7 +777,7 @@ WM.module('wm.widgets.live')
                                 /*Process the dataset if only the data is an array*/
                                 if (newVal && newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                     if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns)) {
-                                        tempVarName = Utils.getVariableNameFromExpr(scope.binddataset);
+                                        tempVarName = Utils.getVariableName(scope);
                                         if (scope.variableName && (tempVarName !== scope.variableName)) {
                                             scope.formCreated = false;
                                             scope.formConstructed = false;
@@ -1125,7 +1125,7 @@ WM.module('wm.widgets.live')
                                     return;
                                 }
                                 relatedDataWatchHandler();
-                                var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
+                                var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableName(parentIsolateScope)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
                                     var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
                                         relatedFormField = parentIsolateScope.formFields[index],
