@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security.config;
 
 import java.util.Map;
 
+import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RememberMeConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
@@ -42,6 +43,8 @@ public class WMAppSecurityConfig {
     private SSLConfig sslConfig;
 
     private XSSConfig xssConfig;
+
+    private CSRFConfig csrfConfig;
 
     public boolean isEnforceSecurity() {
         return enforceSecurity;
@@ -91,6 +94,14 @@ public class WMAppSecurityConfig {
         this.xssConfig = xssConfig;
     }
 
+    public CSRFConfig getCsrfConfig() {
+        return csrfConfig;
+    }
+
+    public void setCsrfConfig(final CSRFConfig csrfConfig) {
+        this.csrfConfig = csrfConfig;
+    }
+
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
@@ -100,6 +111,7 @@ public class WMAppSecurityConfig {
                 ", rememberMeConfig=" + rememberMeConfig +
                 ", sslConfig=" + sslConfig +
                 ", xssConfig=" + xssConfig +
+                ", csrfConfig=" + csrfConfig +
                 '}';
     }
 }
