@@ -134,7 +134,7 @@ WM.module('wm.widgets.base')
                             return;
                         }
 
-                        if (evtValue === ('goToPage-' + $routeParams.name) || evtValue === ('goToPage_' + $routeParams.name)) {
+                        if (_.includes(evtValue, 'goToPage-' + $routeParams.name) || _.includes(evtValue, 'goToPage_' + $routeParams.name)) {
                             $el.addClass('active');
                             if (isAnchor) {
                                 $parent = $el.parent();
