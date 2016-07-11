@@ -16,7 +16,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
-                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
                     '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
