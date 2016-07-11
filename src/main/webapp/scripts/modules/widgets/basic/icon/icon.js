@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<i init-widget class="app-icon"  ng-class="iconclass" ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
+            '<i init-widget class="app-icon"  title="{{hint}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
             );
     }])
     .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
