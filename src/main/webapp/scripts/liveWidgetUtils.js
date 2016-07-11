@@ -1539,7 +1539,7 @@ WM.module('wm.widgets.live')
             this.getRowOperationsColumn     = getRowOperationsColumn;
         }
     ])
-    .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
+    .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
         'use strict';
         var getRecords = function (options, success, error) {
                 var variable = options.variable;
@@ -1581,29 +1581,39 @@ WM.module('wm.widgets.live')
                 });
             },
             deleteRecord = function (options, success, error) {
-                var variable = options.variable,
+                var variable   = options.variable,
                     confirmMsg = options.scope.confirmdelete || 'Are you sure you want to delete this?',
                     dataObject = {
-                        'row': options.row,
-                        'transform': true
+                        'row'       : options.row,
+                        'transform' : true
+                    },
+                    deleteFn = function () {
+                        variable.deleteRecord(dataObject, function (response) {
+                            Utils.triggerFn(success, response);
+                        }, function (err) {
+                            Utils.triggerFn(error, err);
+                        });
                     };
-
                 if (variable.propertiesMap && variable.propertiesMap.tableType === 'VIEW') {
                     wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                     $rs.$safeApply(options.scope);
                     return;
                 }
-                /* delete if user confirm to delete*/
-                if (confirm(confirmMsg)) {
-
-                    variable.deleteRecord(dataObject, function (response) {
-                        Utils.triggerFn(success, response);
-                    }, function (err) {
-                        Utils.triggerFn(error, err);
-                    });
-                } else {
-                    Utils.triggerFn(options.cancelDeleteCallback);
-                }
+                DialogService._showAppConfirmDialog({
+                    'caption'   : 'Delete Record',
+                    'content'   : confirmMsg,
+                    'iconClass' : 'wi wi-delete fa-lg',
+                    'resolve'   : {
+                        'confirmActionOk': function () {
+                            return deleteFn;
+                        },
+                        'confirmActionCancel': function () {
+                            return function () {
+                                Utils.triggerFn(options.cancelDeleteCallback);
+                            };
+                        }
+                    }
+                });
             },
             performOperation = function (operation, options) {
                 var fn,

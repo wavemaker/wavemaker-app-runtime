@@ -205,7 +205,7 @@ WM.module('wm.widgets.dialog')
          */
 
         function showConfirmDialog(params) {
-            var dialogId = "global-confirm-dialog",
+            var dialogId = params.dialogId || "global-confirm-dialog",
                 template,
                 controller,
                 content,
@@ -229,7 +229,7 @@ WM.module('wm.widgets.dialog')
             /* convert the content to DOM (uncompiled version) , it will be easy to add attributes*/
             dialogContainer = WM.element("<div></div>").html(content);
 
-            dialogCaption = $rootScope.locale[params.caption] || params.caption;
+            dialogCaption = $rootScope.locale ? $rootScope.locale[params.caption] || params.caption : params.caption;
             backdrop = params.backdrop || template.attr('backdrop');
             /* backdrop expects 3 values from {true, false, static}*/
             if (backdrop !== 'static') {
@@ -271,12 +271,12 @@ WM.module('wm.widgets.dialog')
                     'controller': controller,
                     'dialogid': dialogId,
                     'title': dialogCaption,
-                    'message': $rootScope.locale[params.content] || params.content,
+                    'message': $rootScope.locale ? $rootScope.locale[params.content] || params.content : params.content,
                     'messageclass': params.contentClass || '',
                     'iconname': params.iconName || '',
                     'iconclass': params.iconClass || '',
-                    'oktext': params.oktext || $rootScope.locale["LABEL_OK"],
-                    'canceltext': params.canceltext || $rootScope.locale["LABEL_CANCEL"]
+                    'oktext': params.oktext || $rootScope.locale ? $rootScope.locale["LABEL_OK"] : 'OK',
+                    'canceltext': params.canceltext || $rootScope.locale ? $rootScope.locale["LABEL_CANCEL"] : 'CANCEL'
                 });
 
             if (params.onOk) {
@@ -386,6 +386,25 @@ WM.module('wm.widgets.dialog')
 
         /**
          * @ngdoc function
+         * @name wm.widgets.dialog.DialogService#_showAppConfirmDialog
+         * @methodOf wm.widgets.dialog.DialogService
+         * @function
+         *
+         * @description
+         * shows Confirm Dialog in app and sets it parameters
+         *
+         * @param {object} params required for confirm dialog(oktext, canceltext, callbacks, message, icon)
+         */
+        function _showAppConfirmDialog(params) {
+            params = params || {};
+            params.controller = 'AppConfirmDialogController';
+            params.dialogId   = '_app-confirm-dialog';
+            params.onOk       = 'confirmDialogActionOk()';
+            params.onCancel   = 'confirmDialogActionCancel()';
+            showConfirmDialog(params);
+        }
+        /**
+         * @ngdoc function
          * @name wm.widgets.dialog.DialogService#close
          * @methodOf wm.widgets.dialog.DialogService
          * @function
@@ -401,5 +420,17 @@ WM.module('wm.widgets.dialog')
         this.hideDialog = hideDialog;
         this.showDialog = showDialog;
         this.showConfirmDialog = showConfirmDialog;
+        this._showAppConfirmDialog = _showAppConfirmDialog;
         this.closeAllDialogs = closeAllDialogs;
+    }])
+    .controller('AppConfirmDialogController', ['$scope', 'confirmActionOk', 'confirmActionCancel', 'DialogService', function ($scope, confirmActionOk, confirmActionCancel, DialogService) {
+        'use strict';
+        $scope.confirmDialogActionOk = function () {
+            confirmActionOk();
+            DialogService.close('_app-confirm-dialog');
+        };
+        $scope.confirmDialogActionCancel = function () {
+            confirmActionCancel();
+            DialogService.close('_app-confirm-dialog');
+        };
     }]);
