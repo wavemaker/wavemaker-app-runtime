@@ -2660,7 +2660,7 @@ WM.module('wm.widgets.base', [])
 
                 expr = expr.replace(/\$\[data\[\$i\]/g, '$[__1');
 
-                for (i = 0; i < expr.length - 1; i++) {
+                for (i = 0; i < expr.length; i++) {
                     ch   = expr[i];
                     next = expr[i + 1];
 
