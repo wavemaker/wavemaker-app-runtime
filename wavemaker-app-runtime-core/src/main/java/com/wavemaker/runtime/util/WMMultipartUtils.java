@@ -39,7 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.studio.common.InvalidInputException;
 import com.wavemaker.studio.common.WMRuntimeException;
@@ -84,7 +84,7 @@ public class WMMultipartUtils {
     }
 
     public static <T> T toObject(MultipartFile multipartFile, Class<T> instance) throws IOException {
-        WMObjectMapper objectMapper = WMObjectMapper.getInstance();
+        WMAppObjectMapper objectMapper = WMAppObjectMapper.getInstance();
         return objectMapper.readValue(multipartFile.getInputStream(), instance);
     }
 
