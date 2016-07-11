@@ -118,6 +118,11 @@ WM.module('wm.layouts.containers')
                                         scope.onFullscreen({$event: $event, $scope: this});
                                     }
                                 }
+                                //Re-plot the chart in case if it is inside panel
+                                element.find('.ng-isolate-scope')
+                                    .each(function () {
+                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                });
                                 /* flip the active flag */
                                 scope.fullscreen = !scope.fullscreen;
                             }
