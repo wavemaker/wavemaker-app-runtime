@@ -5,11 +5,11 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/card.html',
-            '<div init-widget class="app-card card" apply-styles="shell" wm-navigatable-element="true" ng-style="{height:height}">' +
+            '<div init-widget class="app-card card" apply-styles="shell" wm-navigatable-element="true">' +
                 '<div class="app-card-header" ng-show="title || subheading || iconclass || iconurl">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
-                        '<i class="app-icon {{iconclass}}" ng-if="showIcon"></i>' +
-                        '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="showImage"></wm-picture>' +
+                        '<i class="app-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
+                        '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="iconurl"></wm-picture>' +
                     '</div>' +
                     '<div class="app-card-header-text">' +
                         '<h4 class="card-heading">{{title}}</h4>' +
@@ -30,39 +30,8 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']),
-            notifyFor   = {
-                'title'     : true,
-                'subheading': true,
-                'iconclass' : true,
-                'footer'    : true,
-                'action'    : true,
-                'content'   : true,
-                'iconurl'   : true
-            };
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']);
 
-        // Define the property change handler. This function will be triggered when there is a change in the widget property
-        function propertyChangeHandler(scope, key, newVal) {
-            switch (key) {
-            case 'title':
-            case 'subheading':
-            case 'iconclass':
-            case 'iconurl':
-            case 'footer':
-            case 'content':
-            case 'action':
-                if (key === 'iconurl') {
-                    // showing icon when iconurl is not set & hiding icon when iconurl is set
-                    var showIcon = newVal === '';
-                    scope.showIcon = showIcon;
-                    scope.showImage = !showIcon;
-                } else if (key === 'iconclass') {
-                    // showing icon when iconurl is not set
-                    scope.showIcon = scope.iconclass !== '_none_' && newVal !== '' && !scope.iconurl;
-                }
-                break;
-            }
-        }
         return {
             'restrict': 'E',
             'replace': true,
@@ -95,7 +64,6 @@ WM.module('wm.layouts.containers')
                         scope.title = scope.heading;
                     }
 
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }

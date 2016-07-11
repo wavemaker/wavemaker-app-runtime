@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
 
-        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget apply-styles="scrollable-container" ng-style="{width:width}"></div>');
+        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget apply-styles="scrollable-container"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true">' +
