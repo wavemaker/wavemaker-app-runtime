@@ -63,7 +63,8 @@ WM.module('wm.widgets.basic')
                 'textdecoration'    : true,
                 'shape'             : true,
                 'selecteditem'      : true,
-                'bubblesize'        : true
+                'bubblesize'        : true,
+                'tooltips'          : true
             };
 
         // get the data type for the service variable type
@@ -1200,6 +1201,7 @@ WM.module('wm.widgets.basic')
             case 'show':
             case 'bubblesize':
             case 'shape':
+            case 'tooltips':
                     //In RunMode, the plotchart method will not be called for all property change
                 if (scope.chartReady) {
                     plotChartProxy(scope, element);
