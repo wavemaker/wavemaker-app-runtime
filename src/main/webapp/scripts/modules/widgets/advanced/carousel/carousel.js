@@ -7,7 +7,7 @@ WM.module('wm.widgets.advanced')
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
                 '<div init-widget class="app-carousel carousel slide" apply-styles>' +
                     '<ol class="carousel-indicators">' +
-                        '<li ng-repeat="content in contents" ng-class="{\'active\': active === $index}" ng-click="goTo($index)"></li>' +
+                        '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
                     '<div class="carousel-inner" wmtransclude></div>' +
                     '<a class="left carousel-control" ng-click="previous()">' +
@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
                      '<div class="carousel-inner" wmtransclude></div>' +
                      '<div class="carousel-actions">' +
                         '<ul class="pagination" >' +
-                            '<li ng-repeat="content in contents" ng-class="{\'active\': active === $index}"">' +
+                            '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}"">' +
                                 '<a href="javascript:void(0);" ng-click="goTo($index)">{{$index + 1}}</a>' +
                             '</li>' +
                         '</ul>' +
@@ -213,7 +213,8 @@ WM.module('wm.widgets.advanced')
                             }
                         }
                         $scope.contents.splice(i, 1);
-                        $scope.goTo($scope.active);
+                        $scope.activeIndex = $scope.contents.length -1;
+                        $scope.goTo($scope.activeIndex);
                     };
                 },
                 'link' : {
@@ -233,28 +234,28 @@ WM.module('wm.widgets.advanced')
                         if (!attrs.type) {
                             $is.widgetProps = widgetProps;
                             $is.contents    = [];
-                            $is.active = 0;
+                            $is.activeIndex = 0;
 
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index) {
-                                if (!$is.contents[$is.active] || $is.active === index) {
+                                if (!$is.contents[$is.activeIndex]) {
                                     return;
                                 }
-                                var oldElement = $is.contents[$is.active].getElement(),
+                                var oldElement = $is.contents[$is.activeIndex].getElement(),
                                     newElement = $is.contents[index].getElement(),
                                     type = 'next';
 
                                 if ($is.widgetid) {
                                     oldElement.removeClass('active');
                                     newElement.addClass('active');
-                                    $is.active  = index;
-                                } else {
+                                    $is.activeIndex  = index;
+                                } else if(index !== $is.activeIndex) {
                                     $is.stop();
-                                    if ($is.active > index) {
+                                    if ($is.activeIndex > index) {
                                         type = 'prev';
                                     }
                                     animateSlide(oldElement, newElement, type);
-                                    $is.active  = index;
+                                    $is.activeIndex  = index;
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is});
                                 }
@@ -263,19 +264,19 @@ WM.module('wm.widgets.advanced')
 
                             //function to move to next slide
                             $is.next = function () {
-                                if ($is.active > $is.contents.length - 2) {
+                                if ($is.activeIndex > $is.contents.length - 2) {
                                     $is.goTo(0);
                                 } else {
-                                    $is.goTo($is.active + 1);
+                                    $is.goTo($is.activeIndex + 1);
                                 }
                             };
 
                             //function to move to previous slide
                             $is.previous = function () {
-                                if ($is.active < 1) {
+                                if ($is.activeIndex < 1) {
                                     $is.goTo($is.contents.length - 1);
                                 } else {
-                                    $is.goTo($is.active - 1);
+                                    $is.goTo($is.activeIndex - 1);
                                 }
                             };
 
