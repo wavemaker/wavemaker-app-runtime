@@ -64,7 +64,8 @@ WM.module('wm.widgets.basic')
                 'shape'             : true,
                 'selecteditem'      : true,
                 'bubblesize'        : true,
-                'tooltips'          : true
+                'tooltips'          : true,
+                'showlegend'        : true
             };
 
         // get the data type for the service variable type
@@ -973,13 +974,6 @@ WM.module('wm.widgets.basic')
             if (ChartService.isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
                 chartData = Utils.getClonedObject(scope.scopedataset || datum);
             }
-            // checking the parent container before plotting the chart
-            if (!element[0].getBoundingClientRect().height) {
-                return;
-            }
-
-            //empty svg to add-new chart
-            element.find('svg').empty();
 
             // get the chart obejct
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
@@ -1017,7 +1011,7 @@ WM.module('wm.widgets.basic')
 
         // Plotting the chart with set of the properties set to it
         function plotChart(scope, element) {
-            var datum;
+            var datum = [];
             //call user-transformed function
             scope.chartData = (scope.onTransform && scope.onTransform({$scope: scope})) || scope.chartData;
 
@@ -1027,10 +1021,15 @@ WM.module('wm.widgets.basic')
             } else {
                 datum = getChartData(scope);
             }
+            // checking the parent container before plotting the chart
+            if (!element[0].getBoundingClientRect().height) {
+                return;
+            }
+            scope.chart = configureChart(scope, element, datum);
+            //empty svg to add-new chart
+            element.find('svg').empty();
 
-            nv.addGraph(function () {
-                configureChart(scope, element, datum);
-            }, function () {
+            nv.addGraph(scope.chart, function () {
                 /*Bubble chart has an time out delay of 300ms in their implementation due to which we
                 * won't be getting required data points on attaching events
                 * hence delaying it 600ms*/
@@ -1038,6 +1037,8 @@ WM.module('wm.widgets.basic')
                     attachClickEvent(scope);
                 }, 600);
             });
+            //Forced update of the chart
+            scope.chart.update();
         }
 
         function plotChartProxy(scope, element) {
@@ -1202,6 +1203,7 @@ WM.module('wm.widgets.basic')
             case 'bubblesize':
             case 'shape':
             case 'tooltips':
+            case 'showlegend':
                     //In RunMode, the plotchart method will not be called for all property change
                 if (scope.chartReady) {
                     plotChartProxy(scope, element);

@@ -188,14 +188,14 @@ WM.module('wm.widgets.basic')
             function getLabelValues(value) {
                 var labelsConfig = {};
                 switch (value) {
-                case 'Hide Labels':
+                case 'hide':
                     labelsConfig.showlabels = false;
                     break;
-                case 'Show Labels Inside':
+                case 'inside':
                     labelsConfig.showlabels = true;
                     labelsConfig.showlabelsoutside = false;
                     break;
-                case 'Show Labels Outside':
+                case 'outside':
                     labelsConfig.showlabels = true;
                     labelsConfig.showlabelsoutside = true;
                     break;
@@ -525,6 +525,11 @@ WM.module('wm.widgets.basic')
             }
 
             function modifyLegendPosition(scope, position, id) {
+                var showLegend = isShowLegend(scope.showlegend);
+                //Return when showlegend is false
+                if (!showLegend) {
+                    return;
+                }
                 var chart_Id = id ? '#wmChart' + id : chartId,
                     legendWrap = d3.select(chart_Id + ' .nv-legendWrap'),
                     legendWrapHeight,
@@ -552,10 +557,10 @@ WM.module('wm.widgets.basic')
                 coordinates = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(legendWrapTransform);
 
                 switch (position) {
-                case 'Top':
+                case 'top':
                     y = -(legendWrapHeight + 15);
                     break;
-                case 'Bottom':
+                case 'bottom':
                     if (scope.offsetbottom > legendWrapHeight) {
                         y = getChartHeight() - (legendWrapHeight + 15);
 
@@ -576,14 +581,14 @@ WM.module('wm.widgets.basic')
             //Returns value if legend need to shown or not
             function isShowLegend(value) {
                 //Old projects will have either true or false
-                if (value === 'false') {
+                if (value === 'false' || value === false) {
                     return false;
                 }
-                if (value === 'true') {
+                if (value === 'true' || value === true) {
                     return true;
                 }
                 //New projects will have either 'Hide Legend', 'Show Top', 'Show Bottom'
-                return value === 'Hide Legend' ? false : true;
+                return value === 'hide' ? false : true;
             }
 
             // intializes the chart obejct
