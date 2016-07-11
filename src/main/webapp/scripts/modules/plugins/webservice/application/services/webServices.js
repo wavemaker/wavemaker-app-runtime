@@ -556,7 +556,6 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                     headers: params.headers
                 },
                 data: params.dataParams || undefined,
-                "isDirectCall": params.isDirectCall,
                 "byPassResult": true
             }, successCallback, failureCallback);
         },
