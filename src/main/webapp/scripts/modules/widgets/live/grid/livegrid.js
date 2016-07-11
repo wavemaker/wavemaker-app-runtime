@@ -36,11 +36,24 @@ WM.module('wm.widgets.live')
                 transclude: true,
                 scope: {},
                 controller: function ($scope) {
-                    this.confirmMessage = function () {
+                    this.confirmMessage = function (okCallBack, cancelCallBack) {
                         if (!($scope.grid && $scope.grid.confirmdelete)) {
-                            return true;
+                            okCallBack();
+                            return;
                         }
-                        return confirm($scope.grid.confirmdelete);
+                        DialogService._showAppConfirmDialog({
+                            'caption'   : 'Delete Record',
+                            'iconClass' : 'wi wi-delete fa-lg',
+                            'content'   : $scope.grid.confirmdelete,
+                            'resolve'   : {
+                                'confirmActionOk': function () {
+                                    return okCallBack;
+                                },
+                                'confirmActionCancel': function () {
+                                    return cancelCallBack;
+                                }
+                            }
+                        });
                     };
                 },
                 template: function (element) {

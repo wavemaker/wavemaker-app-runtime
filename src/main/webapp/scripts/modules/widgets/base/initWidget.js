@@ -1,4 +1,4 @@
-/*global WM, _, wm,$*/
+/*global WM, _, wm, $, document*/
 /**
  * @ngdoc directive
  * @name wm.widgets.directive:initWidget
@@ -28,14 +28,23 @@ WM.module('wm.widgets.base')
         '$timeout',
         '$routeParams',
         'BindingManager',
+        '$compile',
         'DataFormatService', /*Do not remove*/
 
-        function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, $routeParams, BindingManager) {
+        function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, $routeParams, BindingManager, $compile) {
             'use strict';
 
             var BOOLEAN_ATTRS = {},
                 DLG_ACTIONS   = {'SHOW': 'show', 'HIDE': 'hide'},
-                EVENT         = 'event';
+                EVENT         = 'event',
+                $appConfirmDialog;
+
+            if (CONSTANTS.isRunMode) {
+                //Append and compile the global application confirm dialog in run mode
+                $appConfirmDialog = WM.element('<wm-confirmdialog name="_app-confirm-dialog"></wm-confirmdialog>');
+                WM.element(document.body).append($appConfirmDialog);
+                $compile($appConfirmDialog)($rs);
+            }
 
             // create a map of boolean attrs
             [

@@ -108,7 +108,6 @@ WM.module('wm.widgets.live')
             controller: function ($scope, $attrs, DialogService) {
                 var prevformFields,
                     prevDataObject = {},
-                    isDeleteInProgress,
                     formController,
                     onResult,
                     onVariableUpdate;
@@ -215,14 +214,15 @@ WM.module('wm.widgets.live')
                 };
                 /*Method to handle the insert, update, delete actions*/
                 /*The operationType decides the type of action*/
-                $scope.formSave = function (event, updateMode, newForm) {
+                $scope.formSave = function (event, updateMode, newForm, callBackFn) {
                     var data,
                         prevData,
                         requestData = {},
                         elScope = $scope.element.scope(),
                         variableName = $scope.variableName || Utils.getVariableName($scope),
                         variable = elScope.Variables[variableName],
-                        isValid;
+                        isValid,
+                        deleteFn;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         return;
@@ -339,38 +339,40 @@ WM.module('wm.widgets.live')
                         }
                         break;
                     case "delete":
+                        deleteFn = function () {
+                            variable.deleteRecord(requestData, function (success) {
+                                /* check the response whether the data successfully deleted or not , if any error occurred show the
+                                 * corresponding error , other wise remove the row from grid */
+                                if (success && success.error) {
+                                    $scope.toggleMessage(true, success.error, 'error');
+                                    onResult(success, false);
+                                    return;
+                                }
+                                onResult(success, true);
+                                $scope.clearData();
+                                $scope.toggleMessage(true, $scope.deletemessage, 'success');
+                                $scope.isSelected = false;
+                                /*get updated data without refreshing page*/
+                                if ($scope.ctrl) {
+                                    $scope.$emit('on-result', 'delete', success);
+                                } else {
+                                    variable.update({
+                                        'type': 'wm.LiveVariable'
+                                    }, WM.noop);
+                                }
+
+                            }, function (error) {
+                                $scope.toggleMessage(true, error, 'error');
+                                onResult(error, false);
+                                Utils.triggerFn(callBackFn);
+                            });
+                        };
                         $scope.toggleMessage(false);
                         if ($scope.ctrl) {
-                            if (!$scope.ctrl.confirmMessage()) {
-                                isDeleteInProgress = false;
-                                return;
-                            }
+                            $scope.ctrl.confirmMessage(deleteFn, callBackFn);
+                        } else {
+                            deleteFn();
                         }
-                        variable.deleteRecord(requestData, function (success) {
-                            /* check the response whether the data successfully deleted or not , if any error occurred show the
-                             * corresponding error , other wise remove the row from grid */
-                            if (success && success.error) {
-                                $scope.toggleMessage(true, success.error, 'error');
-                                onResult(success, false);
-                                return;
-                            }
-                            onResult(success, true);
-                            $scope.clearData();
-                            $scope.toggleMessage(true, $scope.deletemessage, 'success');
-                            $scope.isSelected = false;
-                            /*get updated data without refreshing page*/
-                            if ($scope.ctrl) {
-                                $scope.$emit("on-result", "delete", success);
-                            } else {
-                                variable.update({
-                                    "type": "wm.LiveVariable"
-                                }, WM.noop);
-                            }
-
-                        }, function (error) {
-                            $scope.toggleMessage(true, error, 'error');
-                            onResult(error, false);
-                        });
                         break;
                     }
                 };
@@ -515,10 +517,7 @@ WM.module('wm.widgets.live')
                     resetFormState();
                     $scope.operationType = "delete";
                     prevDataObject = Utils.getClonedObject($scope.rowdata);
-                    $scope.formSave();
-                    if (!isDeleteInProgress && callBackFn) {
-                        callBackFn();
-                    }
+                    $scope.formSave(undefined, undefined, undefined, callBackFn);
                 };
                 /*Check if the data is in required format, i.e, if the field has a key and type*/
                 $scope.isInReqdFormat = function (data) {

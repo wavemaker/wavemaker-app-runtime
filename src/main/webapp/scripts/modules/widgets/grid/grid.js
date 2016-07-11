@@ -446,10 +446,6 @@ WM.module('wm.widgets.grid')
                                 if (CONSTANTS.isStudioMode) {
                                     scope.renderOperationColumns();
                                     scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
-                                    scope.widgetProps.confirmdelete.show = newVal;
-                                    scope.widgetProps.deletemessage.show = newVal;
-                                    scope.widgetProps.confirmdelete.showindesigner = newVal;
-                                    scope.widgetProps.deletemessage.showindesigner = newVal;
                                 }
                                 break;
                             case 'updaterow':
@@ -706,7 +702,8 @@ WM.module('wm.widgets.grid')
         "wmToaster",
         "$servicevariable",
         "LiveWidgetUtils",
-        function ($rootScope, $scope, $timeout, $compile, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils) {
+        "DialogService",
+        function ($rootScope, $scope, $timeout, $compile, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
             'use strict';
             var rowOperations = {
                     'update': {
@@ -1061,30 +1058,21 @@ WM.module('wm.widgets.grid')
                     return $compile(el)($scope);
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback, evt) {
-                    var isDelConfirmed,
-                        variable;
-                    if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
-                        wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
-                        $scope.$root.$safeApply($scope);
-                        return;
-                    }
-                    // Know if user wants to delete the row
-                    isDelConfirmed = $scope.confirmdelete ? confirm($scope.confirmdelete) : true;
-                    /* delete if user confirm to delete*/
-                    if (isDelConfirmed) {
+                    var deleteFn = function () {
+                        var variable;
                         variable = $scope.gridElement.scope().Variables[$scope.variableName];
                         if (!variable) {
                             return;
                         }
                         variable.deleteRecord({
-                            "row": row,
-                            "transform": true,
-                            "scope": $scope.gridElement.scope()
+                            'row'       : row,
+                            'transform' : true,
+                            'scope'     : $scope.gridElement.scope()
                         }, function (success) {
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
-                                wmToaster.show("error", "ERROR", success.error);
+                                wmToaster.show('error', 'ERROR', success.error);
                                 return;
                             }
                             /*Emit on row delete to handle any events listening to the delete action*/
@@ -1093,19 +1081,41 @@ WM.module('wm.widgets.grid')
                             $scope.onRecordDelete();
                             $scope.updateVariable();
                             if ($scope.deletemessage) {
-                                wmToaster.show("success", "SUCCESS", $scope.deletemessage);
+                                wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
                             }
                             /*custom EventHandler for row deleted event*/
                             $scope.onRowdeleted({$event: evt, $data: row});
 
                         }, function (error) {
-                            wmToaster.show("error", "ERROR", error);
+                            Utils.triggerFn(cancelRowDeleteCallback);
+                            wmToaster.show('error', 'ERROR', error);
                         });
-                    } else {
-                        if (cancelRowDeleteCallback) {
-                            cancelRowDeleteCallback();
-                        }
+                    };
+                    if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
+                        wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
+                        $scope.$root.$safeApply($scope);
+                        return;
                     }
+                    if (!$scope.confirmdelete) {
+                        deleteFn();
+                        Utils.triggerFn(cancelRowDeleteCallback);
+                        return;
+                    }
+                    DialogService._showAppConfirmDialog({
+                        'caption'   : 'Delete Record',
+                        'iconClass' : 'wi wi-delete fa-lg',
+                        'content'   : $scope.confirmdelete,
+                        'resolve'   : {
+                            'confirmActionOk': function () {
+                                return deleteFn;
+                            },
+                            'confirmActionCancel': function () {
+                                return function () {
+                                    Utils.triggerFn(cancelRowDeleteCallback);
+                                };
+                            }
+                        }
+                    });
                 },
                 insertRecord = function (options) {
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
