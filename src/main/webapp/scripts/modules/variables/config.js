@@ -103,10 +103,32 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
         }
     }
 });
+wm.variables.constant('VARIABLE_SERVICE_URLS_MOBILE', {
+    VariableService : {
+        getServiceOpInfo: {
+            url: 'resources/servicedefs/app/service-definitions.json',
+            method: 'GET'
+        },
+        getPrefabServiceOpInfo: {
+            url: 'resources/servicedefs/prefabs/:prefabName/service-definitions.json',
+            method: 'GET'
+        }
+    }
+});
+
 wm.variables.config(function (BaseServiceManagerProvider, VARIABLE_SERVICE_URLS) {
     'use strict';
 
     BaseServiceManagerProvider.register(VARIABLE_SERVICE_URLS);
+});
+
+wm.variables.run(function ($location, BaseServiceManager, VARIABLE_SERVICE_URLS, VARIABLE_SERVICE_URLS_MOBILE) {
+    'use strict';
+    if ($location.protocol() === 'file') {
+        var urls = WM.extend({}, VARIABLE_SERVICE_URLS.VariableService, VARIABLE_SERVICE_URLS_MOBILE.VariableService);
+        VARIABLE_SERVICE_URLS.VariableService = urls;
+        BaseServiceManager.register(VARIABLE_SERVICE_URLS);
+    }
 });
 
 /*End of Module definition*/

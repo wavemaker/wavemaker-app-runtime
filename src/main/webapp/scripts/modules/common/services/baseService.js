@@ -125,6 +125,7 @@ wm.modules.wmCommon.services.BaseService = [
 
                     /* set byPassResult flag */
                     config.byPassResult = serviceParams.byPassResult;
+                    config.isDirectCall = serviceParams.isDirectCall;
 
                     return config;
                 }
@@ -152,8 +153,11 @@ wm.modules.wmCommon.services.BaseService = [
         /* to return http promise*/
             getHttpPromise = function (params) {
                 var config = params;
-                config.headers = config.headers || {};
-                config.headers['X-Requested-With'] = 'XMLHttpRequest';
+                // this header is not required for direct hits (i.e. not through proxy).
+                if (!params.isDirectCall) {
+                    config.headers = config.headers || {};
+                    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+                }
                 if (params.hasOwnProperty('target') && params.hasOwnProperty('action')) {
                     config = parseReplace(params);
                 }
@@ -164,10 +168,10 @@ wm.modules.wmCommon.services.BaseService = [
                 var returnVal;
                 isUnAuthorized = false;
                 if (!config.byPassResult && response.data.hasOwnProperty('result')) {
-                    Utils.triggerFn(successCallback, response.data.result);
+                    Utils.triggerFn(successCallback, response.data.result, response);
                     returnVal = response.data.result;
                 } else {
-                    Utils.triggerFn(successCallback, response.data);
+                    Utils.triggerFn(successCallback, response.data, response);
                     returnVal = response.data;
                 }
                 logAction("success", "GOT_RESPONSE_FROM_SERVER", config.url);
@@ -175,7 +179,7 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg, errorDetails, appManager;
+                var errTitle, errMsg, errorDetails = error, appManager;
                 /*if user is unauthorized, then show login dialog*/
                 if (error.status === 401 && !error.headers('X-WM-Login-ErrorMessage')) {
                     if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {

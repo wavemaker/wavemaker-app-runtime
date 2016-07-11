@@ -131,6 +131,9 @@ wm.plugins.webServices.constant('WS_CONSTANTS', {
         FORM_URL_ENCODED: "application/x-www-form-urlencoded",
         MULTIPART_FORMDATA: "multipart/form-data",
         OCTET_STREAM: "application/octet-stream"
+    },
+    HTTP_STATUS_CODE: {
+        CORS_FAILURE: -1
     }
 });
 

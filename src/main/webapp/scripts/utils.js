@@ -1,4 +1,4 @@
-/*global WM, wm, window, document, navigator, Image, location, console, _, $, moment*/
+/*global WM, X2JS, wm, window, document, navigator, Image, location, console, _, $, moment*/
 /*jslint todo: true */
 
 /**
@@ -1872,6 +1872,19 @@ WM.module('wm.utils', [])
 
             return expr;
         }
+        /**
+         * Returns the orderBy Expression based on the 'sort 'option in pageable object
+         * returned by backend
+         * @param pageableObj
+         * @returns {string}
+         */
+        function xmlToJson(xmlString, includeRoot) {
+            var json = new X2JS({'emptyNodeForm': 'content', 'attributePrefix': '', 'enableToStringFunc': false}).xml_str2json(xmlString);
+            if (!includeRoot && json) {
+                json = _.get(json, Object.keys(json)[0]);
+            }
+            return json;
+        }
 
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
@@ -1982,4 +1995,5 @@ WM.module('wm.utils', [])
         this.getWidgetRolesArrayFromStr = getWidgetRolesArrayFromStr;
         this.setNodeContent             = setNodeContent;
         this.getOrderByExpr             = getOrderByExpr;
+        this.xmlToJson                  = xmlToJson;
     }]);

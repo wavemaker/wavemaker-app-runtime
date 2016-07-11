@@ -47,7 +47,7 @@ wm.variables.services.$servicevariable = ['Variables',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
-            AUTH_HDR_KEY = "X-WM-Authorization",
+            AUTH_HDR_KEY = "Authorization",
             isPrimitiveType = function (type) {
                 return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1);
             },
@@ -150,6 +150,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     return;
                 }
 
+                response = Utils.getValidJSON(response) || Utils.xmlToJson(response) || response;
+
                 // EVENT: ON_RESULT
                 initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
 
@@ -187,13 +189,36 @@ wm.variables.services.$servicevariable = ['Variables',
                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
             },
 
+            /**
+             * Goes though request headers, appends 'X-' to certain headers
+             * these headers need not be processed at proxy server and should directly be passed to the server
+             * e.g. Authorization, Cookie, etc.
+             * @param headers
+             * @returns {{}}
+             */
+            cloakHeadersForProxy = function (headers) {
+                var _headers = {},
+                    UNCLOAKED_HEADERS = ['CONTENT-TYPE', 'ACCEPT', 'CONTENT-LENGTH', 'ACCEPT-ENCODING', 'ACCEPT-LANGUAGE'],
+                    CLOAK_SUBSCRIPT = 'X-WM';
+                WM.forEach(headers, function (val, key) {
+                    if (_.includes(UNCLOAKED_HEADERS, key.toUpperCase())) {
+                        _headers[key] = val;
+                    } else {
+                        _headers[CLOAK_SUBSCRIPT + key] = val;
+                    }
+                });
+
+                return _headers;
+            },
+
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
             constructRestRequestParams = function (operationInfo, variable) {
+                variable = variable || {};
                 var queryParams = '',
-                    endPointRelativePath = operationInfo.basePath ? operationInfo.basePath + (operationInfo.relativePath || '/') : operationInfo.relativePath || '/',
+                    directPath = operationInfo.directPath || '',
+                    relativePath = operationInfo.basePath ? operationInfo.basePath + (operationInfo.relativePath || '/') : operationInfo.relativePath || '/',
                     headers = {},
-                    variable = variable || {},
                     requestBody,
                     url,
                     requiredParamMissing = false,
@@ -206,11 +231,23 @@ wm.variables.services.$servicevariable = ['Variables',
                     method,
                     isFormDataSupported = Utils.isFileUploadSupported(),
                     formData,
-                    formDataContentType;
+                    formDataContentType,
+                    isProxyCall;
 
-                if (isFormDataSupported) {
-                    formData = new FormData();
+                function getFormDataObj() {
+                    return formData || new FormData();
                 }
+
+                operationInfo.proxySettings = operationInfo.proxySettings || {web: true, mobile: false};
+                method                      = operationInfo.httpMethod || operationInfo.methodType;
+                isProxyCall                 = (function () {
+                    if (CONSTANTS.hasCordova) {
+                        return operationInfo.proxySettings.mobile;
+                    }
+                    return operationInfo.proxySettings.web;
+                }());
+                url                         = isProxyCall ? relativePath : directPath;
+
                 /* loop through all the parameters */
                 _.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
@@ -237,7 +274,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         case 'PATH':
                             /* replacing the path param based on the regular expression in the relative path */
                             pathParamRex = new RegExp("\\s*\\{\\s*" + param.name + "(:\\.\\+)?\\s*\\}\\s*");
-                            endPointRelativePath = endPointRelativePath.replace(pathParamRex, paramValue);
+                            url = url.replace(pathParamRex, paramValue);
                             break;
                         case 'HEADER':
                             headers[param.name] = paramValue;
@@ -250,10 +287,10 @@ wm.variables.services.$servicevariable = ['Variables',
                                 if (param.type === "file") {
                                     if (WM.isArray(paramValue)) {
                                         WM.forEach(paramValue, function (fileObject) {
-                                            formData.append(param.name, fileObject, fileObject.name);
+                                            getFormDataObj().append(param.name, fileObject, fileObject.name);
                                         });
                                     } else {
-                                        formData.append(param.name, paramValue, paramValue.name);
+                                        getFormDataObj().append(param.name, paramValue, paramValue.name);
                                     }
                                 } else {
                                     if (WM.isObject(paramValue)) {
@@ -262,9 +299,9 @@ wm.variables.services.$servicevariable = ['Variables',
                                     } else {
                                         formDataContentType = "text/plain";
                                     }
-                                    formData.append(param.name, new Blob([paramValue], {type: formDataContentType}));
+                                    getFormDataObj().append(param.name, new Blob([paramValue], {type: formDataContentType}));
                                 }
-                                requestBody = formData;
+                                requestBody = getFormDataObj();
                             }
                             break;
                         }
@@ -273,6 +310,8 @@ wm.variables.services.$servicevariable = ['Variables',
                         return false;
                     }
                 });
+
+                // if required param not found, return error
                 if (requiredParamMissing) {
                     return {
                         'error': {
@@ -282,17 +321,8 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                     };
                 }
-                url = $rootScope.project.deployedUrl;
 
-                if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
-                    /* if it is a prefab variable (used in a normal project), modify the url */
-                    url += "/prefabs/" + variable.prefabName;
-                    target = "invokePrefabRestService";
-                }
-
-                method = operationInfo.httpMethod || operationInfo.methodType;
-                url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
-                /*Setting appropriate content-Type*/
+                // Setting appropriate content-Type for request accepting request body like POST, PUT, etc
                 if (!_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
                     /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
                     if (operationInfo.consumes && (operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA)) {
@@ -315,6 +345,23 @@ wm.variables.services.$servicevariable = ['Variables',
                     url += queryParams;
                 }
 
+                /*
+                 * for proxy calls:
+                 * cloak the proper headers
+                 * prepare complete url from relativeUrl
+                 */
+                if (isProxyCall) {
+                    headers = cloakHeadersForProxy(headers);
+                    if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
+                        /* if it is a prefab variable (used in a normal project), modify the url */
+                        url = "/prefabs/" + variable.prefabName + url;
+                        target = "invokePrefabRestService";
+                    } else if (!variable.prefabName) {
+                        url = '/services' + url;
+                    }
+                    url = $rootScope.project.deployedUrl + url;
+                }
+
                 /*creating the params needed to invoke the service. url is generated from the relative path for the operation*/
                 invokeParams = {
                     "projectID": $rootScope.project.id,
@@ -323,7 +370,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     "method": method,
                     "headers": headers,
                     "dataParams": requestBody,
-                    "authType": authType
+                    "authType": authType,
+                    "isDirectCall": !isProxyCall
                 };
 
                 return invokeParams;
@@ -450,9 +498,16 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
-                    variable.promise = WebService.invokeJavaService(params, function (response) {
-                        processSuccessResponse(response, variable, callBackScope, options, success, error);
-                    }, function (errorMsg) {
+                    variable.promise = WebService.invokeJavaService(params, function (response, details) {
+                        if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
+                            processErrorResponse('Possible CORS Failure, try disabling Same-Origin Policy on the browser.', variable, callBackScope, error);
+                        } else {
+                            processSuccessResponse(response, variable, callBackScope, options, success, error);
+                        }
+                    }, function (errorMsg, details) {
+                        if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
+                            errorMsg = 'Possible CORS Failure, try disabling Same-Origin Policy on the browser.';
+                        }
                         processErrorResponse(errorMsg, variable, callBackScope, error);
                     });
                 } else if (serviceType === SERVICE_TYPE_REST) {

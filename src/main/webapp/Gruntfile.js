@@ -316,7 +316,8 @@ module.exports = function (grunt) {
                         //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
-                        '<%= config.scripts %>/modules/base64/base64.js'
+                        '<%= config.scripts %>/modules/base64/base64.js',
+                        '<%= config.scripts %>/modules/xmlToJson/xmlToJson.js'
                     ],
                     '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
@@ -345,7 +346,8 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.components %>/ng-cordova-oauth/ng-cordova-oauth.min.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
-                        '<%= config.scripts %>/modules/base64/base64.js'
+                        '<%= config.scripts %>/modules/base64/base64.js',
+                        '<%= config.scripts %>/modules/xmlToJson/xmlToJson.js'
                     ]
                 }
             },
