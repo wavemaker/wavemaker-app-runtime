@@ -506,13 +506,14 @@ WM.module('wm.widgets.basic')
                 i;
             scope.xAxisDataType = getColumnType(scope.xaxisdatakey, scope.dataset.propertiesMap.columns);
             scope.yAxisDataType = getColumnType(scope.yaxisdatakey, scope.dataset.propertiesMap.columns);
+            scope.xDataKeyArr = [];
 
             while (queryResponse.length !== 0) {
                 groupKey = queryResponse[queryResponse.length - 1][groupingColumn];
                 groupValues.unshift(valueFinder(scope, queryResponse[queryResponse.length - 1], scope.xaxisdatakey, scope.yaxisdatakey, 0));
                 queryResponse.splice(queryResponse.length - 1, 1);
                 for (i = queryResponse.length - 1; i >= 0; i -= 1) {
-                    /*Checking if the new column groupKey is same as the choosen groupKey
+                    /*Checking if the new column groupKey is same as the chosen groupKey
                     Then pushing the data
                     Then splicing the data since it is already pushed */
                     if (groupKey === queryResponse[i][groupingColumn]) {
@@ -675,7 +676,7 @@ WM.module('wm.widgets.basic')
                 'databaseName': variable.liveSource,
                 'query': query,
                 'page': 1,
-                'size': 500,
+                'size': variable.maxResults || 500,
                 'nativeSql': false
             }, function (response) {
                 //Transform the result into a format supported by the chart.
@@ -1161,7 +1162,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 // plotchart for only valid data and only after bound variable returns data
-                if (scope.chartData && scope.chartData.length && !scope.variableInflight) {
+                if (scope.chartData && !scope.variableInflight) {
                     plotChartProxy(scope, element);
                 }
                 break;

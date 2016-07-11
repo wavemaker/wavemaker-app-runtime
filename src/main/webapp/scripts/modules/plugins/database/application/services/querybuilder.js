@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM, wm, moment*/
 /**
  * @ngdoc service
  * @name wm.database.$QueryBuilder
@@ -29,7 +29,9 @@ wm.plugins.database.services.QueryBuilder = [
                     orderByClause,
                     logicalOp = options.logicalOp && options.logicalOp.toLowerCase() === "or" ? " OR " : " AND ",
                     logicalOpSliceLength = logicalOp === " OR " ? -4 : -5,
-                    query;
+                    query,
+                    fields = [],
+                    dateTypes = ['timestamp', 'datetime', 'time', 'date'];
 
                 selectClause = "SELECT ";
 
@@ -77,15 +79,37 @@ wm.plugins.database.services.QueryBuilder = [
                     whereClause = " WHERE ";
                     WM.forEach(options.filterFields, function (field, fieldName) {
                         var fieldValue;
-                        /*Set appropriate value for fieldValue based on the type of data passed for the field.*/
-                        if (field.value) {
-                            fieldValue = field.value;
-                        } else if (!WM.isObject(field)) {
-                            fieldValue = field;
+                        if (WM.isArray(field.value)) {
+                            if (field.filterCondition === 'BETWEEN') {
+                                if (_.includes(dateTypes, field.type)) {
+                                    fields[0] = "'" + moment(field.value[0]).format('YYYY-MM-DD HH:mm:ss') + "'";
+                                    fields[1] = "'" + moment(field.value[1]).format('YYYY-MM-DD HH:mm:ss') + "'";
+                                } else {
+                                    fields = field.value;
+                                }
+                                whereClause += fieldName + ' BETWEEN ' + fields[0] + ' AND ' + fields[1] + logicalOp;
+                            } else {
+                                whereClause += "(" + fieldName + "='";
+                                field.value.forEach(function (element, index) {
+                                    if (index + 1 === field.value.length) {
+                                        whereClause += element;
+                                    } else {
+                                        whereClause += element + "' OR " + fieldName + "='";
+                                    }
+                                });
+                                whereClause += "')" + logicalOp;
+                            }
                         } else {
-                            return;
+                            /*Set appropriate value for fieldValue based on the type of data passed for the field.*/
+                            if (field.value) {
+                                fieldValue = field.value;
+                            } else if (!WM.isObject(field)) {
+                                fieldValue = field;
+                            } else {
+                                return;
+                            }
+                            whereClause += fieldName + "='" + fieldValue + "'" + logicalOp;
                         }
-                        whereClause += fieldName + "='" + fieldValue + "'" + logicalOp;
                     });
                     whereClause = whereClause.slice(0, logicalOpSliceLength);
                 }
