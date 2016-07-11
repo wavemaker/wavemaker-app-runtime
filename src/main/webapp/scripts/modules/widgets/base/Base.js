@@ -51,33 +51,33 @@ WM.module('wm.widgets.base', [])
                 {
                     "name" : "Decimal Digits",
                     "groupOptions" : {
-                        ".f" :  "9.999 >> 9",
-                        ".1f" : "9.999 >> 9.9",
-                        ".2f" : "9.999 >> 9.99",
-                        ".3f" : "9.999 >> 9.999"
+                        ".f" :  "9",
+                        ".1f" : "9.9",
+                        ".2f" : "9.99",
+                        ".3f" : "9.999"
                     }
                 },
                 {
                     "name" : "Precision",
                     "groupOptions" : {
-                        ".1g" : "42347637.87087 >> 4e+7",
-                        ".2g" : "42347637.87087 >> 4.2e+7",
-                        ".3g" : "42347637.87087 >> 4.23e+7"
+                        ".1g" : "9e+7",
+                        ".2g" : "9.9e+7",
+                        ".3g" : "9.99e+7"
                     }
                 },
                 {
                     "name" : "Percentage",
                     "groupOptions" : {
-                        "%" : "0.42 >> 42%"
+                        "%" : "99%"
                     }
                 },
                 {
                     "name" : "Round Options",
                     "groupOptions" : {
                         ",r"    : "99,999,999",
-                        "Thousand" : "9K (Thousand)",
-                        "Million"  : "9M (Million)",
-                        "Billion"  : "9B (Billion)"
+                        "Thousand" : "Thousand (Eg: 9K)",
+                        "Million"  : "Million (Eg: 9M)",
+                        "Billion"  : "Billion (Eg: 9B)"
                     }
                 }
             ],
@@ -107,7 +107,7 @@ WM.module('wm.widgets.base', [])
                     "groupOptions" : {
                         "%d" : "Zero padded day of month (Eg: 01)",
                         "%e" : "Space padded day of month (Eg:  1)",
-                        "%j" : "Day of the year (Eg: 01-31-2016 >> 031)"
+                        "%j" : "Day of the year (Eg: 01-31-2016 returns 031)"
                     }
                 },
                 {
@@ -115,9 +115,9 @@ WM.module('wm.widgets.base', [])
                     "groupOptions" : {
                         "%a" : "Abbreviated weekday name (Eg: Wed)",
                         "%A" : "Full weekday name (Eg: Wednesday)",
-                        "%U" : "Week number of the year(Sunday first day) (Eg: 01-31-2016 >> 05)",
-                        "%W" : "Week number of the year(Monday first day) (Eg: 01-31-2016 >> 04)",
-                        "%w" : "Week day[0(Sunday),6]  (Eg: 01-30-2016 >> 6)"
+                        "%U" : "Week number of the year(Sunday first day) (Eg: 01-31-2016 returns 05)",
+                        "%W" : "Week number of the year(Monday first day) (Eg: 01-31-2016 returns 04)",
+                        "%w" : "Week day[0(Sunday),6]  (Eg: 01-30-2016 returns 6)"
                     }
                 },
                 {
