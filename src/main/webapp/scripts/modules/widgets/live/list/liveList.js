@@ -402,7 +402,7 @@ WM.module('wm.widgets.live')
                 function groupDataByField(liData) {
                     var concatStr = _.get(liData, $is.groupby);
 
-                    if (WM.isUndefined(concatStr)) {
+                    if (WM.isUndefined(concatStr) || _.isNull(concatStr)) {
                         concatStr = GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
                         return concatStr;
                     }
