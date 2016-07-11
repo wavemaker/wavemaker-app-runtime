@@ -144,7 +144,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.class;
             },
             setToasterClass: function (variable, type) {
-                if (WM.isString(text)) {
+                if (WM.isString(type)) {
                     variable.dataBinding.class = type;
                 }
                 return variable.dataBinding.class;
