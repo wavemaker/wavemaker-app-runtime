@@ -423,14 +423,14 @@ WM.module('wm.widgets.dialog')
         this._showAppConfirmDialog = _showAppConfirmDialog;
         this.closeAllDialogs = closeAllDialogs;
     }])
-    .controller('AppConfirmDialogController', ['$scope', 'confirmActionOk', 'confirmActionCancel', 'DialogService', function ($scope, confirmActionOk, confirmActionCancel, DialogService) {
+    .controller('AppConfirmDialogController', ['$scope', 'confirmActionOk', 'confirmActionCancel', 'DialogService', 'Utils', function ($scope, confirmActionOk, confirmActionCancel, DialogService, Utils) {
         'use strict';
         $scope.confirmDialogActionOk = function () {
-            confirmActionOk();
+            Utils.triggerFn(confirmActionOk);
             DialogService.close('_app-confirm-dialog');
         };
         $scope.confirmDialogActionCancel = function () {
-            confirmActionCancel();
+            Utils.triggerFn(confirmActionCancel);
             DialogService.close('_app-confirm-dialog');
         };
     }]);
