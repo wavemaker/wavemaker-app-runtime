@@ -518,7 +518,7 @@ WM.module('wm.widgets.basic')
                         }
                     } else if (!numberFormat) {
                         //Auto formatting the data when no formating option is chosen
-                        formattedData = d;
+                        formattedData = d3.format('.1s')(d);
                     }
                     return formattedData;
                 }
