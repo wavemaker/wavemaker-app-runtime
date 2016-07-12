@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
+import java.util.Set;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
@@ -25,10 +27,10 @@ public abstract class CriteriaUtils {
         return queryFilter.getFilterCondition().criterion(attributeName, attributeValue);
     }
 
-    public static Page executeAndGetPageableData(Criteria criteria, Pageable pageable) {
+    public static Page executeAndGetPageableData(Criteria criteria, Pageable pageable, Set<String> aliases) {
         if (pageable != null) {
             long count = getRowCount(criteria);
-            updateCriteriaForPageable(criteria, pageable);
+            updateCriteriaForPageable(criteria, pageable, aliases);
             return new WMPageImpl(criteria.list(), pageable, count);
         } else {
             return new WMPageImpl(criteria.list());
@@ -54,22 +56,28 @@ public abstract class CriteriaUtils {
         return count;
     }
 
-    public static Criteria criteriaForRelatedProperty(Criteria criteria, final String attributeName) {
-        final int indexOfDot = attributeName.indexOf(SEARCH_PROPERTY_DELIMITER);
+
+    public static Criteria criteriaForRelatedProperty(Criteria criteria, final String attributeName, final Set<String> aliases) {
+        final int indexOfDot = attributeName.lastIndexOf(SEARCH_PROPERTY_DELIMITER);
         if (indexOfDot != -1) {
             String relatedEntityName = attributeName.substring(0, indexOfDot);
-            criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
+            if (aliases == null) {
+                return criteria.createAlias(relatedEntityName, relatedEntityName);
+            } else if (!aliases.contains(relatedEntityName)) {
+                aliases.add(relatedEntityName);
+                return criteria.createAlias(relatedEntityName, relatedEntityName);
+            }
         }
         return criteria;
     }
 
-    public static void updateCriteriaForPageable(Criteria criteria, Pageable pageable) {
+    public static void updateCriteriaForPageable(Criteria criteria, Pageable pageable, Set<String> aliases) {
         criteria.setFirstResult(pageable.getOffset());
         criteria.setMaxResults(pageable.getPageSize());
         if (pageable.getSort() != null) {
             for (final Sort.Order order : pageable.getSort()) {
                 final String property = order.getProperty();
-                criteriaForRelatedProperty(criteria, property);
+                criteriaForRelatedProperty(criteria, property, aliases);
                 if (order.getDirection() == Sort.Direction.DESC) {
                     criteria.addOrder(Order.desc(property));
                 } else {

@@ -15,16 +15,10 @@
  */
 package com.wavemaker.runtime.data.dao;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -113,7 +107,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             public Page doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
                 criteria.add(Restrictions.eq(key, value));
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable);
+                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
             }
         });
     }
@@ -130,18 +124,19 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(entityClass);
+                Set<String> aliases = new HashSet<>();
                 if (ArrayUtils.isNotEmpty(queryFilters)) {
                     for (QueryFilter queryFilter : queryFilters) {
                         final String attributeName = queryFilter.getAttributeName();
 
                         // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
-                        CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName);
+                        CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName, aliases);
 
                         Criterion criterion = CriteriaUtils.createCriterion(queryFilter);
                         criteria.add(criterion);
                     }
                 }
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable);
+                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, aliases);
             }
         });
     }
@@ -157,7 +152,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     Criterion criterion = new QueryParser().parse(query, entityClass, criteria);
                     criteria.add(criterion);
                 }
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable);
+                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
             }
         });
     }

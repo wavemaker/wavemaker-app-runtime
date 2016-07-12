@@ -59,7 +59,7 @@ public class ReportGenerator {
         if (StringUtils.isNotBlank(query)) {
             criteria.add(queryParser.parse(query, fieldNameVsTypes, criteria));
         }
-        CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable());
+        CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable(), null);
         return criteria.list();
     }
 }
