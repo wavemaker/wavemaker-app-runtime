@@ -1027,11 +1027,12 @@ WM.module('wm.widgets.basic')
             if (!element[0].getBoundingClientRect().height) {
                 return;
             }
-            scope.chart = configureChart(scope, element, datum);
             //empty svg to add-new chart
             element.find('svg').empty();
 
-            nv.addGraph(scope.chart, function () {
+            nv.addGraph(function () {
+                configureChart(scope, element, datum);
+            }, function () {
                 /*Bubble chart has an time out delay of 300ms in their implementation due to which we
                 * won't be getting required data points on attaching events
                 * hence delaying it 600ms*/
@@ -1039,8 +1040,6 @@ WM.module('wm.widgets.basic')
                     attachClickEvent(scope);
                 }, 600);
             });
-            //Forced update of the chart
-            scope.chart.update();
         }
 
         function plotChartProxy(scope, element) {
@@ -1167,7 +1166,7 @@ WM.module('wm.widgets.basic')
 
                 // plotchart for only valid data and only after bound variable returns data
                 if (scope.chartData && !scope.variableInflight) {
-                    plotChartProxy(scope, element);
+                    scope._plotChartProxy();
                 }
                 break;
             case 'type':
@@ -1194,7 +1193,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (scope.chartReady) {
-                    plotChartProxy(scope, element);
+                    scope._plotChartProxy();
                 }
                 break;
             case 'xaxisdatakey':
@@ -1208,7 +1207,7 @@ WM.module('wm.widgets.basic')
             case 'showlegend':
                     //In RunMode, the plotchart method will not be called for all property change
                 if (scope.chartReady) {
-                    plotChartProxy(scope, element);
+                    scope._plotChartProxy();
                 }
                 break;
             case 'fontsize':
@@ -1250,6 +1249,8 @@ WM.module('wm.widgets.basic')
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 
+                        scope._plotChartProxy = _.debounce(plotChartProxy.bind(undefined, scope, element), 50);
+
                         if (!scope.theme) {
                             //Default theme for pie/donut is Azure and for other it is Terrestrial
                             scope.theme = ChartService.isPieType(scope.type) ? 'Azure' : 'Terrestrial';
@@ -1275,7 +1276,7 @@ WM.module('wm.widgets.basic')
                             handlers.push($rootScope.$on('wms:replot-chart', function (event, activeChartScope) {
                                 if (activeChartScope.$id === scope.$id) {
                                     modifyAxesOptions(scope);
-                                    plotChartProxy(scope, element);
+                                    scope._plotChartProxy();
                                 }
                             }));
                         }
@@ -1287,7 +1288,7 @@ WM.module('wm.widgets.basic')
 
                         // When there is not value binding, then plot the chart with sample data
                         if (!scope.binddataset && !attrs.scopedataset) {
-                            plotChartProxy(scope, element);
+                            scope._plotChartProxy();
                         }
 
                         // Run Mode Iniitilzation
@@ -1298,14 +1299,14 @@ WM.module('wm.widgets.basic')
                             if (attrs.scopedataset) {
                                 handlers.push(scope.$watch('scopedataset', function (newVal) {
                                     scope.chartData = newVal || scope.chartData;
-                                    plotChartProxy(scope, element);
+                                    scope._plotChartProxy();
                                 }));
                             }
                         } else {
                             scope.showNoDataMsg = true;
                             // on canvas-resize, plot the chart again
                             handlers.push(scope.$root.$on('canvas-resize', function () {
-                                plotChartProxy(scope, element);
+                                scope._plotChartProxy();
                             }));
                         }
 
@@ -1326,7 +1327,7 @@ WM.module('wm.widgets.basic')
                         element.on('$destroy', onDestroy);
 
                         //Container widgets like tabs, accordions will trigger this method to redraw the chart.
-                        scope.redraw = plotChartProxy.bind(undefined, scope, element);
+                        scope.redraw = scope._plotChartProxy;
                     }
                 };
             }
