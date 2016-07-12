@@ -231,14 +231,16 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             testJarRequired: function (params) {
-                return BaseService.execute({
+                var deferred = $q.defer();
+                BaseService.execute({
                     target: "Database",
                     action: "testJarRequired",
                     urlParams: {
                         'projectID': params.projectID,
                         'dbType'   : params.dbType
                     }
-                });
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
             },
 
             /**
