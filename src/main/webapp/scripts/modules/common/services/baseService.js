@@ -372,11 +372,12 @@ wm.modules.wmCommon.services.BaseService = [
         /*function to handle the session timeout in studio mode*/
             handleSessionTimeOut = function () {
                 if (!isUnAuthorized) {
-                    var dialogId = CONSTANTS.isStudioMode ? 'sessionTimeOutDialog' : 'CommonLoginDialog';
+                    var isStudioDisabled, dialogId = CONSTANTS.isStudioMode ? 'sessionTimeOutDialog' : 'CommonLoginDialog';
                     if (!CONSTANTS.isStudioMode) {
                         Utils.triggerFn($rootScope.onSessionTimeout);
                         $rootScope.$emit('on-sessionTimeout');
                     }
+                    isStudioDisabled = $rootScope.isStudioDisabled;
                     $rootScope.isStudioDisabled = false;
                     DialogService.closeAllDialogs();
                     DialogService.showDialog(dialogId, {
@@ -386,6 +387,7 @@ wm.modules.wmCommon.services.BaseService = [
                                     executeErrorCallStack();
 
                                     if (CONSTANTS.isStudioMode) {
+                                        $rootScope.isStudioDisabled = isStudioDisabled;
                                         $rootScope.$emit('wms:unblock-wsm');
                                     }
 
