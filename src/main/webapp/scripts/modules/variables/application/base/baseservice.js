@@ -1658,6 +1658,19 @@ wm.variables.services.Variables = [
             },
             /**
              * @ngdoc method
+             * @name $Variables#getByContext
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Gets variables for specified contextx
+             */
+            'getByContext': function (pages) {
+                if (pages) {
+                    pages = pages || _.keys(pageScopeMap);
+                    return _.pick(self.variableCollection, pages);
+                }
+            },
+            /**
+             * @ngdoc method
              * @name $Variables#getDuplicateVariables
              * @methodOf wm.variables.$Variables
              * @description
