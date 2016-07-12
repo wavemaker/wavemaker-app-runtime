@@ -512,7 +512,8 @@ WM.module('wm.widgets.basic')
 
             while (queryResponse.length !== 0) {
                 groupKey = queryResponse[queryResponse.length - 1][groupingColumn];
-                groupValues.unshift(valueFinder(scope, queryResponse[queryResponse.length - 1], scope.xaxisdatakey, scope.yaxisdatakey, 0));
+                //Data should be in ascending order of 'x', since there is tooltips issue incase of line chart
+                groupValues.push(valueFinder(scope, queryResponse[queryResponse.length - 1], scope.xaxisdatakey, scope.yaxisdatakey, 0));
                 queryResponse.splice(queryResponse.length - 1, 1);
                 for (i = queryResponse.length - 1; i >= 0; i -= 1) {
                     /*Checking if the new column groupKey is same as the chosen groupKey
@@ -520,7 +521,8 @@ WM.module('wm.widgets.basic')
                     Then splicing the data since it is already pushed */
                     if (groupKey === queryResponse[i][groupingColumn]) {
                         index += 1;
-                        groupValues.unshift(valueFinder(scope, queryResponse[i], scope.xaxisdatakey, scope.yaxisdatakey, index));
+                        //Data should be in ascending order of 'x', since there is tooltips issue incase of line chart
+                        groupValues.push(valueFinder(scope, queryResponse[i], scope.xaxisdatakey, scope.yaxisdatakey, index));
                         queryResponse.splice(i, 1);
                     }
                 }
