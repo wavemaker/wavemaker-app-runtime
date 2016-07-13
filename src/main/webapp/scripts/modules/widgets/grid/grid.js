@@ -537,6 +537,7 @@ WM.module('wm.widgets.grid')
                                         scope.actions.splice(addNewRowButtonIndex, 1);
                                     }
                                 }
+                                scope.populateActions();
                                 if (CONSTANTS.isStudioMode) {
                                     actionsObj = {
                                         type: 'GRID',
@@ -2031,6 +2032,19 @@ WM.module('wm.widgets.grid')
                     });
                 }
             };
+            //Populate the _actions based on the position property
+            $scope.populateActions = function () {
+                $scope._actions.header = [];
+                $scope._actions.footer = [];
+                _.forEach($scope.actions, function (action) {
+                    if (_.includes(action.position, 'header')) {
+                        $scope._actions.header.push(action);
+                    }
+                    if (_.includes(action.position, 'footer')) {
+                        $scope._actions.footer.push(action);
+                    }
+                });
+            };
         }])
 
 /**
@@ -2269,16 +2283,7 @@ WM.module('wm.widgets.grid')
                         parentIsolateScope.actions = parentIsolateScope.actions || [];
                         parentIsolateScope.actions.push(buttonDef);
 
-                        parentIsolateScope._actions.header = [];
-                        parentIsolateScope._actions.footer = [];
-                        _.forEach(scope.actions, function (action) {
-                            if (_.includes(action.position, 'header')) {
-                                parentIsolateScope._actions.header.push(action);
-                            }
-                            if (_.includes(action.position, 'footer')) {
-                                parentIsolateScope._actions.footer.push(action);
-                            }
-                        });
+                        parentIsolateScope.populateActions();
                     }
                 };
             }
