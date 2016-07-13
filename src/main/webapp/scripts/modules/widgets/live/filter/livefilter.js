@@ -674,7 +674,7 @@ WM.module('wm.widgets.live')
                                             bindDataSetChanged: true,
                                             widgettype: scope.widgettype
                                         };
-                                        scope.$root.$emit('filterDefs-modified', designerObj);
+                                        Utils.getService('LiveWidgetsMarkupManager').updateMarkupForLiveFilter(designerObj);
                                     }
                                     break;
                                 case "pagesize":
@@ -695,7 +695,7 @@ WM.module('wm.widgets.live')
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
                             /* event emitted on building new markup from canvasDom */
-                            handlers.push($rootScope.$on('compile-filters', function (event, scopeId, markup, filterObj, variableName, fromDesigner) {
+                            handlers.push($rootScope.$on('compile-filters', function (event, scopeId, markup, variableName, fromDesigner) {
 
                                 if (scope.$id === scopeId) {
                                     var markupObj  = WM.element('<div>' + markup + '</div>'),

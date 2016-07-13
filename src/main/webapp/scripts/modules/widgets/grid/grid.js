@@ -545,7 +545,7 @@ WM.module('wm.widgets.grid')
                                         scopeId: scope.$id,
                                         buttonDefs: scope.actions
                                     };
-                                    $rootScope.$emit('grid-defs-modified', actionsObj);
+                                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(actionsObj);
                                 }
                                 break;
                             case 'show':
@@ -1877,7 +1877,7 @@ WM.module('wm.widgets.grid')
                     fieldDefs: defaultFieldDefs,
                     scopeId: $scope.$id
                 };
-                $rootScope.$emit('grid-defs-modified', gridObj);
+                Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(gridObj);
                 $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
             };
 
@@ -2220,7 +2220,7 @@ WM.module('wm.widgets.grid')
                                     scopeId: scope.$parent.$id,
                                     fieldDefs: scope.$parent.fullFieldDefs
                                 };
-                                scope.$root.$emit('grid-defs-modified', config);
+                                Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
                                 scope.$root.$emit('save-workspace', true);
                             }
                         }

@@ -22,11 +22,12 @@ WM.module('wm.layouts.containers')
                                 '<span>{{:: $root.locale.MESSAGE_CANNOT_GENERATE_FIELDS_IN_STUDIO}}</span>' +
                             '</div>' +
                         '</div>' +
+                        '<div class="hidden-form-elements"></div>' +
                     '</div>' +
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
@@ -220,7 +221,7 @@ WM.module('wm.layouts.containers')
                     element.find('[data-role="form-field"]').each(function () {
                         var fieldName;
                         field       = WM.element(this).isolateScope().fieldDefConfig;
-                        fieldTarget = _.split(field.target, '.');
+                        fieldTarget = _.split(field.key || field.target, '.');
                         fieldName   = fieldTarget[0] || field.key || field.name;
                         if (fieldTarget.length === 1 && !formData[fieldName]) {
                             formData[fieldName] = field.value;
@@ -292,6 +293,7 @@ WM.module('wm.layouts.containers')
                     scope.elScope.isUpdateMode = true;
                 },
                 'post': function (scope, element, attrs) {
+                    var handlers = [];
                     scope.statusMessage = undefined;
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
@@ -299,9 +301,30 @@ WM.module('wm.layouts.containers')
                     if (!scope.widgetid) {
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
+                    } else {
+                        //event emitted on building new markup from canvasDom
+                        handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
+                            //as multiple form directives will be listening to the event, apply field-definitions only for current form
+                            if (!markup || scope.$id !== scopeId) {
+                                return;
+                            }
+                            scope.elScope.formFields = undefined;
+                            element.find('.form-elements').empty();
+                            element.find('.hidden-form-elements').empty();
+                            var markupObj = WM.element('<div>' + markup + '</div>');
+                            /* if layout grid template found, simulate canvas dom addition of the elements */
+                            $rootScope.$emit('prepare-element', markupObj, function () {
+                                element.find('.form-elements').append(markupObj);
+                                $compile(markupObj)(scope);
+                            });
+                        }));
                     }
                     scope.elScope.ngform  = scope[scope.name];
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    scope.$on('$destroy', function () {
+                        handlers.forEach(Utils.triggerFn);
+                    });
                 }
             }
         };

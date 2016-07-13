@@ -843,7 +843,7 @@ WM.module('wm.widgets.live')
                                     scope.newcolumns = false;
                                     gridObj.bindDataSetChanged = true;
                                     gridObj.widgettype = scope.widgettype;
-                                    $rootScope.$emit('formFieldsDefs-modified', gridObj);
+                                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForLiveForm(gridObj);
                                 }
                                 break;
                             case 'captionsize':
@@ -908,7 +908,7 @@ WM.module('wm.widgets.live')
                         });
                         if (scope.widgetid) {
                             /* event emitted on building new markup from canvasDom */
-                            handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup, newVal, fromDesigner) {
+                            handlers.push($rootScope.$on('compile-live-form-fields', function (event, scopeId, markup, fromDesigner) {
 
                                 if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
                                     if (scope.formlayout === 'page') {
@@ -1080,7 +1080,7 @@ WM.module('wm.widgets.live')
                         scope.parentIsolateScope = parentIsolateScope;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                            'key'    : attrs.key || attrs.binding || attrs.name,
+                            'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
@@ -1192,7 +1192,11 @@ WM.module('wm.widgets.live')
                             $compile(element.contents())(parentIsolateScope);
                         } else {
                             template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
-                            element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentIsolateScope));
+                            if (externalForm.length) {
+                                element.closest('form.app-form').find('.hidden-form-elements').append($compile(template)(parentIsolateScope));
+                            } else {
+                                element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentIsolateScope));
+                            }
                         }
                         parentIsolateScope.onFocusField = parentIsolateScope.onFocusField ||  function ($event) {
                             WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
