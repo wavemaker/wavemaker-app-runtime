@@ -143,20 +143,22 @@ WM.module('wm.widgets.base')
                             return;
                         }
 
-                        if (_.includes(evtValue, 'goToPage-' + $routeParams.name) || _.includes(evtValue, 'goToPage_' + $routeParams.name)) {
-                            $el.addClass('active');
-                            if (isAnchor) {
-                                $parent = $el.parent();
-                                if ($parent.hasClass('app-nav-item')) {
-                                    $parent.addClass('active');
-                                }
-                            }
-                        }
-
                         fn = evtValue
                             .split(';')
                             .map(function (fnName) {
+
                                 var trimmedFnName = fnName.trim();
+
+                                if (trimmedFnName === ('goToPage-' + $routeParams.name) || trimmedFnName === ('goToPage_' + $routeParams.name)) {
+                                    $el.addClass('active');
+                                    if (isAnchor) {
+                                        $parent = $el.parent();
+                                        if ($parent.hasClass('app-nav-item')) {
+                                            $parent.addClass('active');
+                                        }
+                                    }
+                                }
+
                                 if (!_.includes(trimmedFnName, '(') && !_.includes(trimmedFnName, '=')) {
                                     overrideFlg = true;
                                     return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
