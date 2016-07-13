@@ -88,22 +88,11 @@
         <!-- Max size in bytes. -->
     </bean>
 
-    <bean id="agJSONController"
-          class="com.wavemaker.runtime.server.JSONRPCController">
-        <!-- controller configuration -->
-        <property name="supportedMethods" value="GET,POST"/>
-    </bean>
-
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
     <bean id="serviceDefinitionController" class="com.wavemaker.runtime.servicedef.controller.ServiceDefinitionController" />
 
     <bean id="serviceDefinitionService" class="com.wavemaker.runtime.servicedef.service.ServiceDefinitionService" />
-
-    <bean id="runtimeAccess"
-          class="com.wavemaker.runtime.RuntimeAccess" scope="request">
-        <aop:scoped-proxy/>
-    </bean>
 
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
