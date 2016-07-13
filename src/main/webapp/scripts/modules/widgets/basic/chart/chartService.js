@@ -725,7 +725,29 @@ WM.module('wm.widgets.basic')
                         });
                 }
 
-                if (!isPieType(scope.type)) {
+                if (isPieType(scope.type)) {
+                    //Customizing the tooltips in case of the pie and donut when labelType is value
+                    if (isPieType(scope.type)) {
+                        chart.tooltip.contentGenerator(function (key) {
+                            if (scope.labeltype === 'percent') {
+                                yValue = d3.format('.3s')(key.data.y);
+                            } else if (scope.labeltype === 'value') {
+                                yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                            }
+                            return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
+                                    '<table>' +
+                                        '<tbody>' +
+                                            '<tr>' +
+                                                '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
+                                                '<td class="key">' + key.data.x + '</td>' +
+                                                '<td class="value">' + yValue + '</td>' +
+                                            '</tr>' +
+                                        '</tbody>' +
+                                    '</table>' +
+                                '</div>';
+                        });
+                    }
+                } else {
                     chart.showXAxis(propertyValueMap.showxaxis)
                         .showYAxis(propertyValueMap.showyaxis);
 

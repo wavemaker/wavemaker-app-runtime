@@ -395,9 +395,11 @@ WM.module('wm.widgets.basic')
         //Setting appropriate error messages
         function setErrMsg(scope, message) {
             if (scope.showNoDataMsg) {
-                scope.errMsg = $rootScope.locale[message];
                 scope.showContentLoadError = true;
                 scope.invalidConfig = true;
+                $rootScope.$safeApply(scope, function () {
+                    scope.errMsg = $rootScope.locale[message];
+                });
             }
         }
 
@@ -980,29 +982,6 @@ WM.module('wm.widgets.basic')
             // get the chart obejct
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
-            //Customizing the tooltips in case of the pie and donut when labelType is value
-            if (ChartService.isPieType(scope.type)) {
-                chart.tooltip.contentGenerator(function (key) {
-                    var yValue;
-                    if (scope.labeltype === 'percent') {
-                        yValue = d3.format('.3s')(key.data.y);
-                    } else if (scope.labeltype === 'value') {
-                        yValue = ChartService.formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
-                    }
-                    return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
-                                '<table>' +
-                                    '<tbody>' +
-                                        '<tr>' +
-                                            '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
-                                            '<td class="key">' + key.data.x + '</td>' +
-                                            '<td class="value">' + yValue + '</td>' +
-                                        '</tr>' +
-                                    '</tbody>' +
-                                '</table>' +
-                            '</div>';
-                });
-            }
-
             // changing the default no data message*
             d3.select('#wmChart' + scope.$id + ' svg')
                 .datum(chartData)
@@ -1043,8 +1022,10 @@ WM.module('wm.widgets.basic')
         }
 
         function plotChartProxy(scope, element) {
-            scope.showContentLoadError = false;
-            scope.invalidConfig = false;
+            $rootScope.$safeApply(scope, function () {
+                scope.showContentLoadError = false;
+                scope.invalidConfig = false;
+            });
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
             if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isAggregationEnabled(scope))) {
                 getAggregatedData(scope, element, function () {
