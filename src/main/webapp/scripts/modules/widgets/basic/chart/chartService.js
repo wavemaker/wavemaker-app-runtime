@@ -203,21 +203,6 @@ WM.module('wm.widgets.basic')
                 return labelsConfig;
             }
 
-            function setValues(shawdowProperties, prop) {
-                var labelsConfig;
-                if (shawdowProperties.barspacing) {
-                    shawdowProperties.barspacing = getBarSpacingValue(shawdowProperties.barspacing, prop);
-                }
-                if (shawdowProperties.donutratio) {
-                    shawdowProperties.donutratio = getRadiusValue(shawdowProperties.donutratio, prop);
-                }
-                if (shawdowProperties.showlabels) {
-                    labelsConfig = getLabelValues(shawdowProperties.showlabels);
-                    shawdowProperties.showlabels = labelsConfig.showlabels;
-                    shawdowProperties.showlabelsoutside = labelsConfig.showlabelsoutside;
-                }
-            }
-
             //Construct the sample data
             function constructSampleData(dataType, yaxisLength) {
                 var first_series = [],
@@ -475,9 +460,11 @@ WM.module('wm.widgets.basic')
                     numberFormat;
                 switch (dataType) {
                 case 'date':
+                case 'timestamp':
                     return d3.time.format(options.dateFormat)(new Date(datakey));
                 case 'string':
                 case 'year':
+                case 'time':
                     return datakey;
                 default:
                     numberFormat = options.format;
@@ -572,7 +559,7 @@ WM.module('wm.widgets.basic')
                     showLegend;
                 switch (scope.type) {
                 case 'Column':
-                    barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue);
+                    barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue) || barSpacingMap.medium;
                     chart = nv.models.multiBarChart()
                         .x(function (d) {
                             return d.x;
@@ -615,7 +602,7 @@ WM.module('wm.widgets.basic')
                         .useInteractiveGuideline(propertyValueMap.tooltips);
                     break;
                 case 'Bar':
-                    barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue);
+                    barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue) || barSpacingMap.medium;
                     chart = nv.models.multiBarHorizontalChart()
                         .x(function (d) {
                             return d.x;
@@ -631,7 +618,7 @@ WM.module('wm.widgets.basic')
                 case 'Pie':
                 case 'Donut':
                     labelConfig = getLabelValues(propertyValueMap.showlabels);
-                    radius = getNumberValue(propertyValueMap.donutratio, getRadiusValue);
+                    radius = getNumberValue(propertyValueMap.donutratio, getRadiusValue) || donutRatioMap.medium;
                     chart = nv.models.pieChart()
                         .x(function (d) {
                             return d.x;
@@ -699,28 +686,45 @@ WM.module('wm.widgets.basic')
                         });
                 }
 
+                xformatOptions =  {
+                    'dateFormat'  : propertyValueMap.xdateformat,
+                    'format'      : propertyValueMap.xnumberformat,
+                    'isXaxis'     : true,
+                    'xDataKeyArr' : isPreview ? ['01-01-2001', '01-01-2002', '01-01-2003'] : scope.xDataKeyArr
+                };
+
+                yformatOptions =  {
+                    'format'      : propertyValueMap.ynumberformat
+                };
+
                 if (isPieType(scope.type)) {
-                    //Customizing the tooltips in case of the pie and donut when labelType is value
-                    if (isPieType(scope.type)) {
-                        chart.tooltip.contentGenerator(function (key) {
-                            if (scope.labeltype === 'percent') {
-                                yValue = d3.format('.3s')(key.data.y);
-                            } else if (scope.labeltype === 'value') {
-                                yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
-                            }
-                            return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
-                                    '<table>' +
-                                        '<tbody>' +
-                                            '<tr>' +
-                                                '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
-                                                '<td class="key">' + key.data.x + '</td>' +
-                                                '<td class="value">' + yValue + '</td>' +
-                                            '</tr>' +
-                                        '</tbody>' +
-                                    '</table>' +
-                                '</div>';
+                    //In case of pie/donut chart formatting the values of it
+                    if (propertyValueMap.labeltype === 'percent') {
+                        chart.valueFormat(d3.format('%'));
+                    } else {
+                        chart.valueFormat(function (d) {
+                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
                         });
                     }
+                    //Customizing the tooltips in case of the pie and donut when labelType is value
+                    chart.tooltip.contentGenerator(function (key) {
+                        if (propertyValueMap.labeltype === 'percent') {
+                            yValue = d3.format('.3s')(key.data.y);
+                        } else if (propertyValueMap.labeltype === 'value') {
+                            yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                        }
+                        return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
+                                '<table>' +
+                                    '<tbody>' +
+                                         '<tr>' +
+                                            '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
+                                            '<td class="key">' + key.data.x + '</td>' +
+                                            '<td class="value">' + yValue + '</td>' +
+                                        '</tr>' +
+                                    '</tbody>' +
+                                '</table>' +
+                            '</div>';
+                    });
                 } else {
                     chart.showXAxis(propertyValueMap.showxaxis)
                         .showYAxis(propertyValueMap.showyaxis);
@@ -735,11 +739,22 @@ WM.module('wm.widgets.basic')
                     chart.xAxis
                         .axisLabel(Utils.prettifyLabels(xaxislabel))
                         .axisLabelDistance(propertyValueMap.xaxislabeldistance)
-                        .staggerLabels(propertyValueMap.staggerlabels);
+                        .staggerLabels(propertyValueMap.staggerlabels)
+                        .tickFormat(function (d) {
+                            return formatData(scope, d, isPreview ? 'date' : scope.xAxisDataType, xformatOptions);
+                        });
                     chart.yAxis
                         .axisLabel(Utils.prettifyLabels(yaxislabel))
                         .axisLabelDistance(propertyValueMap.yaxislabeldistance)
-                        .staggerLabels(propertyValueMap.staggerlabels);
+                        .staggerLabels(propertyValueMap.staggerlabels)
+                        .tickFormat(function (d) {
+                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                        });
+                    if (isBarChart(scope.type)) {
+                        chart.valueFormat(function (d) {
+                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                        });
+                    }
                 }
 
                 //Support for custom colors if user gives direct string of colors in text box
@@ -760,43 +775,6 @@ WM.module('wm.widgets.basic')
                 //setting the no data message
                 chart.noData(scope.message);
 
-                xformatOptions =  {
-                    'dateFormat'  : propertyValueMap.xdateformat,
-                    'format'      : propertyValueMap.xnumberformat,
-                    'isXaxis'     : true,
-                    'xDataKeyArr' : isPreview ? ['01-01-2001', '01-01-2002', '01-01-2003'] : scope.xDataKeyArr
-                };
-
-                yformatOptions =  {
-                    'format'      : propertyValueMap.ynumberformat
-                };
-
-                if (!isPieType(scope.type)) {
-
-                    chart.xAxis
-                        .tickFormat(function (d) {
-                            return formatData(scope, d, isPreview ? 'date' : scope.xAxisDataType, xformatOptions);
-                        });
-                    chart.yAxis
-                        .tickFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                        });
-                    if (isBarChart(scope.type)) {
-                        chart.valueFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                        });
-                    }
-                } else {
-                    //In case of pie/donut chart formatting the values of it
-                    if (scope.labeltype === 'percent') {
-                        chart.valueFormat(d3.format('%'));
-                    } else {
-                        chart.valueFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
-                        });
-                    }
-                }
-
                 return chart;
             }
 
@@ -813,9 +791,8 @@ WM.module('wm.widgets.basic')
             this.setLineThickness = setLineThickness;
             this.getBarSpacingValue = getBarSpacingValue;
             this.getRadiusValue = getRadiusValue;
-            this.setValues = setValues;
+            this.getLabelValues = getLabelValues;
             this.modifyLegendPosition = modifyLegendPosition;
             this.hideOrShowProperties = hideOrShowProperties;
-            this.formatData = formatData;
         }
     ]);
