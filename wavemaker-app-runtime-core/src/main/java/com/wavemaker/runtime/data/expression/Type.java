@@ -48,11 +48,23 @@ public enum Type implements Criteria {
     }, EQUALS("=") {
         @Override
         public Criterion criterion(final String name, final Object value) {
+            if (value == null) {
+                throw new IllegalArgumentException("Equals expression should not have null value, either collection or array or primitive values supported.");
+            }
+
             Criterion criterion;
             if (value instanceof Collection) {
-                criterion = Restrictions.in(name, (Collection) value);
+                final Collection values = (Collection) value;
+                if (values.size() == 0) {
+                    throw new IllegalArgumentException("Equals expression should have a collection/array of values with at-least one entry.");
+                }
+                criterion = Restrictions.in(name, values);
             } else if (value.getClass().isArray()) {
-                criterion = Restrictions.in(name, (Object[]) value);
+                final Object[] values = (Object[]) value;
+                if (values.length == 0) {
+                    throw new IllegalArgumentException("Equals expression should have a collection/array of values with at-least one entry.");
+                }
+                criterion = Restrictions.in(name, values);
             } else {
                 criterion = Restrictions.eq(name, value);
             }
@@ -128,7 +140,7 @@ public enum Type implements Criteria {
             }
             throw new RuntimeException("Expected Collection type but found value of type " + value.getClass());
         }
-    }, NULL_OR_EMPTY ("nullorempty") {
+    }, NULL_OR_EMPTY("nullorempty") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             Criterion emptyValueCriterion = Restrictions.eq(name, "");
@@ -146,16 +158,15 @@ public enum Type implements Criteria {
         }
     }
 
-
-    public static Type valueFor(String typeName) {
-        return nameVsType.get(typeName.toLowerCase());
-
-    }
-
     private String name;
 
     Type(String name) {
         this.name = name;
+    }
+
+    public static Type valueFor(String typeName) {
+        return nameVsType.get(typeName.toLowerCase());
+
     }
 
     public String getName() {
