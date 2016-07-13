@@ -204,7 +204,8 @@ WM.module('wm.widgets.live')
                             'iconclass'  : 'wi wi-plus',
                             'show'       : 'true',
                             'class'      : 'btn-primary',
-                            'action'     : 'addNewRow()'
+                            'action'     : 'addNewRow()',
+                            'position'   : 'footer'
                         }
                     ];
                     break;
