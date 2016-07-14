@@ -51,7 +51,7 @@ WM.module('wm.layouts.containers')
                 return;
             }
             _.forEach(scope.elScope.formFields, function (field) {
-                field.value = scope.formdata[field.key || field.name];
+                field.value = _.get(scope.formdata, field.key || field.name);
             });
         }
         //Generate the form field with given field definition. Add a grid column wrapper around the form field.
