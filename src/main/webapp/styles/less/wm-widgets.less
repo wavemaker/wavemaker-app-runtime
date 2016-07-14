@@ -1070,6 +1070,16 @@ body.modal-open {
   .modal {
     overflow-y: auto;
   }
+  .app-date, .app-datetime {
+    .uib-datepicker-popup {
+      &.dropdown-menu {
+        z-index: 1000000;
+      }
+    }
+  }
+  .app-popover {
+    z-index: 1000000;
+  }
 }
 .modal-backdrop {
   height: 100%;
