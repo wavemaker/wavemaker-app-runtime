@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
 
         $templateCache.put('template/widget/form/button.html',
             '<button class="btn app-button" init-widget title="{{hint}}" apply-styles ng-disabled="disabled" role="input" accesskey="{{::shortcutkey}}">' +
-                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}"  ng-if="iconSrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}"  ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +
                 '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
