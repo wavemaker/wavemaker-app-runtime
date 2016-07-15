@@ -54,7 +54,7 @@ WM.module('wm.widgets.live')
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
                                     '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
-                                '<div ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                                '<div ng-show="isLayoutDialog" class="text-left"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                 '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
@@ -62,7 +62,7 @@ WM.module('wm.widgets.live')
                         '</form>';
 
                 defaultTemplate = '<form data-identifier="liveform" init-widget ng-show="show" role="form" class="app-liveform panel app-panel liveform-inline align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
-                                    '<div ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                                    '<div ng-show="isLayoutDialog" class="text-left"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                     '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
                                         '<h3 class="panel-title">' +
                                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -1165,7 +1165,9 @@ WM.module('wm.widgets.live')
 
                         scope.fieldDefConfig = columnDef;
                         parentIsolateScope.formFields = _.isArray(parentIsolateScope.formFields) ?  parentIsolateScope.formFields : [];
-                        index = parentIsolateScope.formFields.push(columnDef) - 1;
+                        index = _.indexOf(parentIsolateScope.formFields, undefined);
+                        index = index > -1 ? index : parentIsolateScope.formFields.length;
+                        parentIsolateScope.formFields[index] = columnDef;
                         if (isLayoutDialog) {
                             parentIsolateScope.setPrevDataValues();
                         }
@@ -1218,7 +1220,7 @@ WM.module('wm.widgets.live')
                         });
                         // when the form-field element is removed, remove the corresponding entry from parentIScope.formFields
                         element.on('$destroy', function () {
-                            _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnDef));
+                            _.set(parentIsolateScope.formFields, index, undefined);
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);
 
