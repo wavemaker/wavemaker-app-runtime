@@ -599,11 +599,12 @@ WM.module('wm.widgets.basic')
         Visually grouped when a different column is choosen in the group by other than x and y axis*/
         function getGroupingDetails(scope) {
             var isVisuallyGrouped = false,
-                visualGroupingColumn = '',
-                groupingExpression = '',
+                visualGroupingColumn,
+                groupingExpression,
                 groupbyColumns = scope.groupby && scope.groupby !== 'none' ? scope.groupby.split(',') : [],
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                groupingColumnIndex;
+                groupingColumnIndex,
+                columns = [];
 
             if (groupbyColumns.length) {
                 /*Getting the group by column which is not selected either in x or y axis*/
@@ -619,14 +620,23 @@ WM.module('wm.widgets.basic')
                 });
                 //Constructing the groupby expression
                 if (visualGroupingColumn) {
-                    groupingExpression = visualGroupingColumn + ',';
+                    columns.push(visualGroupingColumn);
                 }
 
                 if (groupbyColumns.length) {
-                    groupingExpression += groupbyColumns.join();
+                    columns = _.concat(columns, groupbyColumns);
                 }
             }
-
+            //If x and y axis are not included in aggregation need to be included in groupby
+            if (scope.xaxisdatakey !== scope.aggregationcolumn) {
+                columns.push(scope.xaxisdatakey);
+            }
+            _.forEach(yAxisKeys, function (key) {
+                if (key !== scope.aggregationcolumn) {
+                    columns.push(key);
+                }
+            });
+            groupingExpression =  columns.join(',');
             // set isVisuallyGrouped flag in scope for later use
             scope.isVisuallyGrouped = isVisuallyGrouped;
 
@@ -1275,6 +1285,11 @@ WM.module('wm.widgets.basic')
                             //replot the chart after made changes in preview dialog
                             handlers.push($rootScope.$on('wms:replot-chart', function (event, activeChartScope) {
                                 if (activeChartScope.$id === scope.$id) {
+                                    //If aggregation function is set to none then remove it from markup
+                                    if (scope.aggregation === 'none') {
+                                        $rootScope.$emit('update-widget-property', 'aggregation', '');
+                                        $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
+                                    }
                                     modifyAxesOptions(scope);
                                     scope._plotChartProxy();
                                 }
