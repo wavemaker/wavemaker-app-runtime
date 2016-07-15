@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
             '</button>'
             );
     }])
-    .directive('wmButton', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', function (PropertiesFactory, WidgetUtilService, $sce, Utils) {
+    .directive('wmButton', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.button', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events', 'wm.base.events.focus', 'wm.base.events.keyboard']),
@@ -89,7 +89,7 @@ WM.module('wm.widgets.form')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
- * @requires $sce
+ * @requires Utils
  *
  * @param {string=} caption
  *                  This property specifies the label of the button. <br>

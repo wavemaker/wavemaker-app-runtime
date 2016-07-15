@@ -9,7 +9,7 @@ WM.module('wm.widgets.dialog')
                 '<div class="modal-content">' +
                     '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
                     '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                        '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
+                        '<wm-iframe iframesrc="{{iframeurl}}" height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
                     '</div>' +
                     '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
                         '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
