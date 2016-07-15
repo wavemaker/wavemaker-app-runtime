@@ -7,14 +7,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:aop="http://www.springframework.org/schema/aop"
 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans.xsd
                 http://www.springframework.org/schema/mvc
-                http://www.springframework.org/schema/mvc/spring-mvc.xsd
-                http://www.springframework.org/schema/aop
-                http://www.springframework.org/schema/aop/spring-aop.xsd">
+                http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <import resource="config.xml"/>
     <import resource="servicetypes.xml"/>
@@ -104,7 +101,6 @@
     <bean id="reportServiceManager" class="com.wavemaker.runtime.report.manager.ReportServiceManagerImpl"/>
     <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
 
-    <bean id="restServiceSimpleUrlHandlerMapping" class="com.wavemaker.runtime.rest.handler.RestServiceSimpleUrlHandlerMapping"/>
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
 </beans>
