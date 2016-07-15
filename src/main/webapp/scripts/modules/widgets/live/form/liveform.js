@@ -1080,7 +1080,7 @@ WM.module('wm.widgets.live')
                         scope.parentIsolateScope = parentIsolateScope;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                            'key'    : attrs.key || attrs.binding || attrs.name,
+                            'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
