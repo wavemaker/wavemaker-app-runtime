@@ -545,7 +545,7 @@ WM.module('wm.widgets.grid')
                                         scopeId: scope.$id,
                                         buttonDefs: scope.actions
                                     };
-                                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(actionsObj);
+                                    scope.updateMarkupForGrid(actionsObj);
                                 }
                                 break;
                             case 'show':
@@ -652,7 +652,8 @@ WM.module('wm.widgets.grid')
                                 if (active) {
                                     scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
                                 } else {
-                                    if (scope.gridData && scope.gridData.length === 0) {
+                                    //If grid is in edit mode or grid has data, dont show the no data message
+                                    if (!scope.isGridEditMode && scope.gridData && scope.gridData.length === 0) {
                                         scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
                                     } else {
                                         scope.datagridElement.datagrid('setStatus', 'ready');
@@ -1202,6 +1203,11 @@ WM.module('wm.widgets.grid')
                     $scope.primaryKey     = variableObj.getPrimaryKey();
                     $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                 };
+            $scope.updateMarkupForGrid = function (config) {
+                if ($scope.widgetid) {
+                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
+                }
+            };
             $scope.updateVariable = function () {
                 var variable = $scope.gridElement.scope().Variables[$scope.variableName];
                 /*If grid is bound to filter, update the variable dataset*/
@@ -1877,7 +1883,7 @@ WM.module('wm.widgets.grid')
                     fieldDefs: defaultFieldDefs,
                     scopeId: $scope.$id
                 };
-                Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(gridObj);
+                $scope.updateMarkupForGrid(gridObj);
                 $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
             };
 
@@ -2147,8 +2153,8 @@ WM.module('wm.widgets.grid')
                             columnDefProps = {
                                 'field': attrs.binding,
                                 'displayName': attrs.caption,
-                                'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
-                                'mobileDisplay': (attrs.mobiledisplay === "1" || attrs.mobiledisplay === "true"),
+                                'pcDisplay': WM.isDefined(attrs.pcdisplay) ? attrs.pcdisplay === 'true' : true,
+                                'mobileDisplay': WM.isDefined(attrs.mobiledisplay) ? attrs.mobiledisplay === 'true' : true,
                                 'width': width,
                                 'textAlignment': textAlignment,
                                 'backgroundColor': backgroundColor,
@@ -2220,7 +2226,7 @@ WM.module('wm.widgets.grid')
                                     scopeId: scope.$parent.$id,
                                     fieldDefs: scope.$parent.fullFieldDefs
                                 };
-                                Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
+                                scope.updateMarkupForGrid(config);
                                 scope.$root.$emit('save-workspace', true);
                             }
                         }
