@@ -1710,7 +1710,8 @@ WM.module('wm.widgets.base', [])
                         "color": {"type": "string", "hidelabel": true, "widget": "color"},
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"}
                     },
                     "wm.datanavigator": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},

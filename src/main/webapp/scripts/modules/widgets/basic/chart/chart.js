@@ -6,11 +6,12 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
             '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
-                '<div class="app-chart-inner">' +
+                '<div class="app-chart-inner" ng-class="{loading:isLoadInProgress}">' +
                     '<svg></svg>' +
                     '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
                         '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +
                     '</div>' +
+                    '<wm-spinner show="{{isLoadInProgress}}" caption="{{loadingdatamsg}}"></wm-spinner>' +
                 '</div>' +
             '</div>'
             );
@@ -951,7 +952,8 @@ WM.module('wm.widgets.basic')
              * updating chart is being handled by watchers of height & width in studio-mode
              * */
             if (CONSTANTS.isRunMode) {
-                nv.utils.windowResize(function () {
+                Utils.triggerFn(scope._resizeFn && scope._resizeFn.clear);
+                scope._resizeFn = nv.utils.windowResize(function () {
                     if (element[0].getBoundingClientRect().height) {
                         chart.update();
                         if (!ChartService.isPieType(scope.type)) {
@@ -1038,7 +1040,7 @@ WM.module('wm.widgets.basic')
                 return;
             }
             //empty svg to add-new chart
-            element.find('svg').empty();
+            element.find('svg').replaceWith('<svg></svg>');
 
             nv.addGraph(function () {
                 configureChart(scope, element, datum);
@@ -1050,11 +1052,15 @@ WM.module('wm.widgets.basic')
                     attachClickEvent(scope);
                 }, 600);
             });
+            scope.isLoadInProgress = false;
         }
 
         function plotChartProxy(scope, element) {
-            scope.showContentLoadError = false;
-            scope.invalidConfig = false;
+            scope.isLoadInProgress = true;
+            $rootScope.$safeApply(scope, function () {
+                scope.showContentLoadError = false;
+                scope.invalidConfig = false;
+            });
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
             if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isAggregationEnabled(scope))) {
                 getAggregatedData(scope, element, function () {
@@ -1333,7 +1339,7 @@ WM.module('wm.widgets.basic')
                                 //variable is active.so showing loading data message
                                 if (boundVariableName === variableName) {
                                     scope.variableInflight = active;
-                                    scope.message = active ? 'Loading Data...' : '';
+                                    scope.isLoadInProgress = active;
                                 }
                             }));
                         }
