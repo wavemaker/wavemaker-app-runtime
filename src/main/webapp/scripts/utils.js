@@ -1725,7 +1725,8 @@ WM.module('wm.utils', [])
         function updateTmplAttrs($root, parentDataSet) {
 
             var _parentDataSet = parentDataSet.replace('bind:', ''),
-                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
+                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g'),
+                valueRegEx     = new RegExp('(bind:' + _parentDataSet + '.|bind:' + _parentDataSet + '\\[\'\\[a-zA-Z0-9\\]*\'\\])');
 
             $root.find('*').each(function () {
                 var node = this;
@@ -1735,7 +1736,7 @@ WM.module('wm.utils', [])
 
                     if (_.startsWith(value, 'bind:')) {
                         /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
-                        if (_.includes(value, _parentDataSet)) {
+                        if (valueRegEx.test(value)) {
                             value = value.replace('bind:', '');
                             value = value.replace(regex, 'item');
                             attr.value = 'bind:' + value;
