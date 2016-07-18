@@ -6,11 +6,12 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
             '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
-                '<div class="app-chart-inner">' +
+                '<div class="app-chart-inner" ng-class="{loading:isLoadInProgress}">' +
                     '<svg></svg>' +
                     '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
                         '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +
                     '</div>' +
+                    '<wm-spinner show="{{isLoadInProgress}}" caption="{{loadingdatamsg}}"></wm-spinner>' +
                 '</div>' +
             '</div>'
             );
@@ -953,7 +954,8 @@ WM.module('wm.widgets.basic')
              * updating chart is being handled by watchers of height & width in studio-mode
              * */
             if (CONSTANTS.isRunMode) {
-                nv.utils.windowResize(function () {
+                Utils.triggerFn(scope._resizeFn && scope._resizeFn.clear);
+                scope._resizeFn = nv.utils.windowResize(function () {
                     if (element[0].getBoundingClientRect().height) {
                         chart.update();
                         if (!ChartService.isPieType(scope.type)) {
@@ -992,6 +994,29 @@ WM.module('wm.widgets.basic')
             // get the chart obejct
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
+            //Customizing the tooltips in case of the pie and donut when labelType is value
+            if (ChartService.isPieType(scope.type)) {
+                chart.tooltip.contentGenerator(function (key) {
+                    var yValue;
+                    if (scope.labeltype === 'percent') {
+                        yValue = d3.format('.3s')(key.data.y);
+                    } else if (scope.labeltype === 'value') {
+                        yValue = ChartService.formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                    }
+                    return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
+                                '<table>' +
+                                    '<tbody>' +
+                                        '<tr>' +
+                                            '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
+                                            '<td class="key">' + key.data.x + '</td>' +
+                                            '<td class="value">' + yValue + '</td>' +
+                                        '</tr>' +
+                                    '</tbody>' +
+                                '</table>' +
+                            '</div>';
+                });
+            }
+
             // changing the default no data message*
             d3.select('#wmChart' + scope.$id + ' svg')
                 .datum(chartData)
@@ -1017,7 +1042,7 @@ WM.module('wm.widgets.basic')
                 return;
             }
             //empty svg to add-new chart
-            element.find('svg').empty();
+            element.find('svg').replaceWith('<svg></svg>');
 
             nv.addGraph(function () {
                 configureChart(scope, element, datum);
@@ -1029,9 +1054,11 @@ WM.module('wm.widgets.basic')
                     attachClickEvent(scope);
                 }, 600);
             });
+            scope.isLoadInProgress = false;
         }
 
         function plotChartProxy(scope, element) {
+            scope.isLoadInProgress = true;
             $rootScope.$safeApply(scope, function () {
                 scope.showContentLoadError = false;
                 scope.invalidConfig = false;
@@ -1314,7 +1341,7 @@ WM.module('wm.widgets.basic')
                                 //variable is active.so showing loading data message
                                 if (boundVariableName === variableName) {
                                     scope.variableInflight = active;
-                                    scope.message = active ? 'Loading Data...' : '';
+                                    scope.isLoadInProgress = active;
                                 }
                             }));
                         }
