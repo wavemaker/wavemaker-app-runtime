@@ -179,7 +179,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */
-                {"properties": ["onCanUpdate", "onBeforeUpdate", "onResult", "onSuccess", "onError", "onBeforeDatasetReady", 'onClick', 'onHide', "onOk", "onCancel", "onClose", "onTimerFire"], "parent": "events"}
+                {"properties": ["onBeforeUpdate", "onResult", "onSuccess", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire"], "parent": "events"}
             ]
         };
         properties = result.properties;
