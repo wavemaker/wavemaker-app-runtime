@@ -15,6 +15,8 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,6 +33,8 @@ public interface WMGenericDao<Entity, Identifier> {
     void delete(Entity entity);
 
     Entity findById(Identifier entityId);
+
+    Entity findByUniqueKey(final Map<String, Object> fieldValueMap);
 
     Page<Entity> list(Pageable pageable);
 

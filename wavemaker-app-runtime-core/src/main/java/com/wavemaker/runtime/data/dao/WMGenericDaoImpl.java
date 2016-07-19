@@ -23,9 +23,11 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
-
+import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -49,7 +51,11 @@ import com.wavemaker.runtime.data.util.QueryParser;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
-public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
+public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
+        WMGenericDao<Entity, Identifier> {
+
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     private Class<Entity> entityClass;
 
@@ -85,11 +91,27 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @SuppressWarnings("unchecked")
-    public Page getAssociatedObjects(final Object value, final String entityName, final String key, final Pageable pageable) {
+    public Entity findByUniqueKey(final Map<String, Object> fieldValueMap) {
+        return getTemplate().execute(new HibernateCallback<Entity>() {
+            @Override
+            public Entity doInHibernate(final Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                for (final Map.Entry<String, Object> entry : fieldValueMap.entrySet()) {
+                    criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+                }
+                final List list = criteria.list();
+                return list.isEmpty() ? null : (Entity) list.get(0);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public Page getAssociatedObjects(
+            final Object value, final String fieldName, final String key, final Pageable pageable) {
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass).createCriteria(entityName);
+                Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
                 criteria.add(Restrictions.eq(key, value));
                 return CriteriaUtils.executeAndGetPageableData(criteria, pageable);
             }
@@ -97,7 +119,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     public Page<Entity> list() {
-        return search((QueryFilter[]) null, null);
+        return search(null, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -108,7 +130,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(entityClass);
-                if (queryFilters != null && queryFilters.length > 0) {
+                if (ArrayUtils.isNotEmpty(queryFilters)) {
                     for (QueryFilter queryFilter : queryFilters) {
                         final String attributeName = queryFilter.getAttributeName();
 
@@ -144,27 +166,30 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
 //        FIXME remove this check when pageable options are sent.
         final Pageable customPageable;
-        if (pageable == null || (pageable.getPageNumber() == 0 && pageable.getPageSize() == 20)) {
-            customPageable = new PageRequest(0, 100);
+        if (pageable == null || (pageable.getPageNumber() == DEFAULT_PAGE_NUMBER && pageable
+                .getPageSize() == DEFAULT_PAGE_SIZE)) {
+            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, 100);
         } else {
             customPageable = pageable;
         }
-        ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate().execute(new HibernateCallback<OutputStream>() {
-            @Override
-            public OutputStream doInHibernate(Session session) throws HibernateException {
-                ExportOptions exportOptions = new ExportOptions();
-                exportOptions.setPageable(customPageable);
-                exportOptions.setQuery(query);
-                DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType, exportOptions);
-                return exporter.build();
-            }
-        });
+        ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate()
+                .execute(new HibernateCallback<OutputStream>() {
+                    @Override
+                    public OutputStream doInHibernate(Session session) throws HibernateException {
+                        ExportOptions exportOptions = new ExportOptions();
+                        exportOptions.setPageable(customPageable);
+                        exportOptions.setQuery(query);
+                        DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType,
+                                exportOptions);
+                        return exporter.build();
+                    }
+                });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
         return new DownloadResponse(is, exportType.name(), entityClass.getSimpleName() + exportType.getExtension());
     }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
-        if (queryFilters != null && queryFilters.length > 0) {
+        if (ArrayUtils.isNotEmpty(queryFilters)) {
             for (QueryFilter queryFilter : queryFilters) {
                 Object attributeValue = queryFilter.getAttributeValue();
                 if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL) {
