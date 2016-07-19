@@ -1796,8 +1796,8 @@ $.widget('wm.datagrid', {
         if (this.options.rowActions.length || rowOperationsCol) {
             self = this;
             template = self._getRowActionsTemplate();
-            $htm.find("[data-identifier='actionButtons']").each(function () {
-                $(this).empty().append(self.options.compileTemplateInGridScope(template));
+            $htm.find("[data-identifier='actionButtons']").each(function (index) {
+                $(this).empty().append(self.options.getCompiledTemplate(template, self.preparedData[index], rowOperationsCol));
             });
         }
     },
