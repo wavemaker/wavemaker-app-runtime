@@ -280,8 +280,12 @@ WM.module('wm.widgets.form')
 
                     /*On selection of a date, open the time picker popup*/
                     scope.selectDate = function (event) {
-                        if (scope.isDateOpen) {
-                            scope.isTimeOpen = true;
+                        if (_.isNull(scope._dateModel)) { //If date is cleared from datepicker, remove the time model also
+                            scope._timeModel = undefined;
+                        } else if (scope.isDateOpen) {
+                            $timeout(function () { //Open the time after the date is selected
+                                scope.isTimeOpen = true;
+                            });
                         }
                         scope.formatDateTime();
                         scope._onChange({$event: event, $scope: scope});
