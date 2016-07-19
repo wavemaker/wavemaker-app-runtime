@@ -745,7 +745,7 @@ $.widget('wm.datagrid', {
                 this.setStatus('ready', this.dataStatus.ready);
             }
             this.gridElement.find('tbody.app-datagrid-body').append($row);
-            this._appendRowActions($row);
+            this._appendRowActions($row, true, rowData);
             this.attachEventHandlers($row);
             $row.find('.edit-row-button').trigger('click', {operation: 'new'});
             this.updateSelectAllCheckboxState();
@@ -1790,14 +1790,18 @@ $.widget('wm.datagrid', {
     },
 
     //Appends row operations markup to grid template
-    _appendRowActions : function ($htm) {
+    _appendRowActions : function ($htm, isNewRow, rowData) {
         var self, template,
             rowOperationsCol = this._getRowActionsColumnDef();
         if (this.options.rowActions.length || rowOperationsCol) {
             self = this;
             template = self._getRowActionsTemplate();
             $htm.find("[data-identifier='actionButtons']").each(function (index) {
-                $(this).empty().append(self.options.getCompiledTemplate(template, self.preparedData[index], rowOperationsCol));
+                if (isNewRow) {
+                    $(this).empty().append(self.options.getCompiledTemplate(template, rowData, rowOperationsCol));
+                } else {
+                    $(this).empty().append(self.options.getCompiledTemplate(template, self.preparedData[index], rowOperationsCol));
+                }
             });
         }
     },
