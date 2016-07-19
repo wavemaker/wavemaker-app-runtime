@@ -293,23 +293,30 @@
   .mobile-common(@left-panel-width)
 }
 
-/* Smartphones (portrait and landscape) ----------- */
+/* Smartphones (portrait) ----------- */
 @media only screen
 and (min-device-width : 299px)
 and (max-device-width : 480px) {
     .mobile-common(90%)
 }
-/* Small web screens(portrait and landscape) ----------- */
+/* Small web screens(portrait) ----------- */
 @media only screen
 and (min-width : 299px)
 and (max-width : 480px) {
     .mobile-common(90%)
 }
-/* Small web screens(portrait and landscape) ----------- */
+
+/* Small web screens(landscape) ----------- */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 768px) {
+and (min-device-width : 481px)
+and (max-device-width : 767px) {
     .mobile-common(90%)
+}
+
+@media only screen
+and (min-width : 481px)
+and (max-width : 767px) {
+  .mobile-common(90%)
 }
 
 /* Smartphones (landscape) ----------- */
