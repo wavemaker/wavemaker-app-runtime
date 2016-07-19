@@ -1052,7 +1052,9 @@ WM.module('wm.widgets.basic')
                     attachClickEvent(scope);
                 }, 600);
             });
-            scope.isLoadInProgress = false;
+            $rootScope.$safeApply(scope, function () {
+                scope.isLoadInProgress = false;
+            });
         }
 
         function plotChartProxy(scope, element) {
@@ -1339,7 +1341,9 @@ WM.module('wm.widgets.basic')
                                 //variable is active.so showing loading data message
                                 if (boundVariableName === variableName) {
                                     scope.variableInflight = active;
-                                    scope.isLoadInProgress = active;
+                                    $rootScope.$safeApply(scope, function () {
+                                        scope.isLoadInProgress = active;
+                                    });
                                 }
                             }));
                         }
