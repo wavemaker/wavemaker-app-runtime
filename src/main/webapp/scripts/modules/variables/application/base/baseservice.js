@@ -293,6 +293,8 @@ wm.variables.services.Variables = [
                     }
                 }
             },
+            _processVariablePostBindUpdate =  _.debounce(processVariablePostBindUpdate, 20),
+
             /*Function to get array of required variable objects*/
             getVariablesByNames = function (pageName, namesArray) {
                 var tempCollection = [],
@@ -401,7 +403,7 @@ wm.variables.services.Variables = [
                         /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                         if (targetObj) {
                             targetObj[targetNodeKey] = newVal;
-                            processVariablePostBindUpdate(targetNodeKey, newVal, variable);
+                            _processVariablePostBindUpdate(targetNodeKey, newVal, variable);
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
@@ -409,7 +411,7 @@ wm.variables.services.Variables = [
                     if (targetObj) {
                         targetObj[targetNodeKey] = obj.value;
                     }
-                    processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
+                    _processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
                 }
             },
 
