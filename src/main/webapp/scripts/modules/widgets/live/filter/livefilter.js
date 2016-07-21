@@ -837,7 +837,9 @@ WM.module('wm.widgets.live')
                         scope.fieldDefConfig = columnsDef;
                         parentIsolateScope.formFields = parentIsolateScope.formFields || [];
                         parentIsolateScope.columnsDefCreated = true;
-                        index = parentIsolateScope.formFields.push(columnsDef) - 1;
+                        index = _.indexOf(parentIsolateScope.formFields, undefined);
+                        index = index > -1 ? index : parentIsolateScope.formFields.length;
+                        parentIsolateScope.formFields[index] = columnsDef;
 
                         /* this condition will run for:
                          *  1. PC view in STUDIO mode
@@ -871,7 +873,7 @@ WM.module('wm.widgets.live')
 
                         // when the filter-field element is removed, remove the corresponding entry from parentIScope.formFields
                         element.on('$destroy', function () {
-                            _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnsDef));
+                            _.set(parentIsolateScope.formFields, index, undefined);
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);
 
