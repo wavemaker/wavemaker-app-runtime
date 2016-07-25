@@ -139,7 +139,7 @@ WM.module('wm.widgets.basic')
             progressBarEl.css('width', progressBarWidth);
             if (!$label.length || (newDatavalue !== oldDatavalue)) {
                 if ($label.length) {
-                    $label.text(newDatavalue).attr('data-caption-placement', scope.captionplacement);
+                    $label.text(displayValue).attr('data-caption-placement', scope.captionplacement);
                 } else {
                     WM.element('<span class="app-progress-label"></span>').text(displayValue).attr('data-caption-placement', scope.captionplacement).appendTo(progressBarEl);
                 }
