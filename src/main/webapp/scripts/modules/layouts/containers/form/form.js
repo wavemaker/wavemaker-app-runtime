@@ -291,6 +291,7 @@ WM.module('wm.layouts.containers')
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
+                    element.removeAttr('title');
                 },
                 'post': function (scope, element, attrs) {
                     var handlers = [];

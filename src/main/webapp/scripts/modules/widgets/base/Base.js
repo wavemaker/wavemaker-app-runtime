@@ -1592,7 +1592,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"}
                     },
                     "wm.livefilter": {
-                        "title": {"type": "string"},
+                        "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "showindesigner": true},
