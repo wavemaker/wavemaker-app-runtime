@@ -145,12 +145,19 @@ WM.module('wm.widgets.base')
                     _compilePartialAndUpdateVariables(iScope, element, newVal, el);
                 }
                 function onPageFetchError() {
-                    if (element[0].hasAttribute('page-container-target')) {
-                        target = element;
+                    if (CONSTANTS.isRunMode) {
+                        //Handles page-ready event, if any partial page is deleted.
+                        if ($s) {
+                            Utils.triggerFn($s.onPagePartLoad);
+                        }
                     } else {
-                        target = element.find('[page-container-target]').first();
+                        if (element[0].hasAttribute('page-container-target')) {
+                            target = element;
+                        } else {
+                            target = element.find('[page-container-target]').first();
+                        }
+                        target.html('<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>');
                     }
-                    target.html('<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>');
                 }
 
                 element.attr('content', newVal);
@@ -194,7 +201,7 @@ WM.module('wm.widgets.base')
                         } else {
                             var AppManager = Utils.getService('AppManager');
                             AppManager.loadPartial(newVal).
-                                then(onPageFetchSuccess);
+                                then(onPageFetchSuccess, onPageFetchError);
                         }
                     } else {
                         /* to compile the partial page*/
