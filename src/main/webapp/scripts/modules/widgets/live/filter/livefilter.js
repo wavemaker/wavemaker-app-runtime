@@ -737,6 +737,7 @@ WM.module('wm.widgets.live')
                                 handlers.forEach(Utils.triggerFn);
                             });
 
+                            scope.updateAllowedValues = updateAllowedValues;
                             //Will be called after setting filter property.
                             scope.redraw = function (forceRender) {
                                 if (forceRender) {

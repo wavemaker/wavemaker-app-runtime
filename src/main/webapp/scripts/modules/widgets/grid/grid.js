@@ -1209,9 +1209,18 @@ WM.module('wm.widgets.grid')
                 }
             };
             $scope.updateVariable = function () {
-                var variable = $scope.gridElement.scope().Variables[$scope.variableName];
-                /*If grid is bound to filter, update the variable dataset*/
-                if (variable && ($scope.isBoundToFilter || !$scope.shownavigation)) {
+                var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                    sortOptions;
+                if ($scope.isBoundToFilter) {
+                    //If grid is bound to filter, call the apply fiter and update filter options
+                    if (!$scope.shownavigation) {
+                        sortOptions = $scope.sortInfo ? $scope.sortInfo.field + ' ' + $scope.sortInfo.direction : '';
+                        $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
+                    }
+                    $scope.Widgets[$scope.widgetName].updateAllowedValues();
+                    return;
+                }
+                if (variable && !$scope.shownavigation) {
                     variable.update({
                         'type': 'wm.LiveVariable'
                     }, WM.noop);
