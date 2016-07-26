@@ -101,14 +101,19 @@ wm.plugins.database.services.QueryBuilder = [
                             }
                         } else {
                             /*Set appropriate value for fieldValue based on the type of data passed for the field.*/
-                            if (field.value) {
+                            if (!WM.isUndefined(field.value)) {
                                 fieldValue = field.value;
                             } else if (!WM.isObject(field)) {
                                 fieldValue = field;
                             } else {
                                 return;
                             }
-                            whereClause += fieldName + "='" + fieldValue + "'" + logicalOp;
+                            //In case of boolean field quotes should not be sent
+                            if (field.type === 'boolean') {
+                                whereClause += fieldName + "=" + fieldValue + " " + logicalOp;
+                            } else {
+                                whereClause += fieldName + "='" + fieldValue + "'" + logicalOp;
+                            }
                         }
                     });
                     whereClause = whereClause.slice(0, logicalOpSliceLength);

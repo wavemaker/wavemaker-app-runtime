@@ -481,6 +481,8 @@ wm.variables.services.$liveVariable = [
                             fieldValue      = fieldOptions.value,
                             fieldType       = getFieldType(fieldOptions),
                             filterCondition = fieldOptions.filterCondition;
+
+                        fieldOptions.type = fieldType;
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
                         if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
                             WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
