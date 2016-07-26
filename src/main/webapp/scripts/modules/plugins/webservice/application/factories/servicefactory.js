@@ -47,15 +47,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
             },
 
         /*function to get service operation object matching its name*/
-            getServiceOperationObjectByName = function (serviceName, operationName) {
-                var serviceObj, operationObject = {};
-                serviceObj = getServiceObjectByName(serviceName);
-                WM.forEach(serviceObj.operations, function (operation) {
-                    if (operation.name === operationName) {
-                        operationObject = operation;
-                    }
-                });
-                return operationObject;
+            getServiceOperationObjectById = function (serviceName, operationId) {
+                var serviceObj = getServiceObjectByName(serviceName);
+                return _.find(serviceObj.operations, {'operationId' : operationId});
             },
 
         /*function to get list of services from the backend*/
@@ -470,7 +464,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                 /*get the required operation object*/
                 var serviceObj = getServiceObjectByName(serviceId),
-                    operationObj = getServiceOperationObjectByName(serviceId, operationId),
+                    operationObj = getServiceOperationObjectById(serviceId, operationId),
                     urlParams,
                     onOperationParamsFetch = function (response, isRestSupported) {
                         var parameters = isRestSupported ? response.parameters : response.parameter;
@@ -533,7 +527,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                 if (isRESTSupported(serviceObj.type)) {
                     getServiceOperations(serviceId, function () {
-                        onOperationParamsFetch(getServiceOperationObjectByName(serviceId, operationId), true);
+                        onOperationParamsFetch(getServiceOperationObjectById(serviceId, operationId), true);
                     }, true);
                 } else {
                     urlParams = {
