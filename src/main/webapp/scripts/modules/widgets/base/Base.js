@@ -1578,7 +1578,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
-                        "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word"},
+                        "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word", "datasetfilter": "none"},
                         "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"},
@@ -2818,7 +2818,9 @@ WM.module('wm.widgets.base', [])
                     fieldObjects,
                     ALLFIELDS               = 'All Fields',
                     checkboxsetTypeWidgets  = ['multiselect', 'select-all', 'list-typeahead', 'order-by'],
-                    dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset';
+                    dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset',
+                    requiredProps           = {},
+                    resetProps              = {};
 
                 bindExpr        = scope['bind' + dataSetProp];
                 typeUtils       = Utils.getService('TypeUtils');
@@ -2829,17 +2831,27 @@ WM.module('wm.widgets.base', [])
                 };
                 keys.all        = _.union(keys.objects, keys.terminals);
 
-                /* re-initialize the property values */
+                // collection of properties required to be updated
+                _.forEach(scope.widgetProps, function (prop, name) {
+                    if (prop.datasetfilter) {
+                        requiredProps[name] = prop;
+                        resetProps[name] = (name === 'datafield' && prop.allfields) ? ALLFIELDS : '';
+                    }
+                });
+
+                // re-initialize the property values
                 if (scope.newcolumns) {
                     scope.newcolumns = false;
-                    scope.datafield = ALLFIELDS;
-                    scope.displayfield = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
+                    _.forEach(resetProps, function (prop, name) {
+                        scope[name] = prop;
+                    });
+                    scope.$root.$emit('set-markup-attr', scope.widgetid, resetProps);
                 }
 
-                _.forEach(scope.widgetProps, function (prop, name) {
+                // loop through collected properties to set option against them based on datasetfilter
+                _.forEach(requiredProps, function (prop, name) {
                     filter = prop.datasetfilter;
-                    if (filter) {
+                    if (filter && filter !== 'none') {
                         if (_.isEmpty(keys)) {
                             options = [];
                         } else {

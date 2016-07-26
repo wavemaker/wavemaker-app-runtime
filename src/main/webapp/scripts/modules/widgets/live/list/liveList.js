@@ -708,6 +708,7 @@ WM.module('wm.widgets.live')
                     wp          = $is.widgetProps,
                     matchDataTypes  = ['string', 'date', 'time', 'datetime', 'timestamp'],
                     matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
+                    typeUtils = Utils.getService('TypeUtils'),
                     showOrHideMatchProperty = function () {
                         if (!$is.dataset || $is.groupby === 'Javascript') {
                             return;
@@ -721,7 +722,7 @@ WM.module('wm.widgets.live')
                             } else if (selectedVariable.category === 'wm.DeviceVariable') {
                                 wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
                             } else if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
-                                wp.match.show = _.includes(matchServiceDataTypes, _.get($rs, ['dataTypes', selectedVariable.type, 'fields', $is.groupby, 'type']));
+                                wp.match.show = _.includes(matchServiceDataTypes, typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby));
                             }
                         }
                         if (!wp.match.show) {
