@@ -7,7 +7,25 @@ WM.module('wm.widgets.dialog')
             '<div tabindex="-1" role="dialog" class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
-            '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" ><div class="modal-content" wmtransclude></div></div>'
+            '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" >' +
+                '<div class="modal-content">' +
+                    '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
+                        '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="Close">' +
+                            '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
+                        '<h4 class="app-dialog-title modal-title">' +
+                            '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                            '<span name="wm-{{dialogid}}-title">{{caption}}</span>' +
+                        '</h4>' +
+                        '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
+                            '<i title="{{actiontitle}}" class="wm-icon24 help"></i>' +
+                            '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
+                    '</div>' +
+                    '<div ng-transclude="footer"></div>' +
+            '</div>'
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
@@ -21,14 +39,11 @@ WM.module('wm.widgets.dialog')
                 '<div class="dialog-header-action" wmtransclude></div>' +
             '</div>'
             );
-        $templateCache.put("template/widget/dialog/design.html",
-            '<div class="app-dialog-body modal-body" name="wm-{{dialogid}}-content" apply-styles="scrollable-container" data-identifier="dialog-content" init-widget wmtransclude></div>'
-            );
         $templateCache.put("template/widget/dialog/dialog-footer.html",
             '<div class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
             );
 
-    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', '$window', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, $window) {
+    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', '$window', 'DialogService', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, $window, DialogService) {
         'use strict';
         var transcludedContent = "",
             id,
@@ -78,9 +93,12 @@ WM.module('wm.widgets.dialog')
 
         return {
             "restrict": "E",
-            "transclude": (CONSTANTS.isStudioMode),
+            "transclude": (CONSTANTS.isStudioMode ? {'footer': '?wmDialogactions'} : false),
             "controller": function ($scope) {
                 this.dialogtype = $scope.dialogtype;
+                this.register   = function (name, ele) {
+                  this[name] =  ele.isolateScope();
+                };
             },
             "scope": {
                 "dialogtype": '@',
@@ -105,6 +123,9 @@ WM.module('wm.widgets.dialog')
                 return {
                     "pre": function (scope) {
                         scope.widgetProps = widgetProps;
+                        scope.hideDialog = function () {
+                          DialogService.hideDialog(scope.dialogid);
+                        };
                     },
                     "post": function (scope, element, attrs) {
 
@@ -125,7 +146,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils) {
+    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', '$rootScope', 'DialogService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils, $rs, DialogService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.designdialog", ["wm.basicdialog", "wm.base"]),
             notifyFor = {
@@ -173,9 +194,83 @@ WM.module('wm.widgets.dialog')
 
         return {
             "restrict": "E",
-            "transclude": true,
+            "transclude": {
+                'footer': '?wmDialogactions'
+            },
             "controller": function ($scope, $element) {
                 this.dialogtype = $scope.dialogtype;
+                this.register   = function (name, ele) {
+                    this[name] =  ele.isolateScope();
+                };
+                /* handles all types of events for dialog*/
+                var handleEvent = function (eventName, hideDialog, callBack, callbackParams) {
+                    /* if the name is a function, execute the call back
+                     * if name is a dialog hide/show option, call the dialog hide show method accordingly
+                     * else invoke the service and finally close the current dialog*/
+                    if (eventName && eventName.indexOf("(") !== -1) {
+                        Utils.triggerFn(callBack, callbackParams);
+                        return;
+                    }
+
+                    // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
+                    if (callBack) {
+                        if (CONSTANTS.isStudioMode) {
+                            if (WM.isFunction(callBack())) {
+                                Utils.triggerFn(callBack(), callbackParams);
+                            }
+                        } else {
+                            if (WM.isFunction(callBack)) {
+                                Utils.triggerFn(callBack, callbackParams);
+                            }
+                        }
+
+                    } else if (eventName.indexOf('.show') > -1) {
+                        DialogService.showDialog(eventName.slice(0, eventName.indexOf('.show')));
+                    } else if (eventName.indexOf('.hide') > -1) {
+                        DialogService.hideDialog(eventName.slice(0, eventName.indexOf('.hide')));
+                    } else {
+                        if (eventName.trim()) {
+                            $rs.$emit('invoke-service', eventName);
+                        }
+                    }
+                    if (hideDialog) {
+                        DialogService.hideDialog($scope.dialogid);
+                    }
+                };
+                this._OkButtonHandler = function (eventName) {
+                    var eventParams;
+                    /*If "okParams" is a JSON string, then parse it. Else, pass it as is.*/
+                    if ($scope.okParams && $scope.okParams.indexOf("{") > -1) {
+                        eventParams = Utils.getValidJSON($scope.okParams);
+                    } else {
+                        eventParams = $scope.okParams;
+                    }
+                    eventName = eventName || '';
+                    /* handles all types of events*/
+                    handleEvent(eventName, true, $scope.onOk, eventParams);
+                };
+                this._CancelButtonHandler = function (eventName) {
+                    var eventParams;
+                    /*If "cancelParams" is a JSON string, then parse it. Else, pass it as is.*/
+                    if ($scope.cancelParams && $scope.cancelParams.indexOf("{") > -1) {
+                        eventParams = Utils.getValidJSON($scope.cancelParams);
+                    } else {
+                        eventParams = $scope.cancelParams;
+                    }
+                    eventName = eventName || '';
+                    /* handles all types of events*/
+                    handleEvent(eventName, true, $scope.onCancel, eventParams);
+                };
+                this._CloseButtonHandler = function (eventName) {
+                    eventName = eventName || '';
+                    /* handles all types of events*/
+                    handleEvent(eventName, true,  $scope.onClose);
+                };
+                this._OnOpenedHandler = function (eventName) {
+                    eventName = eventName || '';
+                    /* handles all types of events*/
+                    handleEvent(eventName, false, $scope.onOpened);
+                };
                 this.onDialogOk = $scope.onOk;
                 this.onDialogCancel = $scope.onCancel;
                 this.onDialogClose = $scope.onClose;
@@ -194,18 +289,28 @@ WM.module('wm.widgets.dialog')
             "replace": true,
             "compile": function () {
                 return {
-                    "pre": function (scope) {
+                    "pre": function (scope, element, attrs, ctrl) {
                         scope.__readyQueue = [];
                         scope.widgetProps = widgetProps;
                         scope.whenReady = function (fn) {
                             scope.__readyQueue.push(fn);
                         };
+                        scope.hideDialog = function () {
+                            ctrl._CloseButtonHandler(attrs.onClose);
+                        };
                     },
-                    "post": function (scope, element, attrs) {
+                    "post": function (scope, element, attrs, ctrl) {
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
 
+                        if (attrs.onOpen && ctrl && !scope.widgetid) {
+                            if (CONSTANTS.isRunMode && scope.whenReady) {
+                                scope.whenReady(ctrl._OnOpenedHandler.bind(undefined, attrs.onOpen));
+                            } else {
+                                ctrl._OnOpenedHandler(attrs.onOpen);
+                            }
+                        }
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
@@ -297,30 +402,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogcontent', ["$templateCache", "PropertiesFactory", "WidgetUtilService", function ($templateCache, PropertiesFactory, WidgetUtilService) {
-        'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogcontent", ["wm.base"]);
-
-        return {
-            "restrict": 'E',
-            "replace": true,
-            "require": '?^wmDialog',
-            "scope": {},
-            "transclude": true,
-            "template": $templateCache.get("template/widget/dialog/design.html"),
-            "compile": function () {
-                return {
-                    pre: function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    "post": function (scope, element, attrs) {
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-
-        };
-    }]).directive('wmDialogactions', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "DialogService", function (PropertiesFactory, WidgetUtilService, $templateCache, DialogService) {
+    }]).directive('wmDialogactions', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "DialogService", "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $templateCache, DialogService, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogactions", ["wm.base"]);
 
@@ -329,14 +411,21 @@ WM.module('wm.widgets.dialog')
             "replace": true,
             "transclude": true,
             "scope": {},
+            'require'   : (CONSTANTS.isStudioMode ? '^wmDialog' : '^wmDialogContainer'),
             "template": $templateCache.get("template/widget/dialog/dialog-footer.html"),
             "compile": function () {
                 return {
                     "pre": function (scope) {
                         scope.widgetProps = widgetProps;
                     },
-                    "post": function (iScope, element, attrs) {
-                        var scope = element.scope();
+                    "post": function (iScope, element, attrs, ctrl) {
+                        var parentEl,
+                            scope;
+
+                        parentEl       = element.closest('.app-dialog');
+                        scope          = element.scope();
+                        scope.dialogid = parentEl.attr('dialogid');
+                        ctrl.register('footer', element);
                         scope.closeDialog = function () {
                             DialogService.hideDialog(scope.dialogid);
                         };
@@ -393,15 +482,12 @@ WM.module('wm.widgets.dialog')
             <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
-                        <wm-dialogheader></wm-dialogheader>
-                        <wm-dialogcontent>
-                            <wm-form>
-                                <wm-composite widget="text">
-                                    <wm-label caption="Name"></wm-label>
-                                    <wm-text></wm-text>
-                                </wm-composite>
-                            </wm-form>
-                        </wm-dialogcontent>
+                        <wm-form>
+                            <wm-composite widget="text">
+                                <wm-label caption="Name"></wm-label>
+                                <wm-text></wm-text>
+                            </wm-composite>
+                        </wm-form>
                         <wm-dialogactions show="true">
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
@@ -471,15 +557,12 @@ WM.module('wm.widgets.dialog')
             <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
-                        <wm-dialogheader></wm-dialogheader>
-                        <wm-dialogcontent>
-                            <wm-form>
-                                <wm-composite widget="text">
-                                    <wm-label caption="Name"></wm-label>
-                                    <wm-text></wm-text>
-                                </wm-composite>
-                            </wm-form>
-                        </wm-dialogcontent>
+                        <wm-form>
+                            <wm-composite widget="text">
+                                <wm-label caption="Name"></wm-label>
+                                <wm-text></wm-text>
+                            </wm-composite>
+                        </wm-form>
                         <wm-dialogactions show="true">
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
@@ -532,15 +615,12 @@ WM.module('wm.widgets.dialog')
             <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
-                        <wm-dialogheader></wm-dialogheader>
-                        <wm-dialogcontent>
-                            <wm-form>
-                                <wm-composite widget="text">
-                                    <wm-label caption="Name"></wm-label>
-                                    <wm-text></wm-text>
-                                </wm-composite>
-                            </wm-form>
-                        </wm-dialogcontent>
+                        <wm-form>
+                            <wm-composite widget="text">
+                                <wm-label caption="Name"></wm-label>
+                                <wm-text></wm-text>
+                            </wm-composite>
+                        </wm-form>
                         <wm-dialogactions show="true">
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
@@ -592,15 +672,12 @@ WM.module('wm.widgets.dialog')
             <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
-                        <wm-dialogheader></wm-dialogheader>
-                        <wm-dialogcontent>
-                            <wm-form>
-                                <wm-composite widget="text">
-                                    <wm-label caption="Name"></wm-label>
-                                    <wm-text></wm-text>
-                                </wm-composite>
-                            </wm-form>
-                        </wm-dialogcontent>
+                        <wm-form>
+                            <wm-composite widget="text">
+                                <wm-label caption="Name"></wm-label>
+                                <wm-text></wm-text>
+                            </wm-composite>
+                        </wm-form>
                         <wm-dialogactions show="true">
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>

@@ -6,7 +6,13 @@ WM.module('wm.widgets.dialog')
         'use strict';
         $templateCache.put('template/widget/dialog/logindialog.html',
                 '<div class="app-dialog modal-dialog app-login-dialog" ng-style="{width: width}" init-widget>' +
-                    '<div class="modal-content" wmtransclude ></div>' +
+                    '<wm-dialogheader iconclass="wi wi-sign-in" caption="Login"></wm-dialogheader>' +
+                    '<div class="modal-content">' +
+                        '<div class="app-dialog-body modal-body" wmtransclude></div>' +
+                        '<div class="app-dialog-footer modal-footer">' +
+                            '<button class="app-button btn btn-primary" data-role="loginbutton">Sign in</button>' +
+                        '</div>' +
+                    '</div>' +
                 '</div>'
             );
         $templateCache.put('template/widget/dialog/logindialogcontainer.html', '<div wmtransclude></div>');
@@ -248,20 +254,17 @@ WM.module('wm.widgets.dialog')
             <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-logindialog modal="false" iconclass="wi wi-sign-in" title="Login" name="loginDialog" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
-                        <wm-dialogheader></wm-dialogheader>
-                        <wm-dialogcontent>
-                            <wm-form>
-                                <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true"></wm-message>
-                                <wm-composite>
-                                    <wm-label caption="Username" class="col-md-4"></wm-label>
-                                    <wm-text placeholder="Enter username" class="app-logindialog-username"></wm-text>
-                                </wm-composite>
-                                <wm-composite widget="text">
-                                    <wm-label caption="Password" class="col-md-4"></wm-label>
-                                    <wm-text type="password" placeholder="Enter password" class="app-logindialog-password"></wm-text>
-                                </wm-composite>
-                            </wm-form>
-                        </wm-dialogcontent>
+                        <wm-form>
+                            <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true"></wm-message>
+                            <wm-composite>
+                                <wm-label caption="Username" class="col-md-4"></wm-label>
+                                <wm-text placeholder="Enter username" class="app-logindialog-username"></wm-text>
+                            </wm-composite>
+                            <wm-composite widget="text">
+                                <wm-label caption="Password" class="col-md-4"></wm-label>
+                                <wm-text type="password" placeholder="Enter password" class="app-logindialog-password"></wm-text>
+                            </wm-composite>
+                        </wm-form>
                         <wm-dialogactions>
                             <wm-button class="btn-primary" caption="Sign in"></wm-button>
                         </wm-dialogactions>
