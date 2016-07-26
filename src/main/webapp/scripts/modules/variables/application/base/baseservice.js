@@ -249,6 +249,19 @@ wm.variables.services.Variables = [
                 }
             },
 
+            /**
+             * calls the passed method on the variable
+             * @param variable
+             * @param method
+             */
+            callVariableMethod = function (variable, method) {
+                variable[method]();
+            },
+            /**
+             * debounced version of callVariableMethod
+             */
+            debouncedVariableUpdate = _.debounce(callVariableMethod, 100),
+
             processVariablePostBindUpdate = function (nodeName, nodeVal, variable, noUpdate) {
                 if (variable.category === "wm.LiveVariable") {
                     if (variable.operation === "read") {
@@ -265,7 +278,7 @@ wm.variables.services.Variables = [
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
-                            variable.update();
+                            debouncedVariableUpdate(variable, 'update');
                         }
                     } else {
                         if (nodeName === 'dataBinding') {
@@ -275,25 +288,24 @@ wm.variables.services.Variables = [
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable[variable.operation + 'Record']) && !noUpdate) {
-                            variable[variable.operation + 'Record']();
+                            debouncedVariableUpdate(variable, variable.operation + 'Record');
                         }
                     }
                 } else if (variable.category === "wm.ServiceVariable") {
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
-                        variable.update();
+                        debouncedVariableUpdate(variable, 'update');
                     }
                 } else if (variable.category === "wm.LoginVariable") {
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
-                        variable.login();
+                        debouncedVariableUpdate(variable, 'login');
                     }
                 } else if (variable.category === "wm.DeviceVariable") {
                     variable[nodeName] = nodeVal;
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.invoke) && !noUpdate) {
-                        variable.invoke();
+                        debouncedVariableUpdate(variable, 'invoke');
                     }
                 }
             },
-            _processVariablePostBindUpdate =  _.debounce(processVariablePostBindUpdate, 20),
 
             /*Function to get array of required variable objects*/
             getVariablesByNames = function (pageName, namesArray) {
@@ -403,7 +415,7 @@ wm.variables.services.Variables = [
                         /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                         if (targetObj) {
                             targetObj[targetNodeKey] = newVal;
-                            _processVariablePostBindUpdate(targetNodeKey, newVal, variable);
+                            processVariablePostBindUpdate(targetNodeKey, newVal, variable);
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
@@ -411,7 +423,7 @@ wm.variables.services.Variables = [
                     if (targetObj) {
                         targetObj[targetNodeKey] = obj.value;
                     }
-                    _processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
+                    processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
                 }
             },
 
