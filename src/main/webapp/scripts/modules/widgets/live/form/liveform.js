@@ -87,7 +87,7 @@ WM.module('wm.widgets.live')
                                 '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
                                     '<wm-dialogheader iconclass="{{iconclass}}"></wm-dialogheader>' +
                                     '<wm-dialogcontent class="noscroll">' +
-                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
+                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" autocomplete="' + (attrs.autocomplete === true ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell">' +
                                             '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
                                                 '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                             '</div>' +
@@ -864,8 +864,10 @@ WM.module('wm.widgets.live')
                                 break;
                             case 'autocomplete':
                                 /*Set the auto complete on/off based on the input*/
-                                value = (newVal === true || newVal === "true") ? 'on' : 'off';
-                                element.attr(key, value);
+                                if (scope.formlayout !== 'dialog') {
+                                    value = (newVal === true || newVal === "true") ? 'on' : 'off';
+                                    element.attr(key, value);
+                                }
                                 break;
                             case "rowdata":
                                 if (newVal && WM.isObject(newVal)) {
