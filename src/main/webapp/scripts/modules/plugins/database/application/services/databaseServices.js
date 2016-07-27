@@ -272,6 +272,7 @@ wm.plugins.database.services.DatabaseService = [
                         "password": params.password,
                         "url": params.url,
                         "tableFilter": params.tableFilter,
+                        "schemaName": params.schemaName,
                         "schemaFilter": params.schemaFilter,
                         "driverClass": params.driverClass,
                         "dialect": params.dialect,
