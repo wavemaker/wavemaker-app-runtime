@@ -628,8 +628,8 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "DATE"      : "Current Date",
         "TIME"      : "Current Time",
         "DATE_TIME" : "Current Datetime",
-        "USER_ID"   : "User ID",
-        "USER_NAME" : "User Name"
+        "USER_ID"   : "LoggedIn UserId",
+        "USER_NAME" : "LoggedIn Username"
     }
 });
 
