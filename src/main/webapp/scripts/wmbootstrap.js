@@ -204,6 +204,10 @@ Application
                         defaultPageLoadSuccessHandler(pageName, response, isPartial);
                         Utils.triggerFn(onSuccess, cache.get(pageName));
                     }, function (jqxhr) {
+                        if ($route.current.params.name === pageName && jqxhr.status === 404) {
+                            WM.element('.app-spinner').addClass('ng-hide');
+                            wmToaster.show('error', $rs.appLocale.MESSAGE_PAGE_NOT_FOUND || 'The page you are trying to reach is not available');
+                        }
                         defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr);
                     });
                 }
