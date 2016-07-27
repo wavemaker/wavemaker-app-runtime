@@ -420,7 +420,8 @@ WM.module('wm.widgets.live')
                 var template = '',
                     widgetName = 'wm-' + widgetType,
                     updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"',
-                    allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '';
+                    allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '',
+                    readonly = (widgetType === 'rating' ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : (fieldDef.readonly ? 'readonly="{{formFields[' + index + '].readonly}}"' : ''));
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? minPlaceholderDefault : fieldDef.placeholder);
@@ -430,7 +431,7 @@ WM.module('wm.widgets.live')
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? defaultPlaceholder : fieldDef.placeholder);
-                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}"' + readonly + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
             }
