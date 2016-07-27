@@ -88,7 +88,6 @@ public class RestRuntimeController {
             }
         }
         byte[] responseBody = restResponse.getResponseBody();
-        responseBody = (responseBody != null) ? responseBody : restResponse.getConvertedResponse();
         int statusCode = restResponse.getStatusCode();
         if (statusCode >= 200 && statusCode<= 299) {
             if (StringUtils.isNotBlank(restResponse.getContentType())) {
