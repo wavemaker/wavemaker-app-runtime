@@ -895,6 +895,9 @@ WM.module('wm.widgets.live')
                             }
                             scope.oldBindDataSet = scope.binddataset;
                         }
+                        if (newVal === '') {
+                            scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': ''});
+                        }
                         WidgetUtilService.updatePropertyPanelOptions(scope);
                     }
                     break;
