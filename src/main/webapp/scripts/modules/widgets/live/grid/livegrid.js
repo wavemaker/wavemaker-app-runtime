@@ -78,7 +78,8 @@ WM.module('wm.widgets.live')
                                     'multiselect'        : false,
                                     'allowAddNewRow'     : false,
                                     'setGridEditMode'    : ''
-                                };
+                                },
+                                gridWp;
                             /* For row delete , set the row fields to the gridform */
                             liveGridOptions.onRowDelete = function (row, callBackFn) {
                                 scope.gridform.rowdata = row;
@@ -195,9 +196,6 @@ WM.module('wm.widgets.live')
                                             /*The new row would always be inserted at the end of all existing records. Hence navigate to the last page and highlight the inserted row.*/
                                             scope.grid.initiateSelectItem('last', response, scope.primaryKey);
                                         }
-                                        if (WM.isDefined(scope.grid.onRowinsert)) {
-                                            scope.grid.onRowinsert(response);
-                                        }
                                         break;
                                     case 'update':
                                         /*The updated row would be found in the current page itself. Hence simply highlight the row in the current page.*/
@@ -263,6 +261,16 @@ WM.module('wm.widgets.live')
                             $timeout(function () {
                                 WidgetUtilService.postWidgetCreate(scope, element, attrs);
                             }, 0, false);
+
+                            if (scope.widgetid && scope.grid) {
+                                //Hide the grid CRUD call back events
+                                gridWp = scope.grid.widgetProps;
+                                gridWp.onRowdeleted.show      = false;
+                                gridWp.onBeforerowinsert.show = false;
+                                gridWp.onRowinsert.show       = false;
+                                gridWp.onBeforerowupdate.show = false;
+                                gridWp.onRowupdate.show       = false;
+                            }
                         }
                     };
                 }
