@@ -66,7 +66,7 @@ public class QueryParser {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
                     if (token.contains(DOT)) {
-                        CriteriaUtils.criteriaForRelatedProperty(criteria, token);
+                        CriteriaUtils.criteriaForRelatedProperty(criteria, token, null);
                     }
                     if (type != null) {
                         Types types = fieldNameVsTypeMap.get(token);
