@@ -16,7 +16,7 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
-    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout, ChartService) {
+    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, ChartService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.chart', ['wm.base']),
            // properties of the respective chart type
@@ -120,31 +120,6 @@ WM.module('wm.widgets.basic')
             ChartService.hideOrShowProperties(allOptions, scope, false);
             // Showing the properties based on the type of the chart
             ChartService.hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options.Column : options[scope.type], scope, true);
-
-            if (ChartService.isPieType(scope.type)) {
-                // If pie chart, set the display key for x and y axis datakey and subgroups
-                scope.widgetProps.xaxisdatakey.displayKey = 'LABEL_PROPERTY_LABEL';
-                scope.widgetProps.yaxisdatakey.displayKey = 'LABEL_PROPERTY_VALUES';
-                PropertiesFactory.getPropertyGroup('xaxis').displayKey = 'LABEL_PROPERTY_LABEL_DATA';
-                PropertiesFactory.getPropertyGroup('yaxis').displayKey = 'LABEL_PROPERTY_VALUE_DATA';
-
-                // If it is a pie chart then the yaxisdatakey must be a single select else it has to be a multiselect
-                scope.widgetProps.yaxisdatakey.widget = 'list';
-                // Only if bound to valid dataset populate the options
-                if (scope.dataset) {
-                    scope.widgetProps.yaxisdatakey.options = scope.axisoptions;
-                }
-            } else {
-                scope.widgetProps.xaxisdatakey.displayKey = undefined;
-                scope.widgetProps.yaxisdatakey.displayKey = undefined;
-                PropertiesFactory.getPropertyGroup('xaxis').displayKey = undefined;
-                PropertiesFactory.getPropertyGroup('yaxis').displayKey = undefined;
-
-                scope.widgetProps.yaxisdatakey.widget = 'multi-select';
-                $timeout(function () {
-                    scope.widgetDataset.yaxisdatakey = scope.axisoptions || [];
-                }, 5);
-            }
         }
 
         /*
@@ -199,53 +174,29 @@ WM.module('wm.widgets.basic')
         function modifyAxesOptions(scope) {
             var xAxisOptions = [],
                 yAxisOptions = [],
-                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none'),
-                options;
+                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none');
             //Check if the data-set has been bound and the value is available in data-set.
             if (scope.binddataset && WM.isObject(scope.dataset)) {
-
-                // get axis options
-                options = scope.axisoptions;
                 if (isAggregationApplied) {
                     if (scope.groupby) {
                         xAxisOptions = scope.groupby.split(',');
+                        //Choosing first column in group by as x axis
                         scope.xaxisdatakey = xAxisOptions[0];
-                    } else {
-                        xAxisOptions = options;
                     }
                     //If 'aggregation' is not 'none' and if the 'aggregationColumn' has not already been added into the axesOptions, then add it.
                     if (isAggregationApplied && scope.aggregationcolumn) {
                         yAxisOptions.push(scope.aggregationcolumn);
+                        //Choosing first column in aggregation by as y axis
                         scope.yaxisdatakey = yAxisOptions[0];
-                    } else {
-                        yAxisOptions = options;
-                    }
-                    scope.widgetProps.xaxisdatakey.options = xAxisOptions;
-                    setYAxisDataKey(scope, yAxisOptions, '');
-                    setYAxisDataKey(scope, yAxisOptions, yAxisOptions);
-                    //Setting the bubble size and tooltip columns to be shown
-                    if (ChartService.isBubbleChart(scope.type)) {
-                        scope.widgetProps.bubblesize.options = options;
-                    }
-                } else {
-                    scope.widgetProps.xaxisdatakey.options = options;
-                    setYAxisDataKey(scope, options, '');
-                    if (ChartService.isBubbleChart(scope.type)) {
-                        scope.widgetProps.bubblesize.options = options;
                     }
                 }
-
                 displayFormatOptions(scope, 'x');
                 displayFormatOptions(scope, 'y');
             } else if (!scope.binddataset) {//Else, set all the values to default.
-                scope.widgetProps.xaxisdatakey.options = [];
-                setYAxisDataKey(scope, [], '');
-                scope.widgetProps.aggregationcolumn.options = [];
                 scope.xaxisdatakey = scope.yaxisdatakey = '';
                 scope.xaxislabel = scope.yaxislabel = '';
                 scope.xunits = scope.yunits = '';
                 scope.bubblesize = '';
-                scope.widgetProps.bubblesize.options = [];
                 scope.widgetProps.aggregationcolumn.disabled = true;
                 scope.widgetProps.aggregation.disabled = true;
                 //Setting the values to the default
@@ -1089,6 +1040,52 @@ WM.module('wm.widgets.basic')
             scope.$root.$emit('set-markup-attr', scope.widgetid, {'xaxisdatakey': scope.xaxisdatakey, 'yaxisdatakey': scope.yaxisdatakey});
         }
 
+        function getCutomizedOptions(scope, prop, fields) {
+            if (!scope.binddataset) {
+                return fields;
+            }
+            if (!scope.axisoptions) {
+                scope.axisoptions = fields;
+            }
+            var newOptions;
+            switch (prop) {
+            case 'xaxisdatakey':
+                //If group by enabled, columns chosen in groupby will be populated in x axis options
+                if (isGroupByEnabled(scope.groupby)) {
+                    newOptions = _.split(scope.groupby, ',');
+                }
+                break;
+            case 'yaxisdatakey':
+                //If aggregation by enabled, columns chosen in aggregation will be populated in y axis options
+                if (isAggregationEnabled(scope)) {
+                    newOptions = _.split(scope.aggregationcolumn, ',');
+                } else if (scope.isLiveVariable) {
+                    //In case of live variable populating only numeric columns
+                    newOptions = scope.numericColumns;
+                }
+                break;
+            case 'groupby':
+                //Filtering only non primary key columns
+                if (scope.isLiveVariable && scope.nonPrimaryColumns && scope.nonPrimaryColumns.length) {
+                    newOptions = scope.nonPrimaryColumns;
+                }
+                break;
+            case 'aggregationcolumn':
+                //Set the 'aggregationColumn' to show all keys in case of aggregation function is count or to numeric keys in all other cases.
+                if (scope.isLiveVariable && isAggregationEnabled(scope) && scope.aggregation !== 'count') {
+                    newOptions = scope.numericColumns;
+                }
+                break;
+            case 'bubblesize':
+                if (scope.numericColumns && scope.numericColumns.length) {
+                    newOptions = scope.numericColumns;
+                }
+                break;
+            }
+
+            return newOptions || fields;
+        }
+
         //Function that iterates through all the columns and then fetching the numeric and non primary columns among them
         function setNumericandNonPrimaryColumns(scope) {
             var columns,
@@ -1117,13 +1114,26 @@ WM.module('wm.widgets.basic')
             }
         }
 
-        //Sets the aggregation columns
-        function setAggregationColumns(scope) {
-            if (!scope.axisoptions) {
-                return;
+        function setWidgetTypes(scope) {
+            if (ChartService.isPieType(scope.type)) {
+                // If pie chart, set the display key for x and y axis datakey and subgroups
+                scope.widgetProps.xaxisdatakey.displayKey = 'LABEL_PROPERTY_LABEL';
+                scope.widgetProps.yaxisdatakey.displayKey = 'LABEL_PROPERTY_VALUES';
+                PropertiesFactory.getPropertyGroup('xaxis').displayKey = 'LABEL_PROPERTY_LABEL_DATA';
+                PropertiesFactory.getPropertyGroup('yaxis').displayKey = 'LABEL_PROPERTY_VALUE_DATA';
+
+                // If it is a pie chart then the yaxisdatakey must be a single select else it has to be a multiselect
+                scope.widgetProps.yaxisdatakey.widget = 'list';
+                scope.widgetProps.groupby.widget = 'list';
+            } else {
+                scope.widgetProps.xaxisdatakey.displayKey = undefined;
+                scope.widgetProps.yaxisdatakey.displayKey = undefined;
+                PropertiesFactory.getPropertyGroup('xaxis').displayKey = undefined;
+                PropertiesFactory.getPropertyGroup('yaxis').displayKey = undefined;
+
+                scope.widgetProps.yaxisdatakey.widget = 'multi-select';
+                scope.widgetProps.groupby.widget = 'multi-select';
             }
-            //Set the 'aggregationColumn' to show all keys in case of aggregation function is count or to numeric keys in all other cases.
-            scope.widgetProps.aggregationcolumn.options = scope.aggregation === 'count' ? scope.axisoptions : scope.numericColumns;
         }
 
         // Define the property change handler. This function will be triggered when there is a change in the widget property
@@ -1150,14 +1160,11 @@ WM.module('wm.widgets.basic')
                 variableObj = elScope.Variables && elScope.Variables[variableName];
                 //setting the flag for the live variable in the scope for the checks
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable';
-                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset && scope.dataset.propertiesMap, {'sort' : true});
 
                 //If binded to a live variable feed options to the aggregation and group by
                 if (scope.isLiveVariable && CONSTANTS.isStudioMode) {
                     //Updating the numeric and non primary columns when dataset is changed
                     setNumericandNonPrimaryColumns(scope);
-                    setAggregationColumns(scope);
-                    ChartService.setGroupByColumns(scope);
                 }
                 scope.isServiceVariable = variableObj && variableObj.category === 'wm.ServiceVariable';
 
@@ -1176,6 +1183,10 @@ WM.module('wm.widgets.basic')
                         setDefaultAxisOptions(scope);
                         scope.newcolumns = false;
                     }
+                    /*Explicitly calling "updatePropertyPanelOptions" since charts rely on properties map to find the non primary key columns and data type of the columns.
+                     Properties map is getting set after updatePropertyPanelOptions is being called.
+                     Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
+                     */
                     WidgetUtilService.updatePropertyPanelOptions(scope);
                     modifyAxesOptions(scope);
                 }
@@ -1190,10 +1201,6 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case 'type':
-                //setting group by columns based on the chart type
-                if (CONSTANTS.isStudioMode) {
-                    ChartService.setGroupByColumns(scope);
-                }
                 //Based on the change in type deciding the default margins
                 if (ChartService.isPieType(scope.type)) {
                     scope.offsettop = 0;
@@ -1266,6 +1273,7 @@ WM.module('wm.widgets.basic')
                     post: function (scope, element, attrs) {
                         var handlers = [],
                             boundVariableName;
+                        scope.getCutomizedOptions = getCutomizedOptions;
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 
@@ -1304,6 +1312,8 @@ WM.module('wm.widgets.basic')
                                     scope._plotChartProxy();
                                 }
                             }));
+                            //Update the widget type, display key of properties and display key of groups based on the chart type
+                            setWidgetTypes(scope);
                         }
 
                         /* Note:  The below code has to be called only after postWidgetCreate

@@ -395,32 +395,6 @@ WM.module('wm.widgets.basic')
                 return constructSampleData(dataType, _.split(scope.yaxisdatakey, ',').length);
             }
 
-            //Sets the groupby columns to the non primary key columns and other than aggregation column if chosen
-            function setGroupByColumns(scope) {
-                var index,
-                    columns = Utils.getClonedObject(scope.nonPrimaryColumns),
-                    choosenColumn = scope.widgetProps.groupby && scope.widgetProps.groupby.selectedvalues ?  scope.widgetProps.groupby.selectedvalues.split(',')[0] : '';
-                //Removing the aggregation column out of the non primary columns
-                if (scope.nonPrimaryColumns && scope.aggregationcolumn) {
-                    index = _.indexOf(scope.nonPrimaryColumns, scope.aggregationcolumn);
-                    if (index >= 0) {
-                        columns.splice(index, 1);
-                    }
-                }
-                //Making groupby as single select when chart is of pie type
-                if (isPieType(scope.type)) {
-                    scope.widgetProps.groupby.widget = 'list';
-                    //Adding the none option to the groupby columns
-                    if (columns && columns.length > 0 && !_.includes(columns, 'none')) {
-                        columns.push('none');
-                    }
-                    scope.widgetProps.groupby.options = columns;
-                } else {
-                    scope.widgetProps.groupby.widget = 'multi-select';
-                    scope.widgetDataset.groupby = columns || [];
-                }
-            }
-
             //Check whether X/Y Domain was set to Min and is supported for the present chart
             function isAxisDomainValid(scope, axis) {
                 if (scope[axis + 'domain'] === 'Min' && (isAxisDomainSupported(scope.type))) {
@@ -837,7 +811,6 @@ WM.module('wm.widgets.basic')
             this.isAxisDomainValid = isAxisDomainValid;
             this.highlightPoints = highlightPoints;
             this.setLineThickness = setLineThickness;
-            this.setGroupByColumns = setGroupByColumns;
             this.getBarSpacingValue = getBarSpacingValue;
             this.getRadiusValue = getRadiusValue;
             this.setValues = setValues;
