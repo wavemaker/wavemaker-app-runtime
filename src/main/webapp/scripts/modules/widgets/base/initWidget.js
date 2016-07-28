@@ -816,12 +816,14 @@ WM.module('wm.widgets.base')
                     // use the native for to improve the performance
                     for (i = 0; i < watchers.length; i++) {
                         watcher = watchers[i];
-                        if (watcher.$s && !watcher.$s.$$destroyed) {
-                            // when bound to FileUpload widget, use $watchCollection instead of $watch
-                            if (_.endsWith(watcher.expr, 'selectedFiles') && _.includes(watcher.expr, 'Widgets.')) {
-                                watcher.deRegister.destroy = watcher.$s.$watchCollection(watcher.expr, watcher.listener, watcher.deepWatch);
-                            } else {
-                                watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
+                        if (!watcher.deRegister.skip) {
+                            if (watcher.$s && !watcher.$s.$$destroyed) {
+                                // when bound to FileUpload widget, use $watchCollection instead of $watch
+                                if (_.endsWith(watcher.expr, 'selectedFiles') && _.includes(watcher.expr, 'Widgets.')) {
+                                    watcher.deRegister.destroy = watcher.$s.$watchCollection(watcher.expr, watcher.listener, watcher.deepWatch);
+                                } else {
+                                    watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
+                                }
                             }
                         }
                     }
@@ -945,6 +947,10 @@ WM.module('wm.widgets.base')
                 _registerWatchers();
 
                 return function customWatchDeRegister() {
+                    // watcher might have not been registered by this time.
+                    if (!deRegister.destroy) {
+                        deRegister.skip = true;
+                    }
                     Utils.triggerFn(deRegister.destroy);
                 };
             }
