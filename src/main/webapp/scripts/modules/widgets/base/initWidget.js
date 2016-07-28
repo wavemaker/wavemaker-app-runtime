@@ -902,7 +902,7 @@ WM.module('wm.widgets.base')
                     variableObject;
 
                 function isPageable(variable) {
-                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution') || variable.category === 'wm.LiveVariable');
+                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution'));
                 }
 
                 if (isArrayTypeExpr(watchExpr)) {
@@ -918,6 +918,9 @@ WM.module('wm.widgets.base')
                         // So for procedures the watch expression will not have content in it
                         if (variableObject && isPageable(variableObject)) {
                             return 'Variables.' + key + '.dataSet.content[$i]';
+                        }
+                        if (variableObject && variableObject.category === 'wm.LiveVariable') {
+                            return 'Variables.' + key + '.dataSet.data[$i]';
                         }
                         return match;
                     });
