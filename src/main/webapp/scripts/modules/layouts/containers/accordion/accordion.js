@@ -96,6 +96,7 @@ WM.module('wm.layouts.containers')
                         }
                         scope.widgetProps = widgetProps;
                         scope.$lazyLoad   = WM.noop;
+                        element.removeAttr('title');
                     },
                     'post': function (scope, element, attrs, panesCtrl) {
                         //To support backward compatibility for old projects

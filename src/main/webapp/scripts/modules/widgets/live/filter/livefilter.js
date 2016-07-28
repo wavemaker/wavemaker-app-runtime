@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget title="{{hint}}" apply-styles="shell">' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -445,6 +445,7 @@ WM.module('wm.widgets.live')
                             iScope.Widgets = elScope.Widgets;
                             //Map for filterFields with filter key as key
                             iScope.filterFields = {};
+                            element.removeAttr('title');
                         },
                         post: function (scope, element, attrs) {
                             if (scope.expanded === undefined) {

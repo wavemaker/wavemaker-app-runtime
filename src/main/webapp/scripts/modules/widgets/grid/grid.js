@@ -178,7 +178,7 @@ WM.module('wm.widgets.grid')
             "template": function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
-                return '<div data-identifier="grid" init-widget title="{{hint}}" class="app-grid app-panel panel" apply-styles="shell">' +
+                return '<div data-identifier="grid" init-widget class="app-grid app-panel panel" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass || exportOptions.length || _actions.header.length">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
@@ -310,6 +310,7 @@ WM.module('wm.widgets.grid')
                         Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
                         });
+                        element.removeAttr('title');
                     },
                     'post': function (scope, element, attrs) {
                         var runModeInitialProperties = {

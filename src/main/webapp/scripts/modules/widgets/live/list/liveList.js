@@ -21,7 +21,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
-                    '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
+                    '<ul data-identifier="list" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
@@ -1050,6 +1050,7 @@ WM.module('wm.widgets.live')
                     configurable: true
                 });
                 defineProps($is, $el);
+                $el.removeAttr('title');
             }
 
             function configureDnD($el, $is) {
