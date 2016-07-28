@@ -1451,6 +1451,10 @@ $.widget('wm.datagrid', {
             this.disableActions(false);
             this._setGridEditMode(false);
             $row.remove();
+            if (!this.preparedData.length) {
+                //On delete of a new row with no data, show no data message
+                this.setStatus('nodata', this.dataStatus.nodata);
+            }
             this.addOrRemoveScroll();
             return;
         }
