@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _*/
 /*jslint sub: true */
 
 /**
@@ -62,14 +62,21 @@ wm.variables.services.BasicVariableService = [
                     /* return the object against the specified index */
                     return variable.isList ? variable.dataSet[index] : variable.dataSet;
                 },
-                setItem: function (variable, index, value) {
+                setItem: function (variable, i, value) {
+                    var index;
                     /* check param sanity */
-                    if (!WM.isDefined(index) || !WM.isDefined(value) || !variable.isList) {
+                    if (!WM.isDefined(i) || !WM.isDefined(value) || !variable.isList) {
                         return variable.dataSet;
                     }
-
-                    /* set the value against the specified index */
-                    variable.dataSet[index] = value;
+                    if (WM.isObject(i)) {
+                        index = _.findIndex(variable.dataSet, i);
+                    } else {
+                        index = i;
+                    }
+                    if (index > -1) {
+                        /* set the value against the specified index */
+                        variable.dataSet[index] = value;
+                    }
 
                     /* return the new dataSet */
                     return variable.dataSet;
@@ -91,20 +98,20 @@ wm.variables.services.BasicVariableService = [
                 },
 
                 /*'index' can be index value of the element in array or an object with property values which need to be removed*/
-                removeItem: function (variable, index, exactMatch) {
-                    var indexValue;
+                removeItem: function (variable, i, exactMatch) {
+                    var index;
                     /* check for index sanity */
-                    index = index !== undefined ? index : variable.dataSet.length - 1;
+                    i = i !== undefined ? i : variable.dataSet.length - 1;
 
-                    if (WM.isObject(index)) {
-                        indexValue = _.findIndex(variable.dataSet, index);
+                    if (WM.isObject(i)) {
+                        index = _.findIndex(variable.dataSet, i);
                         /*When exactMatch property is set to true delete only when every property values are same*/
-                        if (indexValue > -1 && (!exactMatch || (exactMatch && WM.equals(variable.dataSet[indexValue], index)))) {
-                            variable.dataSet.splice(indexValue, 1);
+                        if (index > -1 && (!exactMatch || (exactMatch && WM.equals(variable.dataSet[index], i)))) {
+                            variable.dataSet.splice(index, 1);
                         }
                     } else {
                         /* set the value against the specified index */
-                        variable.dataSet.splice(index, 1);
+                        variable.dataSet.splice(i, 1);
                     }
                     /* return the new dataSet */
                     return variable.dataSet;
