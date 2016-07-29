@@ -2,8 +2,7 @@ package com.wavemaker.runtime.servicedef.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
+import com.wavemaker.runtime.servicedef.model.ServiceDefinitionWrapper;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.servicedef.model.ServiceDefinition;
 import com.wavemaker.studio.prefab.core.Prefab;
@@ -32,20 +32,20 @@ public class ServiceDefinitionService {
             ServiceDefinitionService.class);
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
-    private Map<String, ServiceDefinition> serviceDefsCache = null;
-    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefsCache = null;
+    private Map<String, ServiceDefinitionWrapper> serviceDefsCache = null;
+    private Map<String, List<ServiceDefinitionWrapper>> prefabServiceDefsCache = null;
 
     @Autowired
     private PrefabManager prefabManager;
 
-    public Map<String, ServiceDefinition> listServiceDefs() {
+    public List<ServiceDefinitionWrapper> listServiceDefs() {
         if (serviceDefsCache == null) {
             loadServiceDefs();
         }
-        return serviceDefsCache;
+        return new ArrayList<>(serviceDefsCache.values());
     }
 
-    public Map<String, ServiceDefinition> listPrefabServiceDefs(final String prefabName) {
+    public List<ServiceDefinitionWrapper> listPrefabServiceDefs(final String prefabName) {
         if (prefabServiceDefsCache == null) {
             loadPrefabsServiceDefs();
         }
@@ -62,7 +62,9 @@ public class ServiceDefinitionService {
             if (resources != null) {
                 for (Resource resource : resources) {
                     try {
-                        serviceDefsCache.putAll(serviceDefinitionHelper.build(resource.getInputStream()));
+                        String serviceName = getServiceName(resource);
+                        final Map<String, ServiceDefinition> serviceDefinitions = serviceDefinitionHelper.build(resource.getInputStream());
+                        serviceDefsCache.put(serviceName, new ServiceDefinitionWrapper(serviceName, serviceDefinitions));
                     } catch (IOException e) {
                         throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
                     }
@@ -88,15 +90,17 @@ public class ServiceDefinitionService {
     }
 
     private synchronized void loadPrefabServiceDefs(final Prefab prefab) {
-        if (prefabServiceDefsCache.get(prefab.getName()) == null) {
-            prefabServiceDefsCache.put(prefab.getName(), new HashMap<String, ServiceDefinition>());
+        if (!prefabServiceDefsCache.containsKey(prefab.getName())) {
+            prefabServiceDefsCache.put(prefab.getName(), new ArrayList<ServiceDefinitionWrapper>());
         }
 
         Resource[] resources = getServiceDefResources(true);
         if (resources != null) {
             for (Resource resource : resources) {
                 try {
-                    prefabServiceDefsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
+                    String serviceName = getServiceName(resource);
+                    final Map<String, ServiceDefinition> serviceDefs = serviceDefinitionHelper.build(resource.getInputStream());
+                    prefabServiceDefsCache.get(prefab.getName()).add(new ServiceDefinitionWrapper(serviceName, serviceDefs));
                 } catch (IOException e) {
                     throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
                 }
@@ -131,6 +135,11 @@ public class ServiceDefinitionService {
         } catch (IOException e) {
             throw new WMRuntimeException("Failed to find service definition files", e);
         }
+    }
+
+    private String getServiceName(final Resource resource) {
+        final int endIndex = resource.getFilename().indexOf(SERVICE_DEF_RESOURCE_POST_FIX);
+        return resource.getFilename().substring(0, endIndex);
     }
 
 }
