@@ -196,8 +196,7 @@ WM.module('wm.widgets.form')
                     dataField = scope.datafield,
                     useKeys = scope.usekeys,
                     objectKeys = [],
-                    displayField = getDisplayField(dataSet, scope.displayfield),
-                    showAllKeys = CONSTANTS.isStudioMode && element.attr('data-identifier') === 'chart-columns';
+                    displayField = getDisplayField(dataSet, scope.displayfield);
 
                 scope.widgetProps.displayfield.value = displayField;
 
@@ -207,14 +206,8 @@ WM.module('wm.widgets.form')
                     /*if only keys of the object within dataset value needs to be used.*/
                     if (useKeys) {
                         data = {};
-                        /*Decides whether to get all the data fields of the object columns or not*/
-                        if (showAllKeys && Utils.isValidDataSet(dataSet)) {
-                            /*Passing the properties map also since it is not accessible through the dataset*/
-                            objectKeys = WidgetUtilService.extractDataSetFields(dataSet, scope.dataset.propertiesMap);
-                        } else {
-                            /*getting keys of the object*/
-                            objectKeys = WM.isObject(dataSet[0]) ? Object.keys(dataSet[0]) : [];
-                        }
+                        /*getting keys of the object*/
+                        objectKeys = WM.isObject(dataSet[0]) ? Object.keys(dataSet[0]) : [];
                         /*iterating over object keys and creating checkboxset dataset*/
                         _.forEach(objectKeys, function (key) {
                             data[key] = key;
@@ -237,12 +230,8 @@ WM.module('wm.widgets.form')
                 } else if (WM.isObject(dataSet)) {
                     /* check for supporting data from sources other than live variable */
                     data = {};
-                    if (showAllKeys &&  Utils.isValidDataSet(dataSet)) {
-                        objectKeys = WidgetUtilService.extractDataSetFields(dataSet, scope.dataset.propertiesMap);
-                    } else {
-                        /*getting keys of the object*/
-                        objectKeys = Object.keys(dataSet);
-                    }
+                    /*getting keys of the object*/
+                    objectKeys = Object.keys(dataSet);
                     /*iterating over object keys and creating checkboxset dataset*/
                     _.forEach(objectKeys, function (key) {
                         data[key] = key;
