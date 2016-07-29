@@ -15,12 +15,27 @@
  */
 package com.wavemaker.runtime.rest.handler;
 
+import java.lang.reflect.Method;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
+import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
+import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
+import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.wavemaker.runtime.rest.controller.RestRuntimeController;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * Created by ArjunSahasranam on 6/10/15.
@@ -32,18 +47,28 @@ import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
 public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
 
-    private static final String REST_RUNTIME_CONTROLLER = "restRuntimeController";
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Autowired
-    @Qualifier("restServiceSimpleUrlHandlerMapping")
-    private RestServiceSimpleUrlHandlerMapping restServiceSimpleUrlHandlerMapping;
+    private RestRuntimeController restRuntimeController;
+
+
+    private static final Method HANDLE_REQUEST_METHOD;
+    static {
+        try {
+            HANDLE_REQUEST_METHOD = RestRuntimeController.class.getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
+        } catch (NoSuchMethodException e) {
+            throw new WMRuntimeException("Couldn't find handleRequestInternal method in RestRuntimeController", e);
+        }
+    }
 
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
         if (bean instanceof RestServiceInfoBean) {
             RestServiceInfoBean restServiceInfoBean = (RestServiceInfoBean) bean;
-            restServiceSimpleUrlHandlerMapping.addRestServiceInfoBean(restServiceInfoBean, REST_RUNTIME_CONTROLLER);
-            restServiceSimpleUrlHandlerMapping.initApplicationContext();
+            RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restServiceInfoBean);
+            requestMappingHandlerMapping.registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
         }
         return bean;
     }
@@ -51,5 +76,15 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
         return bean;
+    }
+
+    private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBean restServiceInfoBean) {
+        RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(RequestMethod.valueOf(restServiceInfoBean.getHttpMethod()));
+        PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceInfoBean.getUrl());
+        ParamsRequestCondition params = new ParamsRequestCondition();
+        HeadersRequestCondition headers = new HeadersRequestCondition();
+        ConsumesRequestCondition consumes = new ConsumesRequestCondition();
+        ProducesRequestCondition produces = new ProducesRequestCondition();
+        return new RequestMappingInfo(patterns, methods, params, headers, consumes, produces, null);
     }
 }

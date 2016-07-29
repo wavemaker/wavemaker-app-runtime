@@ -24,15 +24,14 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.view.AbstractView;
+import org.springframework.web.servlet.HandlerMapping;
 
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestResponse;
@@ -44,35 +43,41 @@ import com.wavemaker.studio.common.util.IOUtils;
 /**
  * @author Uday Shankar
  */
-public class RestRuntimeController extends AbstractController {
+public class RestRuntimeController {
 
     @Autowired
     private RestRuntimeService restRuntimeService;
 
     private static final String WM_HEADER_PREFIX = "X-WM-";
 
-    public RestRuntimeController() {
-        setSupportedMethods(null);//This is to support all http methods instead of default supported methods get,post and head
-    }
+    public void handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        String pathInfo = request.getPathInfo();
+        String[] split = pathInfo.split("/");
+        if (split.length < 3) {
+            throw new WMRuntimeException("Invalid Rest Service Url");
+        }
+        final String serviceId = split[1];
+        if (StringUtils.isBlank(serviceId)) {
+            throw new WMRuntimeException("ServiceId is empty");
+        }
+        final String operationId = split[2];
+        if (StringUtils.isBlank(operationId)) {
+            throw new WMRuntimeException("operationId is empty");
+        }
 
-    @Override
-    protected ModelAndView handleRequestInternal(
-            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        final String pathInfo = request.getPathInfo();
-        final int index = pathInfo.lastIndexOf('/');
-        final String serviceId = getServiceId(pathInfo.substring(1, index));
-        final String operation = pathInfo.substring(index + 1, pathInfo.length());
-        executeRestCall(serviceId, operation, request, response);
-        return new ModelAndView(new NoOpView(), new HashMap<String,Object>());
+        Map<String, String> decodedUriVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+        executeRestCall(serviceId, operationId, decodedUriVariables, request, response);
     }
 
     private void executeRestCall(String serviceId, String methodName,
-                                HttpServletRequest httpServletRequest,
-                                HttpServletResponse httpServletResponse) throws IOException {
+                                 Map<String, String> decodedUriVariables, HttpServletRequest httpServletRequest,
+                                 HttpServletResponse httpServletResponse) throws IOException {
         Map<String, Object> params = new HashMap<>();
         addHeaders(httpServletRequest, params);
         addRequestParams(httpServletRequest, params);
         addRequestBody(httpServletRequest, params);
+        addPathParams(decodedUriVariables, params);
         RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
         for (String responseHeaderKey : responseHeaders.keySet()) {
@@ -83,7 +88,6 @@ public class RestRuntimeController extends AbstractController {
             }
         }
         byte[] responseBody = restResponse.getResponseBody();
-        responseBody = (responseBody != null) ? responseBody : restResponse.getConvertedResponse();
         int statusCode = restResponse.getStatusCode();
         if (statusCode >= 200 && statusCode<= 299) {
             if (StringUtils.isNotBlank(restResponse.getContentType())) {
@@ -95,6 +99,10 @@ public class RestRuntimeController extends AbstractController {
         } else {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, new String(responseBody).intern());
         }
+    }
+
+    private void addPathParams(Map<String, String> decodedUriVariables, Map<String, Object> params) {
+        params.putAll(decodedUriVariables);
     }
 
     private void addHeaders(HttpServletRequest httpServletRequest, Map<String, Object> params) {
@@ -143,30 +151,6 @@ public class RestRuntimeController extends AbstractController {
                 o = objects;
             }
             ((List) o).add(value);
-        }
-    }
-
-    /**
-     * Returns serviceIds from path for imported artifacts like prefab else returns path as it is.
-     *
-     * @param path
-     * @return serviceId
-     */
-    private String getServiceId(String path) {
-        final int index = path.lastIndexOf('/');
-        if (index != -1) {
-            final String serviceIdForImportedArtifacts = path.substring(index + 1, path.length());
-            return serviceIdForImportedArtifacts;
-        }
-        return path;
-    }
-
-    static class NoOpView extends AbstractView {
-        @Override
-        protected void renderMergedOutputModel(
-                final Map<String, Object> model, final HttpServletRequest request,
-                final HttpServletResponse response) throws Exception {
-
         }
     }
 }
