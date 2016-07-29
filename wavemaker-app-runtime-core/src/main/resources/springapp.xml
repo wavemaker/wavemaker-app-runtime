@@ -42,6 +42,7 @@
                 </property>
             </bean>
         </mvc:argument-resolvers>
+        <mvc:path-matching suffix-pattern="false" trailing-slash="false"/>
     </mvc:annotation-driven>
 
     <mvc:interceptors>
