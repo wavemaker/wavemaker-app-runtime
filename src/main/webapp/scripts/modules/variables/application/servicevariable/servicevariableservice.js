@@ -199,12 +199,12 @@ wm.variables.services.$servicevariable = ['Variables',
             cloakHeadersForProxy = function (headers) {
                 var _headers = {},
                     UNCLOAKED_HEADERS = ['CONTENT-TYPE', 'ACCEPT', 'CONTENT-LENGTH', 'ACCEPT-ENCODING', 'ACCEPT-LANGUAGE'],
-                    CLOAK_SUBSCRIPT = 'X-WM';
+                    CLOAK_PREFIX = 'X-WM-';
                 WM.forEach(headers, function (val, key) {
                     if (_.includes(UNCLOAKED_HEADERS, key.toUpperCase())) {
                         _headers[key] = val;
                     } else {
-                        _headers[CLOAK_SUBSCRIPT + key] = val;
+                        _headers[CLOAK_PREFIX + key] = val;
                     }
                 });
 
