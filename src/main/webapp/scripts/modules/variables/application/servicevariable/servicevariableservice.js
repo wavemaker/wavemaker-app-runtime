@@ -529,12 +529,12 @@ wm.variables.services.$servicevariable = ['Variables',
             getDataInStudio = function (variable, startNode, success) {
                 /* get the service and operation from the variable object */
                 var service = variable.service,
-                    operation = variable.operation;
+                    operationId = variable.operationId;
 
                 /* get the data from variable return type information */
                 ServiceFactory.getServicesWithType(function () {
                     ServiceFactory.getServiceOperations(service, function () {
-                        ServiceFactory.getServiceOperationParams(service, operation, function (response) {
+                        ServiceFactory.getServiceOperationParams(service, operationId, function (response) {
                             var typeRef = response['return'].typeRef,
                                 fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode,
                                 variableTypeNode,
