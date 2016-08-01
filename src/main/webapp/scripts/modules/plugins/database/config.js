@@ -113,6 +113,14 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
 
         /*Entity Columns related services*/
+        addUniqueKey: {
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/constraints",
+            method: "POST"
+        },
+        deleteUniqueKey: {
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/constraints/:uniquekeyname",
+            method: "DELETE"
+        },
         addPrimaryKey: {
             url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/primaryKey",
             method: "PUT"

@@ -28,6 +28,8 @@
  * - {@link wm.database.$DatabaseService#methods_deleteEntity deleteEntity}
  * - {@link wm.database.$DatabaseService#methods_addColumns addColumns}
  * - {@link wm.database.$DatabaseService#methods_addPrimaryKey addPrimaryKey}
+ * - {@link wm.database.$DatabaseService#methods_addUniqueKey addUniqueKey}
+ * - {@link wm.database.$DatabaseService#methods_deleteUniqueKey deleteUniqueKey}
  * - {@link wm.database.$DatabaseService#methods_updateColumn updateColumn}
  * - {@link wm.database.$DatabaseService#methods_deleteColumn deleteColumn}
  * - {@link wm.database.$DatabaseService#methods_addRelation addRelation}
@@ -883,6 +885,66 @@ wm.plugins.database.services.DatabaseService = [
                     },
                     data: params.data
                 }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#addUniqueKey
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to add unique key to the specified table in the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database, table, column to be created/updated.
+             */
+
+            addUniqueKey: function (params) {
+
+                var deferred = $q.defer();
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "addUniqueKey",
+                    urlParams: {
+                        projectID: params.projectID,
+                        dataModelName: params.dataModelName,
+                        entityName: params.entityName
+                    },
+                    data: params.data
+                }, deferred.resolve, deferred.reject);
+
+                return deferred.promise;
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#deleteUniqueKey
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to delete a unique key to the specified table in the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database, table, column to be created/updated.
+             */
+
+            deleteUniqueKey: function (params) {
+
+                var deferred = $q.defer();
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "deleteUniqueKey",
+                    urlParams: {
+                        projectID: params.projectID,
+                        dataModelName: params.dataModelName,
+                        entityName: params.entityName,
+                        uniquekeyname : params.uniquekeyname
+                    }
+                }, deferred.resolve, deferred.reject);
+
+                return deferred.promise;
             },
             /**
              * @ngdoc function
