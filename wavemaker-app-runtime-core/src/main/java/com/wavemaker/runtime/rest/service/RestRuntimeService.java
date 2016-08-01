@@ -70,7 +70,7 @@ public class RestRuntimeService {
     private RestRequestInfo getRestRequestInfo(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
-        String relativePath = pathEntry.getKey();
+        String pathValue = pathEntry.getKey();
         Path path = pathEntry.getValue();
         Operation operation = null;
         for (Operation eachOperation : path.getOperations()) {
@@ -83,10 +83,9 @@ public class RestRuntimeService {
             throw new WMRuntimeException("Operation does not exist with id " + methodName);
         }
         RestRequestInfo restRequestInfo = new RestRequestInfo();
-        final String seheme = swagger.getSchemes().get(0).toValue();
-        StringBuilder endpointAddressStringBuilder = new StringBuilder(
-                seheme + "://" + swagger.getHost() + swagger
-                        .getBasePath() + ((relativePath == null) ? "" : relativePath));
+        final String scheme = swagger.getSchemes().get(0).toValue();
+        StringBuilder endpointAddressStringBuilder = new StringBuilder(scheme).append("://").append(swagger.getHost())
+                .append(getNormalizedString(swagger.getBasePath())).append(getNormalizedString(pathValue));
         String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationId());
         restRequestInfo.setMethod(methodType.toUpperCase());
         List<String> consumes = operation.getConsumes();
@@ -184,6 +183,10 @@ public class RestRuntimeService {
             }
         }
         return swaggerDocumentCache.get(serviceId);
+    }
+
+    private String getNormalizedString(String str) {
+        return (str != null) ? str.trim() : "";
     }
 
 }
