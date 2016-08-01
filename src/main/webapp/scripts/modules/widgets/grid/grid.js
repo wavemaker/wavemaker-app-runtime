@@ -1087,7 +1087,7 @@ WM.module('wm.widgets.grid')
                                 wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
                             }
                             /*custom EventHandler for row deleted event*/
-                            $scope.onRowdeleted({$event: evt, $data: row});
+                            $scope.onRowdeleted({$event: evt, $data: row, $rowData: row});
 
                         }, function (error) {
                             Utils.triggerFn(cancelRowDeleteCallback);
@@ -1146,7 +1146,7 @@ WM.module('wm.widgets.grid')
                             $scope.initiateSelectItem('last', response, $scope.primaryKey);
                             $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
-                            $scope.onRowinsert({$event: options.event, $data: response});
+                            $scope.onRowinsert({$event: options.event, $data: response, $rowData: response});
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
@@ -1187,7 +1187,7 @@ WM.module('wm.widgets.grid')
                             $scope.initiateSelectItem('current', response, $scope.primaryKey);
                             $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
-                            $scope.onRowupdate({$event: options.event, $data: response});
+                            $scope.onRowupdate({$event: options.event, $data: response, $rowData: response});
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
@@ -1313,21 +1313,21 @@ WM.module('wm.widgets.grid')
                 },
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                    $scope.onSelect({$data: rowData, $event: e});
-                    $scope.onRowclick({$data: rowData, $event: e});
+                    $scope.onSelect({$data: rowData, $event: e, $rowData: rowData});
+                    $scope.onRowclick({$data: rowData, $event: e, $rowData: rowData});
                     // For backward compatibility.
                     if (WM.isDefined($scope.onClick)) {
-                        $scope.onClick({$data: rowData, $event: e});
+                        $scope.onClick({$data: rowData, $event: e, $rowData: rowData});
                     }
                     $rootScope.$safeApply($scope);
                 },
                 onRowDblClick: function (rowData, e) {
-                    $scope.onRowdblclick({$data: rowData, $event: e});
+                    $scope.onRowdblclick({$data: rowData, $event: e, $rowData: rowData});
                     $rootScope.$safeApply($scope);
                 },
                 onRowDeselect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                    $scope.onDeselect({$data: rowData, $event: e});
+                    $scope.onDeselect({$data: rowData, $event: e, $rowData: rowData});
                     $rootScope.$safeApply($scope);
                 },
                 onColumnSelect: function (col, e) {
@@ -1364,10 +1364,10 @@ WM.module('wm.widgets.grid')
                     updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData});
                 },
                 onBeforeRowUpdate: function (rowData, e) {
-                    $scope.onBeforerowupdate({$event: e, $data: rowData});
+                    return $scope.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});
                 },
                 onBeforeRowInsert: function (rowData, e) {
-                    $scope.onBeforerowinsert({$event: e, $data: rowData});
+                    return $scope.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData});
                 },
                 allowDeleteRow: true,
                 allowInlineEditing: true,
