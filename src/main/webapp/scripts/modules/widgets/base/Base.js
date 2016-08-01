@@ -2834,7 +2834,7 @@ WM.module('wm.widgets.base', [])
 
                 bindExpr        = scope['bind' + dataSetProp];
                 typeUtils       = Utils.getService('TypeUtils');
-                fieldObjects    = typeUtils.getFieldObjectsForExpr(bindExpr);
+                fieldObjects    = typeUtils.getFieldsForExpr(bindExpr, {'getFieldInfo' : true});
                 keys            = {
                     'objects'   : _.map(_.filter(fieldObjects, {'type': 'object'}), 'field'),
                     'terminals' : _.map(_.filter(fieldObjects, {'type': 'terminal'}), 'field')
