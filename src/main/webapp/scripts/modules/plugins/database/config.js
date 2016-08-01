@@ -53,7 +53,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
 
         /*DataModel related services*/
         getAllDataModels: {
-            url: "services/projects/:projectID/datamodels/",
+            url: "services/projects/:projectID/datamodels",
             method: "GET"
         },
         getDataModel: {
@@ -213,15 +213,15 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
 
 
         readTableData: {
-            url: "/:service/:dataModelName/:entityName/?page=:page&size=:size&:sort",
+            url: "/:service/:dataModelName/:entityName?page=:page&size=:size&:sort",
             method: "GET"
         },
         insertTableData: {
-            url: "/:service/:dataModelName/:entityName/",
+            url: "/:service/:dataModelName/:entityName",
             method: "POST"
         },
         insertMultiPartTableData: {
-            url: "/:service/:dataModelName/:entityName/",
+            url: "/:service/:dataModelName/:entityName",
             method: "POST",
             headers: {
                 'Content-Type': undefined
@@ -265,7 +265,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         searchTableDataWithQuery: {
-            url: "/:service/:dataModelName/:entityName/?q=:query&page=:page&size=:size&:sort",
+            url: "/:service/:dataModelName/:entityName?q=:query&page=:page&size=:size&:sort",
             method: "GET"
         },
         exportTableData: {
