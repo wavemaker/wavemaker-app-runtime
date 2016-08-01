@@ -119,6 +119,7 @@ WM.module('wm.widgets.grid')
                 'insertrow'          : true,
                 'show'               : true,
                 'gridsearch'         : true,
+                'filtermode'         : true,
                 'searchlabel'        : true,
                 'multiselect'        : true,
                 'radioselect'        : true,
@@ -321,17 +322,33 @@ WM.module('wm.widgets.grid')
                                 'enablesort'        : 'enableSort',
                                 'showheader'        : 'showHeader'
                             },
+                            matchModesMap = {
+                                'start'            : 'Starts with',
+                                'end'              : 'Ends with',
+                                'anywhere'         : 'Contains',
+                                'exact'            : 'Is equal to',
+                                'notequals'        : 'Is not equal to',
+                                'lessthan'         : 'Less than',
+                                'lessthanequal'    : 'Less than or equals to',
+                                'greaterthan'      : 'Greater than',
+                                'greaterthanequal' : 'Greater than or equals to',
+                                'null'             : 'Is null',
+                                'empty'            : 'Is empty',
+                                'nullorempty'      : 'Is null or empty'
+                            },
                             handlers = [],
                             gridController;
                         /****condition for old property name for grid title*****/
                         if (attrs.gridcaption && !attrs.title) {
                             scope.title = scope.gridcaption;
                         }
-
-                        scope.gridElement = element;
-                        scope.gridColumnCount = gridColumnCount;
-                        scope.displayAllFields = attrs.displayall === '';
-                        scope.datagridElement = element.find('.app-datagrid');
+                        scope.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
+                        scope.emptyMatchModes   = ['null', 'empty', 'nullorempty'];
+                        scope.matchModesMap     = matchModesMap;
+                        scope.gridElement       = element;
+                        scope.gridColumnCount   = gridColumnCount;
+                        scope.displayAllFields  = attrs.displayall === '';
+                        scope.datagridElement   = element.find('.app-datagrid');
 
                         scope.isPartOfLiveGrid = element.closest('.app-livegrid').length > 0;
 
@@ -464,11 +481,12 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'gridsearch':
-                                scope.setDataGridOption('enableSearch', newVal);
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.widgetProps.searchlabel.show = newVal;
-                                    scope.widgetProps.searchlabel.showindesigner = newVal;
+                                if (newVal) {
+                                    scope.filtermode = 'search';
                                 }
+                                break;
+                            case 'filtermode':
+                                scope.setDataGridOption('filtermode', newVal);
                                 break;
                             case 'searchlabel':
                                 scope.setDataGridOption('searchLabel', newVal);
@@ -897,22 +915,39 @@ WM.module('wm.widgets.grid')
                         }
                     }
                 },
-                searchGrid = function (searchObj) {
-                    var filterFields = {},
-                        variable     = $scope.gridElement.scope().Variables[$scope.variableName];
+                //Set filter fields based on the search obj
+                setFilterFields = function (filterFields, searchObj) {
+                    var field = searchObj.field;
                     /*Set the filter options only when a field/column has been selected.*/
-                    if (searchObj.field) {
-                        currentSearch = searchObj;
-                        filterFields[searchObj.field] = {
+                    if (field) {
+                        filterFields[field] = {
                             'value'     : searchObj.value,
                             'logicalOp' : 'AND'
                         };
+                        if (searchObj.matchMode) {
+                            filterFields[field].matchMode = searchObj.matchMode;
+                        }
                     }
-                    $scope.filterFields = filterFields;
+                },
+                getFilterFields = function (searchObj) {
+                    var filterFields = {};
+                    if (_.isArray(searchObj)) {
+                        _.forEach(searchObj, function (obj) {
+                            setFilterFields(filterFields, obj);
+                        });
+                    } else {
+                        setFilterFields(filterFields, searchObj);
+                    }
+                    return filterFields;
+                },
+                searchGrid = function (searchObj) {
+                    var variable  = $scope.gridElement.scope().Variables[$scope.variableName];
+                    currentSearch = searchObj;
+                    $scope.filterFields = getFilterFields(searchObj);
                     variable.update({
                         'type'         : 'wm.LiveVariable',
                         'page'         : 1,
-                        'filterFields' : filterFields,
+                        'filterFields' : $scope.filterFields,
                         'matchMode'    : 'anywhere',
                         'ignoreCase'   : true,
                         'scope'        : $scope.gridElement.scope()
@@ -921,7 +956,7 @@ WM.module('wm.widgets.grid')
                     });
                 },
                 sortHandler = function (sortObj, e) {
-                    var filterFields = {},
+                    var filterFields,
                         variable     = $scope.gridElement.scope().Variables[$scope.variableName],
                         fieldName    = sortObj.field,
                         sortOptions  = fieldName + ' ' + sortObj.direction;
@@ -937,14 +972,8 @@ WM.module('wm.widgets.grid')
                         /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
                         $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
                     } else if (variable.category === 'wm.LiveVariable') {
-                        if ($scope.gridsearch && currentSearch) {
-                            /*Set the filter options only when a field/column has been selected.*/
-                            if (currentSearch.field) {
-                                filterFields[currentSearch.field] = {
-                                    'value' : currentSearch.value,
-                                    'type'  : currentSearch.type
-                                };
-                            }
+                        if ($scope.filtermode && currentSearch) {
+                            filterFields = getFilterFields(currentSearch);
                         }
                         /* else get sorted data through variable */
                         variable.update({
@@ -972,19 +1001,58 @@ WM.module('wm.widgets.grid')
                         });
                     }
                 },
-                /*Returns data filtered using searchObj*/
+                //Filter the data based on the search value and conditions
+                getFilteredData = function (data, searchObj) {
+                    var searchVal = _.toString(searchObj.value).toLowerCase(),
+                        currentVal;
+                    data = _.filter(data, function (obj) {
+                        var isExists;
+                        if (searchObj.field) {
+                            currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                        } else {
+                            currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
+                        }
+                        switch (searchObj.matchMode) {
+                        case 'start':
+                            isExists = _.startsWith(currentVal, searchVal);
+                            break;
+                        case 'end':
+                            isExists = _.endsWith(currentVal, searchVal);
+                            break;
+                        case 'exact':
+                            isExists = _.isEqual(currentVal, searchVal);
+                            break;
+                        case 'notequals':
+                            isExists = !_.isEqual(currentVal, searchVal);
+                            break;
+                        case 'null':
+                            isExists = _.isNull(currentVal, searchVal);
+                            break;
+                        case 'empty':
+                            isExists = _.isEmpty(currentVal, searchVal);
+                            break;
+                        case 'nullorempty':
+                            isExists = _.isNull(currentVal, searchVal) || _.isEmpty(currentVal, searchVal);
+                            break;
+                        default:
+                            isExists = _.includes(currentVal, searchVal);
+                            break;
+                        }
+                        return isExists;
+                    });
+                    return data;
+                },
+                //Returns data filtered using searchObj
                 getSearchResult = function (data, searchObj) {
-                    if (searchObj) {
-                        var searchVal = _.toString(searchObj.value).toLowerCase(),
-                            currentVal;
-                        data = _.filter(data, function (obj) {
-                            if (searchObj.field) {
-                                currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
-                            } else {
-                                currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
-                            }
-                            return _.includes(currentVal, searchVal);
+                    if (!searchObj) {
+                        return data;
+                    }
+                    if (_.isArray(searchObj)) {
+                        _.forEach(searchObj, function (obj) {
+                            data = getFilteredData(data, obj);
                         });
+                    } else {
+                        data = getFilteredData(data, searchObj);
                     }
                     return data;
                 },
@@ -1027,6 +1095,26 @@ WM.module('wm.widgets.grid')
                     if (type === 'sort') {
                         //Calling 'onSort' event
                         $scope.onSort({$event: e, $data: $scope.serverData});
+                    }
+                },
+                //Search handler for default case, when no separate search handler is provided
+                defaultSearchHandler = function (searchObj) {
+                    var data  = Utils.getClonedObject($scope.gridData),
+                        $rows = $scope.datagridElement.find('tbody tr');
+                    data = getSearchResult(data, searchObj);
+                    //Compared the filtered data and original data, to show or hide the rows
+                    _.forEach($scope.gridData, function (value, index) {
+                        var $row = WM.element($rows[index]);
+                        if (_.find(data, function (obj) {return _.isEqual(obj, value); })) {
+                            $row.show();
+                        } else {
+                            $row.hide();
+                        }
+                    });
+                    if (data && data.length) {
+                        $scope.datagridElement.datagrid('setStatus', 'ready');
+                    } else {
+                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                     }
                 },
                 getCompiledTemplate = function (htm, row, colDef, refreshImg) {
@@ -1233,6 +1321,7 @@ WM.module('wm.widgets.grid')
                     $scope.primaryKey     = variableObj.getPrimaryKey();
                     $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                 };
+            $scope.rowFilter = {};
             $scope.updateMarkupForGrid = function (config) {
                 if ($scope.widgetid) {
                     Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
@@ -1409,6 +1498,9 @@ WM.module('wm.widgets.grid')
                 },
                 compileTemplateInGridScope: function (htm) {
                     return compileTemplateInGridScope(htm);
+                },
+                getBindDataSet: function () {
+                    return $scope.binddataset;
                 },
                 setGridEditMode: function (val) {
                     $scope.isGridEditMode = val;
@@ -1661,6 +1753,7 @@ WM.module('wm.widgets.grid')
                     $scope.variableName = variableName;
                     variableObj = elScope.Variables && elScope.Variables[$scope.variableName];
 
+                    $scope.setDataGridOption('searchHandler', defaultSearchHandler);
                     if (variableObj && isBoundToVariable) {
                         $scope.variableType = variableObj.category;
 
@@ -1748,12 +1841,12 @@ WM.module('wm.widgets.grid')
                     }
                     /* If bound to live filter result, disable grid search. */
                     if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
-                        if ($scope.gridsearch) {
-                            $rootScope.$emit('update-widget-property', 'gridsearch', false);
+                        if ($scope.filtermode) {
+                            $rootScope.$emit('update-widget-property', 'filtermode', '');
                         }
-                        wp.gridsearch.disabled = true;
+                        wp.filtermode.disabled = true;
                     } else {
-                        wp.gridsearch.disabled = false;
+                        wp.filtermode.disabled = false;
                     }
                 }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
@@ -2092,6 +2185,34 @@ WM.module('wm.widgets.grid')
                     }
                 });
             };
+            //Function to be executed on any row filter change
+            $scope.onRowFilterChange = function () {
+                var searchObj = [];
+                //Convert row filters to a search object and call search handler
+                _.forEach($scope.rowFilter, function (value, key) {
+                    if (value.value || _.includes($scope.emptyMatchModes, value.matchMode)) {
+                        searchObj.push({
+                            'field'     : key,
+                            'value'     : value.value,
+                            'matchMode' : value.matchMode
+                        });
+                    }
+                });
+                $scope.gridOptions.searchHandler(searchObj, undefined, 'search');
+            };
+            //Function to be executed on filter condition change
+            $scope.onFilterConditionSelect = function (field, value) {
+                $scope.rowFilter[field] = $scope.rowFilter[field] || {};
+                $scope.rowFilter[field].matchMode = value;
+                $scope.onRowFilterChange();
+            };
+            //Function to be executed on clearing a row filter
+            $scope.clearRowFilter = function (field) {
+                if ($scope.rowFilter && $scope.rowFilter[field]) {
+                    $scope.rowFilter[field].value = undefined;
+                    $scope.onRowFilterChange();
+                }
+            };
         }])
 
 /**
@@ -2180,6 +2301,7 @@ WM.module('wm.widgets.grid')
                         };
 
                         var index,
+                            fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap(),
                             exprWatchHandlers = [],
                             config,
                             textAlignment = attrs.textalignment || 'left',
@@ -2191,57 +2313,70 @@ WM.module('wm.widgets.grid')
                                 '; color: ' + textColor + ';',
                             //Obj of its base with setter and getter defined
                             columnDef = new scope.ColumnDef(),
-                            columnDefProps = {
-                                'field': attrs.binding,
-                                'displayName': attrs.caption,
-                                'pcDisplay': WM.isDefined(attrs.pcdisplay) ? attrs.pcdisplay === 'true' : true,
-                                'mobileDisplay': WM.isDefined(attrs.mobiledisplay) ? attrs.mobiledisplay === 'true' : true,
-                                'width': width,
-                                'textAlignment': textAlignment,
-                                'backgroundColor': backgroundColor,
-                                'textColor': textColor,
-                                'type': attrs.type || 'string',
-                                'primaryKey': attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
-                                'generator': attrs.generator,
-                                'isRelatedPk': attrs.isRelatedPk === 'true',
-                                'widgetType': attrs.widgetType,
-                                'style': styleDef,
-                                'class': attrs.colClass || '',
-                                'ngclass': attrs.colNgClass || '',
-                                'datepattern': attrs.datepattern,
-                                'formatpattern': attrs.formatpattern,
-                                'currencypattern': attrs.currencypattern,
-                                'fractionsize': attrs.fractionsize,
-                                'suffix': attrs.suffix,
-                                'prefix': attrs.prefix,
-                                'accessroles': attrs.accessroles || '',
-                                'editWidgetType': attrs.editWidgetType,
-                                'dataset': attrs.dataset,
-                                'datafield': attrs.datafield,
-                                'placeholder': attrs.placeholder,
-                                'displaylabel': attrs.displaylabel,
-                                'searchkey': attrs.searchkey,
-                                'displayfield': attrs.displayfield,
-                                'defaultvalue': attrs.defaultvalue,
-                                'sortable': attrs.sortable !== 'false',
-                                'searchable': attrs.searchable !== 'false',
-                                'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
-                                'rowactionsposition': attrs.rowactionsposition
-                            },
+                            columnDefProps,
                             updateCustomExpression = function (column) {
                                 LiveWidgetUtils.setColumnConfig(column);
-                            };
+                            },
+                            parentScope = scope.$parent,
+                            variable;
                         function watchProperty(property, expression) {
-                            exprWatchHandlers[property] = BindingManager.register(scope.$parent, expression, function (newVal) {
+                            exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                                 if (WM.isDefined(newVal)) {
-                                    scope.$parent.fieldDefs[index].setProperty(property, newVal);
+                                    parentScope.fieldDefs[index].setProperty(property, newVal);
                                 }
                             }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                         }
 
                         //Will be used in ColumnDef prototype methods to re-render grid.
-                        scope.ColumnDef.prototype.$is = scope.$parent;
-
+                        scope.ColumnDef.prototype.$is = parentScope;
+                        //Get the fefault filter widget type
+                        function getFilterWidget(type) {
+                            var widget = fieldTypeWidgetTypeMap[type] && fieldTypeWidgetTypeMap[type][0];
+                            if (_.includes(['text', 'number', 'select', 'autocomplete', 'checkbox', 'date', 'time', 'datetime'], widget)) {
+                                return widget;
+                            }
+                            return 'text';
+                        }
+                        columnDefProps = {
+                            'field': attrs.binding,
+                            'displayName': attrs.caption,
+                            'pcDisplay': WM.isDefined(attrs.pcdisplay) ? attrs.pcdisplay === 'true' : true,
+                            'mobileDisplay': WM.isDefined(attrs.mobiledisplay) ? attrs.mobiledisplay === 'true' : true,
+                            'width': width,
+                            'textAlignment': textAlignment,
+                            'backgroundColor': backgroundColor,
+                            'textColor': textColor,
+                            'type': attrs.type || 'string',
+                            'primaryKey': attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
+                            'generator': attrs.generator,
+                            'isRelatedPk': attrs.isRelatedPk === 'true',
+                            'widgetType': attrs.widgetType,
+                            'style': styleDef,
+                            'class': attrs.colClass || '',
+                            'ngclass': attrs.colNgClass || '',
+                            'datepattern': attrs.datepattern,
+                            'formatpattern': attrs.formatpattern,
+                            'currencypattern': attrs.currencypattern,
+                            'fractionsize': attrs.fractionsize,
+                            'suffix': attrs.suffix,
+                            'prefix': attrs.prefix,
+                            'accessroles': attrs.accessroles || '',
+                            'editWidgetType': attrs.editWidgetType,
+                            'dataset': attrs.dataset,
+                            'datafield': attrs.datafield,
+                            'placeholder': attrs.placeholder,
+                            'displaylabel': attrs.displaylabel,
+                            'searchkey': attrs.searchkey,
+                            'displayfield': attrs.displayfield,
+                            'defaultvalue': attrs.defaultvalue,
+                            'sortable': attrs.sortable !== 'false',
+                            'searchable': attrs.searchable !== 'false',
+                            'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
+                            'rowactionsposition': attrs.rowactionsposition,
+                            'filterwidget': attrs.filterwidget || getFilterWidget(attrs.type || 'string'),
+                            'filterplaceholder': attrs.filterplaceholder,
+                            'relatedEntityName': attrs.relatedEntityName
+                        };
                         //Extends the columnDef class with column meta data
                         WM.extend(columnDef, columnDefProps);
 
@@ -2256,16 +2391,17 @@ WM.module('wm.widgets.grid')
                             }
                         }
                         /* push the fieldDef in the object meant to have all fields */
-                        index = scope.$parent.fullFieldDefs.push(columnDef) - 1;
+                        index = parentScope.fullFieldDefs.push(columnDef) - 1;
+                        columnDef.index = index;
                         /* Backward compatibility for widgetType */
                         if (columnDef.widgetType && !columnDef.customExpression) {
                             updateCustomExpression(columnDef);
-                            if (CONSTANTS.isStudioMode && scope.$parent.fullFieldDefs.length === scope.$parent.gridColumnCount) {
+                            if (CONSTANTS.isStudioMode && parentScope.fullFieldDefs.length === parentScope.gridColumnCount) {
                                 /* Update markup for grid. */
                                 config = {
-                                    widgetName: scope.name,
-                                    scopeId: scope.$parent.$id,
-                                    fieldDefs: scope.$parent.fullFieldDefs
+                                    widgetName : scope.name,
+                                    scopeId    : parentScope.$id,
+                                    fieldDefs  : parentScope.fullFieldDefs
                                 };
                                 scope.updateMarkupForGrid(config);
                                 scope.$root.$emit('save-workspace', true);
@@ -2293,12 +2429,27 @@ WM.module('wm.widgets.grid')
                             }
                         }
                         /* push the fieldDef in the object meant for actual display in the grid (this will be passed to ng-grid) */
-                        scope.$parent.fieldDefs.push(columnDef);
+                        parentScope.fieldDefs.push(columnDef);
                         element.remove();
                         /*destroy watch handler on scope destroy*/
                         scope.$on('$destroy', function () {
-                            _.each(exprWatchHandlers, Utils.triggerFn);
+                            _.forEach(exprWatchHandlers, Utils.triggerFn);
                         });
+                        //Fetch the filter options for select widget when filtermode is row
+                        if (CONSTANTS.isRunMode && parentScope.filtermode === 'row' && columnDef.filterwidget === 'select') {
+                            variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
+                            if (variable && variable.category === 'wm.LiveVariable') {
+                                columnDef.isLiveVariable = true;
+                                if (columnDef.relatedEntityName) {
+                                    columnDef.isRelated   = true;
+                                    columnDef.lookupType  = columnDef.relatedEntityName;
+                                    columnDef.lookupField = _.split(columnDef.field, '.')[1];
+                                }
+                                LiveWidgetUtils.getDistinctValues(columnDef, variable, function (field, data, aliascolumn) {
+                                    field.filterdataset = _.pull(_.map(data.content, aliascolumn), null);
+                                });
+                            }
+                        }
                     }
                 };
             }

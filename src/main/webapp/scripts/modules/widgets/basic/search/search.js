@@ -22,6 +22,7 @@ WM.module('wm.widgets.basic')
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
                     ' autocomplete="off"' +
+                    ' typeahead-append-to-body="true" ' +
                     ' typeahead-loading="_loadingItems" ' +
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
@@ -389,7 +390,8 @@ WM.module('wm.widgets.basic')
                 // setup common request param values
                 requestParams = {
                     'pagesize'           : $is.limit || $is.pagesize || 20,
-                    'skipDataSetUpdate'  : true //don't update the actual variable dataset
+                    'skipDataSetUpdate'  : true, //don't update the actual variable
+                    'skipToggleState'    : true //Dont change the varibale toggle state as this is a independent call
                 };
                 switch (variable.category) {
                 case 'wm.LiveVariable':

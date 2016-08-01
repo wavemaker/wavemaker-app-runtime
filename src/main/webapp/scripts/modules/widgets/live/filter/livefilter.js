@@ -497,46 +497,7 @@ WM.module('wm.widgets.live')
                                     return;
                                 }
                                 _.forEach(scope.formFields, function (filterField) {
-                                    var query,
-                                        tableName,
-                                        columns,
-                                        aliasColumn,
-                                        fieldColumn,
-                                        dataSetWidgetTypes = Utils.getDataSetWidgets();
-
-                                    fieldColumn = filterField.field;
-                                    if (dataSetWidgetTypes[filterField.widget] && !filterField.tempDataset) {
-                                        if (filterField.isRelated) {
-                                            tableName   = filterField.lookupType;
-                                            columns     = filterField.lookupField;
-                                            aliasColumn = columns.replace('.', '_');
-                                            query       = QueryBuilder.getQuery({
-                                                'tableName' : tableName,
-                                                'columns'   : [' DISTINCT ' + columns + ' AS ' + aliasColumn]
-                                            });
-                                        } else {
-                                            aliasColumn = fieldColumn;
-                                            query       = QueryBuilder.getQuery({
-                                                'tableName' : scope.result.propertiesMap.entityName,
-                                                'columns'   : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field]
-                                            });
-                                        }
-                                        /* Sending size = 500 because we want to populate all data values in widgets
-                                         * like select box, checkbox set etc.
-                                         * NOTE: Currently backend is returning max. 100 records for any page size
-                                         * more than 100. So this size will need to change once backend is fixed to
-                                         * return all records instead of max 100 records in this case. */
-                                        QueryBuilder.executeQuery({
-                                            'databaseName' : variable.liveSource,
-                                            'query'        : query,
-                                            'page'         : 1,
-                                            'size'         : 500,
-                                            'nativeSql'    : false,
-                                            'prefabName'   : variable.prefabName
-                                        }, function (data) {
-                                            setFieldDataSet(filterField, data, aliasColumn);
-                                        });
-                                    }
+                                    LiveWidgetUtils.getDistinctValues(filterField, variable, setFieldDataSet);
                                 });
                             }
                             /*Function to retrieve the data of the cascading filter, when filterOnField option is given*/
