@@ -216,43 +216,43 @@ WM.module('wm.layouts.containers')
             element.on('submit', function (event) {
                 formData     = {};
                 formVariable = element.scope().Variables[scope.formvariable];
-                if (scope.onSubmit || formVariable) {
-                    //Get all form fields and prepare form data as key value pairs
-                    element.find('[data-role="form-field"]').each(function () {
-                        var fieldName;
-                        field       = WM.element(this).isolateScope().fieldDefConfig;
-                        fieldTarget = _.split(field.key || field.target, '.');
-                        fieldName   = fieldTarget[0] || field.key || field.name;
-                        if (fieldTarget.length === 1 && !formData[fieldName]) {
-                            formData[fieldName] = field.value;
-                        } else {
-                            if (formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
-                                formData[fieldTarget[1]] = field.value;
-                            } else {
-                                formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                                //Check for if property already not exits
-                                if (!formData[fieldTarget[0]][fieldTarget[1]]) {
-                                    formData[fieldTarget[0]][fieldTarget[1]] = field.value;
-                                }
-                            }
-                        }
-                    });
-                    //Form fields wont't contain grid widgets get those using attribute and add to form data
-                    element.find('[isFormField="true"]').each(function () {
-                        formWidget = WM.element(this).isolateScope();
-                        fieldTarget = _.split(formWidget.name, '.');
-                        if (fieldTarget.length === 1) {
-                            formData[formWidget.name] = formWidget.dataset;
+                //Get all form fields and prepare form data as key value pairs
+                element.find('[data-role="form-field"]').each(function () {
+                    var fieldName;
+                    field       = WM.element(this).isolateScope().fieldDefConfig;
+                    fieldTarget = _.split(field.key || field.target, '.');
+                    fieldName   = fieldTarget[0] || field.key || field.name;
+                    if (fieldTarget.length === 1 && !formData[fieldName]) {
+                        formData[fieldName] = field.value;
+                    } else {
+                        if (formVariable && formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
+                            formData[fieldTarget[1]] = field.value;
                         } else {
                             formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                            formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
+                            //Check for if property already not exits
+                            if (!formData[fieldTarget[0]][fieldTarget[1]]) {
+                                formData[fieldTarget[0]][fieldTarget[1]] = field.value;
+                            }
                         }
-                    });
-                    params = {$event: event, $scope: scope, $formData: formData};
-                    //If on submit is there execute it and if it returns true do service variable invoke else return
-                    if (scope.onSubmit && scope.onSubmit(params) === false) {
-                        return;
                     }
+                });
+                //Form fields wont't contain grid widgets get those using attribute and add to form data
+                element.find('[isFormField="true"]').each(function () {
+                    formWidget = WM.element(this).isolateScope();
+                    fieldTarget = _.split(formWidget.name, '.');
+                    if (fieldTarget.length === 1) {
+                        formData[formWidget.name] = formWidget.dataset;
+                    } else {
+                        formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
+                        formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
+                    }
+                });
+                params = {$event: event, $scope: scope, $formData: formData};
+                //If on before submit is there execute it and return here if result is false
+                if (scope.onBeforesubmit && scope.onBeforesubmit(params) === false) {
+                    return;
+                }
+                if (scope.onSubmit || formVariable) {
                     scope.formdata = formData;
                     //If its a service variable call setInput and assign form data and invoke the service
                     if (formVariable && formVariable.category === 'wm.ServiceVariable') {
@@ -271,6 +271,10 @@ WM.module('wm.layouts.containers')
                             };
                         });
                     }
+                    //If on submit is there execute it and if it returns true do service variable invoke else return
+                    if (scope.onSubmit && scope.onSubmit(params) === false) {
+                        return;
+                    }
                 }
             });
             /*clear the file uploader in the form*/
@@ -286,12 +290,25 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
-                'pre': function (scope, element) {
+                'pre': function (scope, element, attrs) {
+                    var onSubmit,
+                        formVariable;
                     scope.widgetProps = widgetProps;
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
                     element.removeAttr('title');
+                    if (CONSTANTS.isRunMode && !attrs.formvariable && attrs.onSubmit) {
+                        onSubmit     = _.split(attrs.onSubmit, ';');
+                        formVariable = onSubmit[0];
+                        //If form variable is not present, Check for the first parameter in onSubmit and Set it to form variable
+                        //This form variable is triggered on on submit with custom handling of success and error by form
+                        if (formVariable && !_.includes(formVariable, '(') && !_.includes(formVariable, '.')) {
+                            scope.formvariable = formVariable;
+                            onSubmit.splice(0, 1); //Remove the first parameter form the onSubmit
+                            attrs.onSubmit = _.join(onSubmit, ';');
+                        }
+                    }
                 },
                 'post': function (scope, element, attrs) {
                     var handlers = [];
