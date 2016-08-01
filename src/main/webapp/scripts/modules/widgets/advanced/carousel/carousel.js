@@ -72,9 +72,9 @@ WM.module('wm.widgets.advanced')
             },
 
             slideTemplateWrapper =
-                '<uib-carousel interval="interval" active="active" no-wrap="noWrapSlides"> ' +
-                    '<uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></uib-slide>' +
-                '</uib-carousel>';
+                '<div uib-carousel interval="interval" active="active" no-wrap="noWrapSlides"> ' +
+                    '<div uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></div>' +
+                '</div>';
 
             function updateFieldDefs($is, data) {
                 $is.fieldDefs = data;

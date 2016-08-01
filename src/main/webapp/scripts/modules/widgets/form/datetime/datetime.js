@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                     ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
-                        '<uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></uib-timepicker>' +
+                        '<div uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
