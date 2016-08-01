@@ -1061,17 +1061,9 @@ WM.module('wm.widgets.grid')
                     return $compile(el)($scope);
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback, evt) {
-                    var deleteFn = function () {
-                        var variable;
-                        variable = $scope.gridElement.scope().Variables[$scope.variableName];
-                        if (!variable) {
-                            return;
-                        }
-                        variable.deleteRecord({
-                            'row'       : row,
-                            'transform' : true,
-                            'scope'     : $scope.gridElement.scope()
-                        }, function (success) {
+                    var variable,
+                        isStaticVariable,
+                        successHandler = function (success) {
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
@@ -1082,23 +1074,40 @@ WM.module('wm.widgets.grid')
                             $scope.$emit('on-row-delete', row);
 
                             $scope.onRecordDelete();
-                            $scope.updateVariable();
+                            if (!isStaticVariable) {
+                                $scope.updateVariable();
+                            }
                             if ($scope.deletemessage) {
                                 wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
                             }
                             /*custom EventHandler for row deleted event*/
                             $scope.onRowdeleted({$event: evt, $data: row, $rowData: row});
-
-                        }, function (error) {
-                            Utils.triggerFn(cancelRowDeleteCallback);
-                            wmToaster.show('error', 'ERROR', error);
-                        });
-                    };
+                        },
+                        deleteFn = function () {
+                            if (isStaticVariable) {
+                                variable.removeItem(row);
+                                successHandler(row);
+                                return;
+                            }
+                            variable.deleteRecord({
+                                'row'       : row,
+                                'transform' : true,
+                                'scope'     : $scope.gridElement.scope()
+                            }, successHandler, function (error) {
+                                Utils.triggerFn(cancelRowDeleteCallback);
+                                wmToaster.show('error', 'ERROR', error);
+                            });
+                        };
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         $scope.$root.$safeApply($scope);
                         return;
                     }
+                    variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    if (!variable) {
+                        return;
+                    }
+                    isStaticVariable = variable.category === 'wm.Variable';
                     if (!$scope.confirmdelete) {
                         deleteFn();
                         Utils.triggerFn(cancelRowDeleteCallback);
@@ -1123,32 +1132,42 @@ WM.module('wm.widgets.grid')
                 insertRecord = function (options) {
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
                         dataObject = {
-                            "row": options.row,
-                            "transform": true,
-                            "scope": $scope.gridElement.scope(),
-                            "multipartData": options.multipartData
+                            'row'           : options.row,
+                            'transform'     : true,
+                            'scope'         : $scope.gridElement.scope(),
+                            'multipartData' : options.multipartData
+                        },
+                        isStaticVariable,
+                        successHandler = function (response) {
+                            /*Display appropriate error message in case of error.*/
+                            if (response.error) {
+                                wmToaster.show('error', 'ERROR', response.error);
+                                Utils.triggerFn(options.error, response);
+                            } else {
+                                if ($scope.gridOptions.allowInlineEditing && $scope.gridOptions.allowInlineEditing !== 'false' && options.event) {
+                                    var row = WM.element(options.event.target).closest('tr');
+                                    $scope.datagridElement.datagrid('hideRowEditMode', row);
+                                }
+                                wmToaster.show('success', 'SUCCESS', 'Record added successfully');
+                                $scope.initiateSelectItem('last', response, undefined, isStaticVariable);
+                                if (!isStaticVariable) {
+                                    $scope.updateVariable();
+                                }
+                                Utils.triggerFn(options.success, response);
+                                $scope.onRowinsert({$event: options.event, $data: response, $rowData: response});
+                            }
                         };
 
                     if (!variable) {
                         return;
                     }
-                    variable.insertRecord(dataObject, function (response) {
-                        /*Display appropriate error message in case of error.*/
-                        if (response.error) {
-                            wmToaster.show('error', 'ERROR', response.error);
-                            Utils.triggerFn(options.error, response);
-                        } else {
-                            if ($scope.gridOptions.allowInlineEditing && $scope.gridOptions.allowInlineEditing !== "false" && options.event) {
-                                var row = WM.element(options.event.target).closest('tr');
-                                $scope.datagridElement.datagrid('hideRowEditMode', row);
-                            }
-                            wmToaster.show('success', 'SUCCESS', 'Record added successfully');
-                            $scope.initiateSelectItem('last', response, $scope.primaryKey);
-                            $scope.updateVariable();
-                            Utils.triggerFn(options.success, response);
-                            $scope.onRowinsert({$event: options.event, $data: response, $rowData: response});
-                        }
-                    }, function (error) {
+                    isStaticVariable = variable.category === 'wm.Variable';
+                    if (isStaticVariable) {
+                        variable.addItem(options.row);
+                        successHandler(options.row);
+                        return;
+                    }
+                    variable.insertRecord(dataObject, successHandler, function (error) {
                         wmToaster.show('error', 'ERROR', error);
                         Utils.triggerFn(options.error, error);
                     });
@@ -1160,36 +1179,46 @@ WM.module('wm.widgets.grid')
                         return;
                     }*/
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                        isStaticVariable,
                         dataObject = {
-                            "row": options.row,
-                            "prevData": options.prevData,
-                            "multipartData": options.multipartData,
-                            "transform": true,
-                            "scope": $scope.gridElement.scope()
+                            'row'           : options.row,
+                            'prevData'      : options.prevData,
+                            'multipartData' : options.multipartData,
+                            'transform'     : true,
+                            'scope'         : $scope.gridElement.scope()
+                        },
+                        successHandler = function (response) {
+                            /*Display appropriate error message in case of error.*/
+                            if (response.error) {
+                                /*disable readonly and show the appropriate error*/
+                                wmToaster.show('error', 'ERROR', response.error);
+                                Utils.triggerFn(options.error, response);
+                            } else {
+                                if (options.event) {
+                                    var row = WM.element(options.event.target).closest('tr');
+                                    $scope.datagridElement.datagrid('hideRowEditMode', row);
+                                }
+                                $scope.operationType = "";
+                                wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
+                                $scope.initiateSelectItem('current', response, undefined, isStaticVariable);
+                                if (!isStaticVariable) {
+                                    $scope.updateVariable();
+                                }
+                                Utils.triggerFn(options.success, response);
+                                $scope.onRowupdate({$event: options.event, $data: response, $rowData: response});
+                            }
                         };
 
                     if (!variable) {
                         return;
                     }
-                    variable.updateRecord(dataObject, function (response) {
-                        /*Display appropriate error message in case of error.*/
-                        if (response.error) {
-                            /*disable readonly and show the appropriate error*/
-                            wmToaster.show('error', 'ERROR', response.error);
-                            Utils.triggerFn(options.error, response);
-                        } else {
-                            if (options.event) {
-                                var row = WM.element(options.event.target).closest('tr');
-                                $scope.datagridElement.datagrid('hideRowEditMode', row);
-                            }
-                            $scope.operationType = "";
-                            wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
-                            $scope.initiateSelectItem('current', response, $scope.primaryKey);
-                            $scope.updateVariable();
-                            Utils.triggerFn(options.success, response);
-                            $scope.onRowupdate({$event: options.event, $data: response, $rowData: response});
-                        }
-                    }, function (error) {
+                    isStaticVariable = variable.category === 'wm.Variable';
+                    if (isStaticVariable) {
+                        variable.setItem(options.prevData, options.row);
+                        successHandler(options.row);
+                        return;
+                    }
+                    variable.updateRecord(dataObject, successHandler, function (error) {
                         wmToaster.show('error', 'ERROR', error);
                         Utils.triggerFn(options.error, error);
                     });
@@ -1906,11 +1935,13 @@ WM.module('wm.widgets.grid')
                 }
             };
 
-            $scope.initiateSelectItem = function (index, row, primaryKey, skipSelectItem) {
+            $scope.initiateSelectItem = function (index, row, skipSelectItem, skipSizeIncrement) {
                 /*index === "last" indicates that an insert operation has been successfully performed and navigation to the last page is required.
                 * Hence increment the "dataSize" by 1.*/
                 if (index === 'last') {
-                    $scope.dataNavigator.dataSize += 1;
+                    if (!skipSizeIncrement) {
+                        $scope.dataNavigator.dataSize += 1;
+                    }
                     /*Update the data in the current page in the grid after insert/update operations.*/
                     if (!$scope.shownavigation) {
                         index = 'current';
