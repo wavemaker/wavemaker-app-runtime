@@ -205,6 +205,8 @@ wm.modules.wmCommon.services.BaseService = [
                 if (error.status === 403) {
                     pushToErrorCallStack(config, successCallback, failureCallback);
                     displayMessage('failure', $rootScope.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', $rootScope.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.');
+                    /* In runtime, the variable error handler needs to be invoked to hide the spinner */
+                    Utils.triggerFn(failureCallback);
                     return;
                 }
                 /*check if 'locale' resource is loaded*/

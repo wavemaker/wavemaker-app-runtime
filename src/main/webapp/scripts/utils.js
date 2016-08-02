@@ -348,12 +348,7 @@ WM.module('wm.utils', [])
                     modifiedTitle = title;
                 } else {
                     if (WM.isString(title)) {
-                        /*capitalize the initial Letter*/
-                        modifiedTitle = initCaps(title);
-                        /*Convert camel case words to separated words*/
-                        modifiedTitle = spaceSeparate(modifiedTitle);
-                        /*Replace '.' with space and capitalize the next letter*/
-                        modifiedTitle = periodSeparate(modifiedTitle);
+                        modifiedTitle = prettifyLabel(title);
                         modifiedTitle = deHyphenate(modifiedTitle);
                         modifiedTitle = namePrefix ? initCaps(namePrefix) + ' ' + modifiedTitle : modifiedTitle;
                     } else {
