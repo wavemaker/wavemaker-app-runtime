@@ -298,15 +298,17 @@ WM.module('wm.layouts.containers')
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
                     element.removeAttr('title');
-                    if (CONSTANTS.isRunMode && !attrs.formvariable && attrs.onSubmit) {
+                    if (!attrs.formvariable && attrs.onSubmit) {
                         onSubmit     = _.split(attrs.onSubmit, ';');
                         formVariable = onSubmit[0];
                         //If form variable is not present, Check for the first parameter in onSubmit and Set it to form variable
                         //This form variable is triggered on on submit with custom handling of success and error by form
                         if (formVariable && !_.includes(formVariable, '(') && !_.includes(formVariable, '.')) {
                             scope.formvariable = formVariable;
-                            onSubmit.splice(0, 1); //Remove the first parameter form the onSubmit
-                            attrs.onSubmit = _.join(onSubmit, ';');
+                            if (CONSTANTS.isRunMode) {
+                                onSubmit.splice(0, 1); //Remove the first parameter form the onSubmit
+                                attrs.onSubmit = _.join(onSubmit, ';');
+                            }
                         }
                     }
                 },
