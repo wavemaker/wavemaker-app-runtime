@@ -16,13 +16,16 @@
 package com.wavemaker.runtime.rest.handler;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
@@ -48,10 +51,30 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
 
     @Autowired
-    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private RestRuntimeController restRuntimeController;
 
     @Autowired
-    private RestRuntimeController restRuntimeController;
+    private ApplicationContext applicationContext;
+
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+    @PostConstruct
+    private void init() {
+        Map<String, RequestMappingHandlerMapping> beans = applicationContext.getBeansOfType(RequestMappingHandlerMapping.class);
+        if (beans == null || beans.size() == 0) {
+            throw new WMRuntimeException("No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+        } else {
+            for (RequestMappingHandlerMapping bean : beans.values() ) {
+                if (bean.getApplicationContext() == applicationContext) {
+                    requestMappingHandlerMapping = bean;
+                    break;
+                }
+            }
+            if (requestMappingHandlerMapping == null) {
+                throw new WMRuntimeException("No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+            }
+        }
+    }
 
 
     private static final Method HANDLE_REQUEST_METHOD;
