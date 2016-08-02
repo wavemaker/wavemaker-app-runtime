@@ -4,7 +4,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/dialog-template.html",
-            '<div tabindex="-1" role="dialog" class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
+            '<div tabindex="-1" role="dialog" class="modal default" ng-style="{display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
             '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" >' +
@@ -128,13 +128,14 @@ WM.module('wm.widgets.dialog')
                         };
                     },
                     "post": function (scope, element, attrs) {
-
+                        var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
                         if (CONSTANTS.isStudioMode) {
                             element.append($compile(transcludedContent)(scope));
                         }
-                        scope = scope || element.isolateScope();
-                        scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
+                        scope         = scope || element.isolateScope();
+                        scope.header  = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
+                        element.closest('[uib-modal-window]').css({'z-index': 1050 + modalWindowElScope.index * 10, 'display': 'block'});
 
                         /* register the property change handler */
                         if (scope.propertyManager) {
