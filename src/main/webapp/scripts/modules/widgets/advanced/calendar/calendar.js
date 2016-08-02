@@ -183,7 +183,7 @@ WM.module('wm.widgets.advanced')
                     if (isMobile) {
                         $tc.put('template/widget/calendar.html',
                             '<div init-widget has-model apply-styles="shell" class="app-date">' +
-                                '<uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions"></uib-datepicker>' +
+                                '<div uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions"></div>' +
                             '</div>');
                     } else {
                         $tc.put('template/widget/calendar.html',
