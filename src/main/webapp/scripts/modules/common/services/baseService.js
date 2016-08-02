@@ -179,9 +179,10 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg, errorDetails = error, appManager;
+                var errTitle, errMsg, errorDetails = error, appManager, isLoginFailure;
+                isLoginFailure = WM.isFunction(error.headers) && error.headers('X-WM-Login-ErrorMessage');
                 /*if user is unauthorized, then show login dialog*/
-                if (error.status === 401 && !error.headers('X-WM-Login-ErrorMessage')) {
+                if (error.status === 401 && !isLoginFailure) {
                     if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {
                         /*
                          * a failed app.variables.json file doesn't need to be re-invoked always after login
@@ -233,8 +234,8 @@ wm.modules.wmCommon.services.BaseService = [
                 }
 
                 /* check for login failure header */
-                if (error.headers('X-WM-Login-ErrorMessage')) {
-                    errMsg = error.headers('X-WM-Login-ErrorMessage');
+                if (isLoginFailure) {
+                    errMsg = isLoginFailure;
                 }
 
                 /*check if failureCallback is defined*/
