@@ -1373,7 +1373,7 @@ wm.variables.services.$liveVariable = [
                     options.scope = this.activeScope;
 
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
+                        $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
                     }
                     methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                         if (CONSTANTS.isRunMode) {

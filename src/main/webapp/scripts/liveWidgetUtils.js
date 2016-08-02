@@ -17,8 +17,9 @@ WM.module('wm.widgets.live')
         'CONSTANTS',
         'WidgetUtilService',
         'Variables',
+        'QueryBuilder',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables, QueryBuilder) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 focusEvents            = ['onBlur', 'onFocus'],
@@ -267,6 +268,38 @@ WM.module('wm.widgets.live')
                     'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete']
                 };
                 return fieldTypeWidgetTypeMap;
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getMatchModeTypesMap
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return the match modes based on the data type
+             */
+            function getMatchModeTypesMap() {
+                var matchModeTypesMap = {
+                    'integer'    : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'big_integer': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'short'      : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'float'      : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'big_decimal': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'double'     : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'long'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'byte'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'string'     : ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'empty', 'nullorempty'],
+                    'character'  : ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'empty', 'nullorempty'],
+                    'text'       : ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'empty', 'nullorempty'],
+                    'date'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'time'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'timestamp'  : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'datetime'   : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null'],
+                    'boolean'    : ['exact', 'null'],
+                    'clob'       : [],
+                    'blob'       : []
+                };
+                return matchModeTypesMap;
             }
             function toBoolean(val, identity) {
                 return val === 'false' ? false : (val === 'true' || val === '' || val === identity || val);
@@ -1520,6 +1553,62 @@ WM.module('wm.widgets.live')
                     'isRowOperation': true
                 };
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getDistinctValues
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns the distinct values for a field
+             *
+             * @param {object} filterField definition of the column/ field
+             * @param {object} variable variable for the widget
+             * @param {function} callBack Function to be executed after fetching results
+             *
+             */
+            function getDistinctValues(filterField, variable, callBack) {
+                var query,
+                    tableName,
+                    columns,
+                    aliasColumn,
+                    fieldColumn,
+                    dataSetWidgetTypes = Utils.getDataSetWidgets();
+
+                fieldColumn = filterField.field;
+                if (dataSetWidgetTypes[filterField.widget || filterField.filterwidget] && !filterField.tempDataset) {
+                    if (filterField.isRelated) {
+                        tableName   = filterField.lookupType;
+                        columns     = filterField.lookupField;
+                        aliasColumn = columns.replace('.', '_');
+                        query       = QueryBuilder.getQuery({
+                            'tableName' : tableName,
+                            'columns'   : [' DISTINCT ' + columns + ' AS ' + aliasColumn]
+                        });
+                    } else {
+                        aliasColumn = fieldColumn;
+                        query       = QueryBuilder.getQuery({
+                            'tableName' : variable.propertiesMap.entityName,
+                            'columns'   : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field]
+                        });
+                    }
+                    /* Sending size = 500 because we want to populate all data values in widgets
+                     * like select box, checkbox set etc.
+                     * NOTE: Currently backend is returning max. 100 records for any page size
+                     * more than 100. So this size will need to change once backend is fixed to
+                     * return all records instead of max 100 records in this case. */
+                    QueryBuilder.executeQuery({
+                        'databaseName' : variable.liveSource,
+                        'query'        : query,
+                        'page'         : 1,
+                        'size'         : 500,
+                        'nativeSql'    : false,
+                        'prefabName'   : variable.prefabName
+                    }, function (data) {
+                        callBack(filterField, data, aliasColumn);
+                    });
+                }
+            }
 
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -1535,6 +1624,7 @@ WM.module('wm.widgets.live')
             this.splitDimension             = splitDimension;
             this.mergeDimension             = mergeDimension;
             this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
+            this.getMatchModeTypesMap       = getMatchModeTypesMap;
             this.fieldPropertyChangeHandler = fieldPropertyChangeHandler;
             this.preProcessFields           = preProcessFields;
             this.setColumnConfig            = setColumnConfig;
@@ -1542,6 +1632,7 @@ WM.module('wm.widgets.live')
             this.fetchDynamicData           = fetchDynamicData;
             this.fetchReferenceDetails      = fetchReferenceDetails;
             this.getRowOperationsColumn     = getRowOperationsColumn;
+            this.getDistinctValues          = getDistinctValues;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

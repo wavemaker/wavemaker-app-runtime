@@ -1593,6 +1593,19 @@ If the height and width are not specified the video takes the height of the post
         .app-grid-content {
           display: none;
         }
+        .filter-row {
+          pointer-events: all;
+        }
+      }
+      .filter-row .input-group {
+        .input-group-addon {
+          .app-icon {
+            font-size: 1.3em;
+          }
+        }
+        .input-group-btn:last-child > .btn {
+          z-index: 0;
+        }
       }
     }
     .app-datagrid-cell {

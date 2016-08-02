@@ -770,7 +770,8 @@ WM.module('wm.utils', [])
                 'generator'           : prop.generator,
                 'isRelatedPk'         : prop.isRelatedPk,
                 'systemUpdated'       : prop.systemUpdated,
-                'systemInserted'      : prop.systemInserted
+                'systemInserted'      : prop.systemInserted,
+                'relatedEntityName'   : prop.relatedEntityName
             };
         }
 
@@ -796,8 +797,11 @@ WM.module('wm.utils', [])
             });
             _.forEach(relatedColumnsArr, function (val) {
                 _.forEach(val.columns, function (col) {
-                    if (col.isPrimaryKey && val.isRelated) {
-                        col.isRelatedPk = 'true';
+                    if (val.isRelated) {
+                        if (col.isPrimaryKey) {
+                            col.isRelatedPk = 'true';
+                        }
+                        col.relatedEntityName = val.relatedEntityName;
                     }
                 });
 

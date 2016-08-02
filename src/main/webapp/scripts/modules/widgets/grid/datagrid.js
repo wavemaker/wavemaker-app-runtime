@@ -18,7 +18,7 @@ $.widget('wm.datagrid', {
         },
         isMobile: false,
         enableSort: true,
-        enableSearch: false,
+        filtermode: '',
         height: '100%',
         showHeader: true,
         selectFirstRow: false,
@@ -46,48 +46,12 @@ $.widget('wm.datagrid', {
             'nodata': 'No data found.'
         },
         startRowIndex: 1,
-        searchHandler: function (searchObj) {
-            var searchTextRegEx,
-                searchText  = searchObj.value,
-                field       = searchObj.field,
-                hasField    = field.length,
-                $rows       = this.gridElement.find('tbody tr'),
-                self        = this,
-                noDataFound = true;
-            if (!searchText) {
-                this.setStatus('ready', this.dataStatus.ready);
-                $rows.show();
-                return;
-            }
-
-            searchTextRegEx = new RegExp(searchText, 'i');
-
-            $rows.each(function () {
-                var $row = $(this),
-                    rowId = $row.attr('data-row-id'),
-                    text = hasField ? self.preparedData[rowId][field] : $row.text();
-
-                // If the list item does not contain the text phrase fade it out
-                if (text === null || text.toString().search(searchTextRegEx) === -1) {
-                    $row.hide();
-                } else {
-                    noDataFound = false;
-                    $row.show();
-                }
-            });
-            if (noDataFound) { //If no records found, show no data message
-                this.setStatus('nodata', this.dataStatus.nodata);
-            } else {
-                this.setStatus('ready', this.dataStatus.ready);
-            }
-        },
+        searchHandler: WM.noop,
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
             e.stopPropagation();
-            var sortFn = this.Utils.sortFn,
-                sorter = sortFn(sortInfo.field, sortInfo.direction),
-                data = $.extend(true, [], this.options.data);
-            this._setOption('data', data.sort(sorter));
+            var data = $.extend(true, [], this.options.data);
+            this._setOption('data', _.orderBy(data, sortInfo.field, sortInfo.direction));
             if ($.isFunction(this.options.afterSort)) {
                 this.options.afterSort(e);
             }
@@ -137,20 +101,6 @@ $.widget('wm.datagrid', {
     Utils: {
         random: function () {
             return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-        },
-        sortFn: function (key, direction) {
-            return function (a, b) {
-                var strA = a[key] || '',
-                    strB = b[key] || '',
-                    dir = direction === 'asc' ? -1 : 1;
-                if (a[key] && typeof a[key] === 'string') {
-                    strA = a[key].toLowerCase();
-                }
-                if (b[key] && typeof b[key] === 'string') {
-                    strB = b[key].toLowerCase();
-                }
-                return strA === strB ? 0 : (strA < strB ? dir : -dir);
-            };
         },
         isDefined: function (value) {
             return value !== undefined;
@@ -220,7 +170,6 @@ $.widget('wm.datagrid', {
         this.preparedHeaderData.forEach(function (value, index) {
 
             var id = index,
-                type = value.type,
                 field = value.field,
                 headerLabel = WM.isDefined(value.displayName) ? value.displayName : field,
                 headerClasses = this.options.cssClassNames.headerCell,
@@ -790,7 +739,7 @@ $.widget('wm.datagrid', {
             var self       = this,
                 headerCols = this.gridHeaderElement.find('col'),
                 bodyCols   = this.gridElement.find('col');
-            this.gridHeaderElement.find('th').each(function (index) {
+            this.gridHeaderElement.find('th.app-datagrid-header-cell').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
                     width   = $header.width(),
@@ -871,7 +820,7 @@ $.widget('wm.datagrid', {
             this.setColGroupWidths();
             this.addOrRemoveScroll();
             break;
-        case 'enableSearch':
+        case 'filtermode':
             this._toggleSearch();
             break;
         case 'searchLabel':
@@ -931,7 +880,7 @@ $.widget('wm.datagrid', {
     /* Toggles the table header visibility. */
     _toggleHeader: function () {
         // If header is not already rendered, render it first.
-        if (!this.gridHeaderElement.find('thead th').length) {
+        if (!this.gridHeaderElement.find('thead th.app-datagrid-header-cell').length) {
             this._renderHeader();
         }
 
@@ -944,15 +893,13 @@ $.widget('wm.datagrid', {
 
     /* Toggles the searchbox visibility. */
     _toggleSearch: function () {
-        // If search is not already rendered, render it first.
-        if (!this.gridSearch) {
-            this._renderSearch();
+        if (this.gridSearch) {
+            this.gridSearch.remove();
         }
-
-        if (this.options.enableSearch) {
-            this.gridSearch.removeClass('hidden');
-        } else {
-            this.gridSearch.addClass('hidden');
+        if (this.options.filtermode === 'search') {
+            this._renderSearch();
+        } else if (this.options.filtermode === 'row') {
+            this._renderRowFilter();
         }
     },
 
@@ -1049,7 +996,7 @@ $.widget('wm.datagrid', {
         if (!this.options.showHeader) {
             return;
         }
-        var $headerCheckbox = this.gridHeader.find('th input:checkbox'),
+        var $headerCheckbox = this.gridHeader.find('th.app-datagrid-header-cell input:checkbox'),
             $tbody = this.gridElement.find('tbody'),
             checkedItemsLength = $tbody.find('tr:visible input[name="gridMultiSelect"]:checkbox:checked').length,
             visibleRowsLength = $tbody.find('tr:visible').length;
@@ -1102,14 +1049,14 @@ $.widget('wm.datagrid', {
         }
     },
     headerClickHandler: function (e) {
-        var $th = $(e.target).closest('th'),
+        var $th = $(e.target).closest('th.app-datagrid-header-cell'),
             id = $th.attr('data-col-id');
         this.options.onHeaderClick(this.preparedHeaderData[id], e);
     },
     /* Handles column selection. */
     columnSelectionHandler: function (e) {
         e.stopImmediatePropagation();
-        var $th = $(e.target).closest('th'),
+        var $th = $(e.target).closest('th.app-datagrid-header-cell'),
             id = $th.attr('data-col-id'),
             colDef = this.preparedHeaderData[id],
             field = colDef.field,
@@ -1486,7 +1433,7 @@ $.widget('wm.datagrid', {
         var selectedRows = this.gridBody.find('tr.active'),
             rowId = $row.attr('data-row-id'),
             self = this;
-        selectedRows.each(function (index, el) {
+        selectedRows.each(function () {
             var id = $(this).attr('data-row-id'),
                 preparedData = self.preparedData[id];
             if (id !== rowId && preparedData) {
@@ -1501,7 +1448,7 @@ $.widget('wm.datagrid', {
     sortHandler: function (e) {
         e.stopImmediatePropagation();
         var $sortButton = $(e.target).closest('.sort-button'),
-            $th = $sortButton.closest('th'),
+            $th = $sortButton.closest('th.app-datagrid-header-cell'),
             id = $th.attr('data-col-id'),
             $sortIcon = $sortButton.find('i'),
             direction = $sortIcon.hasClass('up') ? 'asc' : 'desc',
@@ -1517,7 +1464,7 @@ $.widget('wm.datagrid', {
         }
         $sortIcon.addClass('active');
         if ($previousSortMarker.length) {
-            $previousSortedColumn = $previousSortMarker.closest('th');
+            $previousSortedColumn = $previousSortMarker.closest('th.app-datagrid-header-cell');
             colId = $previousSortedColumn.attr('data-col-id');
             colDef = this.preparedHeaderData[colId];
             $previousSortMarker.removeClass('active');
@@ -1592,8 +1539,7 @@ $.widget('wm.datagrid', {
     _renderSearch: function () {
         var $htm = $(this._getSearchTemplate()),
             self = this,
-            $searchBox,
-            placeholder;
+            $searchBox;
 
         function search(e) {
             e.stopPropagation();
@@ -1640,7 +1586,63 @@ $.widget('wm.datagrid', {
             }
         });
     },
-
+    //Get the respective widget template
+    _getFilterWidgetTemplate: function (field) {
+        var widget      = field.filterwidget || 'text',
+            placeholder = field.filterplaceholder || '',
+            fieldName   = field.field,
+            template;
+        widget = widget === 'number' ? 'text' : widget;
+        widget = widget === 'autocomplete' ? 'search' : widget;
+        template =  '<wm-' + widget + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange()" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
+        switch (field.filterwidget) {
+        case 'number':
+            template += ' type="number" ';
+            break;
+        case 'select':
+            if (field.isLiveVariable) {
+                template += ' scopedataset="fullFieldDefs[' + field.index + '].filterdataset"';
+            } else {
+                template += ' dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" displayfield="' + fieldName + '"';
+            }
+            break;
+        case 'autocomplete':
+            template += ' type="autocomplete" dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" on-submit="onRowFilterChange()"';
+            break;
+        }
+        template += '></wm-' + widget + '>';
+        return template;
+    },
+    //Generate the row level filter
+    _renderRowFilter: function () {
+        var htm  = '<tr class="filter-row">',
+            self = this;
+        this.gridHeaderElement.find('.filter-row').remove();
+        this.preparedHeaderData.forEach(function (field) {
+            var fieldName = field.field;
+            if (!field.searchable) {
+                htm += '<th></th>';
+                return;
+            }
+            htm += '<th>' +
+                        '<span class="input-group">' +
+                            self._getFilterWidgetTemplate(field) +
+                            '<span class="input-group-addon" uib-dropdown dropdown-append-to-body>' +
+                                '<button class="btn-transparent btn app-button" type="button"  uib-dropdown-toggle><i class="app-icon wi wi-filter-list"></i></button>' +
+                                '<ul class="dropdown-menu pull-right" uib-dropdown-menu> <li ng-repeat="matchMode in matchModeTypesMap[\'' + field.type + '\' || \'string\']" ng-class="{active: matchMode === (rowFilter[\'' + fieldName + '\'].matchMode || matchModeTypesMap[\'' + field.type + '\' || \'string\'][0])}"><a href="javascript:void(0);" ng-click="onFilterConditionSelect(\'' + fieldName + '\', matchMode)">{{matchModesMap[matchMode]}}</a></li> </ul>' +
+                            '</span>' +
+                            '<span class="input-group-addon" ng-if="rowFilter[\'' + fieldName + '\'].value"><button class="btn-transparent btn app-button" type="button" ng-click="clearRowFilter(\'' + fieldName + '\')"><i class="app-icon wi wi-clear"></i></button></span>' +
+                        '</span>' +
+                    '</th>';
+        }, this);
+        htm += '</tr>';
+        if (this.options.showHeader) {
+            this.gridHeader.append(this.options.compileTemplateInGridScope(htm));
+        } else {
+            this.gridHeaderElement.append('<thead></thead>').append(this.options.compileTemplateInGridScope(htm));
+        }
+        this.gridSearch = this.gridHeaderElement.find('.filter-row');
+    },
     /* Renders the table header. */
     _renderHeader: function () {
         var headerTemplate = this._getHeaderTemplate(),
@@ -1685,7 +1687,7 @@ $.widget('wm.datagrid', {
         $header.on('click', 'input:checkbox', toggleSelectAll);
 
         if ($.isFunction(this.options.onHeaderClick)) {
-            this.gridHeader.find('th').on('click', this.headerClickHandler.bind(this));
+            this.gridHeader.find('th.app-datagrid-header-cell').on('click', this.headerClickHandler.bind(this));
         }
 
         if (!this.options.isMobile && this.gridHeaderElement.length) {
@@ -1700,7 +1702,7 @@ $.widget('wm.datagrid', {
                         $colHeaderElement,
                         $cellElements,
                         colIndex = ui.helper.index() + 1,
-                        originalWidth = self.gridHeaderElement.find('thead > tr > th:nth-child(' + colIndex + ')').width(),
+                        originalWidth = self.gridHeaderElement.find('thead > tr > th.app-datagrid-header-cell:nth-child(' + colIndex + ')').width(),
                         newWidth = ui.size.width,
                         originalTableWidth,
                         newTableWidth;
@@ -1853,8 +1855,10 @@ $.widget('wm.datagrid', {
         this.dataStatusContainer = $(statusContainer);
         this.gridContainer.append(this.dataStatusContainer);
         this._renderHeader();
-        if (this.options.enableSearch) {
+        if (this.options.filtermode === 'search') {
             this._renderSearch();
+        } else if (this.options.filtermode === 'row') {
+            this._renderRowFilter();
         }
         if (this.options.spacing === 'condensed') {
             this._toggleSpacingClasses('condensed');
