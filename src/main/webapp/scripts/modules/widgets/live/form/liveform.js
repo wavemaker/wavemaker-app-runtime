@@ -84,19 +84,16 @@ WM.module('wm.widgets.live')
                     /*Generate a unique id for the dialog to avoid conflict with multiple dialogs.*/
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
                     return '<div data-identifier="liveform" init-widget class="app-liveform liveform-dialog" >' +
-                                '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
-                                    '<wm-dialogheader iconclass="{{iconclass}}"></wm-dialogheader>' +
-                                    '<wm-dialogcontent class="noscroll">' +
-                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" autocomplete="' + (attrs.autocomplete === true ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell">' +
-                                            '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
-                                                '<div class="form-content">' + template.context.innerHTML + '</div>' +
-                                            '</div>' +
-                                            '<div class="hidden-form-elements"></div>' +
-                                            '<div class="basic-btn-grp form-action modal-footer clearfix">' +
-                                                '<div class="action-content"></div>' +
-                                            '</div>' +
-                                        '</form>' +
-                                    '</wm-dialogcontent>' +
+                                '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" contentclass="noscroll" iconclass="{{iconclass}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
+                                    '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" autocomplete="' + (attrs.autocomplete === true ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell">' +
+                                        '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
+                                            '<div class="form-content">' + template.context.innerHTML + '</div>' +
+                                        '</div>' +
+                                        '<div class="hidden-form-elements"></div>' +
+                                        '<div class="basic-btn-grp form-action modal-footer clearfix">' +
+                                            '<div class="action-content"></div>' +
+                                        '</div>' +
+                                    '</form>' +
                                 '</wm-dialog>' +
                             '</div>';
                 }
