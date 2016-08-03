@@ -49,7 +49,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
         /*function to get service operation object matching its name*/
             getServiceOperationObjectById = function (serviceName, operationId) {
                 var serviceObj = getServiceObjectByName(serviceName);
-                return _.find(serviceObj.operations, {'operationId' : operationId});
+                return _.find(serviceObj.operations, {'operationId' : operationId}) || {};
             },
 
         /*function to get list of services from the backend*/
@@ -527,7 +527,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                 if (isRESTSupported(serviceObj.type)) {
                     getServiceOperations(serviceId, function () {
-                        onOperationParamsFetch(getServiceOperationObjectById(serviceId, operationId), true);
+                        onOperationParamsFetch(operationObj, true);
                     }, true);
                 } else {
                     urlParams = {
