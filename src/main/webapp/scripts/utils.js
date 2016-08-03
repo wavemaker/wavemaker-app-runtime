@@ -1264,6 +1264,10 @@ WM.module('wm.utils', [])
 
             if (ctrlOrMetaKey) {
                 switch (event.which) {
+                case 80:
+                    return altKey ? 'PREVIEW' : 'UNKNOWN';
+                case 81:
+                    return altKey ? 'RUN-DEBUG' : 'UNKNOWN';
                 case 82:
                     return altKey ? 'RUN' : 'UNKNOWN';
                 case 68:
