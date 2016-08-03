@@ -189,7 +189,7 @@ WM.module('wm.widgets.grid')
                             '</div>' +
                             '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
                                 '<wm-button ng-repeat="btn in _actions.header" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                 ' on-click="{{btn.action}}"></wm-button>' +
+                                 ' on-click="{{btn.action}}" type="button"></wm-button>' +
                                 '<wm-menu caption="Export" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
@@ -201,7 +201,7 @@ WM.module('wm.widgets.grid')
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
                             '<wm-button ng-repeat="btn in _actions.footer" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                ' on-click="{{btn.action}}"></wm-button>' +
+                                ' on-click="{{btn.action}}" type="button"></wm-button>' +
                         '</div>' +
                     '</div></div>';
             },
@@ -1100,7 +1100,7 @@ WM.module('wm.widgets.grid')
                 //Search handler for default case, when no separate search handler is provided
                 defaultSearchHandler = function (searchObj) {
                     var data  = Utils.getClonedObject($scope.gridData),
-                        $rows = $scope.datagridElement.find('tbody tr');
+                        $rows = $scope.datagridElement.find('tbody tr.app-datagrid-row');
                     data = getSearchResult(data, searchObj);
                     //Compared the filtered data and original data, to show or hide the rows
                     _.forEach($scope.gridData, function (value, index) {
@@ -2204,6 +2204,9 @@ WM.module('wm.widgets.grid')
             $scope.onFilterConditionSelect = function (field, value) {
                 $scope.rowFilter[field] = $scope.rowFilter[field] || {};
                 $scope.rowFilter[field].matchMode = value;
+                if (_.includes($scope.emptyMatchModes, value)) {
+                    $scope.rowFilter[field].value = undefined;
+                }
                 $scope.onRowFilterChange();
             };
             //Function to be executed on clearing a row filter
