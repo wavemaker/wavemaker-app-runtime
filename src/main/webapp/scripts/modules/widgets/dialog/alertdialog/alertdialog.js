@@ -104,11 +104,19 @@ WM.module('wm.widgets.dialog')
                     }
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
+                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
                     /* handles ok button click*/
                     if (!scope.okButtonHandler) {
                         scope.okButtonHandler = function () {
                             dialogCtrl._OkButtonHandler(attrs.onOk);
                         };
+                    }
+
+                    if (modalWindowElScope) {
+                        element.closest('[uib-modal-window]').css({
+                            'z-index': 1050 + modalWindowElScope.index * 10,
+                            'display': 'block'
+                        });
                     }
 
                     /* register the property change handler */

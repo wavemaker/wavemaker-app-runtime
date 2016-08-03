@@ -103,6 +103,8 @@ WM.module('wm.widgets.dialog')
                     }
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
+                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
+
                     /* handles cancel button click*/
                     if (!scope.cancelButtonHandler) {
                         scope.cancelButtonHandler = function () {
@@ -121,6 +123,12 @@ WM.module('wm.widgets.dialog')
                     }
                     if (scope.cancelbuttonclass) {
                         WM.element(element.find('button')[0]).addClass(scope.cancelbuttonclass);
+                    }
+                    if (modalWindowElScope) {
+                        element.closest('[uib-modal-window]').css({
+                            'z-index': 1050 + modalWindowElScope.index * 10,
+                            'display': 'block'
+                        });
                     }
 
                     /* register the property change handler */
