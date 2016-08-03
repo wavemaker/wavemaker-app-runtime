@@ -66,7 +66,8 @@ WM.module('wm.widgets.basic')
 
                 filteredEntries = _.filter(entries, function (entry) {
                     return keys.some(function (key) {
-                        var a = entry[key], b = val;
+                        var a = _.get(entry, key),
+                            b = val;
                         if (!casesensitive) {
                             a = _.toLower(_.toString(a));
                             b = _.toLower(_.toString(b));

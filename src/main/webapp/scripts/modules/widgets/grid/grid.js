@@ -2190,7 +2190,7 @@ WM.module('wm.widgets.grid')
                 var searchObj = [];
                 //Convert row filters to a search object and call search handler
                 _.forEach($scope.rowFilter, function (value, key) {
-                    if (value.value || _.includes($scope.emptyMatchModes, value.matchMode)) {
+                    if (WM.isDefined(value.value) || _.includes($scope.emptyMatchModes, value.matchMode)) {
                         searchObj.push({
                             'field'     : key,
                             'value'     : value.value,
