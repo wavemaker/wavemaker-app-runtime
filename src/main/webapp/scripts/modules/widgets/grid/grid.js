@@ -1138,7 +1138,7 @@ WM.module('wm.widgets.grid')
                             ngSrc = imageEl.attr('data-ng-src');
                         }
                         if (ngSrc) {
-                            imageEl.attr('data-ng-src', ngSrc.concat('?_ts=' + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
+                            imageEl.attr('data-ng-src', ngSrc.concat((_.includes(ngSrc, '?') ? '&_ts=' : '?_ts=') + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
                         }
                     }
                     return $compile(el)(rowScope);
@@ -2212,6 +2212,11 @@ WM.module('wm.widgets.grid')
                     $scope.rowFilter[field].value = undefined;
                     $scope.onRowFilterChange();
                 }
+            };
+            //Show clear icon if value exists
+            $scope.showClearIcon = function (field) {
+                var value = $scope.rowFilter[field] && $scope.rowFilter[field].value;
+                return WM.isDefined(value) && value !== '' && value !== null;
             };
         }])
 

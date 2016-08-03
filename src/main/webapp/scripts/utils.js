@@ -810,7 +810,10 @@ WM.module('wm.utils', [])
                 info = fetchPropertiesMapColumns(val, val.fieldName, options);
 
                 if (!options || (options && !options.filter)) {
-                    WM.extend(terminals, info);
+                    //Extend the terminal object with the inner columns. If already present, ignore them.
+                    _.assignWith(terminals, info, function (objValue, srcValue) {
+                        return _.isUndefined(objValue) ? srcValue : objValue;
+                    });
                 } else {
                     switch (options.filter) {
                     case 'all':
