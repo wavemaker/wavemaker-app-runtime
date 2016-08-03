@@ -135,7 +135,9 @@ WM.module('wm.widgets.dialog')
                         scope         = scope || element.isolateScope();
                         scope.header  = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
-                        element.closest('[uib-modal-window]').css({'z-index': 1050 + modalWindowElScope.index * 10, 'display': 'block'});
+                        if (modalWindowElScope) {
+                            element.closest('[uib-modal-window]').css({'z-index': 1050 + modalWindowElScope.index * 10, 'display': 'block'});
+                        }
 
                         /* register the property change handler */
                         if (scope.propertyManager) {
@@ -301,6 +303,7 @@ WM.module('wm.widgets.dialog')
                         };
                     },
                     "post": function (scope, element, attrs, ctrl) {
+                        var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
@@ -311,6 +314,10 @@ WM.module('wm.widgets.dialog')
                             } else {
                                 ctrl._OnOpenedHandler(attrs.onOpen);
                             }
+                        }
+
+                        if (modalWindowElScope) {
+                            element.closest('[uib-modal-window]').css({'z-index': 1050 + modalWindowElScope.index * 10, 'display': 'block'});
                         }
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
