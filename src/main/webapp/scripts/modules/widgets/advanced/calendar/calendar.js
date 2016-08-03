@@ -329,7 +329,13 @@ WM.module('wm.widgets.advanced')
                                     $is.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
                                 }
                             };
-
+                            /* Sets the calendar to refresh and also navigates to the date, if sent as param*/
+                            $is.refresh = function (dtObj) {
+                                dtObj = dtObj ? new Date(dtObj) : new Date($is._model_);
+                                var isValid = !isNaN(dtObj.valueOf());
+                                $is._model_ = isValid ? dtObj : new Date();
+                                $rs.$safeApply($is);
+                            };
                             $is.openCalendar = function () {
                                 $is.isCalendarOpened = true;
                             };
