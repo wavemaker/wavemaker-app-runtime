@@ -249,24 +249,28 @@ wm.variables.services.Variables = [
                 }
             },
 
-            /**
-             * calls the passed method on the variable
-             * @param variable
-             * @param method
-             */
-            callVariableMethod = function (variable, method) {
-                variable[method]();
+            timers = {},
+
+            //debouncing callVariableMethod
+            _invoke = function (variable, op) {
+                var cancelFn = _.noop, debouncedFn, key = variable._id + '__' + op;
+                if (timers[key]) {
+                    cancelFn = timers[key].cancel;
+                }
+                cancelFn();
+                debouncedFn = _.debounce(function () {
+                    variable[op]();
+                }, 100);
+                timers[key] = debouncedFn;
+                debouncedFn();
             },
-            /**
-             * debounced version of callVariableMethod
-             */
-            debouncedVariableUpdate = _.debounce(callVariableMethod, 100),
 
             processVariablePostBindUpdate = function (nodeName, nodeVal, variable, noUpdate) {
-                if (variable.category === "wm.LiveVariable") {
-                    if (variable.operation === "read") {
+
+                if (variable.category === 'wm.LiveVariable') {
+                    if (variable.operation === 'read') {
                         if (nodeName === 'dataBinding') {
-                            WM.forEach(nodeVal, function (val, key) {
+                            _.forEach(nodeVal, function (val, key) {
                                 variable.filterFields[key] = {
                                     'value': val
                                 };
@@ -278,7 +282,7 @@ wm.variables.services.Variables = [
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
-                            debouncedVariableUpdate(variable, 'update');
+                            _invoke(variable, 'update');
                         }
                     } else {
                         if (nodeName === 'dataBinding') {
@@ -288,21 +292,21 @@ wm.variables.services.Variables = [
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable[variable.operation + 'Record']) && !noUpdate) {
-                            debouncedVariableUpdate(variable, variable.operation + 'Record');
+                            _invoke(variable, variable.operation + 'Record');
                         }
                     }
-                } else if (variable.category === "wm.ServiceVariable") {
+                } else if (variable.category === 'wm.ServiceVariable') {
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
-                        debouncedVariableUpdate(variable, 'update');
+                        _invoke(variable, 'update');
                     }
-                } else if (variable.category === "wm.LoginVariable") {
+                } else if (variable.category === 'wm.LoginVariable') {
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
-                        debouncedVariableUpdate(variable, 'login');
+                        _invoke(variable, 'login');
                     }
-                } else if (variable.category === "wm.DeviceVariable") {
+                } else if (variable.category === 'wm.DeviceVariable') {
                     variable[nodeName] = nodeVal;
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.invoke) && !noUpdate) {
-                        debouncedVariableUpdate(variable, 'invoke');
+                        _invoke(variable, 'invoke');
                     }
                 }
             },
