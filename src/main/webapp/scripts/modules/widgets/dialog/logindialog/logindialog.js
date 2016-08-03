@@ -6,12 +6,9 @@ WM.module('wm.widgets.dialog')
         'use strict';
         $templateCache.put('template/widget/dialog/logindialog.html',
                 '<div class="app-dialog modal-dialog app-login-dialog" ng-style="{width: width}" init-widget>' +
-                    '<wm-dialogheader iconclass="wi wi-sign-in" caption="Login"></wm-dialogheader>' +
                     '<div class="modal-content">' +
+                        '<wm-dialogheader iconclass="{{iconclass}}" caption="{{caption}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" wmtransclude></div>' +
-                        '<div class="app-dialog-footer modal-footer">' +
-                            '<button class="app-button btn btn-primary" data-role="loginbutton">Sign in</button>' +
-                        '</div>' +
                     '</div>' +
                 '</div>'
             );

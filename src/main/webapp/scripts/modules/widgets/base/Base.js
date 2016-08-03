@@ -851,7 +851,12 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "closable": {"type": "boolean", "value": true},
                         "modal": {"type": "boolean", "value": true},
-                        "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "caption": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconwidth": {"type": "string", "pattern": dimensionRegex},
+                        "iconheight": {"type": "string", "pattern": dimensionRegex},
+                        "iconmargin": {"type": "string", "pattern": dimensionRegex}
                     },
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},

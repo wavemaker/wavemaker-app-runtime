@@ -419,21 +419,19 @@ WM.module('wm.widgets.dialog')
             "replace": true,
             "transclude": true,
             "scope": {},
-            'require'   : (CONSTANTS.isStudioMode ? '^wmDialog' : '^wmDialogContainer'),
             "template": $templateCache.get("template/widget/dialog/dialog-footer.html"),
             "compile": function () {
                 return {
                     "pre": function (scope) {
                         scope.widgetProps = widgetProps;
                     },
-                    "post": function (iScope, element, attrs, ctrl) {
+                    "post": function (iScope, element, attrs) {
                         var parentEl,
                             scope;
 
                         parentEl       = element.closest('.app-dialog');
                         scope          = element.scope();
                         scope.dialogid = parentEl.attr('dialogid');
-                        ctrl.register('footer', element);
                         scope.closeDialog = function () {
                             DialogService.hideDialog(scope.dialogid);
                         };
