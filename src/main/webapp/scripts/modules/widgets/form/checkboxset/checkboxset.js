@@ -75,6 +75,11 @@ WM.module('wm.widgets.form')
             template = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
+
+            if (CONSTANTS.isStudioMode && scope.groupFields) {
+                var $headerEle = element.closest('.property-value').find('.fixed-header');
+                FormWidgetUtils.setFixedHeader(element, $headerEle);
+            }
             /*register a click event handler for the radio*/
             element.find('.app-checkboxset-label').on('click', function (evt) {
                 /*If the target has class, return here*/
@@ -184,6 +189,8 @@ WM.module('wm.widgets.form')
                             return WM.equals(dataObject, el);
                         }));
                     };
+
+                    scope.groupFields = attrs.groupFields || false;
 
                     /*Watch on the model, to check or uncheck the values of checkboxset*/
                     scope.$watch('_model_', function () {
