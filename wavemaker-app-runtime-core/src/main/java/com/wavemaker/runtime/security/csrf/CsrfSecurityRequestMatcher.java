@@ -22,7 +22,7 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
     private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTION)$");
     private List<RegexRequestMatcher> unprotectedMatchers;
 
-    private WMAppSecurityConfig wmAppSecurityConfig;
+    private CSRFConfig csrfConfig;
 
     public CsrfSecurityRequestMatcher() {
     }
@@ -34,13 +34,12 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
         }
     }
 
-    public void setWmAppSecurityConfig(WMAppSecurityConfig wmAppSecurityConfig) {
-        this.wmAppSecurityConfig = wmAppSecurityConfig;
+    public void setCsrfConfig(final CSRFConfig csrfConfig) {
+        this.csrfConfig = csrfConfig;
     }
 
     @Override
     public boolean matches(HttpServletRequest httpServletRequest) {
-        CSRFConfig csrfConfig = wmAppSecurityConfig.getCsrfConfig();
         if (csrfConfig == null || !csrfConfig.isEnforceCsrfSecurity()) {
             return false;
         }

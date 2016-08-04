@@ -11,7 +11,7 @@ import com.wavemaker.studio.common.model.security.CSRFConfig;
  */
 public class WMHttpSessionCsrfTokenRepository extends AbstractCsrfTokenRepository implements InitializingBean {
 
-    private WMAppSecurityConfig wmAppSecurityConfig;
+    private CSRFConfig csrfConfig;
     private HttpSessionCsrfTokenRepository tokenRepository;
 
     public WMHttpSessionCsrfTokenRepository(HttpSessionCsrfTokenRepository tokenRepository) {
@@ -19,17 +19,16 @@ public class WMHttpSessionCsrfTokenRepository extends AbstractCsrfTokenRepositor
         this.tokenRepository = tokenRepository;
     }
 
+    public void setCsrfConfig(final CSRFConfig csrfConfig) {
+        this.csrfConfig = csrfConfig;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         updateRepositoryProperties();
     }
 
-    public void setWmAppSecurityConfig(WMAppSecurityConfig wmAppSecurityConfig) {
-        this.wmAppSecurityConfig = wmAppSecurityConfig;
-    }
-
     private void updateRepositoryProperties() {
-        CSRFConfig csrfConfig = wmAppSecurityConfig.getCsrfConfig();
         if (csrfConfig != null) {
             String headerName = csrfConfig.getHeaderName();
             tokenRepository.setHeaderName(headerName);
