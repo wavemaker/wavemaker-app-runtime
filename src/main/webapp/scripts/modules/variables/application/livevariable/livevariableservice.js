@@ -432,14 +432,51 @@ wm.variables.services.$liveVariable = [
                     Utils.triggerFn(callback, projectID, variable, options, success);
                 }, WM.noop);
             },
+            //Generate the search query based on the filter options
+            getSearchQuery = function (filterOptions, operator) {
+                var query,
+                    params = [];
+                _.forEach(filterOptions, function (fieldValue) {
+                    var param           = fieldValue.attributeName + ' ',
+                        value           = fieldValue.attributeValue,
+                        filterCondition = fieldValue.filterCondition,
+                        matchMode       = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition],
+                        isValArray      = _.isArray(value);
+                    //If values is NaN and number type, do not generate query for this field
+                    if (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType)) {
+                        return;
+                    }
+                    if (isValArray) {
+                        matchMode = matchMode === 'between' ? matchMode : 'in';
+                    }
+                    param = param + matchMode;
+                    //For null empty match modes value is not required
+                    if (!_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                        //If value is an array, generate query with values between ()
+                        if (isValArray) {
+                            param = param + ' (';
+                            _.forEach(value, function (val) {
+                                param = param + ' ' + '\'' + val + '\'' + ' ,';
+                            });
+                            param = param.slice(0, -2);
+                            param = param + ' )';
+                        } else {
+                            param = param + ' ' + '\'' + value + '\'';
+                        }
+                    }
+                    params.push(param);
+                });
+                query = _.join(params, operator); //empty space added intentionally around OR
+                return query;
+            },
         /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options) {
                 var filterFields = [],
                     filterOptions = [],
                     orderByFields,
-                    orderByOptions = '',
+                    orderByOptions,
                     query          = '',
-                    params         = [],
+                    optionsQuery   = '',
                     getFieldType = function (options) {
                         return options.type || getSqlType(variable, options.fieldName) || 'integer';
                     },
@@ -459,17 +496,18 @@ wm.variables.services.$liveVariable = [
                         return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
                     };
                 /*get the filter fields from the variable*/
-                _.each(variable.filterFields, function (value, key) {
+                _.forEach(variable.filterFields, function (value, key) {
                     if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
                         value.fieldName = key;
                         if (getFieldType(value) === 'string') {
                             value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
                         }
+                        value.isVariableFilter = true;
                         filterFields.push(value);
                     }
                 });
                 /*get the filter fields from the options*/
-                _.each(options.filterFields, function (value, key) {
+                _.forEach(options.filterFields, function (value, key) {
                     value.fieldName = key;
                     value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || options.matchMode];
                     filterFields.push(value);
@@ -480,7 +518,8 @@ wm.variables.services.$liveVariable = [
                             fieldName       = fieldOptions.fieldName,
                             fieldValue      = fieldOptions.value,
                             fieldType       = getFieldType(fieldOptions),
-                            filterCondition = fieldOptions.filterCondition;
+                            filterCondition = fieldOptions.filterCondition,
+                            filterOption;
 
                         fieldOptions.type = fieldType;
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
@@ -522,23 +561,31 @@ wm.variables.services.$liveVariable = [
                                 break;
                             }
                             attributeName = getAttributeName(fieldName);
-                            filterOptions.push({
+                            filterOption  = {
                                 'attributeName'   : attributeName,
                                 'attributeValue'  : fieldValue,
                                 'attributeType'   : fieldType.toUpperCase(),
                                 'filterCondition' : filterCondition
-                            });
+                            };
+                            if (options.searchWithQuery) {
+                                filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                            }
+                            filterOptions.push(filterOption);
                         } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                             attributeName = getAttributeName(fieldName);
                             if (fieldType !== 'string') {
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
                             }
-                            filterOptions.push({
+                            filterOption = {
                                 'attributeName'   : attributeName,
                                 'attributeValue'  : '',
                                 'attributeType'   : fieldType.toUpperCase(),
                                 'filterCondition' : filterCondition
-                            });
+                            };
+                            if (options.searchWithQuery) {
+                                filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                            }
+                            filterOptions.push(filterOption);
                         }
                     });
                 }
@@ -546,38 +593,22 @@ wm.variables.services.$liveVariable = [
                  should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
                  */
                 if (options.searchWithQuery) {
-                    _.forEach(filterOptions, function (fieldValue) {
-                        var param           = fieldValue.attributeName + ' ',
-                            value           = fieldValue.attributeValue,
-                            filterCondition = fieldValue.filterCondition,
-                            matchMode       = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
-                        if (_.isArray(value)) {
-                            matchMode = matchMode === 'between' ? matchMode : 'in';
-                        }
-                        param = param + matchMode;
-                        if (!_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
-                            if (_.isArray(value)) {
-                                param = param + ' (';
-                                _.forEach(value, function (val) {
-                                    param = param + ' ' + '\'' + val + '\'' + ' ,';
-                                });
-                                param = param.slice(0, -2);
-                                param = param + ' )';
-                            } else {
-                                param = param + ' ' + '\'' + value + '\'';
-                            }
-                        }
-                        params.push(param);
-                    });
-                    query = _.join(params, ' OR '); //empty space added intentionally around OR
+                    //Generate query for variable filter fields. This has AND logical operator
+                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ');
+                    //Generate query for option filter fields. This has default logical operator as OR
+                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'OR') + ' ');
+                    if (optionsQuery) {
+                        //If both variable and option query are present, merge them with AND
+                        query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
+                    }
                 }
                 orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
                 return {
-                    'filter': filterOptions,
-                    'sort': orderByOptions,
-                    'query' : query
+                    'filter' : filterOptions,
+                    'sort'   : orderByOptions,
+                    'query'  : query
                 };
             },
         /*Function to initiate the callback and obtain the data for the callback variable.*/
