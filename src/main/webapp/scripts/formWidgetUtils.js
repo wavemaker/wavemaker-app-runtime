@@ -342,7 +342,8 @@ WM.module('wm.widgets.form')
                     liClass,
                     labelClass,
                     type,
-                    required = '';
+                    required = '',
+                    groupedKeys = {};
                 switch (widgetType) {
                 case 'checkboxset':
                     liClass = 'checkbox app-checkbox';
@@ -356,16 +357,25 @@ WM.module('wm.widgets.form')
                     required = ' data-ng-required="' + scope.required + '" name=' + scope.name;
                     break;
                 }
-                /*iterating over the keys to create the template for the widget.*/
-                _.forEach(scope.dataKeys, function (dataKey, index) {
-                    dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
-                    template = template +
-                        '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
-                            '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey + '">' +
-                                 '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']"/>' +
-                                 '<span class="caption">' + dataKey + '</span>' +
-                            '</label>' +
-                        '</li>';
+
+                groupedKeys = getGroupedFields(scope.dataKeys, scope.groupFields);
+
+                _.forEach(_.keys(groupedKeys), function (key) {
+                    if (key !== 'all') {
+                        template = template +
+                                '<li class="' + liClass + ' group-header" title="' + key + '" data-fixed-header="true"><i class="wi wi-arrow-drop-down group-icon"></i><span class="group-title">' + key + '</span></li>';
+                    }
+
+                    _.forEach(groupedKeys[key].keys, function (dataKey) {
+                        dataKey.title    = WM.isString(dataKey.title) ? dataKey.title.trim() : dataKey.title;
+                        template = template +
+                            '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey.key + "'" + ']}">' +
+                                '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
+                                    '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + dataKey.key + "'" + ']"/>' +
+                                    '<span class="caption">' + dataKey.title + '</span>' +
+                                '</label>' +
+                            '</li>';
+                    });
                 });
                 /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
                 template = template + '<input name="{{name}}" data-ng-disabled="disabled" data-ng-hide="true" class="model-holder" data-ng-model="_model_">'  + '<div data-ng-if="readonly || disabled" class="readonly-wrapper"></div>';
@@ -558,6 +568,62 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#setFixedHeader
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to implement fixed header for checkboxset and orderby widgets on grouping of fields
+             *
+             * @param {object} element for which scroll event needs to be attached
+             * @param {object} $headerEle which needs to be a fixed one
+             */
+            function setFixedHeader(element, $headerEle) {
+                element.on('scroll', _.debounce(function () {
+                    $headerEle.css('display', 'none');
+                    WM.element(this).find('[data-fixed-header]').each(function () {
+                        var groupEle    = WM.element(this),
+                            headerTop   = groupEle.position().top,
+                            headerTitle = groupEle.attr('title');
+                        if (headerTop < 0) {
+                            $headerEle.attr('title', headerTitle);
+                            $headerEle.find('.group-title').text(headerTitle);
+                            $headerEle.css('display', 'block');
+                        }
+                    });
+                }, 50));
+            }
+
+            /**
+             * Returns groupedKeys map which has grouping info of related tables
+             * @param fields
+             * @param isGroupFields
+             * @returns {object}
+             */
+            function getGroupedFields(fields, isGroupFields) {
+                var groupedKeys = {'all': {'keys': []}};
+                if (isGroupFields) {
+                    _.forEach(fields, function (key, index) {
+                        if (_.includes(key, '.')) {
+                            var field = _.split(key, '.');
+                            if (!groupedKeys[field[0]]) {
+                                groupedKeys[field[0]] = {'keys': []};
+                            }
+                            groupedKeys[field[0]].keys.push({'title': field[1], 'index': index, 'key': key});
+                        } else {
+                            groupedKeys.all.keys.push({'title': key, 'index': index, 'key': key});
+                        }
+                    });
+                } else {
+                    groupedKeys.all.keys = groupedKeys.all.keys.concat(_.map(fields, function (key, index) {
+                        return {'title': key, 'index': index, 'key': key};
+                    }));
+                }
+                return groupedKeys;
+            }
+
             this.getDisplayField                = getDisplayField;
             this.setPropertiesTextWidget        = setPropertiesTextWidget;
             this.createDataKeys                 = createDataKeys;
@@ -575,6 +641,8 @@ WM.module('wm.widgets.form')
             this.updatedCheckedValues           = updatedCheckedValues;
             this.getOrderedDataSet              = getOrderedDataSet;
             this.disableDates                   = disableDates;
+            this.setFixedHeader                 = setFixedHeader;
+            this.getGroupedFields               = getGroupedFields;
         }
     ])
     .constant('FIELD_TYPE', {
