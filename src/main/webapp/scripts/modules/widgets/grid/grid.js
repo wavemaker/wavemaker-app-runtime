@@ -2375,7 +2375,7 @@ WM.module('wm.widgets.grid')
                             'displayfield': attrs.displayfield,
                             'defaultvalue': attrs.defaultvalue,
                             'sortable': attrs.sortable !== 'false',
-                            'searchable': attrs.searchable !== 'false',
+                            'searchable': (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'rowactionsposition': attrs.rowactionsposition,
                             'filterwidget': attrs.filterwidget || getFilterWidget(attrs.type || 'string'),

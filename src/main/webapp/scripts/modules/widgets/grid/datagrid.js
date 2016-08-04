@@ -1684,7 +1684,7 @@ $.widget('wm.datagrid', {
             this.gridHeader = this.gridHeaderElement.find('thead');
         }
         /**Add event handler, to the select all checkbox on the header**/
-        $header.on('click', 'input:checkbox', toggleSelectAll);
+        $header.on('click', '.app-datagrid-header-cell input:checkbox', toggleSelectAll);
 
         if ($.isFunction(this.options.onHeaderClick)) {
             this.gridHeader.find('th.app-datagrid-header-cell').on('click', this.headerClickHandler.bind(this));
