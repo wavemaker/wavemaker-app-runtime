@@ -103,12 +103,14 @@ public class PrefabControllerServlet extends DispatcherServlet {
         ClassLoader previous = null;
         try {
             context = lookupContext(request);
+            HttpServletRequest updatedRequest = request;
             if (context != null) {
                 activeContext.set(context);
                 previous = Thread.currentThread().getContextClassLoader();
                 Thread.currentThread().setContextClassLoader(context.getClassLoader());
+                updatedRequest = new PrefabAwareHttpRequestWrapper(request, context.getId());
             }
-            super.doDispatch(request, response);
+            super.doDispatch(updatedRequest, response);
         } finally {
             if(context != null) {
                 Thread.currentThread().setContextClassLoader(previous);
