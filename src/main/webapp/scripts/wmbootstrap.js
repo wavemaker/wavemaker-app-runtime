@@ -29,7 +29,8 @@ var Application =
             'wm.prefabs',
             'i18n',
             'angular-gestures',
-            'ngSanitize'
+            'ngSanitize',
+            'angular-websocket'
         ]);
 
 Application
