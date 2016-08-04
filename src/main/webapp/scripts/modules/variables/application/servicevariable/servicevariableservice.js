@@ -217,7 +217,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 variable = variable || {};
                 var queryParams = '',
                     directPath = operationInfo.directPath || '',
-                    relativePath = operationInfo.basePath ? operationInfo.basePath + (operationInfo.relativePath || '/') : operationInfo.relativePath || '/',
+                    relativePath = operationInfo.basePath ? operationInfo.basePath + operationInfo.relativePath : operationInfo.relativePath,
                     headers = {},
                     requestBody,
                     url,
