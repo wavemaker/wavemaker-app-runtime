@@ -74,14 +74,14 @@ WM.module('wm.utils', [])
                     }
                 }
             },
-            isIE = function () {
-                return userAgent.indexOf('MSIE') > -1;
-            },
             isIE11 = function () {
                 return navigator.appVersion.indexOf('Trident/') > -1;
             },
             isIE9 = function () {
                 return navigator.appVersion.indexOf('MSIE 9') > -1;
+            },
+            isIE = function () {
+                return isIE9() || isIE11() || userAgent.indexOf('MSIE') > -1;
             },
             getNode = function (tree, nodeId) {
                 var index, treeLength;
