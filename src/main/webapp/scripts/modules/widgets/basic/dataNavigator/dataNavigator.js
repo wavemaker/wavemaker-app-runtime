@@ -171,11 +171,13 @@ WM.module("wm.widgets.basic")
                             $scope.variableName = $scope.variableName.substr(0, $scope.variableName.indexOf('.'));
                             variable = $scope.variableName && $scope.navigatorElement.scope().Variables[$scope.variableName];
                             variableOptions = variable._options || {};
-                        } else if (newVal.isBoundToFilter && newVal.widgetName) {
-                            $scope.isBoundToFilter = true;
-                            $scope.widgetName = newVal.widgetName;
-                        } else {
-                            $scope.variableName = newVal.variableName;
+                        } else if (newVal) {
+                            if (newVal.isBoundToFilter && newVal.widgetName) {
+                                $scope.isBoundToFilter = true;
+                                $scope.widgetName = newVal.widgetName;
+                            } else {
+                                $scope.variableName = newVal.variableName;
+                            }
                         }
 
                         /*Check for number of elements in the data set*/

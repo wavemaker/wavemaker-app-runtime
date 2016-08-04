@@ -1,4 +1,4 @@
-/*global WM, _ */
+/*global WM, _, window */
 /*jslint todo: true */
 /*Directive for search */
 
@@ -286,7 +286,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 // assign all the keys to the options of the search widget
-                if ( WM.isDefined(dataset) && dataset !== null) {
+                if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
                     if (isServiceVariable($is, element.scope())) {
                         updatePropertyOptions($is); //update searchkey options in case of service variables
@@ -399,7 +399,8 @@ WM.module('wm.widgets.basic')
                     //build input request params for live variable
                     _.forEach(searchInputs, function (colName) {
                         inputFields[colName] = {
-                            'value': searchValue
+                            'value'     : searchValue,
+                            'logicalOp' : 'AND'
                         };
                     });
                     requestParams.filterFields = inputFields;

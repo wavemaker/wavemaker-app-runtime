@@ -2168,7 +2168,8 @@ WM.module('wm.widgets.grid')
                         'matchMode'    : 'anywhere',
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
-                        'exportFormat' : $item.label
+                        'exportFormat' : $item.label,
+                        'logicalOp'    : 'AND'
                     });
                 }
             };

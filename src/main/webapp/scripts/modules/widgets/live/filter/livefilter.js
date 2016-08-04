@@ -293,7 +293,8 @@ WM.module('wm.widgets.live')
                                 'matchMode'    : 'anywhere',
                                 'filterFields' : formFields,
                                 'orderBy'      : orderBy,
-                                'exportFormat' : options.exportFormat
+                                'exportFormat' : options.exportFormat,
+                                'logicalOp'    : 'AND'
                             });
                             return;
                         }
