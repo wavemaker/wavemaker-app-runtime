@@ -900,9 +900,18 @@ html, body {
     tbody{
       .btn-default {
         position: relative;
-        margin-bottom: .75em;
+        margin: 0.8em 0;
         &:after {
           bottom: -1em;
+        }
+      }
+    }
+    table {
+      tbody {
+        tr.uib-weeks {
+          td:first-child {
+            width: auto;
+          }
         }
       }
     }
@@ -1801,7 +1810,18 @@ If the height and width are not specified the video takes the height of the post
     }
   }
 }
-
+//Styles for danger background in grid
+.wm-app .app-grid {
+  .table, .table-hover {
+    > thead, >tbody, >tfoot {
+      >tr {
+        > td.danger, &.danger > td, &.danger:hover > td {
+          background-color: #ffd3d3;
+        }
+      }
+    }
+  }
+}
 .app-livegrid {
   position: relative;
   height: auto;
