@@ -1603,7 +1603,23 @@ WM.module('wm.utils', [])
          * @params: {scope} scope of the fucntion called. Used for eval
          */
         function getEvaluatedExprValue(object, expression, scope) {
-            return scope.$eval(expression, object);
+            var val;
+            /**
+             * Evaluate the expression with the scope and object.
+             * $eval is used, as expression can be in format of field1 + ' ' + field2
+             * $eval can fail, if expression is not in correct format, so attempt the eval function
+             */
+            val = _.attempt(function () {
+                return scope.$eval(expression, object);
+            });
+            /**
+             * $eval fails if field expression has spaces. Ex: 'field name' or 'field@name'
+             * As a fallback, get value directly from object or scope
+             */
+            if (_.isError(val)) {
+                val = _.get(object, expression) || _.get(scope, expression);
+            }
+            return val;
         }
 
         //extend jQuery -- referred from jQuery-UI
