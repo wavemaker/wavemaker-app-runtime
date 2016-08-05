@@ -519,7 +519,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"}
                     },
                     "wm.calendar.mobile": {
-                        "view": {"options": ["day", "month", "year"]},
+                        "view": {"type": "list", "options": ["day", "month", "year"], "value": "day"},
                         "controls": {"show": false},
                         "multiselect": {"show": false},
                         "calendartype": {"show": false},

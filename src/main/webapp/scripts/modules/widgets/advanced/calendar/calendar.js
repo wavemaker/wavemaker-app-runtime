@@ -17,7 +17,8 @@ WM.module('wm.widgets.advanced')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 isMobile    = $rs.isMobileApplicationType || Utils.isMobile(),
                 notifyFor   = isMobile ? {
-                    'dataset'     : true
+                    'dataset'     : true,
+                    'view'        : true
                 } : {
                     'dataset'     : true,
                     'height'      : true,
@@ -91,9 +92,10 @@ WM.module('wm.widgets.advanced')
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $el, key, newVal) {
-                var calendar = $is.calendarOptions && $is.calendarOptions.calendar,
-                    eleScope = $el.scope(),
-                    variable = Utils.getVariableName($is, eleScope);
+                var calendar  = $is.calendarOptions && $is.calendarOptions.calendar,
+                    eleScope  = $el.scope(),
+                    eleIscope = $el.find('.uib-datepicker').isolateScope(),
+                    variable  = Utils.getVariableName($is, eleScope);
                 switch (key) {
                 case 'dataset':
                     if (isMobile) {
@@ -125,10 +127,17 @@ WM.module('wm.widgets.advanced')
                     updateCalendarOptions($is);
                     break;
                 case 'view':
-                    if (newVal !== 'month') {
-                        calendar.defaultView = $is.calendartype + _.capitalize(newVal);
-                    } else {
-                        calendar.defaultView = newVal;
+                    //For Mobile calendar view property should be set on uib element iscope
+                    if (eleIscope && $is.widgetid) {
+                        eleIscope.datepickerMode = newVal;
+                        return;
+                    }
+                    if (!isMobile) {
+                        if (newVal !== 'month') {
+                            calendar.defaultView = $is.calendartype + _.capitalize(newVal);
+                        } else {
+                            calendar.defaultView = newVal;
+                        }
                     }
                     break;
                 case 'multiselect':
