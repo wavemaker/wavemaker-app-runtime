@@ -53,7 +53,7 @@ public class XSSSecurityHandler {
     }
 
     private boolean isXSSEnabledForMethod(HttpServletRequest request) {
-         return  isXSSEnabled() && matches(request, xssConfig.getAllowedMethods());
+         return  isXSSEnabled() && matches(request, XSSConfig.ALLOWED_METHODS);
     }
 
     private boolean isXSSEnabled() {
