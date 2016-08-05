@@ -208,6 +208,12 @@ html, body {
   z-index: 1050;
   text-align: center;
   background-color: @wm-app-spinner-bg-color;
+  &.spinner-transparent {
+    background-color: transparent;
+    .spinner-message {
+      background-color: transparent;
+    }
+  }
   &.app-page-switch {
     .spinner-image {
       color: #888;
