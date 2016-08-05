@@ -2341,7 +2341,10 @@ WM.module('wm.widgets.grid')
                         //Get the fefault filter widget type
                         function getFilterWidget(type) {
                             var widget = fieldTypeWidgetTypeMap[type] && fieldTypeWidgetTypeMap[type][0];
-                            if (_.includes(['text', 'number', 'select', 'autocomplete', 'checkbox', 'date', 'time', 'datetime'], widget)) {
+                            if (type === 'boolean') {
+                                widget = 'select';
+                            }
+                            if (_.includes(['text', 'number', 'select', 'autocomplete', 'date', 'time', 'datetime'], widget)) {
                                 return widget;
                             }
                             return 'text';
