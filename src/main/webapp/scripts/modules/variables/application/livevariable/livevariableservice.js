@@ -302,7 +302,7 @@ wm.variables.services.$liveVariable = [
                                     'length'             : relatedCol.length,
                                     'precision'          : relatedCol.precision,
                                     'scale'              : relatedCol.scale,
-                                    'generator'          : relatedCol.generator,
+                                    'generator'          : relatedCol.generatorType,
                                     'isRelated'          : true,
                                     'defaultValue'       : _.get(relatedCol, ['columnValue', 'defaultValue']),
                                     'targetTable'        : relation.targetTable
@@ -344,7 +344,7 @@ wm.variables.services.$liveVariable = [
                                         "length"            : column.length,
                                         "precision"         : column.precision,
                                         "scale"             : column.scale,
-                                        "generator"         : column.generator,
+                                        "generator"         : column.generatorType,
                                         "isRelated"         : isForeignKey,
                                         "defaultValue"      : _.get(column, ['columnValue', 'defaultValue'])
                                     },
