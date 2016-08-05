@@ -27,7 +27,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
@@ -269,6 +269,11 @@ WM.module('wm.layouts.containers')
                                 'type'   : 'error',
                                 'caption': errMsg
                             };
+                        });
+                    } else if (formVariable) {
+                        /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
+                        $timeout(function () {
+                            $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
                         });
                     }
                     //If on submit is there execute it and if it returns true do service variable invoke else return
