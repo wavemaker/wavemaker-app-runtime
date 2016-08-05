@@ -304,7 +304,11 @@ WM.module('wm.widgets.form')
              *
              */
             function getModelValue(scope, dataSet, value, checkedValue) {
-                value = WM.isString(value) ? value.trim() : value;
+                //Don't trim in case of dataset is object
+                if (!WM.isObject(scope.dataObject)) {
+                    value = WM.isString(value) ? value.trim() : value;
+                }
+
                 /*populating model if dataSet is string*/
                 if (WM.isString(dataSet)) {
                     return value;
