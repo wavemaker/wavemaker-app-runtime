@@ -339,11 +339,20 @@ WM.module('wm.utils', [])
         /*helper function for prepareFieldDefs*/
         function pushFieldDef(dataObject, columnDefObj, namePrefix, options) {
             /*loop over the fields in the dataObject to process them*/
-            var modifiedTitle;
+            var modifiedTitle,
+                relatedTable,
+                relatedField,
+                relatedInfo,
+                fieldName;
             if (!options) {
                 options = {};
             }
             WM.forEach(dataObject, function (value, title) {
+                if (_.includes(title, '.')) {
+                    relatedInfo = _.split(title, '.');
+                    relatedTable = relatedInfo[0];
+                    relatedField = relatedInfo[1];
+                }
                 if (options.noModifyTitle) {
                     modifiedTitle = title;
                 } else {
@@ -356,7 +365,9 @@ WM.module('wm.utils', [])
                     }
                 }
                 title = namePrefix ? namePrefix + '.' + title : title;
-                var defObj = options.setBindingField ? {'displayName': modifiedTitle, 'field': title} : {'displayName': modifiedTitle};
+                fieldName = _.split(modifiedTitle, ' ');
+                fieldName = fieldName.length > 1 ? fieldName[fieldName.length - 2] + ' ' + fieldName[fieldName.length - 1] : fieldName[0];
+                var defObj = options.setBindingField ? {'displayName': fieldName, 'field': title, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle} : {'displayName': fieldName, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle};
                 /*if field is a leaf node, push it in the columnDefs*/
                 if (!WM.isObject(value) || (WM.isArray(value) && !value[0])) {
                     /*if the column counter has reached upperBound return*/
