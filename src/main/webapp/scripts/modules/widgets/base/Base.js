@@ -1273,7 +1273,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string",  "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "formlayout": {"type": "switch", "options":  [{"label": "INLINE", "value": "inline"}, {"label": "PAGE", "value": "page"}], "value": "inline", "show" : false, "displayfield": "label", "datafield": "value"},
-                        "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
+                        "autocomplete": {"type": "boolean", "value": false, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "showindesigner": true},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons-align"},
                         "captionposition": {"type": "string", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
