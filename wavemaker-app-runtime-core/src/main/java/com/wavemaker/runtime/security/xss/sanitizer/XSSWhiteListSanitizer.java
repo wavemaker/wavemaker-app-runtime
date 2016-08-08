@@ -20,6 +20,8 @@ import com.wavemaker.studio.common.util.IOUtils;
  */
 public class XSSWhiteListSanitizer implements XSSSanitizer {
 
+    private static final String POLICIES_LOCATION = "/WEB-INF/";
+
     private AntiSamy antiSamy;
 
     public XSSWhiteListSanitizer(String policyFile) {
@@ -43,15 +45,10 @@ public class XSSWhiteListSanitizer implements XSSSanitizer {
     private Policy buildPolicy(String policyFile) {
         InputStream resourceStream = null;
         try {
-            if (StringUtils.isNotBlank(policyFile)) {
-                ServletContext servletContext = WMAppContext.getInstance().getContext();
-                resourceStream = servletContext.getResourceAsStream(policyFile);
-                if (resourceStream == null) {
-                    resourceStream = ClassLoaderUtils.getResourceAsStream(policyFile);
-                }
-            }
+            ServletContext servletContext = WMAppContext.getInstance().getContext();
+            resourceStream = servletContext.getResourceAsStream(POLICIES_LOCATION + policyFile);
             if (resourceStream == null) {
-                resourceStream = ClassLoaderUtils.getResourceAsStream(SecurityConfigConstants.XSS_POLICY_FILE);
+                resourceStream = ClassLoaderUtils.getResourceAsStream(policyFile);
             }
             return Policy.getInstance(resourceStream);
         } catch (PolicyException e) {
