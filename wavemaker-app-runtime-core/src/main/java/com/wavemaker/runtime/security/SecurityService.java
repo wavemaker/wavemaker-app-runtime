@@ -27,8 +27,6 @@ import org.jasig.cas.client.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -45,6 +43,7 @@ import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
+import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
 
@@ -87,6 +86,10 @@ public class SecurityService {
     public LoginConfig getLoginConfig() {
         WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
         return wmAppSecurityConfig.getLoginConfig();
+    }
+
+    private CSRFConfig getCsrfConfig() {
+        return WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
     }
 
     /**
@@ -312,6 +315,7 @@ public class SecurityService {
         securityInfo.setSecurityEnabled(isSecurityEnabled());
         securityInfo.setLoginConfig(getLoginConfig());
         securityInfo.setUserInfo(userInfo);
+        securityInfo.setCsrfConfig(getCsrfConfig());
         return securityInfo;
     }
 
