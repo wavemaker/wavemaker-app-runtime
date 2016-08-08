@@ -1660,6 +1660,17 @@ If the height and width are not specified the video takes the height of the post
         overflow: hidden;
         width: 100%;
         height: 100%;
+        th.app-datagrid-header-cell {
+          &[data-col-sortable] {
+            cursor: pointer;
+            .header-data {
+              cursor: pointer;
+            }
+          }
+          &[data-col-selectable] {
+            cursor: default;
+          }
+        }
       }
       &.scroll-visible {
         padding-right: 17px;
@@ -1678,55 +1689,12 @@ If the height and width are not specified the video takes the height of the post
     min-width: 100%;
     thead th {
       position: relative;
-      .header-data {
-        position: relative;
-        text-overflow: ellipsis;
-        min-width: 16px;
-        overflow: hidden;
-        padding-right: 1em;
-      }
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
       .ui-resizable-handle {
         right: -1px;
         width: 4px;
-      }
-      .sort-buttons-container {
-        position: absolute;
-        float: right;
-        top: 0;
-        right: 0.5em;
-        height: 100%;
-        width: 10px;
-        .sort-button {
-          width: 100%;
-          height: 50%;
-          display: block;
-          padding: 0;
-          background-color: transparent;
-          border: none;
-          position: relative;
-          cursor: pointer;
-          .sort-icon {
-            position: absolute;
-            left: 0;
-            border-color: #808080 rgba(0, 0, 0, 0);
-            border-style: solid;
-            height: 0;
-            width: 0;
-          }
-          .up, .down {
-            &.active {
-              border-color: #74D1FF rgba(0, 0, 0, 0);
-            }
-          }
-          .up {
-            border-width: 0 5px 5px;
-            bottom: 1px;
-          }
-          .down {
-            border-width: 5px 5px 0;
-            top: 1px;
-          }
-        }
       }
     }
 

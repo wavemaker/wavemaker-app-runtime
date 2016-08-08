@@ -279,7 +279,7 @@ WM.module('wm.widgets.grid')
                 }
 
                 return {
-                    'pre': function (iScope, element) {
+                    'pre': function (iScope, element, attrs) {
 
                         iScope.$on('security:before-child-remove', function (evt, childScope, childEl, childAttrs) {
                             evt.stopPropagation();
@@ -312,15 +312,21 @@ WM.module('wm.widgets.grid')
                             configurable: true
                         });
                         element.removeAttr('title');
+                        //Backward compatibility for old projects. If column select/ deselect event is present, set enablecolumnselection to true
+                        if (!WM.isDefined(attrs.enablecolumnselection) && (attrs.onColumnselect || attrs.onColumndeselect)) {
+                            iScope.enablecolumnselection = attrs.enablecolumnselection = true;
+                            WM.element(tElement.context).attr('enablecolumnselection', true);
+                        }
                     },
                     'post': function (scope, element, attrs) {
                         var runModeInitialProperties = {
-                                'showrowindex'      : 'showRowIndex',
-                                'multiselect'       : 'multiselect',
-                                'radioselect'       : 'showRadioColumn',
-                                'filternullrecords' : 'filterNullRecords',
-                                'enablesort'        : 'enableSort',
-                                'showheader'        : 'showHeader'
+                                'showrowindex'          : 'showRowIndex',
+                                'multiselect'           : 'multiselect',
+                                'radioselect'           : 'showRadioColumn',
+                                'filternullrecords'     : 'filterNullRecords',
+                                'enablesort'            : 'enableSort',
+                                'showheader'            : 'showHeader',
+                                'enablecolumnselection' : 'enableColumnSelection'
                             },
                             matchModesMap = {
                                 'start'            : 'Starts with',
@@ -436,7 +442,7 @@ WM.module('wm.widgets.grid')
                             _.forEach(runModeInitialProperties, function (value, key) {
                                 var attrValue = attrs[key];
                                 if (WM.isDefined(attrValue)) {
-                                    scope.gridOptions[value] = (attrValue === "true" || attrValue === true);
+                                    scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
                             /*Set isMobile value on the datagrid*/
@@ -516,11 +522,6 @@ WM.module('wm.widgets.grid')
                             case 'showrowindex':
                                 if (CONSTANTS.isStudioMode) {
                                     scope.setDataGridOption('showRowIndex', newVal);
-                                }
-                                break;
-                            case 'enablesort':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.setDataGridOption('enableSort', newVal);
                                 }
                                 break;
                             case 'navigation':
@@ -959,13 +960,10 @@ WM.module('wm.widgets.grid')
                     var filterFields,
                         variable     = $scope.gridElement.scope().Variables[$scope.variableName],
                         fieldName    = sortObj.field,
-                        sortOptions  = fieldName + ' ' + sortObj.direction;
+                        sortOptions  = sortObj.direction ? (fieldName + ' ' + sortObj.direction) : '';
                     /* Update the sort info for passing to datagrid */
                     $scope.gridOptions.sortInfo.field     = sortObj.field;
                     $scope.gridOptions.sortInfo.direction = sortObj.direction;
-                    if (!sortObj.direction) {
-                        return;
-                    }
                     $scope.sortInfo = Utils.getClonedObject(sortObj);
 
                     if ($scope.isBoundToFilter && $scope.widgetName) {
@@ -1058,7 +1056,7 @@ WM.module('wm.widgets.grid')
                 },
                 /*Returns data sorted using sortObj*/
                 getSortResult = function (data, sortObj) {
-                    if (sortObj) {
+                    if (sortObj && sortObj.direction) {
                         data = _.orderBy(data, sortObj.field, sortObj.direction);
                     }
                     return data;
@@ -1774,7 +1772,7 @@ WM.module('wm.widgets.grid')
                                 gridSortString = $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                                 variableSortString = _.get(variableObj, ['_options', 'orderBy']) || variableSortString;
                                 if (gridSortString !== variableSortString) {
-                                    element.find('i.sort-icon.active').removeClass('active');
+                                    $scope.datagridElement.datagrid('resetSortIcons');
                                     $scope.sortInfo = {};
                                     $scope.setDataGridOption('sortInfo', {});
                                 }

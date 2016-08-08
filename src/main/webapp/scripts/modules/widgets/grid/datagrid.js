@@ -27,17 +27,19 @@ $.widget('wm.datagrid', {
         allowInlineEditing: true,
         showRowIndex: false,
         enableRowSelection: true,
-        enableColumnSelection: true,
+        enableColumnSelection: false,
         multiselect: false,
         filterNullRecords: true,
         cssClassNames: {
-            'tableRow': 'app-datagrid-row',
-            'headerCell': 'app-datagrid-header-cell',
-            'tableCell': 'app-datagrid-cell',
-            'grid': '',
-            'gridDefault': 'table',
-            'gridBody': 'app-datagrid-body',
-            'deleteRow': 'danger'
+            'tableRow'    : 'app-datagrid-row',
+            'headerCell'  : 'app-datagrid-header-cell',
+            'tableCell'   : 'app-datagrid-cell',
+            'grid'        : '',
+            'gridDefault' : 'table',
+            'gridBody'    : 'app-datagrid-body',
+            'deleteRow'   : 'danger',
+            'ascIcon'     : 'wi wi-long-arrow-up',
+            'descIcon'    : 'wi wi-long-arrow-down'
         },
         dataStates: {
             'loading': 'Loading...',
@@ -164,19 +166,19 @@ $.widget('wm.datagrid', {
     /* Returns the table header template. */
     _getHeaderTemplate: function () {
 
-        var cols = '<colgroup>',
-            htm = '<thead><tr>',
-            isDefined = this.Utils.isDefined;
+        var cols      = '<colgroup>',
+            htm       = '<thead><tr>',
+            isDefined = this.Utils.isDefined,
+            sortInfo  = this.options.sortInfo,
+            sortField = sortInfo.field;
         this.preparedHeaderData.forEach(function (value, index) {
 
-            var id = index,
-                field = value.field,
-                headerLabel = WM.isDefined(value.displayName) ? value.displayName : field,
+            var id            = index,
+                field         = value.field,
+                headerLabel   = WM.isDefined(value.displayName) ? value.displayName : field,
                 headerClasses = this.options.cssClassNames.headerCell,
-                sortInfo,
-                sortField,
-                asc_active,
-                desc_active;
+                sortEnabled   = this.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType,
+                sortClass;
 
             /* Colgroup */
             cols += '<col';
@@ -200,8 +202,11 @@ $.widget('wm.datagrid', {
             if ((_.isUndefined(value.resizable) || value.resizable) && (_.isUndefined(value.show) || value.show)) { //If show is false, do not add the resize option
                 htm += ' data-col-resizable';
             }
-            if (_.isUndefined(value.selectable) || value.selectable) {
+            if (this.options.enableColumnSelection && (_.isUndefined(value.selectable) || value.selectable)) {
                 htm += ' data-col-selectable';
+            }
+            if (sortEnabled) {
+                htm += ' data-col-sortable';
             }
             htm += '>';
             /* For custom columns, show display name if provided, else don't show any label. */
@@ -211,19 +216,15 @@ $.widget('wm.datagrid', {
             if (field === 'radio') {
                 htm += '';
             }
-            htm += '<div class="header-data">' + headerLabel + '</div>';
-            if (this.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
-                htm += '<span class="sort-buttons-container">';
-                sortInfo = this.options.sortInfo;
-                sortField = sortInfo.field;
-                asc_active = sortInfo.direction === 'asc' ? ' active' : '';
-                desc_active = sortInfo.direction === 'desc' ? ' active' : '';
-                if (sortField && sortField === value.field) {
-                    htm += '<button class="sort-button" title="Sort Ascending"><i class="sort-icon up' + asc_active + '"></i></button>';
-                    htm += '<button type="button" class="sort-button" title="Sort Descending"><i class="sort-icon down' + desc_active + '"></i></button>';
+            htm += '<span class="header-data">' + headerLabel + '</span>';
+            if (sortEnabled) { //If sort info is present, show the sort icon for that column on grid render
+                if (sortField && sortField === value.field && sortInfo.direction) {
+                    sortClass = sortInfo.direction === 'asc' ? this.options.cssClassNames.ascIcon : this.options.cssClassNames.descIcon;
+                    htm += '<span class="sort-buttons-container active">';
+                    htm += '<i class="sort-icon ' + sortClass + ' ' + sortInfo.direction + '"></i>';
                 } else {
-                    htm += '<button type="button" class="sort-button"><i class="sort-icon up" title="Sort Ascending"></i></button>';
-                    htm += '<button type="button" class="sort-button"><i class="sort-icon down" title="Sort Descending"></i></button>';
+                    htm += '<span class="sort-buttons-container">';
+                    htm += '<i class="sort-icon"></i>';
                 }
                 htm += '</span>';
             }
@@ -641,12 +642,6 @@ $.widget('wm.datagrid', {
         this._prepareData();
         this._render();
     },
-
-    /* Removes the sort buttons, and the corresponding handler if sorting is disabled. */
-    removeSort: function () {
-        this.gridHeader.find('.sort-button').off('click');
-        this.gridHeader.find('.sort-buttons-container').remove();
-    },
     _setGridEditMode: function (val) {
         if ($.isFunction(this.options.setGridEditMode)) {
             this.options.setGridEditMode(val);
@@ -835,15 +830,6 @@ $.widget('wm.datagrid', {
             break;
         case 'data':
             this.refreshGridData();
-            break;
-        case 'enableSort':
-            if (!this.options.enableSort) {
-                if (this.gridHeader) {
-                    this.removeSort();
-                }
-            } else {
-                this.refreshGrid();
-            }
             break;
         case 'dataStates':
             if (this.dataStatus.state === 'nodata') {
@@ -1066,7 +1052,7 @@ $.widget('wm.datagrid', {
             colInfo = {
                 colDef: colDef,
                 data: this.options.data.map(function (data) { return data[field]; }),
-                sortDirection: this._getColumnSortDirection(colDef)
+                sortDirection: this._getColumnSortDirection(colDef.field)
             };
         selected = !selected;
         colDef.selected = selected;
@@ -1443,42 +1429,67 @@ $.widget('wm.datagrid', {
             }
         });
     },
-
+    //Method to remove sort icons from the column header cells
+    resetSortIcons: function ($el) {
+        var $sortContainer;
+        //If sort icon is not passed, find out the sort icon from the active class
+        if (!$el && this.gridHeader) {
+            $sortContainer = this.gridHeader.find('.sort-buttons-container.active');
+            $el            = $sortContainer.find('i.sort-icon');
+            $sortContainer.removeClass('active');
+        }
+        $el.removeClass('desc asc').removeClass(this.options.cssClassNames.descIcon).removeClass(this.options.cssClassNames.ascIcon);
+    },
     /* Handles table sorting. */
     sortHandler: function (e) {
         e.stopImmediatePropagation();
-        var $sortButton = $(e.target).closest('.sort-button'),
-            $th = $sortButton.closest('th.app-datagrid-header-cell'),
-            id = $th.attr('data-col-id'),
-            $sortIcon = $sortButton.find('i'),
-            direction = $sortIcon.hasClass('up') ? 'asc' : 'desc',
-            sortInfo = this.options.sortInfo,
-            $previousSortMarker = this.gridHeader.find('.active'),
-            field = $th.attr('data-col-field'),
+        var $e                  = $(e.target),
+            $th                 = $e.closest('th.app-datagrid-header-cell'),
+            id                  = $th.attr('data-col-id'),
+            $sortContainer      = $th.find('.sort-buttons-container'),
+            $sortIcon           = $sortContainer.find('i.sort-icon'),
+            direction           = $sortIcon.hasClass('asc') ? 'desc' : $sortIcon.hasClass('desc') ? '' : 'asc',
+            sortInfo            = this.options.sortInfo,
+            $previousSortMarker = this.gridHeader.find('.sort-buttons-container.active'),
+            field               = $th.attr('data-col-field'),
             $previousSortedColumn,
+            $previousSortIcon,
             colId,
             colDef;
-        /* If same field is sorted in same direction again then return. */
-        if (sortInfo.field && sortInfo.field === field && sortInfo.direction === direction) {
-            return;
+        this.resetSortIcons($sortIcon);
+        $sortIcon.addClass(direction);
+        //Add the classes based on the direction
+        if (direction === 'asc') {
+            $sortIcon.addClass(this.options.cssClassNames.ascIcon);
+            $sortContainer.addClass('active');
+        } else if (direction === 'desc') {
+            $sortIcon.addClass(this.options.cssClassNames.descIcon);
+            $sortContainer.addClass('active');
         }
-        $sortIcon.addClass('active');
         if ($previousSortMarker.length) {
+            //Reset the previous sorted column icons and info
             $previousSortedColumn = $previousSortMarker.closest('th.app-datagrid-header-cell');
-            colId = $previousSortedColumn.attr('data-col-id');
-            colDef = this.preparedHeaderData[colId];
-            $previousSortMarker.removeClass('active');
+            colId                 = $previousSortedColumn.attr('data-col-id');
+            colDef                = this.preparedHeaderData[colId];
+            $previousSortIcon     = $previousSortMarker.find('i.sort-icon');
+            if (colDef.field !== field) {
+                $previousSortMarker.removeClass('active');
+                this.resetSortIcons($previousSortIcon);
+            }
             colDef.sortInfo = {'sorted': false, 'direction': ''};
         }
         sortInfo.direction = direction;
-        sortInfo.field = field;
-        this.preparedHeaderData[id].sortInfo = {'sorted': true, 'direction': direction};
+        sortInfo.field     = field;
+        if (direction !== '') {
+            this.preparedHeaderData[id].sortInfo = {'sorted': true, 'direction': direction};
+        }
         this.options.sortHandler.call(this, this.options.sortInfo, e, 'sort');
     },
 
     /* Attaches all event handlers for the table. */
     attachEventHandlers: function ($htm) {
         var rowOperationsCol = this._getRowActionsColumnDef(),
+            $header          = this.gridHeader,
             deleteRowHandler;
 
         if (this.options.enableRowSelection) {
@@ -1489,13 +1500,25 @@ $.widget('wm.datagrid', {
             }
         }
 
-        if (this.gridHeader) {
+        if ($header) {
             if (this.options.enableColumnSelection) {
-                this.gridHeader.find('th[data-col-selectable]').on('click', this.columnSelectionHandler.bind(this));
+                $header.find('th[data-col-selectable]').on('click', this.columnSelectionHandler.bind(this));
+            } else {
+                $header.find('th[data-col-selectable]').off('click');
             }
 
             if (this.options.enableSort) {
-                this.gridHeader.find('.sort-button').on('click', this.sortHandler.bind(this));
+                if (this.options.enableColumnSelection) {
+                    $header.find('th[data-col-sortable] .header-data').on('click', this.sortHandler.bind(this));
+                } else {
+                    $header.find('th[data-col-sortable]').on('click', this.sortHandler.bind(this));
+                }
+            } else {
+                if (this.options.enableColumnSelection) {
+                    $header.find('th[data-col-sortable] .header-data').off('click');
+                } else {
+                    $header.find('th[data-col-sortable]').off('click');
+                }
             }
         }
         if (this.options.rowActions.length) {

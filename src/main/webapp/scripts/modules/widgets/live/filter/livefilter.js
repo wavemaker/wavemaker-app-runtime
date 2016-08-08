@@ -128,7 +128,7 @@ WM.module('wm.widgets.live')
                     $scope.applyFilter = function (options) {
                         options = options || {};
                         options.page = options.page || 1;
-                        options.orderBy = options.orderBy || $scope.orderBy || '';
+                        options.orderBy = WM.isDefined(options.orderBy) ?  options.orderBy : $scope.orderBy;
                         $scope.filter(options);
                     };
 
@@ -150,7 +150,7 @@ WM.module('wm.widgets.live')
                             emptyFilterOptions = $scope.enableemptyfilter.split(',');
                         options = options || {};
                         page = options.page || page;
-                        orderBy = options.orderBy || $scope.orderBy || '';
+                        orderBy = WM.isDefined(options.orderBy) ? options.orderBy : ($scope.orderBy || '');
                         $scope.orderBy = orderBy; //Store the order by in scope. This can be used to retain the sort after filtering
                         /* Copy the values to be sent to the user as '$data' before servicecall */
                         _.forEach($scope.formFields, function (field) {
