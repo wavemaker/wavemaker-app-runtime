@@ -256,27 +256,6 @@ WM.module('wm.widgets.live')
                     });
             }
 
-            // finds the field having the given fieldName and returns the obj
-            function getObjfromFieldname(name, data) {
-                return _.find(data, function (field) {
-                    return field.fieldName ===  name;
-                });
-            }
-
-            // returns the field type
-            function getFieldType(dataProps, groupby) {
-                var field = groupby.split('.'),
-                    obj;
-                _.each(field, function (name, idx) {
-                    if (idx === 0) {
-                        obj = getObjfromFieldname(name, dataProps.columns);
-                    } else {
-                        obj = getObjfromFieldname(name, obj.columns);
-                    }
-                });
-                return obj.type;
-            }
-
             function applyWrapper($tmplContent, attrs, flag) {
                 var tmpl = liTemplateWrapper_start;
 
@@ -718,7 +697,7 @@ WM.module('wm.widgets.live')
                             wp.match.show = false;
                         } else if (selectedVariable) {
                             if (selectedVariable.category === 'wm.LiveVariable') {
-                                wp.match.show = _.includes(matchDataTypes, getFieldType($is.dataset.propertiesMap || selectedVariable.propertiesMap, $is.groupby));
+                                wp.match.show = _.includes(matchDataTypes, _.toLower(Utils.extractType(typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby))));
                             } else if (selectedVariable.category === 'wm.DeviceVariable') {
                                 wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
                             } else if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
