@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 
 /**
@@ -27,7 +26,7 @@ public class SecurityInfo {
     private boolean authenticated;
     private LoginConfig loginConfig;
     private UserInfo userInfo;
-    private CSRFConfig csrfConfig;
+    private String csrfHeaderName;
 
     public boolean isSecurityEnabled() {
         return securityEnabled;
@@ -62,12 +61,12 @@ public class SecurityInfo {
         this.userInfo = userInfo;
     }
 
-    public CSRFConfig getCsrfConfig() {
-        return csrfConfig;
+    public String getCsrfHeaderName() {
+        return csrfHeaderName;
     }
 
-    public void setCsrfConfig(final CSRFConfig csrfConfig) {
-        this.csrfConfig = csrfConfig;
+    public void setCsrfHeaderName(final String csrfHeaderName) {
+        this.csrfHeaderName = csrfHeaderName;
     }
 
     @Override
@@ -77,7 +76,7 @@ public class SecurityInfo {
                 ", authenticated=" + authenticated +
                 ", login=" + loginConfig +
                 ", userInfo=" + userInfo +
-                ", csrfConfig=" + csrfConfig +
+                ", csrfHeaderName=" + csrfHeaderName +
                 '}';
     }
 }
