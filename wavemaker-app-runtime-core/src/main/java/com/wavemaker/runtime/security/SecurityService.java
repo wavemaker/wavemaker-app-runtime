@@ -88,8 +88,9 @@ public class SecurityService {
         return wmAppSecurityConfig.getLoginConfig();
     }
 
-    private CSRFConfig getCsrfConfig() {
-        return WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+    private String getCsrfHeaderName() {
+        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+        return csrfConfig.getHeaderName();
     }
 
     /**
@@ -315,7 +316,7 @@ public class SecurityService {
         securityInfo.setSecurityEnabled(isSecurityEnabled());
         securityInfo.setLoginConfig(getLoginConfig());
         securityInfo.setUserInfo(userInfo);
-        securityInfo.setCsrfConfig(getCsrfConfig());
+        securityInfo.setCsrfHeaderName(getCsrfHeaderName());
         return securityInfo;
     }
 
