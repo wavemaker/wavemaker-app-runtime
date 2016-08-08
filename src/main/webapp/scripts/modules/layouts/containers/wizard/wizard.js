@@ -161,8 +161,9 @@ WM.module('wm.layouts.containers')
         'WidgetUtilService',
         'CONSTANTS',
         '$rootScope',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, $rs) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, $rs, Utils) {
             'use strict';
 
             var widgetProps    = PropertiesFactory.getPropertiesOf('wm.wizardstep', ['wm.base']),
@@ -210,6 +211,10 @@ WM.module('wm.layouts.containers')
                                     if ($is.onLoad) {
                                         $is.onLoad({$isolateScope: $is});
                                     }
+                                    $el.find('.ng-isolate-scope')
+                                        .each(function () {
+                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                        });
                                 }
                             });
                             //$watch on form valid status
