@@ -213,6 +213,7 @@ WM.module('wm.utils', [])
         }
 
         function prettifyLabel(label) {
+            label = _.camelCase(label);
             /*capitalize the initial Letter*/
             label = initCaps(label);
             /*Convert camel case words to separated words*/
@@ -343,15 +344,17 @@ WM.module('wm.utils', [])
                 relatedTable,
                 relatedField,
                 relatedInfo,
-                fieldName;
+                fieldName,
+                isRelated;
             if (!options) {
                 options = {};
             }
             WM.forEach(dataObject, function (value, title) {
                 if (_.includes(title, '.')) {
-                    relatedInfo = _.split(title, '.');
+                    relatedInfo  = _.split(title, '.');
                     relatedTable = relatedInfo[0];
                     relatedField = relatedInfo[1];
+                    isRelated    = true;
                 }
                 if (options.noModifyTitle) {
                     modifiedTitle = title;
@@ -365,8 +368,13 @@ WM.module('wm.utils', [])
                     }
                 }
                 title = namePrefix ? namePrefix + '.' + title : title;
-                fieldName = _.split(modifiedTitle, ' ');
-                fieldName = fieldName.length > 1 ? fieldName[fieldName.length - 2] + ' ' + fieldName[fieldName.length - 1] : fieldName[0];
+                if (isRelated) {
+                    //For related columns, shorten the title to last two words
+                    fieldName = _.split(modifiedTitle, ' ');
+                    fieldName = fieldName.length > 1 ? fieldName[fieldName.length - 2] + ' ' + fieldName[fieldName.length - 1] : fieldName[0];
+                } else {
+                    fieldName = modifiedTitle;
+                }
                 var defObj = options.setBindingField ? {'displayName': fieldName, 'field': title, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle} : {'displayName': fieldName, 'relatedTable': relatedTable, 'relatedField': relatedField || modifiedTitle};
                 /*if field is a leaf node, push it in the columnDefs*/
                 if (!WM.isObject(value) || (WM.isArray(value) && !value[0])) {
