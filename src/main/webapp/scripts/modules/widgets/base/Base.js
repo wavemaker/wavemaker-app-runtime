@@ -358,7 +358,8 @@ WM.module('wm.widgets.base', [])
                         "vertical": {"type": "boolean"},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
                         "padding": {"type": "string", "widget": "box-model"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-group-raised", "btn-toolbar", "btn-group-vertical"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-group-raised", "btn-toolbar", "btn-group-vertical"]},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Button", "widgettype": "wm-button"}], "widget": "add-widget"}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -2125,8 +2126,11 @@ WM.module('wm.widgets.base', [])
                  * add data-droptarget-for attribute on the element.
                  * this attribute is useful in studio. it is used to find out the droptarget on an element.
                  */
-                if (scope.widgetid) {
-                    element.attr('data-droptarget-for', scope.widgettype);
+
+                if (attrs.widgetid) {
+                    element.attr('data-droptarget-for', attrs.widgetid);
+                } else if (scope.widgetid) {
+                    element.attr('data-droptarget-for', scope.widgetid);
                 }
 
                 var eleScope = element.scope(),
