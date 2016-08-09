@@ -106,11 +106,11 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
 wm.variables.constant('VARIABLE_SERVICE_URLS_MOBILE', {
     VariableService : {
         getServiceOpInfo: {
-            url: 'resources/servicedefs/app/service-definitions.json',
+            url: 'metadata/app/service-definitions.json',
             method: 'GET'
         },
         getPrefabServiceOpInfo: {
-            url: 'resources/servicedefs/prefabs/:prefabName/service-definitions.json',
+            url: 'metadata/prefabs/:prefabName/service-definitions.json',
             method: 'GET'
         }
     }
