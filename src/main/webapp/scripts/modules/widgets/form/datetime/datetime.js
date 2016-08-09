@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                 '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen">' +
-                '<div uib-dropdown is-open="isTimeOpen" class="dropdown" dropdown-append-to-body="true">' +
+                '<div uib-dropdown is-open="isTimeOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
                         '<div uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
                     '</div>' +
