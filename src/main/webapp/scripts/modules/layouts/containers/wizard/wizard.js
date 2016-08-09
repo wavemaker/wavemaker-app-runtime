@@ -205,23 +205,26 @@ WM.module('wm.layouts.containers')
                                 ctrl.unRegisterHeaderElement($is);
                             });
                         } else {
-                            //$watch on step load ie.. step is active and trigger onLoad event
-                            $is.$watch('status', function (nv) {
-                                if (nv === STEP_STATUS.CURRENT) {
-                                    if ($is.onLoad) {
-                                        $is.onLoad({$isolateScope: $is});
-                                    }
-                                }
-                            });
                             //$watch on form valid status
                             $is.$watch($is.name + '.$valid', function (newVal) {
                                 $is.isFormInvalid = !newVal;
                             });
                         }
-                        $el.find('.ng-isolate-scope')
-                            .each(function () {
-                                Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                            });
+                        //$watch on step load ie.. step is active and trigger onLoad event
+                        $is.$watch('status', function (nv) {
+                            if (nv === STEP_STATUS.CURRENT) {
+                                if (CONSTANTS.isRunMode) {
+                                    if ($is.onLoad) {
+                                        $is.onLoad({$isolateScope: $is});
+                                    }
+                                }
+                                $el.find('.ng-isolate-scope')
+                                    .each(function () {
+                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                    });
+                            }
+                        });
+
                         $parentElement.on('click', '.app-wizard-step', function (event) {
                             event.stopPropagation();
                             var $headerEles     = $parentElement.find('.app-wizard-step'),
