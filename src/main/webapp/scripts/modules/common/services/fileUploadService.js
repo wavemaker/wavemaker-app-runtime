@@ -63,7 +63,8 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
             uploadUrl = $rootScope.project.deployedUrl + '/' + url,
             ftOptions = {
                 'fileKey'   : options.paramName,
-                'fileName'  : file.name
+                'fileName'  : file.name,
+                'chunkedMode': false
             },
             transferFn = function () {
                 ft.upload(file.path,
