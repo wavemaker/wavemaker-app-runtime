@@ -3103,9 +3103,11 @@ WM.module('wm.widgets.base', [])
                 var cssKey = key, val, top, right, bottom, left, SEPARATOR = ' ', UNSET = 'unset', suffix = '';
 
                 function setVal(prop, value) {
-                    if (value !== UNSET) {
-                        cssObj[cssKey + prop + suffix] = value;
+                    // if the value is UNSET, reset the existing value
+                    if (value === UNSET) {
+                        value = '';
                     }
+                    cssObj[cssKey + prop + suffix] = value;
                 }
 
                 if (key === 'borderwidth') {
