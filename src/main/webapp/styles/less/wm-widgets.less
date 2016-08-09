@@ -162,10 +162,9 @@ html, body {
       outline: none;
     }
   }
-  .dropdown-menu {
+  &.dropdown-menu {
     text-align: left;
-    width: 100%;
-    z-index: 2000; /*Over-write bootstrap style so that search results appear on top of any content*/
+    z-index: 2000 !important; /*Over-write bootstrap style so that search results appear on top of any content*/
     max-height: 200px;
     overflow-y: auto;
     li {

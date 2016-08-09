@@ -1075,7 +1075,11 @@ WM.module('wm.widgets.live')
                             }
                         }
                         function setValidity(name, val) {
-                            parentIsolateScope.ngform[name + '_formWidget'].$setValidity('custom', val);
+                            var formWidget = parentIsolateScope.ngform[name + '_formWidget'];
+                            if (!formWidget) {
+                                return;
+                            }
+                            formWidget.$setValidity('custom', val);
                         }
                         if (parentEle.length) {
                             parentIsolateScope = externalForm.length ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;

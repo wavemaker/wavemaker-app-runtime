@@ -658,6 +658,9 @@ WM.module('wm.widgets.basic')
                         }
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
+                        $timeout(function () {
+                            WM.element('body').find('> [uib-typeahead-popup]').addClass('app-search');
+                        });
                     }
                 }
             };
