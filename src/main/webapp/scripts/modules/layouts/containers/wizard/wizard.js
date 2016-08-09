@@ -211,10 +211,6 @@ WM.module('wm.layouts.containers')
                                     if ($is.onLoad) {
                                         $is.onLoad({$isolateScope: $is});
                                     }
-                                    $el.find('.ng-isolate-scope')
-                                        .each(function () {
-                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                                        });
                                 }
                             });
                             //$watch on form valid status
@@ -222,6 +218,10 @@ WM.module('wm.layouts.containers')
                                 $is.isFormInvalid = !newVal;
                             });
                         }
+                        $el.find('.ng-isolate-scope')
+                            .each(function () {
+                                Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                            });
                         $parentElement.on('click', '.app-wizard-step', function (event) {
                             event.stopPropagation();
                             var $headerEles     = $parentElement.find('.app-wizard-step'),
