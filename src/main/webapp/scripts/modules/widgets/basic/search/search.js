@@ -322,6 +322,7 @@ WM.module('wm.widgets.basic')
                 // if query is empty string, then datavalue will be empty.
                 if (inputVal === '') {
                     $is.datavalue = '';
+                    $is.onSubmit({$event: event, $scope: $is});
                 }
                 $is.query = inputVal;
                 $rs.$evalAsync(function () {
