@@ -89,8 +89,11 @@ public class SecurityService {
     }
 
     private String getCsrfHeaderName() {
-        CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
-        return csrfConfig.getHeaderName();
+        if (isSecurityEnabled()) {
+            CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
+            return csrfConfig.getHeaderName();
+        }
+        return null;
     }
 
     /**
