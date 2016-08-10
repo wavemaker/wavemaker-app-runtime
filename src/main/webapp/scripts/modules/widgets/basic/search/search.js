@@ -233,8 +233,12 @@ WM.module('wm.widgets.basic')
                     return;
                 }
 
-                if (CONSTANTS.isStudioMode && isServiceVariable($is, element.scope())) {
-                    updatePropertyOptions($is); //update searchkey options in case of service variables
+                if (CONSTANTS.isStudioMode) {
+                    if (isServiceVariable($is, element.scope())) {
+                        updatePropertyOptions($is); //update searchkey options in case of service variables
+                    }
+                    //Selecting first option by default for displayValue
+                    $rs.$emit('set-markup-attr', $is.widgetid, {'displaylabel': _.get($is.widgetProps, ['displaylabel', 'options', 1])});
                 }
 
                 if (CONSTANTS.isRunMode) {

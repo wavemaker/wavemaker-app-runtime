@@ -1206,7 +1206,7 @@ WM.module('wm.widgets.basic')
                 }
                 //Based on the change in type deciding the default margins
                 if (ChartService.isPieType(scope.type)) {
-                    scope.offsettop = 0;
+                    scope.offsettop = 20;
                     scope.offsetright = 0;
                     scope.offsetbottom = 0;
                     scope.offsetleft = 0;
