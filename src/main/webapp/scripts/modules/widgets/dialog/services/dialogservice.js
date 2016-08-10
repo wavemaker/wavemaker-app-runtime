@@ -53,9 +53,6 @@ WM.module('wm.widgets.dialog')
             }
             //remove the popovers in the page to avoid the overlap with dialog
             closePopover();
-            if (CONSTANTS.isStudioMode) {
-                $rootScope.muteOverlayCalc = true;
-            }
 
             var template = WM.element("script[id=" + dialogId + "]"),
                 controller = template.attr('controller'),
@@ -177,10 +174,6 @@ WM.module('wm.widgets.dialog')
             }
             //remove the popovers in the page to avoid the overlap with dialog
             closePopover();
-
-            if (CONSTANTS.isStudioMode) {
-                $rootScope.muteOverlayCalc = false;
-            }
 
             $uibModalInstances[dialogId].close();
             // destroy the scope of the dialog
