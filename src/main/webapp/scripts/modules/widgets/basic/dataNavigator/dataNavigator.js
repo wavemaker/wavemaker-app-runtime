@@ -74,6 +74,10 @@ WM.module("wm.widgets.basic")
             'controller': function ($scope) {
 
                 $scope.pageCount = 0;
+                $scope.isDisableNext = true;
+                $scope.isDisablePrevious = true;
+                $scope.isDisableFirst = true;
+                $scope.isDisableLast = true;
 
                 /*Function to reset the paging values to default.*/
                 $scope.resetPageNavigation = function () {
