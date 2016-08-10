@@ -381,9 +381,10 @@ WM.module('wm.widgets.grid')
                             }
                         }
 
-                        scope.actions = [];
-                        scope.rowActions = [];
-                        scope._actions = {};
+                        scope.actions      = [];
+                        scope.rowActions   = [];
+                        scope._actions     = {};
+                        scope.headerConfig = [];
 
                         /* event emitted on building new markup from canvasDom */
                         handlers.push($rootScope.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
@@ -425,7 +426,8 @@ WM.module('wm.widgets.grid')
 
                         /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
                         $compile(attrs.gridColumnMarkup)(scope);
-                        scope.gridOptions.rowActions = scope.rowActions;
+                        scope.gridOptions.rowActions   = scope.rowActions;
+                        scope.gridOptions.headerConfig = scope.headerConfig;
                         if (scope.rowActions.length && CONSTANTS.isStudioMode) {
                             scope.renderOperationColumns();
                         }
@@ -1355,13 +1357,17 @@ WM.module('wm.widgets.grid')
                     opConfig = {},
                     operations = [],
                     insertPosition,
-                    rowOperationsColumn = LiveWidgetUtils.getRowOperationsColumn();
+                    rowOperationsColumn = LiveWidgetUtils.getRowOperationsColumn(),
+                    config = {
+                        'name' : rowOperationsColumn.field
+                    };
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {
                     return;
                 }
                 rowActionCol = _.find($scope.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
                 _.remove($scope.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
+                _.remove($scope.headerConfig, {name : rowOperationsColumn.field});
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
@@ -1376,13 +1382,20 @@ WM.module('wm.widgets.grid')
                     if (rowActionCol) { //If column is present in markup, push the column or push the default column
                         insertPosition = rowActionCol.rowactionsposition ? _.toNumber(rowActionCol.rowactionsposition) : $scope.fieldDefs.length;
                         $scope.fieldDefs.splice(insertPosition, 0, rowActionCol);
+                        if (insertPosition === 0) {
+                            $scope.headerConfig.unshift(config);
+                        } else {
+                            $scope.headerConfig.push(config);
+                        }
                     } else {
                         $scope.fieldDefs.push(rowOperationsColumn);
+                        $scope.headerConfig.push(config);
                     }
                 } else if (!fromDesigner && operations.length) {
                     rowOperationsColumn.operations = operations;
                     rowOperationsColumn.opConfig = opConfig;
                     $scope.fieldDefs.push(rowOperationsColumn);
+                    $scope.headerConfig.push(config);
                 }
             };
 
@@ -2221,6 +2234,45 @@ WM.module('wm.widgets.grid')
                 return WM.isDefined(value) && value !== '' && value !== null;
             };
         }])
+/**
+ * @ngdoc directive
+ * @name wm.widgets.grid.directive:wmGridColumnGroup
+ * @restrict E
+ *
+ * @description
+ * The `wmGridColumnColumn` serves the purpose of providing column group definitions to the parent `wmGrid` directive.
+ * `wmGridColumnColumn` is internally used by `wmGrid`.
+ *
+ * @requires LiveWidgetUtils
+ *
+ * @param {string=} caption
+ *                  Sets the title of the column.
+ * @param {string=} name
+ *                  Sets the name of the column
+ */
+    .directive('wmGridColumnGroup', ['LiveWidgetUtils', function (LiveWidgetUtils) {
+        'use strict';
+
+        return {
+            'restrict': 'E',
+            'scope': true,
+            'template': '<div ng-transclude></div>',
+            'replace': true,
+            'transclude': true,
+            'link': {
+                'pre': function (scope, element, attrs) {
+                    var $parentEl   = element.parent(),
+                        parentScope = scope.$parent,
+                        config      = {
+                            'name'    : attrs.name,
+                            'caption' : attrs.caption,
+                            'columns' : []
+                        };
+                    LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, config, $parentEl);
+                }
+            }
+        };
+    }])
 
 /**
  * @ngdoc directive
@@ -2325,6 +2377,10 @@ WM.module('wm.widgets.grid')
                                 LiveWidgetUtils.setColumnConfig(column);
                             },
                             parentScope = scope.$parent,
+                            $parentEl   = element.parent(),
+                            colConfig   = {
+                                'name': attrs.binding
+                            },
                             variable;
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
@@ -2333,6 +2389,7 @@ WM.module('wm.widgets.grid')
                                 }
                             }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                         }
+                        LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, colConfig, $parentEl);
 
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = parentScope;

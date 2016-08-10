@@ -12,6 +12,7 @@ $.widget('wm.datagrid', {
         statusMsg: '',
         colDefs: [],
         rowActions: [],
+        headerConfig: [],
         sortInfo: {
             'field': '',
             'direction': ''
@@ -31,15 +32,16 @@ $.widget('wm.datagrid', {
         multiselect: false,
         filterNullRecords: true,
         cssClassNames: {
-            'tableRow'    : 'app-datagrid-row',
-            'headerCell'  : 'app-datagrid-header-cell',
-            'tableCell'   : 'app-datagrid-cell',
-            'grid'        : '',
-            'gridDefault' : 'table',
-            'gridBody'    : 'app-datagrid-body',
-            'deleteRow'   : 'danger',
-            'ascIcon'     : 'wi wi-long-arrow-up',
-            'descIcon'    : 'wi wi-long-arrow-down'
+            'tableRow'        : 'app-datagrid-row',
+            'headerCell'      : 'app-datagrid-header-cell',
+            'groupHeaderCell' : 'app-datagrid-group-header-cell',
+            'tableCell'       : 'app-datagrid-cell',
+            'grid'            : '',
+            'gridDefault'     : 'table',
+            'gridBody'        : 'app-datagrid-body',
+            'deleteRow'       : 'danger',
+            'ascIcon'         : 'wi wi-long-arrow-up',
+            'descIcon'        : 'wi wi-long-arrow-down'
         },
         dataStates: {
             'loading': 'Loading...',
@@ -163,22 +165,50 @@ $.widget('wm.datagrid', {
             break;
         }
     },
+    //Method to calculate and get the column span of the header cells
+    _getColSpan: function (cols) {
+        var colSpan = 0,
+            self    = this;
+        _.forEach(cols, function (col) {
+            if (col.columns) {
+                colSpan += self._getColSpan(col.columns);
+            } else {
+                colSpan += 1;
+            }
+        });
+        return colSpan;
+    },
+    //Method to set the column span of the header cells in the config
+    _setColSpan: function (config) {
+        var self = this;
+        _.forEach(config, function (col) {
+            if (col.columns) {
+                col.colspan = self._getColSpan(col.columns);
+                self._setColSpan(col.columns);
+            }
+        });
+    },
     /* Returns the table header template. */
     _getHeaderTemplate: function () {
 
-        var cols      = '<colgroup>',
-            htm       = '<thead><tr>',
-            isDefined = this.Utils.isDefined,
-            sortInfo  = this.options.sortInfo,
-            sortField = sortInfo.field;
-        this.preparedHeaderData.forEach(function (value, index) {
-
+        var cols             = '<colgroup>',
+            htm              = '<thead>',
+            isDefined        = this.Utils.isDefined,
+            sortInfo         = this.options.sortInfo,
+            sortField        = sortInfo.field,
+            self             = this,
+            rowTemplates     = [],
+            headerConfig     = this.options.headerConfig,
+            headerClasses    = self.options.cssClassNames.headerCell,
+            headerGroupClass = self.options.cssClassNames.groupHeaderCell;
+        this._setColSpan(headerConfig);
+        function generateHeaderCell(value, index) {
             var id            = index,
                 field         = value.field,
                 headerLabel   = WM.isDefined(value.displayName) ? value.displayName : field,
-                headerClasses = this.options.cssClassNames.headerCell,
-                sortEnabled   = this.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType,
-                sortClass;
+                sortEnabled   = self.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType,
+                sortClass,
+                tl = '';
 
             /* Colgroup */
             cols += '<col';
@@ -197,40 +227,77 @@ $.widget('wm.datagrid', {
             if (field === 'checkbox' || field === 'radio') {
                 headerClasses += ' grid-col-small';
             }
-            htm += '<th data-col-id="' + id + '" data-col-field="' + field + '" class="' + headerClasses + '" title="' + headerLabel + '" style="text-align: ' +
+            tl += '<th data-col-id="' + id + '" data-col-field="' + field + '" class="' + headerClasses + '" title="' + headerLabel + '" style="text-align: ' +
                 value.textAlignment + ';"';
             if ((_.isUndefined(value.resizable) || value.resizable) && (_.isUndefined(value.show) || value.show)) { //If show is false, do not add the resize option
-                htm += ' data-col-resizable';
+                tl += ' data-col-resizable';
             }
-            if (this.options.enableColumnSelection && (_.isUndefined(value.selectable) || value.selectable)) {
-                htm += ' data-col-selectable';
+            if (self.options.enableColumnSelection && (_.isUndefined(value.selectable) || value.selectable)) {
+                tl += ' data-col-selectable';
             }
             if (sortEnabled) {
-                htm += ' data-col-sortable';
+                tl += ' data-col-sortable';
             }
-            htm += '>';
+            tl += '>';
             /* For custom columns, show display name if provided, else don't show any label. */
             if (field === 'checkbox') {
-                htm += '<input type="checkbox" />';
+                tl += '<input type="checkbox" />';
             }
             if (field === 'radio') {
-                htm += '';
+                tl += '';
             }
-            htm += '<span class="header-data">' + headerLabel + '</span>';
+            tl += '<span class="header-data">' + headerLabel + '</span>';
             if (sortEnabled) { //If sort info is present, show the sort icon for that column on grid render
                 if (sortField && sortField === value.field && sortInfo.direction) {
-                    sortClass = sortInfo.direction === 'asc' ? this.options.cssClassNames.ascIcon : this.options.cssClassNames.descIcon;
-                    htm += '<span class="sort-buttons-container active">';
-                    htm += '<i class="sort-icon ' + sortClass + ' ' + sortInfo.direction + '"></i>';
+                    sortClass = sortInfo.direction === 'asc' ? self.options.cssClassNames.ascIcon : self.options.cssClassNames.descIcon;
+                    tl += '<span class="sort-buttons-container active">';
+                    tl += '<i class="sort-icon ' + sortClass + ' ' + sortInfo.direction + '"></i>';
                 } else {
-                    htm += '<span class="sort-buttons-container">';
-                    htm += '<i class="sort-icon"></i>';
+                    tl += '<span class="sort-buttons-container">';
+                    tl += '<i class="sort-icon"></i>';
                 }
-                htm += '</span>';
+                tl += '</span>';
             }
-            htm += '</th>';
-        }, this);
-        htm += '</tr></thead>';
+            tl += '</th>';
+            return tl;
+        }
+        //Method to generate the header row based on the column group config
+        function generateRow(cols, i) {
+            var tl = '';
+            _.forEach(cols, function (col) {
+                var index,
+                    value;
+                if (col.columns) {
+                    //If columns is present, this is a group header cell.
+                    tl += '<th colspan="' + col.colspan + '" class="' + headerGroupClass + '"><span class="header-data">' + col.caption + '</span></th>';
+                    generateRow(col.columns, (i + 1));
+                } else {
+                    //For non group cells, fetch the relative field definition and generate the template
+                    index = _.findIndex(self.preparedHeaderData, {'field': col.name});
+                    value = self.preparedHeaderData[index];
+                    if (value) {
+                        tl += generateHeaderCell(value, index);
+                    }
+                }
+            });
+            rowTemplates[i] = rowTemplates[i] || '';
+            rowTemplates[i] += tl;
+        }
+        generateRow(headerConfig, 0);
+        //Combine all the row templates to generate the header
+        htm += _.reduce(rowTemplates, function (template, rowTl, index) {
+            var $rowTl  = $(rowTl),
+                tl      = '',
+                rowSpan = rowTemplates.length - index;
+            if (rowSpan > 1) {
+                $rowTl.closest('th.app-datagrid-header-cell').attr('rowspan', rowSpan);
+            }
+            $rowTl.each(function () {
+                tl += $(this).get(0).outerHTML;
+            });
+            return template + '<tr>' + tl + '</tr>';
+        }, '');
+        htm  += '</thead>';
         cols += '</colgroup>';
 
         return { 'colgroup' : cols, 'header' : htm };
@@ -493,7 +560,11 @@ $.widget('wm.datagrid', {
         }
         return '<input class="editable form-control app-textbox" type="text" value=""/>';
     },
-
+    setHeaderConfigForDefaultFields: function (name) {
+        var fieldName = this.customColumnDefs[name].field;
+        _.remove(this.options.headerConfig, {'name': fieldName});
+        this.options.headerConfig.unshift({'name': fieldName});
+    },
     /* Prepares the grid header data by adding custom column definitions if needed. */
     _prepareHeaderData: function () {
         this.preparedHeaderData = [];
@@ -501,12 +572,15 @@ $.widget('wm.datagrid', {
         $.extend(this.preparedHeaderData, this.options.colDefs);
         if (this.options.showRowIndex) {
             this.preparedHeaderData.unshift(this.customColumnDefs.rowIndex);
+            this.setHeaderConfigForDefaultFields('rowIndex');
         }
         if (this.options.multiselect) {
             this.preparedHeaderData.unshift(this.customColumnDefs.checkbox);
+            this.setHeaderConfigForDefaultFields('checkbox');
         }
         if (!this.options.multiselect && this.options.showRadioColumn) {
             this.preparedHeaderData.unshift(this.customColumnDefs.radio);
+            this.setHeaderConfigForDefaultFields('radio');
         }
     },
 
@@ -1724,9 +1798,9 @@ $.widget('wm.datagrid', {
                     var $colElement,
                         $colHeaderElement,
                         $cellElements,
-                        colIndex = ui.helper.index() + 1,
-                        originalWidth = self.gridHeaderElement.find('thead > tr > th.app-datagrid-header-cell:nth-child(' + colIndex + ')').width(),
-                        newWidth = ui.size.width,
+                        colIndex      = +ui.helper.attr('data-col-id') + 1,
+                        originalWidth = ui.helper.width(),
+                        newWidth      = ui.size.width,
                         originalTableWidth,
                         newTableWidth;
                     $colHeaderElement = self.gridHeaderElement.find('colgroup > col:nth-child(' + colIndex + ')');
