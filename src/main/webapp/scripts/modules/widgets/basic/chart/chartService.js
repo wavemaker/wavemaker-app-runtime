@@ -72,7 +72,7 @@ WM.module('wm.widgets.basic')
                         }
                     }
                 },
-                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'title', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints'],
+                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'centerlabel', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints'],
                 barSpacingMap = {
                     'small' : 0.3,
                     'medium' : 0.5,
@@ -668,7 +668,7 @@ WM.module('wm.widgets.basic')
                         .showLabels(labelConfig.showlabels)
                         .labelType(propertyValueMap.labeltype)
                         .valueFormat(d3.format('%'))
-                        .title(propertyValueMap.title)
+                        .title(propertyValueMap.centerlabel)
                         .labelThreshold(0.04)
                         .labelsOutside(labelConfig.showlabelsoutside);
                     if (isDonutChart(scope.type)) {

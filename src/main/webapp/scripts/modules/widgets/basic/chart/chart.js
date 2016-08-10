@@ -5,14 +5,21 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
-                '<div class="app-chart-inner" ng-class="{loading:isLoadInProgress}">' +
-                    '<svg></svg>' +
-                    '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
-                        '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +
-                    '</div>' +
-                    '<wm-spinner show="{{isLoadInProgress}}" caption="{{loadingdatamsg}}"></wm-spinner>' +
+            '<div init-widget class="app-chart" ng-class="{\'panel\': title}" title="{{hint}}" apply-styles="shell">' +
+            '<div class="panel-heading" ng-if="title">' +
+                '<h3 class="panel-title">' +
+                    '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                    '<div class="heading">{{title}}</div>' +
+                    '<div class="description">{{subheading}}</div>' +
+                '</h3>' +
+            '</div>' +
+            '<div class="app-chart-inner panel-body" ng-class="{loading:isLoadInProgress}" apply-styles="inner-shell">' +
+                '<svg></svg>' +
+                '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
+                    '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +
                 '</div>' +
+                '<wm-spinner show="{{isLoadInProgress}}" caption="{{loadingdatamsg}}"></wm-spinner>' +
+            '</div>' +
             '</div>'
             );
     }])
@@ -437,7 +444,7 @@ WM.module('wm.widgets.basic')
                 if ((!isValidAxis(scope) && isAggregationEnabled(scope))) {
                     return scope.sampleData;
                 }
-                if (!scope.chartData) {
+                if (!scope.chartData || !scope.chartData.length) {
                     return [];
                 }
             }
@@ -980,11 +987,14 @@ WM.module('wm.widgets.basic')
                 yDomainValues,
                 chart,
                 yformatOptions = {};
-            if (ChartService.isAxisDomainValid(scope, 'x')) {
-                xDomainValues = scope.binddataset ? getXMinMaxValues(datum[0]) : { 'min' : {'x': 1},  'max' : {'x' : 5}};
-            }
-            if (ChartService.isAxisDomainValid(scope, 'y')) {
-                yDomainValues = scope.binddataset ? getYMinMaxValues(datum) : { 'min' : {'y' : 1}, 'max' : {'y' : 5}};
+
+            if (datum.length > 0) {
+                if (ChartService.isAxisDomainValid(scope, 'x')) {
+                    xDomainValues = scope.binddataset ? getXMinMaxValues(datum[0]) : { 'min' : {'x': 1},  'max' : {'x' : 5}};
+                }
+                if (ChartService.isAxisDomainValid(scope, 'y')) {
+                    yDomainValues = scope.binddataset ? getYMinMaxValues(datum) : { 'min' : {'y' : 1}, 'max' : {'y' : 5}};
+                }
             }
 
             if (ChartService.isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {

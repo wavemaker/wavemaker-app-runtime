@@ -1666,6 +1666,9 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     "wm.chart": {
+                        "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1705,7 +1708,7 @@ WM.module('wm.widgets.base', [])
                         "offsetright": {"type": "number", "value": 25, "pattern": numberRegex},
                         "barspacing": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
                         "donutratio": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
-                        "title": {"type": "string", "bindable": "in-out-bound", "show": false},
+                        "centerlabel": {"type": "string", "bindable": "in-out-bound", "show": false},
                         "showlabelsoutside": {"type": "boolean", "value": true},
                         "xaxislabeldistance": {"type": "number", "value": 12},
                         "yaxislabeldistance": {"type": "number", "value": 12},
@@ -1730,7 +1733,7 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"}
+                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound", "show": false}
                     },
                     "wm.datanavigator": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1889,9 +1892,9 @@ WM.module('wm.widgets.base', [])
                 {"name": "yaxis", "show": true, "icon": 'wi wi-border-left'},
                 {"name": "value", "show": true, "icon": 'wi wi-data-usage'},
                 //chart groups
-                {"name": "", "properties": ["title"], "parent": "chart"},
+                {"name": "", "properties": ["centerlabel"], "parent": "chart"},
                 {"name": "colors", "properties": ["theme", "customcolors"], "parent": "chart"},
-                {"name": "message", "properties": ["nodatamessage"], "parent": "chart"},
+                {"name": "message", "properties": ["nodatamessage", "loadingdatamsg"], "parent": "chart"},
                 {"name": "layout", "properties": ["offset"], "parent": "chart"},
                 {"name": "legend", "properties": ["showlegend"], "parent": "chart"},
                 {"name": "behavior", "properties": ["tooltips", "viewtype", "areaviewtype", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},

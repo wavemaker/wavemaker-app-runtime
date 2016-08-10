@@ -2283,6 +2283,17 @@ If the height and width are not specified the video takes the height of the post
 *********************************************************************************/
 
 .app-chart {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  &.panel {
+    .panel-heading {
+      position: relative;
+      .panel-icon {
+        margin-right: 0.5em;
+      }
+    }
+  }
   /***to fix the tooltip issue*****/
   .app-chart-inner {
     position: relative;
