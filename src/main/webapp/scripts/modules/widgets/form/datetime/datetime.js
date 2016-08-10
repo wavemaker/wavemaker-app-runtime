@@ -383,7 +383,7 @@ WM.module('wm.widgets.form')
 
                     //Add app-datetime class to the wrapper that are appended to body
                     $timeout(function () {
-                        WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').addClass('app-datetime');
+                        WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
                     });
                 }
             }

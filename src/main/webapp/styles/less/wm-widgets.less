@@ -148,7 +148,7 @@ html, body {
 *********************************Search Widget*****************************************
 *********************************************************************************/
 .app-search {
-  width: 15em;
+  width: 30em;
   position: relative;
   vertical-align: middle;
   input {
@@ -163,6 +163,8 @@ html, body {
     }
   }
   &.dropdown-menu {
+    width: auto;
+    max-width: 30em;
     text-align: left;
     z-index: 2000 !important; /*Over-write bootstrap style so that search results appear on top of any content*/
     max-height: 200px;
@@ -2632,11 +2634,14 @@ If the height and width are not specified the video takes the height of the post
       }
     }
   }
+  &.dropdown-menu {
+    z-index: 2000 !important;
+  }
 }
 
 .app-date {
   .uib-datepicker-popup.dropdown-menu {
-    z-index: 100000;
+    z-index: 2000;
   }
 }
 
