@@ -76,8 +76,9 @@ Application
             'wmSpinner',
             '$timeout',
             '$route',
+            '$http',
 
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route) {
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http) {
                 'use strict';
 
                 var prevRoute,
@@ -380,6 +381,12 @@ Application
                                 if (config.authenticated) {
                                     page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
                                     $rs.userRoles = config.userInfo.userRoles;
+                                    //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
+                                    $http.defaults.xsrfCookieName = 'wm_csrf_token';
+                                    if (Utils.getCookieByName('wm_csrf_token')) {
+                                        //set the header only if cookie 'wm_csrf_token' is set
+                                        $http.defaults.xsrfHeaderName = config.csrfHeaderName || 'X-WM-CSRF-TOKEN';
+                                    }
                                 } else {
                                     page = config.homePage;
                                 }
@@ -565,13 +572,6 @@ Application
             }
         ]
     )
-    .run(function ($http) {
-        'use strict';
-
-        //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
-        $http.defaults.xsrfCookieName = 'wm_csrf_token';
-        $http.defaults.xsrfHeaderName = 'X-WM-CSRF-TOKEN';
-    })
     .controller('AppController',
         [
             '$scope',
