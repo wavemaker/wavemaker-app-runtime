@@ -454,7 +454,7 @@ WM.module('wm.widgets.live')
                     widgetName = 'wm-' + widgetType,
                     updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"',
                     allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '',
-                    readonly = (widgetType === 'rating' ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : (fieldDef.readonly ? 'readonly="{{formFields[' + index + '].readonly}}"' : ''));
+                    readonly = (widgetType !== 'richtexteditor' || fieldDef.readonly ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : '');
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? minPlaceholderDefault : fieldDef.placeholder);
