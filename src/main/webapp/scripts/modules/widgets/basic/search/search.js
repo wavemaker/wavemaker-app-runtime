@@ -27,7 +27,7 @@ WM.module('wm.widgets.basic')
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
-                '<span ng-show="_loadingItems" class="fa fa-spinner fa-pulse form-control-feedback"></span>' +
+                '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
@@ -45,7 +45,7 @@ WM.module('wm.widgets.basic')
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
-            ' uib-typeahead="item.wmDisplayLabel ||item for item in _getItems($viewValue) | limitTo:limit" ' +
+                    ' uib-typeahead="item.wmDisplayLabel ||item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
                 '<i class="btn-close wi wi-cancel" ng-show="showClosebtn" ng-click="clearText();"></i>' +
@@ -58,9 +58,16 @@ WM.module('wm.widgets.basic')
             var filteredEntries;
             // filter the entries based on the $is.searchkey and the input
             if (!keys) {
-                filteredEntries = _.filter(entries, function (entry) {
-                    return _.includes(entry, val);
-                });
+                // local search on data with array of objects.
+                if (WM.isArray(entries) && WM.isObject(entries[0])) {
+                    filteredEntries = _.filter(entries, function (entry) {
+                        return (_.includes(_.toLower(_.values(entry).join(' ')), _.toLower(val)));
+                    });
+                } else {
+                    filteredEntries = _.filter(entries, function (entry) {
+                        return _.includes(entry, val);
+                    });
+                }
             } else {
                 keys = _.split(keys, ',');
 
@@ -448,6 +455,12 @@ WM.module('wm.widgets.basic')
                 return position > menuHeight && $win.height() - position < buttonHeight + menuHeight;
             }
 
+            function setLoadingItemsFlag($is, flag) {
+                $rs.$safeApply($is, function () {
+                    $is._loadingItems = flag;
+                });
+            }
+
             // This function fetch the updated variable data in case search widget is bound to some variable
             function fetchVariableData($is, el, searchValue, $s) {
                 var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s)),  // get the bound variable
@@ -456,47 +469,53 @@ WM.module('wm.widgets.basic')
                     customFilter  = $filter('_custom_search_filter');
 
                 if (variable) {
-                    // call variable update
-                    variable.update(requestParams, function handleQuerySuccess(response) {
-                        var data = response.content || response,
-                            expressionArray = _.split($is.binddataset, '.'),
-                            dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
 
-                        //if data expression exists, extract the data from the expression path
-                        if (dataExpression) {
-                            data = _.get(data, dataExpression);
-                        }
-                        if (!_.isArray(data)) {
-                            data = getTransformedData(variable, data);
-                        }
-                        // in case of no data received, resolve the promise with empty array
-                        if (!data.length) {
-                            deferred.resolve([]);
-                        } else {
-                            /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
-                             with which we are resolving the promise
-                             */
-                            setDataSet(data, $is, el, $s);
-                            // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
-                            if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
-                                deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
-                                $is.isVariableDataAvailable = true;
-                            } else {
-                                deferred.resolve($is.itemList);
+                    // If search key is not specified then perform local search -live variable
+                    if (!$is.searchkey) {
+                        deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
+                    } else {
+                        // call variable update
+                        variable.update(requestParams, function handleQuerySuccess(response) {
+                            var data = response.content || response,
+                                expressionArray = _.split($is.binddataset, '.'),
+                                dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
+
+                            //if data expression exists, extract the data from the expression path
+                            if (dataExpression) {
+                                data = _.get(data, dataExpression);
                             }
-                            //Checking if drop up is required for the search results menu, if yes, add class dropup to menu and set top to auto
-                            $timeout(function () {
-                                if (isDropUpRequired(el)) {
-                                    el.addClass('dropup').find('ul').css('top', 'auto');
+                            if (!_.isArray(data)) {
+                                data = getTransformedData(variable, data);
+                            }
+                            // in case of no data received, resolve the promise with empty array
+                            if (!data.length) {
+                                deferred.resolve([]);
+                            } else {
+                                /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
+                                 with which we are resolving the promise
+                                 */
+                                setDataSet(data, $is, el, $s);
+                                // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
+                                if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
+                                    deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
+                                    $is.isVariableDataAvailable = true;
                                 } else {
-                                    el.removeClass('dropup').find('ul').css('top', '100%');
+                                    deferred.resolve($is.itemList);
                                 }
-                            });
-                        }
-                    }, function () {
-                        // setting loadingItems to false when some error occurs, so that loading icon is hidden
-                        $is._loadingItems = false;
-                    });
+                                //Checking if drop up is required for the search results menu, if yes, add class dropup to menu and set top to auto
+                                $timeout(function () {
+                                    if (isDropUpRequired(el)) {
+                                        el.addClass('dropup').find('ul').css('top', 'auto');
+                                    } else {
+                                        el.removeClass('dropup').find('ul').css('top', '100%');
+                                    }
+                                });
+                            }
+                        }, function () {
+                            // setting loadingItems to false when some error occurs, so that loading icon is hidden
+                            setLoadingItemsFlag($is, false);
+                        });
+                    }
                 }
                 return deferred.promise;
             }
@@ -517,15 +536,25 @@ WM.module('wm.widgets.basic')
                 var customFilter      = $filter('_custom_search_filter'),
                     boundDataSet      = $is.binddataset,
                     $s                = element.scope(),
-                    isBoundToVariable = boundDataSet && Utils.stringStartsWith(boundDataSet, 'bind:Variables.');
+                    isBoundToVariable = boundDataSet && Utils.stringStartsWith(boundDataSet, 'bind:Variables.'),
+                    localSearchedData;
+
+                setLoadingItemsFlag($is, true);
+
                 /* check if search widget is bound to variable(live and service) then get the updated results
                  otherwise use the local itemList array and return the filtered result as per the search value
                  */
                 if (isBoundToVariable && isVariableUpdateRequired($is, $s)) {
-                    return fetchVariableData($is, element, searchValue, $s);
+                    return fetchVariableData($is, element, searchValue, $s).then(function (data) {
+                        setLoadingItemsFlag($is, false);
+                        return data;
+                    });
                 }
                 // if variable update is not required then filter the local array and return the results
-                return customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
+                localSearchedData = customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
+                setLoadingItemsFlag($is, false);
+
+                return localSearchedData;
             }
 
 
