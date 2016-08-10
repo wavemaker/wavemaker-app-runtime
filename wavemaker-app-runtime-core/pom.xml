@@ -236,6 +236,10 @@
                     <groupId> com.google.zxing</groupId>
                     <artifactId>core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId> com.ibm.icu</groupId>
+                    <artifactId>icu4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
