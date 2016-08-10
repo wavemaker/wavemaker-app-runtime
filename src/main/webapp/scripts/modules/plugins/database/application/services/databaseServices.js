@@ -820,7 +820,7 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName
+                        entityName: encodeURIComponent(params.entityName)
                     },
                     data: params.data
                 }, successCallback, failureCallback);
@@ -851,7 +851,7 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName
+                        entityName: encodeURIComponent(params.entityName)
                     }
                 }, successCallback, failureCallback);
             },
@@ -939,8 +939,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName,
-                        uniquekeyname : params.uniquekeyname
+                        entityName: encodeURIComponent(params.entityName),
+                        uniquekeyname : encodeURIComponent(params.uniquekeyname)
                     }
                 }, deferred.resolve, deferred.reject);
 
@@ -1001,8 +1001,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName,
-                        columnName: params.columnName,
+                        entityName: encodeURIComponent(params.entityName),
+                        columnName: encodeURIComponent(params.columnName),
                         forceDataLoss: params.forceDataLoss || false
                     },
                     data: params.data
@@ -1034,8 +1034,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName,
-                        columnName: params.columnName
+                        entityName: encodeURIComponent(params.entityName),
+                        columnName: encodeURIComponent(params.columnName)
                     }
                 }, successCallback, failureCallback);
             },
@@ -1096,8 +1096,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName,
-                        relationName: params.relationName
+                        entityName: encodeURIComponent(params.entityName),
+                        relationName: encodeURIComponent(params.relationName)
                     },
                     data: params.data
                 }, successCallback, failureCallback);
@@ -1128,8 +1128,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
-                        entityName: params.entityName,
-                        relationName: params.relationName
+                        entityName: encodeURIComponent(params.entityName),
+                        relationName: encodeURIComponent(params.relationName)
                     }
                 }, successCallback, failureCallback);
             },
