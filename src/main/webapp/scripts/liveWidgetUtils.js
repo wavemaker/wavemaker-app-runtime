@@ -1609,6 +1609,39 @@ WM.module('wm.widgets.live')
                     });
                 }
             }
+            //Method to set the header config of the data table
+            function setHeaderConfig(headerConfig, config, name) {
+                _.forEach(headerConfig, function (cols) {
+                    if (cols.columns) {
+                        if (cols.name === name) {
+                            cols.columns.push(config);
+                        } else {
+                            setHeaderConfig(cols.columns, config, name);
+                        }
+                    }
+                });
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#setHeaderConfigForTable
+             * @methodOf wm.widgets.live.setHeaderConfigForTable
+             * @function
+             *
+             * @description
+             * Sets the header config for data table
+             *
+             * @param {object} headerConfig current header config
+             * @param {object} config current column/ group config
+             * @param {object} $parentEl parent element
+             *
+             */
+            function setHeaderConfigForTable(headerConfig, config, $parentEl) {
+                if (_.isEmpty($parentEl)) {
+                    headerConfig.push(config);
+                } else {
+                    setHeaderConfig(headerConfig, config, $parentEl.attr('name'));
+                }
+            }
 
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -1633,6 +1666,7 @@ WM.module('wm.widgets.live')
             this.fetchReferenceDetails      = fetchReferenceDetails;
             this.getRowOperationsColumn     = getRowOperationsColumn;
             this.getDistinctValues          = getDistinctValues;
+            this.setHeaderConfigForTable    = setHeaderConfigForTable;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
