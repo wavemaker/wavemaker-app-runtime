@@ -25,13 +25,13 @@ WM.module('wm.widgets.basic')
             idCount = 0,
             idMapper = {};
         //renders the custom notification call
-        function renderNotification(template, newClass, timeout, position, onclickHandler, onHideCallback) {
+        function renderNotification(template, newClass, timeout, position, onclickHandler, onHideCallback, scope) {
             $rs.toasterClasses = {};
             $rs.toasterClasses[newClass] = 'custom-toaster ' + newClass;
             if (!_.includes(classlist, newClass)) {
                 idMapper[newClass] = ++idCount;
             }
-            var trustedHtml = $compile(template)($rs),
+            var trustedHtml = $compile(template)(scope),
                 toastTemplate = '<toaster-container name = "' + newClass + '" toaster-options="{\'limit\': 1,\'time-out\': 2000, \'position-class\': \'' + position + '\', \'icon-classes\': toasterClasses, \'toaster-id\': ' + idMapper[newClass] + '}"></toaster-container>';
             if (!_.includes(classlist, newClass)) {
                 WM.element('body').append($compile(toastTemplate)($rs));
@@ -159,8 +159,8 @@ WM.module('wm.widgets.basic')
              * @param {method} onClickHandler handles the method of click on notification
              * @param {method} onHideCallback handles the method on hide of notification
              */
-            createCustomNotification: function (content, className, timeout, position, onClickHandler, onHideCallback) {
-                renderNotification('<wm-container content="' + content + '"></wm-container>', className, timeout, position, onClickHandler, onHideCallback);
+            createCustomNotification: function (content, className, timeout, position, onClickHandler, onHideCallback, pScope) {
+                renderNotification('<wm-container content="' + content + '"></wm-container>', className, timeout, position, onClickHandler, onHideCallback, pScope);
             }
         };
     }]);
