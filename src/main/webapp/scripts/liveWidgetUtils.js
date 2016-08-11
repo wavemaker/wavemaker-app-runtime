@@ -1642,6 +1642,34 @@ WM.module('wm.widgets.live')
                     setHeaderConfig(headerConfig, config, $parentEl.attr('name'));
                 }
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#setFormWidgetsValues
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Set the values of the widgets inside the form/ liveform (other than form fields) in form data
+             *
+             * @param {object} $el current header config
+             * @param {object} dataObject current column/ group config
+             *
+             */
+            function setFormWidgetsValues($el, dataObject) {
+                $el.find('.form-elements [role="input"]').each(function () {
+                    var $inputEl = WM.element(this),
+                        fieldKey,
+                        val;
+                    //Get the values of the widgets (other than form fields and composite widgets)
+                    if (_.isEmpty($inputEl.closest('[data-role="form-field"]')) && !$inputEl.hasClass('app-composite-widget')) {
+                        fieldKey = $inputEl.attr('key') || $inputEl.attr('name');
+                        val      = $inputEl.isolateScope() && $inputEl.isolateScope().datavalue;
+                        if (val && !_.has(dataObject, fieldKey)) {
+                            dataObject[fieldKey] = val;
+                        }
+                    }
+                });
+            }
 
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -1667,6 +1695,7 @@ WM.module('wm.widgets.live')
             this.getRowOperationsColumn     = getRowOperationsColumn;
             this.getDistinctValues          = getDistinctValues;
             this.setHeaderConfigForTable    = setHeaderConfigForTable;
+            this.setFormWidgetsValues       = setFormWidgetsValues;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

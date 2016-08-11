@@ -27,7 +27,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
@@ -207,19 +207,14 @@ WM.module('wm.layouts.containers')
         }
 
         function bindEvents(scope, element) {
-            var params,
-                formData,
-                formVariable,
-                fieldTarget,
-                formWidget,
-                field;
             element.on('submit', function (event) {
-                formData     = {};
-                formVariable = element.scope().Variables[scope.formvariable];
+                var params,
+                    formData     = {},
+                    formVariable = element.scope().Variables[scope.formvariable];
                 //Get all form fields and prepare form data as key value pairs
-                element.find('[data-role="form-field"]').each(function () {
-                    var fieldName;
-                    field       = WM.element(this).isolateScope().fieldDefConfig;
+                _.forEach(scope.elScope.formFields, function (field) {
+                    var fieldName,
+                        fieldTarget;
                     fieldTarget = _.split(field.key || field.target, '.');
                     fieldName   = fieldTarget[0] || field.key || field.name;
                     if (fieldTarget.length === 1 && !formData[fieldName]) {
@@ -238,7 +233,8 @@ WM.module('wm.layouts.containers')
                 });
                 //Form fields wont't contain grid widgets get those using attribute and add to form data
                 element.find('[isFormField="true"]').each(function () {
-                    formWidget = WM.element(this).isolateScope();
+                    var fieldTarget,
+                        formWidget = WM.element(this).isolateScope();
                     fieldTarget = _.split(formWidget.name, '.');
                     if (fieldTarget.length === 1) {
                         formData[formWidget.name] = formWidget.dataset;
@@ -247,6 +243,8 @@ WM.module('wm.layouts.containers')
                         formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
                     }
                 });
+                //Set the values of the widgets inside the form (other than form fields) in form data
+                LiveWidgetUtils.setFormWidgetsValues(element, formData);
                 params = {$event: event, $scope: scope, $formData: formData};
                 //If on before submit is there execute it and return here if result is false
                 if (scope.onBeforesubmit && scope.onBeforesubmit(params) === false) {

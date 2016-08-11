@@ -235,7 +235,7 @@ WM.module('wm.widgets.live')
                     constructed out of the previous object*/
                     data = $scope.constructDataObject($scope.formFields);
                     $scope.dataoutput = data;
-                    prevData = prevformFields ? $scope.constructDataObject(prevformFields) : data;
+                    prevData = prevformFields ? $scope.constructDataObject(prevformFields, true) : data;
                     try {
                         isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data});
                         if (isValid === false) {
@@ -535,7 +535,7 @@ WM.module('wm.widgets.live')
                     return Utils.getClonedObject($scope.formdata || {});
                 }
                 /*construct the data object from the formFields*/
-                $scope.constructDataObject = function (formFields) {
+                $scope.constructDataObject = function (formFields, isPreviousData) {
                     var dataObject = getDataObject(),
                         formName = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
@@ -584,6 +584,10 @@ WM.module('wm.widgets.live')
                             dataObject[field.key] = field.value;
                         }
                     });
+                    if (!isPreviousData) {
+                        //Set the values of the widgets inside the live form (other than form fields) in form data
+                        LiveWidgetUtils.setFormWidgetsValues($scope.element, dataObject);
+                    }
                     if ($scope.operationType !== 'delete' && $scope.multipartData) {
                         formData.append('wm_data_json', new Blob([JSON.stringify(dataObject)], {
                             type: "application/json"

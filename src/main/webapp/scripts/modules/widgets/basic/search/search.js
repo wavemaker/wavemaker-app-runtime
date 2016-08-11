@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
             '</a>'
             );
         $templateCache.put('template/widget/form/search.html',
-            '<div class="app-search input-group" init-widget has-model listen-property="dataset"' +
+            '<div class="app-search input-group" role="input" init-widget has-model listen-property="dataset"' +
                 '>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
@@ -38,7 +38,7 @@ WM.module('wm.widgets.basic')
             );
         // this template is specify to search widget in mobile-navbar
         $templateCache.put('template/widget/form/navsearch.html',
-            '<div class="app-mobile-search" init-widget has-model>' +
+            '<div class="app-mobile-search" role="input" init-widget has-model>' +
                 '<input title="{{hint || query}}" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
                     ' accesskey="{{::shortcutkey}}"' +
