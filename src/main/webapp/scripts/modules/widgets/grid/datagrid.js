@@ -1094,7 +1094,8 @@ $.widget('wm.datagrid', {
         $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
-        if (!rowData) {
+
+        if (($row.hasClass('active') && !this.options.multiselect) || !rowData) {
             return;
         }
         selected = rowData.selected || false;
