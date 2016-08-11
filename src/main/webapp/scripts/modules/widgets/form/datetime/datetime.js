@@ -261,6 +261,7 @@ WM.module('wm.widgets.form')
                             }
                             scope.formatDateTime();
                         };
+
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);

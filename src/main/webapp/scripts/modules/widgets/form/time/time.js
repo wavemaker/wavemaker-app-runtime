@@ -173,6 +173,7 @@ WM.module('wm.widgets.form')
                                 scope._proxyModel = undefined;
                             }
                         };
+
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 

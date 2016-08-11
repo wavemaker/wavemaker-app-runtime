@@ -691,6 +691,7 @@ Application
 
                 if (CONSTANTS.hasCordova) {
                     pageReadyDeregister = $rs.$on('page-ready', function () {
+                        WM.element('#wm-app-content').addClass('cordova');
                         navigator.splashscreen.hide();
                         pageReadyDeregister();
                     });
