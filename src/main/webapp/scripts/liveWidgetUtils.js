@@ -1624,7 +1624,7 @@ WM.module('wm.widgets.live')
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#setHeaderConfigForTable
-             * @methodOf wm.widgets.live.setHeaderConfigForTable
+             * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
              *
              * @description
