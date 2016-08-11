@@ -1486,7 +1486,11 @@ WM.module('wm.widgets.base', [])
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"}
+                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"},
+                        "padding": {"type": "string", "widget": "box-model"},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE}
                     },
 
                     "wm.richtexteditor": {

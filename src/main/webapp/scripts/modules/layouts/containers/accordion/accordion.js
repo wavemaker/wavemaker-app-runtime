@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget apply-styles="scrollable-container"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
-            '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true">' +
+            '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true" apply-styles="shell">' +
                 '<div class="panel-heading clearfix" ng-click="togglePane()" ng-class="{active: isActive}">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle">' +
@@ -79,7 +79,7 @@ WM.module('wm.layouts.containers')
     .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', '$sce', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse, $sce) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base', 'wm.layouts']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
 
         return {
             'restrict': 'E',
