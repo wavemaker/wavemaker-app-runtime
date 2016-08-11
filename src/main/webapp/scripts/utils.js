@@ -1303,6 +1303,14 @@ WM.module('wm.utils', [])
                     return 'PASTE';
                 case 90:
                     return event.shiftKey ? 'REDO' : 'UNDO';
+                case 37:
+                    return 'CTRL-LEFT-ARROW';
+                case 38:
+                    return 'CTRL-UP-ARROW';
+                case 39:
+                    return 'CTRL-RIGHT-ARROW';
+                case 40:
+                    return 'CTRL-DOWN-ARROW';
                 }
             } else if (shiftKey) {
                 switch (event.which) {
@@ -1321,8 +1329,12 @@ WM.module('wm.utils', [])
                     return 'ENTER';
                 case 27:
                     return 'ESC';
+                case 37:
+                    return 'LEFT-ARROW';
                 case 38:
                     return 'UP-ARROW';
+                case 39:
+                    return 'RIGHT-ARROW';
                 case 40:
                     return 'DOWN-ARROW';
                 }
