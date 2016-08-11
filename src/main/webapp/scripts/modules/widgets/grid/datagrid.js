@@ -201,7 +201,6 @@ $.widget('wm.datagrid', {
             headerConfig     = this.options.headerConfig,
             headerClasses    = self.options.cssClassNames.headerCell,
             headerGroupClass = self.options.cssClassNames.groupHeaderCell;
-        this._setColSpan(headerConfig);
         function generateHeaderCell(value, index) {
             var id            = index,
                 field         = value.field,
@@ -283,20 +282,30 @@ $.widget('wm.datagrid', {
             rowTemplates[i] = rowTemplates[i] || '';
             rowTemplates[i] += tl;
         }
-        generateRow(headerConfig, 0);
-        //Combine all the row templates to generate the header
-        htm += _.reduce(rowTemplates, function (template, rowTl, index) {
-            var $rowTl  = $(rowTl),
-                tl      = '',
-                rowSpan = rowTemplates.length - index;
-            if (rowSpan > 1) {
-                $rowTl.closest('th.app-datagrid-header-cell').attr('rowspan', rowSpan);
-            }
-            $rowTl.each(function () {
-                tl += $(this).get(0).outerHTML;
+        //If header config is not present, this is a dynamic grid. Generate headers directly from field defs
+        if (_.isEmpty(headerConfig)) {
+            htm += '<tr>';
+            self.preparedHeaderData.forEach(function (value, index) {
+                htm += generateHeaderCell(value, index);
             });
-            return template + '<tr>' + tl + '</tr>';
-        }, '');
+            htm += '</tr>';
+        } else {
+            this._setColSpan(headerConfig);
+            generateRow(headerConfig, 0);
+            //Combine all the row templates to generate the header
+            htm += _.reduce(rowTemplates, function (template, rowTl, index) {
+                var $rowTl = $(rowTl),
+                    tl = '',
+                    rowSpan = rowTemplates.length - index;
+                if (rowSpan > 1) {
+                    $rowTl.closest('th.app-datagrid-header-cell').attr('rowspan', rowSpan);
+                }
+                $rowTl.each(function () {
+                    tl += $(this).get(0).outerHTML;
+                });
+                return template + '<tr>' + tl + '</tr>';
+            }, '');
+        }
         htm  += '</thead>';
         cols += '</colgroup>';
 
@@ -561,6 +570,9 @@ $.widget('wm.datagrid', {
         return '<input class="editable form-control app-textbox" type="text" value=""/>';
     },
     setHeaderConfigForDefaultFields: function (name) {
+        if (_.isEmpty(this.options.headerConfig)) {
+            return;
+        }
         var fieldName = this.customColumnDefs[name].field;
         _.remove(this.options.headerConfig, {'name': fieldName});
         this.options.headerConfig.unshift({'name': fieldName});

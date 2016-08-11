@@ -391,7 +391,8 @@ WM.module('wm.widgets.grid')
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
                             if (scope.$id === scopeId) {
                                 scope.fullFieldDefs = [];
-                                scope.fieldDefs = [];
+                                scope.fieldDefs     = [];
+                                scope.headerConfig  = [];
 
                                 $compile(markup)(scope);
                                 /*TODO: Check if grid options can be passed.*/
@@ -1760,6 +1761,7 @@ WM.module('wm.widgets.grid')
                     /*TODO to remove is studiomode check*/
                     if ($scope.variableName && (variableName !== $scope.variableName) && CONSTANTS.isStudioMode) {
                         $scope.fullFieldDefs = [];
+                        $scope.headerConfig   = [];
                     }
                     $scope.variableName = variableName;
                     variableObj = elScope.Variables && elScope.Variables[$scope.variableName];
