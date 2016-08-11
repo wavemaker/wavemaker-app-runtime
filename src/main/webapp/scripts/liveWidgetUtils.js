@@ -1529,7 +1529,7 @@ WM.module('wm.widgets.live')
                             });
                         }
                     } else {
-                        Utils.triggerFn(success, {});
+                        Utils.triggerFn(success, undefined);
                     }
                 }, true);
             }

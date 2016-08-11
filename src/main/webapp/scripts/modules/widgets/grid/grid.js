@@ -660,6 +660,8 @@ WM.module('wm.widgets.grid')
                                             if (scope.dataNavigator) {
                                                 scope.dataNavigator.dataset = data;
                                             }
+                                        } else {
+                                            scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
                                         }
                                     });
                                 } else {

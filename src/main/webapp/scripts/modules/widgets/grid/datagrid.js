@@ -199,13 +199,13 @@ $.widget('wm.datagrid', {
             self             = this,
             rowTemplates     = [],
             headerConfig     = this.options.headerConfig,
-            headerClasses    = self.options.cssClassNames.headerCell,
             headerGroupClass = self.options.cssClassNames.groupHeaderCell;
         function generateHeaderCell(value, index) {
             var id            = index,
                 field         = value.field,
                 headerLabel   = WM.isDefined(value.displayName) ? value.displayName : field,
                 sortEnabled   = self.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType,
+                headerClasses = self.options.cssClassNames.headerCell,
                 sortClass,
                 tl = '';
 
