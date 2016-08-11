@@ -435,7 +435,7 @@ WM.module('wm.widgets.base')
                             } else {
                                 watchExpr = nv.replace('bind:', '');
                                 listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, propDetails, watchExpr, $el);
-                                _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray});
+                                _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray}, key);
                             }
                         } else {
                             if ($is.widgetid) {
@@ -802,11 +802,19 @@ WM.module('wm.widgets.base')
                 $0             = '[0]',
                 watchers       = [],
                 VARIABLE_REGEX = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i];
+                DATASET_REGEX  = new RegExp(/Variables\.(\w*)\.dataSet$/), //Reg exp to match expr which is only dataSet
                 _registerWatchers;
 
             function isArrayTypeExpr(expr) {
                 var matchers = expr.match(regex); // check for `[$i]` in the expression
                 return matchers && matchers.length;
+            }
+
+            function isDataSetTypeExpr(expr, key) {
+                if (key !== 'datavalue') {
+                    return false;
+                }
+                return DATASET_REGEX.test(expr);
             }
 
             // register the watchers.
@@ -894,35 +902,45 @@ WM.module('wm.widgets.base')
              * allowPageable: is the data pageable
              * acceptsArray: bound entity accepts array like values
              */
-            function register($s, watchExpr, listenerFn, config) {
+            function register($s, watchExpr, listenerFn, config, key) {
                 var watchInfo,
                     _config        = config || {},
                     deepWatch      = _config.deepWatch,
                     allowPageable  = _config.allowPageable,
                     acceptsArray   = _config.acceptsArray,
+                    isOnlyDataSet  = isDataSetTypeExpr(watchExpr, key),
                     deRegister     = {},
-                    variableObject;
+                    variableObject,
+                    regExp,
+                    index;
 
                 function isPageable(variable) {
                     return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution'));
                 }
 
-                if (isArrayTypeExpr(watchExpr)) {
+                if (isArrayTypeExpr(watchExpr) || isOnlyDataSet) {
                     // In design mode array type expressions(in live list template) are not to be evaluated
                     if (CONSTANTS.isStudioMode && !config.acceptsArray) {
                         listenerFn();
                         return;
                     }
+                    if (isOnlyDataSet) {
+                        index  = '0';
+                        regExp = DATASET_REGEX;
+                    } else {
+                        index  = '$i';
+                        regExp = VARIABLE_REGEX;
+                    }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
-                    watchExpr = watchExpr.replace(VARIABLE_REGEX, function (match, key) {
-                        variableObject = _.get($s.Variables, key);
+                    watchExpr = watchExpr.replace(regExp, function (match, varName) {
+                        variableObject = _.get($s.Variables, varName);
                         // In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped
                         // So for procedures the watch expression will not have content in it
                         if (variableObject && isPageable(variableObject)) {
-                            return 'Variables.' + key + '.dataSet.content[$i]';
+                            return 'Variables.' + varName + '.dataSet.content[' + index + ']';
                         }
                         if (variableObject && variableObject.category === 'wm.LiveVariable') {
-                            return 'Variables.' + key + '.dataSet.data[$i]';
+                            return 'Variables.' + varName + '.dataSet.data[' + index + ']';
                         }
                         return match;
                     });

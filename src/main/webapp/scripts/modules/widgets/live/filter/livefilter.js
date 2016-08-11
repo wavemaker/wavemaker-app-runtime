@@ -780,7 +780,7 @@ WM.module('wm.widgets.live')
                                     }
                                     /*Apply the filter after the default value change*/
                                     parentIsolateScope.filterOnDefault();
-                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
+                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false}, 'datavalue');
                             } else {
                                 defaultVal = columnsDef.defaultvalue;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/

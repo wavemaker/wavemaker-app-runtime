@@ -1123,7 +1123,7 @@ WM.module('wm.widgets.live')
                                     if (parentIsolateScope.operationType !== 'update') {
                                         setDefaultValue();
                                     }
-                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
+                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false}, 'datavalue');
                             } else {
                                 columnDef.defaultvalue = attrs.defaultvalue;
                                 if (CONSTANTS.isRunMode) {
