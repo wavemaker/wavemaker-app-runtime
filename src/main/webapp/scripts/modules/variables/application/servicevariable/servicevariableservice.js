@@ -235,7 +235,11 @@ wm.variables.services.$servicevariable = ['Variables',
                     isProxyCall;
 
                 function getFormDataObj() {
-                    return formData || new FormData();
+                    if (formData) {
+                        return formData;
+                    }
+                    formData = new FormData();
+                    return formData;
                 }
 
                 operationInfo.proxySettings = operationInfo.proxySettings || {web: true, mobile: false};
