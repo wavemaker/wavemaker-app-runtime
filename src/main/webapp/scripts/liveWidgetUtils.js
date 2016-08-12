@@ -1055,7 +1055,7 @@ WM.module('wm.widgets.live')
                 case 'typeahead':
                 case 'autocomplete':
                     baseProperties      = 'wm.search';
-                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
                     break;
                 default:
                     baseProperties      = 'wm.text';
@@ -1696,6 +1696,7 @@ WM.module('wm.widgets.live')
             this.getDistinctValues          = getDistinctValues;
             this.setHeaderConfigForTable    = setHeaderConfigForTable;
             this.setFormWidgetsValues       = setFormWidgetsValues;
+            this.getWidgetProps             = getWidgetProps;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

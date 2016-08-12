@@ -633,16 +633,6 @@ WM.module('wm.widgets.basic')
                     'post': function ($is, element, attrs) {
                         var wp, searchItem;
 
-                        //Hiding the events as there is no support for them.
-                        if ($is.widgetid) {
-                            wp                   = $is.widgetProps;
-                            wp.onClick.show      = false;
-                            wp.onTap.show        = false;
-                            wp.onMouseenter.show = false;
-                            wp.onMouseleave.show = false;
-                            wp.onChange.show     = false;
-                        }
-
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element), $is, notifyFor);
 

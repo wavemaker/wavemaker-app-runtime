@@ -517,57 +517,63 @@ $.widget('wm.datagrid', {
         }
         return htm;
     },
-
+    //Get event related template for editable widget
+    _getEventTemplate: function (colDef) {
+        var events   = _.filter(_.keys(colDef), function (key) {return _.startsWith(key, 'on'); }),
+            template = '';
+        _.forEach(events, function (eventName) {
+            template += ' ' + _.kebabCase(eventName) + '="' + colDef[eventName] + '" ';
+        });
+        return template;
+    },
     _getEditableTemplate: function ($el, colDef, cellText, rowId) {
-        if (colDef.editWidgetType) {
-            var template,
-                formName,
-                placeholder = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
-                dataValue = cellText ? 'datavalue="' + cellText + '"' : '';
-            switch (colDef.editWidgetType) {
-            case 'select':
-                cellText = cellText || '';
-                template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
-                break;
-            case 'autocomplete':
-            case 'typeahead':
-                $el.addClass('datetime-wrapper');
-                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
-                break;
-            case 'date':
-                $el.addClass('datetime-wrapper');
-                template = '<wm-date ' + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
-                break;
-            case 'time':
-                $el.addClass('datetime-wrapper');
-                template = '<wm-time ' + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
-                break;
-            case 'datetime':
-                $el.addClass('datetime-wrapper');
-                template = '<wm-datetime ' + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
-                break;
-            case 'checkbox':
-                template = '<wm-checkbox ' + dataValue + '></wm-checkbox>';
-                break;
-            case 'number':
-                template = '<wm-text type="number" ' + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
-                break;
-            case 'textarea':
-                cellText = cellText || '';
-                template = '<wm-textarea ' + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
-                break;
-            case 'upload':
-                formName = colDef.field + '_' + rowId;
-                $el.attr('form-name', formName);
-                template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
-                break;
-            default:
-                template = '<wm-text ' + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
-                break;
-            }
-            return this.options.compileTemplateInGridScope(template);
+        var template,
+            formName,
+            placeholder = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
+            dataValue = cellText ? 'datavalue="' + cellText + '"' : '',
+            eventTemplate = this._getEventTemplate(colDef);
+        switch (colDef.editWidgetType) {
+        case 'select':
+            cellText = cellText || '';
+            template =  '<wm-select ' + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
+            break;
+        case 'autocomplete':
+        case 'typeahead':
+            $el.addClass('datetime-wrapper');
+            template =  '<wm-search ' + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
+            break;
+        case 'date':
+            $el.addClass('datetime-wrapper');
+            template = '<wm-date ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
+            break;
+        case 'time':
+            $el.addClass('datetime-wrapper');
+            template = '<wm-time ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
+            break;
+        case 'datetime':
+            $el.addClass('datetime-wrapper');
+            template = '<wm-datetime ' + eventTemplate + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
+            break;
+        case 'checkbox':
+            template = '<wm-checkbox ' + eventTemplate + dataValue + '></wm-checkbox>';
+            break;
+        case 'number':
+            template = '<wm-text type="number" ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            break;
+        case 'textarea':
+            cellText = cellText || '';
+            template = '<wm-textarea ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
+            break;
+        case 'upload':
+            formName = colDef.field + '_' + rowId;
+            $el.attr('form-name', formName);
+            template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
+            break;
+        default:
+            template = '<wm-text ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            break;
         }
-        return '<input class="editable form-control app-textbox" type="text" value=""/>';
+        return this.options.getCompiledTemplate(template, this.preparedData[rowId], colDef);
     },
     setHeaderConfigForDefaultFields: function (name) {
         if (_.isEmpty(this.options.headerConfig)) {

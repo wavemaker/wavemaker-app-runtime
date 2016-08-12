@@ -1125,8 +1125,8 @@ WM.module('wm.widgets.grid')
                         el = WM.element(htm),
                         ngSrc,
                         imageEl;
+                    rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
                     rowScope.row = row;
-                    rowScope.selectedItemData = row;
                     rowScope.row.getProperty = function (field) {
                         return row[field];
                     };
@@ -2385,7 +2385,8 @@ WM.module('wm.widgets.grid')
                             colConfig   = {
                                 'name': attrs.binding
                             },
-                            variable;
+                            variable,
+                            events;
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                                 if (WM.isDefined(newVal)) {
@@ -2432,7 +2433,7 @@ WM.module('wm.widgets.grid')
                             'suffix': attrs.suffix,
                             'prefix': attrs.prefix,
                             'accessroles': attrs.accessroles || '',
-                            'editWidgetType': attrs.editWidgetType,
+                            'editWidgetType': attrs.editWidgetType || 'text',
                             'dataset': attrs.dataset,
                             'datafield': attrs.datafield,
                             'placeholder': attrs.placeholder,
@@ -2448,6 +2449,10 @@ WM.module('wm.widgets.grid')
                             'filterplaceholder': attrs.filterplaceholder,
                             'relatedEntityName': attrs.relatedEntityName
                         };
+                        events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
+                        _.forEach(events, function (eventName) {
+                            columnDefProps[eventName] = attrs[eventName];
+                        });
                         //Extends the columnDef class with column meta data
                         WM.extend(columnDef, columnDefProps);
 

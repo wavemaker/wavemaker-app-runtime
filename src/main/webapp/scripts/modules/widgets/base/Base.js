@@ -1667,7 +1667,12 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
-                        "height": {"type": "string", "pattern": dimensionRegex}
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
                     },
                     "wm.chart": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
