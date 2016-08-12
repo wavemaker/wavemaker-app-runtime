@@ -639,7 +639,12 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/device/barcodeScanner/barcodeScanner.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/fileBrowser.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/deviceMediaService.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js'
+                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBStoreFactory.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBService.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/offline/config.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/offline/services/changeLogService.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/offline/services/offlineFileUploadService.js'
                     ],
                     '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js': [
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'
