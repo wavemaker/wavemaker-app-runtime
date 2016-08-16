@@ -1383,7 +1383,6 @@ WM.module('wm.widgets.base', [])
                         "onDatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
-                        "margin": {"type": "string", "widget": "box-model"},
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
                         "tabindex": {"type": "number", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
