@@ -1683,16 +1683,16 @@ WM.module('wm.widgets.base', [])
                         "type": {"type": "string", "widget": "list", "options": ["Area", "Bar", "Bubble", "Column", "Cumulative Line", "Donut", "Line", "Pie"], "bindable": "in-out-bound", "show": false},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "xaxisdatakey": {"type": "list", "widget": "list"},
+                        "xaxisdatakey": {"type": "list", "widget": "list", "datasetfilter" : "custom"},
                         "xaxislabel": {"type": "string"},
                         "xunits": {"type": "string"},
                         "xnumberformat": {"type": "list-group", "options": numberFormatOptions},
                         "xdateformat": {"type": "list-group", "options": dateOptions, "value": "%x"},
-                        "yaxisdatakey": {"type": "list", "widget": "multi-select"},
+                        "yaxisdatakey": {"type": "list", "widget": "multi-select", "datasetfilter" : "custom"},
                         "yaxislabel": {"type": "string"},
                         "yunits": {"type": "string"},
                         "ynumberformat": {"type": "list-group", "options": numberFormatOptions},
-                        "bubblesize": {"type": "string", "widget": "list"},
+                        "bubblesize": {"type": "string", "widget": "list", "datasetfilter" : "custom"},
                         "shape": {"type": "string", "widget": "list", "options": ["circle", "cross", "diamond", "random", "square", "triangle-down", "triangle-up"], value: "circle"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "highlightpoints": {"type": "boolean"},
@@ -1723,8 +1723,8 @@ WM.module('wm.widgets.base', [])
                         "showxdistance": {"type": "boolean", "value": false},
                         "showydistance": {"type": "boolean", "value": false},
                         "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none", "disabled" : true, "show": false},
-                        "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "show": false},
-                        "groupby": {"type": "list", "widget": "multi-select", "show": false},
+                        "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "show": false, "datasetfilter" : "custom"},
+                        "groupby": {"type": "list", "widget": "multi-select", "show": false, "datasetfilter" : "custom"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals", "show": false},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
@@ -2796,7 +2796,7 @@ WM.module('wm.widgets.base', [])
 
             //Updates options based on the widget of the property
             function updateOptions(scope, name, prop, options) {
-                if (prop.widget === 'multiselect') {
+                if (prop.widget === 'multi-select') {
                     scope.widgetDataset = scope.widgetDataset || {};
                     scope.widgetDataset[name] = options;
                 } else if (prop.widget === 'list-typeahead') {
@@ -2850,7 +2850,7 @@ WM.module('wm.widgets.base', [])
                     options,
                     fieldObjects,
                     ALLFIELDS               = 'All Fields',
-                    checkboxsetTypeWidgets  = ['multiselect', 'select-all', 'list-typeahead', 'order-by'],
+                    checkboxsetTypeWidgets  = ['multi-select', 'select-all', 'list-typeahead', 'order-by'],
                     dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset',
                     requiredProps           = {},
                     resetProps              = {};
@@ -2897,6 +2897,10 @@ WM.module('wm.widgets.base', [])
                                 break;
                             case 'terminals':
                                 options = keys.terminals;
+                                break;
+                            case 'custom':
+                                //Widgets like chart need filtering of options
+                                options = scope.getCutomizedOptions(scope, name, keys.terminals);
                                 break;
                             }
                             if (prop.allfields) {
