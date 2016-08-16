@@ -1,5 +1,4 @@
 /*global WM, window, _, document, Hammer, moment*/
-/*jslint todo: true */
 /*Directive for liveList */
 
 WM.module('wm.widgets.live')
@@ -858,6 +857,33 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            function updateSelectedItemsWidgets($is, $el) {
+                // remove the existing entries
+                $is.selectedItemWidgets.length = 0;
+
+                // find the active list item
+                $el.find('li.app-list-item.active')
+                    .each(function () {
+                        var wid = {};
+
+                        $is.selectedItemWidgets.push(wid);
+                        // find the widgets inside the list item and update the map
+                        WM.element(this)
+                            .find('[init-widget]')
+                            .each(function () {
+                                var $target = WM.element(this),
+                                    _is;
+                                if ($target.isolateScope) {
+                                    _is = $target.isolateScope();
+
+                                    if (_is.name) {
+                                        wid[_is.name] = _is;
+                                    }
+                                }
+                            });
+                    });
+            }
+
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl = new Hammer($el[0], {}),
@@ -867,7 +893,7 @@ WM.module('wm.widgets.live')
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el.on('click.wmActive', 'ul.app-livelist-container', function (evt) {
                     // returning if click event is triggered within 50ms after pressup event occurred
-                    if (pressStartTimeStamp + 50 > Date.now() || WM.element(evt.target).is('input, textarea, select')) {
+                    if (pressStartTimeStamp + 50 > Date.now()) {
                         return;
                     }
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
@@ -930,6 +956,8 @@ WM.module('wm.widgets.live')
                             }
                         }
                     }
+
+                    updateSelectedItemsWidgets($is, $el);
                     $rs.$safeApply($is);
                 });
 
@@ -1022,7 +1050,7 @@ WM.module('wm.widgets.live')
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
                 $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;
-                $is.dataset     = [];   // The data that is bound to the list. Stores the name for reference.
+                $is.dataset     = []; // The data that is bound to the list. Stores the name for reference.
                 $is.fieldDefs   = []; // The data required by the wmListItem directive to populate the items
                 $is.noDataFound = false;
                 Object.defineProperty($is, 'selecteditem', {
@@ -1146,6 +1174,7 @@ WM.module('wm.widgets.live')
                 setListClass($is, $liScope);
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
+                $is.selectedItemWidgets = []; // Array of objects containing widget's name - widget's scope map
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {

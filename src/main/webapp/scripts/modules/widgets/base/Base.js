@@ -1604,7 +1604,8 @@ WM.module('wm.widgets.base', [])
                         "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"},
-                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"}
+                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"},
+                        "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
