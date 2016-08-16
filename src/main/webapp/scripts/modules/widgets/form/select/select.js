@@ -308,7 +308,16 @@ WM.module('wm.widgets.form')
                         if (attrs.scopedataset) {
                             iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
                         }
-                        iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
+
+                        Object.defineProperty(iScope, '_model_', {
+                            get: function () {
+                                return this._proxyModel;
+                            },
+                            set: function (newVal) {
+                                this._proxyModel = newVal;
+                                updateModelProxy(iScope, newVal);
+                            }
+                        });
                     }
                 }
             }
