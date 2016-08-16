@@ -42,7 +42,8 @@ WM.module('wm.utils', [])
                 EXE_FILE: /\.exe$/i,
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i,
-                VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/
+                VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
+                SPECIAL_CHARACTERS: /[^A-Z0-9a-z_\s]+/i
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -674,6 +675,11 @@ WM.module('wm.utils', [])
             return REGEX.VALID_HTML.test(str);
         }
 
+        /*function to check if the string contains special characters*/
+        function hasSpecialCharacters(str) {
+            return REGEX.SPECIAL_CHARACTERS.test(str);
+        }
+
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString) {
             if (APPCONSTANTS.isRunMode) {
@@ -794,6 +800,17 @@ WM.module('wm.utils', [])
             };
         }
 
+        /* to handle special characters used while defining variables and page params */
+        function checkSpecialCharacters(str) {
+            if (hasSpecialCharacters(str)) {
+                if (_.includes(str,"'")) {
+                    str = str.replace(/'/g, "\\'");
+                }
+                return str = "['" + str + "']";
+            } else {
+                return str;
+            }
+        }
 
         /* fetch the column names and nested column names from the propertiesMap object */
         function fetchPropertiesMapColumns(propertiesMap, namePrefix, options) {
@@ -1961,6 +1978,8 @@ WM.module('wm.utils', [])
         this.isScriptLoaded             = isScriptLoaded;
         this.isValidJavaPackageName     = isValidJavaPackageName;
         this.isValidHtml                = isValidHtml;
+        this.hasSpecialCharacters       = hasSpecialCharacters;
+        this.checkSpecialCharacters     = checkSpecialCharacters;
         this.isQuoteNotPresent          = isQuoteNotPresent;
         this.stringStartsWith           = stringStartsWith;
         this.stringEndsWith             = stringEndsWith;
