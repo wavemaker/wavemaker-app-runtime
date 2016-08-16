@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.studio.common.model.security.CSRFConfig;
 
 /**

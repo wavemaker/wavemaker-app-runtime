@@ -322,7 +322,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
                     new Object[]{bindPrincipal});
         } catch (IncorrectResultSizeDataAccessException incorrectResults) {
             if (incorrectResults.getActualSize() == 0) {
-                UsernameNotFoundException userNameNotFoundException = new UsernameNotFoundException("User " + username + " not found in directory.", username);
+                UsernameNotFoundException userNameNotFoundException = new UsernameNotFoundException("User " + username + " not found in directory.", incorrectResults);
                 userNameNotFoundException.initCause(incorrectResults);
                 throw badCredentials(userNameNotFoundException);
             }
