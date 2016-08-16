@@ -300,9 +300,10 @@ WM.module('wm.widgets.grid')
                          * and "Variables", "Widgets" will not be available in that scope.
                          * element.scope() might refer to the controller scope/parent scope.*/
                         var elScope = element.scope();
-                        iScope.Variables = elScope.Variables;
-                        iScope.Widgets = elScope.Widgets;
-                        iScope.columns = {};
+                        iScope.Variables  = elScope.Variables;
+                        iScope.Widgets    = elScope.Widgets;
+                        iScope.columns    = {};
+                        iScope.formfields = {};
                         iScope.appLocale = $rootScope.appLocale;
                         $rootScope.$on('locale-change', function () {
                             iScope.appLocale = $rootScope.appLocale;
@@ -2348,12 +2349,10 @@ WM.module('wm.widgets.grid')
 
                         /*
                          * Class : ColumnDef
-                         * Discription : ColumnDef is intermediate class which extends FieldDef base class
+                         * Description : ColumnDef is intermediate class which extends FieldDef base class
                          * */
                         scope.ColumnDef = function () {};
-
                         scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
-
                         scope.ColumnDef.prototype.setProperty = function (property, newval) {
                             this.$is.setProperty.call(this, property, newval);
                             if (property === 'displayName') {
@@ -2361,6 +2360,26 @@ WM.module('wm.widgets.grid')
                             } else {
                                 this.$is.redraw && this.$is.redraw(true);
                             }
+                        };
+                        /*
+                         * Class : fieldDef
+                         * Description : fieldDef is intermediate class which extends FieldDef base class
+                         * */
+                        scope.fieldDef = function () {};
+                        scope.fieldDef.prototype = new wm.baseClasses.FieldDef();
+                        scope.fieldDef.prototype.setProperty = function (property, newval) {
+                            //Get the scope of the current editable widget and set the value
+                            var $el     = scope.datagridElement.find('[data-field-name="' + this.field + '"]'),
+                                elScope = $el.isolateScope();
+                            property = property === 'value' ? 'datavalue' : property;
+                            elScope[property] = newval;
+                        };
+                        scope.fieldDef.prototype.getProperty = function (property) {
+                            //Get the scope of the current editable widget and get the value
+                            var $el     = scope.datagridElement.find('[data-field-name="' + this.field + '"]'),
+                                elScope = $el.isolateScope();
+                            property = property === 'value' ? 'datavalue' : property;
+                            return elScope[property];
                         };
 
                         var index,
@@ -2376,6 +2395,7 @@ WM.module('wm.widgets.grid')
                                 '; color: ' + textColor + ';',
                             //Obj of its base with setter and getter defined
                             columnDef = new scope.ColumnDef(),
+                            fieldDef = new scope.fieldDef(),
                             columnDefProps,
                             updateCustomExpression = function (column) {
                                 LiveWidgetUtils.setColumnConfig(column);
@@ -2386,7 +2406,10 @@ WM.module('wm.widgets.grid')
                                 'name': attrs.binding
                             },
                             variable,
-                            events;
+                            events,
+                            fieldDefProps = {
+                                'field': attrs.binding
+                            };
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                                 if (WM.isDefined(newVal)) {
@@ -2398,6 +2421,7 @@ WM.module('wm.widgets.grid')
 
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = parentScope;
+                        scope.fieldDef.prototype.$is  = parentScope;
                         //Get the fefault filter widget type
                         function getFilterWidget(type) {
                             var widget = fieldTypeWidgetTypeMap[type] && fieldTypeWidgetTypeMap[type][0];
@@ -2455,7 +2479,8 @@ WM.module('wm.widgets.grid')
                         });
                         //Extends the columnDef class with column meta data
                         WM.extend(columnDef, columnDefProps);
-
+                        WM.extend(fieldDef, fieldDefProps);
+                        parentScope.formfields[fieldDef.field] = fieldDef;
                         if (tElement.context.innerHTML) {
                             columnDef.customExpression = tElement.context.innerHTML;
                         }

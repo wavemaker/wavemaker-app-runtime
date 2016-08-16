@@ -1057,12 +1057,14 @@ WM.module('wm.widgets.live')
                         LiveWidgetUtils.preProcessFields('wm-form-field', scope, attrs, tElement);
                     },
                     "post": function (scope, element, attrs) {
+                        scope.FieldDef = function () {};
+                        scope.FieldDef.prototype = new wm.baseClasses.FieldDef();
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         var parentIsolateScope,
                             template,
                             index,
-                            columnDef,
+                            columnDef = new scope.FieldDef(),
                             expr,
                             exprWatchHandler,
                             relatedDataWatchHandler,
@@ -1070,7 +1072,8 @@ WM.module('wm.widgets.live')
                             defaultObj,
                             isLayoutDialog,
                             externalForm = element.closest('form.app-form'),
-                            parentEle    = element.parent();
+                            parentEle    = element.parent(),
+                            columnDefProps;
                         function setDefaultValue() {
                             if (parentIsolateScope._widgettype === 'wm-liveform') {
                                 parentIsolateScope.setDefaultValueToValue(columnDef);
@@ -1092,10 +1095,12 @@ WM.module('wm.widgets.live')
                         }
                         scope.parentIsolateScope = parentIsolateScope;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
-                        columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
+                        columnDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
+                        scope.FieldDef.prototype.$is = parentIsolateScope;
+                        WM.extend(columnDef, columnDefProps);
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
                         columnDef.isRelated = attrs.isRelated;
                         /*if the show property is set to false, set the required property to false (except for identity columns)
@@ -1255,6 +1260,8 @@ WM.module('wm.widgets.live')
                             scope.validationmessage = val;
                             setValidity(scope.name, false);
                         };
+                        parentIsolateScope.formfields = parentIsolateScope.formfields || {};
+                        parentIsolateScope.formfields[columnDef.key] = columnDef;
                     }
                 };
             }

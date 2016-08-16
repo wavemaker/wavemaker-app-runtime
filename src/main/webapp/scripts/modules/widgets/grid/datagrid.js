@@ -529,51 +529,52 @@ $.widget('wm.datagrid', {
     _getEditableTemplate: function ($el, colDef, cellText, rowId) {
         var template,
             formName,
-            placeholder = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
-            dataValue = cellText ? 'datavalue="' + cellText + '"' : '',
-            eventTemplate = this._getEventTemplate(colDef);
+            placeholder   = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
+            dataValue     = cellText ? 'datavalue="' + cellText + '"' : '',
+            eventTemplate = this._getEventTemplate(colDef),
+            dataFieldName = ' data-field-name="' + colDef.field + '" ';
         switch (colDef.editWidgetType) {
         case 'select':
             cellText = cellText || '';
-            template =  '<wm-select ' + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-select ' + dataFieldName + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'autocomplete':
         case 'typeahead':
             $el.addClass('datetime-wrapper');
-            template =  '<wm-search ' + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-search ' + dataFieldName + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
-            template = '<wm-date ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
+            template = '<wm-date ' + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
             break;
         case 'time':
             $el.addClass('datetime-wrapper');
-            template = '<wm-time ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
+            template = '<wm-time ' + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
             break;
         case 'datetime':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + eventTemplate + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
+            template = '<wm-datetime ' + dataFieldName + eventTemplate + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
             break;
         case 'checkbox':
-            template = '<wm-checkbox ' + eventTemplate + dataValue + '></wm-checkbox>';
+            template = '<wm-checkbox ' + dataFieldName + eventTemplate + dataValue + '></wm-checkbox>';
             break;
         case 'number':
-            template = '<wm-text type="number" ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            template = '<wm-text type="number" ' + dataFieldName +  eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
             break;
         case 'textarea':
             cellText = cellText || '';
-            template = '<wm-textarea ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
+            template = '<wm-textarea ' + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
             break;
         case 'upload':
             formName = colDef.field + '_' + rowId;
             $el.attr('form-name', formName);
-            template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
+            template = '<form name="' + formName + '"><input ' + dataFieldName  + 'class="file-upload" type="file" name="' + colDef.field + '"/></form>';
             break;
         default:
-            template = '<wm-text ' + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            template = '<wm-text ' + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
             break;
         }
-        return this.options.getCompiledTemplate(template, this.preparedData[rowId], colDef);
+        return this.options.getCompiledTemplate(template, this.preparedData[rowId] || {}, colDef);
     },
     setHeaderConfigForDefaultFields: function (name) {
         if (_.isEmpty(this.options.headerConfig)) {
