@@ -12,8 +12,9 @@ wm.plugins.security.services.SecurityService = [
     "BaseService",
     "Utils",
     "$rootScope",
+    "CONSTANTS",
 
-    function (BaseService, Utils, $rs) {
+    function (BaseService, Utils, $rs, CONSTANTS) {
         'use strict';
 
         /* to store general options & roles */
@@ -23,40 +24,106 @@ wm.plugins.security.services.SecurityService = [
             _generalOptions,
             _lastUser,
             _config,
+            _mobileconfig,
             loggedInUser,
             _serviceMap = {},
-            getConfig = function (successCallback, failureCallback) {
+            mergeWebAndMobileConfig = function (config) {
+                var userInfo = config.userInfo,
+                    userRole = _.get(userInfo, 'userRoles[0]'),
+                    roles = _mobileconfig.roles,
+                    roleObj = _.find(roles, {'name': userRole});
+                userInfo.landingPage = roleObj.homePage || roleObj.landingPage;
+            },
+            /**
+             * get the security config bundled in the apk file("/metadata/app/security-config.json").
+             * Config returned by this call is updated on each build request from the studio.
+             * Purpose of having this file is to remove backend dependency from a Mobile App, i.e. NO BACKEND CALL.
+             * @param success
+             * @param error
+             */
+            getMobileConfig = function (success, error) {
+                if (!_mobileconfig) {
+                    BaseService.send({
+                        target: 'Security',
+                        action: 'getMobileConfig'
+                    }, function (mobileconfig) {
+                        _mobileconfig = mobileconfig;
+                        Utils.triggerFn(success, _mobileconfig);
+                    }, error);
+                }
+            },
+            /**
+             * gets the security config from the deployed app (backend call)
+             * @param success
+             * @param error
+             */
+            getWebConfig = function (success, error) {
                 if (!_config) {
                     BaseService.send({
                         target: 'Security',
                         action: 'getConfig'
                     }, function (config) {
-                        /* TEMP CODE */
-                        config.homePage = _WM_APP_PROPERTIES.homePage;
-                        if (config.userInfo) {
-                            config.userInfo.homePage = config.userInfo.landingPage;
-                        }
-                        /* TEMP CODE */
                         _config = config;
-                        loggedInUser = config.userInfo;
-                        _lastUser = loggedInUser;
-                        Utils.triggerFn(successCallback, _config);
-                    }, function (error) {
-                        if ($rs.isMobileApplicationType) {
-                            _config = {
-                                "securityEnabled": false,
-                                "authenticated": false,
-                                "homePage": _WM_APP_PROPERTIES.homePage,
-                                "userInfo": null,
-                                "login": null
-                            };
-                            Utils.triggerFn(successCallback, _config);
-                        } else {
-                            Utils.triggerFn(failureCallback, error);
-                        }
-                    });
-                } else {
+                        Utils.triggerFn(success, _config);
+                    }, error);
+                }
+            },
+            /**
+             * gets the security config for an app
+             * @param successCallback
+             * @param failureCallback
+             * @param isPostLogin
+             */
+            getConfig = function (successCallback, failureCallback, isPostLogin) {
+                function onSuccess(config) {
+                    config.homePage = _WM_APP_PROPERTIES.homePage;
+                    if (config.userInfo) {
+                        // Backend returns landingPage instead of homePage, hence this statement(for consistency)
+                        config.userInfo.homePage = config.userInfo.landingPage;
+                    }
+                    _config = config;
+                    loggedInUser = config.userInfo;
+                    _lastUser = loggedInUser;
                     Utils.triggerFn(successCallback, _config);
+                }
+                function onError(error) {
+                    if ($rs.isMobileApplicationType) {
+                        _config = {
+                            "securityEnabled": false,
+                            "authenticated": false,
+                            "homePage": _WM_APP_PROPERTIES.homePage,
+                            "userInfo": null,
+                            "login": null
+                        };
+                        Utils.triggerFn(successCallback, _config);
+                    } else {
+                        Utils.triggerFn(failureCallback, error);
+                    }
+                }
+
+                if (_config) {
+                    // if already fetched, return it
+                    Utils.triggerFn(successCallback, _config);
+                    return;
+                }
+
+                if (!CONSTANTS.hasCordova) {
+                    // for web project, return config returned from backend API call.
+                    getWebConfig(onSuccess, onError);
+                } else {
+                    /*
+                     * for mobile app
+                     * - if getting config first time, just get mobile config (saved in the apk, no backend call)
+                     * - else, get Web config (will be  the same API hit for login) and merge the config with previous _mobileconfig
+                     */
+                    if (!isPostLogin) {
+                        getMobileConfig(onSuccess, onError);
+                    } else {
+                        getWebConfig(function (config) {
+                            mergeWebAndMobileConfig(config);
+                            onSuccess(config);
+                        }, onError);
+                    }
                 }
             },
             setConfig = function (config) {

@@ -443,7 +443,7 @@ Application
                             updateLoggedInUserVariable().
                                 then(deferred.resolve, deferred.resolve);
                         }
-                    });
+                    }, WM.noop, true);
                     return deferred.promise;
                 }
 

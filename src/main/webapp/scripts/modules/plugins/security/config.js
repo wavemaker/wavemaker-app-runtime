@@ -127,6 +127,10 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/security/info",
             method: "GET"
         },
+        getMobileConfig: {
+            url: "metadata/app/security-config.json",
+            method: "GET"
+        },
         configCustomSecurity: {
             url: "services/projects/:projectID/securityservice/providers/customauth",
             method: "POST"
