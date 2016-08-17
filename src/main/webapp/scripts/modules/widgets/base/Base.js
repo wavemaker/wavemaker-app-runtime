@@ -2583,57 +2583,6 @@ WM.module('wm.widgets.base', [])
 
             }
 
-            /*Function that returns all the internal object keys in the bound dataset*/
-            function extractDataSetFields(dataset, propertiesMap, options) {
-                var columns = [],
-                    columnDefs,
-                    properties,
-                    keys = {'terminals' : {}, 'objects' : {}},
-                    filterOptions;
-
-                if (WM.isString(dataset)) {
-                    return;
-                }
-                if (!options) {
-                    options = {};
-                }
-                filterOptions = WM.copy(options);
-                /*In case of live variable getting the properties map*/
-                if (dataset && propertiesMap) {
-                    columns = Utils.fetchPropertiesMapColumns(propertiesMap, null, {'filter' : 'all'});
-                    properties = [Utils.resetObjectWithEmptyValues(columns.objects)];
-                    keys.objects = Object.keys(properties[0]);
-                    properties = [Utils.resetObjectWithEmptyValues(columns.terminals)];
-                    keys.terminals = Object.keys(properties[0]);
-                } else {
-                    filterOptions.noModifyTitle = true;
-                    keys = {'terminals' : [], 'objects' : []};
-                    filterOptions.filter = 'all';
-                    columnDefs = Utils.prepareFieldDefs(dataset, filterOptions);
-                    columnDefs.objects.forEach(function (columnDef) {
-                        keys.objects.push(columnDef.field);
-                    });
-                    columnDefs.terminals.forEach(function (columnDef) {
-                        keys.terminals.push(columnDef.field);
-                    });
-                }
-                if (options.sort) {
-                    keys.objects = keys.objects.sort();
-                    keys.terminals = keys.terminals.sort();
-                }
-                if (!options || (options && !options.filter)) {
-                    return keys.terminals;
-                }
-                switch (options.filter) {
-                case 'all':
-                    return keys;
-                case 'objects':
-                    return keys.objects;
-                case 'terminals':
-                    return keys.terminals;
-                }
-            }
-
             function addEventAttributes($template, tAttrs, customEventsMap) {
 
                 if (tAttrs.widgetid) { // widget is inside canvas
@@ -2944,9 +2893,6 @@ WM.module('wm.widgets.base', [])
                 injectModelUpdater: injectModelUpdater,
 
                 onScopeValueChangeProxy: onScopeValueChangeProxy,
-
-                extractDataSetFields: extractDataSetFields,
-
 
                 /**
                  * @ngdoc function
