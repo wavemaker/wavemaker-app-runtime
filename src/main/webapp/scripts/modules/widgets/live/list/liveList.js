@@ -331,7 +331,8 @@ WM.module('wm.widgets.live')
                         'MONTH' : 'MMM, yyyy',
                         'YEAR'  : 'YYYY',
                         'HOUR'  : 'hh:mm a'
-                    };
+                    },
+                    groupedDataFieldName = '';
 
                 //Get the group by roll up string for time based group by options
                 function getTimeRolledUpString(str, rollUp) {
@@ -416,18 +417,24 @@ WM.module('wm.widgets.live')
 
                 // append data to li based on the grouped data.
                 _.each(groupedLiData, function (groupedData, groupkey) {
+                    groupedDataFieldName = '_groupData' + groupkey.replace(regex, '');
                     liTemplateWrapper_start  = '';
                     liTemplateWrapper_end    = '></li></ul></li>';
-                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item"><h4>' + groupkey + '</h4></li>';
-
-                    groupkey = groupkey.replace(regex, '');
 
                     // appending the sorted data to scope based to groupkey
-                    _s['_groupData' + groupkey] = _.sortBy(groupedData, function (data) {
+                    _s[groupedDataFieldName] = _.sortBy(groupedData, function (data) {
                         return data[$is.groupby];
                     });
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in _groupData' +  groupkey + ' track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item" ng-class="{\'collapsible-content\' : collapsible}">' +
+                                                '<h4>' + groupkey +
+                                                '<div class="header-action">' +
+                                                    '<i class="app-icon wi action wi-minus" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
+                                                    '<span ng-if="showcount" class="label label-default">' + _s[groupedDataFieldName].length + '</span>' +
+                                                '</div>' +
+                                                '</h4></li>';
+
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
 
@@ -477,6 +484,21 @@ WM.module('wm.widgets.live')
 
                 if ($is.groupby) {
                     addListElements(_s, $el, $is, attrs, listCtrl);
+                    if ($is.collapsible) {
+                        // on groupby header click, collapse or expand the list-items.
+                        $el.find('li.app-list-item-header').on('click', function (e) {
+                            var selectedGroup   = WM.element(e.target.closest('.list-group')),
+                                selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
+
+                            if (selectedAppIcon.hasClass('wi-plus')) {
+                                selectedAppIcon.removeClass('wi-plus').addClass('wi-minus');
+                            } else {
+                                selectedAppIcon.removeClass('wi-minus').addClass('wi-plus');
+                            }
+
+                            selectedGroup.find('.app-list-item').toggle();
+                        });
+                    }
                 }
 
                 if (!_s.fieldDefs.length) {
@@ -707,6 +729,12 @@ WM.module('wm.widgets.live')
                             $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
                             $is.match = '';
                         }
+                        wp.showcount.show = wp.collapsible.show = $is.groupby ? true : false;
+
+                        if (!wp.collapsible.show) {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'collapsible': ''});
+                            $is.collapsible = false;
+                        }
                     };
 
                 //checking if the height is set on the element then we will enable the overflow
@@ -797,7 +825,9 @@ WM.module('wm.widgets.live')
                     'itemsPerRowClass'   : '',
                     'addRow'             : $is.addRow,
                     'updateRow'          : $is.updateRow,
-                    'deleteRow'          : $is.deleteRow
+                    'deleteRow'          : $is.deleteRow,
+                    'showcount'          : $is.showcount,
+                    'collapsible'        : $is.collapsible
                 });
 
                 return $liScope;

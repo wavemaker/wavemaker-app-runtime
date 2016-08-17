@@ -1232,11 +1232,25 @@ body.modal-open {
   li.app-list-item-header {
     list-style: none;
     background-color: rgba(0,0,0,0.1);
+    &.collapsible-content {
+      cursor: pointer;
+    }
     h4 {
       margin: 0;
       padding-left: 1em;
       padding-right: 1em;
       line-height: 2.5em;
+      display: table;
+      width: 100%;
+      .header-action {
+        display: table-cell;
+        span, i{
+          float: right;
+        }
+        i {
+          padding: 0 10px 0 10px;
+        }
+      }
     }
   }
   .app-list-item {
