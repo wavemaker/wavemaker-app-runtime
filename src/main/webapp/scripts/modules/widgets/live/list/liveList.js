@@ -887,8 +887,7 @@ WM.module('wm.widgets.live')
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl = new Hammer($el[0], {}),
-                    selectCount = 0,
-                    isMultiSelect = false;// Setting to true on first long press
+                    selectCount = 0;// Setting to true on first long press
 
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el.on('click.wmActive', 'ul.app-livelist-container', function (evt) {
@@ -907,21 +906,20 @@ WM.module('wm.widgets.live')
                     // Setting selectCount value based number of items selected.
                     selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
                     if ($liScope) {
-                        if (isMultiSelect && $rs.isMobileApplicationType) {
+                        if ($is.multiselect && $rs.isMobileApplicationType) {
                             if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $li.toggleClass('active');
-                                isMultiSelect = selectCount !== 0;//Setting 'isMultiSelect' to false if no items are selected
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
-                        } else if (evt.ctrlKey || evt.metaKey) {
+                        } else if ((evt.ctrlKey || evt.metaKey) && $is.multiselect) {
                             if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                                 $li.toggleClass('active');
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
-                        } else if (evt.shiftKey) {
+                        } else if (evt.shiftKey && $is.multiselect) {
                             $liItems = $el.find('li.app-list-item');
                             first    = $liItems.index($li);
                             last     = $liItems.index($is.firstSelectedItem);
@@ -1022,11 +1020,10 @@ WM.module('wm.widgets.live')
                 });
 
                 $hammerEl.on('pressup', function (evt) {
-                    if (!isMultiSelect && $rs.isMobileApplicationType) {
+                    if (!$is.multiselect && $rs.isMobileApplicationType) {
                         var $li = WM.element(evt.target).closest('li.app-list-item');
                         $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         $li.addClass('active'); // adding active class to current selectedItem
-                        isMultiSelect = true;
                         $rs.$safeApply($is);
                         pressStartTimeStamp = Date.now();//Recording pressup event's timestamp
                     }
