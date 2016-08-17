@@ -1605,7 +1605,8 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"},
-                        "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string"}
+                        "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "multiselect": {"type": "boolean", "value": false}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
