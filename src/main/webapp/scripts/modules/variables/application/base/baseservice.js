@@ -1193,9 +1193,9 @@ wm.variables.services.Variables = [
              * loops through the binding objects in the provided array, removes the ones with no value
              * @param bindings
              */
-            cleanseBindings = function (bindings) {
+            cleanseBindings = function (bindings, variable) {
                 _.remove(bindings, function (binding) {
-                    return (WM.isUndefined(binding.value) || binding.value === '');
+                    return (WM.isUndefined(binding.value) || binding.value === '' || (_.isNull(binding.value) && variable && variable.category === 'wm.LiveVariable'));
                 });
             },
 
@@ -1214,7 +1214,7 @@ wm.variables.services.Variables = [
                         }
                     });
 
-                    cleanseBindings(variable.dataBinding);
+                    cleanseBindings(variable.dataBinding, variable);
                     if (variable.category === 'wm.NavigationVariable') {
                         cleanseBindings(variable.dataSet);
                     }
