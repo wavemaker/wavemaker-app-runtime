@@ -2466,7 +2466,7 @@ WM.module('wm.widgets.grid')
                             'suffix'            : attrs.suffix,
                             'prefix'            : attrs.prefix,
                             'accessroles'       : attrs.accessroles || '',
-                            'editWidgetType'    : attrs.editWidgetType || 'text',
+                            'editWidgetType'    : attrs.editWidgetType || (fieldTypeWidgetTypeMap[attrs.type] && fieldTypeWidgetTypeMap[attrs.type][0]) || 'text',
                             'dataset'           : attrs.dataset,
                             'datafield'         : attrs.datafield,
                             'placeholder'       : attrs.placeholder,

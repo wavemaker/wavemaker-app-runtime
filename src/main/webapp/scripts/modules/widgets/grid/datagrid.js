@@ -555,6 +555,10 @@ $.widget('wm.datagrid', {
             $el.addClass('datetime-wrapper');
             template = '<wm-datetime ' + dataFieldName + eventTemplate + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
             break;
+        case 'timestamp':
+            $el.addClass('datetime-wrapper');
+            template = '<wm-datetime ' + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-datetime>';
+            break;
         case 'checkbox':
             template = '<wm-checkbox ' + dataFieldName + eventTemplate + dataValue + '></wm-checkbox>';
             break;
@@ -1181,11 +1185,15 @@ $.widget('wm.datagrid', {
     getTextValue: function ($el, colDef, fields) {
         var text,
             $ie       = $el.find('input'),
-            dataValue;
+            dataValue,
+            $elScope;
         text = this._getValue($ie, fields);
         if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
-            dataValue = $el.children().isolateScope().datavalue;
-            text = dataValue === '' ? undefined : dataValue; //Empty value is set from the grid cell. So, set it back to undefined.
+            $elScope = $el.children().isolateScope();
+            if ($elScope) {
+                dataValue = $elScope.datavalue;
+                text = dataValue === '' ? undefined : dataValue; //Empty value is set from the grid cell. So, set it back to undefined.
+            }
         }
         if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
             text = parseInt(text, 10);

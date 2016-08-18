@@ -1669,6 +1669,18 @@ WM.module('wm.widgets.live')
                         }
                     }
                 });
+                //Form fields wont't contain grid widgets get those using attribute and add to form data
+                $el.find('[data-identifier="grid"]').each(function () {
+                    var fieldTarget,
+                        formWidget = WM.element(this).isolateScope();
+                    fieldTarget = _.split(formWidget.key || formWidget.name, '.');
+                    if (fieldTarget.length === 1) {
+                        dataObject[fieldTarget[0]] = formWidget.datavalue || formWidget.dataset;
+                    } else {
+                        dataObject[fieldTarget[0]] = dataObject[fieldTarget[0]] || {};
+                        dataObject[fieldTarget[0]][fieldTarget[1]] = formWidget.datavalue || formWidget.dataset;
+                    }
+                });
             }
 
             this.getEventTypes              = getEventTypes;
