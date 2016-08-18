@@ -255,7 +255,7 @@ WM.module('wm.widgets.grid')
                     window[tAttr.name + 'Controller'] = WM.noop;
                 }
 
-                function defineSelectedItemProp(scope, items) {
+                function defineSelectedItemProp(scope) {
                     Object.defineProperty(scope, 'selecteditem', {
                         get: function () {
                             /*
@@ -263,20 +263,20 @@ WM.module('wm.widgets.grid')
                              * for multi select, keep old selected items in tact
                              */
                             if (!scope.multiselect) {
-                                items.length = 0;
+                                scope.items.length = 0;
                             }
                             if (!scope.datagridElement.datagrid('instance')) {
                                 return;
                             }
                             _.forEach(scope.datagridElement.datagrid('getSelectedRows'), function (item) {
-                                if (!_.find(items, item)) {
-                                    items.push(item);
+                                if (!_.find(scope.items, item)) {
+                                    scope.items.push(item);
                                 }
                             });
-                            if (items && items.length === 1) {
-                                return items[0];
+                            if (scope.items && scope.items.length === 1) {
+                                return scope.items[0];
                             }
-                            return items;
+                            return scope.items;
                         },
                         set: function (val) {
                             /*Select the rows in the table based on the new selected items passed*/
@@ -694,7 +694,8 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }));
-                        defineSelectedItemProp(scope, []);
+                        scope.items = [];
+                        defineSelectedItemProp(scope);
                         scope.shownavigation = scope.navigation !== 'None';
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
@@ -1468,6 +1469,9 @@ WM.module('wm.widgets.grid')
                     $rootScope.$safeApply($scope);
                 },
                 onRowDeselect: function (rowData, e) {
+                    if ($scope.multiselect) {
+                        $scope.items = _.pullAllWith($scope.items, [rowData], _.isEqual);
+                    }
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
                     $scope.onDeselect({$data: rowData, $event: e, $rowData: rowData});
                     $rootScope.$safeApply($scope);

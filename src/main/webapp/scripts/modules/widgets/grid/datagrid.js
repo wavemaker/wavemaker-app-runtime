@@ -1100,11 +1100,13 @@ $.widget('wm.datagrid', {
         e.stopPropagation();
         var rowId,
             rowData,
-            selected;
+            selected,
+            data;
 
         $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
+        data = this.options.data[rowId];
 
         if (($row.hasClass('active') && !this.options.multiselect) || !rowData) {
             return;
@@ -1113,10 +1115,10 @@ $.widget('wm.datagrid', {
         selected = !selected;
         this.toggleRowSelection($row, selected);
         if (selected && $.isFunction(this.options.onRowSelect)) {
-            this.options.onRowSelect(rowData, e);
+            this.options.onRowSelect(data, e);
         }
         if (!selected && $.isFunction(this.options.onRowDeselect)) {
-            this.options.onRowDeselect(rowData, e);
+            this.options.onRowDeselect(data, e);
         }
     },
     /*Handles the double click of the grid row*/
