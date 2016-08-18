@@ -510,7 +510,7 @@ WM.module('wm.widgets.base', [])
                         "selecteddata": {"type": "array, object", "show": false, "bindable": "out-bound", "getTypeFrom": "expr.getPropertyType('selecteddata')" },
                         "calendartype": {"type": "list", "options": ["basic", "agenda"], "value": "basic"},
                         "view": {"type": "list", "options": ["month", "week", "day"], "value": "month"},
-                        "controls": {"type": "list", "options": ["navigation", "today", "month", "week", "day"], "value": ["navigation", "today", "month", "week", "day"], "widget": "select-all"},
+                        "controls": {"type": "list", "options": "navigation, today, month, week, day", "value": "navigation, today, month, week, day", "widget": "select-all"},
                         "onViewrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventdrop": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
