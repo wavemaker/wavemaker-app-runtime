@@ -916,6 +916,12 @@ wm.variables.services.$liveVariable = [
 
                 if (options.row) {
                     rowObject = options.row;
+                    //Merge inputFields along with dataObj while making Insert/Update/Delete
+                    _.forEach(inputFields, function (attrValue, attrName) {
+                        if (attrValue && !rowObject[attrName]) {
+                            rowObject[attrName] = attrValue;
+                        }
+                    });
                 } else {
                     WM.forEach(inputFields, function (fieldValue, fieldName) {
                         var fieldType,
