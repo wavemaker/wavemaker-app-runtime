@@ -1646,7 +1646,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound"},
+                        "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
                         "searchkey": {"type": "list", "widget": "select-all", "bindable": "in-bound", "datasetfilter" : "terminals"},
