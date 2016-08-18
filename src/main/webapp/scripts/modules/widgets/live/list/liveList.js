@@ -774,13 +774,20 @@ WM.module('wm.widgets.live')
                         'get': function () {
                             return _scope.Widgets;
                         }
+                    },
+                    'item': {
+                        'get': function () {
+                            return _scope.item;
+                        }
                     }
                 });
             }
 
-            function createChildScope($is, $el, attrs) {
-                var _scope = $el.scope(), // scop which inherits controller's scope
+            function createChildScope($is, $el) {
+                var _scope   = $el.scope(), // scop which inherits controller's scope
                     $liScope = _scope.$new(); // create a new child scope. List Items will be compiled with this scope.
+
+                $liScope.fieldDefs = [];
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
