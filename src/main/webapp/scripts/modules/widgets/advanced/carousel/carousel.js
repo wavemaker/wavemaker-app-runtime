@@ -235,7 +235,10 @@ WM.module('wm.widgets.advanced')
                             $is.widgetProps = widgetProps;
                             $is.contents    = [];
                             $is.activeIndex = 0;
-
+                            //static carousel don't have current slide.
+                            if(attrs.widgetid) {
+                                widgetProps.currentslide.show = false;
+                            }
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index) {
                                 if (!$is.contents[$is.activeIndex]) {
@@ -339,13 +342,14 @@ WM.module('wm.widgets.advanced')
                                 $slideTemplate = prepareSlideTemplate(listCtrl.$get('carouselTemplate'), attrs);
                                 $el.prepend($slideTemplate);
                                 $compile($slideTemplate)($el.closest('[data-identifier="carousel"]').isolateScope());
-                                if (attrs.onChange) {
-                                    handlers.push($is.$watch('active', function (nv) {
-                                        if (nv !== undefined) {
+                                handlers.push($is.$watch('active', function (nv) {
+                                    if (nv !== undefined) {
+                                        $is.currentslide = $is.fieldDefs[nv];
+                                        if (attrs.onChange) {
                                             Utils.triggerFn($is.onChange, {$isolateScope: $is});
                                         }
-                                    }));
-                                }
+                                    }
+                                }));
                             }
                         }
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);

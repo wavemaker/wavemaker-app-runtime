@@ -1552,6 +1552,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
+                        "currentslide": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
 
                         "class": {"type": "string", "pattern": classRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -3357,7 +3358,8 @@ WM.module('wm.widgets.base', [])
                             "wm-mobile-navbar ",
                             "wm-chart",
                             "wm-view",
-                            "wm-form"
+                            "wm-form",
+                            "wm-carousel"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [
