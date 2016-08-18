@@ -539,7 +539,8 @@ WM.module('wm.widgets.live')
                     var dataObject = getDataObject(),
                         formName = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
-                        formData;
+                        formData,
+                        element;
 
                     if (isFormDataSupported) {
                         /* Angular does not bind file values so using native object to send files */
@@ -585,8 +586,13 @@ WM.module('wm.widgets.live')
                         }
                     });
                     if (!isPreviousData) {
+                        if ($scope.isLayoutDialog) {
+                            element = WM.element('body').find('.app-liveform-dialog[dialogid="' + $scope._dialogid + '"]');
+                        } else {
+                            element = $scope.element;
+                        }
                         //Set the values of the widgets inside the live form (other than form fields) in form data
-                        LiveWidgetUtils.setFormWidgetsValues($scope.element, dataObject);
+                        LiveWidgetUtils.setFormWidgetsValues(element, dataObject);
                     }
                     if ($scope.operationType !== 'delete' && $scope.multipartData) {
                         formData.append('wm_data_json', new Blob([JSON.stringify(dataObject)], {

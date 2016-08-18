@@ -231,18 +231,6 @@ WM.module('wm.layouts.containers')
                         }
                     }
                 });
-                //Form fields wont't contain grid widgets get those using attribute and add to form data
-                element.find('[isFormField="true"]').each(function () {
-                    var fieldTarget,
-                        formWidget = WM.element(this).isolateScope();
-                    fieldTarget = _.split(formWidget.name, '.');
-                    if (fieldTarget.length === 1) {
-                        formData[formWidget.name] = formWidget.dataset;
-                    } else {
-                        formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                        formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
-                    }
-                });
                 //Set the values of the widgets inside the form (other than form fields) in form data
                 LiveWidgetUtils.setFormWidgetsValues(element, formData);
                 params = {$event: event, $scope: scope, $formData: formData};
