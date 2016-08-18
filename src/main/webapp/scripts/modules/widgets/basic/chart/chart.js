@@ -196,6 +196,10 @@ WM.module('wm.widgets.basic')
                         //Choosing first column in aggregation by as y axis
                         scope.yaxisdatakey = yAxisOptions[0];
                     }
+                    //Setting x axis options with group by columns
+                    scope.widgetProps.xaxisdatakey.options = xAxisOptions;
+                    //Setting y axis options with aggregation columns
+                    setYAxisDataKey(scope, yAxisOptions, yAxisOptions);
                 }
                 displayFormatOptions(scope, 'x');
                 displayFormatOptions(scope, 'y');
@@ -364,10 +368,6 @@ WM.module('wm.widgets.basic')
 
         //Formatting the binded data compatible to chart data
         function getChartData(scope) {
-            if (!isValidAxis(scope)) {
-                setErrMsg(scope, 'MESSAGE_INVALID_AXIS');
-                return [];
-            }
             scope.sampleData = ChartService.getSampleData(scope);
             // scope variables used to keep the actual key values for x-axis
             scope.xDataKeyArr = [];
@@ -1021,11 +1021,16 @@ WM.module('wm.widgets.basic')
         }
 
         function plotChartProxy(scope, element) {
-            scope.isLoadInProgress = true;
             $rootScope.$safeApply(scope, function () {
                 scope.showContentLoadError = false;
                 scope.invalidConfig = false;
             });
+            //Checking if x and y axis are chosen
+            if (!isValidAxis(scope)) {
+                setErrMsg(scope, 'MESSAGE_INVALID_AXIS');
+                return [];
+            }
+            scope.isLoadInProgress = true;
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
             if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isAggregationEnabled(scope))) {
                 getAggregatedData(scope, element, function () {
@@ -1228,24 +1233,7 @@ WM.module('wm.widgets.basic')
                 if (CONSTANTS.isStudioMode) {
                     togglePropertiesByChartType(scope);
                 }
-
-                if (scope.chartReady) {
-                    scope._plotChartProxy();
-                }
-                break;
-            case 'xaxisdatakey':
-            case 'yaxisdatakey':
-            case 'height':
-            case 'width':
-            case 'show':
-            case 'bubblesize':
-            case 'shape':
-            case 'tooltips':
-            case 'showlegend':
-                    //In RunMode, the plotchart method will not be called for all property change
-                if (scope.chartReady) {
-                    scope._plotChartProxy();
-                }
+                scope._plotChartProxy();
                 break;
             case 'fontsize':
             case 'fontunit':
@@ -1254,10 +1242,12 @@ WM.module('wm.widgets.basic')
             case 'fontweight':
             case 'fontstyle':
             case 'textdecoration':
-                if (scope.chartReady) {
-                    styleObj[styleProps[key]] = (key === 'fontsize' || key === 'fontunit') ? scope.fontsize + scope.fontunit : newVal;
-                    setTextStyle(styleObj, scope.$id);
-                }
+                styleObj[styleProps[key]] = (key === 'fontsize' || key === 'fontunit') ? scope.fontsize + scope.fontunit : newVal;
+                setTextStyle(styleObj, scope.$id);
+                break;
+            default:
+                //In RunMode, the plotchart method will not be called for all property change
+                scope._plotChartProxy();
                 break;
             }
         }
@@ -1325,11 +1315,6 @@ WM.module('wm.widgets.basic')
                             //Update the widget type, display key of properties and display key of groups based on the chart type
                             setWidgetTypes(scope);
                         }
-
-                        /* Note:  The below code has to be called only after postWidgetCreate
-                         * During initial load the plot chart will be called only once. During load time, 'plotChart' should not
-                         * be called on each property change*/
-                        scope.chartReady = true;
 
                         // When there is not value binding, then plot the chart with sample data
                         if (!scope.binddataset && !attrs.scopedataset) {
