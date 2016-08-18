@@ -258,13 +258,20 @@ WM.module('wm.widgets.grid')
                 function defineSelectedItemProp(scope, items) {
                     Object.defineProperty(scope, 'selecteditem', {
                         get: function () {
-                            // update the items with out changing the reference.
-                            items.length = 0;
+                            /*
+                             * in case of single select, update the items with out changing the reference.
+                             * for multi select, keep old selected items in tact
+                             */
+                            if (!scope.multiselect) {
+                                items.length = 0;
+                            }
                             if (!scope.datagridElement.datagrid('instance')) {
                                 return;
                             }
                             _.forEach(scope.datagridElement.datagrid('getSelectedRows'), function (item) {
-                                items.push(item);
+                                if (!_.find(items, item)) {
+                                    items.push(item);
+                                }
                             });
                             if (items && items.length === 1) {
                                 return items[0];
@@ -1442,6 +1449,8 @@ WM.module('wm.widgets.grid')
                 colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
                 onDataRender: function () {
+                    // select rows selected in previous pages. (Not finding intersection of data and selecteditems as it will be heavy)
+                    $scope.datagridElement.datagrid('selectRows', $scope.selecteditem);
                     $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
                 },
                 onRowSelect: function (rowData, e) {
