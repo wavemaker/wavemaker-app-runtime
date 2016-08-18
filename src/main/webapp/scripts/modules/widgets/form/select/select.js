@@ -315,6 +315,7 @@ WM.module('wm.widgets.form')
                             },
                             set: function (newVal) {
                                 this._proxyModel = newVal;
+                                _modelChangedManually[iScope.$id] = false;
                                 updateModelProxy(iScope, newVal);
                             }
                         });
