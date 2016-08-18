@@ -366,7 +366,8 @@ Application
 
                 function loadSecurityConfig(forcePageLoad) {
                     var deferred = $q.defer(),
-                        page;
+                        page,
+                        XSRF_COOKIE = 'wm_xsrf_token';
 
                     if (!$rs.isApplicationType) {
                         if ($location.path() === '/') {
@@ -382,10 +383,10 @@ Application
                                     page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
                                     $rs.userRoles = config.userInfo.userRoles;
                                     //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
-                                    $http.defaults.xsrfCookieName = 'wm_csrf_token';
-                                    if (Utils.getCookieByName('wm_csrf_token')) {
+                                    $http.defaults.xsrfCookieName = XSRF_COOKIE;
+                                    if (Utils.getCookieByName(XSRF_COOKIE)) {
                                         //set the header only if cookie 'wm_csrf_token' is set
-                                        $http.defaults.xsrfHeaderName = config.csrfHeaderName || 'X-WM-CSRF-TOKEN';
+                                        $http.defaults.xsrfHeaderName = config.csrfHeaderName;
                                     }
                                 } else {
                                     page = config.homePage;
