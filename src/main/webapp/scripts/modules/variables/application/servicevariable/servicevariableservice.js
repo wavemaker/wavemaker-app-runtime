@@ -394,7 +394,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     params,
                     callBackScope,
                     methodInfo,
-                    inputFields = options.inputFields || variable.dataBinding;
+                    inputFields = Utils.getClonedObject(options.inputFields || variable.dataBinding);
 
                 /* get the callback scope for the variable based on its owner */
                 if (variableOwner === "App") {
@@ -410,9 +410,12 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
-                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, inputFields);
-                    if (preventCall === false) {
+                    var output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, inputFields);
+                    if (output === false) {
                         return;
+                    }
+                    if (_.isObject(output)) {
+                        inputFields = output;
                     }
                     $rootScope.$emit('toggle-variable-state', variable.name, true);
                     variableActive[variable.activeScope.$id][variable.name] = true;

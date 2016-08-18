@@ -470,7 +470,7 @@ wm.variables.services.$liveVariable = [
                 return query;
             },
         /*Function to prepare the options required to read data from the table.*/
-            prepareTableOptions = function (variable, options) {
+            prepareTableOptions = function (variable, options, clonedFields) {
                 var filterFields = [],
                     filterOptions = [],
                     orderByFields,
@@ -495,8 +495,9 @@ wm.variables.services.$liveVariable = [
                         }
                         return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
                     };
-                /*get the filter fields from the variable*/
-                _.forEach(variable.filterFields, function (value, key) {
+                clonedFields  = clonedFields || variable.filterFields;
+                    /*get the filter fields from the variable*/
+                _.forEach(clonedFields, function (value, key) {
                     if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
                         value.fieldName = key;
                         if (getFieldType(value) === 'string') {
@@ -622,8 +623,9 @@ wm.variables.services.$liveVariable = [
                     callBackScope,
                     variableOwner = variable.owner,
                     promiseObj,
-                    preventCall,
+                    output,
                     newDataSet,
+                    clonedFields,
                     dataObj = {},
                     handleError = function (response) {
                         /* If in Run mode, initiate error callback for the variable */
@@ -653,9 +655,10 @@ wm.variables.services.$liveVariable = [
                     };
 
                 if (CONSTANTS.isRunMode) {
+                    clonedFields = Utils.getClonedObject(variable.filterFields);
                     // EVENT: ON_BEFORE_UPDATE
-                    preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, variable.filterFields);
-                    if (preventCall === false) {
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, clonedFields);
+                    if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         $rootScope.$emit('toggle-variable-state', variable.name, false);
@@ -664,7 +667,7 @@ wm.variables.services.$liveVariable = [
                     variable.canUpdate = false;
                 }
 
-                tableOptions = prepareTableOptions(variable, options);
+                tableOptions = prepareTableOptions(variable, options, _.isObject(output) ? output : clonedFields);
                 // if tableOptions object has query then set the dbOperation to 'searchTableDataWithQuery'
                 if (tableOptions.query) {
                     dbOperation = 'searchTableDataWithQuery';
@@ -899,13 +902,15 @@ wm.variables.services.$liveVariable = [
 
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
-                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, variableDetails.inputFields);
-                    if (preventCall === false) {
+                    var clonedFields = Utils.getClonedObject(variableDetails.inputFields),
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, clonedFields);
+                    if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
                         $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
                         return;
                     }
+                    inputFields = _.isObject(output) ? output : clonedFields;
                     variableDetails.canUpdate = false;
                 }
 
