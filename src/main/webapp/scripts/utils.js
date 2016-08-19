@@ -43,7 +43,7 @@ WM.module('wm.utils', [])
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i,
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
-                SPECIAL_CHARACTERS: /[^A-Z0-9a-z_\s]+/i
+                SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
