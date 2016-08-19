@@ -48,12 +48,15 @@ wm.variables.services.$servicevariable = ['Variables',
             CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
             AUTH_HDR_KEY = "Authorization",
-            isPrimitiveType = function (type) {
-                return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1);
+            isPrimitiveType = function (type, modelTypes) {
+                return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1)
+                    || _.get(modelTypes, '["' + type + '"].primitiveType')
+                    || _.isEmpty(_.get(modelTypes, '["' + type + '"].fields'));
             },
             /* function to prepare the sample model for the service variable */
             prepareServiceModel = function (type, parentNode, startNode, variable, typeChain) {
-                var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes;
+                var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes,
+                    typeChainArr;
                 /*if startNode variable is provided, skip till the startNode variable is reached*/
                 if (startNode) {
                     if (modelTypes[type] && modelTypes[type].fields) {
@@ -66,17 +69,14 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                } else if ((type && modelTypes[type]) || isPrimitiveType(type)) {
-                    /* case when the data returned from the service is not an object */
-                    if ((modelTypes[type] && modelTypes[type].primitiveType) || isPrimitiveType(type)) {
-                        if (!variable.isList) {
-                            parentNode['value'] = '';
-                        }
-                        variable._buildTreeFromDataSet = true;
-                        return;
+                } else if (isPrimitiveType(type, modelTypes)) {
+                    if (!variable.isList) {
+                        parentNode['value'] = '';
                     }
+                    variable._buildTreeFromDataSet = true;
+                } else if (type && modelTypes[type]) {
                     typeChain = typeChain || "";
-                    var typeChainArr = typeChain.split("~");
+                    typeChainArr = typeChain.split("~");
                     if (typeChainArr.indexOf(type) !== -1) {
                         return;
                     }
