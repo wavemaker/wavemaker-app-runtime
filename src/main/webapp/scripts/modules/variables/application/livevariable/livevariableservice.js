@@ -168,7 +168,7 @@ wm.variables.services.$liveVariable = [
                     return relatedCol && relatedCol[type];
                 }
                 column = _.find(columns, function (col) {
-                    return col.fieldName === fieldName;
+                    return col.fieldName === fieldName || col.relatedColumnName === fieldName;
                 });
                 return column && column[type];
             },
@@ -294,6 +294,7 @@ wm.variables.services.$liveVariable = [
                                 javaType = getJavaType(relatedCol.javaType);
                                 newColumn = {
                                     'fieldName'          : relation.fieldName,
+                                    'relatedColumnName'  : relatedCol.fieldName,
                                     'type'               : javaType,
                                     'fullyQualifiedType' : javaType,
                                     'columnName'         : sourceCols.join(','),
