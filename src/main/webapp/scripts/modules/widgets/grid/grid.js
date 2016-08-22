@@ -1878,7 +1878,7 @@ WM.module('wm.widgets.grid')
                     wp.exportformat.show  = wp.exportformat.showindesigner  = isBoundToLiveVariable || isBoundToFilter;
                     wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
-                    if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToStaticVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
+                    if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
                         wp.readonlygrid.disabled = false;
                     } else {
                         if ($scope.isPartOfLiveGrid) {
