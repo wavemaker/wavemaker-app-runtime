@@ -83,9 +83,6 @@ public class CleanupListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent event) {
         try {
             /**
-             * Deregistering drivers has the side effect of registering driver classes
-             * which are there in other class loaders but not yet loaded in the current class loader.
-             *
              * De registering it at the start so that preceding clean up tasks may clean any references created by loading unwanted classes by this call.
              */
             deregisterDrivers();
@@ -314,21 +311,26 @@ public class CleanupListener implements ServletContextListener {
     }
 
     /**
+     * de-registers the JDBC drivers registered visible to this class loader from DriverManager
      * Added by akritim
-     * To de-registed drivers loaded by current web-app
      */
     private void deregisterDrivers() {
         try {
-            // remove from the system DriverManager the JDBC drivers registered
-            // by this web app
-            /** Adding this line as getDrivers has a side effect of registering drivers
-             * that are visible to this class loader but haven't yet been loaded and the newly registered
-             * drivers are not returned in the call,therefore calling
-             * DriverManager.getDriviers() twice to get the full list including the newly registered drivers
-             **/
-            Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
-            for (Enumeration<Driver> e = CastUtils.cast(DriverManager.getDrivers()); e.hasMoreElements(); ) {
-                Driver driver = e.nextElement();
+
+            /*
+             * DriverManager.getDrivers() has the side effect of registering driver classes
+             * which are there in other class loaders(and registered with DriverManager) but not yet loaded in the caller class loader.
+             * So calling it twice so that the second call to getDrivers will actually return all the drivers visible to the caller class loader.
+             * Synchronizing the process to prevent a rare case where the second call to getDrivers method actually registers the unwanted driver
+             * because of registerDriver from some other thread between the two getDrivers call
+            */
+            Enumeration<Driver> drivers;
+            synchronized (DriverManager.class) {
+                Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
+                drivers = DriverManager.getDrivers();
+            }
+            while (drivers.hasMoreElements()) {
+                Driver driver = drivers.nextElement();
                 if (driver.getClass().getClassLoader() == getClass().getClassLoader()) {
                     logger.info("De Registering the driver {}", driver.getClass().getCanonicalName());
                     try {
