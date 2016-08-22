@@ -832,6 +832,21 @@ wm.variables.services.$servicevariable = ['Variables',
                 },
                 setInput: function (key, val) {
                     return methods.setInput(this, key, val);
+                },
+                init: function () {
+                    if (this.isList) {
+                        Object.defineProperty(this, 'firstRecord', {
+                            'get': function () {
+                                return _.get(methods.getDataSet(this), 'content[0]', {});
+                            }
+                        });
+                        Object.defineProperty(this, 'lastRecord', {
+                            'get': function () {
+                                var content = _.get(methods.getDataSet(this), 'content', []);
+                                return content[content.length - 1];
+                            }
+                        });
+                    }
                 }
             };
 

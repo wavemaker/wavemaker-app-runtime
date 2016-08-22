@@ -624,6 +624,9 @@ wm.variables.services.Variables = [
 
                     if (runMode) {
                         variable.activeScope = scope;
+                        if (variable.init) {
+                            variable.init();
+                        }
                     } else {
                         /* this copy is used by binding dialog in STUDIO mode */
                         self.studioCopy[context][name] = variable;

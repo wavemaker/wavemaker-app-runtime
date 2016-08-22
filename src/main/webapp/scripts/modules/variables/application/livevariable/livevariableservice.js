@@ -1539,6 +1539,21 @@ wm.variables.services.$liveVariable = [
                 },
                 getRelatedTablePrimaryKeys: function (columnName, options) {
                     return methods.getRelatedTablePrimaryKeys(this, columnName, options);
+                },
+                init: function () {
+                    if (this.operation === 'read') {
+                        Object.defineProperty(this, 'firstRecord', {
+                            'get': function () {
+                                return _.get(methods.getDataSet(this), 'data[0]', {});
+                            }
+                        });
+                        Object.defineProperty(this, 'lastRecord', {
+                            'get': function () {
+                                var data = _.get(methods.getDataSet(this), 'data', []);
+                                return data[data.length - 1];
+                            }
+                        });
+                    }
                 }
             };
 
