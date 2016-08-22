@@ -15,10 +15,18 @@
  */
 package com.wavemaker.runtime.data.dao;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
-
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -236,6 +244,16 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public long count(final String query) {
-        return count(); // TODO filter by query
+        return getTemplate().execute(new HibernateCallback<Long>() {
+            @Override
+            public Long doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                if (StringUtils.isNotBlank(query)) {
+                    Criterion criterion = new QueryParser().parse(query, entityClass, criteria);
+                    criteria.add(criterion);
+                }
+                return CriteriaUtils.getRowCount(criteria);
+            }
+        });
     }
 }
