@@ -30,6 +30,9 @@ WM.module('wm.widgets.basic')
             options = {
                 'Bubble'         : ['bubblesize', 'shape']
             },
+            NONE = 'none',
+            isGroupByChecked,
+            advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             //XPaths to get actual data of data points in charts
             chartDataPointXpath = {
                 'Column'         : 'rect.nv-bar',
@@ -73,6 +76,10 @@ WM.module('wm.widgets.basic')
                 'selecteditem'      : true,
                 'bubblesize'        : true,
                 'tooltips'          : true,
+                'groupby'           : true,
+                'aggregation'       : true,
+                'aggregationcolumn' : true,
+                'orderby'           : true,
                 'showlegend'        : true
             };
 
@@ -164,17 +171,17 @@ WM.module('wm.widgets.basic')
         }
 
         // Based on the chart type, sets the options for the yaxisdatakey
-        function setYAxisDataKey(scope, options, dataSet) {
+        function setYAxisDataKey(scope, options) {
             if (ChartService.isPieType(scope.type)) {
                 scope.widgetProps.yaxisdatakey.widget = 'list';
                 scope.widgetProps.yaxisdatakey.options = options;
             } else {
-                scope.widgetDataset.yaxisdatakey = dataSet || options || [];
+                scope.widgetDataset.yaxisdatakey = options || [];
             }
         }
 
         function isGroupByEnabled(groupby) {
-            return (groupby && groupby !== 'none');
+            return !!(groupby && groupby !== NONE);
         }
 
         // Displaying options for x and y axis based on the columns chosen in aggregation column and groupby
@@ -199,7 +206,7 @@ WM.module('wm.widgets.basic')
                     //Setting x axis options with group by columns
                     scope.widgetProps.xaxisdatakey.options = xAxisOptions;
                     //Setting y axis options with aggregation columns
-                    setYAxisDataKey(scope, yAxisOptions, yAxisOptions);
+                    setYAxisDataKey(scope, yAxisOptions);
                 }
                 displayFormatOptions(scope, 'x');
                 displayFormatOptions(scope, 'y');
@@ -229,7 +236,12 @@ WM.module('wm.widgets.basic')
 
         // Check if aggregation is chosen
         function isAggregationEnabled(scope) {
-            return ((isGroupByEnabled(scope.groupby) && scope.aggregation !== 'none' && scope.aggregationcolumn)) || isGroupByEnabled(scope.groupby) || scope.orderby;
+            return ((isGroupByEnabled(scope.groupby) && scope.aggregation !== NONE && scope.aggregationcolumn));
+        }
+
+        // Check if either groupby, aggregation or orderby is chosen
+        function isDataFilteringEnabled(scope) {
+            return isAggregationEnabled(scope) || isGroupByEnabled(scope.groupby) || scope.orderby;
         }
 
         //Gets the value by parsing upto the leaf node
@@ -392,7 +404,7 @@ WM.module('wm.widgets.basic')
                 }
             } else {
                 //When invalid axis are chosen when aggregation is enabled then plot the chart with sample data
-                if ((!isValidAxis(scope) && isAggregationEnabled(scope))) {
+                if ((!isValidAxis(scope) && isDataFilteringEnabled(scope))) {
                     return scope.sampleData;
                 }
                 if (!scope.chartData || !scope.chartData.length) {
@@ -519,7 +531,7 @@ WM.module('wm.widgets.basic')
         // Returns the columns that are to be fetched in the query response
         function getQueryColumns(scope) {
             var columns = [],
-                groupbyColumns = scope.groupby && scope.groupby !== 'none' ? scope.groupby.split(',') : [],
+                groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 expr;
 
@@ -531,7 +543,7 @@ WM.module('wm.widgets.basic')
             });
 
             // adding aggregation column, if enabled
-            if (scope.aggregation !== 'none' &&  scope.aggregationcolumn) {
+            if (scope.aggregation !== NONE &&  scope.aggregationcolumn) {
                 columns.push(getAggregationFunction(scope.aggregation) + '(' + scope.aggregationcolumn + ') AS ' + getValidAliasName(scope.aggregationcolumn));
             }
 
@@ -562,7 +574,7 @@ WM.module('wm.widgets.basic')
             var isVisuallyGrouped = false,
                 visualGroupingColumn,
                 groupingExpression,
-                groupbyColumns = scope.groupby && scope.groupby !== 'none' ? scope.groupby.split(',') : [],
+                groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 groupingColumnIndex,
                 columns = [];
@@ -668,7 +680,7 @@ WM.module('wm.widgets.basic')
                 WM.forEach(response.content, function (data) {
                     var obj = {};
                     // Set the response in the chartData based on 'aggregationColumn', 'xAxisDataKey' & 'yAxisDataKey'.
-                    if (scope.aggregation !== 'none') {
+                    if (scope.aggregation !== NONE) {
                         obj[scope.aggregationcolumn] = data[aggregationAlias];
                     }
 
@@ -952,33 +964,10 @@ WM.module('wm.widgets.basic')
                 chartData = Utils.getClonedObject(scope.scopedataset || datum);
             }
 
-            // get the chart obejct
+            // get the chart object
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
-            //Customizing the tooltips in case of the pie and donut when labelType is value
-            if (ChartService.isPieType(scope.type)) {
-                chart.tooltip.contentGenerator(function (key) {
-                    var yValue;
-                    if (scope.labeltype === 'percent') {
-                        yValue = d3.format('.3s')(key.data.y);
-                    } else if (scope.labeltype === 'value') {
-                        yValue = ChartService.formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
-                    }
-                    return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
-                                '<table>' +
-                                    '<tbody>' +
-                                        '<tr>' +
-                                            '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
-                                            '<td class="key">' + key.data.x + '</td>' +
-                                            '<td class="value">' + yValue + '</td>' +
-                                        '</tr>' +
-                                    '</tbody>' +
-                                '</table>' +
-                            '</div>';
-                });
-            }
-
-            // changing the default no data message*
+            // changing the default no data message
             d3.select('#wmChart' + scope.$id + ' svg')
                 .datum(chartData)
                 .call(chart);
@@ -1032,7 +1021,7 @@ WM.module('wm.widgets.basic')
             }
             scope.isLoadInProgress = true;
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
-            if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isAggregationEnabled(scope))) {
+            if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isDataFilteringEnabled(scope))) {
                 getAggregatedData(scope, element, function () {
                     plotChart(scope, element);
                 });
@@ -1098,7 +1087,7 @@ WM.module('wm.widgets.basic')
                 break;
             }
 
-            return newOptions || fields;
+            return newOptions || fields || scope.axisoptions;
         }
 
         //Function that iterates through all the columns and then fetching the numeric and non primary columns among them
@@ -1148,6 +1137,40 @@ WM.module('wm.widgets.basic')
 
                 scope.widgetProps.yaxisdatakey.widget = 'multi-select';
                 scope.widgetProps.groupby.widget = 'multi-select';
+            }
+        }
+
+        // enables/disables the aggregation column property
+        function toggleAggregationColumnState(scope, aggregation) {
+            scope.widgetProps.aggregationcolumn.disabled = !isGroupByChecked || (aggregation && aggregation === NONE);
+        }
+
+        // enables/disables the aggregation function property
+        function toggleAggregationState(scope) {
+            scope.widgetProps.aggregation.disabled = !isGroupByChecked;
+            if (!isGroupByChecked) {
+                scope.isVisuallyGrouped = false; //resetting isVisuallyGrouped flag to false when groupby property is empty
+            }
+            // enables/disables the aggregation column property
+            toggleAggregationColumnState(scope, scope.aggregation);
+        }
+
+        //Sets the aggregation columns
+        function setAggregationColumns(scope, aggregation) {
+            //Set the 'aggregationColumn' to show all keys in case of aggregation function is count or to numeric keys in all other cases.
+            scope.widgetProps.aggregationcolumn.options = aggregation === 'count' ? scope.axisoptions : scope.numericColumns;
+        }
+
+        //Sets the groupby columns to the non primary key columns and other than aggregation column if chosen
+        function setGroupByColumns(scope, aggregationcolumn) {
+            var index,
+                columns = Utils.getClonedObject(scope.nonPrimaryColumns);
+            //Removing the aggregation column out of the non primary columns
+            if (scope.nonPrimaryColumns && aggregationcolumn) {
+                index = _.indexOf(scope.nonPrimaryColumns, aggregationcolumn);
+                if (index >= 0) {
+                    columns.splice(index, 1);
+                }
             }
         }
 
@@ -1203,6 +1226,8 @@ WM.module('wm.widgets.basic')
                      Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
                      */
                     WidgetUtilService.updatePropertyPanelOptions(scope);
+                    //hiding the aggregation,group by and order by upon binding to the service variable
+                    ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
                     modifyAxesOptions(scope);
                 }
 
@@ -1245,10 +1270,47 @@ WM.module('wm.widgets.basic')
                 styleObj[styleProps[key]] = (key === 'fontsize' || key === 'fontunit') ? scope.fontsize + scope.fontunit : newVal;
                 setTextStyle(styleObj, scope.$id);
                 break;
+            case 'aggregation':
+                if (CONSTANTS.isStudioMode) {
+                    //setting the aggregation columns
+                    toggleAggregationColumnState(scope, newVal);
+                    modifyAxesOptions(scope);
+                    if (newVal !== NONE) {
+                        //Setting the aggregation columns based on the aggregation function chosen
+                        setAggregationColumns(scope, newVal);
+                    }
+                }
+                break;
+            case 'groupby':
+                if (CONSTANTS.isStudioMode) {
+                    isGroupByChecked = isGroupByEnabled(newVal);
+                    toggleAggregationState(scope);
+                    widgetProps.groupby.selectedvalues = newVal;
+                    if (isGroupByChecked) {
+                        //Filtering x and y axis options based on the data filtering options
+                        modifyAxesOptions(scope, key);
+                    } else {
+                        //Showing all options
+                        scope.widgetProps.xaxisdatakey.options = getCutomizedOptions(scope, 'xaxisdatakey');
+                        setYAxisDataKey(scope, getCutomizedOptions(scope, 'yaxisdatakey'));
+                    }
+                }
+                break;
+
+            case 'aggregationcolumn':
+                if (CONSTANTS.isStudioMode) {
+                    //Setting the group by columns when aggregation column is changed
+                    setGroupByColumns(scope, newVal);
+                    modifyAxesOptions(scope, key);
+                }
+                break;
             default:
                 //In RunMode, the plotchart method will not be called for all property change
                 scope._plotChartProxy();
                 break;
+            }
+            if (_.includes(key, ['groupby', 'aggregation', 'aggregationcolumn', 'orderby'])) {
+                scope._plotChartProxy();
             }
         }
 
@@ -1303,12 +1365,6 @@ WM.module('wm.widgets.basic')
                             //replot the chart after made changes in preview dialog
                             handlers.push($rootScope.$on('wms:replot-chart', function (event, activeChartScope) {
                                 if (activeChartScope.$id === scope.$id) {
-                                    //If aggregation function is set to none then remove it from markup
-                                    if (scope.aggregation === 'none') {
-                                        $rootScope.$emit('update-widget-property', 'aggregation', '');
-                                        $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
-                                    }
-                                    modifyAxesOptions(scope);
                                     scope._plotChartProxy();
                                 }
                             }));
