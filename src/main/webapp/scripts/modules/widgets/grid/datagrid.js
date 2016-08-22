@@ -50,6 +50,7 @@ $.widget('wm.datagrid', {
             'nodata': 'No data found.'
         },
         startRowIndex: 1,
+        editable: '',
         searchHandler: WM.noop,
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
@@ -101,6 +102,9 @@ $.widget('wm.datagrid', {
             'textAlignment' : 'left',
             'show'          : true
         }
+    },
+    CONSTANTS: {
+        'ADVANCED_EDIT': 'Advanced Inline'
     },
     Utils: {
         random: function () {
@@ -770,7 +774,7 @@ $.widget('wm.datagrid', {
     },
 
     /* Inserts a new blank row in the table. */
-    addNewRow: function () {
+    addNewRow: function (skipFocus) {
         var rowId = this.gridBody.find('tr:visible').length,
             rowData = {},
             $row;
@@ -788,7 +792,7 @@ $.widget('wm.datagrid', {
             this.gridElement.find('tbody.app-datagrid-body').append($row);
             this._appendRowActions($row, true, rowData);
             this.attachEventHandlers($row);
-            $row.find('.edit-row-button').trigger('click', {operation: 'new'});
+            $row.trigger('click', [undefined, {action: 'edit', operation: 'new', skipFocus: skipFocus}]);
             this.updateSelectAllCheckboxState();
             this.addOrRemoveScroll();
         }
@@ -1096,13 +1100,22 @@ $.widget('wm.datagrid', {
     },
 
     /* Handles row selection. */
-    rowSelectionHandler: function (e, $row) {
+    rowSelectionHandler: function (e, $row, options) {
+        options = options || {};
         e.stopPropagation();
         var rowId,
             rowData,
+            data,
             selected,
-            data;
-
+            action = options.action;
+        if (action || (this.options.editable === this.CONSTANTS.ADVANCED_EDIT && $(e.target).hasClass('app-datagrid-cell'))) {
+            //In case of advanced edit, Edit the row on click of a row
+            options.action = options.action || 'edit';
+            this.toggleEditRow(e, options);
+            if (options.skipSelect) {
+                return;
+            }
+        }
         $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
@@ -1190,7 +1203,7 @@ $.widget('wm.datagrid', {
             dataValue,
             $elScope;
         text = this._getValue($ie, fields);
-        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
+        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
             $elScope = $el.children().isolateScope();
             if ($elScope) {
                 dataValue = $elScope.datavalue;
@@ -1224,6 +1237,35 @@ $.widget('wm.datagrid', {
         this.gridBody.find('.edit-row-button').prop('disabled', val);
         this.gridBody.find('.delete-row-button').prop('disabled', val);
     },
+    //Function to the first input element in a row
+    setFocusOnElement: function (e, $el) {
+        var $firstEl,
+            $target = $(e.target);
+        if (!$el) {
+            $el = $target.closest('tr').find('td.cell-editing');
+        }
+        $firstEl = $($el).first().find('input');
+        if (!$firstEl.length) {
+            $firstEl = $($el).first().find('textarea');
+        }
+        if (!$firstEl.length) {
+            $firstEl = $($el).first().find('select');
+        }
+        if ($target.hasClass('app-datagrid-cell')) {
+            $target.find('input').focus();
+        } else {
+            $firstEl.focus();
+        }
+    },
+    removeNewRow: function ($row) {
+        this.disableActions(false);
+        this._setGridEditMode(false);
+        $row.remove();
+        if (!this.preparedData.length) {
+            this.setStatus('nodata', this.dataStatus.nodata);
+        }
+        this.addOrRemoveScroll();
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e, options) {
         e.stopPropagation();
@@ -1242,9 +1284,18 @@ $.widget('wm.datagrid', {
             formData,
             isFormDataSupported,
             multipartData,
-            firstEditableEle,
-            isValid;
-        if (e.data.action === 'edit') {
+            isValid,
+            advancedEdit = self.options.editable === self.CONSTANTS.ADVANCED_EDIT;
+        options = options || {};
+        e.data  = e.data  || {};
+        if (e.data.action === 'edit' || options.action === 'edit') {
+            if (advancedEdit) {
+                //In case of advanced edit, save the previous row
+                this.gridBody.find('tr.row-editing').each(function () {
+                    $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true}]);
+                });
+            }
+            $row.addClass('row-editing');
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
             }
@@ -1265,7 +1316,7 @@ $.widget('wm.datagrid', {
                     value,
                 //Set the values to the generated input elements
                     setInputValue = function (value) {
-                        if (!options || options.operation !== 'new') {
+                        if (options.operation !== 'new') {
                             //For widgets, set the datavalue. Upload uses html file upload. So, no need to set value
                             if (colDef.editWidgetType) {
                                 if (colDef.editWidgetType === 'upload') {
@@ -1277,7 +1328,7 @@ $.widget('wm.datagrid', {
                         }
                     };
                 if (!colDef.readonly) {
-                    if (options && options.operation === 'new') {
+                    if (options.operation === 'new') {
                         value = colDef.defaultvalue;
                     } else {
                         value = cellText;
@@ -1303,23 +1354,16 @@ $.widget('wm.datagrid', {
             $cancelButton.removeClass('hidden');
             $saveButton.removeClass('hidden');
             $editableElements = $row.find('td.cell-editing');
-            if ($editableElements) {
-                firstEditableEle = $($editableElements).first().find('input');
-                if (!firstEditableEle.length) {
-                    firstEditableEle = $($editableElements).first().find('textarea');
-                }
-                if (!firstEditableEle.length) {
-                    firstEditableEle = $($editableElements).first().find('select');
-                }
-                firstEditableEle.focus();
-            }
             $editableElements.on('click', function (e) {
                 e.stopPropagation();
             });
+            if (!options.skipFocus && $editableElements) {
+                self.setFocusOnElement(e, $editableElements);
+            }
         } else {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = rowId >= this.preparedData.length;
-            if (e.data.action === 'save') {
+            if (e.data.action === 'save' || options.action === 'save') {
                 isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob);
                 multipartData = false;
                 if (isFormDataSupported) {
@@ -1367,13 +1411,17 @@ $.widget('wm.datagrid', {
                         rowData = formData;
                     }
                     if (isNewRow) {
+                        if (advancedEdit && _.isEmpty(rowData)) {
+                            self.removeNewRow($row);
+                            return;
+                        }
                         if ($.isFunction(this.options.onBeforeRowInsert)) {
                             isValid = this.options.onBeforeRowInsert(rowData, e);
                             if (isValid === false) {
                                 return;
                             }
                         }
-                        this.options.onRowInsert(rowData, e, multipartData);
+                        this.options.onRowInsert(rowData, e, multipartData, options.success);
                     } else {
                         if ($.isFunction(this.options.onBeforeRowUpdate)) {
                             isValid = this.options.onBeforeRowUpdate(rowData, e);
@@ -1381,28 +1429,27 @@ $.widget('wm.datagrid', {
                                 return;
                             }
                         }
-                        this.options.afterRowUpdate(rowData, e, multipartData);
+                        this.options.afterRowUpdate(rowData, e, multipartData, options.success);
                     }
                 } else {
-                    this.cancelEdit($editableElements);
+                    this.cancelEdit($row);
                     $editButton.removeClass('hidden');
                     $cancelButton.addClass('hidden');
                     $saveButton.addClass('hidden');
-                    this.options.noChangesDetected();
+                    if (!options.noMsg) {
+                        this.options.noChangesDetected();
+                    }
+                    if ($.isFunction(options.success)) {
+                        options.success(true);
+                    }
                 }
             } else {
                 if (isNewRow) {
-                    this.disableActions(false);
-                    this._setGridEditMode(false);
-                    $row.remove();
-                    if (!this.preparedData.length) {
-                        this.setStatus('nodata', this.dataStatus.nodata);
-                    }
-                    this.addOrRemoveScroll();
+                    self.removeNewRow($row);
                     return;
                 }
                 // Cancel edit.
-                this.cancelEdit($editableElements);
+                this.cancelEdit($row);
                 $editButton.removeClass('hidden');
                 $cancelButton.addClass('hidden');
                 $saveButton.addClass('hidden');
@@ -1410,10 +1457,13 @@ $.widget('wm.datagrid', {
         }
         this.addOrRemoveScroll();
     },
-    cancelEdit: function ($editableElements) {
-        var self = this;
+    cancelEdit: function ($row) {
+        var self = this,
+            $editableElements = $row.find('td.cell-editing');
         this.disableActions(false);
         this._setGridEditMode(false);
+        $row.removeClass('row-editing');
+        $editableElements.off('click');
         $editableElements.each(function () {
             var $el   = $(this),
                 value = $el.data('originalValue'),
@@ -1439,6 +1489,8 @@ $.widget('wm.datagrid', {
             $cancelButton     = $row.find('.cancel-edit-row-button'),
             $saveButton       = $row.find('.save-edit-row-button'),
             self              = this;
+        $row.removeClass('row-editing');
+        $editableElements.off('click');
         this.disableActions(false);
         this._setGridEditMode(false);
         $editableElements.each(function () {
@@ -1508,7 +1560,25 @@ $.widget('wm.datagrid', {
                 }
                 $row.removeClass(className);
                 self.addOrRemoveScroll();
-            }, e);
+            }, e, function (skipFocus, error) {
+                if (self.options.editable !== self.CONSTANTS.ADVANCED_EDIT || !$(e.target).hasClass('delete-row-button')) {
+                    return;
+                }
+                //Call set status, so that the rows are visible for fom operations
+                self.__setStatus();
+                var rowID,
+                    $nextRow;
+                if (error) {
+                    return;
+                }
+                //On success, Focus the next row. If row is not present, focus the previous row
+                rowID = +$(e.target).closest('tr').attr('data-row-id');
+                $nextRow = self.gridBody.find('tr[data-row-id="' + rowID  + '"]');
+                if (!$nextRow.length) {
+                    $nextRow = self.gridBody.find('tr[data-row-id="' + (rowID - 1)  + '"]');
+                }
+                $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
+            });
         }
     },
 
@@ -1594,6 +1664,7 @@ $.widget('wm.datagrid', {
     attachEventHandlers: function ($htm) {
         var rowOperationsCol = this._getRowActionsColumnDef(),
             $header          = this.gridHeader,
+            self             = this,
             deleteRowHandler;
 
         if (this.options.enableRowSelection) {
@@ -1643,6 +1714,37 @@ $.widget('wm.datagrid', {
                 }
                 $htm.find('td .delete-row-button').on('click', deleteRowHandler.bind(this));
             }
+        }
+        if (self.options.editable === self.CONSTANTS.ADVANCED_EDIT) {
+            //On tab out of delete button, save the current row and make next row editable
+            $htm.find('td .delete-row-button').on('keydown', function (e) {
+                if (e.which !== 9) { //Other than tab key press, return
+                    return;
+                }
+                self.toggleEditRow(e, {
+                    'action'  : 'save',
+                    'noMsg'   : true,
+                    'success' : function (skipFocus, error) {
+                        //Call set status, so that the rows are visible for fom operations
+                        self.__setStatus();
+                        var rowID,
+                            $nextRow;
+                        //On error, focus the current row first element
+                        if (error) {
+                            self.setFocusOnElement(e);
+                            return;
+                        }
+                        //On success, make next row editable. If next row is not present, add new row
+                        rowID = +$(e.target).closest('tr').attr('data-row-id') + 1;
+                        $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
+                        if ($nextRow.length) {
+                            $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
+                        } else {
+                            self.addNewRow(skipFocus);
+                        }
+                    }
+                });
+            });
         }
     },
 

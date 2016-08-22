@@ -145,7 +145,10 @@ WM.module('wm.widgets.grid')
                 return index;
             },
             readOnlyGridAttrUpdated,
-            gridColumnCount;
+            gridColumnCount,
+            EDITABLE = {
+                'ADVANCED': 'Advanced Inline'
+            };
 
         return {
             "restrict": 'E',
@@ -456,6 +459,7 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
+                            scope.gridOptions.editable = attrs.editable;
                             /*Set isMobile value on the datagrid*/
                             scope.gridOptions.isMobile = Utils.isMobile();
                             scope.renderOperationColumns();
@@ -723,6 +727,21 @@ WM.module('wm.widgets.grid')
                                 });
                             }
                         };
+                        if (!scope.widgetid && scope.editable === EDITABLE.ADVANCED) {
+                            //In case of advanced inline, on tab keypress of grid, edit the first row
+                            element.on('keyup', function (e) {
+                                if (e.which !== 9 || !WM.element(e.target).hasClass('app-grid')) {
+                                    return;
+                                }
+                                var $row;
+                                $row = scope.datagridElement.find('.app-grid-content tr:first');
+                                if ($row.length) {
+                                    $row.trigger('click', [undefined, {action: 'edit'}]);
+                                } else {
+                                    scope.addNewRow();
+                                }
+                            });
+                        }
                     }
                 };
             }
@@ -764,7 +783,6 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable,
                 isBoundToLiveVariableRoot,
                 isBoundToServiceVariable,
-                isBoundToStaticVariable,
                 navigatorResultWatch,
                 navigatorMaxResultWatch,
             /* Check whether it is non-empty row. */
@@ -1160,7 +1178,7 @@ WM.module('wm.widgets.grid')
                     var el = WM.element(htm);
                     return $compile(el)($scope);
                 },
-                deleteRecord = function (row, cancelRowDeleteCallback, evt) {
+                deleteRecord = function (row, cancelRowDeleteCallback, evt, callBack) {
                     var variable,
                         isStaticVariable,
                         successHandler = function (success) {
@@ -1173,9 +1191,9 @@ WM.module('wm.widgets.grid')
                             /*Emit on row delete to handle any events listening to the delete action*/
                             $scope.$emit('on-row-delete', row);
 
-                            $scope.onRecordDelete();
+                            $scope.onRecordDelete(callBack);
                             if (!isStaticVariable) {
-                                $scope.updateVariable();
+                                $scope.updateVariable(row, callBack);
                             }
                             if ($scope.deletemessage) {
                                 wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
@@ -1194,6 +1212,7 @@ WM.module('wm.widgets.grid')
                                 'transform' : true,
                                 'scope'     : $scope.gridElement.scope()
                             }, successHandler, function (error) {
+                                Utils.triggerFn(callBack, undefined, true);
                                 Utils.triggerFn(cancelRowDeleteCallback);
                                 wmToaster.show('error', 'ERROR', error);
                             });
@@ -1249,9 +1268,9 @@ WM.module('wm.widgets.grid')
                                     $scope.datagridElement.datagrid('hideRowEditMode', row);
                                 }
                                 wmToaster.show('success', 'SUCCESS', 'Record added successfully');
-                                $scope.initiateSelectItem('last', response, undefined, isStaticVariable);
+                                $scope.initiateSelectItem('last', response, undefined, isStaticVariable, options.callBack);
                                 if (!isStaticVariable) {
-                                    $scope.updateVariable();
+                                    $scope.updateVariable(response, options.callBack);
                                 }
                                 Utils.triggerFn(options.success, response);
                                 $scope.onRowinsert({$event: options.event, $data: response, $rowData: response});
@@ -1270,6 +1289,7 @@ WM.module('wm.widgets.grid')
                     variable.insertRecord(dataObject, successHandler, function (error) {
                         wmToaster.show('error', 'ERROR', error);
                         Utils.triggerFn(options.error, error);
+                        Utils.triggerFn(options.callBack, undefined, true);
                     });
                 },
                 updateRecord = function (options) {
@@ -1300,9 +1320,9 @@ WM.module('wm.widgets.grid')
                                 }
                                 $scope.operationType = "";
                                 wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
-                                $scope.initiateSelectItem('current', response, undefined, isStaticVariable);
+                                $scope.initiateSelectItem('current', response, undefined, isStaticVariable, options.callBack);
                                 if (!isStaticVariable) {
-                                    $scope.updateVariable();
+                                    $scope.updateVariable(response, options.callBack);
                                 }
                                 Utils.triggerFn(options.success, response);
                                 $scope.onRowupdate({$event: options.event, $data: response, $rowData: response});
@@ -1321,6 +1341,7 @@ WM.module('wm.widgets.grid')
                     variable.updateRecord(dataObject, successHandler, function (error) {
                         wmToaster.show('error', 'ERROR', error);
                         Utils.triggerFn(options.error, error);
+                        Utils.triggerFn(options.callBack, undefined, true);
                     });
                 },
                 isBoundToView = function () {
@@ -1332,6 +1353,17 @@ WM.module('wm.widgets.grid')
                     }
                     $scope.primaryKey     = variableObj.getPrimaryKey();
                     $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                },
+                selectItemOnSuccess = function (row, skipSelectItem, callBack) {
+                    /*$timeout is used so that by then $scope.dataset has the updated value.
+                     * Selection of the item is done in the callback of page navigation so that the item that needs to be selected actually exists in the grid.*/
+                    /*Do not select the item if skip selection item is specified*/
+                    $timeout(function () {
+                        if (!skipSelectItem) {
+                            $scope.selectItem(row, $scope.dataset && $scope.dataset.data);
+                        }
+                        Utils.triggerFn(callBack);
+                    }, undefined, false);
                 };
             $scope.rowFilter = {};
             $scope.updateMarkupForGrid = function (config) {
@@ -1339,7 +1371,7 @@ WM.module('wm.widgets.grid')
                     Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
                 }
             };
-            $scope.updateVariable = function () {
+            $scope.updateVariable = function (row, callBack) {
                 var variable = $scope.gridElement.scope().Variables[$scope.variableName],
                     sortOptions;
                 if ($scope.isBoundToFilter) {
@@ -1354,7 +1386,9 @@ WM.module('wm.widgets.grid')
                 if (variable && !$scope.shownavigation) {
                     variable.update({
                         'type': 'wm.LiveVariable'
-                    }, WM.noop);
+                    }, function () {
+                        selectItemOnSuccess(row, true, callBack);
+                    });
                 }
             };
             /* Function to reset the column definitions dynamically. */
@@ -1423,8 +1457,8 @@ WM.module('wm.widgets.grid')
                 if (WM.isDefined(newValue)) {
                     /*Setting the serial no's only when show navigation is enabled and data navigator is compiled
                      and its current page is set properly*/
-                    if ($scope.shownavigation && $scope.dataNavigator && $scope.dataNavigator.currentPage) {
-                        startRowIndex = (($scope.dataNavigator.currentPage - 1) * $scope.dataNavigator.maxResults) + 1;
+                    if ($scope.shownavigation && $scope.dataNavigator && $scope.dataNavigator.dn.currentPage) {
+                        startRowIndex = (($scope.dataNavigator.dn.currentPage - 1) * $scope.dataNavigator.maxResults) + 1;
                         $scope.setDataGridOption('startRowIndex', startRowIndex);
                     }
                     /* If colDefs are available, but not already set on the datagrid, then set them.
@@ -1491,11 +1525,11 @@ WM.module('wm.widgets.grid')
 //                    $scope.onSort({$event: e, $data: e.data.col});
                     $scope.onHeaderclick({$event: e, $data: col});
                 },
-                onRowDelete: function (rowData, cancelRowDeleteCallback, e) {
-                    deleteRecord(rowData, cancelRowDeleteCallback, e);
+                onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack) {
+                    deleteRecord(rowData, cancelRowDeleteCallback, e, callBack);
                 },
-                onRowInsert: function (rowData, e, multipartData) {
-                    insertRecord({'row': rowData, 'multipartData': multipartData, event: e});
+                onRowInsert: function (rowData, e, multipartData, callBack) {
+                    insertRecord({'row': rowData, 'multipartData': multipartData, event: e, 'callBack': callBack});
                 },
                 beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
@@ -1506,8 +1540,8 @@ WM.module('wm.widgets.grid')
                     /*TODO: Bind this event.*/
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
                 },
-                afterRowUpdate: function (rowData, e, multipartData) {
-                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData});
+                afterRowUpdate: function (rowData, e, multipartData, callBack) {
+                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData, 'callBack': callBack});
                 },
                 onBeforeRowUpdate: function (rowData, e) {
                     return $scope.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});
@@ -1690,7 +1724,6 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable                = undefined;
                 isBoundToLiveVariableRoot            = undefined;
                 isBoundToServiceVariable             = undefined;
-                isBoundToStaticVariable              = undefined;
                 isBoundToFilter                      = undefined;
                 isBoundToServiceVariableSelectedItem = undefined;
                 $scope.gridVariable                  = '';
@@ -1792,7 +1825,6 @@ WM.module('wm.widgets.grid')
                             $scope.binddataset.indexOf('dataSet.') === -1 &&
                             $scope.binddataset.indexOf('selecteditem') === -1;
                         isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
-                        isBoundToStaticVariable = $scope.variableType === 'wm.Variable';
                         if (isBoundToServiceVariable && variableObj.serviceType === 'DataService') {
                             isBoundToProcedureServiceVariable = variableObj.controller === 'ProcedureExecution';
                             isBoundToQueryServiceVariable     = variableObj.controller === 'QueryExecution';
@@ -2057,11 +2089,11 @@ WM.module('wm.widgets.grid')
                 }
             };
 
-            $scope.initiateSelectItem = function (index, row, skipSelectItem, skipSizeIncrement) {
+            $scope.initiateSelectItem = function (index, row, skipSelectItem, isStaticVariable, callBack) {
                 /*index === "last" indicates that an insert operation has been successfully performed and navigation to the last page is required.
                 * Hence increment the "dataSize" by 1.*/
                 if (index === 'last') {
-                    if (!skipSizeIncrement) {
+                    if (!isStaticVariable) {
                         $scope.dataNavigator.dataSize += 1;
                     }
                     /*Update the data in the current page in the grid after insert/update operations.*/
@@ -2072,13 +2104,8 @@ WM.module('wm.widgets.grid')
                 /*Re-calculate the paging values like pageCount etc that could change due to change in the dataSize.*/
                 $scope.dataNavigator.calculatePagingValues();
                 $scope.dataNavigator.navigatePage(index, null, true, function () {
-                    /*$timeout is used so that by then $scope.dataset has the updated value.
-                    * Selection of the item is done in the callback of page navigation so that the item that needs to be selected actually exists in the grid.*/
-                    /*Do not select the item if skip selection item is specified*/
-                    if (!skipSelectItem) {
-                        $timeout(function () {
-                            $scope.selectItem(row, $scope.dataset && $scope.dataset.data);
-                        }, null, false);
+                    if ($scope.shownavigation || isStaticVariable) {
+                        selectItemOnSuccess(row, skipSelectItem, callBack);
                     }
                 });
             };
@@ -2138,33 +2165,18 @@ WM.module('wm.widgets.grid')
             };
 
 
-            $scope.onRecordDelete = function () {
+            $scope.onRecordDelete = function (callBack) {
+                var index;
                 /*Check for sanity*/
                 if ($scope.dataNavigator) {
                     $scope.dataNavigator.dataSize -= 1;
                     $scope.dataNavigator.calculatePagingValues();
                     /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                        $scope.dataNavigator.navigatePage('prev');
-                    } else {
-                        $scope.dataNavigator.navigatePage();
-                    }
-                } else {
-                    var variable = $scope.gridElement.scope().Variables[$scope.variableName];
-                    if (!variable) {
-                        return;
-                    }
-
-                    variable.update({
-                        'type': 'wm.LiveVariable',
-                        'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
-                        'scope': $scope.gridElement.scope()
-                    }, function (data) {
-                        $scope.serverData      = [];
-                        $scope.serverData.data = data;
-                        setGridData($scope.serverData);
-                    }, function (error) {
-                        wmToaster.show('error', 'ERROR', error);
+                    index = $scope.dataNavigator.pageCount < $scope.dataNavigator.dn.currentPage ? 'prev' : undefined;
+                    $scope.dataNavigator.navigatePage(index, null, true, function () {
+                        $timeout(function () {
+                            Utils.triggerFn(callBack);
+                        }, undefined, false);
                     });
                 }
             };

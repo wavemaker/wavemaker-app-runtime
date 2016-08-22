@@ -24,7 +24,7 @@ WM.module("wm.widgets.basic")
                 '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
-    }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'Variables', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, Variables, $rootScope, wmToaster, CONSTANTS) {
+    }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS) {
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.navigation']),
             notifyFor = {
@@ -156,7 +156,6 @@ WM.module("wm.widgets.basic")
                     var dataSize,
                         maxResults,
                         currentPage,
-                        pageCount,
                         startIndex,
                         data,
                         variable,
@@ -202,7 +201,7 @@ WM.module("wm.widgets.basic")
                                         currentPage = 1;
                                     }
                                     /* Sending pageCount undefined to calculate it again for query.*/
-                                    $scope.setDefaultPagingValues(dataSize, maxResults, currentPage, pageCount);
+                                    $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
                                     $scope.disableNavigation();
                                     $scope.checkDataSize(dataSize, newVal.numberOfElements, newVal.size);
                                 }
@@ -221,7 +220,7 @@ WM.module("wm.widgets.basic")
                             } else if (!WM.isString(newVal)) {
                                 dataSize = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : 1);
                                 maxResults = ($scope.pagingOptions && $scope.pagingOptions.maxResults) || dataSize;
-                                currentPage = 1;
+                                currentPage = $scope.dn.currentPage || 1;
 
                                 $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
                                 $scope.disableNavigation();
@@ -338,6 +337,7 @@ WM.module("wm.widgets.basic")
                         data = WM.isArray($scope.__fullData) ?
                                 $scope.__fullData.slice(startIndex, startIndex + $scope.maxResults) : $scope.__fullData;
                         $scope.result = data;
+                        $rootScope.$safeApply($scope);
                         $scope.onPageDataReady(event, data, callback);
                     }
                 };
