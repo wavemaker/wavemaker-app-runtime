@@ -1727,10 +1727,10 @@ WM.module('wm.widgets.base', [])
                         "yaxislabeldistance": {"type": "number", "value": 12},
                         "showxdistance": {"type": "boolean", "value": false},
                         "showydistance": {"type": "boolean", "value": false},
-                        "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none", "disabled" : true, "show": false},
-                        "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "show": false, "datasetfilter" : "custom"},
-                        "groupby": {"type": "list", "widget": "multi-select", "show": false, "datasetfilter" : "custom"},
-                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals", "show": false},
+                        "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none", "disabled" : true},
+                        "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "datasetfilter" : "custom"},
+                        "groupby": {"type": "list", "widget": "multi-select", "datasetfilter" : "custom"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
                         "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound", "show": false},
@@ -1900,7 +1900,6 @@ WM.module('wm.widgets.base', [])
             ];
             result.advancedPropertyGroups = [
                 {"name": "chart", "show": true},
-                {"name": "datafiltering", "show": true, "icon": 'wi wi-filter'},
                 {"name": "xaxis", "show": true, "icon": 'wi wi-border-bottom'},
                 {"name": "yaxis", "show": true, "icon": 'wi wi-border-left'},
                 {"name": "value", "show": true, "icon": 'wi wi-data-usage'},
@@ -1919,8 +1918,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "yaxisformat", "properties": ["ynumberformat"], "parent": "yaxis"},
                 //value groups
                 {"name": "value", "properties": ['showlabels', 'labeltype'], "parent": "value"},
-                {"name": "valueformat", "properties": ["ynumberformat"], "parent": "value"},
-                {"name": "datafiltering", "properties": ["groupby", "aggregation", "aggregationcolumn", "orderby"], "parent" : "datafiltering"}
+                {"name": "valueformat", "properties": ["ynumberformat"], "parent": "value"}
             ];
         }
         properties = result.properties;
