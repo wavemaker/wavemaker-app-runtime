@@ -155,9 +155,6 @@ wm.variables.services.$servicevariable = ['Variables',
                 // EVENT: ON_RESULT
                 initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
 
-                // EVENT: ON_SUCCESS
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
-
                 /* if dataTransformation enabled, transform the data */
                 if (variable.transformationColumns) {
                     response = transformData(response, variable);
@@ -178,15 +175,20 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* trigger success callback */
                 Utils.triggerFn(success, response);
 
-                if (CONSTANTS.isRunMode) {
-                    /* process next requests in the queue */
-                    variableActive[variable.activeScope.$id][variable.name] = false;
-                    variable.canUpdate = true;
-                    processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
-                }
+                $rootScope.$$postDigest(function () {
+                    // EVENT: ON_SUCCESS
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
 
-                // EVENT: ON_CAN_UPDATE
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
+                    if (CONSTANTS.isRunMode) {
+                        /* process next requests in the queue */
+                        variableActive[variable.activeScope.$id][variable.name] = false;
+                        variable.canUpdate = true;
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
+                    }
+
+                    // EVENT: ON_CAN_UPDATE
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
+                });
             },
 
             /**

@@ -633,11 +633,6 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
-                            // EVENT: ON_ERROR
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
-                            // EVENT: ON_CAN_UPDATE
-                            variable.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
                         }
 
                         /* update the dataSet against the variable */
@@ -648,10 +643,18 @@ wm.variables.services.$liveVariable = [
                          * The same callback if triggered in case of error also. The error-handling is done in grid.js*/
                         Utils.triggerFn(error, response);
 
-                        /* process next requests in the queue */
                         if (CONSTANTS.isRunMode) {
-                            variableActive[variable.activeScope.$id][variable.name] = false;
-                            processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                            $rootScope.$$postDigest(function () {
+                                // EVENT: ON_ERROR
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
+                                // EVENT: ON_CAN_UPDATE
+                                variable.canUpdate = true;
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
+
+                                /* process next requests in the queue */
+                                variableActive[variable.activeScope.$id][variable.name] = false;
+                                processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                            });
                         }
                     };
 
@@ -715,32 +718,35 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, dataObj.data);
-                            // EVENT: ON_SUCCESS
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
                             // EVENT: ON_PREPARESETDATA
                             newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, dataObj.data);
                             if (newDataSet) {
                                 //setting newDataSet as the response to service variable onPrepareSetData
                                 dataObj.data = newDataSet;
                             }
-                            // EVENT: ON_CAN_UPDATE
-                            variable.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
-                            variable._options =  variable._options || {};
-                            variable._options.orderBy = options && options.orderBy;
-                            variable._options.filterFields = options && options.filterFields;
                         }
                         /* update the dataSet against the variable */
                         updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
-                    }
-                    /* if callback function is provided, send the data to the callback */
-                    Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 
-                    /* process next requests in the queue */
-                    if (CONSTANTS.isRunMode) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$$postDigest(function () {
+                                // EVENT: ON_SUCCESS
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
+                                // EVENT: ON_CAN_UPDATE
+                                variable.canUpdate = true;
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
+                                variable._options =  variable._options || {};
+                                variable._options.orderBy = options && options.orderBy;
+                                variable._options.filterFields = options && options.filterFields;
+                            });
+                        }
+
+                        /* process next requests in the queue */
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
+                    /* if callback function is provided, send the data to the callback */
+                    Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
                 }, function (error) {
                     Utils.triggerFn(handleError, error);
                 });
@@ -1058,11 +1064,13 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
-                            // EVENT: ON_ERROR
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
-                            // EVENT: ON_CAN_UPDATE
-                            variableDetails.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response.error);
+                            $rootScope.$$postDigest(function () {
+                                // EVENT: ON_ERROR
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
+                                // EVENT: ON_CAN_UPDATE
+                                variableDetails.canUpdate = true;
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response.error);
+                            });
                         }
                         /* trigger error callback */
                         Utils.triggerFn(error, response.error);
@@ -1070,8 +1078,6 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
-                            // EVENT: ON_SUCCESS
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
                             if (variableDetails.operation !== "read") {
                                 // EVENT: ON_PREPARESETDATA
                                 var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, callBackScope, response);
@@ -1081,9 +1087,13 @@ wm.variables.services.$liveVariable = [
                                 }
                                 variableDetails.dataSet = response
                             }
-                            // EVENT: ON_CAN_UPDATE
-                            variableDetails.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+                            $rootScope.$$postDigest(function () {
+                                // EVENT: ON_SUCCESS
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
+                                // EVENT: ON_CAN_UPDATE
+                                variableDetails.canUpdate = true;
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+                            });
                         }
                         Utils.triggerFn(success, response);
                     }
@@ -1092,11 +1102,14 @@ wm.variables.services.$liveVariable = [
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
-                        // EVENT: ON_ERROR
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
-                        // EVENT: ON_CAN_UPDATE
-                        variableDetails.canUpdate = true;
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+
+                        $rootScope.$$postDigest(function () {
+                            // EVENT: ON_ERROR
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                            // EVENT: ON_CAN_UPDATE
+                            variableDetails.canUpdate = true;
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+                        });
                     }
                     Utils.triggerFn(error, response);
                 });
