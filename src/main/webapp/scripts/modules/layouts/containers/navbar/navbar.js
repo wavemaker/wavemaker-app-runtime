@@ -51,7 +51,7 @@ WM.module('wm.layouts.containers')
                                 '<i class="{{menuiconclass}}"></i>' +
                             '</button>' +
                             '<a class="navbar-brand" href="#/" ng-if="title || imagesrc">' +
-                                '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" ng-if="imgsrc" ng-src="{{imagesrc}}"/>' +
+                                '<img data-identifier="img" class="brand-image" alt="{{title}}" height="20" ng-if="imgsrc" ng-src="{{imagesrc}}"/>' +
                                 ' <span class="title">{{title}}</span>' +
                             '</a>' +
                         '</div>' +
