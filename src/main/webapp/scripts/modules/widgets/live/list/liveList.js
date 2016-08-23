@@ -382,20 +382,19 @@ WM.module('wm.widgets.live')
                     var concatStr = _.get(liData, $is.groupby);
 
                     if (WM.isUndefined(concatStr) || _.isNull(concatStr)) {
-                        concatStr = GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
-                        return concatStr;
+                        return GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
                     }
 
                     // if match prop is alphabetic ,get the starting alphabet of the word as key.
                     if ($is.match === GROUP_BY_OPTIONS.ALPHABET) {
-                        return concatStr.substr(0, 1);
+                        concatStr = concatStr.substr(0, 1);
                     }
 
                     if (_.includes(_.values(TIME_ROLLUP_OPTIONS), $is.match)) {
-                        return getTimeRolledUpString(concatStr, $is.match);
+                        concatStr = getTimeRolledUpString(concatStr, $is.match);
                     }
 
-                    return concatStr;
+                    return _.toLower(concatStr);
                 }
 
                 $el.find('> [data-identifier=list]').empty();
@@ -411,6 +410,13 @@ WM.module('wm.widgets.live')
                     if ($is.match === TIME_ROLLUP_OPTIONS.DAY) {
                         momentLocale._calendar = momentCalendarDayOptions; //For day, set the relevant moment calendar options
                     }
+                    // handling case-in-sensitive scenario
+                    _s.fieldDefs = _.orderBy(_s.fieldDefs, function (fieldDef) {
+                        var groupKey = _.get(fieldDef, $is.groupby);
+                        if (groupKey) {
+                            return _.toLower(groupKey);
+                        }
+                    });
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
                     momentLocale._calendar = momentCalendarOptions; //Reset to default moment calendar options
                 }
