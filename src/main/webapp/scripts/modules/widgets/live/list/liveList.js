@@ -20,7 +20,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
-                    '<ul data-identifier="list" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
+                    '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
@@ -443,7 +443,7 @@ WM.module('wm.widgets.live')
                                                 '</div>' +
                                                 '</h4></li>';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
 
@@ -496,7 +496,7 @@ WM.module('wm.widgets.live')
                     if ($is.collapsible) {
                         // on groupby header click, collapse or expand the list-items.
                         $el.find('li.app-list-item-header').on('click', function (e) {
-                            var selectedGroup   = WM.element(e.target.closest('.list-group')),
+                            var selectedGroup   = WM.element(e.target).closest('.list-group'),
                                 selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
 
                             if (selectedAppIcon.hasClass('wi-plus')) {
@@ -1020,34 +1020,50 @@ WM.module('wm.widgets.live')
                     }
 
                     keyPressed = Utils.getActionFromKey(evt);
-                    if (keyPressed === 'SHIFT+UP' || keyPressed === 'SHIFT+LEFT') {
-                        setIndexValues();
-                        if (presentIndex > 0) {
-                            if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit($is, selectCount)) {
-                                $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]).toggleClass('active');
-                            } else if (presentIndex > firstIndex) {
-                                WM.element($liItems[presentIndex]).toggleClass('active');
+                    if ($is.multiselect) {
+                        if (keyPressed === 'SHIFT+UP' || keyPressed === 'SHIFT+LEFT') {
+                            setIndexValues();
+                            if (presentIndex > 0) {
+                                if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit($is, selectCount)) {
+                                    $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]).toggleClass('active');
+                                } else if (presentIndex > firstIndex) {
+                                    WM.element($liItems[presentIndex]).toggleClass('active');
+                                    $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
+                                } else {
+                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                }
+                            }
+                        } else if (keyPressed === 'SHIFT+RIGHT' || keyPressed === 'SHIFT+DOWN') {
+                            setIndexValues();
+                            if (presentIndex < $liItems.length - 1) {
+                                if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit($is, selectCount)) {
+                                    $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]).toggleClass('active');
+                                } else if (presentIndex < firstIndex) {
+                                    WM.element($liItems[presentIndex]).toggleClass('active');
+                                    $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
+                                } else {
+                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                }
+                            }
+                        }
+                    }
+                    if (!evt.shiftKey) {
+                        if (keyPressed === 'UP-ARROW') {
+                            setIndexValues();
+                            if (presentIndex !== 0) {
                                 $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
-                            } else {
-                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                $is.lastSelectedItem.focus();
                             }
-                        }
-                        $is.lastSelectedItem.focus();
-                        $rs.$safeApply($is);
-                    } else if (keyPressed === 'SHIFT+RIGHT' || keyPressed === 'SHIFT+DOWN') {
-                        setIndexValues();
-                        if (presentIndex < $liItems.length - 1) {
-                            if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit($is, selectCount)) {
-                                $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]).toggleClass('active');
-                            } else if (presentIndex < firstIndex) {
-                                WM.element($liItems[presentIndex]).toggleClass('active');
+                        } else if (keyPressed === 'DOWN-ARROW') {
+                            setIndexValues();
+                            if (presentIndex !== $liItems.length - 1) {
                                 $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
-                            } else {
-                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                $is.lastSelectedItem.focus();
                             }
+                        } else if (keyPressed === 'ENTER') {
+                            setIndexValues();
+                            WM.element($liItems[presentIndex]).trigger('click');
                         }
-                        $is.lastSelectedItem.focus();
-                        $rs.$safeApply($is);
                     }
                 });
 
@@ -1226,7 +1242,7 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
                         liTemplateWrapper_end   = '></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
@@ -1238,6 +1254,10 @@ WM.module('wm.widgets.live')
                     if (!$is.groupby && $is.enablereorder) {
                         configureDnD($el, $is);
                     }
+
+                    $liScope.onFocus = function ($evt) {
+                        $is.lastSelectedItem = WM.element($evt.target);
+                    };
 
                     $is.$watch('binddataset', function (newVal) {
                         if (_.includes(newVal, 'selecteditem.')) {
