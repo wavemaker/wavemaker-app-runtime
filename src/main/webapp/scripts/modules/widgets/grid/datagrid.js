@@ -1203,7 +1203,7 @@ $.widget('wm.datagrid', {
             dataValue,
             $elScope;
         text = this._getValue($ie, fields);
-        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
+        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
             $elScope = $el.children().isolateScope();
             if ($elScope) {
                 dataValue = $elScope.datavalue;
@@ -1266,6 +1266,12 @@ $.widget('wm.datagrid', {
         }
         this.addOrRemoveScroll();
     },
+    //Method to save a row which is in editable state
+    saveRow: function () {
+        this.gridBody.find('tr.row-editing').each(function () {
+            $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true}]);
+        });
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e, options) {
         e.stopPropagation();
@@ -1291,9 +1297,7 @@ $.widget('wm.datagrid', {
         if (e.data.action === 'edit' || options.action === 'edit') {
             if (advancedEdit) {
                 //In case of advanced edit, save the previous row
-                this.gridBody.find('tr.row-editing').each(function () {
-                    $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true}]);
-                });
+                this.saveRow();
             }
             $row.addClass('row-editing');
             if ($.isFunction(this.options.beforeRowUpdate)) {
@@ -1390,6 +1394,7 @@ $.widget('wm.datagrid', {
                                 _.set(rowData, colDef.field, _.get(rowData, colDef.field) === null ? null : '');
                             }
                         } else {
+                            text = (fields.length === 1 && text === '') ? undefined : text; //Set empty values as undefined
                             if (WM.isDefined(text)) {
                                 text = text === 'null' ? null : text; //For select, null is returned as string null. Set this back to ull
                                 if (text === null) {
@@ -1440,7 +1445,7 @@ $.widget('wm.datagrid', {
                         this.options.noChangesDetected();
                     }
                     if ($.isFunction(options.success)) {
-                        options.success(true);
+                        options.success(false);
                     }
                 }
             } else {
@@ -1673,7 +1678,12 @@ $.widget('wm.datagrid', {
             return;
         }
         $row.focus();
-        $row.trigger('click');
+        if (this.options.editmode === this.CONSTANTS.QUICK_EDIT) {
+            //In case of quick edit, on up or down make the next row editable
+            $row.trigger('click', [undefined, {action: 'edit'}]);
+        } else {
+            $row.trigger('click');
+        }
     },
 
     /* Attaches all event handlers for the table. */
@@ -1686,7 +1696,7 @@ $.widget('wm.datagrid', {
         if (this.options.enableRowSelection) {
             $htm.on('click', this.rowSelectionHandler.bind(this));
             $htm.on('dblclick', this.rowDblClickHandler.bind(this));
-            $htm.on('keydown', this.onKeyDown);
+            $htm.on('keydown', this.onKeyDown.bind(this));
 
             if (this.options.selectFirstRow) {
                 this.selectFirstRow(true);
@@ -1734,9 +1744,12 @@ $.widget('wm.datagrid', {
             }
         }
         if (self.options.editmode === self.CONSTANTS.QUICK_EDIT) {
-            //On tab out of delete button, save the current row and make next row editable
-            $htm.find('td .delete-row-button').on('keydown', function (e) {
-                if (e.which !== 9) { //Other than tab key press, return
+            //On tab out of a row, save the current row and make next row editable
+            $htm.on('focusout', 'tr', function (e) {
+                var $target = $(e.target),
+                    $row    = $target.closest('tr');
+                //Save the row on last column of the data table
+                if (!$target.closest('td').is(':last-child') || $row.hasClass('danger')) {
                     return;
                 }
                 self.toggleEditRow(e, {
@@ -1753,7 +1766,7 @@ $.widget('wm.datagrid', {
                             return;
                         }
                         //On success, make next row editable. If next row is not present, add new row
-                        rowID = +$(e.target).closest('tr').attr('data-row-id') + 1;
+                        rowID = +$row.attr('data-row-id') + 1;
                         $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
                         if ($nextRow.length) {
                             $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);

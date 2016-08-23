@@ -103,7 +103,7 @@
  </example>
  */
 WM.module('wm.widgets.grid')
-    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils) {
+    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils, $document) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
             gridColumnMarkup = '',
@@ -355,6 +355,15 @@ WM.module('wm.widgets.grid')
                             },
                             handlers = [],
                             gridController;
+                        //Function to save the row on clicking outside, in case of quick edit
+                        function documentClickBind(event) {
+                            var $target = event.target;
+                            //If click triggered from same grid or a dialog, do not save the row
+                            if (element[0].contains($target) || $($target).closest('.modal-dialog').length) {
+                                return;
+                            }
+                            scope.datagridElement.datagrid('saveRow');
+                        }
                         /****condition for old property name for grid title*****/
                         if (attrs.gridcaption && !attrs.title) {
                             scope.title = scope.gridcaption;
@@ -371,6 +380,7 @@ WM.module('wm.widgets.grid')
 
                         scope.$on('$destroy', function () {
                             handlers.forEach(Utils.triggerFn);
+                            $document.off('click', documentClickBind);
                             Object.defineProperty(scope, 'selecteditem', {'get': _.noop, 'set': _.noop});
                         });
 
@@ -741,6 +751,7 @@ WM.module('wm.widgets.grid')
                                     scope.addNewRow();
                                 }
                             });
+                            $document.on('click', documentClickBind);
                         }
                     }
                 };
