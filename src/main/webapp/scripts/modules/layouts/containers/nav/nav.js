@@ -67,8 +67,6 @@ WM.module('wm.layouts.containers')
             function constructNav($el, $is) {
                 $el.empty();
 
-                $el.off('.on-select');
-
                 if ($is.nodes && $is.nodes.length) {
                     var iconField     = $is.itemicon     || 'icon',
                         labelField    = $is.itemlabel    || 'label',
