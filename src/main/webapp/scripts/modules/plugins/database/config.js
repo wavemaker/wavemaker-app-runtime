@@ -473,6 +473,13 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "UPDATE": false,
             "DELETE": false,
             "READ"  : true
+        },
+        "RE_IMPORT_CASE": {
+            "CREATE": false,
+            "UPDATE": false,
+            "DELETE": false,
+            "READ"  : true,
+            "VIEWONLY": true
         }
     },
     "IDENTITY_GENERATORS" : ['integer', 'short', 'long', 'big_integer'],
