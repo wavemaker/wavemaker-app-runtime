@@ -50,7 +50,7 @@ $.widget('wm.datagrid', {
             'nodata': 'No data found.'
         },
         startRowIndex: 1,
-        editable: '',
+        editmode: '',
         searchHandler: WM.noop,
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
@@ -104,7 +104,7 @@ $.widget('wm.datagrid', {
         }
     },
     CONSTANTS: {
-        'ADVANCED_EDIT': 'Advanced Inline'
+        'QUICK_EDIT': 'quickedit'
     },
     Utils: {
         random: function () {
@@ -1108,7 +1108,7 @@ $.widget('wm.datagrid', {
             data,
             selected,
             action = options.action;
-        if (action || (this.options.editable === this.CONSTANTS.ADVANCED_EDIT && $(e.target).hasClass('app-datagrid-cell'))) {
+        if (action || (this.options.editmode === this.CONSTANTS.QUICK_EDIT && $(e.target).hasClass('app-datagrid-cell'))) {
             //In case of advanced edit, Edit the row on click of a row
             options.action = options.action || 'edit';
             this.toggleEditRow(e, options);
@@ -1285,7 +1285,7 @@ $.widget('wm.datagrid', {
             isFormDataSupported,
             multipartData,
             isValid,
-            advancedEdit = self.options.editable === self.CONSTANTS.ADVANCED_EDIT;
+            advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
         options = options || {};
         e.data  = e.data  || {};
         if (e.data.action === 'edit' || options.action === 'edit') {
@@ -1561,7 +1561,7 @@ $.widget('wm.datagrid', {
                 $row.removeClass(className);
                 self.addOrRemoveScroll();
             }, e, function (skipFocus, error) {
-                if (self.options.editable !== self.CONSTANTS.ADVANCED_EDIT || !$(e.target).hasClass('delete-row-button')) {
+                if (self.options.editmode !== self.CONSTANTS.QUICK_EDIT || !$(e.target).hasClass('delete-row-button')) {
                     return;
                 }
                 //Call set status, so that the rows are visible for fom operations
@@ -1715,7 +1715,7 @@ $.widget('wm.datagrid', {
                 $htm.find('td .delete-row-button').on('click', deleteRowHandler.bind(this));
             }
         }
-        if (self.options.editable === self.CONSTANTS.ADVANCED_EDIT) {
+        if (self.options.editmode === self.CONSTANTS.QUICK_EDIT) {
             //On tab out of delete button, save the current row and make next row editable
             $htm.find('td .delete-row-button').on('keydown', function (e) {
                 if (e.which !== 9) { //Other than tab key press, return

@@ -146,8 +146,8 @@ WM.module('wm.widgets.grid')
             },
             readOnlyGridAttrUpdated,
             gridColumnCount,
-            EDITABLE = {
-                'ADVANCED': 'Advanced Inline'
+            EDIT_MODE = {
+                'QUICK_EDIT': 'quickedit'
             };
 
         return {
@@ -459,7 +459,7 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
-                            scope.gridOptions.editable = attrs.editable;
+                            scope.gridOptions.editmode = attrs.editmode;
                             /*Set isMobile value on the datagrid*/
                             scope.gridOptions.isMobile = Utils.isMobile();
                             scope.renderOperationColumns();
@@ -727,7 +727,7 @@ WM.module('wm.widgets.grid')
                                 });
                             }
                         };
-                        if (!scope.widgetid && scope.editable === EDITABLE.ADVANCED) {
+                        if (!scope.widgetid && scope.editmode === EDIT_MODE.QUICK_EDIT) {
                             //In case of advanced inline, on tab keypress of grid, edit the first row
                             element.on('keyup', function (e) {
                                 if (e.which !== 9 || !WM.element(e.target).hasClass('app-grid')) {
