@@ -1955,6 +1955,77 @@ WM.module('wm.utils', [])
             return json;
         }
 
+
+        /**
+         * Returns the types array for particular type of widgets
+         * @param type of widgets
+         * @returns [string]
+         */
+        function getTypes(type) {
+            var types = [];
+            
+            if (type === 'form-widgets') {
+                types = ["wm-label",
+                    "wm-text",
+                    "wm-checkbox",
+                    "wm-checkboxset",
+                    "wm-radio",
+                    "wm-radioset",
+                    "wm-textarea",
+                    "wm-select",
+                    "wm-button",
+                    "wm-picture",
+                    "wm-anchor",
+                    "wm-popover",
+                    "wm-date",
+                    "wm-calendar",
+                    "wm-time",
+                    "wm-datetime",
+                    "wm-currency",
+                    "wm-colorpicker",
+                    "wm-slider",
+                    "wm-fileupload",
+                    "wm-grid",
+                    "wm-livefilter",
+                    "wm-livelist",
+                    "wm-datanavigator",
+                    "wm-html",
+                    "wm-prefab",
+                    "wm-richtexteditor",
+                    "wm-search",
+                    "wm-menu",
+                    "wm-switch",
+                    "wm-nav",
+                    "wm-tree",
+                    "wm-liveform",
+                    "wm-rating",
+                    "wm-camera",
+                    "wm-barcodescanner",
+                    "wm-mobile-navbar ",
+                    "wm-chart",
+                    "wm-view",
+                    "wm-form",
+                    "wm-carousel"
+                ];
+            } else if (type === 'page-container-wigdets') {
+                types = [
+                    'wm-accordionpane',
+                    'wm-container',
+                    'wm-panel',
+                    'wm-tabcontent',
+                    'wm-footer',
+                    'wm-header',
+                    'wm-left-panel',
+                    'wm-right-panel',
+                    'wm-top-nav',
+                    'wm-cardcontent',
+                    'wm-wizardstep',
+                    'wm-tabpane'
+                ];
+            }
+            return types;
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2067,4 +2138,5 @@ WM.module('wm.utils', [])
         this.setNodeContent             = setNodeContent;
         this.getOrderByExpr             = getOrderByExpr;
         this.xmlToJson                  = xmlToJson;
+        this.getTypes                   = getTypes;
     }]);
