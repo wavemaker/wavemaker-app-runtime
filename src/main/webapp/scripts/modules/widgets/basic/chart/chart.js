@@ -236,12 +236,18 @@ WM.module('wm.widgets.basic')
 
         // Check if aggregation is chosen
         function isAggregationEnabled(scope) {
-            return ((isGroupByEnabled(scope.groupby) && scope.aggregation !== NONE && scope.aggregationcolumn));
+            return !!((isGroupByEnabled(scope.groupby) && scope.aggregation !== NONE && scope.aggregationcolumn));
         }
 
         // Check if either groupby, aggregation or orderby is chosen
         function isDataFilteringEnabled(scope) {
-            return isAggregationEnabled(scope) || isGroupByEnabled(scope.groupby) || scope.orderby;
+            /*Query need to be triggered if any of the following cases satisfy
+            * 1. Group By and aggregation both chosen
+            * 2. Group By alone with atleast two columns chosen, one of which is x axis
+            * 3. Only Order By is chosen
+            * */
+
+            return isAggregationEnabled(scope) || (isGroupByEnabled(scope.groupby) && scope.isVisuallyGrouped) || scope.orderby;
         }
 
         //Gets the value by parsing upto the leaf node
@@ -543,7 +549,7 @@ WM.module('wm.widgets.basic')
             });
 
             // adding aggregation column, if enabled
-            if (scope.aggregation !== NONE &&  scope.aggregationcolumn) {
+            if (isAggregationEnabled(scope)) {
                 columns.push(getAggregationFunction(scope.aggregation) + '(' + scope.aggregationcolumn + ') AS ' + getValidAliasName(scope.aggregationcolumn));
             }
 
@@ -571,64 +577,70 @@ WM.module('wm.widgets.basic')
         /*Decides whether the data should be visually grouped or not
         Visually grouped when a different column is choosen in the group by other than x and y axis*/
         function getGroupingDetails(scope) {
-            var isVisuallyGrouped = false,
-                visualGroupingColumn,
-                groupingExpression,
-                groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
-                yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                groupingColumnIndex,
-                columns = [];
+            if (isGroupByEnabled(scope.groupby)) {
+                var isVisuallyGrouped = false,
+                    visualGroupingColumn,
+                    groupingExpression,
+                    groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
+                    yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
+                    groupingColumnIndex,
+                    columns = [];
 
-            if (groupbyColumns.length) {
-                /*Getting the group by column which is not selected either in x or y axis*/
-                groupbyColumns.every(function (column, index) {
-                    if (scope.xaxisdatakey !== column && WM.element.inArray(column, yAxisKeys) === -1) {
-                        isVisuallyGrouped = true;
-                        visualGroupingColumn = column;
-                        groupingColumnIndex = index;
-                        groupbyColumns.splice(groupingColumnIndex, 1);
-                        return false;
+                if (groupbyColumns.length > 1) {
+                    /*Getting the group by column which is not selected either in x or y axis*/
+                    groupbyColumns.every(function (column, index) {
+                        if (scope.xaxisdatakey !== column && WM.element.inArray(column, yAxisKeys) === -1) {
+                            isVisuallyGrouped = true;
+                            visualGroupingColumn = column;
+                            groupingColumnIndex = index;
+                            groupbyColumns.splice(groupingColumnIndex, 1);
+                            return false;
+                        }
+                        return true;
+                    });
+                    //Constructing the groupby expression
+                    if (visualGroupingColumn) {
+                        columns.push(visualGroupingColumn);
                     }
-                    return true;
+
+                    if (groupbyColumns.length) {
+                        columns = _.concat(columns, groupbyColumns);
+                    }
+                }
+                //If x and y axis are not included in aggregation need to be included in groupby
+                if (scope.xaxisdatakey !== scope.aggregationcolumn) {
+                    columns.push(scope.xaxisdatakey);
+                }
+                _.forEach(yAxisKeys, function (key) {
+                    if (key !== scope.aggregationcolumn) {
+                        columns.push(key);
+                    }
                 });
-                //Constructing the groupby expression
-                if (visualGroupingColumn) {
-                    columns.push(visualGroupingColumn);
-                }
+                groupingExpression =  columns.join(',');
+                // set isVisuallyGrouped flag in scope for later use
+                scope.isVisuallyGrouped = isVisuallyGrouped;
 
-                if (groupbyColumns.length) {
-                    columns = _.concat(columns, groupbyColumns);
-                }
+                return {
+                    expression: groupingExpression,
+                    isVisuallyGrouped: isVisuallyGrouped,
+                    visualGroupingColumn: visualGroupingColumn
+                };
             }
-            //If x and y axis are not included in aggregation need to be included in groupby
-            if (scope.xaxisdatakey !== scope.aggregationcolumn) {
-                columns.push(scope.xaxisdatakey);
-            }
-            _.forEach(yAxisKeys, function (key) {
-                if (key !== scope.aggregationcolumn) {
-                    columns.push(key);
-                }
-            });
-            groupingExpression =  columns.join(',');
-            // set isVisuallyGrouped flag in scope for later use
-            scope.isVisuallyGrouped = isVisuallyGrouped;
-
             return {
-                expression: groupingExpression,
-                isVisuallyGrouped: isVisuallyGrouped,
-                visualGroupingColumn: visualGroupingColumn
+                expression: '',
+                isVisuallyGrouped: false,
+                visualGroupingColumn: ''
             };
         }
 
         //Function to get the aggregated data after applying the aggregation & group by or order by operations.
-        function getAggregatedData(scope, element, callback) {
+        function getAggregatedData(scope, element, groupingDetails, callback) {
             var query,
                 variableName,
                 variable,
                 columns,
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 orderbyexpression = getOrderbyExpression(scope.orderby),
-                groupingDetails = getGroupingDetails(scope),
                 groupbyExpression = groupingDetails.expression,
                 elScope = element.scope();
 
@@ -680,7 +692,7 @@ WM.module('wm.widgets.basic')
                 WM.forEach(response.content, function (data) {
                     var obj = {};
                     // Set the response in the chartData based on 'aggregationColumn', 'xAxisDataKey' & 'yAxisDataKey'.
-                    if (scope.aggregation !== NONE) {
+                    if (isAggregationEnabled(scope)) {
                         obj[scope.aggregationcolumn] = data[aggregationAlias];
                     }
 
@@ -1020,9 +1032,10 @@ WM.module('wm.widgets.basic')
                 return [];
             }
             scope.isLoadInProgress = true;
+            var groupingDetails = getGroupingDetails(scope);
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
             if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isDataFilteringEnabled(scope))) {
-                getAggregatedData(scope, element, function () {
+                getAggregatedData(scope, element, groupingDetails, function () {
                     plotChart(scope, element);
                 });
             } else { //Else, simply plot the chart.
@@ -1293,6 +1306,9 @@ WM.module('wm.widgets.basic')
                         //Showing all options
                         scope.widgetProps.xaxisdatakey.options = getCutomizedOptions(scope, 'xaxisdatakey');
                         setYAxisDataKey(scope, getCutomizedOptions(scope, 'yaxisdatakey'));
+                        //If groupby not selected then remove aggregation columns from markup
+                        $rootScope.$emit('update-widget-property', 'aggregation', '');
+                        $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
                     }
                 }
                 break;
@@ -1309,7 +1325,7 @@ WM.module('wm.widgets.basic')
                 scope._plotChartProxy();
                 break;
             }
-            if (_.includes(key, ['groupby', 'aggregation', 'aggregationcolumn', 'orderby'])) {
+            if (_.includes(advanceDataProps, key)) {
                 scope._plotChartProxy();
             }
         }
