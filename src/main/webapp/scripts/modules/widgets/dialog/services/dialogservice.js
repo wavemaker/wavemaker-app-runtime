@@ -307,6 +307,10 @@ WM.module('wm.widgets.dialog')
             $uibModalInstances[dialogId].result.then(null,
                 /* called when dialog closes on backdrop click*/
                 function () {
+                    var dialogScope = $uibModalInstances[dialogId].scope;
+                    if (dialogScope.onClose) {
+                        dialogScope.onClose();
+                    }
                     $uibModalInstances[dialogId] = null;
                 });
 
@@ -426,4 +430,5 @@ WM.module('wm.widgets.dialog')
             Utils.triggerFn(confirmActionCancel);
             DialogService.close('_app-confirm-dialog');
         };
+        $scope.onClose = $scope.confirmDialogActionCancel;
     }]);
