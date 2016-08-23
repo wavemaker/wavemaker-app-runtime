@@ -621,12 +621,11 @@ wm.variables.services.Variables = [
                 WM.forEach(self.variableCollection[scope.$id], function (variable, name) {
                     /* assign variable name to the variable object for later use */
                     variable.name = name;
-
+                    if (variable.init) {
+                        variable.init();
+                    }
                     if (runMode) {
                         variable.activeScope = scope;
-                        if (variable.init) {
-                            variable.init();
-                        }
                     } else {
                         /* this copy is used by binding dialog in STUDIO mode */
                         self.studioCopy[context][name] = variable;
@@ -2073,7 +2072,7 @@ wm.variables.services.Variables = [
                     createdVariable.operationId   = variableDetails.operationId;
                     createdVariable.type          = variableDetails.returnType;
 
-                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate'], function (property) {
+                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate', 'isList'], function (property) {
                         if (WM.isDefined(variableDetails[property])) {
                             createdVariable[property] = variableDetails[property];
                         }
