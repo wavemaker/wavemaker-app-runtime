@@ -365,7 +365,7 @@ $.widget('wm.datagrid', {
 
         htm = this.preparedHeaderData.reduce(function (prev, current, colIndex) {
             return prev + self._getColumnTemplate(row, colIndex, current);
-        }, '<tr class="' + this.options.cssClassNames.tableRow + '" data-row-id="' + row.pk + '">');
+        }, '<tr tabindex="0" class="' + this.options.cssClassNames.tableRow + '" data-row-id="' + row.pk + '">');
 
         htm += '</tr>';
         return htm;
@@ -1660,6 +1660,22 @@ $.widget('wm.datagrid', {
         this.options.sortHandler.call(this, this.options.sortInfo, e, 'sort');
     },
 
+    // Handles keydown event on row items.
+    onKeyDown: function (event) {
+        event.stopPropagation();
+        var $row;
+        if (event.which === 38) { // up-arrow action
+            $row = $(event.target).closest('tr').prev();
+
+        } else if (event.which === 40) { // down-arrow action
+            $row = $(event.target).closest('tr').next();
+        } else {
+            return;
+        }
+        $row.focus();
+        $row.trigger('click');
+    },
+
     /* Attaches all event handlers for the table. */
     attachEventHandlers: function ($htm) {
         var rowOperationsCol = this._getRowActionsColumnDef(),
@@ -1670,6 +1686,8 @@ $.widget('wm.datagrid', {
         if (this.options.enableRowSelection) {
             $htm.on('click', this.rowSelectionHandler.bind(this));
             $htm.on('dblclick', this.rowDblClickHandler.bind(this));
+            $htm.on('keydown', this.onKeyDown);
+
             if (this.options.selectFirstRow) {
                 this.selectFirstRow(true);
             }
