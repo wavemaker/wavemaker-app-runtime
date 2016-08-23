@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                         '</h3>' +
                     '</div>' +
                     '<div class="form-body panel-body" apply-styles="inner-shell">' +
-                        '<wm-message scopedataset="statusMessage"></wm-message>' +
+                        '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                         '<div class="form-elements" wmtransclude>' +
                             '<div class="overlay" ng-if="showNoFieldsMsg">' +
                                 '<span>{{:: $root.locale.MESSAGE_CANNOT_GENERATE_FIELDS_IN_STUDIO}}</span>' +
@@ -27,7 +27,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
@@ -206,9 +206,33 @@ WM.module('wm.layouts.containers')
             $rootScope.$safeApply($s);
         }
 
+        function onResult(scope, data, status, event) {
+            /* whether service call success or failure call this method*/
+            Utils.triggerFn(scope.onResult, {$event: event, $data: data});
+            if (status === 'success') {
+                /*if service call is success call this method */
+                Utils.triggerFn(scope.onSuccess, {$event: event, $data: data});
+            } else {
+                /* if service call fails call this method */
+                Utils.triggerFn(scope.onError, {$event: event, $data: data});
+            }
+
+        }
+
+        function toggleMessage(scope, msg, type) {
+            if (msg) {
+                if (scope.messagelayout === 'Inline') {
+                    scope.statusMessage = {'caption': msg || '', type: type};
+                } else {
+                    wmToaster.show(type, type.toUpperCase(), msg, undefined, 'trustedHtml');
+                }
+            }
+        }
+
         function bindEvents(scope, element) {
             element.on('submit', function (event) {
                 var params,
+                    template,
                     formData     = {},
                     formVariable = element.scope().Variables[scope.formvariable];
                 //Get all form fields and prepare form data as key value pairs
@@ -243,18 +267,13 @@ WM.module('wm.layouts.containers')
                     //If its a service variable call setInput and assign form data and invoke the service
                     if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                         formVariable.setInput(formData);
-                        formVariable.update({}, function () {
-                            if (scope.postmessage) {
-                                scope.statusMessage = {
-                                    'type'    : 'success',
-                                    'caption' : scope.postmessage
-                                };
-                            }
+                        formVariable.update({}, function (data) {
+                            toggleMessage(scope, scope.postmessage, 'success');
+                            onResult(scope, data, 'success', event);
                         }, function (errMsg) {
-                            scope.statusMessage = {
-                                'type'   : 'error',
-                                'caption': errMsg
-                            };
+                            template = scope.errormessage && scope.errormessage + (scope.messagelayout === 'Inline' ? ' <span class="toast-title">CAUSE: </span><span>' + errMsg + '</span>' : '<div class="toast-title">CAUSE</div><p>' + errMsg + '</p>');
+                            toggleMessage(scope, template, 'error');
+                            onResult(scope, errMsg, 'error', event);
                         });
                     } else if (formVariable) {
                         /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
