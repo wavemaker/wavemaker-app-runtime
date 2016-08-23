@@ -74,9 +74,7 @@ WM.module('wm.widgets.live')
                         post: function (scope, element, attrs) {
                             var handlers = [],
                                 liveGridOptions = {
-                                    'allowInlineEditing' : false,
                                     'multiselect'        : false,
-                                    'allowAddNewRow'     : false,
                                     'setGridEditMode'    : ''
                                 },
                                 gridWp;
@@ -227,9 +225,6 @@ WM.module('wm.widgets.live')
                             } else if (scope.grid) {
                                 //If form is not present along with the grid, disable the actions on grid
                                 scope.grid.datagridElement.datagrid('option', {
-                                    'allowInlineEditing' : false,
-                                    'disableDelete'      : true,
-                                    'allowAddNewRow'     : false,
                                     'beforeRowUpdate'    : function () {
                                         showErrorMessage();
                                     },
