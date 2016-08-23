@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
                 '<div class="app-wizard-actions panel-footer">' +
                     '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-if="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
                     '<div class="app-wizard-actions-right">' +
-                        '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
+                        '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" ng-click="cancel()" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
                         '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
                             '<i class="app-icon wi wi-chevron-left"></i>' +
                             '<span class="btn-caption">{{previousbtnlabel}}</span>' +
@@ -62,7 +62,7 @@ WM.module('wm.layouts.containers')
 
             return {
                 'restrict'  : 'E',
-                'scope'     : {'onDone': '&'},
+                'scope'     : {'onDone': '&', 'onCancel': '&'},
                 'replace'   : true,
                 'transclude': true,
                 'template'  : $templateCache.get('template/layout/container/wizard.html'),
@@ -136,6 +136,16 @@ WM.module('wm.layouts.containers')
                             if ($is.onDone) {
                                 params = {$isolateScope: $is, steps: $is.steps};
                                 if ($is.onDone(params) === false) {
+                                    return;
+                                }
+                            }
+                        };
+                        //Function to invoke on-Cancel event on wizard
+                        $is.cancel = function () {
+                            var params;
+                            if ($is.onCancel) {
+                                params = {$isolateScope: $is, steps: $is.steps};
+                                if ($is.onCancel(params) === false) {
                                     return;
                                 }
                             }

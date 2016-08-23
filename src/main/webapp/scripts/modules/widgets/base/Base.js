@@ -1540,7 +1540,8 @@ WM.module('wm.widgets.base', [])
                         "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
                         "previousbtnlabel": {"type": "string", "value": "Previous", "bindable": "in-bound"},
                         "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"},
-                        "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.wizardstep": {
                         "title": {"type": "string", "value": "Step Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -3296,8 +3297,8 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `Widgets` provides utility methods for the accessing the scope of the widgets.
      */
-    .service('Widgets', ["$rootScope", 'wmToaster', 'CONSTANTS',
-        function ($rootScope, wmToaster, CONSTANTS) {
+    .service('Widgets', ["$rootScope", 'wmToaster', 'CONSTANTS', 'Utils',
+        function ($rootScope, wmToaster, CONSTANTS, Utils) {
             "use strict";
 
             var registry = {}, /* widgetId - scope map */
@@ -3324,64 +3325,8 @@ WM.module('wm.widgets.base', [])
                 /* if comma separated types are provided, make it an array*/
                 if (typeof types === "string") {
                     /* if form-widgets required */
-                    if (types === "form-widgets") {
-                        types = ["wm-label",
-                            "wm-text",
-                            "wm-checkbox",
-                            "wm-checkboxset",
-                            "wm-radio",
-                            "wm-radioset",
-                            "wm-textarea",
-                            "wm-select",
-                            "wm-button",
-                            "wm-picture",
-                            "wm-anchor",
-                            "wm-popover",
-                            "wm-date",
-                            "wm-calendar",
-                            "wm-time",
-                            "wm-datetime",
-                            "wm-currency",
-                            "wm-colorpicker",
-                            "wm-slider",
-                            "wm-fileupload",
-                            "wm-grid",
-                            "wm-livefilter",
-                            "wm-livelist",
-                            "wm-datanavigator",
-                            "wm-html",
-                            "wm-prefab",
-                            "wm-richtexteditor",
-                            "wm-search",
-                            "wm-menu",
-                            "wm-switch",
-                            "wm-nav",
-                            "wm-tree",
-                            "wm-liveform",
-                            "wm-rating",
-                            "wm-camera",
-                            "wm-barcodescanner",
-                            "wm-mobile-navbar ",
-                            "wm-chart",
-                            "wm-view",
-                            "wm-form",
-                            "wm-carousel"
-                            ];
-                    } else if (types === 'page-container-widgets') {
-                        types = [
-                            'wm-accordionpane',
-                            'wm-container',
-                            'wm-panel',
-                            'wm-tabcontent',
-                            'wm-footer',
-                            'wm-header',
-                            'wm-left-panel',
-                            'wm-right-panel',
-                            'wm-top-nav',
-                            'wm-cardcontent',
-                            'wm-wizardstep',
-                            'wm-tabpane'
-                        ];
+                    if (types === 'form-widgets' || types === 'page-container-widgets') {
+                        types = Utils.getTypes(types);
                     } else {
                         types = types.split(",");
                     }
