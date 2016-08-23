@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                 '</textarea>'
             );
     }])
-    .directive('wmTextarea', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmTextarea', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
         'use strict';
         /*Obtaining properties specific to textarea widget by extending from all editor related widget properties*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.textarea', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']);
@@ -55,6 +55,10 @@ WM.module('wm.widgets.form')
                         scope._model_ = '';
                     };
 
+                    //set the resizable property to none in Studio Mode
+                    if (CONSTANTS.isStudioMode) {
+                        element.css('resize', 'none');
+                    }
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }
