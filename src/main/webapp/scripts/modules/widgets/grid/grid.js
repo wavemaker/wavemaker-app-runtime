@@ -1337,9 +1337,6 @@ WM.module('wm.widgets.grid')
                         Utils.triggerFn(options.callBack, undefined, true);
                     });
                 },
-                isBoundToView = function () {
-                    return $scope.dataset && $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
-                },
                 setImageProperties = function (variableObj) {
                     if (!variableObj) {
                         return;
@@ -1693,7 +1690,6 @@ WM.module('wm.widgets.grid')
                     result,
                     isBoundToSelectedItem,
                     isBoundToSelectedItemSubset,
-                    isBoundToServiceVariableSelectedItem,
                     isBoundToQueryServiceVariable,
                     isBoundToProcedureServiceVariable,
                     isBoundToFilter,
@@ -1716,7 +1712,6 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariableRoot            = undefined;
                 isBoundToServiceVariable             = undefined;
                 isBoundToFilter                      = undefined;
-                isBoundToServiceVariableSelectedItem = undefined;
                 $scope.gridVariable                  = '';
                 /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
                 if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
@@ -1771,7 +1766,6 @@ WM.module('wm.widgets.grid')
                         variableObj = element.scope().Variables && element.scope().Variables[variableName];
                         isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
                         isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
-                        isBoundToServiceVariableSelectedItem = variableObj && variableObj.category === 'wm.ServiceVariable';
                         if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
                             if (variableName === null) {
                                 widgetBindingDetails = LiveWidgetUtils.fetchReferenceDetails($scope);

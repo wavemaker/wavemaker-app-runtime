@@ -1225,7 +1225,7 @@ $.widget('wm.datagrid', {
                 fields       = _.split(colDef.field, '.'),
                 text         = self.getTextValue($el, colDef, fields),
                 originalData = _.get(rowData, colDef.field);
-            isDataChanged = !text && originalData === null ? false : !(originalData == text);
+            isDataChanged = !text && (originalData === null || originalData === undefined) ? false : !(originalData == text);
             if (isDataChanged) {
                 return !isDataChanged;
             }
@@ -1267,9 +1267,9 @@ $.widget('wm.datagrid', {
         this.addOrRemoveScroll();
     },
     //Method to save a row which is in editable state
-    saveRow: function () {
+    saveRow: function (callBack) {
         this.gridBody.find('tr.row-editing').each(function () {
-            $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true}]);
+            $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true, success: callBack}]);
         });
     },
     /* Toggles the edit state of a row. */
@@ -1295,9 +1295,12 @@ $.widget('wm.datagrid', {
         options = options || {};
         e.data  = e.data  || {};
         if (e.data.action === 'edit' || options.action === 'edit') {
-            if (advancedEdit) {
+            if (advancedEdit && self.gridBody.find('tr.row-editing').length) {
                 //In case of advanced edit, save the previous row
-                this.saveRow();
+                self.saveRow(function (skipFocus, error) {
+                    self.editSuccessHandler(skipFocus, error, e, $row, true);
+                });
+                return;
             }
             $row.addClass('row-editing');
             if ($.isFunction(this.options.beforeRowUpdate)) {
@@ -1682,7 +1685,29 @@ $.widget('wm.datagrid', {
             $row.trigger('click');
         }
     },
-
+    editSuccessHandler: function (skipFocus, error, e, $row, isSameRow) {
+        var self = this,
+            rowID,
+            $nextRow;
+        //Call set status, so that the rows are visible for fom operations
+        self.__setStatus();
+        //On error, focus the current row first element
+        if (error) {
+            self.setFocusOnElement(e);
+            return;
+        }
+        //On success, make next row editable. If next row is not present, add new row
+        rowID = +$row.attr('data-row-id');
+        if (!isSameRow) {
+            rowID++;
+        }
+        $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
+        if ($nextRow.length) {
+            $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
+        } else {
+            self.addNewRow(skipFocus);
+        }
+    },
     /* Attaches all event handlers for the table. */
     attachEventHandlers: function ($htm) {
         var rowOperationsCol = this._getRowActionsColumnDef(),
@@ -1753,23 +1778,7 @@ $.widget('wm.datagrid', {
                     'action'  : 'save',
                     'noMsg'   : true,
                     'success' : function (skipFocus, error) {
-                        //Call set status, so that the rows are visible for fom operations
-                        self.__setStatus();
-                        var rowID,
-                            $nextRow;
-                        //On error, focus the current row first element
-                        if (error) {
-                            self.setFocusOnElement(e);
-                            return;
-                        }
-                        //On success, make next row editable. If next row is not present, add new row
-                        rowID = +$row.attr('data-row-id') + 1;
-                        $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
-                        if ($nextRow.length) {
-                            $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
-                        } else {
-                            self.addNewRow(skipFocus);
-                        }
+                        self.editSuccessHandler(skipFocus, error, e, $row);
                     }
                 });
             });
