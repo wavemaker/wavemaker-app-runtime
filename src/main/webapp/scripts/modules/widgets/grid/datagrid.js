@@ -817,7 +817,7 @@ $.widget('wm.datagrid', {
         /*Deselect all the previous selected rows in the table*/
         self.gridBody.find('tr').each(function (index) {
             if (self.preparedData[index].selected) {
-                $(this).trigger('click');
+                $(this).trigger('click', [$(this), {skipSingleCheck: true}]);
             }
         });
         /*Select the given row. If rows is an array, loop through the array and set the row*/
@@ -1121,7 +1121,7 @@ $.widget('wm.datagrid', {
         rowData = this.preparedData[rowId];
         data = this.options.data[rowId];
 
-        if (($row.hasClass('active') && !this.options.multiselect) || !rowData) {
+        if (!options.skipSingleCheck && (($row.hasClass('active') && !this.options.multiselect) || !rowData)) {
             return;
         }
         selected = rowData.selected || false;
@@ -1925,9 +1925,9 @@ $.widget('wm.datagrid', {
                 checked = this.checked;
             $checkboxes.prop('checked', checked);
             $checkboxes.each(function () {
-                var $row = $(this).closest('tr'),
-                    rowId = $row.attr('data-row-id'),
-                    rowData = self.preparedData[rowId];
+                var $row    = $(this).closest('tr'),
+                    rowId   = $row.attr('data-row-id'),
+                    rowData = self.options.data[rowId];
                 self.toggleRowSelection($row, checked);
                 if (checked && $.isFunction(self.options.onRowSelect)) {
                     self.options.onRowSelect(rowData, e);
