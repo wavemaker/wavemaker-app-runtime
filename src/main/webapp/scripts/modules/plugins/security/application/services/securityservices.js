@@ -27,14 +27,31 @@ wm.plugins.security.services.SecurityService = [
             _mobileconfig,
             loggedInUser,
             _serviceMap = {},
-            mergeWebAndMobileConfig = function (config) {
-                var userInfo            = config.userInfo,
-                    userRoles           = _.get(userInfo, 'userRoles'),
-                    roles               = _mobileconfig.roles,
+            /**
+             * merge the security config from mobile and web
+             * the loggedIn user's role is fetched from Web config
+             * the role-landingPage map is fetched from Mobile config
+             * the landing page for loggedIn user is decided from the above two's intersection
+             * @param webconfig, the web-config fetched from backend API
+             * @returns {finalConfig}
+             */
+            mergeWebAndMobileConfig = function (webconfig) {
+                var userInfo = webconfig.userInfo,
+                    roles = _mobileconfig.roles,
+                    userRoles,
+                    finalConfig = _.extend({}, _mobileconfig),
+                    roleObj;
+                if (webconfig.authenticated && userInfo) {
+                    finalConfig.authenticated = true;
+                    userRoles = userInfo.userRoles;
                     roleObj             = _.find(roles, function (o) {return _.includes(userRoles, o.name); }); // find the first role from roles(the first one is with highest priority)
-                if (roleObj) {
-                    userInfo.landingPage    = roleObj.homePage || roleObj.landingPage;
+                    if (roleObj) {
+                        userInfo.landingPage    = roleObj.homePage || roleObj.landingPage;
+                    }
                 }
+
+                finalConfig.userInfo = userInfo;
+                return finalConfig;
             },
             /**
              * get the security config bundled in the apk file("/metadata/app/security-config.json").
@@ -44,15 +61,18 @@ wm.plugins.security.services.SecurityService = [
              * @param error
              */
             getMobileConfig = function (success, error) {
-                if (!_mobileconfig) {
-                    BaseService.send({
-                        target: 'Security',
-                        action: 'getMobileConfig'
-                    }, function (mobileconfig) {
-                        _mobileconfig = mobileconfig;
-                        Utils.triggerFn(success, _mobileconfig);
-                    }, error);
+                if (_mobileconfig) {
+                    // if already fetched, return it
+                    Utils.triggerFn(success, _mobileconfig);
+                    return;
                 }
+                BaseService.send({
+                    target: 'Security',
+                    action: 'getMobileConfig'
+                }, function (mobileconfig) {
+                    _mobileconfig = mobileconfig;
+                    Utils.triggerFn(success, _mobileconfig);
+                }, error);
             },
             /**
              * gets the security config from the deployed app (backend call)
@@ -60,15 +80,18 @@ wm.plugins.security.services.SecurityService = [
              * @param error
              */
             getWebConfig = function (success, error) {
-                if (!_config) {
-                    BaseService.send({
-                        target: 'Security',
-                        action: 'getConfig'
-                    }, function (config) {
-                        _config = config;
-                        Utils.triggerFn(success, _config);
-                    }, error);
+                if (_config) {
+                    // if already fetched, return it
+                    Utils.triggerFn(success, _config);
+                    return;
                 }
+                BaseService.send({
+                    target: 'Security',
+                    action: 'getConfig'
+                }, function (config) {
+                    _config = config;
+                    Utils.triggerFn(success, _config);
+                }, error);
             },
             /**
              * gets the security config for an app
@@ -114,18 +137,20 @@ wm.plugins.security.services.SecurityService = [
                     getWebConfig(onSuccess, onError);
                 } else {
                     /*
-                     * for mobile app
-                     * - if getting config first time, just get mobile config (saved in the apk, no backend call)
-                     * - else, get Web config (will be  the same API hit for login) and merge the config with previous _mobileconfig
+                     * for mobile app, first get the mobile config (saved in the apk)
+                     * - if security not enabled, just return mobile config (no backend call required)
+                     * - else, get Web config (will be  the same API hit for login) and merge the config with _mobileconfig
                      */
-                    if (!isPostLogin) {
-                        getMobileConfig(onSuccess, onError);
-                    } else {
-                        getWebConfig(function (config) {
-                            mergeWebAndMobileConfig(config);
-                            onSuccess(config);
-                        }, onError);
-                    }
+                    getMobileConfig(function (mobileconfig) {
+                        if (!mobileconfig.securityEnabled) {
+                            onSuccess(mobileconfig);
+                        } else {
+                            getWebConfig(function (config) {
+                                mergeWebAndMobileConfig(config);
+                                onSuccess(config);
+                            }, onError);
+                        }
+                    }, onError);
                 }
             },
             setConfig = function (config) {

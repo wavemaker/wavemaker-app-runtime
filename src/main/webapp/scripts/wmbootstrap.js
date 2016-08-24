@@ -389,7 +389,16 @@ Application
                                         $http.defaults.xsrfHeaderName = config.csrfHeaderName;
                                     }
                                 } else {
-                                    page = config.homePage;
+                                    /*
+                                     * TEMPORARY[Vibhu]: For mobile app, if not authenticated, go to landing page
+                                     * Actual Implementation: Page permissions are not present in the mobile apk
+                                     * if it is persisted, the behavior will be same for mobile and web app
+                                     */
+                                    if (CONSTANTS.hasCordova) {
+                                        page = config.login.pageName;
+                                    } else {
+                                        page = config.homePage;
+                                    }
                                 }
                             } else {
                                 page = config.homePage;
