@@ -708,22 +708,16 @@ WM.module('wm.widgets.basic')
                     }
                     //Customizing the tooltips in case of the pie and donut when labelType is value
                     chart.tooltip.contentGenerator(function (key) {
-                        if (propertyValueMap.labeltype === 'percent') {
-                            yValue = d3.format('.3s')(key.data.y);
-                        } else if (propertyValueMap.labeltype === 'value') {
-                            yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
-                        }
-                        return '<div class="nvtooltip xy-tooltip nv-pointer-events-none">' +
-                                '<table>' +
+                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                        return '<table>' +
                                     '<tbody>' +
                                          '<tr>' +
-                                            '<td class="legend-color-guide"><div style="background-color:" + key.color + ";"></div></td>' +
+                                            '<td class="legend-color-guide"><div style="background-color:' + key.color + ';"></div></td>' +
                                             '<td class="key">' + key.data.x + '</td>' +
                                             '<td class="value">' + yValue + '</td>' +
                                         '</tr>' +
                                     '</tbody>' +
-                                '</table>' +
-                            '</div>';
+                                '</table>';
                     });
                 } else {
                     chart.showXAxis(propertyValueMap.showxaxis)
