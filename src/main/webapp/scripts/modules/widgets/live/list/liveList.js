@@ -536,6 +536,7 @@ WM.module('wm.widgets.live')
 
             function onDataChange($is, $el, nv, attrs, listCtrl) {
                 if (nv) {
+                    nv = Utils.getClonedObject(nv);
                     $is.noDataFound = false;
 
                     if (nv.data) {

@@ -789,6 +789,38 @@ WM.module('wm.widgets.base')
             };
         }
     ])
+    .directive('hasModel', function (CONSTANTS) {
+        'use strict';
+
+        if (CONSTANTS.isStudioMode) {
+            return;
+        }
+
+        return {
+            'restrict': 'A',
+            'priority': 200,
+            'compile' : function ($tEl) {
+                return {
+                    'pre': function ($s, $el, attrs) {
+                        var dataValueAttr,
+                            scopeDataValueAttr;
+                        //Input field is inside livelist
+                        if ($el.closest('.app-livelist').length) {
+                            dataValueAttr      = attrs.datavalue;
+                            scopeDataValueAttr = attrs.scopedatavalue;
+                            //If datavalue has bind: and no scopedatavalue on the input remove datavalue and assign value to scopedatavalue
+                            if (dataValueAttr &&  _.startsWith(dataValueAttr, 'bind:item') && !scopeDataValueAttr) {
+                                scopeDataValueAttr = dataValueAttr.replace('bind:', '');
+                                WM.element($tEl.context).attr('scopedatavalue', scopeDataValueAttr).removeAttr('datavalue');
+                                attrs.datavalue = undefined;
+                                attrs.scopedatavalue = scopeDataValueAttr;
+                            }
+                        }
+                    }
+                };
+            }
+        };
+    })
     .service('BindingManager', [
         '$rootScope',
         'Utils',
