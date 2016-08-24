@@ -793,7 +793,7 @@ WM.module('wm.widgets.base')
         'use strict';
 
         if (CONSTANTS.isStudioMode) {
-            return;
+            return {};
         }
 
         return {
