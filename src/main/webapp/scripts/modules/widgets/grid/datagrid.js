@@ -23,9 +23,6 @@ $.widget('wm.datagrid', {
         height: '100%',
         showHeader: true,
         selectFirstRow: false,
-        allowAddNewRow: true,
-        allowDeleteRow: true,
-        allowInlineEditing: true,
         showRowIndex: false,
         enableRowSelection: true,
         enableColumnSelection: false,
@@ -104,7 +101,10 @@ $.widget('wm.datagrid', {
         }
     },
     CONSTANTS: {
-        'QUICK_EDIT': 'quickedit'
+        'QUICK_EDIT': 'quickedit',
+        'INLINE'    : 'inline',
+        'FORM'      : 'form',
+        'DIALOG'    : 'dialog'
     },
     Utils: {
         random: function () {
@@ -784,7 +784,7 @@ $.widget('wm.datagrid', {
         }
         rowData.index = this.options.startRowIndex + rowId;
         rowData.pk = rowId;
-        if (this.options.allowAddNewRow) {
+        if (this.options.editmode === this.CONSTANTS.INLINE || this.options.editmode === this.CONSTANTS.QUICK_EDIT) {
             $row = $(this._getRowTemplate(rowData));
             if (!this.preparedData.length) {
                 this.setStatus('ready', this.dataStatus.ready);
@@ -1304,7 +1304,7 @@ $.widget('wm.datagrid', {
                 this.options.beforeRowUpdate(rowData, e);
             }
 
-            if (!this.options.allowInlineEditing) {
+            if (self.options.editmode === self.CONSTANTS.FORM || self.options.editmode === self.CONSTANTS.DIALOG) {
                 return;
             }
             this._setGridEditMode(true);
@@ -1538,9 +1538,6 @@ $.widget('wm.datagrid', {
         if ($.isFunction(this.options.beforeRowDelete)) {
             this.options.beforeRowDelete(rowData, e);
         }
-        if (this.options.disableDelete) {
-            return;
-        }
         if (isNewRow) {
             this.disableActions(false);
             this._setGridEditMode(false);
@@ -1729,13 +1726,13 @@ $.widget('wm.datagrid', {
             $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
             $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));
         } else {
-            if (this.options.allowInlineEditing || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'update'))) {
+            if ((this.options.editmode === this.CONSTANTS.INLINE || this.options.editmode === this.CONSTANTS.QUICK_EDIT) || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'update'))) {
                 $htm.find('.edit-row-button').on('click', {action: 'edit'}, this.toggleEditRow.bind(this));
                 $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
                 $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));
             }
 
-            if (this.options.allowDeleteRow || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'delete'))) {
+            if (rowOperationsCol && _.includes(rowOperationsCol.operations, 'delete')) {
                 deleteRowHandler = this.deleteRowAndUpdateSelectAll;
                 if (!this.options.multiselect) {
                     deleteRowHandler = this.deleteRow;

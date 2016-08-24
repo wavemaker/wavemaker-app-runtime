@@ -37,9 +37,6 @@
  *                  This property determines the list of values to display for the grid. It is a bindable property.
  * @param {string=} editcolumns
  *                  This property determines the columns to edit for the grid.
- * @param {boolean=} readonlygrid
- *                  This property determines if the grid has read-only behaviour. <br>
- *                  Default value: `true`. <br>
  * @param {boolean=} show
  *                  This property determines whether the grid widget is visible or not. It is a bindable property.
  *                  Default value: `true`. <br>
@@ -92,7 +89,7 @@
    <example module="wmCore">
        <file name="index.html">
            <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
-               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-grid>
+               <wm-grid  name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-grid>
            </div>
        </file>
        <file name="script.js">
@@ -125,7 +122,6 @@ WM.module('wm.widgets.grid')
                 'radioselect'        : true,
                 'showrowindex'       : true,
                 'enablesort'         : true,
-                'readonlygrid'       : true,
                 'gridcaption'        : true,
                 'gridclass'          : true,
                 'nodatamessage'      : true,
@@ -144,10 +140,12 @@ WM.module('wm.widgets.grid')
                 }
                 return index;
             },
-            readOnlyGridAttrUpdated,
             gridColumnCount,
             EDIT_MODE = {
-                'QUICK_EDIT': 'quickedit'
+                'QUICK_EDIT': 'quickedit',
+                'INLINE'    : 'inline',
+                'FORM'      : 'form',
+                'DIALOG'    : 'dialog'
             };
 
         return {
@@ -240,13 +238,6 @@ WM.module('wm.widgets.grid')
                         tAttr.navigation = showNavigation ? 'Basic' : 'None';
                         contextEl.setAttribute('navigation', tAttr.navigation);
                     }
-                }
-
-                /*Backward compatibility to support "readonlygrid".*/
-                if (WM.isUndefined(tAttr.readonlygrid)) {
-                    tAttr.readonlygrid = false;
-                    contextEl.setAttribute('readonlygrid', false);
-                    readOnlyGridAttrUpdated = true;
                 }
 
                 /*set the raw gridColumnMarkup to the grid attribute*/
@@ -354,6 +345,7 @@ WM.module('wm.widgets.grid')
                                 'nullorempty'      : 'Is null or empty'
                             },
                             handlers = [],
+                            liveGrid = element.closest('.app-livegrid'),
                             gridController;
                         //Function to save the row on clicking outside, in case of quick edit
                         function documentClickBind(event) {
@@ -376,8 +368,19 @@ WM.module('wm.widgets.grid')
                         scope.displayAllFields  = attrs.displayall === '';
                         scope.datagridElement   = element.find('.app-datagrid');
 
-                        scope.isPartOfLiveGrid = element.closest('.app-livegrid').length > 0;
-
+                        scope.isPartOfLiveGrid = liveGrid.length > 0;
+                        //Backward compatibility for readonly grid
+                        if (attrs.readonlygrid && !WM.isDefined(attrs.editmode)) {
+                            if (attrs.readonlygrid === 'true') {
+                                scope.editmode = '';
+                            } else {
+                                if (scope.isPartOfLiveGrid) {
+                                    scope.editmode = liveGrid.isolateScope().formlayout === 'inline' ? EDIT_MODE.FORM : EDIT_MODE.DIALOG;
+                                } else {
+                                    scope.editmode = EDIT_MODE.INLINE;
+                                }
+                            }
+                        }
                         scope.$on('$destroy', function () {
                             handlers.forEach(Utils.triggerFn);
                             $document.off('click', documentClickBind);
@@ -469,7 +472,7 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
-                            scope.gridOptions.editmode = attrs.editmode;
+                            scope.gridOptions.editmode = scope.editmode;
                             /*Set isMobile value on the datagrid*/
                             scope.gridOptions.isMobile = Utils.isMobile();
                             scope.renderOperationColumns();
@@ -599,27 +602,6 @@ WM.module('wm.widgets.grid')
                                     scope.onShow();
                                 } else {
                                     scope.onHide();
-                                }
-                                break;
-                            case 'readonlygrid':
-                                /* For backward compatibility, if "readonlygrid" attribute is not there,
-                                 * add it to the markup and save. Also set related properties - insertrow,
-                                 * updaterow and deleterow to whatever their value is.
-                                 * */
-                                if (readOnlyGridAttrUpdated) {
-                                    scope.insertrow = WM.isDefined(scope.insertrow) ? scope.insertrow : false;
-                                    scope.updaterow = WM.isDefined(scope.updaterow) ? scope.updaterow : false;
-                                    scope.deleterow = WM.isDefined(scope.deleterow) ? scope.deleterow : false;
-                                    if (scope.widgetid) { // when the widget is in canvas
-                                        $rootScope.$emit('set-markup-attr', scope.widgetid, {
-                                            'readonlygrid': false,
-                                            'insertrow': scope.insertrow,
-                                            'updaterow': scope.updaterow,
-                                            'deleterow': scope.deleterow
-                                        });
-                                        $rootScope.$emit('save-workspace', true);
-                                    }
-                                    readOnlyGridAttrUpdated = undefined;
                                 }
                                 break;
                             case 'gridclass':
@@ -1274,7 +1256,7 @@ WM.module('wm.widgets.grid')
                                 wmToaster.show('error', 'ERROR', response.error);
                                 Utils.triggerFn(options.error, response);
                             } else {
-                                if ($scope.gridOptions.allowInlineEditing && $scope.gridOptions.allowInlineEditing !== 'false' && options.event) {
+                                if (options.event) {
                                     var row = WM.element(options.event.target).closest('tr');
                                     $scope.datagridElement.datagrid('hideRowEditMode', row);
                                 }
@@ -1560,8 +1542,6 @@ WM.module('wm.widgets.grid')
                 onBeforeRowInsert: function (rowData, e) {
                     return $scope.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData});
                 },
-                allowDeleteRow: true,
-                allowInlineEditing: true,
                 sortInfo: {
                     'field': '',
                     'direction': ''
@@ -1888,29 +1868,6 @@ WM.module('wm.widgets.grid')
                     wp.pagesize.show    = !(isBoundToLiveVariable || isBoundToQueryServiceVariable || isBoundToFilter);
                     wp.exportformat.show  = wp.exportformat.showindesigner  = isBoundToLiveVariable || isBoundToFilter;
                     wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
-                    /* In Studio, disabling readonlygrid property if bound to a service variable or view */
-                    if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
-                        wp.readonlygrid.disabled = false;
-                    } else {
-                        if ($scope.isPartOfLiveGrid) {
-                            $scope.readonlygrid = true;
-                            $scope.insertrow = false;
-                            $scope.updaterow = false;
-                            $scope.deleterow = false;
-                            $rootScope.$emit('set-markup-attr', $scope.widgetid, {
-                                'readonlygrid': $scope.readonlygrid,
-                                'insertrow': $scope.insertrow,
-                                'updaterow': $scope.updaterow,
-                                'deleterow': $scope.deleterow
-                            });
-                        } else {
-                            //For service and static variable update readonly only if its not set on to the grid
-                            if (!$scope.readonlygrid && $scope.widgetid) {
-                                $rootScope.$emit('update-widget-property', 'readonlygrid', true);
-                            }
-                        }
-                        wp.readonlygrid.disabled = true;
-                    }
                     /* If bound to live filter result, disable grid search. */
                     if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
                         if ($scope.filtermode) {
@@ -2070,7 +2027,7 @@ WM.module('wm.widgets.grid')
                         }
                     }
                     //For readonly grid each field should be checked on readonly
-                    if ($scope.readonlygrid) {
+                    if (!$scope.editmode) {
                         columnDef.readonly = true;
                     }
                 });
@@ -2349,7 +2306,7 @@ WM.module('wm.widgets.grid')
   <example module="wmCore">
       <file name="index.html">
           <div data-ng-controller="Ctrl" class="wm-app">
-              <wm-grid readonlygrid="true" dataset="bind:Variables.gridVariable.dataSet">
+              <wm-grid dataset="bind:Variables.gridVariable.dataSet">
                   <wm-grid-column binding="deptid" caption="deptid" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
                   <wm-grid-column binding="budget" caption="budget" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
                   <wm-grid-column binding="location" caption="location" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
