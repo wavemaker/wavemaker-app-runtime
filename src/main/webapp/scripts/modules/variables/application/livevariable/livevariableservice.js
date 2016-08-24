@@ -739,10 +739,12 @@ wm.variables.services.$liveVariable = [
                                 variable.canUpdate = true;
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
                             });
-                            /* process next requests in the queue */
-                            variableActive[variable.activeScope.$id][variable.name] = false;
-                            processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         }
+                    }
+                    if (CONSTANTS.isRunMode) {
+                        /* process next requests in the queue */
+                        variableActive[variable.activeScope.$id][variable.name] = false;
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
