@@ -28,11 +28,13 @@ wm.plugins.security.services.SecurityService = [
             loggedInUser,
             _serviceMap = {},
             mergeWebAndMobileConfig = function (config) {
-                var userInfo = config.userInfo,
-                    userRole = _.get(userInfo, 'userRoles[0]'),
-                    roles = _mobileconfig.roles,
-                    roleObj = _.find(roles, {'name': userRole});
-                userInfo.landingPage = roleObj.homePage || roleObj.landingPage;
+                var userInfo            = config.userInfo,
+                    userRoles           = _.get(userInfo, 'userRoles'),
+                    roles               = _mobileconfig.roles,
+                    roleObj             = _.find(roles, function (o) {return _.includes(userRoles, o.name); }); // find the first role from roles(the first one is with highest priority)
+                if (roleObj) {
+                    userInfo.landingPage    = roleObj.homePage || roleObj.landingPage;
+                }
             },
             /**
              * get the security config bundled in the apk file("/metadata/app/security-config.json").
