@@ -1834,22 +1834,15 @@ WM.module('wm.utils', [])
                 if (eventValue === 'Javascript') {
                     retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data);
                 }
-                if (_.includes(eventValue, '.show')) {
-                    DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
-                    return;
-                }
-                if (_.includes(eventValue, '.hide')) {
-                    DialogService.hideDialog(eventValue.slice(0, eventValue.indexOf('.hide')));
+                if (_.startsWith(eventValue, 'Widgets.') || _.startsWith(eventValue, 'Variables.')) {
+                    $rootScope.$$postDigest(function () {
+                        callBackScope.$evalAsync(eventValue);
+                    });
                     return;
                 }
                 if (_.includes(eventValue, '(')) {
                     retVal = triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], firstArg, data);
                 }
-                /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
-                $rootScope.$evalAsync(function () {
-                    $rootScope.$emit("invoke-service", eventValue, {scope: callBackScope});
-                    $rootScope.$safeApply(callBackScope);
-                });
             });
             return retVal;
         }

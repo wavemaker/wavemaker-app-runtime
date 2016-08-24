@@ -1,4 +1,4 @@
-/*global WM, wmCoreModule, document, window*/
+/*global WM, wmCoreModule, document, window, _*/
 
 WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
@@ -227,14 +227,10 @@ WM.module('wm.widgets.dialog')
                             }
                         }
 
-                    } else if (eventName.indexOf('.show') > -1) {
-                        DialogService.showDialog(eventName.slice(0, eventName.indexOf('.show')));
-                    } else if (eventName.indexOf('.hide') > -1) {
-                        DialogService.hideDialog(eventName.slice(0, eventName.indexOf('.hide')));
-                    } else {
-                        if (eventName.trim()) {
-                            $rs.$emit('invoke-service', eventName);
-                        }
+                    } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
+                        $rs.$$postDigest(function () {
+                            $scope.$evalAsync(eventName);
+                        });
                     }
                     if (hideDialog) {
                         DialogService.hideDialog($scope.dialogid);
@@ -301,6 +297,8 @@ WM.module('wm.widgets.dialog')
                         scope.hideDialog = function () {
                             ctrl._CloseButtonHandler(attrs.onClose);
                         };
+                        scope.open = DialogService.open.bind(undefined, scope.dialogid, WM.element('body').find("[data-role='pageContainer']").scope());
+                        scope.close = DialogService.close.bind(undefined, scope.dialogid);
                     },
                     "post": function (scope, element, attrs, ctrl) {
                         var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();

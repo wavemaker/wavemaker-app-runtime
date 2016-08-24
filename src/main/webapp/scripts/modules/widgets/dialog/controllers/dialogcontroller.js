@@ -1,4 +1,4 @@
-/*global WM, wmDialog*/
+/*global WM, wmDialog, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -29,19 +29,17 @@ WM.module('wm.widgets.dialog')
                     }
                 }
 
-            } else if (eventName.indexOf('.show') > -1) {
-                DialogService.showDialog(eventName.slice(0, eventName.indexOf('.show')));
-            } else if (eventName.indexOf('.hide') > -1) {
-                DialogService.hideDialog(eventName.slice(0, eventName.indexOf('.hide')));
-            } else {
-                if (eventName.trim()) {
-                    $rootScope.$emit('invoke-service', eventName);
-                }
+            } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
+                $rootScope.$$postDigest(function () {
+                    $scope.$evalAsync(eventName);
+                });
             }
             if (hideDialog) {
                 DialogService.hideDialog($scope.dialogid);
             }
         };
+        $scope.open = DialogService.open.bind(undefined, $scope.dialogid, WM.element('body').find("[data-role='pageContainer']").scope());
+        $scope.close = DialogService.close.bind(undefined, $scope.dialogid);
         this._OkButtonHandler = function (eventName) {
             var eventParams;
             /*If "okParams" is a JSON string, then parse it. Else, pass it as is.*/

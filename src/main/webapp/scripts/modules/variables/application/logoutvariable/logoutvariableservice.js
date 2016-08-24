@@ -25,7 +25,15 @@ wm.variables.services.LogoutVariableService = ['Variables',
     function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $location, CONSTANTS, VARIABLE_CONSTANTS, $rootScope) {
         "use strict";
 
-        var methods, logoutVariableObj, initiateCallback;
+        var methods, logoutVariableObj, initiateCallback,
+            logout =  function (options, success, error) {
+                options = options || {};
+                options.scope = options.scope || this.activeScope;
+                methods.logout(this, options, function () {
+                    onLogoutSuccess();
+                    Utils.triggerFn(success);
+                }, error);
+            };
 
         /*function to initiate the callback and obtain the data for the callback variable.*/
         initiateCallback = Variables.initiateCallback;
@@ -111,14 +119,8 @@ wm.variables.services.LogoutVariableService = ['Variables',
         }
 
         logoutVariableObj = {
-            logout: function (options, success, error) {
-                options = options || {};
-                options.scope = options.scope || this.activeScope;
-                methods.logout(this, options, function () {
-                    onLogoutSuccess();
-                    Utils.triggerFn(success);
-                }, error);
-            },
+            logout: logout,
+            invoke: logout,
             cancel: function () {
                 return methods.cancel(this);
             }

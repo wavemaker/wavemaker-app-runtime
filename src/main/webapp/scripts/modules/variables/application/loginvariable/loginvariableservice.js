@@ -27,7 +27,12 @@ wm.variables.services.LoginVariableService = ['Variables',
     function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location, BaseService, DialogService) {
         "use strict";
 
-        var methods, loginVariableObj, initiateCallback;
+        var methods, loginVariableObj, initiateCallback,
+            login = function (options, success, error) {
+                options = options || {};
+                options.scope = this.activeScope || options.scope;
+                methods.login(this, options, success, error);
+            };
 
         /*function to initiate the callback and obtain the data for the callback variable.*/
         initiateCallback = Variables.initiateCallback;
@@ -152,11 +157,8 @@ wm.variables.services.LoginVariableService = ['Variables',
         };
 
         loginVariableObj = {
-            login: function (options, success, error) {
-                options = options || {};
-                options.scope = this.activeScope || options.scope;
-                methods.login(this, options, success, error);
-            },
+            login : login,
+            invoke: login,
             cancel: function () {
                 return methods.cancel(this);
             }

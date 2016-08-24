@@ -75,47 +75,16 @@ WM.module('wm.widgets.base')
                 };
             }
 
-            function handleDialogShowHideActions($s, dialogName, show) {
-                if (show) {
-                    // Pass the scope of the controller. if the controller scope is not found, dialog will be compiled with the rootScope.
-
-                    // if the dialog is of type login, use rootScope instead of the scope passed
-                    if (WM.element('script[id="' + dialogName + '"]').attr('login-dialog')) {
-                        $s = $rs;
-                    }
-
-                    DialogService.showDialog(dialogName, {'scope': $s.ctrlScope || $s});
-
-                } else {
-                    DialogService.hideDialog(dialogName);
-                }
-            }
-
             function handleAppCustomEvent($s, isAnchor, $evt, customEvtName) {
-
-                var parts;
-
                 // For anchor elements suppressing the default action to refresh the page
+                if (WM.element('script[id="' + customEvtName.split('0')[1] + '"]').attr('login-dialog')) {
+                    $s = $rs;
+                }
                 if (isAnchor && $evt) {
                     $evt.preventDefault();
                 }
-
-                parts = customEvtName.split('.');
-
-                if (parts.length === 2) {
-                    if (parts[1] === DLG_ACTIONS.SHOW) {
-                        handleDialogShowHideActions($s, parts[0], true);
-                        return;
-                    }
-                    if (parts[1] === DLG_ACTIONS.HIDE) {
-                        handleDialogShowHideActions($s, parts[0], false);
-                        return;
-                    }
-                }
-
-                // Emit the event in a timeout, so that any variable watching on current widget is updated with its value
-                $timeout(function () {
-                    $rs.$emit('invoke-service', customEvtName, {'scope': $s, '$event': $evt});
+                $rs.$$postDigest(function () {
+                    $s.$evalAsync(customEvtName);
                 });
             }
 
@@ -159,7 +128,7 @@ WM.module('wm.widgets.base')
                                     }
                                 }
 
-                                if (!_.includes(trimmedFnName, '(') && !_.includes(trimmedFnName, '=')) {
+                                if (_.startsWith(trimmedFnName, 'Widgets.') || _.startsWith(trimmedFnName, 'Variables.')) {
                                     overrideFlg = true;
                                     return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
                                 }

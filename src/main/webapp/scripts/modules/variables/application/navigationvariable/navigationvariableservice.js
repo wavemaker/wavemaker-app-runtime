@@ -91,12 +91,14 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                 return methods.setProperty(variable, 'dataSet', value);
             }
         },
+        navigate = function (options) {
+            options        = options || {};
+            options.scope  = options.scope  || this.activeScope;
+            methods.navigate(this, options);
+        },
         basicVariableObj = {
-            navigate: function (options) {
-                options        = options || {};
-                options.scope  = options.scope  || this.activeScope;
-                methods.navigate(this, options);
-            },
+            navigate: navigate,
+            invoke  : navigate,
             setProperty: function (prop, value) {
                 return methods.setProperty(this, prop, value);
             },

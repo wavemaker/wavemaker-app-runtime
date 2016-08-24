@@ -179,12 +179,14 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 return variable.dataBinding.cancelButtonText;
             }
         },
+        notify = function (options) {
+            options = options || {};
+            options.scope = this.activeScope;
+            methods.notify(this, options);
+        },
         basicVariableObj = {
-            notify: function (options) {
-                options = options || {};
-                options.scope = this.activeScope;
-                methods.notify(this, options);
-            },
+            notify: notify,
+            invoke: notify,
             getOperation: function () {
                 return methods.getOperation(this, {scope: this.activeScope});
             },

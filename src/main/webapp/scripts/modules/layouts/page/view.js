@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, _*/
 
 WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<div init-widget class="app-view clearfix" apply-styles="container" wmtransclude wm-navigable-element="true"> </div>'
             );
     }])
-    .directive('wmView', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'ViewService', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, ViewService, Utils) {
+    .directive('wmView', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'ViewService', 'Utils', 'DialogService', function (PropertiesFactory, WidgetUtilService, CONSTANTS, ViewService, Utils, DialogService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.view', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -27,7 +27,11 @@ WM.module('wm.layouts.page')
                     scope.setActive = function () {
                         ViewService.showView(scope.name);
                     };
-                    var isDialogView = element.hasClass('dialog-view');
+                    var isDialogView = element.hasClass('dialog-view'),
+                        dialogService,
+                        dialogName,
+                        newScope,
+                        elScope;
                     if (isDialogView) {
                         if (CONSTANTS.isStudioMode) {
                             /* dialog view is meant to have the dialog only, widgets should not be dropped on the same,
@@ -39,7 +43,13 @@ WM.module('wm.layouts.page')
 
                         if (CONSTANTS.isRunMode) {
                             /* hiding the dialog-view in run mode, just opening the dialog*/
-                            scope.show = false;
+                            scope.show    = false;
+                            newScope      = scope.$new(true);
+                            dialogName    = element.find('script').attr('id');
+                            elScope       = element.scope();
+                            elScope.Widgets[dialogName] = newScope;
+                            newScope.open  = DialogService.open.bind(undefined, dialogName, elScope);
+                            newScope.close = DialogService.close.bind(undefined, dialogName);
                         }
                     }
                     scope.initialize = function () {

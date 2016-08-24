@@ -22,7 +22,10 @@ wm.variables.services.TimerVariableService = ['Variables',
     function (Variables, BaseVariablePropertyFactory, $rootScope, $interval, $timeout, CONSTANTS) {
         "use strict";
 
-        var methods, timerVariableObj, initiateCallback, DEFAULT_TIMER_DELAY = 500;
+        var methods, timerVariableObj, initiateCallback, DEFAULT_TIMER_DELAY = 500,
+            fire = function (success, error) {
+                return methods.fire(this, {scope: this.activeScope}, success, error);
+            };
 
         /*function to initiate the callback and obtain the data for the callback variable.*/
         initiateCallback = Variables.initiateCallback;
@@ -67,9 +70,8 @@ wm.variables.services.TimerVariableService = ['Variables',
         };
 
         timerVariableObj = {
-            fire: function (success, error) {
-                return methods.fire(this, {scope: this.activeScope}, success, error);
-            },
+            fire  : fire,
+            invoke: fire,
             cancel: function () {
                 return methods.cancel(this);
             }
