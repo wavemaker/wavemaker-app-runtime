@@ -729,21 +729,20 @@ wm.variables.services.$liveVariable = [
                         updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 
                         if (CONSTANTS.isRunMode) {
+                            variable._options =  variable._options || {};
+                            variable._options.orderBy = options && options.orderBy;
+                            variable._options.filterFields = options && options.filterFields;
                             $rootScope.$$postDigest(function () {
                                 // EVENT: ON_SUCCESS
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
-                                variable._options =  variable._options || {};
-                                variable._options.orderBy = options && options.orderBy;
-                                variable._options.filterFields = options && options.filterFields;
                             });
+                            /* process next requests in the queue */
+                            variableActive[variable.activeScope.$id][variable.name] = false;
+                            processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         }
-
-                        /* process next requests in the queue */
-                        variableActive[variable.activeScope.$id][variable.name] = false;
-                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
