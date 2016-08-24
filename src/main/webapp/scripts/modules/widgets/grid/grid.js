@@ -111,7 +111,6 @@ WM.module('wm.widgets.grid')
                 'deleterow'          : true,
                 'updaterow'          : true,
                 'dataset'            : true,
-                'showheader'         : true,
                 'navigation'         : true,
                 'insertrow'          : true,
                 'show'               : true,
@@ -447,6 +446,7 @@ WM.module('wm.widgets.grid')
                             forceSet = prevLength !== scope.fieldDefs.length;//since `fieldDefs` has reference to `colDefs` forcibly setting grid option
                             scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs), forceSet);
                             scope.setDataGridOption('rowActions', Utils.getClonedObject(scope.rowActions));
+                            scope.setDataGridOption('showHeader', scope.showheader);
                         }));
 
                         /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
@@ -508,11 +508,6 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'dataset':
                                 scope.watchVariableDataSet(newVal, element);
-                                break;
-                            case 'showheader':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.setDataGridOption('showHeader', newVal);
-                                }
                                 break;
                             case 'gridsearch':
                                 if (newVal) {
@@ -1433,6 +1428,7 @@ WM.module('wm.widgets.grid')
                     $scope.fieldDefs.push(rowOperationsColumn);
                     $scope.headerConfig.push(config);
                 }
+                $scope.setDataGridOption('headerConfig', $scope.headerConfig);
             };
 
             $scope.fieldDefs = [];
@@ -1448,7 +1444,7 @@ WM.module('wm.widgets.grid')
                     /*Setting the serial no's only when show navigation is enabled and data navigator is compiled
                      and its current page is set properly*/
                     if ($scope.shownavigation && $scope.dataNavigator && $scope.dataNavigator.dn.currentPage) {
-                        startRowIndex = (($scope.dataNavigator.dn.currentPage - 1) * $scope.dataNavigator.maxResults) + 1;
+                        startRowIndex = (($scope.dataNavigator.dn.currentPage - 1) * ($scope.dataNavigator.maxResults || 1)) + 1;
                         $scope.setDataGridOption('startRowIndex', startRowIndex);
                     }
                     /* If colDefs are available, but not already set on the datagrid, then set them.

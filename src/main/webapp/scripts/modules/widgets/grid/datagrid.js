@@ -592,23 +592,32 @@ $.widget('wm.datagrid', {
         _.remove(this.options.headerConfig, {'name': fieldName});
         this.options.headerConfig.unshift({'name': fieldName});
     },
+    setDefaultColsData: function (header) {
+        if (this.options.showRowIndex) {
+            if (header) {
+                this.preparedHeaderData.unshift(this.customColumnDefs.rowIndex);
+            }
+            this.setHeaderConfigForDefaultFields('rowIndex');
+        }
+        if (this.options.multiselect) {
+            if (header) {
+                this.preparedHeaderData.unshift(this.customColumnDefs.checkbox);
+            }
+            this.setHeaderConfigForDefaultFields('checkbox');
+        }
+        if (!this.options.multiselect && this.options.showRadioColumn) {
+            if (header) {
+                this.preparedHeaderData.unshift(this.customColumnDefs.radio);
+            }
+            this.setHeaderConfigForDefaultFields('radio');
+        }
+    },
     /* Prepares the grid header data by adding custom column definitions if needed. */
     _prepareHeaderData: function () {
         this.preparedHeaderData = [];
 
         $.extend(this.preparedHeaderData, this.options.colDefs);
-        if (this.options.showRowIndex) {
-            this.preparedHeaderData.unshift(this.customColumnDefs.rowIndex);
-            this.setHeaderConfigForDefaultFields('rowIndex');
-        }
-        if (this.options.multiselect) {
-            this.preparedHeaderData.unshift(this.customColumnDefs.checkbox);
-            this.setHeaderConfigForDefaultFields('checkbox');
-        }
-        if (!this.options.multiselect && this.options.showRadioColumn) {
-            this.preparedHeaderData.unshift(this.customColumnDefs.radio);
-            this.setHeaderConfigForDefaultFields('radio');
-        }
+        this.setDefaultColsData(true);
     },
 
     /* Generates default column definitions from given data. */
@@ -966,15 +975,16 @@ $.widget('wm.datagrid', {
 
     /* Toggles the table header visibility. */
     _toggleHeader: function () {
-        // If header is not already rendered, render it first.
-        if (!this.gridHeaderElement.find('thead th.app-datagrid-header-cell').length) {
-            this._renderHeader();
+        if (this.gridHeaderElement) {
+            this.gridHeaderElement.empty();
         }
-
+        if (this.gridElement) {
+            this.gridElement.find('colgroup').remove();
+            this.gridElement.find('thead').remove();
+        }
+        this.setDefaultColsData();
         if (this.options.showHeader) {
-            this.gridHeaderElement.show();
-        } else {
-            this.gridHeaderElement.hide();
+            this._renderHeader();
         }
     },
 
@@ -1916,7 +1926,7 @@ $.widget('wm.datagrid', {
             self           = this,
             $header;
         if (!this.options.showHeader) {
-            this.gridElement.append($colgroup);
+            this.gridElement.prepend($colgroup);
             return;
         }
         $header   = $(headerTemplate.header);
@@ -1946,7 +1956,7 @@ $.widget('wm.datagrid', {
              * Colgroup is used to maintain the consistent widths between the header table and body table**/
             this.gridHeaderElement.append($colgroup).append($header);
             /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
-            this.gridElement.append($colgroup.clone());
+            this.gridElement.prepend($colgroup.clone());
             this.gridHeader = this.gridHeaderElement.find('thead');
         }
         /**Add event handler, to the select all checkbox on the header**/
