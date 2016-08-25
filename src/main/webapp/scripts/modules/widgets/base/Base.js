@@ -980,7 +980,7 @@ WM.module('wm.widgets.base', [])
                         "itembadge": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
-                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
