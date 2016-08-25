@@ -202,19 +202,18 @@ WM.module('wm.layouts.containers')
                 });
             }
             $s.formdata      = undefined;
-            $s.statusMessage = undefined;
             $rootScope.$safeApply($s);
         }
 
         function onResult(scope, data, status, event) {
             /* whether service call success or failure call this method*/
-            Utils.triggerFn(scope.onResult, {$event: event, $data: data});
+            Utils.triggerFn(scope.onResult, {$event: event, $isolateScope: scope, $data: data});
             if (status === 'success') {
                 /*if service call is success call this method */
-                Utils.triggerFn(scope.onSuccess, {$event: event, $data: data});
+                Utils.triggerFn(scope.onSuccess, {$event: event, $isolateScope: scope, $data: data});
             } else {
                 /* if service call fails call this method */
-                Utils.triggerFn(scope.onError, {$event: event, $data: data});
+                Utils.triggerFn(scope.onError, {$event: event, $isolateScope: scope, $data: data});
             }
 
         }
@@ -277,7 +276,7 @@ WM.module('wm.layouts.containers')
                             toggleMessage(scope, scope.postmessage, 'success');
                             onResult(scope, data, 'success', event);
                         }, function (errMsg) {
-                            template = scope.errormessage && scope.errormessage + (scope.messagelayout === 'Inline' ? ' <span class="toast-title">CAUSE: </span><span>' + errMsg + '</span>' : '<div class="toast-title">CAUSE</div><p>' + errMsg + '</p>');
+                            template = scope.errormessage || errMsg;
                             toggleMessage(scope, template, 'error');
                             onResult(scope, errMsg, 'error', event);
                         });
@@ -297,6 +296,11 @@ WM.module('wm.layouts.containers')
             element.bind('reset', function () {
                 resetForm(scope, element);
             });
+        }
+
+        function clearMessage(scope) {
+            scope.statusMessage = undefined;
+            $rootScope.$safeApply(scope);
         }
 
         return {
@@ -347,6 +351,7 @@ WM.module('wm.layouts.containers')
                             });
                         }));
                     }
+                    scope.clearMessage = clearMessage.bind(undefined, scope);
                     scope.elScope.ngform  = scope[scope.name];
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
