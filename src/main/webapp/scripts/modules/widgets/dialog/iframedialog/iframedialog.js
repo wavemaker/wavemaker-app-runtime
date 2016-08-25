@@ -163,7 +163,7 @@ WM.module('wm.widgets.dialog')
                         on-ok="onOkCallBack()">
                     </wm-iframedialog>
                 </wm-view>
-                <wm-button on-click="iframeDialog.show" caption="show dialog" class="btn-success"></wm-button>
+                <wm-button on-click="Widgets.iframeDialog.open()" caption="show dialog" class="btn-success"></wm-button>
             </div>
         </file>
         <file name="script.js">

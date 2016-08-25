@@ -267,7 +267,7 @@ WM.module('wm.widgets.dialog')
                         </wm-dialogactions>
                     </wm-logindialog>
                 </wm-view>
-                <wm-button on-click="loginDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
+                <wm-button on-click="Widgets.loginDialog.open()" caption="Show Dialog" class="btn-primary"></wm-button>
             </div>
         </file>
         <file name="script.js">
