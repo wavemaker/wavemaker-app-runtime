@@ -297,7 +297,7 @@ WM.module('wm.widgets.dialog')
                         scope.hideDialog = function () {
                             ctrl._CloseButtonHandler(attrs.onClose);
                         };
-                        scope.open = DialogService.open.bind(undefined, scope.dialogid, WM.element('body').find("[data-role='pageContainer']").scope());
+                        scope.open  = Utils.openDialog.bind(undefined, scope.dialogid);
                         scope.close = DialogService.close.bind(undefined, scope.dialogid);
                     },
                     "post": function (scope, element, attrs, ctrl) {

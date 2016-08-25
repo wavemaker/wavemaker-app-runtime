@@ -38,7 +38,7 @@ WM.module('wm.widgets.dialog')
                 DialogService.hideDialog($scope.dialogid);
             }
         };
-        $scope.open = DialogService.open.bind(undefined, $scope.dialogid, WM.element('body').find("[data-role='pageContainer']").scope());
+        $scope.open = Utils.openDialog.bind(undefined, $scope.dialogid);
         $scope.close = DialogService.close.bind(undefined, $scope.dialogid);
         this._OkButtonHandler = function (eventName) {
             var eventParams;

@@ -76,10 +76,14 @@ WM.module('wm.widgets.base')
             }
 
             function handleAppCustomEvent($s, isAnchor, $evt, customEvtName) {
-                // For anchor elements suppressing the default action to refresh the page
-                if (WM.element('script[id="' + customEvtName.split('0')[1] + '"]').attr('login-dialog')) {
-                    $s = $rs;
+                //If dialog is in commonPage then evaluating expression on commmonPage's scope 
+                var dialogId = customEvtName.split('.')[1],
+                    $dialogEl = WM.element('[id="wm-common-content"]').find('script[id="' + dialogId + '"]');
+                if ($dialogEl.length) {
+                    $s = WM.element('[name="CommonPage"]').scope();
                 }
+
+                // For anchor elements suppressing the default action to refresh the page
                 if (isAnchor && $evt) {
                     $evt.preventDefault();
                 }

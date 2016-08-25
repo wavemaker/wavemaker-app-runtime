@@ -2019,6 +2019,16 @@ WM.module('wm.utils', [])
             return types;
         }
 
+        /*
+        * Function to trigger DialogService's open with proper scope
+         * @param dialogId
+         * @param dialogScope
+        * */
+        function openDialog(dialogId, dialogScope) {
+            dialogScope = dialogScope || WM.element('body > [id="wm-app-content"] > [data-role="pageContainer"]').scope();
+            DialogService.open(dialogId, dialogScope);
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2132,4 +2142,5 @@ WM.module('wm.utils', [])
         this.getOrderByExpr             = getOrderByExpr;
         this.xmlToJson                  = xmlToJson;
         this.getTypes                   = getTypes;
+        this.openDialog                 = openDialog;
     }]);

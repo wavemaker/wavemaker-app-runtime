@@ -28,10 +28,9 @@ WM.module('wm.layouts.page')
                         ViewService.showView(scope.name);
                     };
                     var isDialogView = element.hasClass('dialog-view'),
-                        dialogService,
-                        dialogName,
+                        dialogId,
                         newScope,
-                        elScope;
+                        targetScope;
                     if (isDialogView) {
                         if (CONSTANTS.isStudioMode) {
                             /* dialog view is meant to have the dialog only, widgets should not be dropped on the same,
@@ -45,11 +44,11 @@ WM.module('wm.layouts.page')
                             /* hiding the dialog-view in run mode, just opening the dialog*/
                             scope.show    = false;
                             newScope      = scope.$new(true);
-                            dialogName    = element.find('script').attr('id');
-                            elScope       = element.scope();
-                            elScope.Widgets[dialogName] = newScope;
-                            newScope.open  = DialogService.open.bind(undefined, dialogName, elScope);
-                            newScope.close = DialogService.close.bind(undefined, dialogName);
+                            dialogId    = element.find('script').attr('id');
+                            targetScope   = element.scope();
+                            targetScope.Widgets[dialogId] = newScope;
+                            newScope.open  = Utils.openDialog.bind(undefined, dialogId);
+                            newScope.close = DialogService.close.bind(undefined, dialogId);
                         }
                     }
                     scope.initialize = function () {
