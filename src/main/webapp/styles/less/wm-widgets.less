@@ -1430,10 +1430,19 @@ body.modal-open {
 If the height and width are not specified the video takes the height of the poster*/
   height: 150px;
   width: 300px;
+  display: inline-block;
+  > video {
+    height: 100%;
+    width: 100%;
+  }
 }
 .app-audio {
   position: relative;
-  width: 100%;
+  display: inline-block;
+  width: 300px;
+  > audio {
+    width: 100%;
+  }
 }
 /********************************************************************************
 ********************************* prefab style classes *****************************

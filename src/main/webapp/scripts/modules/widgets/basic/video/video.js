@@ -5,14 +5,16 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/video.html',
-            '<video init-widget alt="{{hint}}" title="{{hint}}" class="app-video" preload="{{videopreload}}" ng-attr-poster="{{postersource}}" ng-src="{{mp4videoUrl}}" apply-styles>' +
-                '<source type="video/mp4" ng-src="{{mp4videoUrl}}" ng-if="mp4videoUrl">' +
-                '<source type="video/webm" ng-src="{{webmvideoUrl}}" ng-if="webmvideoUrl">' +
-                '<source type="video/ogg" ng-src="{{oggvideoUrl}}" ng-if="oggvideoUrl">' +
-                '<track kind="subtitles" label="{{subtitlelang}}" ng-if="tracksource" ng-src="{{tracksource}}" srclang="{{subtitlelang}}" default>' +
-                '{{videosupportmessage}}' +
-            '</video>'
-            );
+            '<div init-widget class="app-video" alt="{{hint}}" title="{{hint}}" apply-styles>' +
+                '<video preload="{{videopreload}}" ng-attr-poster="{{postersource}}" ng-src="{{mp4videoUrl}}">' +
+                    '<source type="video/mp4" ng-src="{{mp4videoUrl}}" ng-if="mp4videoUrl">' +
+                    '<source type="video/webm" ng-src="{{webmvideoUrl}}" ng-if="webmvideoUrl">' +
+                    '<source type="video/ogg" ng-src="{{oggvideoUrl}}" ng-if="oggvideoUrl">' +
+                    '<track kind="subtitles" label="{{subtitlelang}}" ng-if="tracksource" ng-src="{{tracksource}}" srclang="{{subtitlelang}}" default>' +
+                    '{{videosupportmessage}}' +
+                '</video>' +
+            '</div>'
+        );
     }])
     .directive('wmVideo', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $sce, CONSTANTS) {
         'use strict';
@@ -22,11 +24,21 @@ WM.module('wm.widgets.basic')
                 'mp4format'     : true,
                 'oggformat'     : true,
                 'webmformat'    : true,
-                'subtitlesource': true
+                'subtitlesource': true,
+                'controls'      : true
             };
 
+        //Toggles the controls
+        function toggleControls($el, controls) {
+            if (controls === 'false') {
+                $el.children().first().removeAttr('controls');
+            } else {
+                $el.children().first().attr('controls', controls);
+            }
+        }
+
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'videoposter':
                 scope.postersource = Utils.getImageUrl(newVal);
@@ -51,6 +63,9 @@ WM.module('wm.widgets.basic')
                     scope.tracksource =  Utils.getResourceUrl(newVal);
                 }
                 break;
+            case 'controls':
+                toggleControls(element, newVal);
+                break;
             }
         }
 
@@ -71,8 +86,11 @@ WM.module('wm.widgets.basic')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+                        if (attrs.controls) {
+                            toggleControls(element, attrs.controls);
+                        }
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         // update the mute property manually
                         element.removeAttr('muted');
