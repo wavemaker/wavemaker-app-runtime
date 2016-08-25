@@ -1271,6 +1271,7 @@ $.widget('wm.datagrid', {
     removeNewRow: function ($row) {
         this.disableActions(false);
         this._setGridEditMode(false);
+        $row.attr('data-removed', true);
         $row.remove();
         if (!this.preparedData.length) {
             this.setStatus('nodata', this.dataStatus.nodata);
@@ -1303,6 +1304,10 @@ $.widget('wm.datagrid', {
             multipartData,
             isValid,
             advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
+        if ($row.attr('data-removed') === 'true') {
+            //Even after removing row, focus out is triggered and edit is called. In this case, return here
+            return;
+        }
         options = options || {};
         e.data  = e.data  || {};
         if (e.data.action === 'edit' || options.action === 'edit') {
@@ -1555,6 +1560,7 @@ $.widget('wm.datagrid', {
         if (isNewRow) {
             this.disableActions(false);
             this._setGridEditMode(false);
+            $row.attr('data-removed', true);
             $row.remove();
             if (!this.preparedData.length) {
                 //On delete of a new row with no data, show no data message
@@ -1679,17 +1685,36 @@ $.widget('wm.datagrid', {
     // Handles keydown event on row items.
     onKeyDown: function (event) {
         event.stopPropagation();
-        var $row;
+        var $target   = $(event.target),
+            $row      = $target.closest('tr'),
+            quickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT,
+            rowId,
+            isNewRow;
+        if (event.which === 27) { //Escape key
+            rowId    = parseInt($row.attr('data-row-id'), 10);
+            isNewRow = rowId >= this.preparedData.length;
+            //On Escape other than new row, can cancel the row edit
+            if (!isNewRow) {
+                $row.trigger('click', [undefined, {action: 'cancel'}]);
+                $row.focus();
+            }
+            return;
+        }
+        if (event.which === 13) { //Enter key
+            if (quickEdit && $target.hasClass('app-datagrid-row')) {
+                $row.trigger('click', [undefined, {action: 'edit'}]);
+            }
+            return;
+        }
         if (event.which === 38) { // up-arrow action
-            $row = $(event.target).closest('tr').prev();
-
+            $row = $row.prev();
         } else if (event.which === 40) { // down-arrow action
-            $row = $(event.target).closest('tr').next();
+            $row = $row.next();
         } else {
             return;
         }
         $row.focus();
-        if (this.options.editmode === this.CONSTANTS.QUICK_EDIT) {
+        if (quickEdit) {
             //In case of quick edit, on up or down make the next row editable
             $row.trigger('click', [undefined, {action: 'edit'}]);
         } else {
