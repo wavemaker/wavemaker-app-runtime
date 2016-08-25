@@ -111,6 +111,7 @@ WM.module('wm.widgets.grid')
                 'deleterow'          : true,
                 'updaterow'          : true,
                 'dataset'            : true,
+                'showheader'         : true,
                 'navigation'         : true,
                 'insertrow'          : true,
                 'show'               : true,
@@ -508,6 +509,11 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'dataset':
                                 scope.watchVariableDataSet(newVal, element);
+                                break;
+                            case 'showheader':
+                                if (CONSTANTS.isStudioMode && !scope.widgetid) {
+                                    scope.setDataGridOption('showHeader', newVal);
+                                }
                                 break;
                             case 'gridsearch':
                                 if (newVal) {

@@ -846,19 +846,20 @@ $.widget('wm.datagrid', {
                 bodyCols   = this.gridElement.find('col');
             this.gridHeaderElement.find('th.app-datagrid-header-cell').each(function (index) {
                 /***setting the header col width based on the content width***/
-                var $header = $(this),
-                    width   = $header.width(),
-                    id      = $header.attr('data-col-id'),
-                    colDef  = self.preparedHeaderData[id];
+                var $header      = $(this),
+                    width        = $header.width(),
+                    id           = $header.attr('data-col-id'),
+                    colDef       = self.preparedHeaderData[id],
+                    definedWidth = colDef.width;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     width = 0;
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 50;
                 } else {
-                    if (_.isUndefined(colDef.width) || colDef.width === '') {
+                    if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
                         width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
                     } else {
-                        width = colDef.width;
+                        width = definedWidth;
                     }
                 }
                 $(headerCols[index]).css('width', width);
