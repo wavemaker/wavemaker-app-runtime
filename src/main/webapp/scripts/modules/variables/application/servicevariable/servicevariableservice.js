@@ -23,9 +23,10 @@ wm.variables.services.$servicevariable = ['Variables',
     'VARIABLE_CONSTANTS',
     'WS_CONSTANTS',
     'DatabaseService',
+    '$timeout',
     '$base64',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, DatabaseService, $base64) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, DatabaseService, $timeout, $base64) {
         "use strict";
 
         var serviceModel = {},
@@ -175,7 +176,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* trigger success callback */
                 Utils.triggerFn(success, response);
 
-                $rootScope.$$postDigest(function () {
+                $timeout(function () {
                     // EVENT: ON_SUCCESS
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
 
@@ -188,7 +189,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                     // EVENT: ON_CAN_UPDATE
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
-                });
+                }, null, false);
             },
 
             /**

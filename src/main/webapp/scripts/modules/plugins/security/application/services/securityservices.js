@@ -146,7 +146,7 @@ wm.plugins.security.services.SecurityService = [
                             onSuccess(mobileconfig);
                         } else {
                             getWebConfig(function (config) {
-                                mergeWebAndMobileConfig(config);
+                                config = mergeWebAndMobileConfig(config);
                                 onSuccess(config);
                             }, onError);
                         }
