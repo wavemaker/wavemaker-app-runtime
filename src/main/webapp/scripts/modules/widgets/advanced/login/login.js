@@ -112,10 +112,11 @@ WM.module('wm.widgets.advanced')
                                     if (clickFn) {
                                         clickFn({$event: event, $scope: scope});
                                     }
-                                    if (submitFn.indexOf('(') !== -1) {
-                                        scope.onSubmit({$event: event, $scope: scope});
-                                    } else {
+                                    //In case of login variable invoke
+                                    if (_.startsWith(submitFn, 'Variables.')) {
                                         $rootScope.$emit('invoke-service', submitFn, {scope: element.scope()}, onSuccess, onError);
+                                    } else if (submitFn.indexOf('(') !== -1) {
+                                        scope.onSubmit({$event: event, $scope: scope});
                                     }
                                 }
                             });
