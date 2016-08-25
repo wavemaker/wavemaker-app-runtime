@@ -1344,7 +1344,7 @@ WM.module('wm.widgets.base', [])
                         "updaterow": {"type": "boolean", "bindable": "in-bound", "show": false},
                         "showheader": {"type": "boolean", "value": true, "showindesigner": true},
                         "gridsearch": {"type": "boolean", "show": false, "showindesigner": false},
-                        "filtermode": {"type": "select-by-object", "options": [{"label": "No Filter", "value": ""}, {"label": "Search", "value": "search"}, {"label": "Row", "value": "row"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
+                        "filtermode": {"type": "select-by-object", "options": [{"label": "No Filter", "value": ""}, {"label": "Search", "value": "search"}, {"label": "Multi-column", "value": "multicolumn"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "searchlabel": {"type": "string", "value": "Search", "bindable": "in-bound", "show": false, "showindesigner": false, "alignright": true},
                         "enablesort": {"type": "boolean", "value": true, "showindesigner": true},
                         "enablecolumnselection": {"type": "boolean", "value": false, "showindesigner": true},

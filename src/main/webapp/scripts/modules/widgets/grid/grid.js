@@ -347,11 +347,22 @@ WM.module('wm.widgets.grid')
                             handlers = [],
                             liveGrid = element.closest('.app-livegrid'),
                             gridController;
+                        function isInputBodyWrapper(target) {
+                            var classes = ['.dropdown-menu', '.uib-typeahead-match', 'modal-dialog'],
+                                isInput = false;
+                            _.forEach(classes, function (cls) {
+                                if (target.closest(cls).length) {
+                                    isInput = true;
+                                    return false;
+                                }
+                            });
+                            return isInput;
+                        }
                         //Function to save the row on clicking outside, in case of quick edit
                         function documentClickBind(event) {
                             var $target = event.target;
                             //If click triggered from same grid or a dialog, do not save the row
-                            if (element[0].contains($target) || $($target).closest('.modal-dialog').length) {
+                            if (element[0].contains($target) || event.target.doctype || isInputBodyWrapper($($target))) {
                                 return;
                             }
                             scope.datagridElement.datagrid('saveRow');
@@ -2526,7 +2537,7 @@ WM.module('wm.widgets.grid')
                             _.forEach(exprWatchHandlers, Utils.triggerFn);
                         });
                         //Fetch the filter options for select widget when filtermode is row
-                        if (CONSTANTS.isRunMode && parentScope.filtermode === 'row' && columnDef.filterwidget === 'select') {
+                        if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && columnDef.filterwidget === 'select') {
                             variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
                             if (variable && variable.category === 'wm.LiveVariable') {
                                 columnDef.isLiveVariable = true;

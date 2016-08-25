@@ -101,10 +101,12 @@ $.widget('wm.datagrid', {
         }
     },
     CONSTANTS: {
-        'QUICK_EDIT': 'quickedit',
-        'INLINE'    : 'inline',
-        'FORM'      : 'form',
-        'DIALOG'    : 'dialog'
+        'QUICK_EDIT'   : 'quickedit',
+        'INLINE'       : 'inline',
+        'FORM'         : 'form',
+        'DIALOG'       : 'dialog',
+        'SEARCH'       : 'search',
+        'MULTI_COLUMN' : 'multicolumn'
     },
     Utils: {
         random: function () {
@@ -994,9 +996,9 @@ $.widget('wm.datagrid', {
         if (this.gridSearch) {
             this.gridSearch.remove();
         }
-        if (this.options.filtermode === 'search') {
+        if (this.options.filtermode === this.CONSTANTS.SEARCH) {
             this._renderSearch();
-        } else if (this.options.filtermode === 'row') {
+        } else if (this.options.filtermode === this.CONSTANTS.MULTI_COLUMN) {
             this._renderRowFilter();
         }
     },
@@ -2157,9 +2159,9 @@ $.widget('wm.datagrid', {
         this.dataStatusContainer = $(statusContainer);
         this.gridContainer.append(this.dataStatusContainer);
         this._renderHeader();
-        if (this.options.filtermode === 'search') {
+        if (this.options.filtermode === this.CONSTANTS.SEARCH) {
             this._renderSearch();
-        } else if (this.options.filtermode === 'row') {
+        } else if (this.options.filtermode === this.CONSTANTS.MULTI_COLUMN) {
             this._renderRowFilter();
         }
         if (this.options.spacing === 'condensed') {
