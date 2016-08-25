@@ -1,6 +1,6 @@
 /*global WM, window, _, cordova, document*/
 
-WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'ngAnimate'])
+WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'ngAnimate', 'wm.plugins.offline'])
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
         function ($rootScope, $location, CONSTANTS, Utils, AppAutoUpdateService) {
