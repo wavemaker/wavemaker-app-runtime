@@ -274,11 +274,24 @@ WM.module('wm.widgets.form')
             },
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
             'link': {
-                'pre': function (iScope) {
+                'pre': function (iScope, $el, attrs) {
                     if (CONSTANTS.isStudioMode) {
                         iScope.widgetProps = Utils.getClonedObject(widgetProps);
                     } else {
                         iScope.widgetProps = widgetProps;
+                    }
+
+                    if (!attrs.widgetid) {
+                        Object.defineProperty(iScope, '_model_', {
+                            get: function () {
+                                return this._proxyModel;
+                            },
+                            set: function (newVal) {
+                                this._proxyModel = newVal;
+                                _modelChangedManually[iScope.$id] = false;
+                                updateModelProxy(iScope, newVal);
+                            }
+                        });
                     }
                 },
                 'post': function (iScope, element, attrs) {
@@ -308,17 +321,6 @@ WM.module('wm.widgets.form')
                         if (attrs.scopedataset) {
                             iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
                         }
-
-                        Object.defineProperty(iScope, '_model_', {
-                            get: function () {
-                                return this._proxyModel;
-                            },
-                            set: function (newVal) {
-                                this._proxyModel = newVal;
-                                _modelChangedManually[iScope.$id] = false;
-                                updateModelProxy(iScope, newVal);
-                            }
-                        });
                     }
                 }
             }
