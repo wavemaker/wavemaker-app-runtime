@@ -5,24 +5,40 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/audio.html',
-            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio" preload="{{audiopreload}}" ng-src="{{mp3audioUrl}}" apply-styles>' +
-                '<source type="audio/mp3" ng-src="{{mp3audioUrl}}">' +
-                '{{audiosupportmessage}}' +
-            '</audio>');
+            '<div class="app-audio" init-widget alt="{{hint}}" title="{{hint}}" apply-styles>' +
+                '<audio preload="{{audiopreload}}" ng-src="{{mp3audioUrl}}">' +
+                    '<source type="audio/mp3" ng-src="{{mp3audioUrl}}">' +
+                    '{{audiosupportmessage}}' +
+                '</audio>' +
+            '</div>');
     }])
     .directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.audio', ['wm.base']),
             notifyFor = {
-                'mp3format': true
+                'mp3format': true,
+                'controls' : true
             };
+
+        //Toggles the controls
+        function toggleControls($el, controls) {
+            if (controls === 'false') {
+                $el.children().first().removeAttr('controls');
+            } else {
+                $el.children().first().attr('controls', controls);
+            }
+        }
+        
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'mp3format':
                 if (WM.isString(newVal) && newVal.indexOf('Variables') === -1) {
                     scope.mp3audioUrl = $sce.trustAsResourceUrl(newVal);
                 }
+                break;
+            case 'controls':
+                toggleControls(element, newVal);
                 break;
             }
         }
@@ -44,8 +60,11 @@ WM.module('wm.widgets.basic')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+                        if (attrs.controls) {
+                            toggleControls(element, attrs.controls);
+                        }
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         // update the mute property manually
                         element.removeAttr('muted');
