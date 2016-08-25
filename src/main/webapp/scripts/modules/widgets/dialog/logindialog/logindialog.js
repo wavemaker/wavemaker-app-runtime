@@ -180,10 +180,11 @@ WM.module('wm.widgets.dialog')
                                     if (loginBtnClickFn) {
                                         loginBtnClickFn({'$event': event, '$scope': $is});
                                     }
-                                    if (submitFn.indexOf('(') !== -1) {
-                                        $is.onSubmit({'$event': event, '$scope': $is});
-                                    } else {
+                                    //In case of login variable invoke
+                                    if (_.startsWith(submitFn, 'Variables.')) {
                                         $is.$root.$emit('invoke-service', submitFn, {'scope': $s, 'mode': 'dialog'}, onSuccess.bind(undefined, event), onError.bind(undefined, event));
+                                    } else if (submitFn.indexOf('(') !== -1) {
+                                        $is.onSubmit({'$event': event, '$scope': $is});
                                     }
                                 }
                             };
