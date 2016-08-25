@@ -234,7 +234,7 @@ WM.module('wm.layouts.containers')
                 var params,
                     template,
                     formData     = {},
-                    formVariable = element.scope().Variables[scope.formvariable];
+                    formVariable = element.scope().Variables[scope.dataset];
                 //Get all form fields and prepare form data as key value pairs
                 _.forEach(scope.elScope.formFields, function (field) {
                     var fieldName,
@@ -301,30 +301,19 @@ WM.module('wm.layouts.containers')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
                 'pre': function (scope, element, attrs) {
-                    var onSubmit,
-                        formVariable;
                     scope.widgetProps = widgetProps;
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
                     element.removeAttr('title');
-                    if (!attrs.formvariable && attrs.onSubmit) {
-                        onSubmit     = _.split(attrs.onSubmit, ';');
-                        formVariable = onSubmit[0];
-                        //If form variable is not present, Check for the first parameter in onSubmit and Set it to form variable
-                        //This form variable is triggered on on submit with custom handling of success and error by form
-                        if (formVariable && !_.includes(formVariable, '(') && !_.includes(formVariable, '.')) {
-                            scope.formvariable = formVariable;
-                            if (CONSTANTS.isRunMode) {
-                                onSubmit.splice(0, 1); //Remove the first parameter form the onSubmit
-                                attrs.onSubmit = _.join(onSubmit, ';');
-                            }
-                        }
-                    }
                 },
                 'post': function (scope, element, attrs) {
                     var handlers = [];
                     scope.statusMessage = undefined;
+
+                    if (scope.dataset === undefined) {
+                        scope.dataset = scope.formvariable;
+                    }
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
@@ -332,6 +321,8 @@ WM.module('wm.layouts.containers')
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
                     } else {
+                        //binddataset: allowing user click on the binded dataset.
+                        scope.binddataset = 'bind:Variables.' + scope.dataset;
                         //event emitted on building new markup from canvasDom
                         handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
                             //as multiple form directives will be listening to the event, apply field-definitions only for current form

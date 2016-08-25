@@ -1239,6 +1239,7 @@ WM.module('wm.widgets.base', [])
                         "method": {"type": "list", "options": ["post", "put", "delete"], "showindesigner": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
+                        "dataset": {"type": "array, object", "widget": "string", "disabled": true, "bindable": "in-bound"},
                         "captionsize": {"type": "string", "showindesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "formdata": {"type": "object", "bindable": "in-out-bound", "widget": "string"},
