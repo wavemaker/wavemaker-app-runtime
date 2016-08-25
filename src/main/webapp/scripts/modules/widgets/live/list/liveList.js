@@ -217,9 +217,10 @@ WM.module('wm.widgets.live')
             function bindScrollEvt($is, $el) {
                 var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
                     navigator      = $dataNavigator.isolateScope(),
-                    lastScrollTop  = 0;
+                    lastScrollTop  = 0,
+                    $scrollParent;
 
-                $el.find('> ul')
+                $scrollParent = $el.find('> ul')
                     .children()
                     .first()
                     .scrollParent(false)
@@ -253,6 +254,8 @@ WM.module('wm.widgets.live')
 
                         lastScrollTop = scrollTop;
                     });
+
+                $el.data('$scrollParent', $scrollParent);
             }
 
             function applyWrapper($tmplContent, attrs, flag) {
@@ -1183,9 +1186,13 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function onDestroy($is, handlers) {
+            function onDestroy($is, $el, handlers) {
+                var $scrollParent = $el.data('$scrollParent');
                 Object.defineProperty($is, 'selecteditem', {'get': _.noop, 'set': _.noop});
                 handlers.forEach(Utils.triggerFn);
+                if ($scrollParent) { //In case of infinite scroll, get the scroll element and remove the scroll event
+                    $scrollParent.off('scroll.livelist');
+                }
             }
 
             function setListClass($is, $liScope) {
@@ -1250,7 +1257,7 @@ WM.module('wm.widgets.live')
                             $is.variableInflight = active;
                         }
                     }));
-                    _onDestroy = onDestroy.bind(undefined, $is, handlers);
+                    _onDestroy = onDestroy.bind(undefined, $is, $el, handlers);
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 } else {
