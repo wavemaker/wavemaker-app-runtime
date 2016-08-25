@@ -30,9 +30,7 @@ WM.module('wm.widgets.dialog')
                 }
 
             } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
-                $rootScope.$$postDigest(function () {
-                    $scope.$evalAsync(eventName);
-                });
+                Utils.evalExp($scope, eventName);
             }
             if (hideDialog) {
                 DialogService.hideDialog($scope.dialogid);

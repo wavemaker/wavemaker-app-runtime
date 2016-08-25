@@ -87,9 +87,7 @@ WM.module('wm.widgets.base')
                 if (isAnchor && $evt) {
                     $evt.preventDefault();
                 }
-                $rs.$$postDigest(function () {
-                    $s.$evalAsync(customEvtName);
-                });
+                Utils.evalExp($s, customEvtName);
             }
 
             if (CONSTANTS.isRunMode) {

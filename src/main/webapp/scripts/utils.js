@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1825,6 +1825,15 @@ WM.module('wm.utils', [])
                 }
             });
         }
+
+        //Function to evaluate expression
+        function evalExp(scope, evtValue) {
+            //Evaluating in timeout so that the binding get updated
+            $timeout(function () {
+                scope.$evalAsync(evtValue);
+            });
+        }
+
         //Triggers custom events passed
         function triggerCustomEvents(event, customEvents, callBackScope, data, variable) {
             var retVal,
@@ -1835,9 +1844,7 @@ WM.module('wm.utils', [])
                     retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data);
                 }
                 if (_.startsWith(eventValue, 'Widgets.') || _.startsWith(eventValue, 'Variables.')) {
-                    $rootScope.$$postDigest(function () {
-                        callBackScope.$evalAsync(eventValue);
-                    });
+                    evalExp(callBackScope, eventValue);
                     return;
                 }
                 if (_.includes(eventValue, '(')) {
@@ -2143,4 +2150,5 @@ WM.module('wm.utils', [])
         this.xmlToJson                  = xmlToJson;
         this.getTypes                   = getTypes;
         this.openDialog                 = openDialog;
+        this.evalExp                    = evalExp;
     }]);

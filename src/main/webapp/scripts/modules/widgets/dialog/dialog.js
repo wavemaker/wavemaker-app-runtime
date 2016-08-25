@@ -149,7 +149,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', '$rootScope', 'DialogService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils, $rs, DialogService) {
+    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', 'DialogService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils, DialogService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.designdialog", ["wm.basicdialog", "wm.base"]),
             notifyFor = {
@@ -228,9 +228,7 @@ WM.module('wm.widgets.dialog')
                         }
 
                     } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
-                        $rs.$$postDigest(function () {
-                            $scope.$evalAsync(eventName);
-                        });
+                        Utils.evalExp($scope, eventName);
                     }
                     if (hideDialog) {
                         DialogService.hideDialog($scope.dialogid);
