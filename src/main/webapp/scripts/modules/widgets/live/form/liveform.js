@@ -77,7 +77,7 @@ WM.module('wm.widgets.live')
                                         template.context.innerHTML +
                                     '</div>' +
                                     '<div class="hidden-form-elements"></div>' +
-                                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-hide="isLayoutDialog"></div>' +
+                                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-hide="isLayoutDialog || !buttonArray"></div>' +
                                 '</form>';
 
                 if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
@@ -233,9 +233,9 @@ WM.module('wm.widgets.live')
                     /*Construct the data object with required values from the formFields*/
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
                     constructed out of the previous object*/
-                    data = $scope.constructDataObject($scope.formFields);
+                    data = $scope.constructDataObject();
                     $scope.dataoutput = data;
-                    prevData = prevformFields ? $scope.constructDataObject(prevformFields, true) : data;
+                    prevData = prevformFields ? $scope.constructDataObject(true) : data;
                     try {
                         isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data});
                         if (isValid === false) {
@@ -535,13 +535,18 @@ WM.module('wm.widgets.live')
                     return Utils.getClonedObject($scope.formdata || {});
                 }
                 /*construct the data object from the formFields*/
-                $scope.constructDataObject = function (formFields, isPreviousData) {
-                    var dataObject = getDataObject(),
-                        formName = $scope.name,
+                $scope.constructDataObject = function (isPreviousData) {
+                    var dataObject          = getDataObject(),
+                        formName            = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
+                        formFields,
                         formData,
                         element;
-
+                    if (isPreviousData) {
+                        formFields = prevformFields;
+                    } else {
+                        formFields = $scope.formFields;
+                    }
                     if (isFormDataSupported) {
                         /* Angular does not bind file values so using native object to send files */
                         formData = new FormData();
@@ -659,6 +664,7 @@ WM.module('wm.widgets.live')
                         }
                     });
                     $scope.setPrevDataValues();
+                    $scope.dataoutput = $scope.constructDataObject();
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
@@ -1026,7 +1032,7 @@ WM.module('wm.widgets.live')
                                             break;
                                         case 'delete':
                                             scope.operationType = 'delete';
-                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.formFields)});
+                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject()});
                                             break;
                                         }
                                     }
@@ -1067,7 +1073,7 @@ WM.module('wm.widgets.live')
                         scope.FieldDef.prototype = new wm.baseClasses.FieldDef();
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
-                        var parentIsolateScope,
+                        var parentScope,
                             template,
                             index,
                             columnDef = new scope.FieldDef(),
@@ -1081,31 +1087,31 @@ WM.module('wm.widgets.live')
                             parentEle    = element.parent(),
                             columnDefProps;
                         function setDefaultValue() {
-                            if (parentIsolateScope._widgettype === 'wm-liveform') {
-                                parentIsolateScope.setDefaultValueToValue(columnDef);
+                            if (parentScope._widgettype === 'wm-liveform') {
+                                parentScope.setDefaultValueToValue(columnDef);
                             } else {
                                 columnDef.value =  LiveWidgetUtils.getDefaultValue(columnDef.defaultvalue, undefined, columnDef.widget);
                             }
                         }
                         function setValidity(name, val) {
-                            var formWidget = parentIsolateScope.ngform[name + '_formWidget'];
+                            var formWidget = parentScope.ngform[name + '_formWidget'];
                             if (!formWidget) {
                                 return;
                             }
                             formWidget.$setValidity('custom', val);
                         }
                         if (parentEle.length) {
-                            parentIsolateScope = externalForm.length ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;
+                            parentScope = externalForm.length ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;
                         } else {
-                            parentIsolateScope = scope.$parent;
+                            parentScope = scope.$parent;
                         }
-                        scope.parentIsolateScope = parentIsolateScope;
-                        isLayoutDialog = parentIsolateScope.isLayoutDialog;
+                        scope.parentScope = parentScope;
+                        isLayoutDialog = parentScope.isLayoutDialog;
                         columnDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
-                        scope.FieldDef.prototype.$is = parentIsolateScope;
+                        scope.FieldDef.prototype.$is = parentScope;
                         WM.extend(columnDef, columnDefProps);
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
                         columnDef.isRelated = attrs.isRelated;
@@ -1122,16 +1128,16 @@ WM.module('wm.widgets.live')
                         scope._validationmessage = columnDef.validationmessage;
                         //For normal form is update mode won't be set on parent scope, set it explicitly based on isupdatemode attribute
                         if (scope.isupdatemode === 'true') {
-                            parentIsolateScope.isUpdateMode = true;
+                            parentScope.isUpdateMode = true;
                         }
 
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultvalue) {
                             if (Utils.stringStartsWith(attrs.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.defaultvalue.replace('bind:', '');
-                                exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
-                                    parentIsolateScope.formFields[index].defaultvalue = newVal;
-                                    if (parentIsolateScope.operationType !== 'update') {
+                                exprWatchHandler = BindingManager.register(parentScope, expr, function (newVal) {
+                                    parentScope.formFields[index].defaultvalue = newVal;
+                                    if (parentScope.operationType !== 'update') {
                                         setDefaultValue();
                                     }
                                 }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false}, 'datavalue');
@@ -1143,15 +1149,15 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!attrs.dataset && attrs.isRelated && CONSTANTS.isRunMode) {
-                            relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function (newVal) {
+                            relatedDataWatchHandler = parentScope.$watch(parentScope.binddataset.replace('bind:', ''), function (newVal) {
                                 if (!newVal) {
                                     return;
                                 }
                                 relatedDataWatchHandler();
-                                var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableName(parentIsolateScope)];
+                                var boundVariable = elScope.Variables[parentScope.variableName || Utils.getVariableName(parentScope)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
                                     var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
-                                        relatedFormField = parentIsolateScope.formFields[index],
+                                        relatedFormField = parentScope.formFields[index],
                                         displayField;
                                     relatedFormField.datafield = 'All Fields';
                                     relatedFormField.dataset = response;
@@ -1171,32 +1177,32 @@ WM.module('wm.widgets.live')
                         }
 
                         if (isLayoutDialog) {
-                            parentIsolateScope.ngform = parentIsolateScope[parentIsolateScope.name];
-                            defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
+                            parentScope.ngform = parentScope[parentScope.name];
+                            defaultObj = _.find(parentScope.translatedObj, function (obj) {
                                 return obj.key === columnDef.key;
                             });
                             if (defaultObj) {
                                 columnDef.isRelated = defaultObj.isRelated;
                                 columnDef.type = defaultObj.type;
-                                columnDef.outputformat = parentIsolateScope.getOutputPatterns(columnDef.type, columnDef.outputformat);
+                                columnDef.outputformat = parentScope.getOutputPatterns(columnDef.type, columnDef.outputformat);
                             }
-                            parentIsolateScope.setDefaultValueToValue(columnDef);
-                            parentIsolateScope.setFieldVal(columnDef);
-                            if (parentIsolateScope.operationType === 'update') {
-                                parentIsolateScope.setReadonlyFields();
+                            parentScope.setDefaultValueToValue(columnDef);
+                            parentScope.setFieldVal(columnDef);
+                            if (parentScope.operationType === 'update') {
+                                parentScope.setReadonlyFields();
                             }
                         }
 
                         scope.fieldDefConfig = columnDef;
-                        parentIsolateScope.formFields = _.isArray(parentIsolateScope.formFields) ?  parentIsolateScope.formFields : [];
-                        index = _.indexOf(parentIsolateScope.formFields, undefined);
-                        index = index > -1 ? index : parentIsolateScope.formFields.length;
-                        parentIsolateScope.formFields[index] = columnDef;
+                        parentScope.formFields = _.isArray(parentScope.formFields) ?  parentScope.formFields : [];
+                        index = _.indexOf(parentScope.formFields, undefined);
+                        index = index > -1 ? index : parentScope.formFields.length;
+                        parentScope.formFields[index] = columnDef;
                         if (isLayoutDialog) {
-                            parentIsolateScope.setPrevDataValues();
+                            parentScope.setPrevDataValues();
                         }
-                        parentIsolateScope.formCreated = true;
-                        parentIsolateScope.formFieldCompiled = true;
+                        parentScope.formCreated = true;
+                        parentScope.formFieldCompiled = true;
                         /* this condition will run for:
                          *  1. PC view in STUDIO mode
                          *  2. Mobile/tablet view in RUN mode
@@ -1213,28 +1219,29 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition);
+                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition);
                             element.html(template);
-                            $compile(element.contents())(parentIsolateScope);
+                            $compile(element.contents())(parentScope);
                         } else {
                             template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
                             if (externalForm.length) {
-                                element.closest('form.app-form').find('.hidden-form-elements').append($compile(template)(parentIsolateScope));
+                                element.closest('form.app-form').find('.hidden-form-elements').append($compile(template)(parentScope));
                             } else {
-                                element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentIsolateScope));
+                                element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentScope));
                             }
                         }
-                        parentIsolateScope.onFocusField = parentIsolateScope.onFocusField ||  function ($event) {
+                        parentScope.onFocusField = parentScope.onFocusField ||  function ($event) {
                             WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
                         };
-                        parentIsolateScope.onBlurField = parentIsolateScope.onBlurField || function ($event) {
+                        parentScope.onBlurField = parentScope.onBlurField || function ($event) {
                             var $field     = WM.element($event.target).closest('.live-field'),
                                 fieldScope = $field.parent('[data-role="form-field"]').isolateScope();
                             $field.removeClass('active');
                             fieldScope.validationmessage = fieldScope._validationmessage;
                             setValidity(fieldScope.name, true);
+                            parentScope.dataoutput = parentScope.constructDataObject();
                         };
-                        parentIsolateScope.$on('$destroy', function () {
+                        parentScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();
                             }
@@ -1245,20 +1252,20 @@ WM.module('wm.widgets.live')
                         // when the form-field element is removed, remove the corresponding entry from parentIScope.formFields
                         element.on('$destroy', function () {
                             if (CONSTANTS.isRunMode) {
-                                _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnDef));
+                                _.pullAt(parentScope.formFields, _.indexOf(parentScope.formFields, columnDef));
                             } else {
-                                _.set(parentIsolateScope.formFields, index, undefined);
+                                _.set(parentScope.formFields, index, undefined);
                             }
                         });
-                        WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);
+                        WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentScope, index), scope);
 
                         if (!scope.hasOwnProperty('datavalue')) {
                             Object.defineProperty(scope, 'datavalue', {
                                 get: function () {
-                                    return _.get(parentIsolateScope, ['formFields', [index], 'value']);
+                                    return _.get(parentScope, ['formFields', [index], 'value']);
                                 },
                                 set: function (val) {
-                                    _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
+                                    _.set(parentScope, ['formFields', [index], 'value'], val);
                                 }
                             });
                         }
@@ -1266,8 +1273,8 @@ WM.module('wm.widgets.live')
                             scope.validationmessage = val;
                             setValidity(scope.name, false);
                         };
-                        parentIsolateScope.formfields = parentIsolateScope.formfields || {};
-                        parentIsolateScope.formfields[columnDef.key] = columnDef;
+                        parentScope.formfields = parentScope.formfields || {};
+                        parentScope.formfields[columnDef.key] = columnDef;
                     }
                 };
             }
@@ -1297,7 +1304,7 @@ WM.module('wm.widgets.live')
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
-                        var parentIsolateScope,
+                        var parentScope,
                             template,
                             index,
                             parentEle = element.parent(),
@@ -1309,15 +1316,15 @@ WM.module('wm.widgets.live')
                             });
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
-                            parentIsolateScope = scope;
+                            parentScope = scope;
                         } else {
-                            parentIsolateScope = scope.parentIsolateScope = (parentEle && parentEle.length > 0) ? parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentScope = scope.parentScope = (parentEle && parentEle.length > 0) ? parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
 
-                        parentIsolateScope.buttonArray = parentIsolateScope.buttonArray || [];
-                        index = parentIsolateScope.buttonArray.push(buttonDef) - 1;
-                        parentIsolateScope.formCreated = true;
-                        parentIsolateScope.formFieldCompiled = true;
+                        parentScope.buttonArray = parentScope.buttonArray || [];
+                        index = parentScope.buttonArray.push(buttonDef) - 1;
+                        parentScope.formCreated = true;
+                        parentScope.formFieldCompiled = true;
                         template = getTemplate(buttonDef, index);
 
                         if (scope.formlayout === 'page') {
@@ -1325,7 +1332,7 @@ WM.module('wm.widgets.live')
                             scope.buttonArray[index].action = buttonDef.action;
                         } else {
                             /*append the buttons template to element with class basic-btn-grp*/
-                            element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentIsolateScope));
+                            element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentScope));
                         }
                         //Removing the default template for the directive
                         element.remove();
