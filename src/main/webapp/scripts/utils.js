@@ -1792,10 +1792,15 @@ WM.module('wm.utils', [])
         }
 
         // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
-        function updateTmplAttrs($root, parentDataSet) {
+        function updateTmplAttrs($root, parentDataSet, name) {
 
             var _parentDataSet = parentDataSet.replace('bind:', ''),
-                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
+                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g'),
+                currentItemRegEx;
+
+            if (name) {
+                currentItemRegEx = new RegExp('(Widgets.' + name + '.currentitem)', 'g');
+            }
 
             $root.find('*').each(function () {
                 var node = this;
@@ -1809,6 +1814,10 @@ WM.module('wm.utils', [])
                             value = value.replace('bind:', '');
                             value = value.replace(regex, 'item');
                             attr.value = 'bind:' + value;
+                        }
+                        //Replace item if widget property is bound to livelist currentItem
+                        if (currentItemRegEx.test(value)) {
+                            attr.value = value.replace(currentItemRegEx, 'item');
                         }
                     }
                 });
