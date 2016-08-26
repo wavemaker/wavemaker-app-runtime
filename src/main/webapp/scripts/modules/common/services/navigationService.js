@@ -15,12 +15,12 @@
 
 wm.modules.wmCommon.services.NavigationService = [
     '$rootScope',
-    '$window',
     'ViewService',
     'DialogService',
     '$timeout',
+    '$location',
 
-    function ($rs, $window, ViewService, DialogService, $timeout) {
+    function ($rs, ViewService, DialogService, $timeout, $location) {
         'use strict';
 
         var nextTransitionToApply,
@@ -206,27 +206,18 @@ wm.modules.wmCommon.services.NavigationService = [
          */
         this.goToPage = function (pageName, options) {
             options = options || {};
-            var location = '#/' + pageName,
-                viewName = options.viewName,
-                queryParams = options.urlParams || {},
-                strQueryParams = '';
-
-            _.each(queryParams, function (value, key) {
-                if (!strQueryParams) {
-                    strQueryParams += '?';
-                } else {
-                    strQueryParams += '&';
-                }
-                strQueryParams += key + '=' + value;
-            });
+            var location    = '/' + pageName,
+                viewName    = options.viewName,
+                queryParams = options.urlParams || {};
 
             nextTransitionToApply = options.transition || '';
             if (viewName) {
                 location +=  '.' + viewName;
             }
 
-            $rs._appNavEvt   = options.$event;
-            $window.location = location + strQueryParams;
+            $rs._appNavEvt = options.$event;
+
+            $location.path(location).search(queryParams);
         };
 
         /**
