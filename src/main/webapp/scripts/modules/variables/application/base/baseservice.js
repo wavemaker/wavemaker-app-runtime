@@ -1567,18 +1567,8 @@ wm.variables.services.Variables = [
                     * Else, if the variable has been selected for "unbinding", decrement the bindCount.*/
                     if (isBind) {
                         variable.bindCount = ((variable.bindCount || 0) + (bindCount || 1));
-                        if (!variable.startUpdate) {
-                            writableVariable.startUpdate = variable.startUpdate = true;
-                            if (WM.isFunction(variable.update)) {
-                                variable.update();
-                            }
-                        }
                     } else {
                         variable.bindCount -= 1;
-                        /*When the bindCount becomes 0, set the "startUpdate" flag to false*/
-                        if (!variable.bindCount) {
-                            writableVariable.startUpdate = variable.startUpdate = false;
-                        }
                     }
                     writableVariable.bindCount = variable.bindCount;
                     /*Set the "saveVariables" to true so that when "save"/"run" buttons are clicked, the variables could be saved into the file.*/
