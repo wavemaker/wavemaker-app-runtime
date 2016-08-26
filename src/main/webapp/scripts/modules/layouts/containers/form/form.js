@@ -229,33 +229,40 @@ WM.module('wm.layouts.containers')
             }
         }
 
+        function constructDataObject(scope, element) {
+            var formData     = {},
+                formVariable = element.scope().Variables[scope.dataset];
+            //Get all form fields and prepare form data as key value pairs
+            _.forEach(scope.elScope.formFields, function (field) {
+                var fieldName,
+                    fieldTarget;
+                fieldTarget = _.split(field.key || field.target, '.');
+                fieldName   = fieldTarget[0] || field.key || field.name;
+                if (fieldTarget.length === 1 && !formData[fieldName]) {
+                    formData[fieldName] = field.value;
+                } else {
+                    if (formVariable && formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
+                        formData[fieldTarget[1]] = field.value;
+                    } else {
+                        formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
+                        //Check for if property already not exits
+                        if (!formData[fieldTarget[0]][fieldTarget[1]]) {
+                            formData[fieldTarget[0]][fieldTarget[1]] = field.value;
+                        }
+                    }
+                }
+            });
+            scope.dataoutput = formData;
+            return formData;
+        }
         function bindEvents(scope, element) {
             element.on('submit', function (event) {
                 var params,
                     template,
-                    formData     = {},
+                    formData,
                     formVariable = element.scope().Variables[scope.dataset];
-                //Get all form fields and prepare form data as key value pairs
-                _.forEach(scope.elScope.formFields, function (field) {
-                    var fieldName,
-                        fieldTarget;
-                    fieldTarget = _.split(field.key || field.target, '.');
-                    fieldName   = fieldTarget[0] || field.key || field.name;
-                    if (fieldTarget.length === 1 && !formData[fieldName]) {
-                        formData[fieldName] = field.value;
-                    } else {
-                        if (formVariable && formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
-                            formData[fieldTarget[1]] = field.value;
-                        } else {
-                            formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                            //Check for if property already not exits
-                            if (!formData[fieldTarget[0]][fieldTarget[1]]) {
-                                formData[fieldTarget[0]][fieldTarget[1]] = field.value;
-                            }
-                        }
-                    }
-                });
                 //Set the values of the widgets inside the form (other than form fields) in form data
+                formData = scope.constructDataObject();
                 LiveWidgetUtils.setFormWidgetsValues(element, formData);
                 params = {$event: event, $scope: scope, $formData: formData};
                 //If on before submit is there execute it and return here if result is false
@@ -263,7 +270,6 @@ WM.module('wm.layouts.containers')
                     return;
                 }
                 if (scope.onSubmit || formVariable) {
-                    scope.formdata = formData;
                     //If its a service variable call setInput and assign form data and invoke the service
                     if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                         formVariable.setInput(formData);
@@ -300,7 +306,7 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
-                'pre': function (scope, element, attrs) {
+                'pre': function (scope, element) {
                     scope.widgetProps = widgetProps;
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
@@ -317,6 +323,7 @@ WM.module('wm.layouts.containers')
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
+                    scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
                     if (!scope.widgetid) {
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
