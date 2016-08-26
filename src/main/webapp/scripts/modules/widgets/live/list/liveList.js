@@ -280,13 +280,13 @@ WM.module('wm.widgets.live')
                 return tmpl;
             }
 
-            function prepareLITemplate(tmpl, attrs, flag) {
+            function prepareLITemplate(tmpl, attrs, flag, name) {
                 var $tmpl = WM.element(tmpl),
                     $div  = WM.element('<div></div>').append($tmpl),
                     parentDataSet = attrs.dataset || attrs.scopedataset;
 
                 if (parentDataSet) {
-                    Utils.updateTmplAttrs($div, parentDataSet);
+                    Utils.updateTmplAttrs($div, parentDataSet, name);
                 }
                 $tmpl = applyWrapper($tmpl, attrs, flag);
 
@@ -1244,7 +1244,7 @@ WM.module('wm.widgets.live')
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
                         liTemplateWrapper_end   = '></li>';
-                        $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
+                        $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, false, $is.name);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);
                         $el.find('> [data-identifier=list]').addClass('list-group');
