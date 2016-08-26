@@ -143,6 +143,9 @@ $.widget('wm.datagrid', {
         },
         isMac: function () {
             return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        },
+        isDeleteKey: function (event) {
+            return (this.isMac() && event.which === 8) || event.which === 46;
         }
     },
 
@@ -1415,7 +1418,7 @@ $.widget('wm.datagrid', {
                                 _.set(rowData, colDef.field, _.get(rowData, colDef.field) === null ? null : '');
                             }
                         } else {
-                            text = (fields.length === 1 && text === '') ? undefined : text; //Set empty values as undefined
+                            text = ((fields.length === 1 || isNewRow) && text === '') ? undefined : text; //Set empty values as undefined
                             if (WM.isDefined(text)) {
                                 text = text === 'null' ? null : text; //For select, null is returned as string null. Set this back to ull
                                 if (text === null) {
@@ -1585,7 +1588,8 @@ $.widget('wm.datagrid', {
                 $row.removeClass(className);
                 self.addOrRemoveScroll();
             }, e, function (skipFocus, error) {
-                if (self.options.editmode !== self.CONSTANTS.QUICK_EDIT || !$(e.target).hasClass('delete-row-button')) {
+                //For quick edit, on clicking of delete button or DELETE key, edit the next row
+                if (self.options.editmode !== self.CONSTANTS.QUICK_EDIT || !($(e.target).hasClass('delete-row-button') || self.Utils.isDeleteKey(e))) {
                     return;
                 }
                 //Call set status, so that the rows are visible for fom operations
@@ -1692,12 +1696,16 @@ $.widget('wm.datagrid', {
             quickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT,
             rowId,
             isNewRow;
+        if (this.Utils.isDeleteKey(event)) { //Delete Key
+            this.deleteRow(event);
+            return;
+        }
         if (event.which === 27) { //Escape key
             rowId    = parseInt($row.attr('data-row-id'), 10);
             isNewRow = rowId >= this.preparedData.length;
-            //On Escape other than new row, can cancel the row edit
+            //On Escape, cancel the row edit
+            $row.trigger('click', [undefined, {action: 'cancel'}]);
             if (!isNewRow) {
-                $row.trigger('click', [undefined, {action: 'cancel'}]);
                 $row.focus();
             }
             return;

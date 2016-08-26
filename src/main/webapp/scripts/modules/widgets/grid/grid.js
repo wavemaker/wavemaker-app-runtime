@@ -274,6 +274,7 @@ WM.module('wm.widgets.grid')
                         },
                         set: function (val) {
                             /*Select the rows in the table based on the new selected items passed*/
+                            scope.items.length = 0;
                             scope.datagridElement.datagrid('selectRows', val);
                         }
                     });
@@ -348,7 +349,7 @@ WM.module('wm.widgets.grid')
                             liveGrid = element.closest('.app-livegrid'),
                             gridController;
                         function isInputBodyWrapper(target) {
-                            var classes = ['.dropdown-menu', '.uib-typeahead-match', 'modal-dialog'],
+                            var classes = ['.dropdown-menu', '.uib-typeahead-match', '.modal-dialog', '#toast-container'],
                                 isInput = false;
                             _.forEach(classes, function (cls) {
                                 if (target.closest(cls).length) {
