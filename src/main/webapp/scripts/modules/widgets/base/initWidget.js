@@ -79,24 +79,28 @@ WM.module('wm.widgets.base')
                 //If dialog is in commonPage then evaluating expression on commmonPage's scope 
                 var widgetId   = customEvtName.split('.')[1],
                     $dialogEl  = WM.element('[id="wm-common-content"]').find('script[id="' + widgetId + '"]'),
-                    $currentEl = WM.element($evt.currentTarget),
-                    $listEl    = $currentEl.closest('.app-list-item').first(),
+                    $currentEl,
+                    $listEl,
                     $formEl;
                 if ($dialogEl.length) {
                     $s = WM.element('[name="CommonPage"]').scope();
                 }
                 
-                //If widget is inside list and in/outside the form we assign $s as isolateScope of current iterator form widget
-                if ($listEl.length) {
-                    $formEl = $listEl.find('[name="' + widgetId + '"]').first();
-                    //If form and event is those five events assign scope to form isolateScope and make event name cancel()/save()/new()/delete()/reset()
-                    if ($formEl.length && (_.includes(customEvtName, '.cancel') ||
-                        _.includes(customEvtName, '.delete') ||
-                        _.includes(customEvtName, '.new') ||
-                        _.includes(customEvtName, '.reset') ||
-                        _.includes(customEvtName, '.save'))) {
-                        $s            = $formEl.isolateScope();
-                        customEvtName = customEvtName.split('.')[2];
+                if ($evt) {
+                    $currentEl = WM.element($evt.currentTarget);
+                    $listEl    = $currentEl.closest('.app-list-item').first();
+                    //If widget is inside list and in/outside the form we assign $s as isolateScope of current iterator form widget
+                    if ($listEl.length) {
+                        $formEl = $listEl.find('[name="' + widgetId + '"]').first();
+                        //If form and event is those five events assign scope to form isolateScope and make event name cancel()/save()/new()/delete()/reset()
+                        if ($formEl.length && (_.includes(customEvtName, '.cancel') ||
+                            _.includes(customEvtName, '.delete') ||
+                            _.includes(customEvtName, '.new') ||
+                            _.includes(customEvtName, '.reset') ||
+                            _.includes(customEvtName, '.save'))) {
+                            $s            = $formEl.isolateScope();
+                            customEvtName = customEvtName.split('.')[2];
+                        }
                     }
                 }
 
