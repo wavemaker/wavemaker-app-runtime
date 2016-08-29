@@ -2544,6 +2544,67 @@ If the height and width are not specified the video takes the height of the post
     }
   }
 }
+
+// Custom styles for form widgets within liveform and livefilter
+.wm-app {
+  .app-liveform, .app-livefilter {
+    .form-control {
+      border-radius: 0;
+    }
+    .app-date, .app-timeinput, .app-datetime {
+      .input-group-btn {
+        .btn.btn-default, .btn.btn-default:hover {
+          border-radius: 0;
+          border: 1px solid @wm-standard-border-color;
+        }
+      }
+    }
+    .app-currency {
+      .input-group-addon {
+        border-radius: 0;
+        border-right: 1px solid @wm-standard-border-color;
+      }
+    }
+    .app-switch {
+      .btn-group {
+        > .btn.btn-default {
+          border:1px solid @wm-standard-border-color;
+          &:hover, &.active , &:focus {
+            border:1px solid @wm-standard-border-color;
+          }
+        }
+      }
+    }
+    &.align-right.position-top {
+      .radio.app-radio, .app-checkbox.checkbox {
+        .app-radioset-label, .app-checkboxset-label {
+          input[type="checkbox"], input[type="radio"] {
+            margin-right: -20px;
+          }
+        }
+      }
+      .app-switch {
+        .btn-group {
+          .btn.btn-default:first-child {
+            border: 1px solid @wm-standard-border-color;
+            border-top-right-radius: 19px;
+            border-bottom-right-radius: 19px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+          .btn.btn-default:last-child {
+            border: 1px solid @wm-standard-border-color;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 19px;
+            border-bottom-left-radius: 19px;
+          }
+        }
+      }
+    }
+  }
+}
+
 /********************************************************************************
 ************************* Login form classes ******************************
 *********************************************************************************/
