@@ -1449,6 +1449,9 @@ $.widget('wm.datagrid', {
                     if (isNewRow) {
                         if (advancedEdit && !multipartData && _.isEmpty(rowData)) {
                             self.removeNewRow($row);
+                            if ($.isFunction(options.success)) {
+                                options.success(false, undefined, true);
+                            }
                             return;
                         }
                         if ($.isFunction(this.options.onBeforeRowInsert)) {
@@ -1694,7 +1697,22 @@ $.widget('wm.datagrid', {
         }
         this.options.sortHandler.call(this, this.options.sortInfo, e, 'sort');
     },
-
+    //Method to handle up and next key presses
+    processUpDownKeys: function (event, $row, direction) {
+        var self = this;
+        if ($row.hasClass('row-editing') && self.options.editmode === self.CONSTANTS.QUICK_EDIT) {
+            self.toggleEditRow(event, {
+                'action'  : 'save',
+                'noMsg'   : true,
+                'success' : function (skipFocus, error) {
+                    self.editSuccessHandler(skipFocus, error, event, $row, true, direction);
+                }
+            });
+        } else {
+            $row = direction === 'down' ? $row.next() : $row.prev();
+            $row.focus();
+        }
+    },
     // Handles keydown event on row items.
     onKeyDown: function (event) {
         event.stopPropagation();
@@ -1712,7 +1730,7 @@ $.widget('wm.datagrid', {
             return;
         }
         if (event.which === 27) { //Escape key
-            rowId    = parseInt($row.attr('data-row-id'), 10);
+            rowId = parseInt($row.attr('data-row-id'), 10);
             isNewRow = rowId >= this.preparedData.length;
             //On Escape, cancel the row edit
             $row.trigger('click', [undefined, {action: 'cancel'}]);
@@ -1724,25 +1742,20 @@ $.widget('wm.datagrid', {
         if (event.which === 13) { //Enter key
             if (quickEdit && $target.hasClass('app-datagrid-row')) {
                 $row.trigger('click', [undefined, {action: 'edit'}]);
+            } else {
+                $row.trigger('click');
             }
             return;
         }
         if (event.which === 38) { // up-arrow action
-            $row = $row.prev();
-        } else if (event.which === 40) { // down-arrow action
-            $row = $row.next();
-        } else {
+            this.processUpDownKeys(event, $row, 'up');
             return;
         }
-        $row.focus();
-        if (quickEdit) {
-            //In case of quick edit, on up or down make the next row editable
-            $row.trigger('click', [undefined, {action: 'edit'}]);
-        } else {
-            $row.trigger('click');
+        if (event.which === 40) { // down-arrow action
+            this.processUpDownKeys(event, $row, 'down');
         }
     },
-    editSuccessHandler: function (skipFocus, error, e, $row, isSameRow) {
+    editSuccessHandler: function (skipFocus, error, e, $row, isSameRow, direction) {
         var self = this,
             rowID,
             $nextRow;
@@ -1755,6 +1768,16 @@ $.widget('wm.datagrid', {
         }
         //On success, make next row editable. If next row is not present, add new row
         rowID = +$row.attr('data-row-id');
+        if (direction) {
+            rowID    = direction === 'down' ? ++rowID : --rowID;
+            $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
+            if ($nextRow.length) {
+                $nextRow.focus();
+            } else {
+                $row.focus();
+            }
+            return;
+        }
         if (!isSameRow) {
             rowID++;
         }
@@ -1834,8 +1857,10 @@ $.widget('wm.datagrid', {
                 self.toggleEditRow(e, {
                     'action'  : 'save',
                     'noMsg'   : true,
-                    'success' : function (skipFocus, error) {
-                        self.editSuccessHandler(skipFocus, error, e, $row);
+                    'success' : function (skipFocus, error, isNewRow) {
+                        if (!isNewRow) {
+                            self.editSuccessHandler(skipFocus, error, e, $row);
+                        }
                     }
                 });
             });
