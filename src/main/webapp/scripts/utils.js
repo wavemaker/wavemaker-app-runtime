@@ -2046,7 +2046,20 @@ WM.module('wm.utils', [])
          * @param dialogScope
         * */
         function openDialog(dialogId, dialogScope) {
-            dialogScope = dialogScope || WM.element('body > [id="wm-app-content"]').find('[data-role="pageContainer"]').scope();
+            if (!dialogScope) {
+                /*case1: Prefab's dialog - setting nearest page's scope
+                 *case2: Partials's dialog - setting nearest partials's scope
+                 *case3: pages's dialog - setting nearest page's scope
+                 * */
+                var $scriptEl = WM.element('script[id="' + dialogId + '"]'),
+                    parentPageScope = $scriptEl.closest('[data-role="pageContainer"]').scope(),
+                    isPrefabDialog = parentPageScope && parentPageScope.prefabname;
+                if (isPrefabDialog) {
+                    dialogScope = parentPageScope;
+                } else {
+                    dialogScope = $scriptEl.closest('[data-role="partial"]').scope() || parentPageScope;
+                }
+            }
             DialogService.open(dialogId, dialogScope);
         }
 
