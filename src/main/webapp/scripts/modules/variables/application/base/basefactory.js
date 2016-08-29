@@ -19,7 +19,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             properties,
             propertyGroups,
             variableMap,
-            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$',
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_]+$',
             matchModes = Utils.getMatchModes();
 
         /* make events compatible to select widget options */
