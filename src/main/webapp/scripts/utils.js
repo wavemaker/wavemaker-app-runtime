@@ -1837,6 +1837,11 @@ WM.module('wm.utils', [])
 
         //Function to evaluate expression
         function evalExp(scope, evtValue) {
+            //Modifying expression in to array notation for variables with special characters in name
+            if (_.includes(evtValue, 'Variables.')) {
+                var parts = evtValue.split('.');
+                evtValue = parts[0] + '["' + parts[1] + '"].' + parts[2];
+            }
             //Evaluating in timeout so that the binding get updated
             $timeout(function () {
                 scope.$evalAsync(evtValue);
@@ -2041,7 +2046,7 @@ WM.module('wm.utils', [])
          * @param dialogScope
         * */
         function openDialog(dialogId, dialogScope) {
-            dialogScope = dialogScope || WM.element('body > [id="wm-app-content"] > [data-role="pageContainer"]').scope();
+            dialogScope = dialogScope || WM.element('body > [id="wm-app-content"]').find('[data-role="pageContainer"]').scope();
             DialogService.open(dialogId, dialogScope);
         }
 
