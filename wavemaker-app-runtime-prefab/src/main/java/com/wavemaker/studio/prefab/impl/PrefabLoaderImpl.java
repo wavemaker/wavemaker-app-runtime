@@ -122,8 +122,8 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
     protected File[] readPrefabDirs() {
         File[] prefabs;
         try {
-            File prefabDirectory = prefabUtils.getDirectory(prefabsConfig.getPrefabsHomeDir());
-            prefabs = prefabUtils.listPrefabDirectories(prefabDirectory);
+            File prefabsDirectory = prefabUtils.getDirectory(prefabsConfig.getPrefabsHomeDir());
+            prefabs = prefabUtils.listPrefabDirectories(prefabsDirectory);
         } catch (IOException e) {
             LOGGER.warn("Prefabs feature disabled. Reason: {}", e.getMessage());
             prefabs = PrefabConstants.ZERO_FILES;

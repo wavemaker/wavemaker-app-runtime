@@ -88,11 +88,21 @@ public class PrefabUtils {
     }
 
     public boolean isDirContainsConfig(File directory) {
-        return Utils.isGivenDirectoryAvaliable(directory, prefabsConfig.getPrefabConfigDir());
+        File prefabConfigDirectory = new File(directory, prefabsConfig.getPrefabConfigDir());
+        if (prefabConfigDirectory.exists() && prefabConfigDirectory.isDirectory()) {
+            File[] files = prefabConfigDirectory.listFiles();
+            return files.length > 0;// Valid prefab config folder if it contains atleast one file
+        }
+        return false;
     }
 
     public boolean isDirContainsLib(File directory) {
-        return Utils.isGivenDirectoryAvaliable(directory, prefabsConfig.getPrefabLibDir());
+        File prefabLibDirectory = new File(directory, prefabsConfig.getPrefabLibDir());
+        if (prefabLibDirectory.exists() && prefabLibDirectory.isDirectory()) {
+            File[] files = prefabLibDirectory.listFiles();
+            return files.length > 0;// Valid prefab lib folder if it contains atleast one file
+        }
+        return false;
     }
 
     public boolean isPrefabDirectory(File pathName) {
