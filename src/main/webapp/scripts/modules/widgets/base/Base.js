@@ -1731,7 +1731,7 @@ WM.module('wm.widgets.base', [])
                         "offsetright": {"type": "number", "value": 25, "pattern": numberRegex},
                         "barspacing": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
                         "donutratio": {"type": "list", "options": ["small", "medium", "large"], "value": "medium"},
-                        "centerlabel": {"type": "string", "bindable": "in-out-bound", "show": false},
+                        "centerlabel": {"type": "string", "bindable": "in-bound", "show": false},
                         "showlabelsoutside": {"type": "boolean", "value": true},
                         "xaxislabeldistance": {"type": "number", "value": 12},
                         "yaxislabeldistance": {"type": "number", "value": 12},
@@ -1743,7 +1743,7 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
-                        "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound", "show": false},
+                        "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-bound", "show": false},
                         "xdomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         "ydomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         /**Style**/
