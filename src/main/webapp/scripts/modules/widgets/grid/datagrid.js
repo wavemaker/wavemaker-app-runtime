@@ -1440,7 +1440,7 @@ $.widget('wm.datagrid', {
                         rowData = formData;
                     }
                     if (isNewRow) {
-                        if (advancedEdit && _.isEmpty(rowData)) {
+                        if (advancedEdit && !multipartData && _.isEmpty(rowData)) {
                             self.removeNewRow($row);
                             return;
                         }
@@ -1697,6 +1697,10 @@ $.widget('wm.datagrid', {
             rowId,
             isNewRow;
         if (this.Utils.isDeleteKey(event)) { //Delete Key
+            //For input elements, dont delete the row
+            if ($target.is('input') || $target.hasClass('form-control')) {
+                return;
+            }
             this.deleteRow(event);
             return;
         }
