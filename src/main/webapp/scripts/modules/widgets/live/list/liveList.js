@@ -445,7 +445,7 @@ WM.module('wm.widgets.live')
 
                     liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
-                    $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
+                    $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 
                     $el.find('> [data-identifier=list]').append($liTemplate);
                     $compile($liTemplate)($is.$liScope);
