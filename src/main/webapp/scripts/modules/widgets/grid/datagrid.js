@@ -1099,6 +1099,8 @@ $.widget('wm.datagrid', {
         if (!this.options.showHeader) {
             return;
         }
+        //As rows visibility is checked, remove loading icon
+        this.__setStatus();
         var $headerCheckbox = this.gridHeader.find('th.app-datagrid-header-cell input:checkbox'),
             $tbody = this.gridElement.find('tbody'),
             checkedItemsLength = $tbody.find('tr:visible input[name="gridMultiSelect"]:checkbox:checked').length,
@@ -1428,6 +1430,11 @@ $.widget('wm.datagrid', {
                                         _.set(rowData, colDef.field, ''); //Set to empty for normal fields
                                     }
                                 } else {
+                                    _.set(rowData, colDef.field, text);
+                                }
+                            } else {
+                                //Set undefined while editing the rows
+                                if (fields.length === 1 && !isNewRow) {
                                     _.set(rowData, colDef.field, text);
                                 }
                             }
