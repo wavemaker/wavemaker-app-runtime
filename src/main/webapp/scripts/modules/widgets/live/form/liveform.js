@@ -847,7 +847,9 @@ WM.module('wm.widgets.live')
                                         }
                                         gridObj = getNonEmptyDatSetGridObj();
                                     }
-                                } else if (!newVal) {
+                                } else if (newVal) {
+                                    scope.variableName = Utils.getVariableName(scope);
+                                } else {
                                     /*If variable binding has been removed empty the form and the variableName*/
                                     if (CONSTANTS.isStudioMode) {
                                         element.find('.form-elements').empty();

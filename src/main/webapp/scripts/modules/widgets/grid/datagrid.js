@@ -1784,7 +1784,7 @@ $.widget('wm.datagrid', {
         }
         $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
         if ($nextRow.length) {
-            $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
+            $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus, skipSelect: self.options.multiselect}]);
         } else {
             self.addNewRow(skipFocus);
         }
