@@ -372,7 +372,9 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "number", "value": "0"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
-                        "margin": {"type": "string", "widget": "box-model"}
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "onFocus": {"show": false},
+                        "onBlur": {"show": false}
                     },
                     "wm.menu": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -620,8 +622,8 @@ WM.module('wm.widgets.base', [])
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false, "getTypeFrom": "dataset"},
@@ -639,7 +641,9 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Select Color"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
+                        "onDblclick": {"show": false},
+                        "onDoubletap": {"show": false}
                     },
 
                     "wm.inputcolorpicker": {
@@ -695,8 +699,8 @@ WM.module('wm.widgets.base', [])
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
