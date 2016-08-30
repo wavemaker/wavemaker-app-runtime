@@ -423,6 +423,8 @@ WM.module('wm.widgets.live')
                     default:
                         if (_.includes(evtTypes, field)) {
                             fields += ' ' + Utils.hyphenate(field) + '="' + fieldDef[field] + '"';
+                        } else if (_.isString(fieldDef[field])) {
+                            fields += ' ' + field + '="' + fieldDef[field].replace(/"/g, "'") + '"';
                         } else {
                             fields += ' ' + field + '="' + fieldDef[field] + '"';
                         }
