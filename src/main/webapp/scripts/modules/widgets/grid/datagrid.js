@@ -928,6 +928,7 @@ $.widget('wm.datagrid', {
         switch (key) {
         case 'showHeader':
             this._toggleHeader();
+            this._toggleSearch();
             this.setColGroupWidths();
             this.addOrRemoveScroll();
             break;
