@@ -2052,11 +2052,12 @@ WM.module('wm.utils', [])
                  *case3: pages's dialog - setting nearest page's scope
                  * */
                 var $scriptEl = WM.element('script[id="' + dialogId + '"]'),
+                    isCommonDialog = WM.element('[id="wm-common-content"]').find($scriptEl).length,
                     parentPageScope = $scriptEl.closest('[data-role="pageContainer"]').scope(),
                     isPrefabDialog = parentPageScope && parentPageScope.prefabname;
                 if (isPrefabDialog) {
                     dialogScope = parentPageScope;
-                } else {
+                } else if (!isCommonDialog) {
                     dialogScope = $scriptEl.closest('[data-role="partial"]').scope() || parentPageScope;
                 }
             }
