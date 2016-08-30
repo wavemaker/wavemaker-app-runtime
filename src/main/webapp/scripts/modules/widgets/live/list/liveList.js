@@ -913,14 +913,15 @@ WM.module('wm.widgets.live')
 
             function updateSelectedItemsWidgets($is, $el) {
                 // remove the existing entries
-                $is.selectedItemWidgets.length = 0;
+                if ($is.multiselect) {
+                    $is.selectedItemWidgets.length = 0;
+                }
 
                 // find the active list item
                 $el.find('li.app-list-item.active')
                     .each(function () {
                         var wid = {};
 
-                        $is.selectedItemWidgets.push(wid);
                         // find the widgets inside the list item and update the map
                         WM.element(this)
                             .find('[init-widget]')
@@ -935,6 +936,12 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             });
+
+                        if ($is.multiselect) {
+                            $is.selectedItemWidgets.push(wid);
+                        } else {
+                            $is.selectedItemWidgets = wid;
+                        }
                     });
             }
 
@@ -1245,7 +1252,7 @@ WM.module('wm.widgets.live')
                 setListClass($is, $liScope);
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
-                $is.selectedItemWidgets = []; // Array of objects containing widget's name - widget's scope map
+                $is.selectedItemWidgets = $is.multiselect ? [] : {}; // Array of objects containing widget's name - widget's scope map
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
