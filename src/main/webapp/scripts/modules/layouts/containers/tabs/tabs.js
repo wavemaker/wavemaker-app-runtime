@@ -375,7 +375,8 @@ WM.module('wm.layouts.containers')
                             var index = element.index(),
                                 $parent = element.parent(),
                                 delta,
-                                ul;
+                                ul,
+                                $prevHeaderEle;
 
                             // when the transition is setup animate the selected tab into the view.
                             if (hasTransition) {
@@ -399,7 +400,10 @@ WM.module('wm.layouts.containers')
                             ul = scope._headerElement.parent()[0];
                             // move the tabheader into the viewport
                             if (scope.tabId) {
-                                ul.scrollLeft = scope._headerElement.prev()[0].offsetLeft;
+                                $prevHeaderEle = scope._headerElement.prev();
+                                if ($prevHeaderEle.length) {
+                                    ul.scrollLeft = $prevHeaderEle[0].offsetLeft;
+                                }
                             } else {
                                 ul.scrollLeft = 0;
                             }

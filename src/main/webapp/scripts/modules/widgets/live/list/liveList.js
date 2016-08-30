@@ -305,7 +305,7 @@ WM.module('wm.widgets.live')
                 var $liTemplate,
                     groupedLiData,
                     groupDataByUserDefinedFn,
-                    regex                    = /[^\w]/g,
+                    regex                    = /\W/g,
                     momentLocale             = moment.localeData(),
                     momentCalendarOptions    = Utils.getClonedObject(momentLocale._calendar),
                     momentCalendarDayOptions = momentLocale._calendarDay || {
@@ -335,7 +335,8 @@ WM.module('wm.widgets.live')
                         'YEAR'  : 'YYYY',
                         'HOUR'  : 'hh:mm a'
                     },
-                    groupedDataFieldName = '';
+                    groupedDataFieldName = '',
+                    count                = 0;
 
                 //Get the group by roll up string for time based group by options
                 function getTimeRolledUpString(str, rollUp) {
@@ -425,10 +426,16 @@ WM.module('wm.widgets.live')
                 }
 
                 // append data to li based on the grouped data.
-                _.each(groupedLiData, function (groupedData, groupkey) {
-                    groupedDataFieldName = '_groupData' + groupkey.replace(regex, '');
+                _.forEach(groupedLiData, function (groupedData, groupkey) {
+                    groupedDataFieldName     = '_groupData' + groupkey;
                     liTemplateWrapper_start  = '';
                     liTemplateWrapper_end    = '></li></ul></li>';
+
+                    // replace special characters in groupkey by '_'
+                    if (regex.test(groupedDataFieldName)) {
+                        count = count + 1;
+                        groupedDataFieldName = groupedDataFieldName.replace(regex, '_') + count;
+                    }
 
                     // appending the sorted data to scope based to groupkey
                     _s[groupedDataFieldName] = _.sortBy(groupedData, function (data) {
