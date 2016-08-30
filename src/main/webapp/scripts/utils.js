@@ -1844,7 +1844,11 @@ WM.module('wm.utils', [])
             }
             //Evaluating in timeout so that the binding get updated
             $timeout(function () {
-                scope.$evalAsync(evtValue);
+                if (_.startsWith(evtValue, 'Variables') || _.startsWith(evtValue, 'Widgets.')) {
+                    scope.$evalAsync(evtValue);
+                } else {
+                    $rootScope.$emit('invoke-service', evtValue);
+                }
             });
         }
 
