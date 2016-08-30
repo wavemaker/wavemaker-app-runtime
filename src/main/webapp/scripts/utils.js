@@ -1844,10 +1844,11 @@ WM.module('wm.utils', [])
             }
             //Evaluating in timeout so that the binding get updated
             $timeout(function () {
-                if (_.startsWith(evtValue, 'Variables') || _.startsWith(evtValue, 'Widgets.')) {
+                //Evaluating for Variables,Widgets and Form events inside list
+                if (_.startsWith(evtValue, 'Variables') || _.startsWith(evtValue, 'Widgets.') || !_.includes(evtValue, '.')) {
                     scope.$evalAsync(evtValue);
                 } else {
-                    $rootScope.$emit('invoke-service', evtValue);
+                    $rootScope.$emit('invoke-service', evtValue);//Invoking Prefab events
                 }
             });
         }
