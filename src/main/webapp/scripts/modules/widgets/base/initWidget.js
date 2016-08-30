@@ -35,7 +35,6 @@ WM.module('wm.widgets.base')
             'use strict';
 
             var BOOLEAN_ATTRS = {},
-                DLG_ACTIONS   = {'SHOW': 'show', 'HIDE': 'hide'},
                 EVENT         = 'event',
                 $appConfirmDialog;
 
@@ -85,7 +84,7 @@ WM.module('wm.widgets.base')
                 if ($dialogEl.length) {
                     $s = WM.element('[name="CommonPage"]').scope();
                 }
-                
+
                 if ($evt) {
                     $currentEl = WM.element($evt.currentTarget);
                     $listEl    = $currentEl.closest('.app-list-item').first();
@@ -151,7 +150,7 @@ WM.module('wm.widgets.base')
                                     }
                                 }
 
-                                if (_.startsWith(trimmedFnName, 'Widgets.') || _.startsWith(trimmedFnName, 'Variables.')) {
+                                if (_.includes(trimmedFnName, '.') && !_.includes(trimmedFnName, '=')) {
                                     overrideFlg = true;
                                     return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
                                 }
