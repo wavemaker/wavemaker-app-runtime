@@ -1796,10 +1796,12 @@ WM.module('wm.utils', [])
 
             var _parentDataSet = parentDataSet.replace('bind:', ''),
                 regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g'),
-                currentItemRegEx;
+                currentItemRegEx,
+                currentItemWidgetsRegEx;
 
             if (name) {
-                currentItemRegEx = new RegExp('(Widgets.' + name + '.currentitem)', 'g');
+                currentItemRegEx        = new RegExp('(Widgets.' + name + '.currentitem)', 'g');
+                currentItemWidgetsRegEx = new RegExp('(Widgets.' + name + '.currentItemWidgets)', 'g');
             }
 
             $root.find('*').each(function () {
@@ -1818,6 +1820,9 @@ WM.module('wm.utils', [])
                         //Replace item if widget property is bound to livelist currentItem
                         if (currentItemRegEx.test(value)) {
                             attr.value = value.replace(currentItemRegEx, 'item');
+                        }
+                        if (currentItemWidgetsRegEx.test(value)) {
+                            attr.value = value.replace(currentItemWidgetsRegEx, 'currentItemWidgets');
                         }
                     }
                 });

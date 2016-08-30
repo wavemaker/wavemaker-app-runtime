@@ -1257,11 +1257,37 @@ WM.module('wm.widgets.live')
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
-                        liTemplateWrapper_end   = '></li>';
+                        liTemplateWrapper_end   = ' ng-init="addCurrentItemWidgets(this);"></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, false, $is.name);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);
                         $el.find('> [data-identifier=list]').addClass('list-group');
+
+                        //Add currentitem widgets on each template item scope
+                        $liScope.addCurrentItemWidgets = function (__s) {
+                            $timeout(function () {
+                                $el.find('li.app-list-item:nth-child(' + __s.$index+1 + ')')
+                                    .each(function () {
+                                        var wid = {};
+
+                                        // find the widgets inside the list item and update the map
+                                        WM.element(this)
+                                            .find('[init-widget]')
+                                            .each(function () {
+                                                var $target = WM.element(this),
+                                                    _is;
+                                                if ($target.isolateScope) {
+                                                    _is = $target.isolateScope();
+
+                                                    if (_is.name) {
+                                                        wid[_is.name] = _is;
+                                                    }
+                                                }
+                                            });
+                                        __s.currentItemWidgets = wid;
+                                    });
+                            });
+                        }
                         $compile($liTemplate)($liScope);
                     }
 
