@@ -1267,7 +1267,7 @@ WM.module('wm.widgets.live')
                         $liScope.addCurrentItemWidgets = function (__s) {
                             $timeout(function () {
                                 $rs.$evalAsync(function () {
-                                    $el.find('li.app-list-item:nth-child(' + __s.$index+1 + ')')
+                                    $el.find('li.app-list-item:nth-child(' + (__s.$index + 1) + ')')
                                         .each(function () {
                                             var wid = {};
 
