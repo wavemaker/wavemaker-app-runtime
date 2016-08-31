@@ -17,15 +17,23 @@ WM.module('wm.widgets.advanced')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 isMobile    = $rs.isMobileApplicationType || Utils.isMobile(),
                 notifyFor   = isMobile ? {
-                    'dataset'     : true,
-                    'view'        : true
+                    'dataset'       : true,
+                    'view'          : true,
+                    'eventtitle'    : true,
+                    'eventallday'   : true,
+                    'eventstart'    : true,
+                    'eventend'      : true
                 } : {
-                    'dataset'     : true,
-                    'height'      : true,
-                    'controls'    : true,
-                    'calendartype': true,
-                    'view'        : true,
-                    'multiselect' : true
+                    'dataset'       : true,
+                    'height'        : true,
+                    'controls'      : true,
+                    'calendartype'  : true,
+                    'view'          : true,
+                    'multiselect'   : true,
+                    'eventtitle'    : true,
+                    'eventallday'   : true,
+                    'eventstart'    : true,
+                    'eventend'      : true
                 },
                 defaultHeaderOptions = {
                     'left'  : 'prev next today',
@@ -90,12 +98,30 @@ WM.module('wm.widgets.advanced')
                 $is.onEventrender({$scope: $is, $data: $is.eventData});
             }
 
+            function constructCalendarDataset($is, eventSource) {
+                var properties = {title : $is.eventtitle,
+                    description : $is.eventdescription,
+                    allday      : $is.eventallday,
+                    start       : $is.eventstart,
+                    end         : $is.eventend,
+                    className   : $is.eventclass
+                    };
+                _.forEach(eventSource, function (obj) {
+                    _.mapKeys(properties, function (value, key) {
+                        obj[key] = obj[value];
+                    });
+                    obj.className = obj.className || 'bg-primary';
+                });
+                return eventSource;
+            }
+
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $el, key, newVal) {
                 var calendar  = $is.calendarOptions && $is.calendarOptions.calendar,
                     eleScope  = $el.scope(),
                     eleIscope = $el.find('.uib-datepicker').isolateScope(),
-                    variable  = Utils.getVariableName($is, eleScope);
+                    variable  = Utils.getVariableName($is, eleScope),
+                    eventSet = [];
                 switch (key) {
                 case 'dataset':
                     if (isMobile) {
@@ -104,8 +130,11 @@ WM.module('wm.widgets.advanced')
                     }
                     $is.eventSources.length = 0;
                     if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
+                        if (newVal.data) {
+                            newVal = newVal.data;
+                        }
                         newVal = WM.isArray(newVal) ? newVal : WM.isObject(newVal) ? [newVal] : [];
-                        var eventSet = [];
+                        newVal = constructCalendarDataset($is, newVal);
                         if (_.includes(_.keys(newVal[0]), 'start')) {
                             _.forEach(newVal, function (event) {
                                 if (!event.start && event.end) {
@@ -191,12 +220,12 @@ WM.module('wm.widgets.advanced')
                 'template': function (tElement, tAttrs) {
                     if (isMobile) {
                         $tc.put('template/widget/calendar.html',
-                            '<div init-widget has-model apply-styles="shell" class="app-date">' +
+                            '<div init-widget has-model apply-styles="shell" class="app-date" listen-property="dataset" >' +
                                 '<div uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions"></div>' +
                             '</div>');
                     } else {
                         $tc.put('template/widget/calendar.html',
-                            '<div class="app-calendar" init-widget has-model ng-model ="_model_" ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
+                            '<div class="app-calendar" init-widget has-model ng-model ="_model_" listen-property="dataset"  ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
                                 '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
                             '</div>');
                     }
@@ -309,12 +338,14 @@ WM.module('wm.widgets.advanced')
                             $is.eventData = {};
                             //prepare calendar Events
                             $is.prepareCalendarEvents = function () {
-                                var eventDay;
+                                var eventDay,
+                                    dataset;
                                 $is.eventData = {};
                                 if (!$is.dataset) {
                                     return;
                                 }
-                                $is.events = WM.isArray($is.dataset) ? $is.dataset : (WM.isObject($is.dataset) ? [$is.dataset] : []);
+                                dataset = $is.dataset.data || $is.dataset;
+                                $is.events = WM.isArray(dataset) ? dataset : (WM.isObject(dataset) ? [dataset] : []);
                                 _.forEach($is.events, function (event) {
                                     if (event.start) {
                                         eventDay = moment(event.start).startOf('day').format(dateFormat);
