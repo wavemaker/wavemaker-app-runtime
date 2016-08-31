@@ -1266,28 +1266,30 @@ WM.module('wm.widgets.live')
                         //Add currentitem widgets on each template item scope
                         $liScope.addCurrentItemWidgets = function (__s) {
                             $timeout(function () {
-                                $el.find('li.app-list-item:nth-child(' + __s.$index+1 + ')')
-                                    .each(function () {
-                                        var wid = {};
+                                $rs.$evalAsync(function () {
+                                    $el.find('li.app-list-item:nth-child(' + __s.$index+1 + ')')
+                                        .each(function () {
+                                            var wid = {};
 
-                                        // find the widgets inside the list item and update the map
-                                        WM.element(this)
-                                            .find('[init-widget]')
-                                            .each(function () {
-                                                var $target = WM.element(this),
-                                                    _is;
-                                                if ($target.isolateScope) {
-                                                    _is = $target.isolateScope();
+                                            // find the widgets inside the list item and update the map
+                                            WM.element(this)
+                                                .find('[init-widget]')
+                                                .each(function () {
+                                                    var $target = WM.element(this),
+                                                        _is;
+                                                    if ($target.isolateScope) {
+                                                        _is = $target.isolateScope();
 
-                                                    if (_is.name) {
-                                                        wid[_is.name] = _is;
+                                                        if (_is.name) {
+                                                            wid[_is.name] = _is;
+                                                        }
                                                     }
-                                                }
-                                            });
-                                        __s.currentItemWidgets = wid;
-                                    });
-                            });
-                        }
+                                                });
+                                            __s.currentItemWidgets = wid;
+                                        });
+                                });
+                            }, 0, false);
+                        };
                         $compile($liTemplate)($liScope);
                     }
 
