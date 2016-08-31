@@ -772,6 +772,19 @@ WM.module('wm.widgets.basic')
                 return chart;
             }
 
+            function postPlotChartProcess(scope, isPreview) {
+                var id = isPreview ? null : scope.$id;
+                //If user sets to highlight the data points and increase the thickness of the line
+                if (isLineTypeChart(scope.type)) {
+                    setLineThickness(id, scope.linethickness);
+                    highlightPoints(id, scope.highlightpoints);
+                }
+                //Modifying the legend position only when legend is shown
+                if (scope.showlegend) {
+                    modifyLegendPosition(scope, scope.showlegend, id);
+                }
+            }
+
             this.isBarChart = isBarChart;
             this.isBubbleChart = isBubbleChart;
             this.isPieType = isPieType;
@@ -788,5 +801,6 @@ WM.module('wm.widgets.basic')
             this.getLabelValues = getLabelValues;
             this.modifyLegendPosition = modifyLegendPosition;
             this.hideOrShowProperties = hideOrShowProperties;
+            this.postPlotChartProcess = postPlotChartProcess;
         }
     ]);

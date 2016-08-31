@@ -888,11 +888,7 @@ WM.module('wm.widgets.basic')
                 angleArray,
                 styleObj = {};
 
-            //If user sets to highlight the data points and increase the thickness of the line
-            if (ChartService.isLineTypeChart(scope.type)) {
-                ChartService.setLineThickness(scope.$id, scope.linethickness);
-                ChartService.highlightPoints(scope.$id, scope.highlightpoints);
-            }
+            ChartService.postPlotChartProcess(scope);
 
             if (!ChartService.isPieType(scope.type)) {
                 setLabelsMaxWidth(scope);
@@ -926,10 +922,6 @@ WM.module('wm.widgets.basic')
                 }
             });
             setTextStyle(styleObj, scope.$id);
-            //Modifying the legend position only when legend is shown
-            if (scope.showlegend && scope.legendposition) {
-                ChartService.modifyLegendPosition(scope, scope.legendposition, scope.$id);
-            }
 
             /*
              * allow window-resize functionality, for only-run mode as
