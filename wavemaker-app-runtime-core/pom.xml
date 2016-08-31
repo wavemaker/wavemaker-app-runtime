@@ -94,14 +94,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ldap</groupId>
-            <artifactId>spring-ldap-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-cas</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.mchange</groupId>
@@ -209,35 +207,35 @@
                     <artifactId>lucene-queryparser</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> org.jfree</groupId>
+                    <groupId>org.jfree</groupId>
                     <artifactId>jcommon</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> org.jfree</groupId>
+                    <groupId>org.jfree</groupId>
                     <artifactId>jfreechart</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> org.eclipse.jdt.core.compiler</groupId>
+                    <groupId>org.eclipse.jdt.core.compiler</groupId>
                     <artifactId>ecj</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> org.codehaus.castor</groupId>
+                    <groupId>org.codehaus.castor</groupId>
                     <artifactId>castor-xml</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> com.lowagie</groupId>
+                    <groupId>com.lowagie</groupId>
                     <artifactId>itext</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> org.olap4j</groupId>
+                    <groupId>org.olap4j</groupId>
                     <artifactId>olap4j</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> com.google.zxing</groupId>
+                    <groupId>com.google.zxing</groupId>
                     <artifactId>core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId> com.ibm.icu</groupId>
+                    <groupId>com.ibm.icu</groupId>
                     <artifactId>icu4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -322,7 +320,7 @@
             <artifactId>dynamicreports-core</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId> net.sf.barcode4j</groupId>
+                    <groupId>net.sf.barcode4j</groupId>
                     <artifactId>barcode4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -341,5 +339,26 @@
         <!-- End: Quartz framework -->
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>dependency-list</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/app-runtime-dependencies.txt</outputFile>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
