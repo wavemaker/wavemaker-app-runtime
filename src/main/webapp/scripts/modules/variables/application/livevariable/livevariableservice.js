@@ -61,7 +61,18 @@ wm.variables.services.$liveVariable = [
         /*Function to convert values of date time types into default formats*/
             getDateInDefaultFormat = function (value, type) {
                 var formatDate = function (dateValue) {
-                    var epoch = moment(dateValue).valueOf();
+                    var epoch;
+                    if (WM.isDate(dateValue)) {
+                        epoch = dateValue.getTime();
+                    } else {
+                        if (!isNaN(dateValue)) {
+                            dateValue = parseInt(dateValue, 10);
+                        }
+                        epoch = moment(dateValue).valueOf();
+                    }
+                    if (type === 'timestamp') {
+                        return epoch;
+                    }
                     if (type === 'time' && !epoch) {
                         epoch = moment(new Date().toDateString() + ' ' + dateValue).valueOf();
                     }
@@ -543,13 +554,8 @@ wm.variables.services.$liveVariable = [
                                 break;
                             case 'date':
                             case 'datetime':
-                                fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
-                                filterCondition = getFilterCondition(filterCondition);
-                                break;
                             case 'timestamp':
-                                fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
-                                    return moment(value).valueOf();
-                                }) : moment(fieldValue).valueOf();
+                                fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
                                 filterCondition = getFilterCondition(filterCondition);
                                 break;
                             case 'string':
@@ -911,7 +917,7 @@ wm.variables.services.$liveVariable = [
 
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
-                    var clonedFields = Utils.getClonedObject(variableDetails.inputFields),
+                    var clonedFields = Utils.getClonedObject(inputFields),
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, clonedFields);
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;

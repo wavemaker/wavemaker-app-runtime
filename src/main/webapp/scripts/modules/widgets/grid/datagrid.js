@@ -1244,7 +1244,12 @@ $.widget('wm.datagrid', {
                 fields       = _.split(colDef.field, '.'),
                 text         = self.getTextValue($el, colDef, fields),
                 originalData = _.get(rowData, colDef.field);
-            isDataChanged = !text && (originalData === null || originalData === undefined) ? false : !(originalData == text);
+            if (colDef.editWidgetType === 'upload') {
+                //For upload widget, check if any file is uploaded
+                isDataChanged = document.forms[$el.attr('form-name')][colDef.field].files.length > 0;
+            } else {
+                isDataChanged = !text && (originalData === null || originalData === undefined) ? false : !(originalData == text);
+            }
             if (isDataChanged) {
                 return !isDataChanged;
             }
@@ -2176,7 +2181,7 @@ $.widget('wm.datagrid', {
         this._findAndReplaceCompiledTemplates();
         this._appendRowActions($htm);
         this.attachEventHandlers($htm);
-        if (this.preparedData.length && $.isFunction(this.options.onDataRender)) {
+        if ($.isFunction(this.options.onDataRender)) {
             this.options.onDataRender();
         }
     },
