@@ -75,7 +75,7 @@ WM.module('wm.widgets.live')
                     'height'      : true,
                     'groupby'     : true,
                     'navigation'  : CONSTANTS.isStudioMode,
-                    'itemsperrow' : CONSTANTS.isStudioMode,
+                    'itemsperrow' : true,
                     'match'       : CONSTANTS.isStudioMode,
                     'padding'     : true
                 },
@@ -714,6 +714,30 @@ WM.module('wm.widgets.live')
                     break;
                 }
             }
+
+            /* this function sets the itemclass depending on itemsperrow.
+            if itemsperrow is 2 for large device, then itemclass is 'col-xs-1 col-sm-1 col-lg-2'
+            if itemsperrow is 'lg-3' then itemclass is 'col-lg-3'
+            */
+            function setListClass($is) {
+                var itemClass = '',
+                    oldClass  = $rs.isMobileApplicationType ? 'xs' : 'sm',
+                    $liScope  = $is.$liScope;
+
+                if (isNaN(parseInt($is.itemsperrow, 10))) {
+                    // handling itemsperrow containing string of classes
+                    _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
+                        var keys = _.split(cls, '-');
+                        cls  = keys[0] + '-' + (12 / parseInt(keys[1], 10));
+                        itemClass += ' ' + 'col-' + cls;
+                    });
+                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + itemClass.trim()).trim();
+                } else {
+                    // handling itemsperrow having integer value.
+                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow, 10))).trim();
+                }
+            }
+
             /* In case of run mode, the field-definitions will be generated from the markup
              * Define the property change handler. This function will be triggered when there is a change in the widget property
              */
@@ -799,6 +823,9 @@ WM.module('wm.widgets.live')
                     break;
                 case 'padding':
                     $rs.$emit('apply-box-model-property', $el.find('> .app-livelist-container'), 'padding', nv);
+                    break;
+                case 'itemsperrow':
+                    setListClass($is);
                     break;
                 }
             }
@@ -1225,21 +1252,6 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function setListClass($is, $liScope) {
-                var itemClass = '',
-                    oldClass  = $rs.isMobileApplicationType ? 'xs' : 'sm';
-                if (isNaN(parseInt($is.itemsperrow))) {
-                    _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
-                        var keys = _.split(cls, '-');
-                        cls  = keys[0] + '-' + (12 / parseInt(keys[1]));
-                        itemClass += ' ' + 'col-' + cls;
-                    });
-                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + itemClass.trim()).trim();
-                } else {
-                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow))).trim();
-                }
-            }
-
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
@@ -1249,7 +1261,6 @@ WM.module('wm.widgets.live')
 
                 variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
-                setListClass($is, $liScope);
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
                 $is.selectedItemWidgets = $is.multiselect ? [] : {}; // Array of objects containing widget's name - widget's scope map
