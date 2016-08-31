@@ -1490,7 +1490,10 @@ WM.module('wm.widgets.grid')
                 onDataRender: function () {
                     // select rows selected in previous pages. (Not finding intersection of data and selecteditems as it will be heavy)
                     $scope.datagridElement.datagrid('selectRows', $scope.selecteditem);
-                    $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
+                    $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
+                    if ($scope.gridData.length) {
+                        $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
+                    }
                 },
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
