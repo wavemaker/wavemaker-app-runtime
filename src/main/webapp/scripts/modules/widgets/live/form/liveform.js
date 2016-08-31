@@ -498,7 +498,7 @@ WM.module('wm.widgets.live')
                     /*If the field is primary but is assigned set readonly false.
                      Assigned is where the user inputs the value while a new entry.
                      This is not editable(in update mode) once entry is successful*/
-                    if (fieldObj.primaryKey && fieldObj.generator === "assigned") {
+                    if (fieldObj.readonly && fieldObj.primaryKey && fieldObj.generator === "assigned") {
                         fieldObj.readonly = false;
                     }
                     $scope.setPrevDataValues();
