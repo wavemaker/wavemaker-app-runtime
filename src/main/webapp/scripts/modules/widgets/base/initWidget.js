@@ -589,6 +589,18 @@ WM.module('wm.widgets.base')
                             return;
                         }
 
+                        /*
+                         * remove 'disabled' attr from the root node of the widget when the value is false
+                         * Non-form elements with disabled attribute will block the click events (IE bug)
+                         */
+                        if (isBooleanType && key === 'disabled') {
+                            if (_nv) {
+                                $el.attr('disabled', 'disabled');
+                            } else {
+                                $el.removeAttr('disabled');
+                            }
+                        }
+
                         // if the name is changed, update the tree and registry of the Widgets service
                         if (isName) {
                             if (attrs.widgetid) { // widget is inside the canvas
