@@ -2060,6 +2060,9 @@ WM.module('wm.widgets.grid')
             };
 
             $scope.setDataGridOption = function (optionName, newVal, forceSet) {
+                if (!$scope.datagridElement.datagrid('instance')) {
+                    return;
+                }
                 var option = {};
                 if (WM.isDefined(newVal) && (!WM.equals(newVal, $scope.gridOptions[optionName]) || forceSet)) {
                     option[optionName] = newVal;
