@@ -199,10 +199,10 @@ WM.module('wm.widgets.live')
                     var template;
                     if (show && msg) {
                         if ($scope.messagelayout === 'Inline') {
-                            template = (type === 'error' && $scope.errormessage) ? ($scope.errormessage + '<span class="toast-title"> CAUSE: </span><span>' + msg + '</span>') : msg;
+                            template = (type === 'error' && $scope.errormessage) ? $scope.errormessage : msg;
                             $scope.statusMessage = {'caption': template || '', type: type};
                         } else {
-                            template = (type === 'error' && $scope.errormessage) ? ($scope.errormessage + '<div class="toast-title">CAUSE</div><p>' + msg + '</p>') : msg;
+                            template = (type === 'error' && $scope.errormessage) ? $scope.errormessage : msg;
                             wmToaster.show(type, type.toUpperCase(), template, undefined, 'trustedHtml');
                         }
                     } else {
@@ -409,10 +409,13 @@ WM.module('wm.widgets.live')
                     dataValue.href = '';
                     dataValue.value = null;
                 }
+                /*clear the inline message*/
+                $scope.clearMessage = function () {
+                    $scope.toggleMessage(false);
+                };
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
                     resetFormState();
-                    $scope.toggleMessage(false);
                     if (WM.isArray($scope.formFields)) {
                         $scope.formFields.forEach(function (dataValue) {
                             if (dataValue.type === 'blob') {
