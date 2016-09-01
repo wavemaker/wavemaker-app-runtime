@@ -18,22 +18,14 @@ WM.module('wm.widgets.advanced')
                 isMobile    = $rs.isMobileApplicationType || Utils.isMobile(),
                 notifyFor   = isMobile ? {
                     'dataset'       : true,
-                    'view'          : true,
-                    'eventtitle'    : true,
-                    'eventallday'   : true,
-                    'eventstart'    : true,
-                    'eventend'      : true
+                    'view'          : true
                 } : {
                     'dataset'       : true,
                     'height'        : true,
                     'controls'      : true,
                     'calendartype'  : true,
                     'view'          : true,
-                    'multiselect'   : true,
-                    'eventtitle'    : true,
-                    'eventallday'   : true,
-                    'eventstart'    : true,
-                    'eventend'      : true
+                    'multiselect'   : true
                 },
                 defaultHeaderOptions = {
                     'left'  : 'prev next today',
@@ -110,7 +102,6 @@ WM.module('wm.widgets.advanced')
                     _.mapKeys(properties, function (value, key) {
                         obj[key] = obj[value];
                     });
-                    obj.className = obj.className || 'bg-primary';
                 });
                 return eventSource;
             }
@@ -345,7 +336,8 @@ WM.module('wm.widgets.advanced')
                                     return;
                                 }
                                 dataset = $is.dataset.data || $is.dataset;
-                                $is.events = WM.isArray(dataset) ? dataset : (WM.isObject(dataset) ? [dataset] : []);
+                                dataset = WM.isArray(dataset) ? dataset : (WM.isObject(dataset) ? [dataset] : []);
+                                $is.events = constructCalendarDataset($is, dataset);
                                 _.forEach($is.events, function (event) {
                                     if (event.start) {
                                         eventDay = moment(event.start).startOf('day').format(dateFormat);
