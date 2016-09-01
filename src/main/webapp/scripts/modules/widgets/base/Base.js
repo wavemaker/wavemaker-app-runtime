@@ -533,7 +533,13 @@ WM.module('wm.widgets.base', [])
                         "multiselect": {"show": false},
                         "calendartype": {"show": false},
                         "onEventdrop": {"show": false},
-                        "onEventresize": {"show": false}
+                        "onEventresize": {"show": false},
+                        "eventstart": {"type": "list", "value": "start", "options": [""], "datasetfilter" : "terminals"},
+                        "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals", "show": false },
+                        "eventallday": {"type": "list", "value": "allday", "options": [""], "datasetfilter" : "terminals", "show": false},
+                        "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals", "show": false},
+                        "eventdescription": {"type": "list", "value": "description", "options": [""], "datasetfilter" : "terminals", "show": false},
+                        "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals", "show": false}
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time"},
