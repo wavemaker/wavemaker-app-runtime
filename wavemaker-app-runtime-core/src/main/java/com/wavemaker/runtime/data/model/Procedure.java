@@ -27,7 +27,7 @@ import com.wavemaker.runtime.data.metadata.DataObject;
 /**
  * @author Sowmyad
  */
-public class Procedure {
+public class Procedure implements Comparable<Procedure> {
 
     @NotBlank
     @NotEmpty
@@ -120,5 +120,10 @@ public class Procedure {
 
     public void setReturnTypeMetadata(final List<DataObject> returnTypeMetadata) {
         this.returnTypeMetadata = returnTypeMetadata;
+    }
+
+    @Override
+    public int compareTo(final Procedure other) {
+        return getName().compareToIgnoreCase(other.getName());
     }
 }

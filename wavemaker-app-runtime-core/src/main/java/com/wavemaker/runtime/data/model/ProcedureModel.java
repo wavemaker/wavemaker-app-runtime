@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,9 @@ package com.wavemaker.runtime.data.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.wavemaker.studio.common.util.SortedList;
+
 
 /**
  * @author sowmyad
@@ -33,13 +36,13 @@ public class ProcedureModel {
     public ProcedureModel(final String name, final String description, final List<Procedure> procedures) {
         this.name = name;
         this.description = description;
-        this.procedures = procedures;
+        this.procedures = new SortedList<>(procedures);
     }
 
     public ProcedureModel(ProcedureModel procedureModel) {
         this.name = procedureModel.getName();
         this.description = procedureModel.getDescription();
-        this.procedures = procedureModel.getProcedures();
+        this.procedures = new SortedList<>(procedureModel.getProcedures());
     }
 
     public String getName() {
@@ -60,13 +63,13 @@ public class ProcedureModel {
 
     public List<Procedure> getProcedures() {
         if (procedures == null) {
-            return new ArrayList<>();
+            return new SortedList<>(new ArrayList<Procedure>());
         }
         return procedures;
     }
 
     public void setProcedures(List<Procedure> procedures) {
-        this.procedures = procedures;
+        this.procedures = new SortedList<>(procedures);
     }
 
 
