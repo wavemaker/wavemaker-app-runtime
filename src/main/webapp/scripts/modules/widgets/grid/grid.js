@@ -2468,6 +2468,7 @@ WM.module('wm.widgets.grid')
                             'dataset'           : attrs.dataset,
                             'datafield'         : attrs.datafield,
                             'placeholder'       : attrs.placeholder,
+                            'disabled'          : !attrs.disabled ? false : (attrs.disabled === 'true' || attrs.disabled),
                             'displaylabel'      : attrs.displaylabel,
                             'searchkey'         : attrs.searchkey,
                             'displayfield'      : attrs.displayfield,
@@ -2477,7 +2478,9 @@ WM.module('wm.widgets.grid')
                             'rowactionsposition': attrs.rowactionsposition,
                             'filterwidget'      : attrs.filterwidget || getFilterWidget(attrs.type || 'string'),
                             'filterplaceholder' : attrs.filterplaceholder,
-                            'relatedEntityName' : attrs.relatedEntityName
+                            'relatedEntityName' : attrs.relatedEntityName,
+                            'checkedvalue'      : attrs.checkedvalue,
+                            'uncheckedvalue'    : attrs.uncheckedvalue
                         };
                         columnDefProps.defaultvalue = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
                         events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
@@ -2518,7 +2521,7 @@ WM.module('wm.widgets.grid')
                         /*check if any attribute has binding. put a watch for the attributes*/
                         if (CONSTANTS.isRunMode) {
                             _.each(columnDef, function (value, property) {
-                                if (Utils.stringStartsWith(value, 'bind:') && property !== 'dataset' && property !== 'defaultvalue') {
+                                if (Utils.stringStartsWith(value, 'bind:') && property !== 'dataset' && property !== 'defaultvalue' && property !== 'disabled') {
                                     watchProperty(property, value.replace('bind:', ''));
                                 }
                             });
