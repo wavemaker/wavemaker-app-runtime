@@ -1289,7 +1289,7 @@ WM.module('wm.widgets.live')
         'use strict';
 
         var getTemplate = function (btnField, index) {
-            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" hint="' + btnField.title + '"';
+            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" hint="' + btnField.title + '"  shortcutkey="' + btnField.shortcutkey + '" disabled="' + btnField.disabled + '"';
             if (btnField.updateMode) {
                 template  = template + ' show="{{isUpdateMode && buttonArray[' + index + '].show}}"';
             } else {
