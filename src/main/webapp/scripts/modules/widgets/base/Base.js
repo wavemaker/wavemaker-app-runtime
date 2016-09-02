@@ -1719,7 +1719,7 @@ WM.module('wm.widgets.base', [])
                         "xaxislabel": {"type": "string"},
                         "xunits": {"type": "string"},
                         "xnumberformat": {"type": "list-group", "options": numberFormatOptions},
-                        "xdateformat": {"type": "list-group", "options": dateOptions, "value": "%x"},
+                        "xdateformat": {"type": "list-group", "options": dateOptions},
                         "yaxisdatakey": {"type": "list", "widget": "multi-select", "datasetfilter" : "custom"},
                         "yaxislabel": {"type": "string"},
                         "yunits": {"type": "string"},
