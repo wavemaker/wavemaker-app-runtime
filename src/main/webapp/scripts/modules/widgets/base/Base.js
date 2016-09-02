@@ -450,7 +450,7 @@ WM.module('wm.widgets.base', [])
                         "maxvalue": {"type": "string", "bindable": "in-bound"},
                         "step": {"type": "number"},
                         "shortcutkey": {"type": "string"},
-                        "displayformat": {"type": "string", "options": ["999-99-9999", "(999) 999-9999", "(999) 999-9999 ext. 999", "(999) 999-9999 ext. ?9?9?9", "(?9?9?9) ?9?9?9-?9?9?9?9", "(999) 999-9999 ext. 999", "(**: AAA-999)", "9999 9999 9999 9999", "AA-9999"], "widget": "data-list", "bindable": "in-bound"}
+                        "displayformat": {"type": "string", "options": ["999-99-9999", "(999) 999-9999", "(999) 999-9999 ext. 999", "(999) 999-9999 ext. ?9?9?9", "(?9?9?9) ?9?9?9-?9?9?9?9", "(999) 999-9999 ext. 999", "(**: AAA-999)", "9999 9999 9999 9999", "AA-9999"], "widget": "data-list", "bindable": "in-bound", "show": false}
                     },
 
                     "wm.currency": {
