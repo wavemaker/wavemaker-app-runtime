@@ -2031,7 +2031,7 @@ WM.module('wm.widgets.grid')
                         }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType === 'image') {
-                                columnDef.customExpression = '<img width="48px" class="wm-icon wm-icon24 wi wi-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                columnDef.customExpression = '<img ng-if="columnValue != null" width="48px" class="wm-icon wm-icon24 wi wi-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
                             } else {
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                             }

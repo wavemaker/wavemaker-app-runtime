@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                         ' ng-disabled="disabled" ' +
                         ' accesskey="{{::shortcutkey}}"' +
                         ' ng-change="_onChange({$event: $event, $scope: this})">' +
-                    '<span class="caption">{{caption || "&nbsp;"}}</span>' +
+                    '<span class="caption" ng-bind="getCaption()"></span>' +
                     '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
                 '</label>' +
                 /*Holder for the model for submitting values in a form*/
@@ -98,6 +98,12 @@ WM.module('wm.widgets.form')
                     scope.reset = function () {
                         scope._model_ = false;
                     };
+
+                    // this function returns the caption, if caption is defined.
+                    scope.getCaption = function () {
+                        return WM.isDefined(scope.caption) ? scope.caption : '&nbsp;';
+                    };
+
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                     var checkbox = element.children().first().children().first()[0];
