@@ -440,6 +440,16 @@ WM.module('wm.widgets.base')
                 });
             }
 
+            function parseNgTrueNgFalseValue(val) {
+                if (val === 'true' || val === true) {
+                    return true;
+                } else if (val === 'false' || val === false) {
+                    return false;
+                } else {
+                    return val;
+                }
+            }
+
             function defineDataValueGetterSetters($is, $el, attrs) {
                 var flg,
                     key,
@@ -474,9 +484,7 @@ WM.module('wm.widgets.base')
                         }
                         modifiedVal = temp;
                     } else if (isCheckbox) {
-                        if (!$is.checkedvalue) {
-                            modifiedVal = toBoolean(val);
-                        }
+                        modifiedVal = parseNgTrueNgFalseValue(val);
                     } else if (isDate) {
                         modifiedVal = new Date(val);
                     }

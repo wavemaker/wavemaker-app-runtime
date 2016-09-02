@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/checkbox.html',
             '<div class="app-checkbox checkbox" ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model title="{{hint}}" role="input">' +
-                '<label ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false || _model_ === null)}" apply-styles role="button">' +
+                '<label ng-class="{disabled:disabled, unchecked: isUnchecked() }" apply-styles role="button">' +
                     '<input focus-target type="checkbox" ' +
                         ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                         ' ng-readonly="readonly" ' +
@@ -73,8 +73,19 @@ WM.module('wm.widgets.form')
                 'pre': function (scope, element, attrs) {
                     /*Applying widget properties to directive scope*/
                     scope.widgetProps = widgetProps;
+
                     if (!attrs.datavalue && !attrs.scopedatavalue) {
-                        scope._model_ = attrs.uncheckedvalue || false;
+                        if (attrs.hasOwnProperty('uncheckedvalue')) {
+                            if (attrs.uncheckedvalue === 'true') {
+                                scope._model_ = true;
+                            } else if (attrs.uncheckedvalue === 'false') {
+                                scope._model_ = false;
+                            } else {
+                                scope._model_ = attrs.uncheckedvalue;
+                            }
+                        } else {
+                            scope._model_ = false;
+                        }
                     }
 
                 },
@@ -88,6 +99,12 @@ WM.module('wm.widgets.form')
                         scope._model_ = false;
                     };
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    var checkbox = element.children().first().children().first()[0];
+
+                    scope.isUnchecked = function () {
+                        return !checkbox.checked;
+                    };
                 }
             }
         };
