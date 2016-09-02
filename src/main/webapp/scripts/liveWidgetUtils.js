@@ -1228,7 +1228,7 @@ WM.module('wm.widgets.live')
                 case 'image':
                     if (column.type === 'blob') {
                         column.widgetConfig.src = "{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}";
-                        column.customExpression = '<img width="48px" class="" data-ng-src="' + column.widgetConfig.src + '"/>';
+                        column.customExpression = '<img ng-if="columnValue != null" width="48px" class="" data-ng-src="' + column.widgetConfig.src + '"/>';
                     } else {
                         column.customExpression = '<img data-ng-src="' + column.widgetConfig.src + '" alt="' + column.widgetConfig.src + '" class="' + column.widgetConfig.class +
                             '" data-ng-class="' + widgetNgClassesExpression + '"/>';

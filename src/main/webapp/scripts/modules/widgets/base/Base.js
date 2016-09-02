@@ -435,7 +435,7 @@ WM.module('wm.widgets.base', [])
                         "regexp": {"type": "string", "value": ".*"},
 
                         /* Properties: help */
-                        "placeholder": {"type": "string", "value": "Enter text"},
+                        "placeholder": {"type": "string", "value": "Enter text", "bindable": "in-bound"},
 
                         /* Properties: Behavior */
                         "maxchars": {"type": "number", "bindable": "in-bound"},
@@ -459,7 +459,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "currency": {"type": "list", "value": "USD", "options": ["AED", "AFN", "ALL", "AMD", "ARS", "AUD", "AZN", "BAM", "BDT", "BGN", "BHD", "BIF", "BND", "BOB", "BRL", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EEK", "EGP", "ERN", "ETB", "EUR", "GBP", "GEL", "GHS", "GNF", "GTQ", "HKD", "HNL", "HRK", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KHR", "KMF", "KRW", "KWD", "KZT", "LBP", "LKR", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MOP", "MUR", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SDG", "SEK", "SGD", "SOS", "SYP", "THB", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "XAF", "XOF", "YER", "ZAR", "ZMK"]},
                         /* Properties: help */
-                        "placeholder": {"type": "string", "value": "Enter value"},
+                        "placeholder": {"type": "string", "value": "Enter value", "bindable": "in-bound"},
                         /* Style: Basic */
 
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -476,7 +476,7 @@ WM.module('wm.widgets.base', [])
                         "color": {"type": "string", "hidelabel": true, "widget": "color"}
                     },
                     "wm.date": {
-                        "placeholder": {"type": "string", "value": "Select date"},
+                        "placeholder": {"type": "string", "value": "Select date", "bindable": "in-bound"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "autofocus": {"type": "boolean"},
                         "showweeks": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -542,7 +542,7 @@ WM.module('wm.widgets.base', [])
                         "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals", "show": false}
                     },
                     "wm.time": {
-                        "placeholder": {"type": "string", "value": "Select time"},
+                        "placeholder": {"type": "string", "value": "Select time", "bindable": "in-bound"},
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
@@ -562,7 +562,7 @@ WM.module('wm.widgets.base', [])
                         "minutestep": {"show": false}
                     },
                     "wm.datetime": {
-                        "placeholder": {"type": "string", "value": "Select date time"},
+                        "placeholder": {"type": "string", "value": "Select date time", "bindable": "in-bound"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "autofocus": {"type": "boolean"},
                         "showweeks": {"type": "boolean", "value": false},
@@ -650,7 +650,7 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "placeholder": {"type": "string", "value": "Select Color"},
+                        "placeholder": {"type": "string", "value": "Select Color", "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
@@ -735,7 +735,7 @@ WM.module('wm.widgets.base', [])
                         "restrictvalues": {"type": "boolean", "value": true},
                         "disabled": {"value": false, "bindable": "in-bound"},
                         "multiple": {"type": "boolean", "value": false},
-                        "placeholder": {"type": "string", "value": ""},
+                        "placeholder": {"type": "string", "value": "", "bindable": "in-bound"},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"}
@@ -792,7 +792,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "placeholder": {"type": "string", "value": "Place your text"},
+                        "placeholder": {"type": "string", "value": "Place your text", "bindable": "in-bound"},
                         "maxchars": {"type": "number"},
                         "updateon": {"type": "list", "value": "blur", "widget": "update-on"},
                         "updatedelay": {"type": "number", "value": 0},
@@ -1522,7 +1522,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
                         "showpreview": {"type": "boolean", "value": false},
-                        "placeholder": {"type": "string"},
+                        "placeholder": {"type": "string", "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "scopedatavalue": {"type": "string"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1684,7 +1684,7 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "limit": {"type": "number"},
-                        "placeholder": {"type": "string", "value": "Search"},
+                        "placeholder": {"type": "string", "value": "Search", "bindable": "in-bound"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
