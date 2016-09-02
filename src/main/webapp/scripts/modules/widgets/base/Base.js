@@ -2501,7 +2501,7 @@ WM.module('wm.widgets.base', [])
             /* when the model is provided, this function will create a two way binding between model(controller's scope) and view(input element) */
             function injectModelUpdater(element, model) {
 
-                var isolateScope = element.isolateScope(), /* reference to the isolateScope of the element */
+                var iScope = element.isolateScope(), /* reference to the isolateScope of the element */
                     ctrlScope = element.scope(), /* reference to the scope which inherits from the controller */
                     _model,
                     dotIdx,
@@ -2573,26 +2573,26 @@ WM.module('wm.widgets.base', [])
 
                 /* this method will update the view value in the controller's scope */
                 function updateModel() {
-                    /*if (element.hasClass('app-calendar')) {
-                        *//* if model for Calendar or Date widget and model is a valid date, update the model with the primitive value
-                         * else make it undefined *//*
-                        var formattedDate = new Date(isolateScope._model_);
-                        isolateScope._model_ = $filter('date')(formattedDate, isolateScope.datepattern);
-                    }*/
-
                     if (_model && ctrlScope) {
                         /* update the model value in the controller if the controller scope is available */
-                        _model.assign(ctrlScope, isolateScope._model_);
+                        _model.assign(ctrlScope, iScope._model_);
                     }
                 }
+                
+                //Old val is used while triggering onChange event
+                $rootScope.$evalAsync(function () {
+                    iScope._ngModelOldVal = iScope.datavalue;
+                });
 
                 /* _onChange is a wrapper fn for onChange. */
-                isolateScope._onChange = function ($event) {
+                iScope._onChange = function ($event) {
                     updateModel();
                     /* update the view value in the controller */
-                    if ($event && isolateScope.onChange) {
-                        isolateScope.onChange({$event: $event, $scope: isolateScope});
+                    if ($event && iScope.onChange) {
                         /* trigger the onChange fn */
+                        iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
+                        
+                        iScope._ngModelOldVal = iScope.datavalue;
                     }
                 };
 
@@ -2600,13 +2600,13 @@ WM.module('wm.widgets.base', [])
                 if (model && ctrlScope) {
                     /* watch the model */
 
-                    isolateScope.$on('$destroy', ctrlScope.$watch(model, function (newVal) {
-                        if (isolateScope._model_ === newVal) {
+                    iScope.$on('$destroy', ctrlScope.$watch(model, function (newVal) {
+                        if (iScope._model_ === newVal) {
                             return;
                         }
 
                         /* update the view value if the model is updated */
-                        isolateScope._model_ = newVal;
+                        iScope._model_ = newVal;
 
                     }, true));
                 }
