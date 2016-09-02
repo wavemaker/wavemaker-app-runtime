@@ -451,38 +451,31 @@ WM.module('wm.widgets.basic')
                 });
             }
 
-            // Formatting the data based on the data-type
-            function formatData(scope, d, dataType, options) {
-                var datakey = (options.isXaxis && options.xDataKeyArr && options.xDataKeyArr.length && isLineTypeChart(scope.type)) ? options.xDataKeyArr[d] : d,
-                    formattedData,
+            //Formats the given value according to date format
+            function getDateFormatedData(dateFormat, d) {
+                dateFormat = dateFormat || '%x';
+                return d3.time.format(dateFormat)(new Date(d));
+            }
+
+            //Formats the given value according to number format
+            function getNumberFormatedData(numberFormat, d) {
+                var formattedData,
                     divider,
-                    prefix,
-                    numberFormat;
-                switch (dataType) {
-                case 'date':
-                case 'timestamp':
-                    return d3.time.format(options.dateFormat)(new Date(datakey));
-                case 'string':
-                case 'year':
-                case 'time':
-                    return datakey;
-                default:
-                    numberFormat = options.format;
-                    formattedData = d3.format(numberFormat)(d);
-                    //formating the data based on number format selected
-                    if (options.format && dataType) {
-                        //Getting the respective divider[1000,1000000,1000000000] based on the number format choosen
-                        divider = (tickformats[numberFormat] && tickformats[numberFormat].divider) || 0;
-                        prefix = tickformats[numberFormat] && tickformats[numberFormat].prefix;
-                        if (prefix && divider !== 0) {
-                            formattedData = d3.format('.2f')(d / divider) + prefix;
-                        }
-                    } else if (!numberFormat) {
-                        //Auto formatting the data when no formating option is chosen
-                        formattedData = d3.format('.1s')(d);
+                    prefix;
+                formattedData = d3.format(numberFormat)(d);
+                //formatting the data based on number format selected
+                if (numberFormat) {
+                    //Getting the respective divider[1000,1000000,1000000000] based on the number format choosen
+                    divider = (tickformats[numberFormat] && tickformats[numberFormat].divider) || 0;
+                    prefix = tickformats[numberFormat] && tickformats[numberFormat].prefix;
+                    if (prefix && divider !== 0) {
+                        formattedData = d3.format('.2f')(d / divider) + prefix;
                     }
-                    return formattedData;
+                } else {
+                    //Auto formatting the data when no formating option is chosen
+                    formattedData = d3.format('.1s')(d);
                 }
+                return formattedData;
             }
 
             function modifyLegendPosition(scope, position, id) {
@@ -556,7 +549,7 @@ WM.module('wm.widgets.basic')
             function initChart(scope, xDomainValues, yDomainValues, propertyValueMap, isPreview) {
                 propertyValueMap =  initProperties(scope, propertyValueMap);
                 var chart, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing, xformatOptions, yformatOptions,
-                    showLegend;
+                    showLegend, xAxisValue;
                 switch (scope.type) {
                 case 'Column':
                     barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue) || barSpacingMap.medium;
@@ -703,12 +696,12 @@ WM.module('wm.widgets.basic')
                         chart.valueFormat(d3.format('%'));
                     } else {
                         chart.valueFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                            return getNumberFormatedData(scope.ynumberformat, d);
                         });
                     }
                     //Customizing the tooltips in case of the pie and donut when labelType is value
                     chart.tooltip.contentGenerator(function (key) {
-                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
+                        yValue = getNumberFormatedData(scope.ynumberformat, key.data.y);
                         return '<table>' +
                                     '<tbody>' +
                                          '<tr>' +
@@ -733,20 +726,43 @@ WM.module('wm.widgets.basic')
                     chart.xAxis
                         .axisLabel(Utils.prettifyLabels(xaxislabel))
                         .axisLabelDistance(propertyValueMap.xaxislabeldistance)
-                        .staggerLabels(propertyValueMap.staggerlabels)
-                        .tickFormat(function (d) {
-                            return formatData(scope, d, isPreview ? 'date' : scope.xAxisDataType, xformatOptions);
+                        .staggerLabels(propertyValueMap.staggerlabels);
+
+                    // If date format set format based date format
+                    if (propertyValueMap.xdateformat || isPreview) {
+                        if (isLineTypeChart(scope.type)) {
+                            chart.xAxis.tickFormat(function (d) {
+                                //get the actual value
+                                xAxisValue = scope.xDataKeyArr[d];
+                                return getDateFormatedData(propertyValueMap.xdateformat, xAxisValue);
+                            });
+                        } else {
+                            chart.xAxis.tickFormat(function (d) {
+                                return getDateFormatedData(propertyValueMap.xdateformat, d);
+                            });
+                        }
+                    } else if (propertyValueMap.xnumberformat) {
+                        chart.xAxis.tickFormat(function (d) {
+                            return getNumberFormatedData(propertyValueMap.xnumberformat, d);
                         });
+                    } else {
+                        if (isLineTypeChart(scope.type)) {
+                            chart.xAxis.tickFormat(function (d) {
+                                //get the actual value
+                                return scope.xDataKeyArr[d];
+                            });
+                        }
+                    }
                     chart.yAxis
                         .axisLabel(Utils.prettifyLabels(yaxislabel))
                         .axisLabelDistance(propertyValueMap.yaxislabeldistance)
                         .staggerLabels(propertyValueMap.staggerlabels)
                         .tickFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                            return getNumberFormatedData(propertyValueMap.ynumberformat, d);
                         });
                     if (isBarChart(scope.type)) {
                         chart.valueFormat(function (d) {
-                            return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                            return getNumberFormatedData(propertyValueMap.ynumberformat, d);
                         });
                     }
                 }

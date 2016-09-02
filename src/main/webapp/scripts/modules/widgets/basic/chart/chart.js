@@ -83,91 +83,12 @@ WM.module('wm.widgets.basic')
                 'showlegend'        : true
             };
 
-        // get the data type for the service variable type
-        function getDataType(key, data) {
-            var keys = key.split('.'),
-                newKey = key,
-                value;
-            if (data) {
-                value = data[key];
-                //If the element is not directly accessible then access it inside of it
-                if (value === undefined && keys.length > 1) {
-                    data = data[keys[0]];
-                    keys.shift();
-                    newKey = keys.join('.');
-                    return getDataType(newKey, data);
-                }
-                return typeof value;
-            }
-            return null;
-        }
-
-        // get the column type definition for the live data-source
-        function getColumnType(key, columns) {
-            var keys = _.split(key, '.'),
-                newKey,
-                i,
-                type;
-            if (columns) {
-                for (i = 0; i < columns.length; i += 1) {
-                    //Trying to get the column type of key fields of object columns
-                    if (keys.length > 0 && key.indexOf('.') > -1) {
-                        if (Utils.initCaps(keys[0]) === columns[i].relatedEntityName) {
-                            //initialising columns with columns of object type column
-                            columns = columns[i].columns;
-                            //removing already accessed keys
-                            keys.shift();
-                            newKey = keys.join('.');
-                            return getColumnType(newKey, columns);
-                        }
-                    } else if (columns[i].fieldName === key) {
-                        type = columns[i].type;
-                    }
-                }
-            }
-            return type || null;
-        }
-
         // Configuring the properties panel based on the type of the chart chosen
         function togglePropertiesByChartType(scope) {
             // Initially hiding all the properties
             ChartService.hideOrShowProperties(allOptions, scope, false);
             // Showing the properties based on the type of the chart
             ChartService.hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options.Column : options[scope.type], scope, true);
-        }
-
-        /*
-         * Displaying the formatting options based on the type of the column chosen
-         * @param axis, x or y axis
-         */
-        function displayFormatOptions(scope, axis) {
-            var type,
-                key = axis + 'axisdatakey',
-                numFormat = axis + 'numberformat',
-                dateFormat = 'xdateformat';
-
-            // get column type
-            if (scope.dataset && scope.dataset.propertiesMap) {
-                type = scope[key] ? getColumnType(scope[key].split(',')[0], scope.dataset.propertiesMap.columns) : null;
-            }
-            switch (type) {
-            case 'integer':
-            case 'float':
-                ChartService.hideOrShowProperties([numFormat], scope, true);
-                if (axis === 'x') {
-                    ChartService.hideOrShowProperties([dateFormat], scope, false);
-                }
-                break;
-            case 'string':
-                ChartService.hideOrShowProperties([numFormat, dateFormat], scope, false);
-                break;
-            case 'date':
-                ChartService.hideOrShowProperties([numFormat], scope, false);
-                if (axis === 'x') {
-                    ChartService.hideOrShowProperties([dateFormat], scope, true);
-                }
-                break;
-            }
         }
 
         // Based on the chart type, sets the options for the yaxisdatakey
@@ -208,8 +129,6 @@ WM.module('wm.widgets.basic')
                     //Setting y axis options with aggregation columns
                     setYAxisDataKey(scope, yAxisOptions);
                 }
-                displayFormatOptions(scope, 'x');
-                displayFormatOptions(scope, 'y');
             } else if (!scope.binddataset) {//Else, set all the values to default.
                 scope.xaxisdatakey = scope.yaxisdatakey = '';
                 scope.xaxislabel = scope.yaxislabel = '';
@@ -425,17 +344,6 @@ WM.module('wm.widgets.basic')
                 yAxisKey,
                 shapes = [];
 
-            //check if the datasource is live variable then get the column definition else directly get the data type of the object passed
-            if (scope.isLiveVariable) {
-                scope.xAxisDataType = getColumnType(xAxisKey, scope.dataset.propertiesMap.columns);
-                scope.yAxisDataType = getColumnType(yAxisKeys[0], scope.dataset.propertiesMap.columns);
-            } else {
-                if (scope.chartData && scope.chartData[0]) {
-                    scope.xAxisDataType = getDataType(xAxisKey, scope.chartData[0]);
-                    scope.yAxisDataType = getDataType(yAxisKeys[0], scope.chartData[0]);
-                }
-            }
-
             if (WM.isArray(dataSet)) {
                 if (ChartService.isPieType(scope.type)) {
                     yAxisKey = yAxisKeys[0];
@@ -485,8 +393,6 @@ WM.module('wm.widgets.basic')
                 groupKey,
                 index = 0,
                 i;
-            scope.xAxisDataType = getColumnType(scope.xaxisdatakey, scope.dataset.propertiesMap.columns);
-            scope.yAxisDataType = getColumnType(scope.yaxisdatakey, scope.dataset.propertiesMap.columns);
             scope.xDataKeyArr = [];
 
             while (queryResponse.length !== 0) {
