@@ -122,7 +122,8 @@ WM.module('wm.widgets.live')
                             displayName :    'Reset',
                             show        :    'true',
                             type        :    'button',
-                            updateMode  :    true
+                            updateMode  :    true,
+                            shortcutkey : ''
                         },
                         {
                             key         :   'cancel',
@@ -132,7 +133,8 @@ WM.module('wm.widgets.live')
                             displayName :   'Cancel',
                             show        :   'true',
                             type        :   'button',
-                            updateMode  :   true
+                            updateMode  :   true,
+                            shortcutkey : ''
                         },
                         {
                             key         :   'save',
@@ -142,7 +144,8 @@ WM.module('wm.widgets.live')
                             displayName :   'Save',
                             show        :   'true',
                             type        :   'submit',
-                            updateMode  :   true
+                            updateMode  :   true,
+                            shortcutkey : ''
                         },
                         {
                             key         :   'delete',
@@ -152,7 +155,8 @@ WM.module('wm.widgets.live')
                             displayName :   'Delete',
                             show        :   'true',
                             type        :   'button',
-                            updateMode  :   false
+                            updateMode  :   false,
+                            shortcutkey : ''
                         },
                         {
                             key         :   'edit',
@@ -162,7 +166,8 @@ WM.module('wm.widgets.live')
                             displayName :   'Edit',
                             show        :   'true',
                             type        :   'button',
-                            updateMode  :   false
+                            updateMode  :   false,
+                            shortcutkey : ''
                         },
                         {
                             key         :   'new',
@@ -172,7 +177,8 @@ WM.module('wm.widgets.live')
                             displayName :   'New',
                             show        :   'true',
                             type        :   'button',
-                            updateMode  :   false
+                            updateMode  :   false,
+                            shortcutkey : ''
                         }
                     ];
                     break;
@@ -185,7 +191,8 @@ WM.module('wm.widgets.live')
                             action      :   'filter()',
                             displayName :   'Filter',
                             show        :   'true',
-                            type        :   'button'
+                            type        :   'button',
+                            shortcutkey : ''
                         },
                         {
                             key         :   'clear',
@@ -194,7 +201,8 @@ WM.module('wm.widgets.live')
                             action      :   'clearFilter()',
                             displayName :   'Clear',
                             show        :   'true',
-                            type        :   'button'
+                            type        :   'button',
+                            shortcutkey : ''
                         }];
                     break;
                 case 'GRID':
@@ -206,7 +214,8 @@ WM.module('wm.widgets.live')
                             'show'       : 'true',
                             'class'      : 'btn-primary',
                             'action'     : 'addNewRow()',
-                            'position'   : 'footer'
+                            'position'   : 'footer',
+                            shortcutkey : ''
                         }
                     ];
                     break;
@@ -357,7 +366,9 @@ WM.module('wm.widgets.live')
                     'iconclass'     :   attrs.iconclass,
                     'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
                     'action'        :   attrs.action,
-                    'accessroles'   :   attrs.accessroles
+                    'accessroles'   :   attrs.accessroles,
+                    'shortcutkey'   :   attrs.shortcutkey,
+                    'disabled'      :   attrs.disabled || 'false'
                 };
             }
 

@@ -101,7 +101,7 @@ WM.module('wm.widgets.form')
 
                     // this function returns the caption, if caption is defined.
                     scope.getCaption = function () {
-                        return WM.isDefined(scope.caption) ? scope.caption : '&nbsp;';
+                        return WM.isDefined(scope.caption) ? scope.caption : ' ';
                     };
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
