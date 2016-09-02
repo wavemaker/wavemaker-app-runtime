@@ -509,6 +509,7 @@ WM.module('wm.widgets.base')
                         }
 
                         $is._model_ = parseDataValue(nv);
+                        $is._ngModelOldVal = $is._model_;
                         Utils.triggerFn($is._onChange);
                     }
                 });
