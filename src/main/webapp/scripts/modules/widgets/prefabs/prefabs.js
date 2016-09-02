@@ -126,9 +126,21 @@ WM.module('wm.prefabs')
                 prefabWidgetPropsMap = {},
                 prefabMethodsMap     = {},
                 propsSkipList        = ['width', 'height', 'show', 'animation'],
+                notifyFor            = {
+                  'height': true
+                },
                 propertyGroups,
                 propertiesGroup,
                 eventsGroup;
+
+            // Define the property change handler. This function will be triggered when there is a change in the widget property
+            function propertyChangeHandler(scope, key, newVal) {
+                switch (key) {
+                case 'height':
+                    scope.overflow = newVal ? 'auto' : '';
+                    break;
+                }
+            }
 
             if (CONSTANTS.isStudioMode) {
                 (function () {
@@ -269,7 +281,7 @@ WM.module('wm.prefabs')
                 'replace' : true,
                 'template':
                     '<section data-role="prefab" init-widget class="app-prefab" ' +
-                        'ng-style="{width:width, height:height, margin: margin}">' +
+                        'ng-style="{width:width, height:height, margin: margin, overflow: overflow}">' +
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {
@@ -393,6 +405,7 @@ WM.module('wm.prefabs')
                         } else { //dependencies already loaded.
                             compileTemplate(depsMap[prefabName].templateContent);
                         }
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                         $is.showServerProps = $is.serverProps && _.keys($is.serverProps).length;
                     }
                 }
