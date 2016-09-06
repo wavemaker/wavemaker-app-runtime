@@ -445,7 +445,7 @@ WM.module('wm.widgets.live')
                     liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item" ng-class="{\'collapsible-content\' : collapsible}">' +
                                                 '<h4>' + groupkey +
                                                 '<div class="header-action">' +
-                                                    '<i class="app-icon wi action wi-minus" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
+                                                    '<i class="app-icon wi action wi-chevron-up" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
                                                     '<span ng-if="showcount" class="label label-default">' + _s[groupedDataFieldName].length + '</span>' +
                                                 '</div>' +
                                                 '</h4></li>';
@@ -507,9 +507,9 @@ WM.module('wm.widgets.live')
                                 selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
 
                             if (selectedAppIcon.hasClass('wi-plus')) {
-                                selectedAppIcon.removeClass('wi-plus').addClass('wi-minus');
+                                selectedAppIcon.removeClass('wi-chevron-down').addClass('wi-chevron-up');
                             } else {
-                                selectedAppIcon.removeClass('wi-minus').addClass('wi-plus');
+                                selectedAppIcon.removeClass('wi-chevron-up').addClass('wi-chevron-down');
                             }
 
                             selectedGroup.find('.app-list-item').toggle();

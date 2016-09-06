@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                         ' ng-disabled="disabled" ' +
                         ' accesskey="{{::shortcutkey}}"' +
                         ' ng-change="_onChange({$event: $event, $scope: this})">' +
-                    '<span class="caption" ng-bind="getCaption()"></span>' +
+                    '<span class="caption" ng-bind-html="_caption"></span>' +
                     '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
                 '</label>' +
                 /*Holder for the model for submitting values in a form*/
@@ -26,7 +26,8 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors.abstracteditors']),
             notifyFor = {
-                'readonly': true
+                'readonly': true,
+                'caption' : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -34,6 +35,13 @@ WM.module('wm.widgets.form')
             switch (key) {
             case 'readonly':
                 scope.disabled = newVal;
+                break;
+            case 'caption':
+                if (!WM.isDefined(newVal)) {
+                    scope._caption = '&nbsp;';
+                } else {
+                    scope._caption = newVal;
+                }
                 break;
             }
         }
@@ -88,6 +96,8 @@ WM.module('wm.widgets.form')
                         }
                     }
 
+                    scope._caption = '&nbsp;';
+
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
@@ -98,12 +108,6 @@ WM.module('wm.widgets.form')
                     scope.reset = function () {
                         scope._model_ = false;
                     };
-
-                    // this function returns the caption, if caption is defined.
-                    scope.getCaption = function () {
-                        return WM.isDefined(scope.caption) ? scope.caption : ' ';
-                    };
-
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                     var checkbox = element.children().first().children().first()[0];
