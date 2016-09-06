@@ -1818,10 +1818,10 @@ WM.module('wm.utils', [])
                             attr.value = 'bind:' + value;
                         }
                         //Replace item if widget property is bound to livelist currentItem
-                        if (currentItemRegEx.test(value)) {
+                        if (currentItemRegEx && currentItemRegEx.test(value)) {
                             attr.value = value.replace(currentItemRegEx, 'item');
                         }
-                        if (currentItemWidgetsRegEx.test(value)) {
+                        if (currentItemWidgetsRegEx && currentItemWidgetsRegEx.test(value)) {
                             attr.value = value.replace(currentItemWidgetsRegEx, 'currentItemWidgets');
                         }
                     }
