@@ -543,44 +543,46 @@ $.widget('wm.datagrid', {
             dataValue     = cellText ? 'datavalue="' + cellText + '"' : '',
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
-            disabled      = colDef.disabled ? ' disabled="' + colDef.disabled + '" ' : '';
+            disabled      = colDef.disabled ? ' disabled="' + colDef.disabled + '" ' : '',
+            required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
+            properties    = disabled + dataFieldName + eventTemplate + dataValue + required;
         switch (colDef.editWidgetType) {
         case 'select':
             cellText = cellText || '';
-            template =  '<wm-select ' + disabled + dataFieldName + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-select ' + properties + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'autocomplete':
         case 'typeahead':
             $el.addClass('datetime-wrapper');
-            template =  '<wm-search ' + disabled + dataFieldName + eventTemplate + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-search ' + properties + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
-            template = '<wm-date ' + disabled + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
+            template = '<wm-date ' + properties + ' placeholder="' + placeholder + '"></wm-date>';
             break;
         case 'time':
             $el.addClass('datetime-wrapper');
-            template = '<wm-time ' + disabled + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
+            template = '<wm-time ' + properties + ' placeholder="' + placeholder + '"></wm-time>';
             break;
         case 'datetime':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + disabled + dataFieldName + eventTemplate + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
             break;
         case 'timestamp':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + disabled + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' placeholder="' + placeholder + '"></wm-datetime>';
             break;
         case 'checkbox':
             checkedTmpl = colDef.checkedvalue ? ' checkedvalue="' + colDef.checkedvalue + '" ' : '';
             checkedTmpl += colDef.uncheckedvalue ? ' uncheckedvalue="' + colDef.uncheckedvalue + '" ' : '';
-            template = '<wm-checkbox ' + checkedTmpl + disabled + dataFieldName + eventTemplate + dataValue + '></wm-checkbox>';
+            template = '<wm-checkbox ' + checkedTmpl + properties + '></wm-checkbox>';
             break;
         case 'number':
-            template = '<wm-text type="number" ' + disabled + dataFieldName +  eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            template = '<wm-text type="number" ' + properties + ' placeholder="' + placeholder + '"></wm-text>';
             break;
         case 'textarea':
             cellText = cellText || '';
-            template = '<wm-textarea ' + disabled + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
+            template = '<wm-textarea ' + properties + ' placeholder="' + placeholder + '"></wm-textarea>';
             break;
         case 'upload':
             formName = colDef.field + '_' + rowId;
@@ -588,7 +590,7 @@ $.widget('wm.datagrid', {
             template = '<form name="' + formName + '"><input ' + dataFieldName  + 'class="file-upload" type="file" name="' + colDef.field + '"/></form>';
             break;
         default:
-            template = '<wm-text ' + disabled + dataFieldName + eventTemplate + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
+            template = '<wm-text ' + properties + ' placeholder="' + placeholder + '"></wm-text>';
             break;
         }
         return this.options.getCompiledTemplate(template, this.preparedData[rowId] || {}, colDef);
@@ -1320,6 +1322,7 @@ $.widget('wm.datagrid', {
             isFormDataSupported,
             multipartData,
             isValid,
+            $requiredEls,
             advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
         if ($row.attr('data-removed') === 'true') {
             //Even after removing row, focus out is triggered and edit is called. In this case, return here
@@ -1387,6 +1390,9 @@ $.widget('wm.datagrid', {
                         setInputValue(_.get(rowData, colDef.field));
                     }
                 }
+                if (colDef.required) {
+                    $el.addClass('required-field form-group');
+                }
             });
 
             // Show editable row.
@@ -1404,6 +1410,15 @@ $.widget('wm.datagrid', {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = rowId >= this.preparedData.length;
             if (e.data.action === 'save' || options.action === 'save') {
+                $requiredEls = $editableElements.find('.ng-invalid-required');
+                //If required fields are present and value is not filled, return here
+                if ($requiredEls.length > 0) {
+                    $requiredEls.addClass('ng-touched');
+                    if ($.isFunction(options.success)) {
+                        options.success(false, true);
+                    }
+                    return;
+                }
                 isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob);
                 multipartData = false;
                 if (isFormDataSupported) {
@@ -1518,7 +1533,7 @@ $.widget('wm.datagrid', {
                 value = $el.data('originalValue'),
                 originalValue,
                 template;
-            $el.removeClass('datetime-wrapper cell-editing');
+            $el.removeClass('datetime-wrapper cell-editing required-field form-group');
             if (!value) {
                 $el.text($el.data('originalText') || '');
             } else {
@@ -1549,7 +1564,7 @@ $.widget('wm.datagrid', {
                 template,
                 text,
                 colDef;
-            $el.removeClass('datetime-wrapper cell-editing');
+            $el.removeClass('datetime-wrapper cell-editing required-field form-group');
             if (!value) {
                 colDef = self.preparedHeaderData[$el.attr('data-col-id')];
                 text   = self.getTextValue($el, colDef, colDef.field.split('.'));
