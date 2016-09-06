@@ -251,6 +251,10 @@ WM.module('wm.prefabs')
                             prop.disabled = false;
                         }
 
+                        if (prop.type === 'number' && prop.widget === 'list') {
+                            prop.widget = 'list-number';
+                        }
+
                         if (prop.type === 'event') {
                             prop.options = WIDGET_CONSTANTS.EVENTS_OPTIONS;
                         } else {
