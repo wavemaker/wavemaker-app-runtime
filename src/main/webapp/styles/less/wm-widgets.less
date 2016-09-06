@@ -285,6 +285,10 @@ html, body {
   position: relative;
   .dropdown-toggle {
     white-space: nowrap;
+    /**hiding the caret if there is only icon and no caption***/
+    .caption:empty + span + span.caret {
+      display: none;
+    }
   }
   &.open {
     .dropdown-menu {
@@ -1260,11 +1264,6 @@ body.modal-open {
     outline: none;
     .app-list-item-value {
      word-break: break-all;
-    }
-    .app-menu {
-      .caret {
-        display: none;
-      }
     }
     &.active {
       z-index: auto !important;/***fix for popover in the list item getting hidden***/
