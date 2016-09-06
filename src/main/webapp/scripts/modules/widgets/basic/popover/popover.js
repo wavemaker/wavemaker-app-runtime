@@ -202,10 +202,11 @@ WM.module('wm.widgets.basic')
          * @constructor
          */
         function Popover(element, transcludeFn, isInlineContent, onOpen, onClose, onLoad) {
-            var scope = element.isolateScope(),
+            var scope        = element.isolateScope(),
                 popoverScope = createPopoverScope(element),
-                page = $rootScope.$activePageEl,
-                popoverEle = $compile($templateCache.get('template/widget/basic/popover.html'))(popoverScope),
+                page         = $rootScope.$activePageEl,
+                popoverEle   = $compile($templateCache.get('template/widget/basic/popover.html'))(popoverScope),
+                $content,
                 pageClickListener;
             if (popoverScope.popoverautoclose) {
                 WM.element('.app-popover').each(function () {
@@ -220,9 +221,15 @@ WM.module('wm.widgets.basic')
             popoverEle.data('linkScope', scope);
             //check if inline content
             if (isInlineContent) {
-                transcludeFn(element.scope(), function (clone) {
-                    popoverEle.find('> .popover-content').append(clone);
-                });
+                try {
+                    transcludeFn(element.scope(), function (clone) {
+                        popoverEle.find('> .popover-content').append(clone);
+                    });
+                } catch (e) {
+                    $content = '<div class="well-sm"><h4 >Error loading content</h4></div>';
+                    popoverEle.find('> .popover-content').empty().append($content);
+                }
+
                 Utils.triggerFn(onOpen);
             } else {
                 /**
