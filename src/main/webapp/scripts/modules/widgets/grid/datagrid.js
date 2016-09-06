@@ -1824,10 +1824,6 @@ $.widget('wm.datagrid', {
             $htm.on('click', this.rowSelectionHandler.bind(this));
             $htm.on('dblclick', this.rowDblClickHandler.bind(this));
             $htm.on('keydown', this.onKeyDown.bind(this));
-
-            if (this.options.selectFirstRow) {
-                this.selectFirstRow(true);
-            }
         }
 
         if ($header) {
@@ -2202,6 +2198,9 @@ $.widget('wm.datagrid', {
         this.attachEventHandlers($htm);
         if ($.isFunction(this.options.onDataRender)) {
             this.options.onDataRender();
+        }
+        if (this.options.selectFirstRow) {
+            this.selectFirstRow(true);
         }
     },
 
