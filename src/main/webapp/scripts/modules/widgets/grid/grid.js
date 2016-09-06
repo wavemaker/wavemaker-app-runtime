@@ -2416,7 +2416,8 @@ WM.module('wm.widgets.grid')
                             events,
                             fieldDefProps = {
                                 'field': attrs.binding
-                            };
+                            },
+                            skipWatchProps = ['dataset', 'defaultvalue', 'disabled', 'readonly'];
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                                 if (WM.isDefined(newVal)) {
@@ -2469,6 +2470,7 @@ WM.module('wm.widgets.grid')
                             'datafield'         : attrs.datafield,
                             'placeholder'       : attrs.placeholder,
                             'disabled'          : !attrs.disabled ? false : (attrs.disabled === 'true' || attrs.disabled),
+                            'required'          : !attrs.required ? false : (attrs.required === 'true' || attrs.required),
                             'displaylabel'      : attrs.displaylabel,
                             'searchkey'         : attrs.searchkey,
                             'displayfield'      : attrs.displayfield,
@@ -2521,7 +2523,7 @@ WM.module('wm.widgets.grid')
                         /*check if any attribute has binding. put a watch for the attributes*/
                         if (CONSTANTS.isRunMode) {
                             _.each(columnDef, function (value, property) {
-                                if (Utils.stringStartsWith(value, 'bind:') && property !== 'dataset' && property !== 'defaultvalue' && property !== 'disabled') {
+                                if (Utils.stringStartsWith(value, 'bind:') && !_.includes(skipWatchProps, property)) {
                                     watchProperty(property, value.replace('bind:', ''));
                                 }
                             });

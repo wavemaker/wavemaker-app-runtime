@@ -1626,6 +1626,11 @@ If the height and width are not specified the video takes the height of the post
   .app-datagrid {
     position: relative;
     padding: 0;
+    .cell-editing {
+      input, select, textarea {
+        border-color: transparent;
+      }
+    }
     .table-container {
       position: relative;
       overflow: hidden;
@@ -1669,9 +1674,6 @@ If the height and width are not specified the video takes the height of the post
       }
       &.cell-editing {
         padding: 0;
-        input, select, textarea {
-          border: transparent;
-        }
         .uib-timepicker input {
           border: 1px solid #e0e0e0;
         }
@@ -1681,6 +1683,18 @@ If the height and width are not specified the video takes the height of the post
         .app-checkbox, form {
           margin: 7px 0 0 12px;
         }
+      }
+      &.required-field:before {
+        content: '*';
+        position: absolute;
+        top: 4px;
+        left: 0;
+        color: red;
+        line-height: 0;
+        padding-top: 5px;
+        padding-left: 5px;
+        z-index: 10;
+        font-size: 16px;
       }
     }
     .grid-col-small {
@@ -1752,6 +1766,7 @@ If the height and width are not specified the video takes the height of the post
           }
           text-overflow: ellipsis;
           overflow: hidden;
+          position: relative;
           .row-action-button {
             &.btn-transparent {
               opacity: 0.5;
