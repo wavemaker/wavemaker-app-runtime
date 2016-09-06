@@ -1450,7 +1450,12 @@ body {
   .h1,.h2,.h3,.h4,.h5,.h6 {
     word-wrap: break-word;
   }
-
+  /****livelist specific classes***/
+  .app-livelist {
+    .media-body {
+      overflow: inherit;
+    }
+  }
   //Angular UI bootstrap 1.1.0 related styles.
   .ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left};
   .uib-datepicker .uib-title{width:100%;}
