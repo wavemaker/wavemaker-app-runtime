@@ -87,7 +87,7 @@ WM.module('wm.widgets.advanced')
                 $is.prepareCalendarEvents();
                 //change the model so that the view is rendered again with the events , after the dataset is changed.
                 $is._model_ = modelVal ? new Date(modelVal) : new Date();
-                $is.onEventrender({$scope: $is, $data: $is.eventData});
+                $is.onEventrender({$isolateScope: $is, $scope: $is, $data: $is.eventData});
             }
 
             function constructCalendarDataset($is, eventSource) {
@@ -322,7 +322,7 @@ WM.module('wm.widgets.advanced')
                                 return;
                             }
                             $is.currentview = {start: moment(viewObj.date)._d.getTime(), end: moment(viewObj.date).add(1, 'month')._d.getTime()};
-                            $is.onViewrender({$view: $is.mobileCalendarOptions});
+                            $is.onViewrender({$isolateScope: $is, $scope: $is, $view: $is.mobileCalendarOptions});
                         }
 
                         if (isMobile) {
@@ -356,9 +356,9 @@ WM.module('wm.widgets.advanced')
                                     start               = moment($is._model_),
                                     end                 = moment($is._model_).endOf('day');
                                 $is.selecteddata = selectedEventData;
-                                $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: eleScope, $data: selectedEventData});
+                                $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: $is, $isolateScope: $is, $data: selectedEventData});
                                 if (selectedEventData) {
-                                    $is.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
+                                    $is.onEventclick({$event: this, $view: eleScope, $isolateScope: $is, $scope: $is, $data: selectedEventData});
                                 }
                             };
                             /* Sets the calendar to refresh and also navigates to the date, if sent as param*/
