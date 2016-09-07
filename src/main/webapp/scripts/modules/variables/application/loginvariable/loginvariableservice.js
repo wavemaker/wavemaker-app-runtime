@@ -45,6 +45,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                     callBackScope,
                     errMsg,
                     paramKey,
+                    output,
                     loginInfo = {};
 
                 /* get the callback scope for the variable based on its owner */
@@ -83,6 +84,14 @@ wm.variables.services.LoginVariableService = ['Variables',
                     }
                     return;
                 }
+
+                //Triggering 'onBeforeUpdate' and considering
+                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, params);
+                if (_.isObject(output)) {
+                    params = output;
+                } else if (output === false) {
+                    return;
+                }
                 variable.promise = SecurityService.appLogin(params, function (response) {
                     var redirectUrl = response && response.url ? response.url : 'index.html',
                         appManager = Utils.getService("AppManager"),
@@ -103,7 +112,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                             Utils.triggerFn(success);
 
                             WM.forEach(variableEvents, function (event) {
-                                if (event !== "onError") {
+                                if (event !== 'onError' && event !== VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE) {
                                     initiateCallback(event, variable, callBackScope);
                                 }
                             });
