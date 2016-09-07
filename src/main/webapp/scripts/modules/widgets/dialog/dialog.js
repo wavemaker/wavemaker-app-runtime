@@ -61,7 +61,7 @@ WM.module('wm.widgets.dialog')
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case "height":
                 if (scope.content) {
@@ -86,6 +86,7 @@ WM.module('wm.widgets.dialog')
                 scope.header[key] = newVal;
                 break;
             case "title":
+                element.removeAttr('title');
                 scope.header.caption = newVal;
                 break;
             }
@@ -141,7 +142,7 @@ WM.module('wm.widgets.dialog')
 
                         /* register the property change handler */
                         if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

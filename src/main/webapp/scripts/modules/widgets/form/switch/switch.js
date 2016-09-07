@@ -56,7 +56,7 @@ WM.module('wm.widgets.form')
                 if (scope._model_ !== undefined && scope._model_ !== null) {
                     options.some(function (opt, index) {
 
-                        if (scope._model_ === opt
+                        if (_.isEqual(scope._model_, opt)
                                 || scope._model_ === opt[scope.datafield]
                                 || scope._model_ === opt.value) {
 
