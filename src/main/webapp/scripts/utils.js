@@ -1851,7 +1851,7 @@ WM.module('wm.utils', [])
             $timeout(function () {
                 //Evaluating for Variables,Widgets and Form events inside list
                 if (_.startsWith(evtValue, 'Variables') || _.startsWith(evtValue, 'Widgets.') || !_.includes(evtValue, '.')) {
-                    scope.$evalAsync(evtValue);
+                    scope.$eval(evtValue);
                 } else {
                     $rootScope.$emit('invoke-service', evtValue);//Invoking Prefab events
                 }
