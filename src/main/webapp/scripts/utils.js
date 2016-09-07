@@ -1873,6 +1873,13 @@ WM.module('wm.utils', [])
                 }
                 if (_.includes(eventValue, '(')) {
                     retVal = triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], firstArg, data);
+                } else {
+                    // [fallback - 8.3.0] for case where variable re-name migration fails: happens when Variable is not found in the current context
+                    // for example, an App variable tries to call a Page variable, the Page variable will not be found in the App context
+                    $timeout(function () {
+                        $rootScope.$emit("invoke-service", eventValue, {scope: callBackScope});
+                        $rootScope.$safeApply(callBackScope);
+                    }, null, false);
                 }
             });
             return retVal;
