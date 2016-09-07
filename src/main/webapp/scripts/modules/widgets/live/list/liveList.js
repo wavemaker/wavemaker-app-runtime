@@ -508,7 +508,7 @@ WM.module('wm.widgets.live')
                             var selectedGroup   = WM.element(e.target).closest('.list-group'),
                                 selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
 
-                            if (selectedAppIcon.hasClass('wi-plus')) {
+                            if (selectedAppIcon.hasClass('wi-chevron-down')) {
                                 selectedAppIcon.removeClass('wi-chevron-down').addClass('wi-chevron-up');
                             } else {
                                 selectedAppIcon.removeClass('wi-chevron-up').addClass('wi-chevron-down');
