@@ -426,7 +426,8 @@ WM.module('wm.widgets.live')
                 }
 
                 // append data to li based on the grouped data.
-                _.forEach(groupedLiData, function (groupedData, groupkey) {
+                _.forEach(_.keys(groupedLiData), function (groupkey, index) {
+                    var groupedData = groupedLiData[groupkey];
                     groupedDataFieldName     = '_groupData' + groupkey;
                     liTemplateWrapper_start  = '';
                     liTemplateWrapper_end    = '></li></ul></li>';
@@ -439,6 +440,7 @@ WM.module('wm.widgets.live')
 
                     // appending the sorted data to scope based to groupkey
                     _s[groupedDataFieldName] = _.sortBy(groupedData, function (data) {
+                        data._groupIndex = index + 1;
                         return data[$is.groupby];
                     });
 
@@ -450,7 +452,7 @@ WM.module('wm.widgets.live')
                                                 '</div>' +
                                                 '</h4></li>';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 
@@ -1252,6 +1254,27 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            //Gets current item widgets for given element
+            function getCurrentItemWidgets(__s, element) {
+                var wid = {};
+
+                // find the widgets inside the list item and update the map
+                element
+                    .find('[init-widget]')
+                    .each(function () {
+                        var $target = WM.element(this),
+                            _is;
+                        if ($target.isolateScope) {
+                            _is = $target.isolateScope();
+
+                            if (_is.name) {
+                                wid[_is.name] = _is;
+                            }
+                        }
+                    });
+                __s.currentItemWidgets = wid;
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
@@ -1274,35 +1297,28 @@ WM.module('wm.widgets.live')
                         $el.find('> [data-identifier=list]').append($liTemplate);
                         $el.find('> [data-identifier=list]').addClass('list-group');
 
-                        //Add currentitem widgets on each template item scope
-                        $liScope.addCurrentItemWidgets = function (__s) {
-                            $timeout(function () {
-                                $rs.$evalAsync(function () {
-                                    $el.find('li.app-list-item:nth-child(' + (__s.$index + 1) + ')')
-                                        .each(function () {
-                                            var wid = {};
-
-                                            // find the widgets inside the list item and update the map
-                                            WM.element(this)
-                                                .find('[init-widget]')
-                                                .each(function () {
-                                                    var $target = WM.element(this),
-                                                        _is;
-                                                    if ($target.isolateScope) {
-                                                        _is = $target.isolateScope();
-
-                                                        if (_is.name) {
-                                                            wid[_is.name] = _is;
-                                                        }
-                                                    }
-                                                });
-                                            __s.currentItemWidgets = wid;
-                                        });
-                                });
-                            }, 0, false);
-                        };
                         $compile($liTemplate)($liScope);
                     }
+
+                    //Add currentitem widgets on each template item scope
+                    $liScope.addCurrentItemWidgets = function (__s) {
+                        $timeout(function () {
+                            $rs.$evalAsync(function () {
+                                if ($is.groupby) {
+                                    $el.find('li.app-list-item-group:nth-child(' + __s.item._groupIndex + ')').each(function () {
+                                        WM.element(this).find('li.app-list-item:nth-child(' + (__s.$index + 2) + ')').each(function () {
+                                            getCurrentItemWidgets(__s, WM.element(this));
+                                        });
+                                    });
+                                } else {
+                                    $el.find('li.app-list-item:nth-child(' + (__s.$index + 1) + ')')
+                                        .each(function () {
+                                            getCurrentItemWidgets(__s, WM.element(this));
+                                        });
+                                }
+                            });
+                        }, 0, false);
+                    };
 
                     if (!$is.groupby && $is.enablereorder) {
                         configureDnD($el, $is);
