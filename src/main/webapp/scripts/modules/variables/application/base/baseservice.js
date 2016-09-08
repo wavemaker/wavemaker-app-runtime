@@ -1164,10 +1164,10 @@ wm.variables.services.Variables = [
             },
 
         /*function to retrieve service and live variables from the collection, other than the variable name provided.*/
-            retrieveEventCallbackVariables = function (variableName, namesOnly) {
+            retrieveEventCallbackVariables = function (variableName, context) {
                 var variableArray = [],
                     varCollection = self.variableCollection,
-                    contextsVariables = [varCollection[VARIABLE_CONSTANTS.OWNER.APP], varCollection[$rootScope.activePageName]];
+                    contextsVariables = context ? [varCollection[context]] : [varCollection[VARIABLE_CONSTANTS.OWNER.APP], varCollection[$rootScope.activePageName]];
 
                 if ($rootScope.isPrefabTemplate) {
                     contextsVariables = [varCollection.Main];
@@ -1178,7 +1178,7 @@ wm.variables.services.Variables = [
                         if (isEventCallbackVariable(curVariable.category)) {
                             /*checking if current variable name is not equal to the variable name provided.*/
                             if (!variableName || curVariableName !== variableName) {
-                                variableArray.push(namesOnly ? curVariableName : {name: curVariableName, category: curVariable.category});
+                                variableArray.push({name: curVariableName, category: curVariable.category});
                             }
                         }
                     });
