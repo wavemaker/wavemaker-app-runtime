@@ -1633,7 +1633,7 @@ WM.module('wm.widgets.base', [])
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"},
                         "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "currentItemWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "currentitem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
+                        "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "multiselect": {"type": "boolean", "value": false},
                         "collapsible": {"type": "boolean", "show": false},
                         "showcount": {"type": "boolean", "show": false}

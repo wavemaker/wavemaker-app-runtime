@@ -1800,7 +1800,7 @@ WM.module('wm.utils', [])
                 currentItemWidgetsRegEx;
 
             if (name) {
-                currentItemRegEx        = new RegExp('(Widgets.' + name + '.currentitem)', 'g');
+                currentItemRegEx        = new RegExp('(Widgets.' + name + '.currentItem)', 'g');
                 currentItemWidgetsRegEx = new RegExp('(Widgets.' + name + '.currentItemWidgets)', 'g');
             }
 
