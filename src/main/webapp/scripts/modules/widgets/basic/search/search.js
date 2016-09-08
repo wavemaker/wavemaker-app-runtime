@@ -685,6 +685,10 @@ WM.module('wm.widgets.basic')
                         $timeout(function () {
                             WM.element('body').find('> [uib-typeahead-popup]').addClass('app-search');
                         });
+                        /*Called from form reset when users clicks on form reset*/
+                        $is.reset = function () {
+                            $is._model_ = undefined;
+                        };
                     }
                 }
             };

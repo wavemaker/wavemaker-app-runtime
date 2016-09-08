@@ -118,6 +118,11 @@ WM.module('wm.widgets.base')
 
                 var wp = $is.widgetProps;
 
+                function isActiveNavItem(fnName) {
+                    return fnName === 'Variables.goToPage_' + $routeParams.name + '.invoke()' ||
+                        fnName === 'Variables.goToPage-' + $routeParams.name + '.invoke()';
+                }
+
                 _.keys(attrs)
                     .filter(function (attrName) {
                         return wp[attrName] && wp[attrName].type === EVENT;
@@ -140,7 +145,7 @@ WM.module('wm.widgets.base')
 
                                 var trimmedFnName = fnName.trim();
 
-                                if (trimmedFnName === ('goToPage-' + $routeParams.name) || trimmedFnName === ('goToPage_' + $routeParams.name)) {
+                                if (isActiveNavItem(trimmedFnName)) {
                                     $el.addClass('active');
                                     if (isAnchor) {
                                         $parent = $el.parent();
