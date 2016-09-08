@@ -745,7 +745,7 @@ wm.variables.services.$liveVariable = [
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
-                            }, null, false);
+                            });
                         }
                     }
                     if (CONSTANTS.isRunMode) {
