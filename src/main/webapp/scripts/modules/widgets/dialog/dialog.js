@@ -305,11 +305,11 @@ WM.module('wm.widgets.dialog')
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
 
-                        if (attrs.onOpen && ctrl && !scope.widgetid) {
+                        if (attrs.onOpened && ctrl && !scope.widgetid) {
                             if (CONSTANTS.isRunMode && scope.whenReady) {
-                                scope.whenReady(ctrl._OnOpenedHandler.bind(undefined, attrs.onOpen));
+                                scope.whenReady(ctrl._OnOpenedHandler.bind(undefined, attrs.onOpened));
                             } else {
-                                ctrl._OnOpenedHandler(attrs.onOpen);
+                                ctrl._OnOpenedHandler(attrs.onOpened);
                             }
                         }
 
