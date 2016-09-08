@@ -804,9 +804,8 @@ Application
                 $rs.$on('toggle-variable-state', function (event, variableName, active) {
                     var variable = Variables.getVariableByName(variableName);
                     if (variable && !_.isEmpty(_.trim(variable.spinnerContext))) {
-
                         if (active) {
-                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage, variable._id);
+                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage, variable._id, variable.spinnerclass, variable.spinnerContext);
                         } else {
                             wmSpinner.hide(variable._spinnerId);
                         }

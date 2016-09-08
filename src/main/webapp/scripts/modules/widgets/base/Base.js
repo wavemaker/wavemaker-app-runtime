@@ -3386,7 +3386,7 @@ WM.module('wm.widgets.base', [])
                 /* if comma separated types are provided, make it an array*/
                 if (typeof types === "string") {
                     /* if form-widgets required */
-                    if (_.includes(['form-widgets', 'page-container-widgets', 'dialog-widgets'], types)) {
+                    if (_.includes(['form-widgets', 'page-container-widgets', 'dialog-widgets', 'spinner-widgets'], types)) {
                         types = Utils.getTypes(types);
                     } else {
                         types = types.split(",");

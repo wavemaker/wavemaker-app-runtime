@@ -2075,6 +2075,32 @@ WM.module('wm.utils', [])
                 ];
             } else if (type === 'dialog-widgets') {
                 types = ['wm-dialog', 'wm-alertdialog', 'wm-confirmdialog', 'wm-iframedialog', 'wm-pagedialog', 'wm-logindialog'];
+            } else if (type === 'spinner-widgets') {
+                types = [
+                    "wm-checkboxset",
+                    "wm-radioset",
+                    "wm-calendar",
+                    "wm-grid",
+                    "wm-livefilter",
+                    "wm-livelist",
+                    "wm-tree",
+                    "wm-liveform",
+                    "wm-chart",
+                    "wm-view",
+                    "wm-form",
+                    "wm-carousel",
+                    "wm-media-list",
+                    'wm-accordionpane',
+                    'wm-container',
+                    'wm-panel',
+                    'wm-tabcontent',
+                    'wm-left-panel',
+                    'wm-right-panel',
+                    'wm-top-nav',
+                    'wm-cardcontent',
+                    'wm-wizardstep',
+                    'wm-tabpane'
+                ];
             }
             return types;
         }
