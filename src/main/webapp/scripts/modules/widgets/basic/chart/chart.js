@@ -1127,16 +1127,17 @@ WM.module('wm.widgets.basic')
 
                 // perform studio mode actions
                 if (CONSTANTS.isStudioMode) {
-                    // if dataset changed from workspace controller, set default columns
-                    if (scope.newcolumns) {
-                        setDefaultAxisOptions(scope);
-                        scope.newcolumns = false;
-                    }
                     /*Explicitly calling "updatePropertyPanelOptions" since charts rely on properties map to find the non primary key columns and data type of the columns.
                      Properties map is getting set after updatePropertyPanelOptions is being called.
                      Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
                      */
                     WidgetUtilService.updatePropertyPanelOptions(scope);
+                    //Marking 'newcolumns' false after updating property options
+                    // if dataset changed from workspace controller, set default columns
+                    if (scope.newcolumns) {
+                        setDefaultAxisOptions(scope);
+                        scope.newcolumns = false;
+                    }
                     //hiding the aggregation,group by and order by upon binding to the service variable
                     ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
                     modifyAxesOptions(scope);
