@@ -189,7 +189,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                     // EVENT: ON_CAN_UPDATE
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
-                }, null, false);
+                });
             },
 
             /**
