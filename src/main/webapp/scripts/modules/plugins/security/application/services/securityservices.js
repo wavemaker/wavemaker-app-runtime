@@ -897,11 +897,24 @@ wm.plugins.security.services.SecurityService = [
              */
 
             appLogin: function (params, successCallback, failureCallback) {
-                var rememberme = WM.isUndefined(params.rememberme) ? false : params.rememberme;
+                var rememberme = WM.isUndefined(params.rememberme) ? false : params.rememberme,
+                    loginParams = ['username', 'password', 'rememberme'],
+                    customParams = '';
+
+                // process extra data if passed
+                _.each(params, function (value, name) {
+                    if (!_.includes(loginParams, name)) {
+                        customParams += '&' + encodeURIComponent(name) + '=' + encodeURIComponent(value);
+                    }
+                });
+
                 return BaseService.send({
                     'target' : 'Security',
                     'action' : 'appLogin',
-                    'data'   : 'j_username=' + encodeURIComponent(params.username) + '&j_password=' + encodeURIComponent(params.password) + '&remember-me=' + rememberme
+                    'data'   : 'j_username=' + encodeURIComponent(params.username) +
+                        '&j_password=' + encodeURIComponent(params.password) +
+                        '&remember-me=' + rememberme +
+                        customParams
                 }, successCallback, failureCallback);
             },
 
