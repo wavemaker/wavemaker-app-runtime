@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" ng-class="{\'panel\': title}" title="{{hint}}" apply-styles="shell">' +
+            '<div init-widget class="app-chart" ng-class="{\'panel\': title}" title="{{hint}}" apply-styles>' +
             '<div class="panel-heading" ng-if="title">' +
                 '<h3 class="panel-title">' +
                     '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -13,7 +13,7 @@ WM.module('wm.widgets.basic')
                     '<div class="description">{{subheading}}</div>' +
                 '</h3>' +
             '</div>' +
-            '<div class="app-chart-inner panel-body" ng-class="{loading:isLoadInProgress}" apply-styles="inner-shell">' +
+            '<div class="app-chart-inner" ng-class="{\'loading\':isLoadInProgress,\'panel-body\': title}">' +
                 '<svg></svg>' +
                 '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
                     '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +

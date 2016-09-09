@@ -2352,7 +2352,12 @@ If the height and width are not specified the video takes the height of the post
         margin-right: 0.5em;
       }
     }
+    .app-chart-inner {
+      .calc('height', ~"calc(100% - 4em)");
+      padding: 5px;
+    }
   }
+
   /***to fix the tooltip issue*****/
   .app-chart-inner {
     position: relative;
