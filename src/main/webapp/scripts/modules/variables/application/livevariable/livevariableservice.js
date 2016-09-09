@@ -101,12 +101,15 @@ wm.variables.services.$liveVariable = [
                     return;
                 }
                 var blobCols = _.map(_.filter(variable.propertiesMap.columns, {'type': 'blob'}), 'fieldName'),
-                    href,
+                    href = '',
                     primaryKeys;
                 if (_.isEmpty(blobCols)) {
                     return;
                 }
-                href        = ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
+                if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
+                    href += $rootScope.project.deployedUrl;
+                }
+                href        += ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
                 primaryKeys = variable.propertiesMap.primaryFields || variable.propertiesMap.primaryKeys;
                 _.forEach(responseData, function (data) {
                     if (data) {

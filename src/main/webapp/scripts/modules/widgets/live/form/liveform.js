@@ -644,9 +644,17 @@ WM.module('wm.widgets.live')
                 $scope.translateVariableObject = function (rawObject) {
                     return LiveWidgetUtils.translateVariableObject(rawObject, $scope);
                 };
+                $scope.getBlobURL = function (primaryKey, key) {
+                    var href = '';
+                    if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
+                        href += $rootScope.project.deployedUrl;
+                    }
+                    href += (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
+                    href += $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + primaryKey + '/content/' + key + '?' + Math.random();
+                    return href;
+                };
                 $scope.changeDataObject = function (dataObj) {
-                    var primaryKey,
-                        href;
+                    var primaryKey;
                     if (!$scope.formFields || $scope.widgetid) {
                         return;
                     }
@@ -657,9 +665,7 @@ WM.module('wm.widgets.live')
                             if ($scope.dataset.propertiesMap) {
                                 var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
                                 primaryKey = primaryKeys.join();
-                                href = (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
-                                href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
-                                formField.href = href;
+                                formField.href = $scope.getBlobURL(dataObj[primaryKey], formField.key);
                             }
                             formField.value = dataObj[formField.key];
                         } else {
@@ -671,17 +677,16 @@ WM.module('wm.widgets.live')
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
-                    var dataObj = $scope.rowdata || $scope.formdata, primaryKey, href, primaryKeys;
+                    var dataObj = $scope.rowdata || $scope.formdata, primaryKey, primaryKeys;
                     if (!dataObj) {
                         return;
                     }
                     if (isTimeType(fieldDef)) {
                         fieldDef.value = getValidTime(dataObj[fieldDef.key]);
                     } else if (fieldDef.type === "blob") {
-                        primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
-                        primaryKey = primaryKeys.join();
-                        href = 'services/' + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + fieldDef.key + '?' + Math.random();
-                        fieldDef.href = href;
+                        primaryKeys   = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                        primaryKey    = primaryKeys.join();
+                        fieldDef.href = $scope.getBlobURL(dataObj[primaryKey], fieldDef.key);
                     } else {
                         fieldDef.value = dataObj[fieldDef.key];
                     }
