@@ -9,7 +9,7 @@ WM.module('wm.widgets.dialog')
         $templateCache.put("template/widget/dialog/dialog.html",
             '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" >' +
                 '<div class="modal-content">' +
-                    '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
+                    '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="iconclass || title">' +
                         '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="Close">' +
                             '<span aria-hidden="true">&times;</span>' +
                         '</button>' +
