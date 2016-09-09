@@ -817,8 +817,7 @@ WM.module('wm.widgets.base', [])
                         "actiontitle": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "actionlink": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "closable": {"type": "boolean", "show": false},
-                        "contentclass": {"type": "string", "pattern": classRegex, "show": false},
-                        "showheader": {"type": "boolean", "value": true, "show": false}
+                        "contentclass": {"type": "string", "pattern": classRegex, "show": false}
                     },
                     "wm.dialog.dialogheader": {
                         "caption": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -878,7 +877,7 @@ WM.module('wm.widgets.base', [])
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},
                         "closable": {"type": "boolean", "value": true},
-                        "title": {"type": "string", "show": false} //for backward compatibility
+                        "title": {"type": "string", "show": true}
                     },
                     "wm.spinner": {
                         "show": {"type": "boolean", "value": false},
