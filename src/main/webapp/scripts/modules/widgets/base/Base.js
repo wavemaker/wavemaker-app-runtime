@@ -1383,6 +1383,7 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
                         "exportformat": {"type": "list", "widget": "select-all", "options": ["EXCEL", "CSV"], "showindesigner": true},
+                        "margin": {"type": "string", "widget": "box-model", "show": false}, //Deprecated margin property for data table
 
                         /* Events */
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
