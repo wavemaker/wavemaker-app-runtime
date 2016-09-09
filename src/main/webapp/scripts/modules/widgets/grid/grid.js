@@ -728,6 +728,7 @@ WM.module('wm.widgets.grid')
                                 scope.datagridElement.datagrid(scope.gridOptions);
                             } else {
                                 $timeout(function () {
+                                    scope.datagridElement.datagrid('setColGroupWidths');
                                     scope.datagridElement.datagrid('addOrRemoveScroll');
                                 });
                             }

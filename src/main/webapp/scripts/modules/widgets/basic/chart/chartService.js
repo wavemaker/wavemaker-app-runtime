@@ -548,7 +548,7 @@ WM.module('wm.widgets.basic')
             // intializes the chart obejct
             function initChart(scope, xDomainValues, yDomainValues, propertyValueMap, isPreview) {
                 propertyValueMap =  initProperties(scope, propertyValueMap);
-                var chart, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing, xformatOptions, yformatOptions,
+                var chart, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing,
                     showLegend, xAxisValue;
                 switch (scope.type) {
                 case 'Column':
@@ -679,16 +679,6 @@ WM.module('wm.widgets.basic')
                         });
                 }
 
-                xformatOptions =  {
-                    'dateFormat'  : propertyValueMap.xdateformat,
-                    'format'      : propertyValueMap.xnumberformat,
-                    'isXaxis'     : true,
-                    'xDataKeyArr' : isPreview ? ['01-01-2001', '01-01-2002', '01-01-2003'] : scope.xDataKeyArr
-                };
-
-                yformatOptions =  {
-                    'format'      : propertyValueMap.ynumberformat
-                };
 
                 if (isPieType(scope.type)) {
                     //In case of pie/donut chart formatting the values of it
@@ -729,7 +719,7 @@ WM.module('wm.widgets.basic')
                         .staggerLabels(propertyValueMap.staggerlabels);
 
                     // If date format set format based date format
-                    if (propertyValueMap.xdateformat || isPreview) {
+                    if (propertyValueMap.xdateformat || (isPreview && !isBubbleChart(scope.type))) {
                         if (isLineTypeChart(scope.type)) {
                             chart.xAxis.tickFormat(function (d) {
                                 //get the actual value
