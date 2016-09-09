@@ -93,7 +93,7 @@ WM.module('wm.widgets.form')
                     isWidgetInsideCanvas,
                     target;
 
-                if ($rs.isMobileApplicationType) {
+                if ($rs.isMobileApplicationType && tAttrs.type !== 'uib-picker') {
                     template = WM.element(WidgetUtilService.getPreparedTemplate('template/device/widget/form/time.html', tElement, tAttrs));
                     return template[0].outerHTML;
                 }
