@@ -310,6 +310,7 @@ WM.module('wm.widgets.basic')
             scope.xDataKeyArr = [];
             //Plotting the chart with sample data when the chart dataset is not bound
             if (!scope.binddataset) {
+                scope.xDataKeyArr = ['01-01-2001', '01-01-2002', '01-01-2003'];
                 return scope.sampleData;
             }
 
