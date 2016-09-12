@@ -92,7 +92,6 @@ WM.module('wm.widgets.advanced')
 
             function constructCalendarDataset($is, eventSource) {
                 var properties = {title : $is.eventtitle,
-                    description : $is.eventdescription,
                     allday      : $is.eventallday,
                     start       : $is.eventstart,
                     end         : $is.eventend,
