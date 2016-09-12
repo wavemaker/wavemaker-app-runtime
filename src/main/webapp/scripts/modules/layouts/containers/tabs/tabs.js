@@ -334,8 +334,8 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function (scope, element, attrs, ctrl) {
                         //To support backward compatibility for old projects
-                        if (scope.title === undefined) {
-                            scope.title = scope.heading;
+                        if (scope.title === undefined && !scope.bindtitle) {
+                            scope.title = scope.heading || scope.bindheading;
                         }
                         scope._headerElement = WM.element($headerEle);
                         ctrl.registerHeader(scope);
