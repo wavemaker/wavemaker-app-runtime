@@ -851,7 +851,8 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-globe", "pattern": classRegex},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "closable": {"type": "boolean", "value": true},
-                        "showactions": {"type": "boolean", "value": true}
+                        "showactions": {"type": "boolean", "value": true},
+                        "showheader": {"type": "boolean", "value": true}
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -875,7 +876,8 @@ WM.module('wm.widgets.base', [])
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},
                         "closable": {"type": "boolean", "value": true},
-                        "title": {"type": "string", "show": true}
+                        "title": {"type": "string"},
+                        "showheader": {"type": "boolean", "value": true}
                     },
                     "wm.spinner": {
                         "show": {"type": "boolean", "value": false},
