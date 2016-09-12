@@ -740,10 +740,13 @@ WM.module('wm.widgets.live')
                             scope.isLayoutDialog = true;
                             scope._dialogid = attrs.dialogid;
                         }
-
-                        scope.Variables = elScope.Variables;
-                        scope.Widgets = elScope.Widgets;
-                        scope.appLocale = $rootScope.appLocale;
+                        /*This is to make the "Variables" & "Widgets" available in the Grid scope.
+                         * and "Variables", "Widgets" will not be available in that scope.
+                         * element.scope() might refer to the controller scope/parent scope.*/
+                        scope.Variables  = elScope.Variables;
+                        scope.Widgets    = elScope.Widgets;
+                        scope.appLocale  = $rootScope.appLocale;
+                        scope.pageParams = elScope.pageParams;
                         element.removeAttr('title');
                     },
                     post: function (scope, element, attrs, controller) {
