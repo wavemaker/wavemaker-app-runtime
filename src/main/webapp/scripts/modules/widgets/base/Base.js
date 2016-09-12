@@ -515,7 +515,6 @@ WM.module('wm.widgets.base', [])
                         "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals"},
                         "eventallday": {"type": "list", "value": "allday", "options": [""], "datasetfilter" : "terminals"},
                         "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals"},
-                        "eventdescription": {"type": "list", "value": "description", "options": [""], "datasetfilter" : "terminals"},
                         "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals"},
                         "view": {"type": "list", "options": ["month", "week", "day"], "value": "month"},
                         "controls": {"type": "list", "options": "navigation, today, month, week, day", "value": "navigation, today, month, week, day", "widget": "select-all"},
@@ -538,7 +537,6 @@ WM.module('wm.widgets.base', [])
                         "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals", "show": false },
                         "eventallday": {"type": "list", "value": "allday", "options": [""], "datasetfilter" : "terminals", "show": false},
                         "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals", "show": false},
-                        "eventdescription": {"type": "list", "value": "description", "options": [""], "datasetfilter" : "terminals", "show": false},
                         "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals", "show": false}
                     },
                     "wm.time": {
@@ -1888,7 +1886,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "thumbnailurl", "mediaurl"], "parent": "properties"},
-                {"name": "eventsdata", "properties": ["eventtitle","eventdescription" , "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
+                {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
                 {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itembadge", "itemchildren"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
