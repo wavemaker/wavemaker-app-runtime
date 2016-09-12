@@ -304,9 +304,10 @@ WM.module('wm.widgets.grid')
                         var elScope = element.scope();
                         iScope.Variables  = elScope.Variables;
                         iScope.Widgets    = elScope.Widgets;
+                        iScope.pageParams = elScope.pageParams;
+                        iScope.appLocale  = $rootScope.appLocale;
                         iScope.columns    = {};
                         iScope.formfields = {};
-                        iScope.appLocale = $rootScope.appLocale;
                         $rootScope.$on('locale-change', function () {
                             iScope.appLocale = $rootScope.appLocale;
                         });

@@ -442,8 +442,13 @@ WM.module('wm.widgets.live')
                                 iScope.widgetProps = widgetProps;
                             }
                             iScope.filterElement = element;
-                            iScope.Variables = elScope.Variables;
-                            iScope.Widgets = elScope.Widgets;
+                            /*This is to make the "Variables" & "Widgets" available in the Filter scope.
+                             * and "Variables", "Widgets" will not be available in that scope.
+                             * element.scope() might refer to the controller scope/parent scope.*/
+                            iScope.Variables  = elScope.Variables;
+                            iScope.Widgets    = elScope.Widgets;
+                            iScope.pageParams = elScope.pageParams;
+                            iScope.appLocale  = $rootScope.appLocale;
                             //Map for filterFields with filter key as key
                             iScope.filterFields = {};
                             element.removeAttr('title');
