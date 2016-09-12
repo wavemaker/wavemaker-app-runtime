@@ -400,16 +400,35 @@ wm.variables.services.Variables = [
                 var target = obj.target,
                     targetObj,
                     targetNodeKey,
-                    rootNode = variable[root];
+                    rootNode = variable[root],
+                    regex = /^\[("|')[\w\W]*(\1)\]$/g;
 
-                targetNodeKey = target.split(".").pop();
-                target = target.substr(0, target.lastIndexOf('.'));
-                if (obj.target === root) {
-                    targetObj = variable;
-                } else if (target) {
-                    targetObj = Utils.findValueOf(rootNode, target, true);
-                } else {
+                /*
+                 * if the target key is in the form as "['my.param']"
+                 * keep the target key as "my.param" and do not split further
+                 * this is done, so that, the computed value against this binding is assigned as
+                 *      {"my.param": "value"}
+                 * and not as
+                 *      {
+                 *          "my": {
+                 *              "param": "value"
+                 *          }
+                 *      }
+                 */
+                if (regex.test(target)) {
+                    targetNodeKey = target;
                     targetObj = rootNode;
+                    targetNodeKey = targetNodeKey.replace(/^(\[["'])|(["']\])$/g, '');
+                } else {
+                    targetNodeKey = target.split(".").pop();
+                    target = target.substr(0, target.lastIndexOf('.'));
+                    if (obj.target === root) {
+                        targetObj = variable;
+                    } else if (target) {
+                        targetObj = Utils.findValueOf(rootNode, target, true);
+                    } else {
+                        targetObj = rootNode;
+                    }
                 }
                 if (Utils.stringStartsWith(obj.value, "bind:")) {
                     BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
