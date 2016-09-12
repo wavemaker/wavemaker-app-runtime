@@ -149,6 +149,7 @@ WM.module('wm.widgets.form')
                             }
                             if (CONSTANTS.isRunMode) {
                                 scope.disabled = true;
+                                onPropertyChange('disabled', scope.disabled);
                                 //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
                                 if (!timeInterval || timeInterval.$$state.value === 'canceled') {
                                     timeInterval = $interval(function () {

@@ -724,7 +724,7 @@ WM.module('wm.widgets.grid')
                             }
                         }, 0, false);
                         //Will be called after setting grid column property.
-                        scope.redraw = function (forceRender) {
+                        scope._redraw = function (forceRender) {
                             if (forceRender) {
                                 scope.datagridElement.datagrid(scope.gridOptions);
                             } else {
@@ -734,6 +734,7 @@ WM.module('wm.widgets.grid')
                                 });
                             }
                         };
+                        scope.redraw = _.debounce(scope._redraw, 150);
                         if (!scope.widgetid && scope.editmode === EDIT_MODE.QUICK_EDIT) {
                             //In case of advanced inline, on tab keypress of grid, edit the first row
                             element.on('keyup', function (e) {
