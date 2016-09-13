@@ -11,7 +11,7 @@
  * The 'NavigationVariableService' provides methods to work with Navigation variables
  */
 
-wm.variables.services.NavigationVariableService = function ($rootScope, BaseVariablePropertyFactory, Utils, NavigationService) {
+wm.variables.services.NavigationVariableService = function ($rootScope, BaseVariablePropertyFactory, Utils, NavigationService, $timeout) {
     "use strict";
 
 
@@ -92,9 +92,11 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
             }
         },
         navigate = function (options) {
-            options        = options || {};
-            options.scope  = options.scope  || this.activeScope;
-            methods.navigate(this, options);
+            $timeout(function () {
+                options        = options || {};
+                options.scope  = options.scope  || this.activeScope;
+                methods.navigate(this, options);
+            }.bind(this));
         },
         basicVariableObj = {
             navigate: navigate,

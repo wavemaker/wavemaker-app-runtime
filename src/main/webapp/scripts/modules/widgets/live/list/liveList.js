@@ -548,17 +548,20 @@ WM.module('wm.widgets.live')
 
             function onDataChange($is, $el, nv, attrs, listCtrl) {
                 if (nv) {
-                    nv = Utils.getClonedObject(nv);
+                    var boundVariableName = Utils.getVariableName($is),
+                        variable = getVariable($is, boundVariableName),
+                        category = variable && variable.category;
+                    
+                    //Clone data if variable type is not static
+                    nv = category === 'wm.Variable' ? nv : Utils.getClonedObject(nv);
                     $is.noDataFound = false;
 
                     if (nv.data) {
                         nv = nv.data;
                     } else {
                         if (!_.includes($is.binddataset, 'bind:Widgets.')) {
-                            var boundVariableName = Utils.getVariableName($is),
-                                variable = getVariable($is, boundVariableName);
                             // data from the live list must have .data filed
-                            if (variable && variable.category === 'wm.LiveVariable') {
+                            if (category === 'wm.LiveVariable') {
                                 return;
                             }
                         }

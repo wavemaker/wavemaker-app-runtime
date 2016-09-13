@@ -1131,45 +1131,49 @@ wm.variables.services.$liveVariable = [
             },
          /*Function to fetch records*/
             update = function (options, success, error) {
-                var name = this.name;
-                options = options || {};
-                options.scope = this.activeScope;
+                $timeout(function () {
+                    var name = this.name;
+                    options = options || {};
+                    options.scope = this.activeScope;
 
-                if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
-                }
-                methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
+                        $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
                     }
-                    Utils.triggerFn(success, data, propertiesMap, pageOptions);
-                }, function (errMsg) {
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
-                    }
-                    Utils.triggerFn(error, errMsg);
-                });
+                    methods.getData(this, options, function (data, propertiesMap, pageOptions) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(success, data, propertiesMap, pageOptions);
+                    }, function (errMsg) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(error, errMsg);
+                    });
+                }.bind(this));
             },
             insertRecord = function (options, success, error) {
-                var name = this.name;
-                options = options || {};
-                options.scope = this.activeScope;
+                $timeout(function () {
+                    var name = this.name;
+                    options = options || {};
+                    options.scope = this.activeScope;
 
-                if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, true);
-                }
+                    if (CONSTANTS.isRunMode) {
+                        $rootScope.$emit('toggle-variable-state', name, true);
+                    }
 
-                methods.insertRecord(this, options, function (response) {
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
-                    }
-                    Utils.triggerFn(success, response);
-                }, function (errMsg) {
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
-                    }
-                    Utils.triggerFn(error, errMsg);
-                });
+                    methods.insertRecord(this, options, function (response) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(success, response);
+                    }, function (errMsg) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(error, errMsg);
+                    });
+                }.bind(this));
             },
         /* properties of a basic variable - should contain methods applicable on this particular object */
             methods = {
@@ -1483,48 +1487,52 @@ wm.variables.services.$liveVariable = [
                     methods.download(this, options);
                 },
                 updateRecord: function (options, success, error) {
-                    var name = this.name;
-                    options = options || {};
-                    options.scope = this.activeScope;
+                    $timeout(function () {
+                        var name = this.name;
+                        options = options || {};
+                        options.scope = this.activeScope;
 
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
-                    }
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, true);
+                        }
 
-                    methods.updateRecord(this, options, function (response) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(success, response);
-                    }, function (errMsg) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(error, errMsg);
-                    });
+                        methods.updateRecord(this, options, function (response) {
+                            if (CONSTANTS.isRunMode) {
+                                $rootScope.$emit('toggle-variable-state', name, false);
+                            }
+                            Utils.triggerFn(success, response);
+                        }, function (errMsg) {
+                            if (CONSTANTS.isRunMode) {
+                                $rootScope.$emit('toggle-variable-state', name, false);
+                            }
+                            Utils.triggerFn(error, errMsg);
+                        });
+                    }.bind(this));
                 },
                 insertRecord: insertRecord,
                 createRecord: insertRecord,
                 deleteRecord: function (options, success, error) {
-                    var name = this.name;
-                    options = options || {};
-                    options.scope = this.activeScope;
+                    $timeout(function () {
+                        var name = this.name;
+                        options = options || {};
+                        options.scope = this.activeScope;
 
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
-                    }
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, true);
+                        }
 
-                    methods.deleteRecord(this, options, function (response) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(success, response);
-                    }, function (errMsg) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(error, errMsg);
-                    });
+                        methods.deleteRecord(this, options, function (response) {
+                            if (CONSTANTS.isRunMode) {
+                                $rootScope.$emit('toggle-variable-state', name, false);
+                            }
+                            Utils.triggerFn(success, response);
+                        }, function (errMsg) {
+                            if (CONSTANTS.isRunMode) {
+                                $rootScope.$emit('toggle-variable-state', name, false);
+                            }
+                            Utils.triggerFn(error, errMsg);
+                        });
+                    }.bind(this));
                 },
                 updateRelatedData: function (options, success, error) {
                     options = options || {};
