@@ -2573,7 +2573,7 @@ WM.module('wm.widgets.base', [])
 
                 /* this method will update the view value in the controller's scope */
                 function updateModel() {
-                    if (_model && ctrlScope) {
+                    if (_model && ctrlScope && _model.assign) {
                         /* update the model value in the controller if the controller scope is available */
                         _model.assign(ctrlScope, iScope._model_);
                     }
