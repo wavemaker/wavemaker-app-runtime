@@ -685,20 +685,23 @@ wm.variables.services.$servicevariable = ['Variables',
                 }, forceReload);
             },
             update = function (options, success, error) {
-                var name = this.name;
-                options = options || {};
-                options.scope = this.activeScope || options.scope;
-                methods.getData(this, options, function (response) {
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false, response);
-                    }
-                    Utils.triggerFn(success, response);
-                }, function (errMsg) {
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
-                    }
-                    Utils.triggerFn(error, errMsg);
-                });
+                $timeout(function () {
+                    var name = this.name;
+                    options = options || {};
+                    options.scope = this.activeScope || options.scope;
+                    methods.getData(this, options, function (response) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false, response);
+                        }
+                        Utils.triggerFn(success, response);
+                    }, function (errMsg) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(error, errMsg);
+                    });
+                }.bind(this));
+
             },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
