@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.security;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 /**
@@ -36,6 +36,10 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 public class JSONExceptionTranslationFilter extends ExceptionTranslationFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JSONExceptionTranslationFilter.class);
+
+    public JSONExceptionTranslationFilter(final AuthenticationEntryPoint authenticationEntryPoint) {
+        super(authenticationEntryPoint);
+    }
 
     @Override
     protected void sendStartAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, AuthenticationException reason)

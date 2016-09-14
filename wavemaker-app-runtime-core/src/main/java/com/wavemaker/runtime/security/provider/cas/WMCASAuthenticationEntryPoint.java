@@ -24,7 +24,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     private ServiceProperties serviceProperties;
 
     protected String createServiceUrl(HttpServletRequest request, HttpServletResponse response) {
-        if (StringUtils.isBlank(serviceProperties.getService())) {
+        if (serviceProperties.getService().equals("/")) {
             String serviceUrl = HttpRequestUtils.getServiceUrl(request);
             serviceProperties.setService(serviceUrl + "/j_spring_cas_security_check");
         }
