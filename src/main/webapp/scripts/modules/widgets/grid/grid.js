@@ -252,21 +252,6 @@ WM.module('wm.widgets.grid')
                 function defineSelectedItemProp(scope) {
                     Object.defineProperty(scope, 'selecteditem', {
                         get: function () {
-                            /*
-                             * in case of single select, update the items with out changing the reference.
-                             * for multi select, keep old selected items in tact
-                             */
-                            if (!scope.multiselect) {
-                                scope.items.length = 0;
-                            }
-                            if (!scope.datagridElement.datagrid('instance')) {
-                                return;
-                            }
-                            _.forEach(scope.datagridElement.datagrid('getSelectedRows'), function (item) {
-                                if (!_.find(scope.items, item)) {
-                                    scope.items.push(item);
-                                }
-                            });
                             if (scope.items && scope.items.length === 1) {
                                 return scope.items[0];
                             }
@@ -422,6 +407,7 @@ WM.module('wm.widgets.grid')
                         scope.rowActions   = [];
                         scope._actions     = {};
                         scope.headerConfig = [];
+                        scope.items        = [];
 
                         /* event emitted on building new markup from canvasDom */
                         handlers.push($rootScope.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
@@ -475,23 +461,6 @@ WM.module('wm.widgets.grid')
                         scope.gridOptions.colDefs.map(function (column) {
                             scope.columns[column.field] = column;
                         });
-
-                        if (CONSTANTS.isRunMode) {
-                            /**runModeInitialProperties are not triggered in property change handler in run mode.
-                             * So, set these grid options based on the attribute values.
-                             * This is done to prevent re-rendering of the grid for a property change in run mode**/
-                            _.forEach(runModeInitialProperties, function (value, key) {
-                                var attrValue = attrs[key];
-                                if (WM.isDefined(attrValue)) {
-                                    scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
-                                }
-                            });
-                            scope.gridOptions.editmode = scope.editmode;
-                            /*Set isMobile value on the datagrid*/
-                            scope.gridOptions.isMobile = Utils.isMobile();
-                            scope.renderOperationColumns();
-                        }
-                        scope.datagridElement.datagrid(scope.gridOptions);
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
@@ -704,7 +673,6 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }));
-                        scope.items = [];
                         defineSelectedItemProp(scope);
                         scope.shownavigation = scope.navigation !== 'None';
                         $timeout(function () {
@@ -751,6 +719,23 @@ WM.module('wm.widgets.grid')
                             });
                             $document.on('click', documentClickBind);
                         }
+
+                        if (CONSTANTS.isRunMode) {
+                            /**runModeInitialProperties are not triggered in property change handler in run mode.
+                             * So, set these grid options based on the attribute values.
+                             * This is done to prevent re-rendering of the grid for a property change in run mode**/
+                            _.forEach(runModeInitialProperties, function (value, key) {
+                                var attrValue = attrs[key];
+                                if (WM.isDefined(attrValue)) {
+                                    scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
+                                }
+                            });
+                            scope.gridOptions.editmode = scope.editmode;
+                            /*Set isMobile value on the datagrid*/
+                            scope.gridOptions.isMobile = Utils.isMobile();
+                            scope.renderOperationColumns();
+                        }
+                        scope.datagridElement.datagrid(scope.gridOptions);
                     }
                 };
             }
@@ -1492,7 +1477,10 @@ WM.module('wm.widgets.grid')
                 startRowIndex: 1,
                 onDataRender: function () {
                     // select rows selected in previous pages. (Not finding intersection of data and selecteditems as it will be heavy)
-                    $scope.datagridElement.datagrid('selectRows', $scope.selecteditem);
+                    if (!$scope.multiselect) {
+                        $scope.items.length = 0;
+                    }
+                    $scope.datagridElement.datagrid('selectRows', $scope.items);
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
                     if ($scope.gridData.length) {
                         $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
@@ -1500,6 +1488,18 @@ WM.module('wm.widgets.grid')
                 },
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
+                    /*
+                     * in case of single select, update the items with out changing the reference.
+                     * for multi select, keep old selected items in tact
+                     */
+                    if ($scope.multiselect) {
+                        if (_.findIndex($scope.items, rowData) === -1) {
+                            $scope.items.push(rowData);
+                        }
+                    } else {
+                        $scope.items.length = 0;
+                        $scope.items.push(rowData);
+                    }
                     $scope.onSelect({$data: rowData, $event: e, $rowData: rowData});
                     $scope.onRowclick({$data: rowData, $event: e, $rowData: rowData});
                     // For backward compatibility.
