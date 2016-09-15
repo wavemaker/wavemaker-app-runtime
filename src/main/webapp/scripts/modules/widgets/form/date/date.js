@@ -36,12 +36,12 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
-                'readonly': true,
-                'disabled': true,
+                'readonly' : CONSTANTS.isRunMode,
+                'disabled' : CONSTANTS.isRunMode,
                 'timestamp': true,
                 'showweeks': true,
-                'mindate': true,
-                'maxdate': true,
+                'mindate'  : true,
+                'maxdate'  : true,
                 'excludedates': true
             };
 
