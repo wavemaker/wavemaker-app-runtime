@@ -35,7 +35,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             Variables.addVariableConfig({
                 'collectionType': 'data',
                 'category': 'wm.DeviceVariable',
-                'labelKey': 'LABEL_VARIABLE_DEVICE',
                 'defaultName': 'deviceVariable'
             });
             /* Add additional event options.*/

@@ -54,50 +54,42 @@ wm.variables.services.Variables = [
                 {
                     "collectionType": "call",
                     "category": "wm.NavigationVariable",
-                    "labelKey": "LABEL_VARIABLE_NAVIGATION",
                     "defaultName": "navigationVariable"
                 },
                 {
                     "collectionType": "call",
                     "category": "wm.NotificationVariable",
-                    "labelKey": "LABEL_VARIABLE_NOTIFICATION",
                     "defaultName": "notificationVariable"
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.Variable",
-                    "labelKey": "LABEL_VARIABLE_BASIC",
                     "defaultName": "staticVariable"
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.ServiceVariable",
-                    "labelKey": "LABEL_VARIABLE_SERVICE",
                     "defaultName": "serviceVariable"
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.LiveVariable",
-                    "labelKey": "LABEL_VARIABLE_LIVE",
                     "defaultName": "liveVariable"
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.TimerVariable",
-                    "labelKey": "LABEL_VARIABLE_TIMER",
                     "defaultName": "timerVariable"
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.LoginVariable",
-                    "labelKey": "LABEL_VARIABLE_LOGIN",
                     "defaultName": "loginVariable",
                     "appOnly": true
                 },
                 {
                     "collectionType": "data",
                     "category": "wm.LogoutVariable",
-                    "labelKey": "LABEL_VARIABLE_LOGOUT",
                     "defaultName": "logoutVariable",
                     "appOnly": true
                 }
@@ -1072,7 +1064,7 @@ wm.variables.services.Variables = [
                     });
                 }
                 _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
-                    categoryList[variable.category] = variable.labelKey;
+                    categoryList[variable.category] = variable.category;
                 });
 
                 if (getKeysList) {
@@ -2231,7 +2223,6 @@ wm.variables.services.Variables = [
              * ex : {
              *          "collectionType": "call", //accepted values are 'call' or 'data'
              *          "category": "wm.NotificationVariable", // category name
-             *          "labelKey": "LABEL_VARIABLE_NOTIFICATION", // key to find localed specific display name
              *          "defaultName": "notificationVariable" // default category name
              *      }
              */
