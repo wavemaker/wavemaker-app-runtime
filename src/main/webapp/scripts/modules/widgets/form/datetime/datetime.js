@@ -36,8 +36,8 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datetime', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
-                'readonly'     : true,
-                'disabled'     : true,
+                'readonly'     : CONSTANTS.isRunMode,
+                'disabled'     : CONSTANTS.isRunMode,
                 'autofocus'    : true,
                 'excludedates' : true,
                 'showweeks'    : true,
@@ -84,7 +84,7 @@ WM.module('wm.widgets.form')
         }
 
         function propertyChangeHandler(scope, element, key, newVal) {
-            var inputEl = element.find('input'),
+            var inputEl  = element.find('input'),
                 buttonEl = element.find('button');
             switch (key) {
             case 'readonly':
@@ -296,11 +296,15 @@ WM.module('wm.widgets.form')
                         scope.formatDateTime();
                         scope._onChange({$event: event, $scope: scope});
                     };
-                    /* handle initial readonly/disabled values */
-                    $timeout(function () {
-                        onPropertyChange('disabled', scope.disabled);
-                        onPropertyChange('readonly', scope.readonly);
-                    });
+
+                    if (!scope.widgetid) {
+                        /* handle initial readonly/disabled values */
+                        $timeout(function () {
+                            onPropertyChange('disabled', scope.disabled);
+                            onPropertyChange('readonly', scope.readonly);
+                        });
+                    }
+
 
                     /*update the model with device datetime value*/
                     scope.updateModel = function () {

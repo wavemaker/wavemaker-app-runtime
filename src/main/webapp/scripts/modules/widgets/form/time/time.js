@@ -32,8 +32,8 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
-                'readonly'    : true,
-                'disabled'    : true,
+                'readonly'    : CONSTANTS.isRunMode,
+                'disabled'    : CONSTANTS.isRunMode,
                 'autofocus'   : true,
                 'timepattern' : true
             };
@@ -213,11 +213,15 @@ WM.module('wm.widgets.form')
                         scope._model_ = scope._proxyModel;
                         scope._onChange({$event: event, $scope: scope});
                     };
-                    /* handle initial readonly/disabled values */
-                    $timeout(function () {
-                        onPropertyChange('disabled', scope.disabled);
-                        onPropertyChange('readonly', scope.readonly);
-                    });
+
+                    if (!scope.widgetid) {
+                        /* handle initial readonly/disabled values */
+                        $timeout(function () {
+                            onPropertyChange('disabled', scope.disabled);
+                            onPropertyChange('readonly', scope.readonly);
+                        });
+                    }
+
                     /* _model_ acts as a converter for _proxyModel
                      * read operation of _model_/datavalue will return epoch format of the date
                      * write operation of _model_ will update _proxyModel with Date object.
