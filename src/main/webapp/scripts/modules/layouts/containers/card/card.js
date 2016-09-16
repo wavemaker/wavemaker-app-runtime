@@ -60,8 +60,8 @@ WM.module('wm.layouts.containers')
                 },
                 'post': function (scope, element, attrs) {
                     //To support backward compatibility for old projects
-                    if (scope.title === undefined) {
-                        scope.title = scope.heading;
+                    if (scope.title === undefined && !scope.bindtitle) {
+                        scope.title = scope.heading || scope.bindheading;
                     }
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
