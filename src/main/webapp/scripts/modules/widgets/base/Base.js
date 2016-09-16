@@ -1735,7 +1735,7 @@ WM.module('wm.widgets.base', [])
                         "showyaxis": {"type": "boolean", "value": true},
                         "legendtype": {"type": "list", "options": ["classic", "furious"], "value": "furious", "disabled": false, "show": false},
                         "showvalues": {"type": "boolean", "value": false},
-                        "showlabels": {"type": "list", "options":  ['hide', 'inside', 'outside'], "value": "outside"},
+                        "showlabels": {"type": "list", "options":  ['hide', 'inside', 'outside'], "value": "true"},
                         "viewtype": {"type": "list", "options":  ['Grouped', 'Stacked'], "value": "Grouped"},
                         "areaviewtype": {"type": "list", "options":  ['stack', 'stream', 'expand'], "value": "stack"},
                         "staggerlabels": {"type": "boolean", "value": false},

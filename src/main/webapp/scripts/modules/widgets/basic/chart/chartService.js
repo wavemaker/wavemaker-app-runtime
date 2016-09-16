@@ -184,21 +184,48 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            //get the boolean value
+            function getBooleanValue(val) {
+                if (val === true || val === 'true') {
+                    return true;
+                }
+                if (val === false || val === 'false') {
+                    return false;
+                }
+                return val;
+            }
+
             //Returns labels config
-            function getLabelValues(value) {
+            function getLabelValues(showlabels, showlabelsoutside, prop) {
                 var labelsConfig = {};
-                switch (value) {
-                case 'hide':
-                    labelsConfig.showlabels = false;
-                    break;
-                case 'inside':
-                    labelsConfig.showlabels = true;
-                    labelsConfig.showlabelsoutside = false;
-                    break;
-                case 'outside':
-                    labelsConfig.showlabels = true;
-                    labelsConfig.showlabelsoutside = true;
-                    break;
+                showlabels        = getBooleanValue(showlabels);
+                showlabelsoutside = getBooleanValue(showlabelsoutside);
+                //Getting the model value
+                if (prop === 'value') {
+                    if (typeof showlabels === 'boolean' && typeof showlabelsoutside === 'boolean') {
+                        return {
+                            'showlabels' : showlabels,
+                            'showlabelsoutside' : showlabelsoutside
+                        };
+                    }
+                    switch (showlabels) {
+                    case 'hide':
+                        labelsConfig.showlabels = false;
+                        break;
+                    case 'inside':
+                        labelsConfig.showlabels = true;
+                        labelsConfig.showlabelsoutside = false;
+                        break;
+                    case 'outside':
+                        labelsConfig.showlabels = true;
+                        labelsConfig.showlabelsoutside = true;
+                        break;
+                    }
+                    return labelsConfig;
+                }
+                //Getting the view value
+                if (prop === 'key') {
+                    labelsConfig.showlabels = showlabels ? (showlabelsoutside ? 'outside' : 'inside') : 'hide';
                 }
                 return labelsConfig;
             }
@@ -473,7 +500,7 @@ WM.module('wm.widgets.basic')
                     }
                 } else {
                     //Auto formatting the data when no formating option is chosen
-                    formattedData = d3.format('.1s')(d);
+                    formattedData = d >= 1000 ? d3.format('.1s')(d) : d;
                 }
                 return formattedData;
             }
@@ -610,7 +637,7 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'Pie':
                 case 'Donut':
-                    labelConfig = getLabelValues(propertyValueMap.showlabels);
+                    labelConfig = getLabelValues(propertyValueMap.showlabels, propertyValueMap.showlabelsoutside, 'value');
                     radius = getNumberValue(propertyValueMap.donutratio, getRadiusValue) || donutRatioMap.medium;
                     chart = nv.models.pieChart()
                         .x(function (d) {
