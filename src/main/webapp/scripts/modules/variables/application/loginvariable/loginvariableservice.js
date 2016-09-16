@@ -149,12 +149,13 @@ wm.variables.services.LoginVariableService = ['Variables',
                                 }
                             }
                         });
-                }, function () {
+                }, function (errorMsg) {
+                    errorMsg = errorMsg || "Invalid credentials.";
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, callBackScope, "Invalid username or password.");
+                        initiateCallback("onError", variable, callBackScope, errorMsg);
                     }
-                    Utils.triggerFn(error, "Invalid username or password.");
+                    Utils.triggerFn(error, errorMsg);
                 });
             },
             cancel: function (variable) {
