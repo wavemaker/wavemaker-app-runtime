@@ -1229,6 +1229,17 @@ WM.module('wm.widgets.basic')
             }
         }
 
+        //get the boolean value
+        function getBooleanValue(val) {
+            if (val === true || val === 'true') {
+                return true;
+            }
+            if (val === false || val === 'false') {
+                return false;
+            }
+            return val;
+        }
+
         return {
             restrict: 'E',
             replace: true,
@@ -1249,8 +1260,16 @@ WM.module('wm.widgets.basic')
                     },
                     post: function (scope, element, attrs) {
                         var handlers = [],
-                            boundVariableName;
+                            boundVariableName,
+                            showLabelsValue = scope.showlabels;
                         scope.getCutomizedOptions = getCutomizedOptions;
+                        //migration for old projects
+                        if (!_.includes(['outside', 'inside', 'hide'], showLabelsValue)) {
+                            scope.showlabels        = getBooleanValue(scope.showlabels);
+                            scope.showlabelsoutside = getBooleanValue(scope.showlabelsoutside);
+                            scope.showlabels        = scope.showlabels ? (scope.showlabelsoutside ? 'outside' : 'inside') : 'hide';
+                        }
+
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 

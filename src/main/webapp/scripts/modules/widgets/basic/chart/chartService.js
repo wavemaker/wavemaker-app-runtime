@@ -473,7 +473,7 @@ WM.module('wm.widgets.basic')
                     }
                 } else {
                     //Auto formatting the data when no formating option is chosen
-                    formattedData = d3.format('.1s')(d);
+                    formattedData = d >= 1000 ? d3.format('.1s')(d) : d;
                 }
                 return formattedData;
             }
