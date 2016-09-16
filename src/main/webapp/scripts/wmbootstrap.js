@@ -159,7 +159,11 @@ Application
                                 showLoginDialog();
                                 break;
                             case LOGIN_METHOD.PAGE:
+                                // do not provide redirectTo page if fetching HOME page resulted 401
+                                // on app load, by default Home page is loaded
+                                page = (page === _WM_APP_PROPERTIES.homePage) ? undefined : (!page ? $location.path().replace('/', '') : page);
                                 $location.path(loginConfig.pageName);
+                                $location.search('redirectTo', page);
                                 break;
                             case LOGIN_METHOD.SSO:
                                 //showing a redirecting message
