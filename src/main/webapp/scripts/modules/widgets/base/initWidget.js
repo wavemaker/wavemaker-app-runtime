@@ -609,7 +609,7 @@ WM.module('wm.widgets.base')
                          * remove 'disabled' attr from the root node of the widget when the value is false
                          * Non-form elements with disabled attribute will block the click events (IE bug)
                          */
-                        if (isBooleanType && key === 'disabled') {
+                        if (!$is.widgetid && isBooleanType && key === 'disabled') {
                             if (_nv) {
                                 $el.attr('disabled', 'disabled');
                             } else {
