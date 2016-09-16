@@ -1740,7 +1740,6 @@ $.widget('wm.datagrid', {
     },
     // Handles keydown event on row items.
     onKeyDown: function (event) {
-        event.stopPropagation();
         var $target   = $(event.target),
             $row      = $target.closest('tr'),
             quickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT,
