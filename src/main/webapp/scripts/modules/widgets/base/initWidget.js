@@ -584,8 +584,8 @@ WM.module('wm.widgets.base')
 
                         if (isBindableProperty) {
                             if (!$is[UPDATE_FROM_WATCHER]) {
-                                // this will remove the existing watch
-                                $is[bindKey]  = undefined;
+                                Utils.triggerFn(_watchers[key]);
+                                _watchers[key] = undefined;
                                 doEqualsCheck = true;
                             } else {
                                 $is[UPDATE_FROM_WATCHER] = false;
