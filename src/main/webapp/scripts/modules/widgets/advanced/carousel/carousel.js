@@ -158,7 +158,7 @@ WM.module('wm.widgets.advanced')
 
                 $tmpl = $div.append($tmpl);
                 if (parentDataSet) {
-                    Utils.updateTmplAttrs($tmpl, parentDataSet);
+                    Utils.updateTmplAttrs($tmpl, parentDataSet, attrs.name);
                 }
                 $tmpl = applyWrapper($tmpl, attrs);
                 return $tmpl;
