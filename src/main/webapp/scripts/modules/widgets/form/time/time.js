@@ -56,7 +56,7 @@ WM.module('wm.widgets.form')
                 inputEl.attr(key, newVal);
                 buttonEl.attr('disabled', newVal);
                 // prevent the click events on decrement/increment buttons
-                element.css('pointer-events', newVal ? 'none' : 'all');
+                element.css('pointer-events', (scope.readonly || scope.disabled) ? 'none' : 'all');
                 break;
             case 'autofocus':
                 inputEl.first().attr(key, newVal);
