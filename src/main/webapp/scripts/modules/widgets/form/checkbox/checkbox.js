@@ -37,7 +37,7 @@ WM.module('wm.widgets.form')
                 scope.disabled = newVal;
                 break;
             case 'caption':
-                if (!WM.isDefined(newVal)) {
+                if (!WM.isDefined(newVal) || newVal === '') {
                     scope._caption = '&nbsp;';
                 } else {
                     scope._caption = newVal;
