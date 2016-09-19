@@ -764,7 +764,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
-                        "disabled": {"type": "boolean", "bindable": "in-bound"},
+                        "disabled": {"type": "boolean", "show": false , "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shape":  {"type": "list", "options": ["", "rounded", "circle", "thumbnail"]},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
