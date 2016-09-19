@@ -152,7 +152,7 @@ WM.module('wm.widgets.basic')
                     }
                     // type conversion required here. hence `==` is used instead of `===`
                     return _.get(item, $is.datafield) == $is._proxyModel;
-                });
+                }) || $is._proxyModel;
                 $is.updateModel();
             }
 
