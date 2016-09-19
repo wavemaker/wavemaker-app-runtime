@@ -257,7 +257,7 @@ wm.variables.services.Variables = [
                 debouncedFn();
             },
 
-            processVariablePostBindUpdate = function (nodeName, nodeVal, variable, noUpdate) {
+            processVariablePostBindUpdate = function (nodeName, nodeVal, nodeType, variable, noUpdate) {
 
                 if (variable.category === 'wm.LiveVariable') {
                     if (variable.operation === 'read') {
@@ -269,7 +269,8 @@ wm.variables.services.Variables = [
                             });
                         } else {
                             variable.filterFields[nodeName] = {
-                                'value': nodeVal
+                                'value': nodeVal,
+                                'type' : nodeType
                             };
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
@@ -430,7 +431,7 @@ wm.variables.services.Variables = [
                         /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                         if (targetObj) {
                             targetObj[targetNodeKey] = newVal;
-                            processVariablePostBindUpdate(targetNodeKey, newVal, variable);
+                            processVariablePostBindUpdate(targetNodeKey, newVal, obj.type, variable);
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
@@ -438,7 +439,7 @@ wm.variables.services.Variables = [
                     if (targetObj) {
                         targetObj[targetNodeKey] = obj.value;
                     }
-                    processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
+                    processVariablePostBindUpdate(targetNodeKey, obj.value, obj.type, variable, true);
                 }
             },
 
@@ -457,7 +458,7 @@ wm.variables.services.Variables = [
                             return;
                         }
                         parentNode[node.name] = newVal;
-                        processVariablePostBindUpdate(node.name, newVal, variable);
+                        processVariablePostBindUpdate(node.name, newVal, node.type, variable);
                     }, true);
                 } else {
                     if (WM.isDefined(node.value)) {
