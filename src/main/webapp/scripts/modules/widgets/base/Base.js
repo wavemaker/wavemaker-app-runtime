@@ -2301,8 +2301,8 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `WidgetUtilService` provides utility methods for the widgets
      */
-    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache',
-        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache) {
+    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout',
+        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout) {
             'use strict';
 
             var deviceSizeArray = {
@@ -2580,7 +2580,7 @@ WM.module('wm.widgets.base', [])
                         _model.assign(ctrlScope, iScope._model_);
                     }
                 }
-                
+
                 //Old val is used while triggering onChange event
                 $rootScope.$evalAsync(function () {
                     iScope._ngModelOldVal = iScope.datavalue;
@@ -2591,10 +2591,11 @@ WM.module('wm.widgets.base', [])
                     updateModel();
                     /* update the view value in the controller */
                     if ($event && iScope.onChange) {
-                        /* trigger the onChange fn */
-                        iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
-                        
-                        iScope._ngModelOldVal = iScope.datavalue;
+                        $timeout(function () {
+                            /* trigger the onChange fn */
+                            iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
+                            iScope._ngModelOldVal = iScope.datavalue;
+                        });
                     }
                 };
 
