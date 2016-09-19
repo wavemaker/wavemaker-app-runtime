@@ -487,6 +487,9 @@ wm.variables.services.$liveVariable = [
             },
         /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options, clonedFields) {
+                if (_.isUndefined(options.searchWithQuery)) {
+                    options.searchWithQuery = true;//Using query api instead of  search api
+                }
                 var filterFields = [],
                     filterOptions = [],
                     orderByFields,
@@ -494,7 +497,10 @@ wm.variables.services.$liveVariable = [
                     query          = '',
                     optionsQuery   = '',
                     getFieldType = function (options) {
-                        return options.type || getSqlType(variable, options.fieldName) || 'integer';
+                        if (_.includes(['timestamp', 'datetime', 'date'], options.type)) {
+                                return options.type;
+                        }
+                        return options.type || getSqlType(variable, options.fieldName);
                     },
                     getAttributeName = function (fieldName) {
                         var attrName = fieldName;
@@ -576,7 +582,7 @@ wm.variables.services.$liveVariable = [
                             filterOption  = {
                                 'attributeName'   : attributeName,
                                 'attributeValue'  : fieldValue,
-                                'attributeType'   : fieldType.toUpperCase(),
+                                'attributeType'   : _.toUpper(fieldType),
                                 'filterCondition' : filterCondition
                             };
                             if (options.searchWithQuery) {
@@ -585,13 +591,13 @@ wm.variables.services.$liveVariable = [
                             filterOptions.push(filterOption);
                         } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                             attributeName = getAttributeName(fieldName);
-                            if (fieldType !== 'string') {
+                            if (fieldType && fieldType !== 'string') {
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
                             }
                             filterOption = {
                                 'attributeName'   : attributeName,
                                 'attributeValue'  : '',
-                                'attributeType'   : fieldType.toUpperCase(),
+                                'attributeType'   : _.toUpper(fieldType),
                                 'filterCondition' : filterCondition
                             };
                             if (options.searchWithQuery) {

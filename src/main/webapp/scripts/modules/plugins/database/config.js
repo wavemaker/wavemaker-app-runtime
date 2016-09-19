@@ -588,9 +588,9 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "LESS_THAN_OR_EQUALS"    : "<=",
         "GREATER_THAN"           : ">",
         "GREATER_THAN_OR_EQUALS" : ">=",
-        "NULL"                   : "= null",
-        "EMPTY"                  : "= empty",
-        "NULL_OR_EMPTY"          : "= nullorempty"
+        "NULL"                   : "is null",
+        "EMPTY"                  : "is empty",
+        "NULL_OR_EMPTY"          : "is nullorempty"
     },
     "DATABASE_EMPTY_MATCH_MODES": ["NULL", "EMPTY", "NULL_OR_EMPTY"],
     "DATABASE_RANGE_MATCH_MODES": ["BETWEEN", "LESS_THAN", "LESS_THAN_OR_EQUALS", "GREATER_THAN", "GREATER_THAN_OR_EQUALS", "NOT_EQUALS"],
