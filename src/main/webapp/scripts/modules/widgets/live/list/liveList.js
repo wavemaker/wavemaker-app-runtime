@@ -1290,6 +1290,7 @@ WM.module('wm.widgets.live')
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
                 $is.selectedItemWidgets = $is.multiselect ? [] : {}; // Array of objects containing widget's name - widget's scope map
+                setListClass($is); //To add classes in studio mode
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
