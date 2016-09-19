@@ -74,7 +74,7 @@ WM.module('wm.widgets.base')
                 };
             }
 
-            function handleAppCustomEvent($s, isAnchor, $evt, customEvtName) {
+            function handleAppCustomEvent($s, isAnchor, $evt, customEvtName, iScope) {
                 //If dialog is in commonPage then evaluating expression on commmonPage's scope 
                 var widgetId   = customEvtName.split('.')[1],
                     $dialogEl  = WM.element('[id="wm-common-content"]').find('script[id="' + widgetId + '"]'),
@@ -86,7 +86,7 @@ WM.module('wm.widgets.base')
                 }
 
                 if ($evt) {
-                    $currentEl = WM.element($evt.currentTarget);
+                    $currentEl = WM.element(iScope.$element);
                     $listEl    = $currentEl.closest('.app-list-item').first();
                     //If widget is inside list and in/outside the form we assign $s as isolateScope of current iterator form widget
                     if ($listEl.length) {
@@ -157,7 +157,7 @@ WM.module('wm.widgets.base')
 
                                 if ((!_.includes(trimmedFnName, '(') || _.startsWith(trimmedFnName, 'Variables.') || _.startsWith(trimmedFnName, 'Widgets.')) && !_.includes(trimmedFnName, '=')) {
                                     overrideFlg = true;
-                                    return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
+                                    return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '", iScope)';
                                 }
                                 return trimmedFnName;
                             })
