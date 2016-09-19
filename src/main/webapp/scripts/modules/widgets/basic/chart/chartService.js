@@ -198,34 +198,18 @@ WM.module('wm.widgets.basic')
             //Returns labels config
             function getLabelValues(showlabels, showlabelsoutside, prop) {
                 var labelsConfig = {};
-                showlabels        = getBooleanValue(showlabels);
-                showlabelsoutside = getBooleanValue(showlabelsoutside);
-                //Getting the model value
-                if (prop === 'value') {
-                    if (typeof showlabels === 'boolean' && typeof showlabelsoutside === 'boolean') {
-                        return {
-                            'showlabels' : showlabels,
-                            'showlabelsoutside' : showlabelsoutside
-                        };
-                    }
-                    switch (showlabels) {
-                    case 'hide':
-                        labelsConfig.showlabels = false;
-                        break;
-                    case 'inside':
-                        labelsConfig.showlabels = true;
-                        labelsConfig.showlabelsoutside = false;
-                        break;
-                    case 'outside':
-                        labelsConfig.showlabels = true;
-                        labelsConfig.showlabelsoutside = true;
-                        break;
-                    }
-                    return labelsConfig;
-                }
-                //Getting the view value
-                if (prop === 'key') {
-                    labelsConfig.showlabels = showlabels ? (showlabelsoutside ? 'outside' : 'inside') : 'hide';
+                switch (showlabels) {
+                case 'hide':
+                    labelsConfig.showlabels = false;
+                    break;
+                case 'inside':
+                    labelsConfig.showlabels = true;
+                    labelsConfig.showlabelsoutside = false;
+                    break;
+                case 'outside':
+                    labelsConfig.showlabels = true;
+                    labelsConfig.showlabelsoutside = true;
+                    break;
                 }
                 return labelsConfig;
             }
