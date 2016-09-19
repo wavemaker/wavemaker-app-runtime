@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $tc.put('template/widget/richtexteditor.html',
             '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles role="input">' +
-                '<div text-angular ng-model="_model_"></div>' +
+                '<div text-angular ng-model="_model_" ta-disabled="readonly"></div>' +
                 '<div ng-bind-html="_model_" class="ta-preview" ng-if="showpreview"></div>' +
                 '<input class="model-holder ng-hide" ng-disabled="disabled">' +
             '</div>'
@@ -24,34 +24,17 @@ WM.module('wm.widgets.form')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.richtexteditor', ['wm.base']),
                 notifyFor = {
                     'placeholder': true,
-                    'showpreview': true,
-                    'readonly': true
+                    'showpreview': true
                 };
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, editorElement, btnElements, key, nv) {
+            function propertyChangeHandler($is, key, nv) {
                 switch (key) {
                 case 'placeholder':
                     $is._model_ = nv;
                     break;
                 case 'showpreview':
                     $is.showpreview = nv;
-                    break;
-                case 'readonly':
-                    if (nv === true) {
-                        /*listen on keypress, prevent default action*/
-                        editorElement.on('keypress.readOnlyEvent', function (event) {
-                            event.preventDefault();
-                        });
-                        editorElement.on('click.readOnlyEvent', function (event) {
-                            event.preventDefault();
-                            /*to enable/disable picture, link, unlink & YouTube buttons*/
-                            btnElements.attr('disabled', nv === true);
-                        });
-                    } else {
-                        /*unbind readOnlyEvent keypress action*/
-                        editorElement.off('.readOnlyEvent');
-                    }
                     break;
                 }
             }
@@ -91,11 +74,7 @@ WM.module('wm.widgets.form')
                     },
                     'post': function ($is, $el, attrs) {
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(
-                            propertyChangeHandler.bind(undefined, $is, $el.find('.ta-editor'), $el.find('.fa-picture-o, .fa-link, .fa-unlink, .fa-youtube-play, .fa-code').parent('.btn')),
-                            $is,
-                            notifyFor
-                        );
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
 
                         var hiddenInputEl = $el.children('input'),
                             ngModelCtrl;
