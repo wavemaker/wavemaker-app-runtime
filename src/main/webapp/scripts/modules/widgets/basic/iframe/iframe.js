@@ -44,6 +44,8 @@ WM.module('wm.widgets.basic')
                     }
 
                     element.children('iframe').attr('src', scope._iframesrc);
+                } else {
+                    element.children('iframe').attr('src', '');
                 }
                 break;
                 case 'width':
