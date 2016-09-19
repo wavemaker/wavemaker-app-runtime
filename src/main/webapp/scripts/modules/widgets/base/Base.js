@@ -1585,7 +1585,8 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
-                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"}
                     },
                     "wm.tabbar" : {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1643,7 +1644,8 @@ WM.module('wm.widgets.base', [])
                         "thumbnailurl": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals"},
                         "mediaurl": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals"},
                         "layout": {"type": "list", "options": ["Single-row", "Multi-row"], "value": "Single-row"},
-                        "tabindex": {"type": "number", "value": "0"}
+                        "tabindex": {"type": "number", "value": "0"},
+                        "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"}
                     },
                     "wm.livefilter": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},

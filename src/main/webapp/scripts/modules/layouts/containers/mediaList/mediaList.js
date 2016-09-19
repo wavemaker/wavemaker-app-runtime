@@ -157,7 +157,7 @@ WM.module('wm.layouts.containers')
                     $div = WM.element('<div></div>').append($tmpl);
 
                 if (attrs.dataset) {
-                    Utils.updateTmplAttrs($div, attrs.dataset);
+                    Utils.updateTmplAttrs($div, attrs.dataset, attrs.name);
                 }
                 $tmpl = applyWrapper($tmpl);
 
