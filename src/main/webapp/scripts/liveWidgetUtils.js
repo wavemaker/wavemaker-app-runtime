@@ -914,9 +914,7 @@ WM.module('wm.widgets.live')
              * @param {string} newVal new value for the key
              */
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
-                var variable,
-                    eleScope = element.scope(),
-                    template = '',
+                var template = '',
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {
                         if (CONSTANTS.isRunMode) {
@@ -934,14 +932,6 @@ WM.module('wm.widgets.live')
                 case 'dataset':
                     /*if studio-mode, then update the displayField & dataField in property panel for dataset widgets*/
                     if (scope.widgetid && isDataSetWidgets[attrs.widget] && WM.isDefined(newVal) && newVal !== null) {
-                        //Get variable and properties map only on binddataset change
-                        if (scope.oldBindDataSet !== scope.binddataset) {
-                            if (!WM.isString(newVal)) {
-                                variable = Utils.getVariableName(scope, eleScope);
-                                newVal.propertiesMap = eleScope.Variables[variable].category === 'wm.ServiceVariable' ? undefined : eleScope.Variables[variable].propertiesMap;
-                            }
-                            scope.oldBindDataSet = scope.binddataset;
-                        }
                         if (newVal === '') {
                             scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': ''});
                         }
