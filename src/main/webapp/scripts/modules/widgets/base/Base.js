@@ -2591,11 +2591,17 @@ WM.module('wm.widgets.base', [])
                     updateModel();
                     /* update the view value in the controller */
                     if ($event && iScope.onChange) {
-                        $timeout(function () {
+                        if (CONSTANTS.isRunMode) {
+                            $timeout(function () {
+                                /* trigger the onChange fn */
+                                iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
+                                iScope._ngModelOldVal = iScope.datavalue;
+                            });
+                        } else {
                             /* trigger the onChange fn */
                             iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
                             iScope._ngModelOldVal = iScope.datavalue;
-                        });
+                        }
                     }
                 };
 
