@@ -353,7 +353,7 @@ WM.module('wm.widgets.form')
                         set: function (val) {
                             var dateTime;
                             isCurrentDateTime = val === CURRENT_DATETIME;
-                            if (scope._nativeMode) {
+                            if (scope._nativeMode && attrs.type !== 'uib-picker') {
                                 if (val) {
                                     if (isCurrentDateTime) {
                                         dateTime = new Date();
