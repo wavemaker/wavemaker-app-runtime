@@ -1131,49 +1131,45 @@ wm.variables.services.$liveVariable = [
             },
          /*Function to fetch records*/
             update = function (options, success, error) {
-                $timeout(function () {
-                    var name = this.name;
-                    options = options || {};
-                    options.scope = this.activeScope;
+                var name = this.name;
+                options = options || {};
+                options.scope = this.activeScope;
 
+                if (CONSTANTS.isRunMode) {
+                    $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
+                }
+                methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
+                        $rootScope.$emit('toggle-variable-state', name, false);
                     }
-                    methods.getData(this, options, function (data, propertiesMap, pageOptions) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(success, data, propertiesMap, pageOptions);
-                    }, function (errMsg) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(error, errMsg);
-                    });
-                }.bind(this));
+                    Utils.triggerFn(success, data, propertiesMap, pageOptions);
+                }, function (errMsg) {
+                    if (CONSTANTS.isRunMode) {
+                        $rootScope.$emit('toggle-variable-state', name, false);
+                    }
+                    Utils.triggerFn(error, errMsg);
+                });
             },
             insertRecord = function (options, success, error) {
-                $timeout(function () {
-                    var name = this.name;
-                    options = options || {};
-                    options.scope = this.activeScope;
+                var name = this.name;
+                options = options || {};
+                options.scope = this.activeScope;
 
+                if (CONSTANTS.isRunMode) {
+                    $rootScope.$emit('toggle-variable-state', name, true);
+                }
+
+                methods.insertRecord(this, options, function (response) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
+                        $rootScope.$emit('toggle-variable-state', name, false);
                     }
-
-                    methods.insertRecord(this, options, function (response) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(success, response);
-                    }, function (errMsg) {
-                        if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
-                        }
-                        Utils.triggerFn(error, errMsg);
-                    });
-                }.bind(this));
+                    Utils.triggerFn(success, response);
+                }, function (errMsg) {
+                    if (CONSTANTS.isRunMode) {
+                        $rootScope.$emit('toggle-variable-state', name, false);
+                    }
+                    Utils.triggerFn(error, errMsg);
+                });
             },
         /* properties of a basic variable - should contain methods applicable on this particular object */
             methods = {
@@ -1487,52 +1483,48 @@ wm.variables.services.$liveVariable = [
                     methods.download(this, options);
                 },
                 updateRecord: function (options, success, error) {
-                    $timeout(function () {
-                        var name = this.name;
-                        options = options || {};
-                        options.scope = this.activeScope;
+                    var name = this.name;
+                    options = options || {};
+                    options.scope = this.activeScope;
 
+                    if (CONSTANTS.isRunMode) {
+                        $rootScope.$emit('toggle-variable-state', name, true);
+                    }
+
+                    methods.updateRecord(this, options, function (response) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, true);
+                            $rootScope.$emit('toggle-variable-state', name, false);
                         }
-
-                        methods.updateRecord(this, options, function (response) {
-                            if (CONSTANTS.isRunMode) {
-                                $rootScope.$emit('toggle-variable-state', name, false);
-                            }
-                            Utils.triggerFn(success, response);
-                        }, function (errMsg) {
-                            if (CONSTANTS.isRunMode) {
-                                $rootScope.$emit('toggle-variable-state', name, false);
-                            }
-                            Utils.triggerFn(error, errMsg);
-                        });
-                    }.bind(this));
+                        Utils.triggerFn(success, response);
+                    }, function (errMsg) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(error, errMsg);
+                    });
                 },
                 insertRecord: insertRecord,
                 createRecord: insertRecord,
                 deleteRecord: function (options, success, error) {
-                    $timeout(function () {
-                        var name = this.name;
-                        options = options || {};
-                        options.scope = this.activeScope;
+                    var name = this.name;
+                    options = options || {};
+                    options.scope = this.activeScope;
 
+                    if (CONSTANTS.isRunMode) {
+                        $rootScope.$emit('toggle-variable-state', name, true);
+                    }
+
+                    methods.deleteRecord(this, options, function (response) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, true);
+                            $rootScope.$emit('toggle-variable-state', name, false);
                         }
-
-                        methods.deleteRecord(this, options, function (response) {
-                            if (CONSTANTS.isRunMode) {
-                                $rootScope.$emit('toggle-variable-state', name, false);
-                            }
-                            Utils.triggerFn(success, response);
-                        }, function (errMsg) {
-                            if (CONSTANTS.isRunMode) {
-                                $rootScope.$emit('toggle-variable-state', name, false);
-                            }
-                            Utils.triggerFn(error, errMsg);
-                        });
-                    }.bind(this));
+                        Utils.triggerFn(success, response);
+                    }, function (errMsg) {
+                        if (CONSTANTS.isRunMode) {
+                            $rootScope.$emit('toggle-variable-state', name, false);
+                        }
+                        Utils.triggerFn(error, errMsg);
+                    });
                 },
                 updateRelatedData: function (options, success, error) {
                     options = options || {};
