@@ -24,6 +24,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
+
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 17/2/16
@@ -146,6 +147,21 @@ public enum Type implements Criteria {
             Criterion emptyValueCriterion = Restrictions.eq(name, "");
             Criterion nullValueCriterion = Restrictions.isNull(name);
             return Restrictions.or(emptyValueCriterion, nullValueCriterion);
+        }
+    }, IS("is") {
+        @Override
+        public Criterion criterion(String name, Object value) {
+            String castedValue = (String) value;
+            if ("null".equalsIgnoreCase(castedValue)) {
+                return NULL.criterion(name, value);
+            } else if ("notnull".equalsIgnoreCase(castedValue)) {
+                return Restrictions.not(NULL.criterion(name, value));
+            } else if ("nullorempty".equalsIgnoreCase(castedValue)) {
+                return NULL_OR_EMPTY.criterion(name, value);
+            } else if ("empty".equalsIgnoreCase(castedValue)) {
+                return EMPTY.criterion(name, value);
+            }
+            throw new RuntimeException("Value for IS operator can be either of null, notnull, nullorempty, empty" + value.getClass());
         }
     };
 
