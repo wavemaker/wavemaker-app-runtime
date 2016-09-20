@@ -188,23 +188,8 @@ WM.module('wm.widgets.form')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
-            var variable,
-                eleScope = element.scope();
             switch (key) {
             case 'dataset':
-                /*if studio-mode, then update the displayField & dataField in property panel*/
-                if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    //Get variable and properties map only on binddataset change
-                    if (scope.oldBindDataSet !== scope.binddataset) {
-                        if (!WM.isString(newVal)) {
-                            variable = Utils.getVariableName(scope, eleScope);
-                            if (eleScope.Variables[variable].category === 'wm.LiveVariable') {
-                                newVal.propertiesMap = eleScope.Variables[variable].propertiesMap;
-                            }
-                        }
-                        scope.oldBindDataSet = scope.binddataset;
-                    }
-                }
                 /*creating options for the select element, whenever the property value changes*/
                 createSelectOptions(scope.dataset, scope, element);
                 break;
