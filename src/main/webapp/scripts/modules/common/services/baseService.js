@@ -182,7 +182,7 @@ wm.modules.wmCommon.services.BaseService = [
                 var errTitle, errMsg, errorDetails = error, appManager, isLoginFailure;
                 isLoginFailure = WM.isFunction(error.headers) && error.headers('X-WM-Login-ErrorMessage');
                 /*if user is unauthorized, then show login dialog*/
-                if (error.status === 401 && !isLoginFailure) {
+                if (error.status === 401 && !isLoginFailure && !config.isDirectCall) {
                     if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {
                         /*
                          * a failed app.variables.json file doesn't need to be re-invoked always after login
