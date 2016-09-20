@@ -1466,7 +1466,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.popover": {
                         "contentsource": {"type": "list", "options": ['inline', 'partial'], value: "partial"},
-                        "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
+                        "content": {"type": "string", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
                         "inlinecontent": {"type": "string", "widget": "textarea"},
                         "hyperlink": {"type": "string", "value": "", "show": false},
                         "target": {"type": "string", "value" : "", "show": false},
@@ -1792,7 +1792,7 @@ WM.module('wm.widgets.base', [])
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.pagecontainer": {
-                        "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
+                        "content": {"type": "string", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.video": {
