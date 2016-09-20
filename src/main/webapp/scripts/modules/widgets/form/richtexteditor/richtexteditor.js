@@ -1,4 +1,4 @@
-/*global WM, Event*/
+/*global WM, Event, _, document*/
 /*Directive for richtexteditor */
 
 WM.module('wm.widgets.form')
@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $tc.put('template/widget/richtexteditor.html',
             '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles role="input">' +
-                '<div text-angular ng-model="_model_" ta-disabled="readonly"></div>' +
+                '<div text-angular ng-model="_model_" ta-disabled="readonly" placeholder="Enter text"></div>' +
                 '<div ng-bind-html="_model_" class="ta-preview" ng-if="showpreview"></div>' +
                 '<input class="model-holder ng-hide" ng-disabled="disabled">' +
             '</div>'
@@ -21,6 +21,32 @@ WM.module('wm.widgets.form')
         function (PropertiesFactory, $tc, WidgetUtilService, $injector) {
             'use strict';
 
+            // Specific to textAngular.
+            // Returns the cssRule corresponding to the placeholder
+            function getRule(el) {
+                var id = el.find('[contenteditable]').attr('id'),
+                    rule;
+
+                if (id) {
+                    WM.element(document.head)
+                        .find('style:not([id]):empty')
+                        .each(function () {
+                            var _rules = this.sheet.cssRules || this.sheet.rules;
+
+                            _.forEach(_rules, function (_rule) {
+                                if (_.includes(_rule.cssText, '#' + id)) {
+                                    rule = _rule.style;
+                                    return false;
+                                }
+                            });
+                            if (rule) {
+                                return false;
+                            }
+                        });
+                }
+                return rule || {};
+            }
+
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.richtexteditor', ['wm.base']),
                 notifyFor = {
                     'placeholder': true,
@@ -28,10 +54,17 @@ WM.module('wm.widgets.form')
                 };
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, key, nv) {
+            function propertyChangeHandler($is, $taEl, key, nv) {
                 switch (key) {
+                // placehodler for the textAngular works with the pseudo clasess (:before).
+                // To update the placeholder dynamically, get a reference to the cssRule and update the content property with the new placeholder
                 case 'placeholder':
-                    $is._model_ = nv;
+                    if (!$is._rule) {
+                        $is._rule = getRule($taEl);
+                    }
+
+                    $is._rule.content = '"' + nv + '"';
+
                     break;
                 case 'showpreview':
                     $is.showpreview = nv;
@@ -74,7 +107,11 @@ WM.module('wm.widgets.form')
                     },
                     'post': function ($is, $el, attrs) {
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(
+                            propertyChangeHandler.bind(undefined, $is, $el.children().first()),
+                            $is,
+                            notifyFor
+                        );
 
                         var hiddenInputEl = $el.children('input'),
                             ngModelCtrl;
