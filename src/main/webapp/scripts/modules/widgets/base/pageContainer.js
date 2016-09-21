@@ -178,7 +178,7 @@ WM.module('wm.widgets.base')
                     });
                 }
                 //checking if the newVale is there
-                if (newVal && newVal.trim().length) {
+                if (_.isString(newVal) && newVal.trim().length) {
                     /*load the partial on-demand*/
                     if (!loadedPartials[newVal]) {
                         //checking if it is a studio mode then remove the button element from the toolbar
