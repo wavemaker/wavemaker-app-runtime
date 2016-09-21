@@ -2610,12 +2610,12 @@ WM.module('wm.widgets.base', [])
                     /* watch the model */
 
                     iScope.$on('$destroy', ctrlScope.$watch(model, function (newVal) {
-                        if (iScope._model_ === newVal) {
+                        if (iScope.datavalue === newVal) {
                             return;
                         }
 
                         /* update the view value if the model is updated */
-                        iScope._model_ = newVal;
+                        iScope.datavalue = newVal;
 
                     }, true));
                 }

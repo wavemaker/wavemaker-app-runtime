@@ -2081,6 +2081,22 @@ WM.module('wm.utils', [])
             DialogService.open(dialogId, dialogScope);
         }
 
+        /* formats the data and returns the array of values.
+         * If object is given as param, array of object is returned.
+         * If commma separated string is given as param, array of strings is returned.
+         */
+        function convertToArray(val) {
+            if (WM.isDefined(val)) {
+                if (WM.isArray(val)) {
+                    return val;
+                }
+                if (WM.isString(val)) {
+                    return _.split(val, ',').map(function (opt) {return ('' + opt).trim(); });
+                }
+                return [val];
+            }
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2196,4 +2212,5 @@ WM.module('wm.utils', [])
         this.getTypes                   = getTypes;
         this.openDialog                 = openDialog;
         this.evalExp                    = evalExp;
+        this.convertToArray             = convertToArray;
     }]);

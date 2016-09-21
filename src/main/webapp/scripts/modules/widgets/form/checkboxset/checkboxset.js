@@ -35,21 +35,13 @@ WM.module('wm.widgets.form')
             } else if (scope.selectedvalues === '') {
                 scope._model_ = [];
             } else if (scope.selectedvalues) {
-                if (WM.isString(scope.selectedvalues)) {
-                    selectedValues = scope.selectedvalues.split(',');
-                } else if (WM.isArray(scope.selectedvalues)) {
-                    selectedValues = scope.selectedvalues;
-                }
+                selectedValues = Utils.convertToArray(scope.selectedvalues);
                 scope._model_ = [];
             } else {
                 if ((!selectedValues || selectedValues.length === 0) && !WM.isDefined(scope._model_)) {
                     scope._model_ = [];
                 } else if (WM.isDefined(scope._model_)) {
-                    if (WM.isString(scope._model_)) {
-                        scope._model_ = scope._model_.split(',');
-                    } else if (!WM.isArray(scope._model_)) {
-                        scope._model_ = [scope._model_];
-                    }
+                    scope._model_ = Utils.convertToArray(scope._model_);
                 } else {
                     scope._model_ = [];
                 }
@@ -98,6 +90,9 @@ WM.module('wm.widgets.form')
                 /*updating the selectedvalues if the model array has values*/
                 /* TODO - to remove this condition (temporary fix to support chart properties in studio mode)*/
                 if (CONSTANTS.isStudioMode) {
+                    if (_.isArray(scope._model_) && _.isObject(scope._model_[0])) {
+                        return;
+                    }
                     scope.selectedvalues = scope._model_.join(',');
                 }
 
@@ -186,7 +181,10 @@ WM.module('wm.widgets.form')
                         }
                         /*If the dataobject is present in model, return true*/
                         return (dataObject && WM.isArray(model) && model.some(function (el) {
-                            return WM.equals(dataObject, el);
+                            if (_.isObject(el)) {
+                                return WM.equals(dataObject, el);
+                            }
+                            return dataObject == el;
                         }));
                     };
 
