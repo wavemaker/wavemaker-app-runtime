@@ -100,6 +100,10 @@ WM.module('wm.widgets.form')
 
                 },
                 'post': function (scope, element, attrs) {
+                    //hide the caption property for the toggle widget
+                    if (scope.widgetid) {
+                        widgetProps.caption.show = (scope.type !== 'toggle');
+                    }
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
