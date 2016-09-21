@@ -416,6 +416,7 @@ WM.module('wm.widgets.basic')
                         };
                     });
                     requestParams.filterFields = inputFields;
+                    requestParams.logicalOp = 'OR';
                     requestParams.searchWithQuery = true; // search results using the query api
                     break;
                 case 'wm.ServiceVariable':

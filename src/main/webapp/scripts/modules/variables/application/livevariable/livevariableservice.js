@@ -614,7 +614,7 @@ wm.variables.services.$liveVariable = [
                     //Generate query for variable filter fields. This has AND logical operator
                     query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ');
                     //Generate query for option filter fields. This has default logical operator as OR
-                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'OR') + ' ');
+                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ');
                     if (optionsQuery) {
                         //If both variable and option query are present, merge them with AND
                         query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
