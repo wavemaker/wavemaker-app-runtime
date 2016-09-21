@@ -480,10 +480,7 @@ WM.module('wm.widgets.base')
                         temp;
 
                     if (isSelect && attrs.multiple) {
-                        // convert the comma separated list into array and update _model_
-                        if (_.isString(val)) {
-                            modifiedVal = val.split(',').map(function (opt) {return ('' + opt).trim(); });
-                        }
+                        modifiedVal = Utils.convertToArray(val);
                     } else if (isNumberType) {
                         temp = +val; // convert the value to number and update the scope property
                         if (isNaN(temp)) {

@@ -63,7 +63,19 @@ WM.module('wm.widgets.form')
                 if (scope.datafield !== ALLFIELDS) {
                     scope.modelProxy = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
                 } else if (_dataSetModelMap[scope.$id]) {  /* check for sanity */
-                    scope.modelProxy = _dataSetModelMap[scope.$id][WM.toJson(_model_)];
+                    //For multiple select with data field as All Fields, set model as array of objects
+                    if (scope.multiple && WM.isArray(_model_)) {
+                        if (!WM.isDefined(scope.modelProxy)) {
+                            scope.modelProxy = [];
+                        } else if (WM.isArray(scope.modelProxy)) {
+                            scope.modelProxy.length = 0;
+                        }
+                        _.forEach(_model_, function (modelObj) {
+                            scope.modelProxy.push(_dataSetModelMap[scope.$id][WM.toJson(modelObj)]);
+                        });
+                    } else {
+                        scope.modelProxy = _dataSetModelMap[scope.$id][WM.toJson(_model_)];
+                    }
                 }
             }
             /* reset the value */
@@ -195,6 +207,9 @@ WM.module('wm.widgets.form')
                 break;
             case 'multiple':
                 attrs.$set('multiple', newVal);
+                if (scope.widgetid) {
+                    scope.widgetProps.datavalue.isList = newVal;
+                }
                 break;
             case 'active':
                 /*listening on 'active' property, as losing the properties during page switch*/
