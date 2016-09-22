@@ -1,7 +1,11 @@
 /*global WM, _*/
 WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', function (DeviceVariableService, $cordovaCalendar) {
     "use strict";
-    var modelMeta = { // setting the type of fields
+    var getDefaultTime   = new Date().getTime(),
+        DELTAVALUE_DATE  = (3 * 30 * 24 * 60 * 60 * 1000), //3 months timestamp value
+        defaultStartDate = new Date(getDefaultTime - DELTAVALUE_DATE), // 3 months previous date
+        defaultEndDate   = new Date(getDefaultTime + DELTAVALUE_DATE),   // 3 months later date
+        modelMeta = { // setting the type of fields
             'title' : {
                 fieldName: 'title',
                 type     : 'string',
@@ -86,8 +90,8 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                         title    : variable.eventTitle,
                         location : variable.eventLocation,
                         notes    : variable.eventNotes,
-                        startDate: variable.eventStart,
-                        endDate  : variable.eventEnd
+                        startDate: variable.eventStart || defaultStartDate,
+                        endDate  : variable.eventEnd || defaultEndDate
                     };
                     $cordovaCalendar.findEvent(listEventOptions).then(success, error);
                 },
