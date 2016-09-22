@@ -1,10 +1,8 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 import org.hibernate.Criteria;
@@ -30,15 +28,15 @@ public class QueryParser {
     private static String COMMA = ",";
     private static String DOT = ".";
 
-    public QueryParser() {}
-
-    public Criterion parse(String query, Class<?> entityClass, Criteria criteria) {
-        HashMap<String, Types> fieldNameVsTypeMap = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass.getName());
-        return parse(query, fieldNameVsTypeMap, criteria);
+    public QueryParser() {
     }
 
-    public Criterion parse(String query, Map<String, Types> fieldNameVsTypeMap, Criteria criteria) {
+    public Criterion parse(String query, Class<?> entityClass, Criteria criteria) {
+        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass);
+        return parse(query, typeInformation, criteria);
+    }
 
+    public Criterion parse(String query, TypeInformation typeInformation, Criteria criteria) {
         Stack<Criterion> criterionStack = new Stack<>();
         Stack<String> joinOperatorStack = new Stack<>();
         RegExStringTokenizer stringTokenizer = new RegExStringTokenizer(query, QUERY_DELIMITER);
@@ -69,7 +67,16 @@ public class QueryParser {
                         CriteriaUtils.criteriaForRelatedProperty(criteria, token, null);
                     }
                     if (type != null) {
-                        Types types = fieldNameVsTypeMap.get(token);
+                        // token is variable name here
+                        if (!typeInformation.getFieldVsTypeMap().containsKey(token) && typeInformation.hasSimpleId()
+                                && QueryParserConstants.ID.equals(token)) {
+                            // overriding field name to primary key, if no field exists with given name in entity class.
+                            token = typeInformation.getFirstIdField();
+                        } else {
+                            throw new WMRuntimeException("Invalid field name [" + token + "] in the query");
+                        }
+
+                        Types types = typeInformation.getFieldVsTypeMap().get(token);
                         if (Type.IN == type || Type.BETWEEN == type) {
                             Collection value = formatOperandAsCollection(stringTokenizer, types);
                             criterionStack.push(type.criterion(token, value));
