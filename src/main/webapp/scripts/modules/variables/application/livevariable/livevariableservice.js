@@ -472,12 +472,12 @@ wm.variables.services.$liveVariable = [
                         if (isValArray) {
                             param = param + ' (';
                             _.forEach(value, function (val) {
-                                param = param + ' ' + '\'' + val + '\'' + ' ,';
+                                param = param + ' ' + '\'' + encodeURIComponent(val) + '\'' + ' ,';
                             });
                             param = param.slice(0, -2);
                             param = param + ' )';
                         } else {
-                            param = param + ' ' + '\'' + value + '\'';
+                            param = param + ' ' + '\'' + encodeURIComponent(value) + '\'';
                         }
                     }
                     params.push(param);
