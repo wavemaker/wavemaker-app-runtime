@@ -251,9 +251,10 @@ WM.module('wm.widgets.live')
                         }
                     }
                     requestData = {
-                        "row": data,
-                        "transform": true,
-                        "multipartData": $scope.multipartData
+                        'row'              : data,
+                        'transform'        : true,
+                        'multipartData'    : $scope.multipartData,
+                        'skipNotification' : true
                     };
                     /*Pass in the prefab scope if the liveForm is present in a prefab, as the bound variable is available in the prefab scope only*/
                     if (elScope.prefabname) {

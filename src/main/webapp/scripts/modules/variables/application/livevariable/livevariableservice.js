@@ -1122,7 +1122,9 @@ wm.variables.services.$liveVariable = [
 
                         $timeout(function () {
                             // EVENT: ON_ERROR
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                            if (!options.skipNotification) {
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                            }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);

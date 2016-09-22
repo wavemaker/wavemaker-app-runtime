@@ -1202,9 +1202,10 @@ WM.module('wm.widgets.grid')
                                 return;
                             }
                             variable.deleteRecord({
-                                'row'       : row,
-                                'transform' : true,
-                                'scope'     : $scope.gridElement.scope()
+                                'row'              : row,
+                                'transform'        : true,
+                                'scope'            : $scope.gridElement.scope(),
+                                'skipNotification' : true
                             }, successHandler, function (error) {
                                 Utils.triggerFn(callBack, undefined, true);
                                 Utils.triggerFn(cancelRowDeleteCallback);
@@ -1245,10 +1246,11 @@ WM.module('wm.widgets.grid')
                 insertRecord = function (options) {
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
                         dataObject = {
-                            'row'           : options.row,
-                            'transform'     : true,
-                            'scope'         : $scope.gridElement.scope(),
-                            'multipartData' : options.multipartData
+                            'row'              : options.row,
+                            'transform'        : true,
+                            'scope'            : $scope.gridElement.scope(),
+                            'multipartData'    : options.multipartData,
+                            'skipNotification' : true
                         },
                         isStaticVariable,
                         successHandler = function (response) {
@@ -1295,11 +1297,12 @@ WM.module('wm.widgets.grid')
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName],
                         isStaticVariable,
                         dataObject = {
-                            'row'           : options.row,
-                            'prevData'      : options.prevData,
-                            'multipartData' : options.multipartData,
-                            'transform'     : true,
-                            'scope'         : $scope.gridElement.scope()
+                            'row'              : options.row,
+                            'prevData'         : options.prevData,
+                            'multipartData'    : options.multipartData,
+                            'transform'        : true,
+                            'scope'            : $scope.gridElement.scope(),
+                            'skipNotification' : true
                         },
                         successHandler = function (response) {
                             /*Display appropriate error message in case of error.*/
