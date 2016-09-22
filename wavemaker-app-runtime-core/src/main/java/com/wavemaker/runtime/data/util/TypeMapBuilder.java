@@ -1,11 +1,12 @@
 package com.wavemaker.runtime.data.util;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.beans.PropertyDescriptor;
+import java.util.*;
+
+import javax.persistence.Id;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.wavemaker.runtime.data.Types;
 
@@ -16,18 +17,24 @@ import com.wavemaker.runtime.data.Types;
 public class TypeMapBuilder {
 
 
-    public static HashMap<String, Types> buildFieldNameVsTypeMap(String className) {
-        return _buildFieldNameVsTypeMap(className, "", true);
+    public static TypeInformation buildFieldNameVsTypeMap(Class<?> clazz) {
+        return _buildFieldNameVsTypeMap(clazz, "", true);
     }
 
 
-    public static HashMap<String, Types> _buildFieldNameVsTypeMap(String entityName, String fieldPrefix, boolean loopOnce) {
+    public static TypeInformation _buildFieldNameVsTypeMap(Class<?> clazz, String fieldPrefix, boolean loopOnce) {
         try {
-            Class entity = Class.forName(entityName);
-            HashMap<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
-            for (Field field : entity.getDeclaredFields()) {
-                Class fieldType = field.getType();
-                String fieldName = field.getName();
+            Map<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
+            List<String> idFields = new ArrayList<>();
+            PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
+            for (PropertyDescriptor descriptor : descriptors) {
+                Class fieldType = descriptor.getPropertyType();
+                String fieldName = descriptor.getName();
+
+                if (descriptor.getReadMethod().isAnnotationPresent(Id.class)) {
+                    idFields.add(fieldName);
+                }
+
                 if (Collection.class != fieldType) {
                     String typeClassName = fieldType.getName();
                     Types types = Types.valueFor(typeClassName);
@@ -37,11 +44,11 @@ public class TypeMapBuilder {
                         }
                         fieldNameVsTypeMap.put(fieldName, types);
                     } else if (loopOnce) {
-                        fieldNameVsTypeMap.putAll(_buildFieldNameVsTypeMap(typeClassName, fieldName, false));
+                        fieldNameVsTypeMap.putAll(_buildFieldNameVsTypeMap(fieldType, fieldName, false).getFieldVsTypeMap());
                     }
                 }
             }
-            return fieldNameVsTypeMap;
+            return new TypeInformation(clazz.getName(), idFields, fieldNameVsTypeMap);
         } catch (Exception e) {
             throw new RuntimeException("error while mapping fieldNames with typeNames", e);
         }
