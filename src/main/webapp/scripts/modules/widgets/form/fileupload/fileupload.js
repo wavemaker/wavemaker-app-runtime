@@ -204,14 +204,15 @@ WM.module('wm.widgets.form')
             FILESIZE_MB = 1048576;
 
         /* this function returns the uploadUrl */
-        function constructUrl(uploadUriPrefix, service, operation, destination) {
+        function getUrlAndParamName(uploadUriPrefix, service, operation, destination) {
             var uploadUrl = '/file/uploadFile',
                 variableObject,
                 variableFilterData = {
                     'service'   : service,
                     'operation' : operation,
                     'category'  : 'wm.ServiceVariable'
-                };
+                },
+                name;
             uploadUriPrefix = uploadUriPrefix || '';
             destination     = destination ? '?relativePath=' + destination : '';
             /*fetching the variable object with service, operation*/
@@ -219,7 +220,8 @@ WM.module('wm.widgets.form')
             if (variableObject) {
                 uploadUrl = variableObject._wmServiceOperationInfo.relativePath;
             }
-            return uploadUriPrefix + uploadUrl + destination;
+            name = _.find(variableObject._wmServiceOperationInfo.parameters, {'type' : 'file'}).name || 'files';
+            return {'uploadUrl' : uploadUriPrefix + uploadUrl + destination, 'fileParamName' : name};
         }
 
         function getAllServices(onSuccess) {
@@ -359,8 +361,8 @@ WM.module('wm.widgets.form')
 
         /* this function uploads the validfiles */
         function uploadFiles($files, scope, uploadOptions) {
-            var uploadUrl = constructUrl(scope.uploadUrl, scope.service, scope.operation, scope.destination);
-            scope.fileTransfers = FileUploadService.upload($files, uploadUrl, uploadOptions);
+            var config = getUrlAndParamName(scope.uploadUrl, scope.service, scope.operation, scope.destination);
+            scope.fileTransfers = FileUploadService.upload($files, config, uploadOptions);
             scope.uploadedFiles = [];
             _.map(scope.fileTransfers, function (ft) {
                 ft.then(onUploadSuccess.bind(undefined, scope),
