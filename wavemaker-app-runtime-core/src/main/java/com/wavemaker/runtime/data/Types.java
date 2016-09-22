@@ -7,16 +7,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.joda.time.LocalDateTime;
 
+import com.wavemaker.runtime.data.util.QueryParserConstants;
 import com.wavemaker.studio.common.WMRuntimeException;
 import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
 import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
@@ -138,7 +133,11 @@ public enum Types {
 
         @Override
         public Object toJavaType(String value) {
-            return value.charAt(0);
+            Object castedValue = value;
+            if (isNotBlankType(value)) {
+                castedValue = value.charAt(0);
+            }
+            return castedValue;
         }
 
         @Override
@@ -176,20 +175,22 @@ public enum Types {
 
         @Override
         public Object toJavaType(String value) {
-            Object castedValue = null;
-            List<SimpleDateFormat> formats = new LinkedList<>();
-//        TODO add other formats
-            formats.add(new SimpleDateFormat("yyyy-MM-dd"));
-            formats.add(new SimpleDateFormat("HH:mm:ss"));
-            for (SimpleDateFormat format : formats) {
-                try {
-                    castedValue = format.parse(value);
-                } catch (ParseException ex) {
+            Object castedValue = value;
+            if (isNotBlankType(value)) {
+                List<SimpleDateFormat> formats = new LinkedList<>();
+                //        TODO add other formats
+                formats.add(new SimpleDateFormat("yyyy-MM-dd"));
+                formats.add(new SimpleDateFormat("HH:mm:ss"));
+                for (SimpleDateFormat format : formats) {
+                    try {
+                        castedValue = format.parse(value);
+                    } catch (ParseException ex) {
 //                do nothing
+                    }
                 }
-            }
-            if (castedValue == null) {
-                castedValue = new Date(Long.parseLong(value));
+                if (castedValue == null) {
+                    castedValue = new Date(Long.parseLong(value));
+                }
             }
             return castedValue;
         }
@@ -208,7 +209,11 @@ public enum Types {
 
         @Override
         public Object toJavaType(String value) {
-            return LocalDateTime.parse(value);
+            Object castedValue = value;
+            if (isNotBlankType(value)) {
+                castedValue = LocalDateTime.parse(value);
+            }
+            return castedValue;
         }
 
         @Override
@@ -260,18 +265,24 @@ public enum Types {
 
 
     public Object toJavaType(String value) {
-        Object castedValue;
-        try {
-            Class<?> typeClass = getJavaClass();
-            Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
-            castedValue = cons.newInstance(value);
-            return castedValue;
-        } catch (Exception e) {
-            throw new WMRuntimeException("Exception while casting the operand", e);
+        Object castedValue = value;
+        if (isNotBlankType(value)) {
+            try {
+                Class<?> typeClass = getJavaClass();
+                Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
+                castedValue = cons.newInstance(value);
+            } catch (Exception e) {
+                throw new WMRuntimeException("Exception while casting the operand", e);
+            }
         }
+        return castedValue;
     }
 
-    class ImageExpression extends AbstractSimpleExpression<InputStream> {
+    private static boolean isNotBlankType(String value) {
+        return !QueryParserConstants.NULL.equals(value) && !QueryParserConstants.NOTNULL.equals(value) && !QueryParserConstants.EMPTY.equals(value) && !QueryParserConstants.NULL_OR_EMPTY.equals(value);
+    }
+
+    private class ImageExpression extends AbstractSimpleExpression<InputStream> {
         private static final long serialVersionUID = 1L;
 
         private String fieldName;

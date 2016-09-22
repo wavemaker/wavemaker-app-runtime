@@ -24,6 +24,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
+import com.wavemaker.runtime.data.util.QueryParserConstants;
+
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -152,13 +154,13 @@ public enum Type implements Criteria {
         @Override
         public Criterion criterion(String name, Object value) {
             String castedValue = (String) value;
-            if ("null".equalsIgnoreCase(castedValue)) {
+            if (QueryParserConstants.NULL.equalsIgnoreCase(castedValue)) {
                 return NULL.criterion(name, value);
-            } else if ("notnull".equalsIgnoreCase(castedValue)) {
+            } else if (QueryParserConstants.NOTNULL.equalsIgnoreCase(castedValue)) {
                 return Restrictions.not(NULL.criterion(name, value));
-            } else if ("nullorempty".equalsIgnoreCase(castedValue)) {
+            } else if (QueryParserConstants.NULL_OR_EMPTY.equalsIgnoreCase(castedValue)) {
                 return NULL_OR_EMPTY.criterion(name, value);
-            } else if ("empty".equalsIgnoreCase(castedValue)) {
+            } else if (QueryParserConstants.EMPTY.equalsIgnoreCase(castedValue)) {
                 return EMPTY.criterion(name, value);
             }
             throw new RuntimeException("Value for IS operator can be either of null, notnull, nullorempty, empty" + value.getClass());
