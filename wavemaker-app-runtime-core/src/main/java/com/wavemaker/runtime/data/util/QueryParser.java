@@ -67,16 +67,17 @@ public class QueryParser {
                         CriteriaUtils.criteriaForRelatedProperty(criteria, token, null);
                     }
                     if (type != null) {
+                        Types types = typeInformation.getFieldVsTypeMap().get(token);
                         // token is variable name here
-                        if (!typeInformation.getFieldVsTypeMap().containsKey(token) && typeInformation.hasSimpleId()
-                                && QueryParserConstants.ID.equals(token)) {
-                            // overriding field name to primary key, if no field exists with given name in entity class.
-                            token = typeInformation.getFirstIdField();
-                        } else {
-                            throw new WMRuntimeException("Invalid field name [" + token + "] in the query");
+                        if (types == null) {
+                            if (QueryParserConstants.ID.equals(token) && typeInformation.hasSimpleId()) {
+                                //overriding field name to primary key, if no field exists with given name in entity class.
+                                types = typeInformation.getFieldVsTypeMap().get(typeInformation.getFirstIdField());
+                            } else {
+                                throw new WMRuntimeException("Invalid field name [" + token + "] in the query");
+                            }
                         }
 
-                        Types types = typeInformation.getFieldVsTypeMap().get(token);
                         if (Type.IN == type || Type.BETWEEN == type) {
                             Collection value = formatOperandAsCollection(stringTokenizer, types);
                             criterionStack.push(type.criterion(token, value));
