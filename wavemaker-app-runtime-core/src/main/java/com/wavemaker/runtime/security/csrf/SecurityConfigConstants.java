@@ -6,5 +6,4 @@ package com.wavemaker.runtime.security.csrf;
 public class SecurityConfigConstants {
 
     public static final String WM_CSRF_TOKEN_COOKIE = "wm_xsrf_token";
-    public static final String XSS_POLICY_FILE = "wm-xss-policies.xml";
 }
