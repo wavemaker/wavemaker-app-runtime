@@ -7,7 +7,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -181,6 +187,7 @@ public enum Types {
                 //        TODO add other formats
                 formats.add(new SimpleDateFormat("yyyy-MM-dd"));
                 formats.add(new SimpleDateFormat("HH:mm:ss"));
+                formats.add(new TimestampFormat());
                 for (SimpleDateFormat format : formats) {
                     try {
                         castedValue = format.parse(value);
@@ -279,7 +286,9 @@ public enum Types {
     }
 
     private static boolean isNotBlankType(String value) {
-        return !QueryParserConstants.NULL.equals(value) && !QueryParserConstants.NOTNULL.equals(value) && !QueryParserConstants.EMPTY.equals(value) && !QueryParserConstants.NULL_OR_EMPTY.equals(value);
+        return !QueryParserConstants.NULL.equals(value) && !QueryParserConstants.NOTNULL
+                .equals(value) && !QueryParserConstants.EMPTY.equals(value) && !QueryParserConstants.NULL_OR_EMPTY
+                .equals(value);
     }
 
     private class ImageExpression extends AbstractSimpleExpression<InputStream> {
@@ -325,6 +334,18 @@ public enum Types {
         public String evaluate(ReportParameters reportParameters) {
             Date date = reportParameters.getValue(fieldName);
             return date.toString();
+        }
+    }
+
+    private static class TimestampFormat extends SimpleDateFormat {
+
+        @Override
+        public Date parse(final String source) throws ParseException {
+            try {
+                return new Date(Long.valueOf(source));
+            } catch (NumberFormatException e) {
+                throw new ParseException("Cannot convert to Date from given timestamp:" + source, 0);
+            }
         }
     }
 }
