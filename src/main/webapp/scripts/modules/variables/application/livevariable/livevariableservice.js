@@ -102,12 +102,13 @@ wm.variables.services.$liveVariable = [
                 }
                 var blobCols = _.map(_.filter(variable.propertiesMap.columns, {'type': 'blob'}), 'fieldName'),
                     href = '',
-                    primaryKeys;
+                    primaryKeys,
+                    deployedUrl = _.trim($rootScope.project.deployedUrl);
                 if (_.isEmpty(blobCols)) {
                     return;
                 }
                 if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
-                    href += $rootScope.project.deployedUrl;
+                    href += _.endsWith(deployedUrl, '/') ? deployedUrl : deployedUrl + '/';
                 }
                 href        += ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
                 primaryKeys = variable.propertiesMap.primaryFields || variable.propertiesMap.primaryKeys;
