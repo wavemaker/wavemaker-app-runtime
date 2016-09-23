@@ -218,7 +218,7 @@ WM.module('wm.widgets.form')
                             data = {};
                             if (dataField !== ALLFIELDS) {
                                 _.forEach(dataSet, function (option) {
-                                    data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = option[dataField];
+                                    data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = _.get(option, dataField);
                                 });
                             } else {
                                 _.forEach(dataSet, function (option) {
