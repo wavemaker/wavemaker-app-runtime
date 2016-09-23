@@ -237,8 +237,12 @@ WM.module('wm.widgets.basic')
                     if (isServiceVariable($is, element.scope())) {
                         updatePropertyOptions($is); //update searchkey options in case of service variables
                     }
-                    //Selecting first option by default for displayValue
-                    $rs.$emit('set-markup-attr', $is.widgetid, {'displaylabel': _.get($is.widgetProps, ['displaylabel', 'options', 1])});
+                    //Selecting first option by default for displayValue if it is undefined
+                    if(!$is.displaylabel && !$is.binddisplaylabel) {
+                        var defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
+                        $is.displaylabel = defaultLabel;
+                        $rs.$emit('set-markup-attr', $is.widgetid, {'displaylabel': defaultLabel});
+                    }
                 }
 
                 if (CONSTANTS.isRunMode) {
