@@ -405,21 +405,14 @@ WM.module('wm.utils', [])
 
         /*function to prepare column definition objects from the data provided*/
         function prepareFieldDefs(data, options) {
-            var defaultDefs = false,
-                dataObject,
+            var dataObject,
                 columnDef = {
                     'objects' : [],
                     'terminals' : []
-                },
-                defaultData = [
-                    {'column1': '', 'column2': '', 'column3': '', 'column4': '', 'column5': ''}
-                ];
+                };
             /*if no data provided, initialize default column definitions*/
-            if (!data || data.length === 0) {
-                data = defaultData;
-                defaultDefs = true;
-            } else if (_.isEqual(data, defaultData)) {
-                defaultDefs = true;
+            if (!data) {
+                data = [];
             }
             if (!options) {
                 options = {};

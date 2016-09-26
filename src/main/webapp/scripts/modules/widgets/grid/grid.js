@@ -420,6 +420,9 @@ WM.module('wm.widgets.grid')
                                 $compile(markup)(scope);
                                 /*TODO: Check if grid options can be passed.*/
                                 /*Invoke the function to render the operation columns.*/
+                                if (markup === '') {
+                                    scope.setGridData([], true);
+                                }
                                 scope.renderOperationColumns();
                                 scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                             }
@@ -808,10 +811,10 @@ WM.module('wm.widgets.grid')
                     }
                     return filteredData;
                 },
-                setGridData = function (serverData) {
+                setGridData = function (serverData, forceSet) {
                     var data = serverData;
                     /*If serverData has data but is undefined, then return*/
-                    if (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap)) {
+                    if (!forceSet && (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap))) {
                         if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
                             $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                             return;
@@ -1359,6 +1362,7 @@ WM.module('wm.widgets.grid')
                         Utils.triggerFn(callBack);
                     }, undefined, false);
                 };
+            $scope.setGridData = setGridData.bind(undefined);
             $scope.rowFilter = {};
             $scope.updateMarkupForGrid = function (config) {
                 if ($scope.widgetid) {
