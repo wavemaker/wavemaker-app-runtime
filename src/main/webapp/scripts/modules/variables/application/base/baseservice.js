@@ -1311,7 +1311,9 @@ wm.variables.services.Variables = [
                     errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
                     if (errorVariable) {
                         response = errorVariable.getMessage() || response;
-                        $rootScope.$emit("invoke-service", VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION, {scope: callBackScope, message: response});
+                        $rootScope.$evalAsync(function () {
+                            $rootScope.$emit("invoke-service", VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION, {scope: callBackScope, message: response});
+                        });
                     }
                 }
                 return retVal;
