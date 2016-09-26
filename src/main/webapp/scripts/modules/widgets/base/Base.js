@@ -303,7 +303,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-default" , "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.rating": {
@@ -1015,7 +1015,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["navbar-inverse", "navbar-header", "navbar-right", "navbar-left", "navbar-fixed-top", "navbar-fixed-bottom", "navbar-static-top"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["navbar-inverse"]}
                     },
                     'wm.layouts.mobile.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1174,7 +1174,7 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["card", "well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["card", "well", "bg-primary", "bg-success", "bg-info", "bg-warning", "bg-danger"]}
                     },
                     'wm.layouts.footer': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1431,6 +1431,7 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value" : "wi wi-file-upload", "pattern": classRegex},
                         "filelistheight": {"type": "string", "pattern": dimensionRegex, "show": false},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["bg-primary", "bg-success", "bg-info", "bg-warning", "bg-danger"]},
 
                         /* ---- events ---- */
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
