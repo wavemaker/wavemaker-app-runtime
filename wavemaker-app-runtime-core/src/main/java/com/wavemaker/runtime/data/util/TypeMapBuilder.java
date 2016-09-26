@@ -17,12 +17,12 @@ import com.wavemaker.runtime.data.Types;
 public class TypeMapBuilder {
 
 
-    public static TypeInformation buildFieldNameVsTypeMap(Class<?> clazz) {
-        return _buildFieldNameVsTypeMap(clazz, "", true);
+    public static TypeInformation buildFieldNameVsTypeMap(Class<?> clazz, boolean addEntityFields) {
+        return _buildFieldNameVsTypeMap(clazz, "", true, addEntityFields);
     }
 
 
-    public static TypeInformation _buildFieldNameVsTypeMap(Class<?> clazz, String fieldPrefix, boolean loopOnce) {
+    public static TypeInformation _buildFieldNameVsTypeMap(Class<?> clazz, String fieldPrefix, boolean loopOnce, boolean addEntityFields) {
         try {
             Map<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
             List<String> idFields = new ArrayList<>();
@@ -35,16 +35,19 @@ public class TypeMapBuilder {
                     idFields.add(fieldName);
                 }
 
-                if (Collection.class != fieldType) {
+                if (Collection.class != fieldType && !StringUtils.equalsIgnoreCase("class", descriptor.getName())) {
                     String typeClassName = fieldType.getName();
-                    Types types = Types.valueFor(typeClassName);
-                    if (types != null) {
+                    Types type = Types.valueFor(typeClassName);
+                    if (type != null) {
                         if (StringUtils.isNotBlank(fieldPrefix)) {
                             fieldName = fieldPrefix + "." + fieldName;
                         }
-                        fieldNameVsTypeMap.put(fieldName, types);
+                        fieldNameVsTypeMap.put(fieldName, type);
                     } else if (loopOnce) {
-                        fieldNameVsTypeMap.putAll(_buildFieldNameVsTypeMap(fieldType, fieldName, false).getFieldVsTypeMap());
+                        if (addEntityFields) {
+                            fieldNameVsTypeMap.put(fieldName, Types.OBJECT);
+                        }
+                        fieldNameVsTypeMap.putAll(_buildFieldNameVsTypeMap(fieldType, fieldName, false, addEntityFields).getFieldVsTypeMap());
                     }
                 }
             }
