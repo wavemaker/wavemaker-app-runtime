@@ -32,7 +32,7 @@ public class QueryParser {
     }
 
     public Criterion parse(String query, Class<?> entityClass, Criteria criteria) {
-        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass);
+        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass, true);
         return parse(query, typeInformation, criteria);
     }
 

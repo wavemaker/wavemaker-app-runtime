@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.export;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,9 @@ public class ReportGenerator {
     public JasperReportBuilder generateReport() {
         JasperReportBuilder reportBuilder = new JasperReportBuilder();
 
-        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass);
+        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass, false);
         Map<String, Types> fieldNameVsTypeMap = typeInformation.getFieldVsTypeMap();
-        reportBuilder.setDataSource(constructDataSource(typeInformation));
+        reportBuilder.setDataSource(constructDataSource());
         List<String> fieldNames = new ArrayList<>(fieldNameVsTypeMap.keySet());
 
         for (String fieldName : fieldNames) {
@@ -53,7 +54,8 @@ public class ReportGenerator {
         return reportBuilder;
     }
 
-    private List constructDataSource(TypeInformation typeInformation) {
+    private List constructDataSource() {
+        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass, true);
         Criteria criteria = session.createCriteria(entityClass);
         QueryParser queryParser = new QueryParser();
         String query = exportOptions.getQuery();
