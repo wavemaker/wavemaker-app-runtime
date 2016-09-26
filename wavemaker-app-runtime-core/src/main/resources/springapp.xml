@@ -106,4 +106,6 @@
 
     <bean id="httpsConnection" class="com.wavemaker.studio.common.util.InitializeHttpsURLConnection" lazy-init="false"/>
 
+    <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
+
 </beans>
