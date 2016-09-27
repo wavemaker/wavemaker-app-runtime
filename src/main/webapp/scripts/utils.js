@@ -825,7 +825,13 @@ WM.module('wm.utils', [])
                 }
             });
             _.forEach(relatedColumnsArr, function (val) {
-                _.forEach(val.columns, function (col) {
+                //If a related column doesn't have further columns in it the adding the current column and returning
+                if (_.isEmpty(val.columns)) {
+                    var relColumnName = namePrefix ? namePrefix + '.' + val.relatedColumnName : val.relatedColumnName;
+                    terminals[relColumnName] = getPropertyNode(val);
+                    return;
+                }
+                 _.forEach(val.columns, function (col) {
                     if (val.isRelated) {
                         if (col.isPrimaryKey) {
                             col.isRelatedPk = 'true';
