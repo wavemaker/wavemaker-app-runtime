@@ -1154,3 +1154,25 @@ WM.module('wm.widgets.base')
         });
     }
 }());
+//prevents the event propagation to document when clicked on a day button.
+//needed to prevent the popover close when clicked on element which is appended to body but part of popover content
+(function(){
+    if ($.__isStudioMode) {
+        return;
+    }
+    var module = WM.module('wm.widgets.base');
+    function directiveFn () {
+        return {
+            'restrict': 'A',
+            'link'    : function($s, $el) {
+                $el.on('click', function (event) {
+                    event.stopPropagation();
+                });
+            }
+        }
+    }
+    //perform the operation on the uib datepicker, search typeahead and time picker
+    module.directive('uibDatepickerPopupWrap', directiveFn)
+        .directive('uibTimepicker', directiveFn)
+        .directive('uibTypeaheadPopup', directiveFn);
+}());
