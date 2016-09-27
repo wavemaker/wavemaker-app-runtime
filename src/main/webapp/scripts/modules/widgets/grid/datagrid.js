@@ -2199,6 +2199,10 @@ $.widget('wm.datagrid', {
             this.options.onDataRender();
         }
         if (this.options.selectFirstRow) {
+            if (this.options.multiselect) {
+                //Set selectFirstRow to false, to prevent first item being selected in next page
+                this.options.selectFirstRow = false;
+            }
             this.selectFirstRow(true);
         }
     },
