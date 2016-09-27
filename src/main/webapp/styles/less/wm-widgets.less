@@ -1120,6 +1120,18 @@ body.modal-open {
   position: relative;
   margin: 0 0 @app-standard-margin 0;
   background-color: @app-fileupload-dropbox-color;
+  &[disabled="disabled"] {
+    .app-multi-file-upload, .app-single-file-upload {
+      .caption, .form-horizontal .file-input, .drop-box {
+        cursor: not-allowed;
+      }
+      .app-button-wrapper {
+        .app-button {
+          opacity: 0.65;
+        }
+      }
+    }
+  }
 /**single file upload classes**/
   .app-single-file-upload, .app-multi-file-upload {
     position: relative;
@@ -2795,6 +2807,14 @@ If the height and width are not specified the video takes the height of the post
 .app-date {
   .uib-datepicker-popup.dropdown-menu {
     z-index: 2000;
+  }
+  &[disabled="disabled"] {
+    > .input-group-btn {
+      .btn-date {
+        opacity:  0.65;
+        cursor: not-allowed;
+      }
+    }
   }
 }
 
