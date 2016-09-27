@@ -656,7 +656,7 @@ WM.module('wm.widgets.live')
                 };
                 $scope.changeDataObject = function (dataObj) {
                     var primaryKey;
-                    if (!$scope.formFields || $scope.widgetid) {
+                    if (!$scope.formFields || $scope.widgetid || !dataObj) {
                         return;
                     }
                     $scope.formFields.forEach(function (formField) {
@@ -909,7 +909,11 @@ WM.module('wm.widgets.live')
                                 break;
                             case "formdata":
                                 if (newVal && WM.isObject(newVal)) {
-                                    scope.changeDataObject(newVal);
+                                    if (_.isArray(newVal)) {
+                                        scope.changeDataObject(_.last(newVal));
+                                    } else {
+                                        scope.changeDataObject(newVal);
+                                    }
                                 }
                                 break;
                             case "updatemode":

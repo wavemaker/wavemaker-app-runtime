@@ -89,6 +89,20 @@ WM.module('wm.widgets.live')
                     'PAGER'    : 'Pager'
                 };
 
+            //Based on the given item, find the index of the list item
+            function getItemIndex(listItems, item) {
+                var matchIndex;
+                listItems.each(function (index) {
+                    var $li = WM.element(this),
+                        liScope = $li.scope();
+                    if (_.isEqual(liScope.item, item)) {
+                        matchIndex = index;
+                        return false;
+                    }
+                });
+                return matchIndex;
+            }
+
             function getVariable($is, variableName) {
 
                 if (!variableName) {
@@ -528,6 +542,10 @@ WM.module('wm.widgets.live')
 
                 // In run mode, making the first element selected, if flag is set
                 if ($is.selectfirstitem) {
+                    if ($is.multiselect) {
+                        //Set selectFirstRow to false, to prevent first item being selected in next page
+                        $is.selectfirstitem = false;
+                    }
                     unbindWatcher = $is.$watch(function () {
                         var items = $el.find('.list-group li.app-list-item:first');
                         if (items.length) {
@@ -544,6 +562,17 @@ WM.module('wm.widgets.live')
                         }
                     });
                 }
+                $timeout(function () {
+                    //Set the list item class to active, If list item is present in selected items
+                    _.forEach($is._items, function (item) {
+                        var listItems = $el.find('.list-group li.app-list-item'),
+                            itemIndex = getItemIndex(listItems, item),
+                            $li       = WM.element(listItems[itemIndex]);
+                        if (itemIndex !== -1) {
+                            $li.addClass('active');
+                        }
+                    });
+                });
             }
 
             function onDataChange($is, $el, nv, attrs, listCtrl) {
@@ -551,7 +580,7 @@ WM.module('wm.widgets.live')
                     var boundVariableName = Utils.getVariableName($is),
                         variable = getVariable($is, boundVariableName),
                         category = variable && variable.category;
-                    
+
                     //Clone data if variable type is not static
                     nv = category === 'wm.Variable' ? nv : Utils.getClonedObject(nv);
                     $is.noDataFound = false;
@@ -746,7 +775,7 @@ WM.module('wm.widgets.live')
             /* In case of run mode, the field-definitions will be generated from the markup
              * Define the property change handler. This function will be triggered when there is a change in the widget property
              */
-            function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
+            function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv) {
                 var doNotRemoveTemplate,
                     selectedVariable,
                     eleScope    = $el.scope(),
@@ -888,16 +917,6 @@ WM.module('wm.widgets.live')
 
                 return $liScope;
             }
-
-            /*Function to get data of all active elements*/
-            function getSelectedItems($el, items) {
-                items.length = 0;
-                $el.find('li.app-list-item.active').each(function () {
-                    var liScope = WM.element(this).scope();
-                    items.push(liScope.item);
-                });
-                return items;
-            }
             // Triggers event to update or delete list item
             function triggerWMEvent($is, evt, name) {
                 var $li = WM.element(evt.target).parents('li.app-list-item');
@@ -981,81 +1000,100 @@ WM.module('wm.widgets.live')
                 var pressStartTimeStamp = 0,
                     $hammerEl   = new Hammer($el[0], {}),
                     selectCount = 0;// Setting to true on first long press
+                function setItems($li) {
+                    var _item = $li.scope().item;
+                    if ($li.hasClass('active')) {
+                        $is._items.push(_item);
+                    } else {
+                        $is._items = _.pullAllWith($is._items, [_item], _.isEqual);
+                    }
+                }
+                function clearItems() {
+                    $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
+                    $is._items.length = 0;
+                }
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el[0].addEventListener('click', function (evt) {
-                        // returning if click event is triggered within 50ms after pressup event occurred
-                        if (pressStartTimeStamp + 50 > Date.now()) {
-                            return;
-                        }
-                        var $li      = WM.element(evt.target).closest('li.app-list-item'),
-                            $liScope = $li && $li.scope(),
-                            isActive = $li.hasClass('active'),
-                            first,
-                            last,
-                            $liItems;
+                    // returning if click event is triggered within 50ms after pressup event occurred
+                    if (pressStartTimeStamp + 50 > Date.now()) {
+                        return;
+                    }
+                    var $li      = WM.element(evt.target).closest('li.app-list-item'),
+                        $liScope = $li && $li.scope(),
+                        isActive = $li.hasClass('active'),
+                        first,
+                        last,
+                        $liItems;
 
-                        $is.firstSelectedItem = $is.firstSelectedItem || $li;
-                        // Setting selectCount value based number of items selected.
-                        selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
-                        if ($liScope) {
-                            if ($is.multiselect && $rs.isMobileApplicationType) {
-                                if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
-                                    $li.toggleClass('active');
-                                } else {
-                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
-                                }
-                            } else if ((evt.ctrlKey || evt.metaKey) && $is.multiselect) {
-                                if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
-                                    $is.lastSelectedItem = $is.firstSelectedItem = $li;
-                                    $li.toggleClass('active');
-                                } else {
-                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
-                                }
-                            } else if (evt.shiftKey && $is.multiselect) {
-                                $liItems = $el.find('li.app-list-item');
-                                first    = $liItems.index($li);
-                                last     = $liItems.index($is.firstSelectedItem);
-
-                                // if first is greater than last, then swap values
-                                if (first > last) {
-                                    last = [first, first = last][0];
-                                }
-                                if (checkSelectionLimit($is, last - first)) {
-                                    $el.find('li.app-list-item.active').removeClass('active');
-                                    _.forEach($liItems, function (element, index) {
-                                        if (index >= first && index <= last) {
-                                            WM.element($liItems[index]).addClass('active');
-                                        }
-                                    });
-                                    $is.lastSelectedItem = $li;
-                                } else {
-                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
-                                }
+                    $is.firstSelectedItem = $is.firstSelectedItem || $li;
+                    // Setting selectCount value based number of items selected.
+                    selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
+                    if ($liScope) {
+                        if ($is.multiselect && $rs.isMobileApplicationType) {
+                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
+                                $li.toggleClass('active');
+                                setItems($li);
                             } else {
-                                if (!isActive || selectCount > 1) {
-                                    $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
-                                    $li.addClass('active');
-                                    $is.lastSelectedItem = $is.firstSelectedItem = $li;
-                                }
-                                // trigger $apply, as 'click' or 'tap' is out of angular-scope
-                                if (attrs.onClick) {
-                                    Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
-                                }
-                                if (attrs.onTap) {
-                                    Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
-                                }
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        } else if ((evt.ctrlKey || evt.metaKey) && $is.multiselect) {
+                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
+                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
+                                $li.toggleClass('active');
+                                setItems($li);
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        } else if (evt.shiftKey && $is.multiselect) {
+                            $liItems = $el.find('li.app-list-item');
+                            first    = $liItems.index($li);
+                            last     = $liItems.index($is.firstSelectedItem);
+
+                            // if first is greater than last, then swap values
+                            if (first > last) {
+                                last = [first, first = last][0];
+                            }
+                            if (checkSelectionLimit($is, last - first)) {
+                                clearItems();
+                                _.forEach($liItems, function (element, index) {
+                                    var $currentLi;
+                                    if (index >= first && index <= last) {
+                                        $currentLi = WM.element($liItems[index]);
+                                        $currentLi.addClass('active');
+                                        setItems($currentLi);
+                                    }
+                                });
+                                $is.lastSelectedItem = $li;
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        } else {
+                            if (!isActive || selectCount > 1) {
+                                clearItems();
+                                $li.addClass('active');
+                                setItems($li);
+                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
+                            }
+                            // trigger $apply, as 'click' or 'tap' is out of angular-scope
+                            if (attrs.onClick) {
+                                Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                            }
+                            if (attrs.onTap) {
+                                Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
                             }
                         }
+                    }
 
-                        updateSelectedItemsWidgets($is, $el);
-                        $rs.$safeApply($is);
-                    }, true);
+                    updateSelectedItemsWidgets($is, $el);
+                    $rs.$safeApply($is);
+                }, true);
 
                 $el.on('keydown', 'li.app-list-item', function (evt) {
                     var $liItems,
                         presentIndex,
                         firstIndex,
-                        keyPressed;
+                        keyPressed,
+                        $currentLi;
 
                     function setIndexValues() {
                         $liItems     = $el.find('li.app-list-item');
@@ -1070,25 +1108,35 @@ WM.module('wm.widgets.live')
                             setIndexValues();
                             if (presentIndex > 0) {
                                 if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit($is, selectCount)) {
-                                    $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]).toggleClass('active');
+                                    $currentLi = $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
+                                    $currentLi.toggleClass('active');
+                                    setItems($currentLi);
                                 } else if (presentIndex > firstIndex) {
-                                    WM.element($liItems[presentIndex]).toggleClass('active');
+                                    $currentLi = WM.element($liItems[presentIndex]);
+                                    $currentLi.toggleClass('active');
+                                    setItems($currentLi);
                                     $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
                                 } else {
                                     Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                                 }
+                                $rs.$safeApply($is);
                             }
                         } else if (keyPressed === 'SHIFT+RIGHT' || keyPressed === 'SHIFT+DOWN') {
                             setIndexValues();
                             if (presentIndex < $liItems.length - 1) {
                                 if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit($is, selectCount)) {
-                                    $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]).toggleClass('active');
+                                    $currentLi = $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
+                                    $currentLi.toggleClass('active');
+                                    setItems($currentLi);
                                 } else if (presentIndex < firstIndex) {
-                                    WM.element($liItems[presentIndex]).toggleClass('active');
+                                    $currentLi = WM.element($liItems[presentIndex]);
+                                    $currentLi.toggleClass('active');
+                                    setItems($currentLi);
                                     $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
                                 } else {
                                     Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                                 }
+                                $rs.$safeApply($is);
                             }
                         }
                     }
@@ -1132,6 +1180,7 @@ WM.module('wm.widgets.live')
                         var $li = WM.element(evt.target).closest('li.app-list-item');
                         $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         $li.addClass('active'); // adding active class to current selectedItem
+                        setItems($li);
                         $rs.$safeApply($is);
                         pressStartTimeStamp = Date.now();//Recording pressup event's timestamp
                     }
@@ -1199,18 +1248,17 @@ WM.module('wm.widgets.live')
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
             }
 
-            function defineSelectedItemProp($is, $el, items) {
+            function defineSelectedItemProp($is, $el) {
                 Object.defineProperty($is, 'selecteditem', {
                     'configurable': true,
                     'get': function () {
-                        //update the items with out changing the reference.
-                        items = getSelectedItems($el, items);
-                        if (items && items.length === 1) {
-                            return items[0];
+                        if ($is._items && $is._items.length === 1) {
+                            return $is._items[0];
                         }
-                        return items;
+                        return $is._items;
                     },
                     'set': function (items) {
+                        $is._items.length = 0;
                         $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         if (_.isArray(items)) {
                             _.forEach(items, function (item) {
@@ -1222,27 +1270,20 @@ WM.module('wm.widgets.live')
                     }
                 });
             }
-            //Based on the given item, find the index of the list item
-            function getItemIndex(listItems, item) {
-                var matchIndex;
-                listItems.each(function (index) {
-                    var $li = WM.element(this),
-                        liScope = $li.scope();
-                    if (_.isEqual(liScope.item, item)) {
-                        matchIndex = index;
-                        return false;
-                    }
-                });
-                return matchIndex;
-            }
             // Select or delselect the live list item
-            function toggleSelectedItem($el, item, isSelect) {
+            function toggleSelectedItem($is, $el, item, isSelect) {
+                if (!WM.isDefined(item)) {
+                    return;
+                }
                 var listItems = $el.find('.list-group li.app-list-item'),
                     itemIndex = WM.isNumber(item) ? item : getItemIndex(listItems, item),
-                    $li = WM.element(listItems[itemIndex]);
+                    $li       = WM.element(listItems[itemIndex]),
+                    _item     = $li.scope().item;
                 if (isSelect) {
+                    $is._items.push(_item);
                     $li.addClass('active');
                 } else {
+                    $is._items = _.pullAllWith($is._items, [_item], _.isEqual);
                     $li.removeClass('active');
                 }
             }
@@ -1286,6 +1327,7 @@ WM.module('wm.widgets.live')
 
                 variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
+                $is._items = [];
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
                 $is.selectedItemWidgets = $is.multiselect ? [] : {}; // Array of objects containing widget's name - widget's scope map
@@ -1358,14 +1400,14 @@ WM.module('wm.widgets.live')
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
 
-                defineSelectedItemProp($is, $el, []);
+                defineSelectedItemProp($is, $el);
                 // Select the given item
                 $is.selectItem = function (item) {
-                    toggleSelectedItem($el, item, true);
+                    toggleSelectedItem($is, $el, item, true);
                 };
                 // deselect the given item
                 $is.deselectItem = function (item) {
-                    toggleSelectedItem($el, item, false);
+                    toggleSelectedItem($is, $el, item, false);
                 };
                 //Empty the livelist content on clear
                 $is.clear = function () {
