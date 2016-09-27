@@ -1074,15 +1074,17 @@ WM.module('wm.widgets.live')
                                 setItems($li);
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                             }
-                            // trigger $apply, as 'click' or 'tap' is out of angular-scope
-                            if (attrs.onClick) {
-                                Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
-                            }
-                            if (attrs.onTap) {
-                                Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
-                            }
+                        }
+
+                        // trigger $apply, as 'click' or 'tap' is out of angular-scope
+                        if (attrs.onClick) {
+                            Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                        }
+                        if (attrs.onTap) {
+                            Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
                         }
                     }
+
 
                     updateSelectedItemsWidgets($is, $el);
                     $rs.$safeApply($is);
