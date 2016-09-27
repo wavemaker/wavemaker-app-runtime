@@ -1653,12 +1653,13 @@ If the height and width are not specified the video takes the height of the post
       padding-right: 0;
       height: 100%;
       .form-control {
-        height: inherit !important;
+        height: auto;
         border: none;
         box-shadow: none;
         padding: 0 2px;
         font-size: inherit !important;
         background-color: transparent;
+        line-height: inherit;
       }
     }
     & > li.totalcount.basiccount > a {
@@ -1667,9 +1668,19 @@ If the height and width are not specified the video takes the height of the post
   }
   ul.pager {
     display: inline-block;
+    &.pager-sm {
+      zoom: 80%;
+    }
   }
   ul.pagination {
     &.basic {
+      &.pagination-sm {
+        .pagination-prev, .pagination-next, .pagination-first, .pagination-last {
+          a:before {
+            font-size: 11pt;
+          }
+        }
+      }
       > li {
         > a {
           color: inherit;
@@ -2946,7 +2957,7 @@ If the height and width are not specified the video takes the height of the post
   .pagination-sm {
     li {
       a {
-        padding-top: 6px !important;
+        padding-top: 6px;
       }
     }
   }

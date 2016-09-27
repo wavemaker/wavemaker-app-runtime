@@ -6,7 +6,7 @@ WM.module("wm.widgets.basic")
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" init-widget apply-styles>' +
-                '<ul class="pagination advanced {{class}}" ng-if="navcontrols === \'Classic\'">' +
+                '<ul class="pagination advanced {{navigationClass}}" ng-if="navcontrols === \'Classic\'">' +
                     '<li ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
                     '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
                     '<li class="pagecount disabled"><a><input title="Current Page" type="number" ng-disabled="isDisableCurrent" ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" ng-change="onModelChange($event)" class="form-control" /></a></li>' +
@@ -15,11 +15,11 @@ WM.module("wm.widgets.basic")
                     '<li ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" ng-click="navigatePage(\'last\', $event)"><i class="wi wi-last-page"></i></a></li>' +
                     '<li ng-if="showrecordcount" class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li>' +
                 '</ul>' +
-                '<ul class="pager" ng-if="navcontrols === \'Pager\'">' +
+                '<ul class="pager {{navigationClass}}" ng-if="navcontrols === \'Pager\'">' +
                     '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span> Previous</a></li>' +
                     '<li class="next" ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
                 '</ul>' +
-                '<ul uib-pagination class="basic" ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
+                '<ul uib-pagination class="basic pagination {{navigationClass}}" ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
                         ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="." next-text="." first-text="." last-text="."></ul>' +
                 '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
             '</nav>'
@@ -30,8 +30,31 @@ WM.module("wm.widgets.basic")
             notifyFor = {
                 'dataset'        : true,
                 'navigation'     : true,
-                'navigationalign': true
+                'navigationalign': true,
+                'navigationsize' : true
+            },
+            sizeClasses = {
+                'Pager': {
+                    'small': 'pager-sm',
+                    'large': 'pager-lg'
+                },
+                'Basic': {
+                    'small': 'pagination-sm',
+                    'large': 'pagination-lg'
+                },
+                'Classic': {
+                    'small': 'pagination-sm',
+                    'large': 'pagination-lg'
+                }
             };
+
+        // Update navigationClass based on navigation and navigationSize props
+        function updateNavSize(scope) {
+            var sizeCls = sizeClasses[scope.navigation];
+            if (sizeCls && scope.navigationsize) {
+                scope.navigationClass = sizeCls[scope.navigationsize];
+            }
+        }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
@@ -52,6 +75,8 @@ WM.module("wm.widgets.basic")
                     return;
                 }
 
+                updateNavSize(scope);
+
                 if (scope.widgetid) {
                     scope.widgetProps.showrecordcount.show = (newVal !== 'Pager');
                 }
@@ -60,6 +85,9 @@ WM.module("wm.widgets.basic")
                 break;
             case 'navigationalign':
                 element.removeClass('text-' + oldVal).addClass('text-' + newVal);
+                break;
+            case 'navigationsize':
+                updateNavSize(scope);
                 break;
             }
         }
