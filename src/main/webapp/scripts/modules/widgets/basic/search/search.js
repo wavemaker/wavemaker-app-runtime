@@ -335,7 +335,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 // if query is empty string, then datavalue will be empty.
-                if (inputVal === '') {
+                if (inputVal === ''  && $is.datavalue) {
                     $is.datavalue = '';
                     $is.onSubmit({$event: event, $scope: $is});
                 }
