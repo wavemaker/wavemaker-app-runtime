@@ -75,11 +75,11 @@ WM.module('wm.widgets.form')
                 scope.onClick({$event: evt, $scope: scope});
             }
         }
-        function _onTimeClick(scope, evt) {
+        function _onTimeClick(scope, element, evt) {
             evt.stopPropagation();
             var timeOpen = scope.isOpen;
             $timeout(function () {
-                WM.element(document).trigger('click');
+                element.parent().trigger('click');
                 scope.isOpen = !timeOpen;
             });
         }
@@ -193,7 +193,7 @@ WM.module('wm.widgets.form')
                     }
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     scope._onClick = _onClick.bind(undefined, scope);
-                    scope._onTimeClick = _onTimeClick.bind(undefined, scope);
+                    scope._onTimeClick = _onTimeClick.bind(undefined, scope, element);
 
                     /*update the model for device time*/
                     scope.updateModel = function () {

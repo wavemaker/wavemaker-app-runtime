@@ -125,22 +125,22 @@ WM.module('wm.widgets.form')
         }
 
         /*On click of date icon button, open the date picker popup*/
-        function _onDateClick(scope, evt) {
+        function _onDateClick(scope, element, evt) {
             evt.stopPropagation();
             var dateOpen = scope.isDateOpen;
             $timeout(function () {
-                WM.element(document).trigger('click');
+                element.parent().trigger('click');
                 scope.isDateOpen = !dateOpen;
                 scope.isTimeOpen = false;
             });
         }
 
         /*On click of time icon button, open the time picker popup*/
-        function _onTimeClick(scope, evt) {
+        function _onTimeClick(scope, element, evt) {
             evt.stopPropagation();
             var TimeOpen = scope.isTimeOpen;
             $timeout(function () {
-                WM.element(document).trigger('click');
+                element.parent().trigger('click');
                 scope.isTimeOpen = !TimeOpen;
                 scope.isDateOpen = false;
             });
@@ -269,8 +269,8 @@ WM.module('wm.widgets.form')
 
                     scope.formatDateTime = _formatDateTime.bind(undefined, scope);
                     scope._onClick = _onClick.bind(undefined, scope);
-                    scope._onDateClick = _onDateClick.bind(undefined, scope);
-                    scope._onTimeClick = _onTimeClick.bind(undefined, scope);
+                    scope._onDateClick = _onDateClick.bind(undefined, scope, element);
+                    scope._onTimeClick = _onTimeClick.bind(undefined, scope, element);
 
                     /*
                      * Backward compatibility for ismeridian property which is deprecated.
