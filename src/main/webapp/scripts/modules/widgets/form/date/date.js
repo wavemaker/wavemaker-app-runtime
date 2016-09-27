@@ -29,7 +29,7 @@ WM.module('wm.widgets.form')
             ' ng-readonly="readonly" ' +
             ' ng-required="required" ' +
             ' ng-disabled="disabled" ' +
-            ' ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
+            ' ng-change="updateModel();_onChange({$event: $event, $scope: this});" ng-model-options="{ updateOn: \'change\' }"> '
             );
     }])
     .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', '$timeout', 'CONSTANTS', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS) {

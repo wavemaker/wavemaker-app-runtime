@@ -123,6 +123,15 @@ WM.module('wm.widgets.form')
              * @param {object} dataSet data set of the widget
              */
             function createDataKeys(scope, dataSet) {
+
+                // using orderedKeys as dataKeys
+                function getKeys() {
+                    if (scope.orderedKeys.length) {
+                        return scope.orderedKeys;
+                    }
+                    return Object.keys(scope.dataObject);
+                }
+
                 /*if dataSet is an array, process it to create the keys for the radioset.*/
                 if (WM.isArray(dataSet)) {
                     /*if array values are objects*/
@@ -132,7 +141,7 @@ WM.module('wm.widgets.form')
                             scope.dataObject[data.name] = data.dataValue;
                         });
                         /*getting the dataKeys for creating the option texts*/
-                        scope.dataKeys = Object.keys(scope.dataObject);
+                        scope.dataKeys = getKeys();
                     } else {
                         scope.dataObject = dataSet;
                         /*getting the dataKeys for creating the option texts*/
@@ -145,7 +154,7 @@ WM.module('wm.widgets.form')
                 } else if (WM.isObject(dataSet)) {
                     scope.dataObject = dataSet;
                     /*getting the dataKeys for creating the option texts*/
-                    scope.dataKeys = Object.keys(scope.dataObject);
+                    scope.dataKeys = getKeys();
                 }
                 updatedCheckedValues(scope);
             }
@@ -196,6 +205,7 @@ WM.module('wm.widgets.form')
                     dataField = scope.datafield,
                     useKeys = scope.usekeys,
                     objectKeys = [],
+                    orderedKeys = [],
                     displayField = getDisplayField(dataSet, scope.displayfield);
 
                 scope.widgetProps.displayfield.value = displayField;
@@ -216,15 +226,12 @@ WM.module('wm.widgets.form')
                         /*if filter dataSet if datafield is select other than 'All Fields'*/
                         if (dataField) {
                             data = {};
-                            if (dataField !== ALLFIELDS) {
-                                _.forEach(dataSet, function (option) {
-                                    data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = _.get(option, dataField);
-                                });
-                            } else {
-                                _.forEach(dataSet, function (option) {
-                                    data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = option;
-                                });
-                            }
+
+                            _.forEach(dataSet, function (option) {
+                                var key = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
+                                data[key] = dataField === ALLFIELDS ? option : _.get(option, dataField);
+                                orderedKeys.push(key);
+                            });
                         }
                     }
                 } else if (WM.isObject(dataSet)) {
@@ -237,6 +244,7 @@ WM.module('wm.widgets.form')
                         data[key] = key;
                     });
                 }
+                scope.orderedKeys = orderedKeys;
                 return data;
             }
 
@@ -541,10 +549,24 @@ WM.module('wm.widgets.form')
              * @param {string} previousValue previous model value
              */
             function getUpdatedModel(minDate, maxDate, modelValue, proxyModelValue, previousValue) {
+                var dateFormat = 'YYYY-MM-DD',
+                    startDate,
+                    endDate,
+                    selectedDate;
+
+                function getFormatedDate(val) {
+                    return moment(val).format(dateFormat);
+                }
+                function getTimeStamp(val) {
+                    return moment(val).valueOf();
+                }
+
                 if (minDate || maxDate) {
-                    var startDate = Date.parse($filter('date')(minDate, 'yyyy-MM-dd')),
-                        endDate = Date.parse($filter('date')(maxDate, 'yyyy-MM-dd')),
-                        selectedDate = Date.parse(new Date(modelValue).toLocaleDateString());
+                    minDate      = getFormatedDate(minDate);
+                    maxDate      = getFormatedDate(maxDate);
+                    startDate    = getTimeStamp(minDate);
+                    endDate      = getTimeStamp(maxDate);
+                    selectedDate = getTimeStamp(getFormatedDate(modelValue));
                     if (startDate <= selectedDate && selectedDate <= endDate) {
                         return proxyModelValue;
                     }
