@@ -1698,8 +1698,13 @@ wm.variables.services.Variables = [
              * @methodOf wm.variables.$Variables
              * @description
              * Gets all the variables in studio along with data inside the dataSet
+             * @param {string} pages of which variables are required.
              */
-            'getStudioCopy': function () {
+            'getStudioCopy': function (pages) {
+                if (pages && pages.length) {
+                    pages = pages || _.keys(pageScopeMap);
+                    return _.pick(self.studioCopy, pages);
+                }
                 return self.studioCopy;
             },
 
