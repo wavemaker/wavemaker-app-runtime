@@ -76,7 +76,7 @@ WM.module('wm.widgets.basic')
          * @constructor
          */
         function ParentEventListener(parent, child, link) {
-            var processEvent = false,
+            var processEvent = true,
                 objectId = 'parenteventlistener' + new Date().getTime();
             function getEventName(event) {
                 return event + '.' + objectId;
@@ -86,19 +86,13 @@ WM.module('wm.widgets.basic')
                 var eventName = getEventName(event);
                 child.off(eventName).on(eventName, function (event) {
                     processEvent = false;
-                    event.stopPropagation();
                 });
                 $timeout(function () {
                     parent.off(eventName).on(eventName, function (event) {
-                        if (link[0].contains(event.target)) {
-                            if (processEvent) {
-                                Utils.triggerFn(callBack, event);
-                            } else {
-                                processEvent = true;
-                            }
-                        } else {
+                        if (processEvent) {
                             Utils.triggerFn(callBack, event);
                         }
+                        processEvent = true;
                     });
                 });
 
