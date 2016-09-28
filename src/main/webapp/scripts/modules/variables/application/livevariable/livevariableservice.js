@@ -458,8 +458,9 @@ wm.variables.services.$liveVariable = [
                         filterCondition = fieldValue.filterCondition,
                         matchMode       = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition],
                         isValArray      = _.isArray(value);
-                    //If values is NaN and number type, do not generate query for this field
-                    if (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType)) {
+                    // If value is an empty array, do not generate the query
+                    // If values is NaN and number type, do not generate query for this field
+                    if ((isValArray && _.isEmpty(value)) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
                         return;
                     }
                     if (isValArray) {
@@ -494,11 +495,11 @@ wm.variables.services.$liveVariable = [
                     filterOptions = [],
                     orderByFields,
                     orderByOptions,
-                    query          = '',
-                    optionsQuery   = '',
+                    query,
+                    optionsQuery,
                     getFieldType = function (options) {
                         if (_.includes(['timestamp', 'datetime', 'date'], options.type)) {
-                                return options.type;
+                            return options.type;
                         }
                         return options.type || getSqlType(variable, options.fieldName);
                     },
@@ -610,7 +611,7 @@ wm.variables.services.$liveVariable = [
                 /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
                  should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
                  */
-                if (options.searchWithQuery) {
+                if (options.searchWithQuery && filterOptions.length) {
                     //Generate query for variable filter fields. This has AND logical operator
                     query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ');
                     //Generate query for option filter fields. This has default logical operator as OR
@@ -689,7 +690,7 @@ wm.variables.services.$liveVariable = [
 
                 tableOptions = prepareTableOptions(variable, options, _.isObject(output) ? output : clonedFields);
                 // if tableOptions object has query then set the dbOperation to 'searchTableDataWithQuery'
-                if (tableOptions.query) {
+                if (WM.isDefined(tableOptions.query)) {
                     dbOperation = 'searchTableDataWithQuery';
                 } else {
                     dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
