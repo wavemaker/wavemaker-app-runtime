@@ -87,6 +87,9 @@ wm.variables.services.$servicevariable = ['Variables',
                          * skipping as it is resulting in endless recursive loop for DataServices
                          */
                         if (modelTypes[field.type] && modelTypes[field.type].fields) {
+                            if (variable.serviceType === 'DataService' && _.get(modelTypes[type].fields, [fieldName, 'isList'])) {
+                                return;
+                            }
                             parentNode[fieldName] = field.isList ? [{}] : {};
                             prepareServiceModel(field.type, field.isList ? parentNode[fieldName][0] : parentNode[fieldName], '', variable, typeChain);
                         } else {
