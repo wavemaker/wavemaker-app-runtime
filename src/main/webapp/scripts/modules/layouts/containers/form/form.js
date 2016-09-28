@@ -272,7 +272,9 @@ WM.module('wm.layouts.containers')
                     //If its a service variable call setInput and assign form data and invoke the service
                     if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                         formVariable.setInput(formData);
-                        formVariable.update({}, function (data) {
+                        formVariable.update({
+                            'skipNotification': true
+                        }, function (data) {
                             toggleMessage(scope, scope.postmessage, 'success');
                             onResult(scope, data, 'success', event);
                         }, function (errMsg) {
