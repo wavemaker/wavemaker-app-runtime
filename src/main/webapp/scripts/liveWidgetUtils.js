@@ -465,7 +465,7 @@ WM.module('wm.widgets.live')
             function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
                 var template = '',
                     widgetName = 'wm-' + widgetType,
-                    updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"',
+                    updateModeCondition = isCustomWidget ? '' : (widgetType === 'richtexteditor' ? 'show = "bind:isUpdateMode"' : 'show="{{isUpdateMode}}"'),
                     allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '',
                     readonly = (widgetType !== 'richtexteditor' || fieldDef.readonly ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : '');
                 additionalFields = additionalFields || '';
