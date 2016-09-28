@@ -123,9 +123,11 @@ wm.variables.services.$servicevariable = ['Variables',
             },
 
             /* function to process error response from a service */
-            processErrorResponse = function (errMsg, variable, callBackScope, error) {
+            processErrorResponse = function (errMsg, variable, callBackScope, error, skipNotification) {
                 // EVENT: ON_ERROR
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, errMsg);
+                if (!skipNotification) {
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, errMsg);
+                }
 
                 /* trigger error callback */
                 Utils.triggerFn(error, errMsg);
@@ -147,7 +149,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 /* if RestService check statusCode for error, else check 'error' field in response */
                 if (response && response.error) {
-                    processErrorResponse(response, variable, callBackScope, error);
+                    processErrorResponse(response, variable, callBackScope, error, options.skipNotification);
                     return;
                 }
 
@@ -459,7 +461,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         params = constructRestRequestParams(methodInfo, variable);
                     }
                     if (params.error && params.error.message) {
-                        processErrorResponse(params.error.message, variable, callBackScope, error);
+                        processErrorResponse(params.error.message, variable, callBackScope, error, options.skipNotification);
                         return;
                     }
                 } else if (serviceType === SERVICE_TYPE_REST) {
@@ -511,7 +513,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
                     variable.promise = WebService.invokeJavaService(params, function (response, details) {
                         if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
-                            processErrorResponse('Possible CORS Failure, try disabling Same-Origin Policy on the browser.', variable, callBackScope, error);
+                            processErrorResponse('Possible CORS Failure, try disabling Same-Origin Policy on the browser.', variable, callBackScope, error, options.skipNotification);
                         } else {
                             processSuccessResponse(response, variable, callBackScope, options, success, error);
                         }
@@ -519,20 +521,20 @@ wm.variables.services.$servicevariable = ['Variables',
                         if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
                             errorMsg = 'Possible CORS Failure, try disabling Same-Origin Policy on the browser.';
                         }
-                        processErrorResponse(errorMsg, variable, callBackScope, error);
+                        processErrorResponse(errorMsg, variable, callBackScope, error, options.skipNotification);
                     });
                 } else if (serviceType === SERVICE_TYPE_REST) {
                     variable.promise = WebService.invokeRestService(params, function (response) {
                         processSuccessResponse(response, variable, callBackScope, options, success, error);
                     }, function (errorMsg) {
-                        processErrorResponse(errorMsg, variable, callBackScope, error);
+                        processErrorResponse(errorMsg, variable, callBackScope, error, options.skipNotification);
                     });
                 } else {
                     /* invoke the service */
                     variable.promise = WebService.invoke(params, function (response) {
                         processSuccessResponse(response, variable, callBackScope, options, success, error);
                     }, function (errMsg) {
-                        processErrorResponse(errMsg, variable, callBackScope, error);
+                        processErrorResponse(errMsg, variable, callBackScope, error, options.skipNotification);
                     });
                 }
             },
