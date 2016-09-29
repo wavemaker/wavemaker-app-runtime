@@ -1,4 +1,4 @@
-/*global $, window, angular, moment, WM, _, FormData, document, parseInt, Blob, navigator*/
+/*global $, window, angular, moment, WM, _, document, parseInt, navigator*/
 /*jslint todo: true*/
 /**
  * JQuery Datagrid widget.
@@ -1342,9 +1342,6 @@ $.widget('wm.datagrid', {
             isNewRow,
             $editableElements,
             isDataChanged = false,
-            formData,
-            isFormDataSupported,
-            multipartData,
             isValid,
             $requiredEls,
             advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
@@ -1450,12 +1447,6 @@ $.widget('wm.datagrid', {
                     }
                     return;
                 }
-                isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob);
-                multipartData = false;
-                if (isFormDataSupported) {
-                    /* Angular does not bind file values so using native object to send files */
-                    formData = new FormData();
-                }
                 if (isNewRow) {
                     isDataChanged = true;
                 } else {
@@ -1470,11 +1461,7 @@ $.widget('wm.datagrid', {
                             text;
                         text = self.getTextValue($el, colDef, fields);
                         if (fields.length === 1 && colDef.editWidgetType === 'upload') {
-                            if (isFormDataSupported) {
-                                multipartData = true;
-                                formData.append(colDef.field, document.forms[$el.attr('form-name')][colDef.field].files[0]);
-                                _.set(rowData, colDef.field, _.get(rowData, colDef.field) === null ? null : '');
-                            }
+                            _.set(rowData, colDef.field, _.get(document.forms, [$el.attr('form-name'), colDef.field, 'files', 0]));
                         } else {
                             text = ((fields.length === 1 || isNewRow) && text === '') ? undefined : text; //Set empty values as undefined
                             if (WM.isDefined(text)) {
@@ -1496,14 +1483,8 @@ $.widget('wm.datagrid', {
                             }
                         }
                     });
-                    if (multipartData) {
-                        formData.append('wm_data_json', new Blob([JSON.stringify(rowData)], {
-                            type: 'application/json'
-                        }));
-                        rowData = formData;
-                    }
                     if (isNewRow) {
-                        if (advancedEdit && !multipartData && _.isEmpty(rowData)) {
+                        if (advancedEdit && _.isEmpty(rowData)) {
                             self.removeNewRow($row);
                             if ($.isFunction(options.success)) {
                                 options.success(false, undefined, true);
@@ -1516,7 +1497,7 @@ $.widget('wm.datagrid', {
                                 return;
                             }
                         }
-                        this.options.onRowInsert(rowData, e, multipartData, options.success);
+                        this.options.onRowInsert(rowData, e, options.success);
                     } else {
                         if ($.isFunction(this.options.onBeforeRowUpdate)) {
                             isValid = this.options.onBeforeRowUpdate(rowData, e);
@@ -1524,7 +1505,7 @@ $.widget('wm.datagrid', {
                                 return;
                             }
                         }
-                        this.options.afterRowUpdate(rowData, e, multipartData, options.success);
+                        this.options.afterRowUpdate(rowData, e, options.success);
                     }
                 } else {
                     this.cancelEdit($row);

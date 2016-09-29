@@ -1270,7 +1270,6 @@ WM.module('wm.widgets.grid')
                             'row'              : options.row,
                             'transform'        : true,
                             'scope'            : $scope.gridElement.scope(),
-                            'multipartData'    : options.multipartData,
                             'skipNotification' : true
                         },
                         isStaticVariable,
@@ -1320,7 +1319,6 @@ WM.module('wm.widgets.grid')
                         dataObject = {
                             'row'              : options.row,
                             'prevData'         : options.prevData,
-                            'multipartData'    : options.multipartData,
                             'transform'        : true,
                             'scope'            : $scope.gridElement.scope(),
                             'skipNotification' : true
@@ -1563,8 +1561,8 @@ WM.module('wm.widgets.grid')
                 onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack) {
                     deleteRecord(rowData, cancelRowDeleteCallback, e, callBack);
                 },
-                onRowInsert: function (rowData, e, multipartData, callBack) {
-                    insertRecord({'row': rowData, 'multipartData': multipartData, event: e, 'callBack': callBack});
+                onRowInsert: function (rowData, e, callBack) {
+                    insertRecord({'row': rowData, event: e, 'callBack': callBack});
                 },
                 beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
@@ -1575,8 +1573,8 @@ WM.module('wm.widgets.grid')
                     /*TODO: Bind this event.*/
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
                 },
-                afterRowUpdate: function (rowData, e, multipartData, callBack) {
-                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData, 'callBack': callBack});
+                afterRowUpdate: function (rowData, e, callBack) {
+                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'callBack': callBack});
                 },
                 onBeforeRowUpdate: function (rowData, e) {
                     return $scope.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});

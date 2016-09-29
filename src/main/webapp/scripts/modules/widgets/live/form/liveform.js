@@ -1,4 +1,4 @@
-/*global WM, window, document, FormData, Blob, _, wm*/
+/*global WM, window, document, _, wm*/
 /*Directive for liveform */
 
 WM.module('wm.widgets.live')
@@ -568,25 +568,18 @@ WM.module('wm.widgets.live')
                 $scope.constructDataObject = function (isPreviousData) {
                     var dataObject          = getDataObject(),
                         formName            = $scope.name,
-                        isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
                         formFields,
-                        formData,
                         element;
                     if (isPreviousData) {
                         formFields = prevformFields;
                     } else {
                         formFields = $scope.formFields;
                     }
-                    if (isFormDataSupported) {
-                        /* Angular does not bind file values so using native object to send files */
-                        formData = new FormData();
-                    }
                     formFields.forEach(function (field) {
-                        var files,
-                            dateTime;
+                        var dateTime;
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
-                        if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
+                        if ((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type]) {
                             if (field.value) {
                                 dateTime = Utils.getValidDateObject(field.value);
                                 if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
@@ -600,20 +593,7 @@ WM.module('wm.widgets.live')
                                 dataObject[field.key] = undefined;
                             }
                         } else if (field.type === "blob") {
-                            if (isFormDataSupported) {
-                                files =  _.get(document.forms, [formName, field.key, 'files']);
-                                /*Display an error message if no file is selected and simply return.*/
-                                //if (document.forms[formName].file.files.length === 0) {
-                                /*Handle if file not selected*/
-                                //}
-                                /*1. Append the uploaded script file.
-                                 * 2. Append the connection properties.*/
-                                if ($scope.operationType !== 'delete' && files) {
-                                    $scope.multipartData = true;
-                                    formData.append(field.key, files[0]);
-                                }
-                                dataObject[field.key] = dataObject[field.key] !== null ? '' : null;
-                            }
+                            dataObject[field.key] = _.get(document.forms, [formName, field.key, 'files', 0]);//passing file
                         } else if (field.type === "list") {
                             dataObject[field.key] = field.value || undefined;
                         } else {
@@ -624,12 +604,6 @@ WM.module('wm.widgets.live')
                         element = getFormElement();
                         //Set the values of the widgets inside the live form (other than form fields) in form data
                         LiveWidgetUtils.setFormWidgetsValues(element, dataObject);
-                    }
-                    if ($scope.operationType !== 'delete' && $scope.multipartData) {
-                        formData.append('wm_data_json', new Blob([JSON.stringify(dataObject)], {
-                            type: "application/json"
-                        }));
-                        return formData;
                     }
                     return dataObject;
                 };

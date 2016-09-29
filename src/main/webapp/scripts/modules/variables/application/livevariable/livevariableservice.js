@@ -1,4 +1,4 @@
-/*global wm, WM, _, moment*/
+/*global wm, WM, _, moment, FormData, Blob*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -248,7 +248,7 @@ wm.variables.services.$liveVariable = [
                     /*Clearing old relatedTables array so that it is populated with new values*/
                     variable.relatedTables = [];
                     variable.properties = [];
-                    WM.forEach(database.tables, function (table) {
+                    _.forEach(database.tables, function (table) {
                         tableNameToEntityNameMap[table.name] = table.entityName;
                         entityNameToTableNameMap[table.entityName] = table.name;
                     });
@@ -262,7 +262,7 @@ wm.variables.services.$liveVariable = [
                     }
 
                     /*Loop through the tables*/
-                    WM.forEach(database.tables, function (table) {
+                    _.forEach(database.tables, function (table) {
 
                         var tableName = table.name,
                             tablePackageName = database.packageName + "." + table.entityName,
@@ -287,7 +287,7 @@ wm.variables.services.$liveVariable = [
                             return [relation.composite === false, relation.cardinality !== "OneToOne"];
                         });
                         /*Loop through the relations and insert the related columns*/
-                        WM.forEach(table.relations, function (relation) {
+                        _.forEach(table.relations, function (relation) {
                             if (relation.primary) {
                                 var sourceCols = _.map(relation.mappings, function (mapping) {
                                         return mapping.sourceColumn;
@@ -337,7 +337,7 @@ wm.variables.services.$liveVariable = [
                             }
                         });
                         /*Loop through the table*/
-                        WM.forEach(table.columns, function (column) {
+                        _.forEach(table.columns, function (column) {
                             /*Columns names are present in primary keys. Map the respective field names*/
                             if (_.includes(table.primaryKey.columns, column.name)) {
                                 tableDetails[tableName].primaryFields.push(column.fieldName);
@@ -373,7 +373,7 @@ wm.variables.services.$liveVariable = [
                             }
                         });
 
-                        WM.forEach(table.relations, function (relation) {
+                        _.forEach(table.relations, function (relation) {
                             var relatedColumns = [];
                             /*Find out the related columns for the relation*/
                             _.each(relation.mappings, function (mapping) {
@@ -382,7 +382,7 @@ wm.variables.services.$liveVariable = [
                                 }
                             });
                             /*Loop through the table's columns*/
-                            WM.forEach(tableDetails[tableName].columns, function (column) {
+                            _.forEach(tableDetails[tableName].columns, function (column) {
 
                                 var fkColumnName = column.columnName.split(',');
                                 /*Check if the column is a foreign-key/related column and it is present in the "relatedColumns" of the current relation.*/
@@ -425,7 +425,7 @@ wm.variables.services.$liveVariable = [
                     variableTable = tableDetails[variableType];
 
                     /*Iterate through the columns of the table associated with the variable and fetch all the columns of the related tables.*/
-                    WM.forEach(variableTable.columns, function (column) {
+                    _.forEach(variableTable.columns, function (column) {
                         var columnDef;
                         /*Fetch all the columns of the related table and set them as columns in the related column.*/
                         if (column.isRelated) {
@@ -528,7 +528,7 @@ wm.variables.services.$liveVariable = [
                     fieldOptions.type = fieldType;
                     /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
                     if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
-                        WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
+                        _.forEach(fieldValue, function (subFieldValue, subFieldName) {
                             if (subFieldValue && !WM.isObject(subFieldValue)) {
                                 filterOptions.push(fieldName + '.' + subFieldName + '=' + subFieldValue);
                             }
@@ -851,7 +851,7 @@ wm.variables.services.$liveVariable = [
                             /*Check for sanity*/
                             if (callbackParams.length) {
                                 /*Iterate through the "callbackParams" and invoke "getData" for each of them.*/
-                                WM.forEach(callbackParams, function (callbackParam) {
+                                _.forEach(callbackParams, function (callbackParam) {
                                     deployProjectAndFetchData(callbackParam.variable, callbackParam.options, callbackParam.success, callbackParam.error);
                                 });
                                 /*Reset the array*/
@@ -870,7 +870,7 @@ wm.variables.services.$liveVariable = [
                         /*Check for sanity*/
                         if (callbackParams.length) {
                             /*Iterate through the "callbackParams" and set empty data for each of them.*/
-                            WM.forEach(callbackParams, function (callbackParam) {
+                            _.forEach(callbackParams, function (callbackParam) {
                                 /*Update the variable with empty data so that the widgets reflect the same.*/
                                 updateVariableDataset(callbackParam.variable, {'error': true, 'errorMessage': $rootScope.locale["MESSAGE_INFO_DATABASE_DATA_LOADING_FAILED"]}, callbackParam.variable.propertiesMap, {});
                             });
@@ -915,6 +915,32 @@ wm.variables.services.$liveVariable = [
                 }
                 return fieldType;
             },
+            //Check if table has blob column
+            hasBlob = function (variable) {
+                return _.find(_.get(variable, ['propertiesMap', 'columns']), {'type': 'blob'});
+            },
+            //Prepare formData for blob columns
+            prepareFormData = function (variableDetails, rowObject) {
+                var formData = new FormData();
+                _.forEach(rowObject, function (colValue, colName) {
+                    if (getFieldType(colName, variableDetails) === 'blob') {
+                        if (WM.isObject(colValue)) {
+                            if (WM.isArray(colValue)) {
+                                _.forEach(colValue, function (fileObject) {
+                                    formData.append(colName, fileObject, fileObject.name);
+                                });
+                            } else {
+                                formData.append(colName, colValue, colValue.name);
+                            }
+                        }
+                        rowObject[colName] = colValue !== null ? '' : null;
+                    }
+                });
+                formData.append('wm_data_json', new Blob([JSON.stringify(rowObject)], {
+                    type: 'application/json'
+                }));
+                return formData;
+            },
         /*Function to perform common database actions through calling DatabaseService methods*/
             performDataAction = function (action, variableDetails, options, success, error) {
                 var dbName,
@@ -925,6 +951,7 @@ wm.variables.services.$liveVariable = [
                     callBackScope,
                     promiseObj,
                     primaryKey = variableDetails.getPrimaryKey(),
+                    isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
                     compositeKeysData = {},
                     prevCompositeKeysData = {},
                     id,
@@ -964,7 +991,7 @@ wm.variables.services.$liveVariable = [
                         }
                     });
                 } else {
-                    WM.forEach(inputFields, function (fieldValue, fieldName) {
+                    _.forEach(inputFields, function (fieldValue, fieldName) {
                         var fieldType,
                             primaryKeys = variableDetails.propertiesMap.primaryFields || variableDetails.propertiesMap.primaryKeys;
                         if (WM.isDefined(fieldValue) && fieldValue !== "") {
@@ -989,8 +1016,8 @@ wm.variables.services.$liveVariable = [
                                 rowObject[fieldName] = fieldValue;
                             }
                             // for related entities, clear the blob type fields
-                            if (WM.isObject(fieldValue)) {
-                                WM.forEach(fieldValue, function (val, key) {
+                            if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
+                                _.forEach(fieldValue, function (val, key) {
                                     if (getFieldType(fieldName, variableDetails, key) === 'blob') {
                                         fieldValue[key] = val === null ? val : '';
                                     }
@@ -1002,7 +1029,6 @@ wm.variables.services.$liveVariable = [
 
                 switch (action) {
                 case 'updateTableData':
-                case 'updateMultiPartTableData':
                     prevData = options.prevData || {};
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
@@ -1057,7 +1083,15 @@ wm.variables.services.$liveVariable = [
                 default:
                     break;
                 }
-
+                //If table has blob column then send multipart data
+                if ((action === 'updateTableData' || action === 'insertTableData') && hasBlob(variableDetails) && isFormDataSupported) {
+                    if (action === 'updateTableData') {
+                        action = 'updateMultiPartTableData';
+                    } else {
+                        action = 'insertMultiPartTableData';
+                    }
+                    rowObject = prepareFormData(variableDetails, rowObject);
+                }
                 /*Check if "options" have the "compositeKeysData" property.*/
                 if (options.compositeKeysData) {
                     switch (action) {
@@ -1369,19 +1403,11 @@ wm.variables.services.$liveVariable = [
                 },
             /*function to update a row in the data associated with the live variable*/
                 updateRecord: function (variable, options, success, error) {
-                    if (options.multipartData) {
-                        performDataAction('updateMultiPartTableData', variable, options, success, error);
-                    } else {
-                        performDataAction('updateTableData', variable, options, success, error);
-                    }
+                    performDataAction('updateTableData', variable, options, success, error);
                 },
             /*function to insert a row into the data associated with the live variable*/
                 insertRecord: function (variable, options, success, error) {
-                    if (options.multipartData) {
-                        performDataAction('insertMultiPartTableData', variable, options, success, error);
-                    } else {
-                        performDataAction('insertTableData', variable, options, success, error);
-                    }
+                    performDataAction('insertTableData', variable, options, success, error);
                 },
             /*function to set the orderBy property of the live variable*/
                 setOrderBy: function (variable, expression) {
@@ -1424,7 +1450,7 @@ wm.variables.services.$liveVariable = [
                     }
                     targetObj = variable.inputFields;
 
-                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                    _.forEach(paramObj, function (paramVal, paramKey) {
                         targetObj[paramKey] = paramVal;
                     });
 
@@ -1444,7 +1470,7 @@ wm.variables.services.$liveVariable = [
                     }
                     targetObj = variable.filterFields;
 
-                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                    _.forEach(paramObj, function (paramVal, paramKey) {
                         targetObj[paramKey] = {
                             "value": paramVal
                         };
