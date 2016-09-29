@@ -428,7 +428,7 @@ WM.module('wm.widgets.base', [])
                         "updatedelay": {"type": "number", "value": 0},
                         "type": {"type": "list", "options": ["color", "date", "datetime-local", "email", "month", "number", "password", "search", "tel", "text", "time", "url", "week"], "value": "text"},
                         "accept": {"type": "data-list", "options": ["image/*", "audio/*", "video/*"], "show": false},
-                        "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
+                        "datavalue": {"type": "string", value: "", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('datavalue')"},
                         "scopedatavalue": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
