@@ -138,7 +138,7 @@ wm.plugins.offline.run([
          */
         function handleOnlineDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
             onlineHandler.call(DatabaseService, params, function (response) {
-                if (_.includes(['readTableData', 'searchTableData'], operation)) {
+                if (_.includes(['readTableData', 'searchTableData', 'searchTableDataWithQuery'], operation)) {
                     _.forEach(response.content, function (r) {
                         var updateParams = {
                             dataModelName: params.dataModelName,
@@ -162,7 +162,8 @@ wm.plugins.offline.run([
                               'updateTableData',
                               'deleteTableData',
                               'readTableData',
-                              'searchTableData'];
+                              'searchTableData',
+                              'searchTableDataWithQuery'];
             _.forEach(operations, function (operation) {
                 var onlineHandler = DatabaseService[operation];
                 if (onlineHandler) {
