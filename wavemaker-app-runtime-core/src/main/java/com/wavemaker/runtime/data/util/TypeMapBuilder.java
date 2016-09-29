@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.*;
 
 import javax.persistence.Id;
@@ -26,8 +27,8 @@ public class TypeMapBuilder {
         try {
             Map<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
             List<String> idFields = new ArrayList<>();
-            PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
-            for (PropertyDescriptor descriptor : descriptors) {
+            for (Field field : clazz.getDeclaredFields()) {
+                PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(clazz, field.getName());
                 Class fieldType = descriptor.getPropertyType();
                 String fieldName = descriptor.getName();
 
@@ -35,7 +36,7 @@ public class TypeMapBuilder {
                     idFields.add(fieldName);
                 }
 
-                if (Collection.class != fieldType && !StringUtils.equalsIgnoreCase("class", descriptor.getName())) {
+                if (Collection.class != fieldType) {
                     String typeClassName = fieldType.getName();
                     Types type = Types.valueFor(typeClassName);
                     if (type != null) {
