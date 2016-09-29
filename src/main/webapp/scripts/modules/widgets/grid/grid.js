@@ -379,11 +379,15 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }
-                        scope.$on('$destroy', function () {
+
+                        function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
                             $document.off('click', documentClickBind);
                             Object.defineProperty(scope, 'selecteditem', {'get': _.noop, 'set': _.noop});
-                        });
+                        }
+
+                        scope.$on('$destroy', onDestroy);
+                        element.on('$destroy', onDestroy);
 
                         WM.element(element).css({'position': 'relative'});
                         /*being done to trigger watch on the dataset property for first time if property is not defined(only for a simple grid not inside a live-grid)*/

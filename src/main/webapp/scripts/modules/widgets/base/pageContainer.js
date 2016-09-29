@@ -17,14 +17,10 @@ WM.module('wm.widgets.base')
         function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, ProjectService, $timeout) {
             'use strict';
 
-            var props = PropertiesFactory.getPropertiesOf('wm.pagecontainer'),
-                notifyFor = {
-                    'content': true,
-                    'active': true
-                },
-                PARTIAL_PARAM_SUBSCRIPT = 'partialparam',
+            var props     = PropertiesFactory.getPropertiesOf('wm.pagecontainer'),
+                notifyFor = { 'content': true, 'active': true},
 
-            // to hold the whether the content of partials is loaded or not
+                // to hold the whether the content of partials is loaded or not
                 loadedPartials = {},
                 listPartials   = [],
                 filteredPartials;
@@ -124,13 +120,24 @@ WM.module('wm.widgets.base')
                 });
             }
 
+            // reload the partial with the same content
+            // this method will be triggered when there is a change in the page param value
+            // Use some time to reload the page to improve the performance when there are changes in multiple page params
+            function reloadPartial(iScope, element, attrs) {
+                $timeout.cancel(iScope._pageLoadTimer);
+
+                iScope._pageLoadTimer = $timeout(function () {
+                    onPageIncludeChange(iScope, element, attrs, iScope.content);
+                }, 200);
+            }
+
             /* This function handles the change in content property of the page-container */
             function onPageIncludeChange(iScope, element, attrs, newVal) {
                 var target = iScope.target,
-                    el = '',
-                    page = 'pages/' + newVal + '/',
-                    addToolBar,
-                    $s = element.scope();
+                    el     = '',
+                    page   = 'pages/' + newVal + '/',
+                    $s     = element.scope(),
+                    addToolBar;
 
                 if (!target) {
                     iScope.target = target = WM.isDefined(attrs.pageContainerTarget) ? element : element.find('[page-container-target]').eq(0);
@@ -165,12 +172,29 @@ WM.module('wm.widgets.base')
                     target.find('.app-included-page, .app-included-page + .content-overlay, .wm-included-page-heading').remove();
                 } else {
                     iScope.pageParams = {};
+
                     _.forEach(iScope.partialParams, function (param) {
                         var paramName = param.name,
-                            paramVal = param.value;
+                            paramVal  = param.value,
+                            watchExpr;
+
                         if (Utils.stringStartsWith(paramVal, 'bind:')) {
-                            $s.$watch(paramVal.replace('bind:', ''), function (nv) {
-                                iScope.pageParams[paramName] = nv;
+                            watchExpr = paramVal.replace('bind:', '');
+                            $s.$watch(':: ' + watchExpr, function (nv1) {
+
+                                // this watch is changed for the first time.
+                                // register one more watch on the same expr
+                                var deregister = $s.$watch(watchExpr, function (nv2) {
+
+                                    // reload the partial when the page param changes
+                                    if (nv2 !== nv1) {
+                                        deregister();
+                                        // expr value is changed for the second time, reload the partial
+                                        reloadPartial(iScope, element, attrs);
+                                    }
+                                });
+
+                                iScope.pageParams[paramName] = nv1;
                             });
                         } else {
                             iScope.pageParams[paramName] = paramVal;
@@ -200,8 +224,7 @@ WM.module('wm.widgets.base')
                             }, onPageFetchError);
                         } else {
                             var AppManager = Utils.getService('AppManager');
-                            AppManager.loadPartial(newVal).
-                                then(onPageFetchSuccess, onPageFetchError);
+                            AppManager.loadPartial(newVal).then(onPageFetchSuccess, onPageFetchError);
                         }
                     } else {
                         /* to compile the partial page*/
