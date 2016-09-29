@@ -1290,7 +1290,7 @@ wm.variables.services.$liveVariable = [
                         'entityName'    : variable.type,
                         'sort'          : tableOptions.sort,
                         'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
-                        'query'         : tableOptions.query,
+                        'query'         : tableOptions.query || '',
                         'exportFormat'  : options.exportFormat
                     });
                 },
