@@ -328,8 +328,10 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.camera": {
                         "capturetype": {"type": "list", "options": ["IMAGE", "VIDEO"], "value" : "IMAGE"},
-                        "datavalue": {"type": "string", "value": "", "bindable": "in-out-bound"},
-                        "iconclass": {"type": "string", "value": "wi wi-photo-camera", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "datavalue": {"type": "string", "value": "", "bindable": "in-bound"},
+                        "localFilePath": {"type": "string", "value": "", "bindable": "out-bound"},
+                        "localFile": {"type": "string", "value": "", "bindable": "out-bound"},
+                        "iconclass": {"type": "string", "value": "wi wi-photo-camera", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
                         /* capture picture options*/
                         "imagequality": {"type": "number", "value": 80},
