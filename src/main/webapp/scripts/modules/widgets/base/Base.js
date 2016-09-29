@@ -1689,6 +1689,7 @@ WM.module('wm.widgets.base', [])
                         "limit": {"type": "number"},
                         "placeholder": {"type": "string", "value": "Search", "bindable": "in-bound"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
@@ -1706,7 +1707,7 @@ WM.module('wm.widgets.base', [])
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.chart": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -2574,6 +2575,11 @@ WM.module('wm.widgets.base', [])
                     }
                 }
 
+                //Returns query for search widget and datavalue for other widgets
+                function getModelValue() {
+                    return iScope._widgettype === 'wm-search' ? iScope.query : iScope.datavalue;
+                }
+
                 /* this method will update the view value in the controller's scope */
                 function updateModel() {
                     if (_model && ctrlScope && _model.assign) {
@@ -2584,7 +2590,7 @@ WM.module('wm.widgets.base', [])
 
                 //Old val is used while triggering onChange event
                 $rootScope.$evalAsync(function () {
-                    iScope._ngModelOldVal = iScope.datavalue;
+                    iScope._ngModelOldVal = getModelValue();
                 });
 
                 /* _onChange is a wrapper fn for onChange. */
@@ -2594,9 +2600,10 @@ WM.module('wm.widgets.base', [])
                     if ($event && iScope.onChange) {
                         if (CONSTANTS.isRunMode) {
                             $timeout(function () {
+                                var modelVal = getModelValue();
                                 /* trigger the onChange fn */
-                                iScope.onChange({$event: $event, $scope: iScope, newVal: iScope.datavalue, oldVal: iScope._ngModelOldVal});
-                                iScope._ngModelOldVal = iScope.datavalue;
+                                iScope.onChange({$event: $event, $scope: iScope, newVal: modelVal, oldVal: iScope._ngModelOldVal});
+                                iScope._ngModelOldVal = modelVal;
                             });
                         } else {
                             /* trigger the onChange fn */
