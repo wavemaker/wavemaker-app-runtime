@@ -68,27 +68,37 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             var conditions,
                 fieldToColumnMapping = store.fieldToColumnMapping;
             conditions = _.map(filterCriteria, function (filterCriterion) {
-                var itemValue = fieldToColumnMapping[filterCriterion.attributeName],
-                    operator = filterCriterion.filterCondition,
-                    target = filterCriterion.attributeValue;
+                var colName = fieldToColumnMapping[filterCriterion.attributeName],
+                    condition = filterCriterion.filterCondition,
+                    target = filterCriterion.attributeValue,
+                    operator = '=';
                 if (filterCriterion.attributeType === 'STRING') {
-                    if (operator === 'STARTING_WITH') {
+                    if (condition === 'STARTING_WITH') {
                         target = target + '%';
-                    } else if (operator === 'ENDING_WITH') {
+                        operator = 'like';
+                    } else if (condition === 'ENDING_WITH') {
                         target = '%' + target;
-                    } else if (operator === 'CONTAINING') {
+                        operator = 'like';
+                    } else if (condition === 'CONTAINING') {
                         target = '%' + target + '%';
+                        operator = 'like';
                     }
                     target = "'" + target + "'";
-                    itemValue = 'LOWER(' + itemValue + ')';
                 }
-                return itemValue + '=' + target;
+                return colName + ' ' + operator + ' ' + target;
             });
             return conditions && conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
         }
 
-        function generateOrderByClause() {
-            return '';//sort && sort.length > 0 ? ' ORDER BY ' + sort : '';
+        function generateOrderByClause(store, sort) {
+            if (sort) {
+                return ' ORDER BY ' + _.map(sort.split(','), function (field) {
+                    var splits =  _.trim(field).split(' ');
+                    splits[0] = store.fieldToColumnMapping[splits[0]];
+                    return splits.join(' ');
+                }).join(',');
+            }
+            return '';
         }
 
         function geneateLimitClause(page) {

@@ -264,4 +264,21 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
         this.searchTableData = this.readTableData;
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#searchTableDataWithQuery
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         *
+         * @description
+         * Method to read data from a specified table.
+         *
+         * @param {object} params
+         *                 Object containing name of the project & table data to be inserted.
+         * @param {function=} successCallback
+         *                    Callback function to be triggered on success.
+         * @param {function=} failureCallback
+         *                    Callback function to be triggered on failure.
+         */
+        this.searchTableDataWithQuery = this.readTableData;
     }];

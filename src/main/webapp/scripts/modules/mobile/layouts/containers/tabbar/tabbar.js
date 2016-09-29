@@ -147,12 +147,23 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the widget.
- * @param {string=} dropposition
- *                  dropdown position, allowed values are 'up' or 'down'. Default value is up.
+ * @param {string=} dataset
+ *                  This is a bindable property. Dataset should resolve to an array of objects.
+ * @param {string=} itemlabel
+ *                  The property of the dataset object that has to be used as label.
+ * @param {string=} itemlink
+ *                  The property of the dataset object that has to be used as link.
+ * @param {string=} itemicon
+ *                  The property of the dataset object that has to be used as icon.
+ * @param {string=} show
+ *                  This property determines whether or not the tabbar is visible. This property is a bindable property.
+ * @param {string=} morebuttoniconclass
+ *                  Icon to use for the 'more' button.
+ * @param {string=} morebuttonlabel
+ *                  label to use for the 'more' button. Default value is 'more'.
  * @param {string=} on-select
  *                  callback to be called when an item is clicked.
- * @param {string=} class
- *                 class to apply to the widget
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
