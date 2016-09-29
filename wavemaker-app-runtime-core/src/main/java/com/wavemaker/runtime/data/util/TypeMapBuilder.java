@@ -39,10 +39,12 @@ public class TypeMapBuilder {
                     String typeClassName = fieldType.getName();
                     Types type = Types.valueFor(typeClassName);
                     if (type != null) {
-                        if (StringUtils.isNotBlank(fieldPrefix)) {
-                            fieldName = fieldPrefix + "." + fieldName;
+                        if (Types.LIST != type) {
+                            if (StringUtils.isNotBlank(fieldPrefix)) {
+                                fieldName = fieldPrefix + "." + fieldName;
+                            }
+                            fieldNameVsTypeMap.put(fieldName, type);
                         }
-                        fieldNameVsTypeMap.put(fieldName, type);
                     } else if (loopOnce) {
                         if (addEntityFields) {
                             fieldNameVsTypeMap.put(fieldName, Types.OBJECT);

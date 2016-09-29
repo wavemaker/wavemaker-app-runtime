@@ -238,6 +238,17 @@ public enum Types {
         public Class getJavaClass() {
             return Object.class;
         }
+    },
+    LIST(Collections.singletonList(List.class.getName())){
+        @Override
+        public ColumnBuilder getColumnBuilder(String fieldName, String aliasName) {
+            throw new WMRuntimeException("List typed column data cannot be exported");
+        }
+
+        @Override
+        public Class getJavaClass() {
+            return List.class;
+        }
     };
 
     private static Map<String, Types> classNameVsTypesMap = new HashMap<>();
