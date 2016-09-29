@@ -41,6 +41,38 @@ WM.module('wm.widgets.form')
             }
         }
 
+        /**
+         * Returns the data-type for properties in the widget.
+         * Pushes the meta data against these types in $rs.dataTypes, as $rs.dataTypes will be referred for the data-types returned.
+         * @param $is
+         * @param prop
+         * @returns {*}
+         */
+        function getPropertyType($is, prop) {
+            var type;
+            switch (prop) {
+            case 'datavalue':
+                switch ($is.type) {
+                case 'number':
+                case 'time':
+                    type = $is.type;
+                    break;
+                case 'datetime-local':
+                    type = 'datetime, timestamp';
+                    break;
+                case 'date':
+                case 'month':
+                case 'week':
+                    type = 'date';
+                    break;
+                default:
+                    type = 'string';
+                }
+            break;
+            }
+            return type;
+        }
+
         return {
             'restrict': 'E',
             'replace': true,
@@ -98,6 +130,7 @@ WM.module('wm.widgets.form')
                     };
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    scope.getPropertyType = getPropertyType.bind(undefined, scope);
                 }
             }
         };
