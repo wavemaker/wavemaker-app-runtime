@@ -245,7 +245,7 @@ wm.variables.services.Variables = [
 
             //debouncing callVariableMethod
             _invoke = function (variable, op) {
-                var cancelFn = _.noop, debouncedFn, key = variable._id + '__' + op;
+                var cancelFn = _.noop, debouncedFn, key = variable._id + '__' + op + '__' + (_.get(variable, ['activeScope', '$id']) || '');
                 if (timers[key]) {
                     cancelFn = timers[key].cancel;
                 }
