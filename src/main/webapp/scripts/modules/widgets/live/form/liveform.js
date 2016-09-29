@@ -1149,6 +1149,12 @@ WM.module('wm.widgets.live')
                             parentScope.isUpdateMode = true;
                         }
 
+                        scope.fieldDefConfig = columnDef;
+                        parentScope.formFields = _.isArray(parentScope.formFields) ?  parentScope.formFields : [];
+                        index = _.indexOf(parentScope.formFields, undefined);
+                        index = index > -1 ? index : parentScope.formFields.length;
+                        parentScope.formFields[index] = columnDef;
+
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultvalue) {
                             if (Utils.stringStartsWith(attrs.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
@@ -1210,12 +1216,6 @@ WM.module('wm.widgets.live')
                                 parentScope.setReadonlyFields();
                             }
                         }
-
-                        scope.fieldDefConfig = columnDef;
-                        parentScope.formFields = _.isArray(parentScope.formFields) ?  parentScope.formFields : [];
-                        index = _.indexOf(parentScope.formFields, undefined);
-                        index = index > -1 ? index : parentScope.formFields.length;
-                        parentScope.formFields[index] = columnDef;
                         if (isLayoutDialog) {
                             parentScope.setPrevDataValues();
                         }
