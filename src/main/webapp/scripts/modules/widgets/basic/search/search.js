@@ -15,7 +15,7 @@ WM.module('wm.widgets.basic')
             '<div class="app-search input-group" role="input" init-widget has-model listen-property="dataset"' +
                 '>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
-                    ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
+                    ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
@@ -40,7 +40,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/form/navsearch.html',
             '<div class="app-mobile-search" role="input" init-widget has-model>' +
                 '<input title="{{hint || query}}" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
-                    ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
+                    ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
@@ -572,7 +572,8 @@ WM.module('wm.widgets.basic')
                 'replace': true,
                 'scope': {
                     'scopedataset': '=?',
-                    'onSubmit': '&'
+                    'onSubmit': '&',
+                    'onSelect': '&'
                 },
                 'template': function (tElement, tAttrs) {
                     var template, url = '', target, isWidgetInsideCanvas;
@@ -659,7 +660,8 @@ WM.module('wm.widgets.basic')
                             $is.datavalue = ($is.datafield && $is.datafield !== 'All Fields') ? ($item  && _.get($item, $is.datafield)) : $item;
                             $is.queryModel = $item;
                             $is.query = $label;
-                            // call user 'onSubmit' fn
+                            // call user 'onSubmit & onSelect' fn
+                            $is.onSelect({$event: $event, $scope: $is, selectedValue: $is.datavalue});
                             $is.onSubmit({$event: $event, $scope: $is});
                         };
 
