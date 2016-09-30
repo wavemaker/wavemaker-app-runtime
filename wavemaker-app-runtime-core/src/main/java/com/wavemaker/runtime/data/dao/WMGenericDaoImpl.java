@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -58,6 +59,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int DESIRED_PAGE_SIZE = 100;
 
     private Class<Entity> entityClass;
 
@@ -167,11 +169,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-//        FIXME remove this check when pageable options are sent.
         final Pageable customPageable;
-        if (pageable == null || (pageable.getPageNumber() == DEFAULT_PAGE_NUMBER && pageable
-                .getPageSize() == DEFAULT_PAGE_SIZE)) {
-            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, 100);
+        if (pageable == null) {
+            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, DESIRED_PAGE_SIZE);
+        } else if (pageable.getPageNumber() == DEFAULT_PAGE_NUMBER && pageable.getPageSize() == DEFAULT_PAGE_SIZE) {
+            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, DESIRED_PAGE_SIZE, pageable.getSort());
         } else {
             customPageable = pageable;
         }
