@@ -367,6 +367,11 @@ WM.module('wm.prefabs')
                         /* called on load of the prefab template*/
                         function onTemplateLoad() {
                             var pfScope = $el.find('[data-ng-controller]').scope();
+
+                            if (!pfScope || pfScope.$$destroyed) {
+                                return;
+                            }
+
                             /* scope of the controller */
 
                             _.forEach($is.widgetProps, function (propDetails, propName) {
