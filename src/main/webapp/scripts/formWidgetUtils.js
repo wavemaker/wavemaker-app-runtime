@@ -9,13 +9,12 @@
 WM.module('wm.widgets.form')
     .service('FormWidgetUtils', [
         'WidgetUtilService',
-        'CONSTANTS',
         'Utils',
         'Variables',
         '$rootScope',
         '$filter',
 
-        function (WidgetUtilService, CONSTANTS, Utils, Variables, $rootScope, $filter) {
+        function (WidgetUtilService, Utils, Variables, $rootScope, $filter) {
             'use strict';
             var ALLFIELDS = 'All Fields';
 
@@ -135,7 +134,7 @@ WM.module('wm.widgets.form')
                 /*if dataSet is an array, process it to create the keys for the radioset.*/
                 if (WM.isArray(dataSet)) {
                     /*if array values are objects*/
-                    if (WM.isObject(dataSet[0])) {
+                    if (WM.isObject(dataSet[0]) && _.has(dataSet[0], 'dataValue')) {
                         _.forEach(dataSet, function (data) {
                             /*getting the dataObject*/
                             scope.dataObject[data.name] = data.dataValue;
@@ -199,7 +198,7 @@ WM.module('wm.widgets.form')
              * @param {object} scope isolate scope of the widget
              * @param {object} element element of widget
              */
-            function parseDataSet(dataSet, scope, element) {
+            function parseDataSet(dataSet, scope) {
                 /*store parsed data in 'data'*/
                 var data = dataSet,
                     dataField = scope.datafield,
@@ -312,6 +311,7 @@ WM.module('wm.widgets.form')
              *
              */
             function getModelValue(scope, dataSet, value, checkedValue) {
+                var val = _.get(scope.dataObject, value);
                 //Don't trim in case of dataset is object
                 if (!WM.isObject(scope.dataObject)) {
                     value = WM.isString(value) ? value.trim() : value;
@@ -323,19 +323,46 @@ WM.module('wm.widgets.form')
                 }
                 if (WM.isArray(dataSet)) {
                     /*if dataSet is array and array values are objects*/
-                    if (WM.isObject(dataSet[0])) {
-                        return scope.dataObject[value];
+                    if (WM.isObject(dataSet[0]) && val) {
+                        return val;
                     }
                     /*if dataSet is array*/
                     return value;
                 }
                 /*if dataSet is object*/
                 if (checkedValue) {
-                    return scope.dataObject[value];
+                    return val;
                 }
                 return value;
             }
 
+            /**
+             * Returns groupedKeys map which has grouping info of related tables
+             * @param fields
+             * @param isGroupFields
+             * @returns {object}
+             */
+            function getGroupedFields(fields, isGroupFields) {
+                var groupedKeys = {'all': {'keys': []}};
+                if (isGroupFields) {
+                    _.forEach(fields, function (key, index) {
+                        if (_.includes(key, '.')) {
+                            var field = _.split(key, '.');
+                            if (!groupedKeys[field[0]]) {
+                                groupedKeys[field[0]] = {'keys': []};
+                            }
+                            groupedKeys[field[0]].keys.push({'title': field[1], 'index': index, 'key': key});
+                        } else {
+                            groupedKeys.all.keys.push({'title': key, 'index': index, 'key': key});
+                        }
+                    });
+                } else {
+                    groupedKeys.all.keys = groupedKeys.all.keys.concat(_.map(fields, function (key, index) {
+                        return {'title': key, 'index': index, 'key': key};
+                    }));
+                }
+                return groupedKeys;
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#getRadiosetCheckboxsetTemplate
@@ -620,34 +647,6 @@ WM.module('wm.widgets.form')
                         }
                     });
                 }, 50));
-            }
-
-            /**
-             * Returns groupedKeys map which has grouping info of related tables
-             * @param fields
-             * @param isGroupFields
-             * @returns {object}
-             */
-            function getGroupedFields(fields, isGroupFields) {
-                var groupedKeys = {'all': {'keys': []}};
-                if (isGroupFields) {
-                    _.forEach(fields, function (key, index) {
-                        if (_.includes(key, '.')) {
-                            var field = _.split(key, '.');
-                            if (!groupedKeys[field[0]]) {
-                                groupedKeys[field[0]] = {'keys': []};
-                            }
-                            groupedKeys[field[0]].keys.push({'title': field[1], 'index': index, 'key': key});
-                        } else {
-                            groupedKeys.all.keys.push({'title': key, 'index': index, 'key': key});
-                        }
-                    });
-                } else {
-                    groupedKeys.all.keys = groupedKeys.all.keys.concat(_.map(fields, function (key, index) {
-                        return {'title': key, 'index': index, 'key': key};
-                    }));
-                }
-                return groupedKeys;
             }
 
             this.getDisplayField                = getDisplayField;
