@@ -1274,7 +1274,7 @@ WM.module('wm.widgets.live')
             }
             // Select or delselect the live list item
             function toggleSelectedItem($is, $el, item, isSelect) {
-                if (!WM.isDefined(item)) {
+                if (!WM.isDefined(item) || item === null) {
                     return;
                 }
                 var listItems = $el.find('.list-group li.app-list-item'),
