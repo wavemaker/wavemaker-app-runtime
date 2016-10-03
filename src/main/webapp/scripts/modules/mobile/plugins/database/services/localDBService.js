@@ -15,7 +15,15 @@ wm.plugins.database.services.LocalDBService = [
         'use strict';
         var initialized = false,
             schemas = [],
-            stores = {};
+            databases = {};
+
+        function getDatabase(dbName) {
+            var db = databases[dbName];
+            if (!db) {
+                databases[dbName] = db = {};
+            }
+            return db;
+        }
 
         /**
          * Picks essential details from the given schema.
@@ -24,12 +32,13 @@ wm.plugins.database.services.LocalDBService = [
          * @param entity
          * @returns {{entityName: *, name: *, columns: Array}}
          */
-        function mapEntitySchema(schema, entity) {
-            var reqEntity = {
+        function mapEntitySchema(schema, entity, transformedSchemas) {
+            var reqEntity = transformedSchemas[entity['entityName']];
+            _.assign(reqEntity, {
                 'entityName' : entity['entityName'],
                 'name' : entity['name'],
                 'columns' : []
-            };
+            });
             _.forEach(entity.columns, function (col) {
                 reqEntity.columns.push({
                     'name' : col['name'],
@@ -38,52 +47,159 @@ wm.plugins.database.services.LocalDBService = [
                 });
             });
             _.forEach(entity.relations, function (r) {
-                var targetEntity, col, sourceColumn;
+                var targetEntitySchema, targetEntity, col, sourceColumn, mapping;
                 if (r.cardinality === 'ManyToOne' || r.cardinality === 'OneToOne') {
                     targetEntity = _.find(schema.tables, function (t) {
                         return t.name === r.targetTable;
                     });
+                    mapping = r.mappings[0];
                     if (targetEntity) {
                         targetEntity = targetEntity.entityName;
-                        sourceColumn = r.mappings[0].sourceColumn;
+                        sourceColumn = mapping.sourceColumn;
                         col = _.find(reqEntity.columns, function (column) {
                             return column.name === sourceColumn;
                         });
+                        targetEntitySchema = _.find(schema.tables, function (table) {
+                            return table.name === r.targetTable;
+                        });
+                        col.sourceFieldName = r.fieldName;
                         col.targetEntity = targetEntity;
+                        col.targetTable = r.targetTable;
+                        col.targetColumn = mapping.targetColumn;
+                        col.targetFieldName = _.find(targetEntitySchema.columns, function (column) {
+                            return column.name === mapping.targetColumn;
+                        }).fieldName;
+                        col.dataMapper = _.chain(targetEntitySchema.columns).keyBy(function (childCol) {
+                            return col.sourceFieldName + '.' + childCol.fieldName;
+                        }).mapValues(function (childCol) {
+                            return {
+                                'name' : childCol.name,
+                                'fieldName' : childCol.fieldName
+                            };
+                        }).value();
+                        col.targetPath = col.sourceFieldName + '.' + col.targetFieldName;
                     }
                 }
             });
             return reqEntity;
         }
 
-         //creates database stores for each entity.
-        function createStores(schema) {
-            var db = $cordovaSQLite.openDB({
-                name: schema.name,
-                location: 'default'
-            });
+        //creates database for each entity.
+        function createDatabases(schema) {
+            var db = getDatabase(schema.name),
+                connection = $cordovaSQLite.openDB({
+                    name: schema.name,
+                    location: 'default'
+                }),
+                transformedSchemas = {};
 
-            stores[schema.name] = {};
+            db.connection = connection;
+            db.schema = schema;
+            db.stores = {};
             _.forEach(schema.tables, function (entitySchema) {
-                entitySchema = mapEntitySchema(schema, entitySchema);
-                stores[schema.name][entitySchema.entityName] = LocalDBStoreFactory.createStore(db, entitySchema, schema.drop);
+                transformedSchemas[entitySchema.entityName] = {};
+            });
+            _.forEach(schema.tables, function (entitySchema) {
+                var entityName = entitySchema.entityName,
+                    transformedSchema = transformedSchemas[entityName];
+                mapEntitySchema(schema, entitySchema, transformedSchemas);
+                db.stores[entityName] = LocalDBStoreFactory.createStore(connection, transformedSchema, schema.drop);
             });
 
         }
 
         /**
          * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#executeNamedQuery
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         * @description
+         * Executes a named query.
+         *
+         * @param {string} dbName name of database on which the named query has to be run
+         * @param {string} queryName name of the query to execute
+         * @param {object} params parameters required for query.
+         * @returns {object} a promise.
+         */
+        this.executeNamedQuery = function (dbName, queryName, params) {
+            var queryData = databases[dbName].queries[queryName];
+            if (params && queryData.params) {
+                params = _.map(queryData.params, function (p) {
+                    return params[p];
+                });
+            }
+            return this.executeSQLQuery(dbName, queryData.query, params);
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#executeNamedQuery
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         * @description
+         * Executes a named query.
+         *
+         * @param {string} dbName name of database on which the named query has to be run
+         * @param {string} queryName name of the query to execute
+         * @param {object} params parameters required for query.
+         * @returns {object} a promise.
+         */
+        this.executeSQLQuery = function (dbName, sql, params) {
+            var db = databases[dbName];
+            if (db) {
+                return $cordovaSQLite.execute(db.connection, sql, params).then(function (result) {
+                    var i,
+                        data = [],
+                        rows = result.rows;
+                    for (i = 0; i < rows.length; i++) {
+                        data.push(rows.item(i));
+                    }
+                    return {
+                        'rowsAffected'  : result.rowsAffected,
+                        'rows'          : data
+                    };
+                });
+            }
+            return $q.reject('No Database with name ' + dbName + 'found');
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#registerNamedQueries
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         * @description
+         * Registers named queries.
+         *
+         * @param {string} dbName name of database to which queries belong.
+         * @param {array} queries a list of query meta info
+         */
+        this.registerNamedQueries = function (dbName, queries) {
+            var db = getDatabase(dbName);
+
+            db.queries = db.queries || {};
+            _.forEach(queries, function (queryData) {
+                var query = queryData.query,
+                    params = _.map(query.match(/:[a-zA-Z0-9]+\s?/g), function (p) {
+                        return _.trim(p.substring(1));
+                    });
+                db.queries[queryData.name] = {
+                    query: query.replace(/:[a-zA-Z0-9]+\s?/g, '? '),
+                    params: params
+                };
+            });
+        };
+
+        /**
+         * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBService#loadSchema
          * @methodOf wm.plugins.database.services.$LocalDBService
          * @description
-         * Loads the given schema and create stores for all the entities.
-         * If service is not initialized, creation of stores will be done post initialization..
+         * Loads the given schema and create database .
+         * If service is not initialized, creation of database will be done post initialization..
          *
          * @param {object} schema The user defined schema
          */
         this.loadSchema = function (schema) {
             if (initialized) {
-                createStores(schema);
+                createDatabases(schema);
             } else {
                 schemas.push(schema);
             }
@@ -98,8 +214,8 @@ wm.plugins.database.services.LocalDBService = [
          * @returns {object} the database store.
          */
         this.getStore = function (dataModelName, entityName) {
-            if (stores[dataModelName]) {
-                return stores[dataModelName][entityName];
+            if (databases[dataModelName]) {
+                return databases[dataModelName].stores[entityName];
             }
             return null;
         };
@@ -109,13 +225,13 @@ wm.plugins.database.services.LocalDBService = [
          * @name wm.plugins.database.services.$LocalDBService#clearAll
          * @methodOf wm.plugins.database.services.$LocalDBService
          * @description
-         * clear data in all the database stores.
+         * clear data in all databases.
          * @returns {object} a promise that is resolved when data is cleared.
          */
         this.clearAll = function () {
             var promises = [];
-            _.forEach(stores, function (entities) {
-                _.forEach(entities, function (store) {
+            _.forEach(databases, function (database) {
+                _.forEach(database.stores, function (store) {
                     promises.push(store.clear());
                 });
             });
@@ -126,12 +242,12 @@ wm.plugins.database.services.LocalDBService = [
          * @name wm.plugins.database.services.$LocalDBService#init
          * @methodOf wm.plugins.database.services.$LocalDBService
          * @description
-         * initializes the services by creating the database stores of schemas so far loaded.
+         * initializes the services by creating the database of schemas so far loaded.
          */
         this.init = function () {
             if (!initialized) {
                 _.forEach(schemas, function (v) {
-                    createStores(v);
+                    createDatabases(v);
                 });
                 initialized = true;
                 schemas = [];
