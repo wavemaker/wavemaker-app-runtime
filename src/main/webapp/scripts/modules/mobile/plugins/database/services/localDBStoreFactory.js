@@ -9,9 +9,8 @@
  */
 wm.plugins.database.services.LocalDBStoreFactory = [
     "$q",
-    "$log",
     "$cordovaSQLite",
-    function ($q, $log, $cordovaSQLite) {
+    function ($q, $cordovaSQLite) {
         'use strict';
 
         function createTableSql(schema) {
@@ -30,13 +29,13 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function insertRecordSqlTemplate(schema) {
-            var fieldNames = [],
+            var columnNames = [],
                 placeHolder = [];
-            _.forEach(schema.columns, function (field) {
-                fieldNames.push(field.name);
+            _.forEach(schema.columns, function (col) {
+                columnNames.push(col.name);
                 placeHolder.push('?');
             });
-            return 'INSERT INTO ' + schema.name + ' (' + fieldNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
+            return 'INSERT INTO ' + schema.name + ' (' + columnNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
         }
 
         function updateRecordSqlTemplate(schema) {
@@ -49,7 +48,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     fields.push(field.name + ' = ?');
                 }
             });
-            return 'UPDATE ' + schema.name + ' SET ' + fields.join(',') + 'WHERE ' + idClause;
+            return 'UPDATE ' + schema.name + ' SET ' + fields.join(',') + ' WHERE ' + idClause;
         }
 
         function deleteRecordTemplate(schema) {
@@ -57,7 +56,21 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function selectSqlTemplate(schema) {
-            return 'SELECT ' + _.map(schema.columns, 'name').join(',') + ' FROM ' + schema.name;
+            var columns = [],
+                joins = [];
+            _.forEach(schema.columns, function (col) {
+                var childTableName;
+                if (col.targetEntity) {
+                    childTableName = col.sourceFieldName;
+                    _.forEach(col.dataMapper, function (childCol, childFiledName) {
+                        columns.push(childTableName + '.' + childCol.name + ' as \'' + childFiledName + '\'');
+                    });
+                    joins.push(' INNER JOIN ' + col.targetTable + ' ' + childTableName + ' ON ' + childTableName + '.' + col.targetColumn + ' = ' + schema.name + '.' +  col.name);
+                } else {
+                    columns.push(schema.name + '.' + col.name + ' as ' + col.fieldName);
+                }
+            });
+            return 'SELECT ' + columns.join(',') + ' FROM ' + schema.name + ' ' + joins.join(',');
         }
 
         function countQuery(schema) {
@@ -66,7 +79,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
 
         function generateWherClause(store, filterCriteria) {
             var conditions,
-                fieldToColumnMapping = store.fieldToColumnMapping;
+                fieldToColumnMapping = store.fieldToColumnMapping,
+                tableName = store.schema.name;
             conditions = _.map(filterCriteria, function (filterCriterion) {
                 var colName = fieldToColumnMapping[filterCriterion.attributeName],
                     condition = filterCriterion.filterCondition,
@@ -85,7 +99,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     }
                     target = "'" + target + "'";
                 }
-                return colName + ' ' + operator + ' ' + target;
+                return tableName + '.' + colName + ' ' + operator + ' ' + target;
             });
             return conditions && conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
         }
@@ -106,17 +120,32 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function mapRowDataToObj(schema, dataObj) {
-            var obj = {};
-            _.forEach(schema.columns, function (field) {
-                obj[field.fieldName] = dataObj[field.name];
+            _.forEach(schema.columns, function (col) {
+                var childEntity;
+                if (col.targetEntity) {
+                    _.forEach(col.dataMapper, function (childCol, childFieldName) {
+                        if (dataObj[childFieldName]) {
+                            childEntity = childEntity || {};
+                            childEntity[childCol.fieldName] = dataObj[childFieldName];
+                        }
+                        delete dataObj[childFieldName];
+                    });
+                    dataObj[col.sourceFieldName] = childEntity;
+                }
             });
-            return obj;
+            return dataObj;
         }
 
         function mapObjToRow(store, entity) {
             var row = {};
-            _.forEach(store.schema.columns, function (f) {
-                row[f.name] = entity[f.fieldName];
+            _.forEach(store.schema.columns, function (col) {
+                if (col.targetEntity) {
+                    if (entity[col.sourceFieldName]) {
+                        row[col.name] = entity[col.sourceFieldName][col.targetFieldName];
+                    }
+                } else {
+                    row[col.name] = entity[col.fieldName];
+                }
             });
             return row;
         }
@@ -124,9 +153,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
          * @ngdoc object
          * @name wm.plugins.database.services.$LocalDBStoreFactory.$Store
          */
-        var Store = function (db, schema) {
+        var Store = function (dbConnection, schema) {
             var self = this;
-            this.database = db;
+            this.dbConnection = dbConnection;
             this.schema = schema;
             this.fieldToColumnMapping = {};
             this.primaryKeyName = _.find(schema.columns, 'primaryKey').fieldName;
@@ -137,6 +166,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             this.countQuery = countQuery(schema);
             _.forEach(schema.columns, function (c) {
                 self.fieldToColumnMapping[c.fieldName] = c.name;
+                if (c.targetPath) {
+                    self.fieldToColumnMapping[c.targetPath] = c.name;
+                }
             });
         };
 
@@ -150,7 +182,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'create': function () {
-                return this.executeSql(createTableSql(this.schema));
+                return $cordovaSQLite.execute(this.dbConnection, createTableSql(this.schema));
             },
             /**
              * @ngdoc method
@@ -161,7 +193,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'drop': function () {
-                return this.executeSql(dropTable(this.schema));
+                return $cordovaSQLite.execute(this.dbConnection, dropTable(this.schema));
             },
             /**
              * @ngdoc method
@@ -175,11 +207,16 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             'add': function (entity) {
                 var defer = $q.defer(),
                     params = [],
-                    rowData = mapObjToRow(this, entity);
+                    rowData,
+                    idValue = entity[this.primaryKeyName];
+                if (_.isString(idValue) && _.isEmpty(_.trim(idValue))) {
+                    entity[this.primaryKeyName] = undefined;
+                }
+                rowData = mapObjToRow(this, entity);
                 _.forEach(this.schema.columns, function (f) {
                     params.push(rowData[f.name]);
                 });
-                this.executeSql(this.insertRecordSqlTemplate, params).then(function (result) {
+                $cordovaSQLite.execute(this.dbConnection, this.insertRecordSqlTemplate, params).then(function (result) {
                     defer.resolve(result.insertId);
                 }, defer.reject.bind());
                 return defer.promise;
@@ -207,7 +244,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     }
                 });
                 params.push(pk);
-                this.executeSql(this.updateRecordSqlTemplate, params).then(function (result) {
+                $cordovaSQLite.execute(this.dbConnection, this.updateRecordSqlTemplate, params).then(function (result) {
                     if (result.rowsAffected === 0) {
                         self.add(entity, function (result) {
                             defer.resolve(result);
@@ -232,7 +269,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              */
             'count' : function (filterCriteria) {
                 var sql = this.countQuery + generateWherClause(this, filterCriteria);
-                return this.executeSql(sql).then(function (result) {
+                return $cordovaSQLite.execute(this.dbConnection, sql).then(function (result) {
                     return result.rows.item(0)['count'];
                 });
             },
@@ -246,8 +283,13 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise that is resolved with entity
              */
             'get': function (primaryKey) {
-                var sql = this.selectSqlTemplate + ' WHERE ' + this.primaryKeyName + ' = ?';
-                return this.executeSql(sql, [primaryKey]);
+                var filterCriteria = [{"attributeName" : this.primaryKeyName,
+                                        "filterCondition" : '=',
+                                        "attributeValue" : primaryKey,
+                                        "attributeType": 'INTEGER' }];
+                return this.filter([filterCriteria]).then(function (obj) {
+                    return obj && obj.length === 1 ? obj[0] : undefined;
+                });
             },
             /**
              * @ngdoc method
@@ -259,7 +301,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'delete': function (primaryKey) {
-                return this.executeSql(this.deleteRecordTemplate, [primaryKey]);
+                return $cordovaSQLite.execute(this.dbConnection, this.deleteRecordTemplate, [primaryKey]);
             },
             /**
              * @ngdoc method
@@ -270,7 +312,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'clear': function () {
-                return this.executeSql('DELETE FROM ' + this.schema.name);
+                return $cordovaSQLite.execute(this.dbConnection, 'DELETE FROM ' + this.schema.name);
             },
             /**
              * @ngdoc method
@@ -292,7 +334,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 sql += generateWherClause(this, filterCriteria);
                 sql += generateOrderByClause(this, sort);
                 sql += geneateLimitClause(page);
-                return this.executeSql(sql).then(function (result) {
+                return $cordovaSQLite.execute(this.dbConnection, sql).then(function (result) {
                     var objArr = [],
                         rowCount = result.rows.length,
                         i;
@@ -301,28 +343,6 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     }
                     return objArr;
                 });
-            },
-            /**
-             * @ngdoc method
-             * @name wm.plugins.database.services.$LocalDBStoreFactory.$Store#filter
-             * @methodOf wm.plugins.database.services.$LocalDBStoreFactory.$Store
-             * @description
-             * Executes the given SQL
-             * @param {string} sql SQL query to execute
-             * @param {Array=} params these will be placed in respective placeholder (?) position
-             * @returns {object} promise with result of the sql
-             */
-            'executeSql': function (sql, params) {
-                var defer = $q.defer(),
-                    timer = Date.now();
-                $cordovaSQLite.execute(this.database, sql, params).then(function () {
-                    $log.debug('SQL "%s" took [%d ms]', sql, Date.now() - timer);
-                    defer.resolve.apply(defer, arguments);
-                }, function (error) {
-                    $log.error('SQL "%s"  with error message %s', sql, error.message);
-                    defer.reject.apply(defer, arguments);
-                });
-                return defer.promise;
             }
         });
         /**
@@ -332,13 +352,13 @@ wm.plugins.database.services.LocalDBStoreFactory = [
          * @description
          * Creates a store for the given entity schema in the given database.
          *
-         * @param {object} database an database instance created using SQLite api.
+         * @param {object} dbConnection an database connection created using SQLite api.
          * @param {object} entitySchema schema of the entity
          * @param {boolean} drop if true, existing store will be deleted.
          * @returns {object} Store
          */
-        this.createStore = function (database, entitySchema, drop) {
-            var store = new Store(database, entitySchema);
+        this.createStore = function (dbConnection, entitySchema, drop) {
+            var store = new Store(dbConnection, entitySchema);
             if (drop) {
                 store.drop().then(function () {
                     store.create();

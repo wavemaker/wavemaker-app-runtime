@@ -59,6 +59,10 @@ wm.plugins.offline.constant('OFFLINE_SERVICE_URLS', {
         getDatabaseSchema: {
             url: 'metadata/app/dataModel.json',
             method: 'GET'
+        },
+        getNamedQueries: {
+            url: 'metadata/app/namedQuery.json',
+            method: 'GET'
         }
     }
 });
@@ -81,6 +85,7 @@ wm.plugins.offline.run([
     'Utils',
     'wmSpinner',
     'wmToaster',
+    'WebService',
     function ($cordovaNetwork,
               $document,
               $q,
@@ -96,7 +101,8 @@ wm.plugins.offline.run([
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
               Utils,
               wmSpinner,
-              wmToaster) {
+              wmToaster,
+              WebService) {
         'use strict';
         /*
          * Intercepts FileTransfer#upload and if device is offline, then OfflineFileUploadService will handle it.
@@ -202,6 +208,92 @@ wm.plugins.offline.run([
             return defer.promise;
         }
 
+        function loadNamedQueries() {
+            var defer = $q.defer();
+            LocalDBService.loadSchema(OFFLINE_WAVEMAKER_DATABASE_SCHEMA);
+            BaseService.send({
+                target: 'OfflineService',
+                action: 'getNamedQueries'
+            }, function (queryInfo) {
+                if (_.isArray(queryInfo)) {
+                    _.forEach(queryInfo, function (d) {
+                        LocalDBService.registerNamedQueries(d.name, d.queries);
+                    });
+                } else if (_.isObject(queryInfo)) {
+                    LocalDBService.registerNamedQueries(queryInfo.name, queryInfo.queries);
+                }
+                defer.resolve();
+            }, function () {
+                defer.reject();
+            });
+            return defer.promise;
+        }
+
+        function substring(source, start, end) {
+            if (start) {
+                var startIndex = source.indexOf(start) + start.length,
+                    endIndex = end ? source.indexOf(end) : undefined;
+                return source.substring(startIndex, endIndex);
+            }
+            return undefined;
+        }
+
+        function getHttpParamMap(str) {
+            var result = {};
+            if (str) {
+                str = decodeURIComponent(str);
+                _.forEach(str.split('&'), function (c) {
+                    var csplits = c.split('='),
+                        intVal = parseInt(csplits[1], 10);
+                    if (_.isNaN(intVal)) {
+                        result[csplits[0]] = csplits[1];
+                    } else {
+                        result[csplits[0]] = intVal;
+                    }
+                });
+            }
+            return result;
+        }
+
+        function addOfflineNamedQuerySupport() {
+            var origInvokeJavaService = WebService.invokeJavaService;
+            loadNamedQueries().then(function () {
+                WebService.invokeJavaService = function (params, onSuccess, onError) {
+                    if ($cordovaNetwork.isOffline() && params.url.indexOf('/queryExecutor/') > 0) {
+                        var url = params.url,
+                            hasUrlParams = url.indexOf('?') > 0,
+                            dbName = substring(url, 'services/', '/queryExecutor'),
+                            queryName = substring(url, 'queries/', hasUrlParams ? '?' : undefined),
+                            urlParams = hasUrlParams ? getHttpParamMap(substring(url, '?', undefined)) : {},
+                            dataParams = getHttpParamMap(params.dataParams),
+                            queryParams = _.extend(urlParams, dataParams);
+                        LocalDBService.executeNamedQuery(dbName, queryName, queryParams).then(function (result) {
+                            var rows = result.rows;
+                            if (result.rowsAffected) {
+                                ChangeLogService.add('WebService', 'invokeJavaService', params).then(function () {
+                                    Utils.triggerFn(onSuccess, result.rowsAffected);
+                                }, onError);
+                            } else {
+                                Utils.triggerFn(onSuccess, {
+                                    "totalPages": 1,
+                                    "totalElements": rows.length,
+                                    "first": true,
+                                    "sort": null,
+                                    "numberOfElements": rows.length,
+                                    "last": true,
+                                    "size": params.size,
+                                    "number": 0,
+                                    'content': rows
+                                });
+                            }
+                        }, onError);
+                    } else {
+                        origInvokeJavaService.apply(WebService, arguments);
+                    }
+                };
+            });
+        }
+
         /*
          * A flush will be triggered on ChangeLogService. Once the flush is completed, user will be navigated to the
          * main page.
@@ -215,6 +307,7 @@ wm.plugins.offline.run([
                     }
                     wmSpinner.hide(spinnerId);
                     NavigationService.goToPage('Main');
+                    $rootScope.$emit('on-offline-flush-complete');
                 });
             });
         }
@@ -223,6 +316,7 @@ wm.plugins.offline.run([
             BaseServiceManager.register(OFFLINE_SERVICE_URLS);
             loadOfflineDatabaseSchemas().then(function () {
                 LocalDBService.init();
+                addOfflineNamedQuerySupport();
                 addOfflineFileUploadSupport();
                 addOfflineDatabaseSupport();
                 // When the device is online, flush ChangeLogService only if there are any changes to flush.
