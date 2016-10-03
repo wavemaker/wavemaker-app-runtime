@@ -89,13 +89,13 @@ public class RestRuntimeController {
             }
         }
         byte[] responseBody = restResponse.getResponseBody();
+        responseBody = (responseBody == null) ? "".getBytes() : responseBody;
         int statusCode = restResponse.getStatusCode();
         if (statusCode >= 200 && statusCode<= 299) {
             if (StringUtils.isNotBlank(restResponse.getContentType())) {
                 httpServletResponse.setContentType(restResponse.getContentType());
             }
             httpServletResponse.setHeader("X-WM-STATUS_CODE", String.valueOf(statusCode));
-            responseBody = (responseBody == null) ? "".getBytes() : responseBody;
             IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
         } else {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, new String(responseBody).intern());
