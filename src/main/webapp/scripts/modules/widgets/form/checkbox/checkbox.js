@@ -46,6 +46,18 @@ WM.module('wm.widgets.form')
             }
         }
 
+        /**
+         * when the checkedvalue(ng-true-value) or uncheckedvalue(ng-false-value) or datavalue(ng-model) is not a string and not a boolean convert to string
+         * @param value: boolean in string format or string
+         * @returns value: string
+         */
+        function stringify(value) {
+            if (!(value === 'true' || value === 'false' || _.includes(value, "'"))) {
+                value = "'" + value + "'";
+            }
+            return value;
+        }
+
         return {
             'restrict': 'E',
             'scope'   : {},
@@ -53,21 +65,27 @@ WM.module('wm.widgets.form')
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/checkbox.html')),
                     checkbox,
+                    _dataValue,
                     isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
+
                     setTrueFalseValues = function (attr, property) {
                         var value = tAttrs[attr];
                         if (value) {
                             //If boolean type value or value contains quotes, do not add the quotes
-                            if (value === 'true' || value === 'false' || _.includes(value, "'")) {
-                                checkbox.attr(property, value);
-                            } else {
-                                checkbox.attr(property, "'" + value + "'");
-                            }
+                            value = stringify(value);
+                            checkbox.attr(property, value);
                         }
                     };
                 checkbox = template.find('input[type=checkbox]');
                 setTrueFalseValues('checkedvalue', 'ng-true-value');
                 setTrueFalseValues('uncheckedvalue', 'ng-false-value');
+
+                if (tAttrs.datavalue && !_.startsWith(tAttrs.datavalue, 'bind:')) {
+                    _dataValue = stringify(tAttrs.datavalue);
+                    tElement.attr('datavalue', _dataValue);
+                    tAttrs.datavalue = _dataValue;
+                }
+
                 if (!isWidgetInsideCanvas) {
                     WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
                     WidgetUtilService.addEventAttributes(checkbox, tAttrs, FormWidgetUtils.getFocusBlurEvents());

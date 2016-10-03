@@ -445,14 +445,15 @@ WM.module('wm.widgets.base')
                 });
             }
 
-            function parseNgTrueNgFalseValue(val) {
-                if (val === 'true' || val === true) {
-                    return true;
-                } else if (val === 'false' || val === false) {
-                    return false;
-                } else {
-                    return val;
+            function parseNgTrueNgFalseValue(val, $s, defalutVal) {
+                var parseFn;
+                if (val) {
+                    parseFn = $parse(val);
+                    if (parseFn.constant) {
+                        return parseFn($s);
+                    }
                 }
+                return defalutVal;
             }
 
             function defineDataValueGetterSetters($is, $el, attrs) {
@@ -488,7 +489,7 @@ WM.module('wm.widgets.base')
                         }
                         modifiedVal = temp;
                     } else if (isCheckbox) {
-                        modifiedVal = parseNgTrueNgFalseValue(val);
+                        modifiedVal = val;
                     } else if (isDate) {
                         modifiedVal = new Date(val);
                     }
@@ -798,6 +799,9 @@ WM.module('wm.widgets.base')
 
                             // if element has datavalue, populate it into the isolateScope
                             if (hasDataValue) {
+                                if ($el.is('.app-checkbox') && !_.startsWith(datavalue_value, 'bind:')) {
+                                    datavalue_value = parseNgTrueNgFalseValue(datavalue_value, $s, false);
+                                }
                                 $is.datavalue = datavalue_value;
                             }
 
@@ -1157,6 +1161,8 @@ WM.module('wm.widgets.base')
 //prevents the event propagation to document when clicked on a day button.
 //needed to prevent the popover close when clicked on element which is appended to body but part of popover content
 (function(){
+    'use strict';
+
     if ($.__isStudioMode) {
         return;
     }
@@ -1169,7 +1175,7 @@ WM.module('wm.widgets.base')
                     event.stopPropagation();
                 });
             }
-        }
+        };
     }
     //perform the operation on the uib datepicker, search typeahead and time picker
     module.directive('uibDatepickerPopupWrap', directiveFn)
