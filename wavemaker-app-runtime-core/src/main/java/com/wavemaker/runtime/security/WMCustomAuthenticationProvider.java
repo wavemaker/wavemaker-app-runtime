@@ -48,7 +48,7 @@ public class WMCustomAuthenticationProvider implements AuthenticationProvider {
 					if (wmUser == null) {
 						throw new BadCredentialsException("Invalid credentials");
 					}
-					return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), wmUser.getUsername(), wmUser.getAuthorities());
+					return new UsernamePasswordAuthenticationToken(wmUser, null, wmUser.getAuthorities());
 				} catch (AuthenticationException e) {
 					throw e;
 				} catch (Exception e) {
