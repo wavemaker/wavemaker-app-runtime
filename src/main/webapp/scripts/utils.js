@@ -2037,7 +2037,7 @@ WM.module('wm.utils', [])
                     "wm-form",
                     "wm-carousel"
                 ];
-            } else if (type === 'page-container-wigdets') {
+            } else if (type === 'page-container-widgets') {
                 types = [
                     'wm-accordionpane',
                     'wm-container',
