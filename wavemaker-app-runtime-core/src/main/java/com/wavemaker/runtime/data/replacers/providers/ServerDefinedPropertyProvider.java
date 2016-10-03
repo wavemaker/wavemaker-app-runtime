@@ -21,16 +21,18 @@ public class ServerDefinedPropertyProvider implements ValueProvider {
 
     private final Set<Scope> scopes;
     private final VariableType type;
+    private final Class<?> fieldType;
 
-    public ServerDefinedPropertyProvider(final VariableType type, final Set<Scope> scopes) {
+    public ServerDefinedPropertyProvider(final VariableType type, final Set<Scope> scopes, final Class<?> fieldType) {
         this.scopes = scopes;
         this.type = type;
+        this.fieldType = fieldType;
     }
 
 
     @Override
     public Object getValue(final ListenerContext context) {
-        return type.getValue();
+        return type.getValue(fieldType);
     }
 
     @Override
@@ -45,7 +47,8 @@ public class ServerDefinedPropertyProvider implements ValueProvider {
                 final Field field, final Map<Field, PropertyDescriptor> fieldDescriptorMap,
                 final Annotation annotation) {
             ServerDefinedProperty variable = ((ServerDefinedProperty) annotation);
-            return new ServerDefinedPropertyProvider(variable.value(), Sets.newHashSet(variable.scopes()));
+            return new ServerDefinedPropertyProvider(variable.value(), Sets.newHashSet(variable.scopes()),
+                    field.getType());
         }
     }
 }
