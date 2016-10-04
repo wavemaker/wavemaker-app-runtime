@@ -151,8 +151,11 @@ WM.module('wm.widgets.live')
                     $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
                 };
                 $scope.prevDataValues = {};
-                $scope.findOperationType = function () {
+                $scope.findOperationType = function (variable) {
                     var operation;
+                    if (variable && variable.operation && variable.operation !== 'read') {
+                        return variable.operation;
+                    }
                     /*If OperationType is not set then based on the formdata object return the operation type,
                         this case occurs only if the form is outside a livegrid*/
                     /*If the formdata object has primary key value then return update else insert*/
@@ -229,7 +232,7 @@ WM.module('wm.widgets.live')
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
 
-                    $scope.operationType = $scope.operationType || $scope.findOperationType();
+                    $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
                     /*Construct the data object with required values from the formFields*/
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
                     constructed out of the previous object*/
@@ -636,6 +639,7 @@ WM.module('wm.widgets.live')
                 /*Function to set the specified column as a primary key by adding it to the primary key array.*/
                 $scope.setPrimaryKey = function (columnName) {
                     /*Store the primary key of data*/
+                    $scope.primaryKey = $scope.primaryKey || [];
                     if (WM.element.inArray(columnName, $scope.primaryKey) === -1) {
                         $scope.primaryKey.push(columnName);
                     }
@@ -878,6 +882,11 @@ WM.module('wm.widgets.live')
                                     gridObj.widgettype = scope.widgettype;
                                     Utils.getService('LiveWidgetsMarkupManager').updateMarkupForLiveForm(gridObj);
                                 }
+                                _.forEach(scope.formFields, function (field) {
+                                    if (field && field.primaryKey) {
+                                        scope.setPrimaryKey(field.key);
+                                    }
+                                });
                                 break;
                             case 'captionsize':
                                 labelElements = WM.element(element).find('.app-label');
