@@ -314,26 +314,23 @@ wm.plugins.offline.run([
 
         // Exchange primary key  of the given entity
         function exchangeId(dataModelName, entityName, data) {
-            var primaryKeyName = LocalDBService.getStore(dataModelName, entityName).primaryKeyName,
-                localId = data[primaryKeyName],
-                remoteId = getEntityIdStore(dataModelName, entityName)[localId];
-            if (remoteId) {
-                data[primaryKeyName] = remoteId;
-                logResolution(entityName, localId, remoteId);
+            if (data) {
+                var primaryKeyName = LocalDBService.getStore(dataModelName, entityName).primaryKeyName,
+                    localId = data[primaryKeyName],
+                    remoteId = getEntityIdStore(dataModelName, entityName)[localId];
+                if (remoteId) {
+                    data[primaryKeyName] = remoteId;
+                    logResolution(entityName, localId, remoteId);
+                }
             }
         }
 
         //Looks primary key changes in the given entity or in the relations
         function exchangeIds(dataModelName, entityName, data) {
             exchangeId(dataModelName, entityName, data);
-            _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (f) {
-                var localId = data[f.fieldName], remoteId;
-                if (localId && f.targetEntity) {
-                    remoteId = getEntityIdStore(dataModelName, f.targetEntity)[localId];
-                    if (remoteId) {
-                        data[f.fieldName] = remoteId;
-                        logResolution(f.targetEntity, localId, remoteId);
-                    }
+            _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (col) {
+                if (col.targetEntity && data[col.sourceFieldName]) {
+                    exchangeIds(dataModelName, col.targetEntity, data[col.sourceFieldName]);
                 }
             });
         }
@@ -354,6 +351,7 @@ wm.plugins.offline.run([
                         delete change.params.data[primaryKeyName];
                         break;
                     case 'updateTableData':
+                        exchangeId(dataModelName, entityName, change.params);
                         exchangeIds(dataModelName, entityName, change.params.data);
                         break;
                     case 'deleteTableData':
