@@ -1359,13 +1359,20 @@ $.widget('wm.datagrid', {
                     value,
                 //Set the values to the generated input elements
                     setInputValue = function (value) {
+                        var childIs;
                         if (options.operation !== 'new') {
                             //For widgets, set the datavalue. Upload uses html file upload. So, no need to set value
                             if (colDef.editWidgetType) {
                                 if (colDef.editWidgetType === 'upload') {
                                     return;
                                 }
-                                $el.children().isolateScope().datavalue = value;
+                                childIs = $el.children().isolateScope();
+                                //For checkbox, set value from row data as cellText may contain string values of true or false
+                                if (colDef.editWidgetType === 'checkbox') {
+                                    childIs.datavalue = _.get(rowData, colDef.field);
+                                } else {
+                                    childIs.datavalue = value;
+                                }
                             }
                             $el.find('input').val(value);
                         }
