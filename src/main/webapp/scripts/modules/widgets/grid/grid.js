@@ -1379,7 +1379,7 @@ WM.module('wm.widgets.grid')
                 if ($scope.isBoundToFilter) {
                     //If grid is bound to filter, call the apply fiter and update filter options
                     if (!$scope.shownavigation) {
-                        sortOptions = $scope.sortInfo ? $scope.sortInfo.field + ' ' + $scope.sortInfo.direction : '';
+                        sortOptions = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                         $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
                     }
                     $scope.Widgets[$scope.widgetName].updateAllowedValues();
@@ -1847,7 +1847,7 @@ WM.module('wm.widgets.grid')
                         }
 
                         if (isBoundToLiveVariable || isBoundToQueryServiceVariable) {
-                            if ($scope.sortInfo) {
+                            if (!_.isEmpty($scope.sortInfo)) {
                                 gridSortString = $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                                 variableSortString = _.get(variableObj, ['_options', 'orderBy']) || variableSortString;
                                 if (gridSortString !== variableSortString) {
@@ -2196,7 +2196,7 @@ WM.module('wm.widgets.grid')
             $scope.export = function ($item) {
                 var filterFields,
                     variable     = $scope.gridElement.scope().Variables[$scope.variableName],
-                    sortOptions  = $scope.sortInfo ? $scope.sortInfo.field + ' ' + $scope.sortInfo.direction : '';
+                    sortOptions  = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                 if ($scope.isBoundToFilter) {
                     $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label});
                 } else {
