@@ -483,9 +483,18 @@ WM.module('wm.widgets.base')
                     if (isSelect && attrs.multiple) {
                         modifiedVal = Utils.convertToArray(val);
                     } else if (isNumberType) {
-                        temp = +val; // convert the value to number and update the scope property
-                        if (isNaN(temp)) {
-                            temp = 0;
+                        temp = val;
+                        if (WM.isString(val)) {
+                            if (val.length) {
+                                temp = +val; // convert the value to number and update the scope property
+                                if (isNaN(temp)) {
+                                    temp = undefined;
+                                }
+                            } else {
+                                temp = undefined;
+                            }
+                        } else if (!WM.isNumber(val)) {
+                            temp = undefined;
                         }
                         modifiedVal = temp;
                     } else if (isCheckbox) {
