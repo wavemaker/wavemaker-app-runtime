@@ -489,6 +489,17 @@ WM.module('wm.widgets.basic')
                 return formattedData;
             }
 
+            //Set the visibility property of the chart x,y axis due to a bug in the nvd3
+            function toggleAxisShow(property, value) {
+                var $xAxis = d3.select(chartId + ' g.nv-axis.nv-x'),
+                    $yAxis = d3.select(chartId + ' g.nv-axis.nv-y');
+                if (property === 'showxaxis') {
+                    $xAxis.style('visibility', value ? 'visible' : 'hidden');
+                } else {
+                    $yAxis.style('visibility', value ? 'visible' : 'hidden');
+                }
+            }
+
             function modifyLegendPosition(scope, position, id) {
                 var showLegend = isShowLegend(scope.showlegend);
                 //Return when showlegend is false
@@ -583,7 +594,7 @@ WM.module('wm.widgets.basic')
                             return d[0];
                         })
                         .y(function (d) {
-                            return d[1] / 100;
+                            return d[1];
                         })
                         .showControls(false)
                         .useInteractiveGuideline(propertyValueMap.tooltips);
@@ -817,6 +828,7 @@ WM.module('wm.widgets.basic')
             this.getRadiusValue = getRadiusValue;
             this.getLabelValues = getLabelValues;
             this.modifyLegendPosition = modifyLegendPosition;
+            this.toggleAxisShow = toggleAxisShow;
             this.hideOrShowProperties = hideOrShowProperties;
             this.postPlotChartProcess = postPlotChartProcess;
         }

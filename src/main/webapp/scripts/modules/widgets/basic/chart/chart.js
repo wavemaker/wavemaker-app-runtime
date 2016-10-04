@@ -73,7 +73,6 @@ WM.module('wm.widgets.basic')
                 'fontstyle'         : true,
                 'textdecoration'    : true,
                 'shape'             : true,
-                'selecteditem'      : true,
                 'bubblesize'        : true,
                 'tooltips'          : true,
                 'groupby'           : true,
