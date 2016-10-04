@@ -1995,10 +1995,13 @@ WM.module('wm.utils', [])
             var iFrameElement,
                 formEl,
                 paramElement,
-                queryParams,
-                IFRAME_NAME = 'fileDownloadIFrame',
-                FORM_NAME   = 'fileDownloadForm',
-                url         = requestParams.url;
+                queryParams     = '',
+                IFRAME_NAME     = 'fileDownloadIFrame',
+                FORM_NAME       = 'fileDownloadForm',
+                CONTENT_TYPE    = 'Content-Type',
+                url             = requestParams.url,
+                encType         = _.get(requestParams.headers, CONTENT_TYPE),
+                params          = _.pickBy(requestParams.headers, function (val, key) {return key !== CONTENT_TYPE; });
 
             /* look for existing iframe. If exists, remove it first */
             iFrameElement = $(IFRAME_NAME);
@@ -2011,19 +2014,22 @@ WM.module('wm.utils', [])
                 'target'  : iFrameElement.attr("name"),
                 'action'  : url,
                 'method'  : requestParams.method,
-                'enctype' : requestParams.headers['Content-Type']
+                'enctype' : encType
             });
 
             /* process query params, append a hidden input element in the form against each param */
-            queryParams = url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) :
-                    requestParams.headers['Content-Type'] === getService('WS_CONSTANTS').CONTENT_TYPES.FORM_URL_ENCODED ? requestParams.dataParams : '';
+            queryParams += url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) : '';
+            queryParams += encType === getService('WS_CONSTANTS').CONTENT_TYPES.FORM_URL_ENCODED ? ((queryParams ? '&' : '') + requestParams.dataParams) : '';
             queryParams = _.split(queryParams, '&');
             _.forEach(queryParams, function (param) {
                 param = _.split(param, '=');
+                params[param[0]] = decodeURIComponent(_.join(_.slice(param, 1), '='));
+            });
+            _.forEach(params, function (val, key) {
                 paramElement = WM.element('<input type="hidden">');
                 paramElement.attr({
-                    'name'  : param[0],
-                    'value' : decodeURIComponent(_.join(_.slice(param, 1), '='))
+                    'name'  : key,
+                    'value' : val
                 });
                 formEl.append(paramElement);
             });
