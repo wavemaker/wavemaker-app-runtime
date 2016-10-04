@@ -139,7 +139,7 @@ public class RestRuntimeService {
 
         }
 
-        String[] defaultHeaders = {"User-Agent", "Referer"};
+        String[] defaultHeaders = {"User-Agent"};
         for (String headerKey : defaultHeaders) {
             if (!headers.containsKey(headerKey)) {
                 String headerValue = originRequest.getHeader(headerKey);
