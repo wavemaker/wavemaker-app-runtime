@@ -752,10 +752,6 @@ WM.module('wm.widgets.live')
                             column.maxchars = fieldObj.length;
                         }
                         if (fieldObj.isPrimaryKey) {
-                            /*Store the primary key of data*/
-                            if (scope) {
-                                scope.setPrimaryKey(fieldObj.fieldName);
-                            }
                             /*If the field has assigned generator, make read only false*/
                             if (fieldObj.generator === 'assigned') {
                                 column.readonly = false;
