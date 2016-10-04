@@ -239,10 +239,6 @@
                     <artifactId>castor-xml</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.lowagie</groupId>
-                    <artifactId>itext</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.olap4j</groupId>
                     <artifactId>olap4j</artifactId>
                 </exclusion>
