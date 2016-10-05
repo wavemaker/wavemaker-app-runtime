@@ -1293,6 +1293,8 @@ WM.module('wm.widgets.live')
                         };
                         parentScope.formfields = parentScope.formfields || {};
                         parentScope.formfields[columnDef.key] = columnDef;
+                        //tabindex should be only on the input fields, remove tabindex on form field
+                        element.removeAttr('tabindex');
                     }
                 };
             }
