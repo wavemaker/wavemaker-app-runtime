@@ -264,46 +264,49 @@ WM.module('wm.layouts.containers')
             scope.dataoutput = formData;
             return formData;
         }
-        function bindEvents(scope, element) {
-            element.on('submit', function (event) {
-                var params,
-                    template,
-                    formData,
-                    formVariable = element.scope().Variables[scope.dataset];
-                resetFormState(scope);
-                //Set the values of the widgets inside the form (other than form fields) in form data
-                formData = scope.constructDataObject();
-                LiveWidgetUtils.setFormWidgetsValues(element, formData);
-                params = {$event: event, $scope: scope, $formData: formData};
-                //If on before submit is there execute it and return here if result is false
-                if (scope.onBeforesubmit && scope.onBeforesubmit(params) === false) {
+        function submitForm(scope, element, event) {
+            var params,
+                template,
+                formData,
+                formVariable = element.scope().Variables[scope.dataset];
+            resetFormState(scope);
+            //Set the values of the widgets inside the form (other than form fields) in form data
+            formData = scope.constructDataObject();
+            LiveWidgetUtils.setFormWidgetsValues(element, formData);
+            params = {$event: event, $scope: scope, $formData: formData};
+            //If on before submit is there execute it and return here if result is false
+            if (scope.onBeforesubmit && scope.onBeforesubmit(params) === false) {
+                return;
+            }
+            if (scope.onSubmit || formVariable) {
+                //If its a service variable call setInput and assign form data and invoke the service
+                if (formVariable && formVariable.category === 'wm.ServiceVariable') {
+                    formVariable.setInput(formData);
+                    formVariable.update({
+                        'skipNotification': true
+                    }, function (data) {
+                        toggleMessage(scope, scope.postmessage, 'success');
+                        onResult(scope, data, 'success', event);
+                    }, function (errMsg) {
+                        template = scope.errormessage || errMsg;
+                        toggleMessage(scope, template, 'error');
+                        onResult(scope, errMsg, 'error', event);
+                    });
+                } else if (formVariable) {
+                    /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
+                    $timeout(function () {
+                        $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
+                    });
+                }
+                //If on submit is there execute it and if it returns true do service variable invoke else return
+                if (scope.onSubmit && scope.onSubmit(params) === false) {
                     return;
                 }
-                if (scope.onSubmit || formVariable) {
-                    //If its a service variable call setInput and assign form data and invoke the service
-                    if (formVariable && formVariable.category === 'wm.ServiceVariable') {
-                        formVariable.setInput(formData);
-                        formVariable.update({
-                            'skipNotification': true
-                        }, function (data) {
-                            toggleMessage(scope, scope.postmessage, 'success');
-                            onResult(scope, data, 'success', event);
-                        }, function (errMsg) {
-                            template = scope.errormessage || errMsg;
-                            toggleMessage(scope, template, 'error');
-                            onResult(scope, errMsg, 'error', event);
-                        });
-                    } else if (formVariable) {
-                        /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
-                        $timeout(function () {
-                            $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
-                        });
-                    }
-                    //If on submit is there execute it and if it returns true do service variable invoke else return
-                    if (scope.onSubmit && scope.onSubmit(params) === false) {
-                        return;
-                    }
-                }
+            }
+        }
+        function bindEvents(scope, element) {
+            element.on('submit', function (event) {
+                submitForm(scope, element, event);
             });
             /*clear the file uploader in the form*/
             element.bind('reset', function () {
@@ -344,6 +347,8 @@ WM.module('wm.layouts.containers')
                     if (!scope.widgetid) {
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
+                        scope.reset     = resetForm.bind(undefined, scope, element);
+                        scope.submit    = submitForm.bind(undefined, scope, element);
                     } else {
                         //binddataset: allowing user click on the binded dataset.
                         scope.binddataset = 'bind:Variables.' + scope.dataset;
