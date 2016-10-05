@@ -23,7 +23,7 @@ WM.module('wm.widgets.live')
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 focusEvents            = ['onBlur', 'onFocus'],
-                eventTypes             = focusEvents.concat(['onChange', 'onMouseleave', 'onMouseenter', 'onClick']),
+                eventTypes             = focusEvents.concat(['onChange', 'onMouseleave', 'onMouseenter', 'onClick', 'onSelect', 'onSubmit']),
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets();
