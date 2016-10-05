@@ -1,4 +1,4 @@
-/*global WM, wm, document, _*/
+/*global WM, wm, document, _, window*/
 /*Directive for prefabs */
 
 WM.module('wm.prefabs')
@@ -99,11 +99,194 @@ WM.module('wm.prefabs')
                 };
             }
         ])
-    /*.config(function ($httpProvider) {
+    .config(function ($httpProvider) {
         'use strict';
 
         $httpProvider.interceptors.push('debugModePrefabResourceInterceptor');
-    })*/
+    })
+    .service('DevModePrefab', [
+        '$rootScope',
+        '$compile',
+        '$timeout',
+        'Utils',
+        'wmToaster',
+        function ($rs, $compile, $timeout, Utils, wmToaster) {
+            'use strict';
+
+            var _dialogTemplate,
+                _sessionStorage,
+                _prefabNames,
+                _settingsIcon,
+                _dialogScope,
+                _showDlgTimer,
+                _settingIconAddedToDOM,
+                SESSSION_STORAGE_KEY_PREFIX;
+
+            SESSSION_STORAGE_KEY_PREFIX = '__prefab__devmode__url__';
+
+            _sessionStorage = window.sessionStorage;
+            _prefabNames    = [];
+            _dialogTemplate = '' +
+                '<div class="modal prefab-url-config-dialog" role="dialog">' +
+                    '<div class="modal-dialog app-dialog" role="document">' +
+                        '<div class="modal-content">' +
+                            '<div class="modal-header app-dialog-header">' +
+                                '<h4><i class="app-icon wi wi-settings fa-2x"></i>Development Mode Prefab URL Config</h4>' +
+                            '</div>'+
+                            '<div class="modal-body app-dialog-body">' +
+                                '<table class="wm-table">' +
+                                    '<thead>' +
+                                        '<tr>' +
+                                            '<th width="150">Prefab Name</th>' +
+                                            '<th>Prefab Application Run URL</th>' +
+                                        '</tr>' +
+                                    '</thead>' +
+                                '</table>' +
+                                '<div class="prefab-url-config">' +
+                                    '<table class="wm-table">' +
+                                        '<tbody>' +
+                                            '<tr ng-repeat="config in configs track by config.name">' +
+                                                '<td width="150">{{config.name}}</td>' +
+                                                '<td class="prefab-dev-url">' +
+                                                    '<div>' +
+                                                        '<input ng-model="config.url" class="form-control" placeholder="https://youDomain.com/appPrefabURL">' +
+                                                    '</div>' +
+                                                '</td>' +
+                                            '</tr>' +
+                                        '</tbody>' +
+                                    '</table>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="modal-footer app-dialog-footer">' +
+                                '<button class="btn btn-secondary" ng-click="cancel()">Cancel</button>' +
+                                '<button class="btn btn-primary" ng-click="save()">Save</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '<div>' +
+                '</div>';
+            _settingsIcon = '' +
+                '<div class="prefab-url-config-settings" title="Configure Prefab Dev URLs">' +
+                    '<i class="app-icon wi wi-settings fa-3x"></i>' +
+                '</div>';
+
+            // close the prefab url config dialog
+            function closeConfigDialog() {
+                WM.element(document.body).find('> .prefab-url-config-dialog').remove();
+            }
+
+            // show the prefab url config dialog
+            function showConfigDialog(force) {
+                var $compiled,
+                    showDlg = false,
+                    configs = [];
+
+                // destroy the scope with which the dialog is compiled last time
+                if (_dialogScope && !_dialogScope.$$destroyed) {
+                    _dialogScope.$destroy();
+                }
+
+                // prepare the prefabName-url model,
+                // if the url for any prefab is not found in the session storage, show the dialog
+                _.forEach(_prefabNames, function (pfName) {
+                    var url = getPrefabDevUrl(pfName, false, true);
+                    if (!url) {
+                        showDlg = true;
+                    }
+                    configs.push({'name': pfName, 'url': url});
+                });
+
+                // force flag will be set when the dialog is opened from the settings icon
+                if (!force && !showDlg) {
+                    return;
+                }
+
+                // Create a new scope and populate required methods and model
+                _dialogScope = $rs.$new();
+                _dialogScope.configs = configs;
+                _dialogScope.cancel  = closeConfigDialog;
+                _dialogScope.save    = function () {
+                    // update the provided url and update the session storage
+                    // close and reload the project post save
+                    _.forEach(configs, function (config) {
+                        var i = -1;
+                        if (config.url) {
+                            i = config.url.indexOf('/#');
+                            if (i !== -1) {
+                                config.url = config.url.substring(0, i + 1);
+                            }
+
+                        }
+                        _sessionStorage.setItem(SESSSION_STORAGE_KEY_PREFIX + config.name + '__', config.url);
+                    });
+
+                    closeConfigDialog();
+                    window.location.reload();
+                };
+                $compiled = $compile(_dialogTemplate)(_dialogScope);
+
+                WM.element(document.body).append($compiled);
+            }
+
+            // validate the prefab app url
+            // if the end point is not accessible show an error message
+            function isValidURL(pfName, url) {
+                var isValid = true;
+                Utils.fetchContent(
+                    'json',
+                    url + '/config.json',
+                    _.noop,
+                    function () {
+                        isValid = false;
+                        wmToaster.show('error', 'Error Loading Prefab Resources',
+                            'Unable to load the resources of ' + pfName + ' from ' + url + '. \n Please make sure that the Prefab is accessible at given location or updated the url.');
+                    },
+                    true
+                );
+                return isValid;
+            }
+
+            // returns the dev url of a prefab from session storage
+            // if the url is not found, open the config load during the load time
+            function getPrefabDevUrl(pfName, registerIfNotFound, skipValidation) {
+                var url = _sessionStorage.getItem(SESSSION_STORAGE_KEY_PREFIX + pfName + '__'),
+                    $settingsIcon;
+
+                // add an icon at the bottom right corner to access config dialog
+                if (!_settingIconAddedToDOM) {
+                    _settingIconAddedToDOM = true;
+                    $settingsIcon = WM.element(_settingsIcon);
+                    $settingsIcon.on('click', function () {
+                        $rs.$evalAsync(function () {
+                            showConfigDialog(true);
+                        });
+
+                    });
+                    WM.element(document.body).append($settingsIcon);
+                }
+
+                if (!_.includes(_prefabNames, pfName)) {
+                    _prefabNames.push(pfName);
+                }
+
+                // validate the url
+                if (url && !skipValidation) {
+                    if (!isValidURL(pfName, url)) {
+                        return;
+                    }
+                }
+
+                if (!url && registerIfNotFound) {
+                    $timeout.cancel(_showDlgTimer);
+
+                    _showDlgTimer = $timeout(showConfigDialog, 1000);
+                }
+
+                return url;
+            }
+
+            this.getPrefabDevUrl = getPrefabDevUrl;
+        }
+    ])
     .directive('wmPrefab', [
         'PrefabManager',
         'Utils',
@@ -117,8 +300,9 @@ WM.module('wm.prefabs')
         'DialogService',
         'PrefabService',
         'debugModePrefabResourceInterceptor',
+        'DevModePrefab',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, debugModePrefabResourceInterceptor, DevModePrefab) {
             'use strict';
 
             var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -126,18 +310,19 @@ WM.module('wm.prefabs')
                 prefabWidgetPropsMap = {},
                 prefabMethodsMap     = {},
                 propsSkipList        = ['width', 'height', 'show', 'animation'],
-                notifyFor            = {
-                  'height': true
-                },
+                notifyFor            = {'height': true, 'devmode': CONSTANTS.isStudioMode},
                 propertyGroups,
                 propertiesGroup,
                 eventsGroup;
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler(scope, key, newVal) {
+            function propertyChangeHandler(scope, $el, key, newVal) {
                 switch (key) {
                 case 'height':
                     scope.overflow = newVal ? 'auto' : '';
+                    break;
+                case 'devmode':
+                    $el.attr(key, newVal);
                     break;
                 }
             }
@@ -289,13 +474,17 @@ WM.module('wm.prefabs')
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {
-                        /*
-                        if (attrs.debugurl) {
-                            debugModePrefabResourceInterceptor.register($is.prefabname, attrs.debugurl);
-                        }
-                        */
 
-                        var serverProps;
+                        var serverProps, prefabDevUrl;
+
+                        // In run mode when the devmode is on for a prefab, load the resources from the provided endpoint
+                        if (CONSTANTS.isRunMode && attrs.devmode === 'on') {
+                            prefabDevUrl = DevModePrefab.getPrefabDevUrl($is.prefabname, true);
+                            if (prefabDevUrl) {
+                                debugModePrefabResourceInterceptor.register($is.prefabname, prefabDevUrl);
+                            }
+                        }
+
                         function loadDependencies() {
                             if (CONSTANTS.isStudioMode) {
                                 PrefabService.getAppPrefabServerProps({
@@ -414,7 +603,7 @@ WM.module('wm.prefabs')
                         } else { //dependencies already loaded.
                             compileTemplate(depsMap[prefabName].templateContent);
                         }
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el), $is, notifyFor);
                         $is.showServerProps = $is.serverProps && _.keys($is.serverProps).length;
                     }
                 }

@@ -2842,3 +2842,94 @@ Hence the height is set to 0. */
     height: 0;
   }
 }
+
+
+.app-prefab[devmode=on]:not([widgetid]) {
+  border: 1px dashed #ccc;
+  padding-top: 1.2em;
+  &:before {
+    position: absolute;
+    content: "Development Mode";
+    top: 0;
+    background-color: #999;
+    left: 50%;
+    color: white;
+    margin-left: -50px;
+  }
+}
+
+//prefab-development-url-config
+.prefab-url-config-settings {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.prefab-url-config-dialog {
+  display: block !important;
+  .app-dialog.modal-dialog {
+    width: 600px;
+    .app-dialog-header {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .app-dialog-body {
+      height: 200px;
+      .prefab-url-config {
+        height: 150px;
+        overflow: auto;
+        tr {
+          height: 30px;
+          .prefab-dev-url {
+            padding: 0;
+            > input {
+              border: none;
+              height: 100%;
+              width: 100%;
+              padding: 2px;
+              outline: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .wm-table {
+    border: 1px solid rgba(0,0,0,0.1);
+    width: 100%;
+    .border-radius(3px);
+    margin: 0;
+
+    th {
+      color: #333;
+      background-color: #DAE2ED;
+      padding: 0.25em;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    td {
+      padding: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+      vertical-align: middle;
+    }
+
+    .table-bg-gradient {
+      color: #333;
+      background-color: #DAE2ED;
+    }
+
+    .text-format {
+      text-transform: uppercase;
+    }
+
+    tr:nth-child(odd) td {
+      background-color: rgba(0,0,0,0.05);
+    }
+
+    tr:nth-child(even) td {
+      background-color: #FFFFFF;
+    }
+  }
+}
