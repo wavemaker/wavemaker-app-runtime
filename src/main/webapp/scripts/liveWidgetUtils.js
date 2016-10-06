@@ -1755,9 +1755,10 @@ WM.module('wm.widgets.live')
             insertRecord = function (options, success, error) {
                 var variable = options.variable,
                     dataObject = {
-                        'row': options.row,
-                        'transform': true,
-                        'multipartData': options.multipartData
+                        'row'              : options.row,
+                        'transform'        : true,
+                        'multipartData'    : options.multipartData,
+                        'skipNotification' : true
                     };
 
                 variable.insertRecord(dataObject, function (response) {
@@ -1769,11 +1770,12 @@ WM.module('wm.widgets.live')
             updateRecord = function (options, success, error) {
                 var variable = options.variable,
                     dataObject = {
-                        'row': options.row,
-                        'prevData': options.prevData,
-                        'multipartData': options.multipartData,
-                        'transform': true,
-                        'rowData': options.rowData
+                        'row'              : options.row,
+                        'prevData'         : options.prevData,
+                        'multipartData'    : options.multipartData,
+                        'transform'        : true,
+                        'rowData'          : options.rowData,
+                        'skipNotification' : true
                     };
 
                 variable.updateRecord(dataObject, function (response) {
@@ -1786,8 +1788,9 @@ WM.module('wm.widgets.live')
                 var variable   = options.variable,
                     confirmMsg = options.scope.confirmdelete || 'Are you sure you want to delete this?',
                     dataObject = {
-                        'row'       : options.row,
-                        'transform' : true
+                        'row'              : options.row,
+                        'transform'        : true,
+                        'skipNotification' : true
                     },
                     deleteFn = function () {
                         variable.deleteRecord(dataObject, function (response) {

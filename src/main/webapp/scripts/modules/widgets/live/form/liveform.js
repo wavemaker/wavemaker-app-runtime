@@ -292,6 +292,9 @@ WM.module('wm.widgets.live')
                                     DialogService.hideDialog($scope._dialogid);
                                 }
                                 $scope.isUpdateMode = false;
+                                $scope.toggleMessage(true, $scope.updatemessage, 'success');
+                            }, function (error) {
+                                $scope.toggleMessage(true, $scope.errormessage || error, 'error');
                             });
                         } else {
                             variable.updateRecord(requestData, function (response) {
@@ -327,6 +330,9 @@ WM.module('wm.widgets.live')
                                     DialogService.hideDialog($scope._dialogid);
                                 }
                                 $scope.isUpdateMode = false;
+                                $scope.toggleMessage(true, $scope.insertmessage, 'success');
+                            }, function (error) {
+                                $scope.toggleMessage(true, $scope.errormessage || error, 'error');
                             });
                         } else {
                             variable.insertRecord(requestData, function (response) {
@@ -1080,7 +1086,11 @@ WM.module('wm.widgets.live')
                                             break;
                                         case 'delete':
                                             scope.operationType = 'delete';
-                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject()});
+                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject()}, function() {
+                                                scope.toggleMessage(true, scope.deletemessage, 'success');
+                                            }, function (error) {
+                                                scope.toggleMessage(true, scope.errormessage || error, 'error');
+                                            });
                                             break;
                                         }
                                     }
