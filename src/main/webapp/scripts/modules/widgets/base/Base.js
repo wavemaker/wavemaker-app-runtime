@@ -1485,7 +1485,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box-model"},
-                        "devmode": {"type": "string", "widget": "prefab-devmode", "value": "off"},
+                        "debugurl": {"type": "string", "show": false},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1880,7 +1880,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "devmode", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "picture", "properties": ["imageheight", "picturesource", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
