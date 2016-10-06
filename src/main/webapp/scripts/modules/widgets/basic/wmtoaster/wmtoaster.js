@@ -7,16 +7,11 @@ WM.module('wm.widgets.basic')
         var _showToaster = function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
             /*pop the toaster only if either title or description are defined*/
             if (title || desc) {
-                /*hide all previous toasters*/
-                WM.element('.toast').hide();
                 /*call pop function in toaster to show the toaster*/
                 /*Not closing the toaster only in case type is not success and there is not timeout specified*/
 
                 if (!timeout) {
-                    timeout = 0;
-                    if (type === 'success') {
-                        timeout = 5000;
-                    }
+                    timeout = (timeout !== 0 && type === 'success') ? 5000 : 0;
                 }
 
                 toaster.pop(type, title, desc, timeout, bodyOutputType || 'trustedHtml', onClickHandler, undefined, undefined, undefined, onHideCallback);
