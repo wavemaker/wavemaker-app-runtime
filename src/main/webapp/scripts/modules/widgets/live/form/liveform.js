@@ -994,6 +994,8 @@ WM.module('wm.widgets.live')
                                             $compile(fieldsObj)(scope);
                                             $compile(actionsObj)(scope);
                                         }
+                                        //on canvas update update widgets of form
+                                        scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
                                     }
                                 }
                             }));
@@ -1003,6 +1005,8 @@ WM.module('wm.widgets.live')
                         });
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        //Add widgets to form on load
+                        scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                         function initDependency(widgetname) {
                             var dependsonWidget = scope.Widgets[widgetname],

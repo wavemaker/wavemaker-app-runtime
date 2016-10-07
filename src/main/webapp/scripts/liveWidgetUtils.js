@@ -992,8 +992,9 @@ WM.module('wm.widgets.live')
                             defaultProp = 'datavalue';
                         }
                         if (widgetProps[defaultProp]) {
-                            widgetProps.defaultvalue = WM.copy(widgetProps[defaultProp]);
-                            delete widgetProps[defaultProp];
+                            widgetProps.defaultvalue                     = WM.copy(widgetProps[defaultProp]);
+                            widgetProps[defaultProp].ignoreGetterSetters = true;
+                            widgetProps[defaultProp].show                = false;
                         }
                     };
                 widgetType = widgetType.toLowerCase();
@@ -1687,6 +1688,34 @@ WM.module('wm.widgets.live')
                 });
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getFormWidgets
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get widgets on form/filter isolate scope
+             *
+             * @param {object} element from which widgets needs to be retrieved
+             */
+            function getFormFilterWidgets(element) {
+                var wid = {};
+                element.find('[init-widget]').not('[name*="_formWidget"]').each(function () {
+                    var $target = WM.element(this),
+                        _is;
+                    if ($target.isolateScope) {
+                        _is = $target.isolateScope();
+
+                        if (_is.name) {
+                            wid[_is.name] = _is;
+                        }
+                    }
+                });
+
+                return wid;
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -1713,6 +1742,7 @@ WM.module('wm.widgets.live')
             this.setHeaderConfigForTable    = setHeaderConfigForTable;
             this.setFormWidgetsValues       = setFormWidgetsValues;
             this.getWidgetProps             = getWidgetProps;
+            this.getFormFilterWidgets       = getFormFilterWidgets;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

@@ -1285,7 +1285,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "margin": {"type": "string", "widget": "box-model"}
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
                     },
                     'wm.layouts.login': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1335,7 +1336,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "margin": {"type": "string", "widget": "box-model"}
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforesegmentchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1635,8 +1637,8 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-bound"},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound"},
-                        "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "currentItemWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "selectedItemWidgets": {"type": "array", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true},
+                        "currentItemWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true},
                         "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "multiselect": {"type": "boolean", "value": false},
                         "collapsible": {"type": "boolean", "show": false},
@@ -1676,7 +1678,8 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "margin": {"type": "string", "widget": "box-model"},
-                        "backgroundcolor": {"type": "string", "widget": "color"}
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "filterWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
