@@ -341,6 +341,7 @@ WM.module('wm.layouts.containers')
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
                     scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
+
                     if (!scope.widgetid) {
                         bindEvents(scope, element);
                         scope.resetForm = resetForm.bind(undefined, scope, element);
@@ -367,6 +368,8 @@ WM.module('wm.layouts.containers')
                     scope.clearMessage = clearMessage.bind(undefined, scope);
                     scope.elScope.ngform  = scope[scope.name];
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    //Set form widgets on load of form layout
+                    scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                     scope.$on('$destroy', function () {
                         handlers.forEach(Utils.triggerFn);
