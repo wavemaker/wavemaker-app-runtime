@@ -391,7 +391,7 @@ WM.module('wm.widgets.live')
 
             function getCaptionByWidget(type, index, isRelated) {
                 if (isRelated) {
-                    return '{{getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield)}}';
+                    return '{{getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield || formFields[' + index + '].displaylabel)}}';
                 }
                 if (type === 'password') {
                     return '********';
@@ -574,7 +574,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSearchTemplate(fieldDef, index) {
-                var additionalFields = ' type="autocomplete"' +  getDataSetFields(fieldDef, index);
+                var additionalFields = ' type="autocomplete" relatedfield="{{formFields[' + index + '].relatedfield}}" ' +  getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
             }
             /**

@@ -147,6 +147,34 @@ html, body {
 /********************************************************************************
 *********************************Search Widget*****************************************
 *********************************************************************************/
+.app-search-dropdown() {
+  width: auto;
+  text-align: left;
+  z-index: 2000 !important; /*Over-write bootstrap style so that search results appear on top of any content*/
+  max-height: 200px;
+  overflow-y: auto;
+  span {
+    padding-left: 4px;
+    text-overflow: ellipsis;
+    width: auto;
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1em;
+  }
+  img {
+    line-height: 1em;
+  }
+  .status {
+    padding: 8px 15px;
+    text-align: center;
+    font-size: 12px;
+    background-color: rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    span {
+      overflow: initial;
+    }
+  }
+}
 .app-search {
   width: 30em;
   position: relative;
@@ -163,26 +191,48 @@ html, body {
     }
   }
   &.dropdown-menu {
-    width: auto;
-    max-width: 30em;
-    text-align: left;
-    z-index: 2000 !important; /*Over-write bootstrap style so that search results appear on top of any content*/
-    max-height: 200px;
-    overflow-y: auto;
-    span {
-      padding-left: 4px;
-      text-overflow: ellipsis;
-      width: auto;
-      display: inline-block;
-      overflow: hidden;
-      line-height: 1em;
-    }
-    img {
-      line-height: 1em;
-    }
+    .app-search-dropdown();
+  }
+  .dropdown-menu {
+    .app-search-dropdown();
   }
   .form-control-feedback {
     right: 3em !important;
+    &.clear-btn {
+      display: none;
+    }
+  }
+}
+.wm-app {
+  .app-search.full-screen {
+    &.input-group {
+      width: 100% !important;
+      position: fixed;
+      display: block;
+      background-color: #fff;
+      height: 100%;
+      z-index: 5000;
+      top: 0;
+      left: 0;
+    }
+    .input-group-addon {
+      display: none;
+    }
+    .dropdown-menu {
+      position: relative;
+      width: 100%;
+      .calc('height', ~"calc(100% - 36px)");;
+      overflow: auto;
+      max-height: initial;
+      top: 0 !important;
+    }
+    .clear-btn {
+      right: 1em !important;
+      cursor: pointer;
+      pointer-events: initial;
+      display: block;
+      z-index: 5001;
+    }
   }
 }
 /*To override the bootstrap style to app-search class, specificity has been increased*/

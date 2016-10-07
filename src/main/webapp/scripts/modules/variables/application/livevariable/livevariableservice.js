@@ -188,10 +188,6 @@ wm.variables.services.$liveVariable = [
                 });
                 return column && column[type];
             },
-            /*Function to get the hibernateType of the specified field.*/
-            getHibernateType = function (variable, fieldName) {
-                return getHibernateOrSqlType(variable, fieldName, 'hibernateType');
-            },
             /*Function to get the sqlType of the specified field.*/
             getSqlType = function (variable, fieldName) {
                 return getHibernateOrSqlType(variable, fieldName, 'type');
@@ -487,44 +483,130 @@ wm.variables.services.$liveVariable = [
                 query = _.join(params, operator); //empty space added intentionally around OR
                 return query;
             },
-        /*Function to prepare the options required to read data from the table.*/
+            //Get the related field name for the field given
+            getAttributeName = function (variable, fieldName) {
+                var attrName = fieldName;
+                variable.propertiesMap.columns.forEach(function (column) {
+                    if (column.fieldName === fieldName && column.isRelated) {
+                        attrName = column.relatedFieldName;
+                    }
+                });
+                return attrName;
+            },
+            //Get SQL field type form options or variable properties
+            getSQLFieldType = function (variable, options) {
+                if (_.includes(['timestamp', 'datetime', 'date'], options.type)) {
+                    return options.type;
+                }
+                return options.type || getSqlType(variable, options.fieldName);
+            },
+            //Get the default filter condition
+            getFilterCondition = function (filterCondition) {
+                if (_.includes(DB_CONSTANTS.DATABASE_RANGE_MATCH_MODES, filterCondition)) {
+                    return filterCondition;
+                }
+                return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
+            },
+            /**
+             * Transform the filter fields with valid value and filter condition
+             * @param variable Variable object
+             * @param filterFields Filter options to be passed
+             * @param options Extra options containing logical op
+             * @returns {Array} transformed filter options
+             */
+            getFilterOptions = function (variable, filterFields, options) {
+                var filterOptions = [],
+                    matchModes    = DB_CONSTANTS.DATABASE_MATCH_MODES;
+                _.each(filterFields, function (fieldOptions) {
+                    var attributeName,
+                        fieldName       = fieldOptions.fieldName,
+                        fieldValue      = fieldOptions.value,
+                        fieldType       = getSQLFieldType(variable, fieldOptions),
+                        filterCondition = fieldOptions.filterCondition,
+                        filterOption;
+
+                    fieldOptions.type = fieldType;
+                    /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
+                    if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
+                        WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
+                            if (subFieldValue && !WM.isObject(subFieldValue)) {
+                                filterOptions.push(fieldName + '.' + subFieldName + '=' + subFieldValue);
+                            }
+                        });
+                    } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
+                        /*Based on the sqlType of the field, format the value & set the filter condition.*/
+                        switch (fieldType) {
+                        case 'integer':
+                            fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
+                                return parseInt(value, 10);
+                            }) : parseInt(fieldValue, 10);
+                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                            break;
+                        case 'date':
+                        case 'datetime':
+                        case 'timestamp':
+                            fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
+                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                            break;
+                        case 'text':
+                        case 'string':
+                            if (WM.isArray(fieldValue)) {
+                                filterCondition = matchModes['exact'];
+                            } else {
+                                filterCondition = filterCondition || matchModes['anywhere'];
+                            }
+                            break;
+                        default:
+                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                            break;
+                        }
+                        attributeName = getAttributeName(variable, fieldName);
+                        filterOption  = {
+                            'attributeName'   : attributeName,
+                            'attributeValue'  : fieldValue,
+                            'attributeType'   : _.toUpper(fieldType),
+                            'filterCondition' : filterCondition
+                        };
+                        if (options.searchWithQuery) {
+                            filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                        }
+                        filterOptions.push(filterOption);
+                    } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                        attributeName = getAttributeName(variable, fieldName);
+                        if (fieldType && fieldType !== 'string') {
+                            filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
+                        }
+                        filterOption = {
+                            'attributeName'   : attributeName,
+                            'attributeValue'  : '',
+                            'attributeType'   : _.toUpper(fieldType),
+                            'filterCondition' : filterCondition
+                        };
+                        if (options.searchWithQuery) {
+                            filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                        }
+                        filterOptions.push(filterOption);
+                    }
+                });
+                return filterOptions;
+            },
+            /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options, clonedFields) {
                 if (_.isUndefined(options.searchWithQuery)) {
                     options.searchWithQuery = true;//Using query api instead of  search api
                 }
                 var filterFields = [],
-                    filterOptions = [],
+                    filterOptions,
                     orderByFields,
                     orderByOptions,
                     query,
-                    optionsQuery,
-                    getFieldType = function (options) {
-                        if (_.includes(['timestamp', 'datetime', 'date'], options.type)) {
-                            return options.type;
-                        }
-                        return options.type || getSqlType(variable, options.fieldName);
-                    },
-                    getAttributeName = function (fieldName) {
-                        var attrName = fieldName;
-                        variable.propertiesMap.columns.forEach(function (column) {
-                            if (column.fieldName === fieldName && column.isRelated) {
-                                attrName = column.relatedFieldName;
-                            }
-                        });
-                        return attrName;
-                    },
-                    getFilterCondition = function (filterCondition) {
-                        if (_.includes(DB_CONSTANTS.DATABASE_RANGE_MATCH_MODES, filterCondition)) {
-                            return filterCondition;
-                        }
-                        return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
-                    };
+                    optionsQuery;
                 clonedFields  = clonedFields || variable.filterFields;
                     /*get the filter fields from the variable*/
                 _.forEach(clonedFields, function (value, key) {
                     if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
                         value.fieldName = key;
-                        if (getFieldType(value) === 'string') {
+                        if (getSQLFieldType(variable, value) === 'string') {
                             value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
                         }
                         value.isVariableFilter = true;
@@ -538,76 +620,7 @@ wm.variables.services.$liveVariable = [
                     filterFields.push(value);
                 });
                 if (variable.operation === 'read') {
-                    _.each(filterFields, function (fieldOptions) {
-                        var attributeName,
-                            fieldName       = fieldOptions.fieldName,
-                            fieldValue      = fieldOptions.value,
-                            fieldType       = getFieldType(fieldOptions),
-                            filterCondition = fieldOptions.filterCondition,
-                            filterOption;
-
-                        fieldOptions.type = fieldType;
-                        /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
-                        if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
-                            WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
-                                if (subFieldValue && !WM.isObject(subFieldValue)) {
-                                    filterOptions.push(fieldName + '.' + subFieldName + '=' + subFieldValue);
-                                }
-                            });
-                        } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
-                            /*Based on the sqlType of the field, format the value & set the filter condition.*/
-                            switch (fieldType) {
-                            case 'integer':
-                                fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
-                                    return parseInt(value, 10);
-                                }) : parseInt(fieldValue, 10);
-                                filterCondition = getFilterCondition(filterCondition);
-                                break;
-                            case 'date':
-                            case 'datetime':
-                            case 'timestamp':
-                                fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
-                                filterCondition = getFilterCondition(filterCondition);
-                                break;
-                            case 'string':
-                                if (WM.isArray(fieldValue)) {
-                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
-                                } else {
-                                    filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES['anywhere'];
-                                }
-                                break;
-                            default:
-                                filterCondition = getFilterCondition(filterCondition);
-                                break;
-                            }
-                            attributeName = getAttributeName(fieldName);
-                            filterOption  = {
-                                'attributeName'   : attributeName,
-                                'attributeValue'  : fieldValue,
-                                'attributeType'   : _.toUpper(fieldType),
-                                'filterCondition' : filterCondition
-                            };
-                            if (options.searchWithQuery) {
-                                filterOption.isVariableFilter = fieldOptions.isVariableFilter;
-                            }
-                            filterOptions.push(filterOption);
-                        } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
-                            attributeName = getAttributeName(fieldName);
-                            if (fieldType && fieldType !== 'string') {
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
-                            }
-                            filterOption = {
-                                'attributeName'   : attributeName,
-                                'attributeValue'  : '',
-                                'attributeType'   : _.toUpper(fieldType),
-                                'filterCondition' : filterCondition
-                            };
-                            if (options.searchWithQuery) {
-                                filterOption.isVariableFilter = fieldOptions.isVariableFilter;
-                            }
-                            filterOptions.push(filterOption);
-                        }
-                    });
+                    filterOptions = getFilterOptions(variable, filterFields, options);
                 }
                 /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
                  should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
@@ -916,6 +929,8 @@ wm.variables.services.$liveVariable = [
                     prevCompositeKeysData = {},
                     id,
                     columnName,
+                    clonedFields,
+                    output,
                     inputFields = options.inputFields || variableDetails.inputFields;
                 /* evaluate the callback scope */
                 /* get the callback scope for the variable based on its owner */
@@ -928,8 +943,8 @@ wm.variables.services.$liveVariable = [
 
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
-                    var clonedFields = Utils.getClonedObject(inputFields),
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, clonedFields);
+                    clonedFields = Utils.getClonedObject(inputFields);
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, clonedFields);
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
@@ -1104,7 +1119,7 @@ wm.variables.services.$liveVariable = [
                                     //setting newDataSet as the response to service variable onPrepareSetData
                                     response = newDataSet;
                                 }
-                                variableDetails.dataSet = response
+                                variableDetails.dataSet = response;
                             }
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
@@ -1438,50 +1453,66 @@ wm.variables.services.$liveVariable = [
                     return targetObj;
                 },
                 getRelatedTableData: function (variable, columnName, options, success, error) {
-                    var projectID = $rootScope.project.id || $rootScope.projectName,
-                        resultProperties = {
-                            'firstResult' : 0
-                        },
+                    var projectID    = $rootScope.project.id || $rootScope.projectName,
                         relatedTable = _.find(variable.relatedTables, function (table) {
                             return table.relationName === columnName || table.columnName === columnName; //Comparing column name to support the old projects
                         }),
                         selfRelatedCols = _.map(_.filter(variable.relatedTables, function (o) { //Find out the self related columns
                             return o.type === variable.type;
-                        }), 'relationName');
-                    /* if orderBy properties is set, append it to the resultProperties */
-                    if (variable.orderBy) {
-                        resultProperties.orderBy = variable.orderBy.split(',');
-                    }
-                    DatabaseService.readTableData({
-                        "projectID": projectID,
-                        "service": variable.prefabName ? "" : "services",
-                        "dataModelName": variable.liveSource,
-                        "entityName": relatedTable.type,
-                        "page": 1,
-                        "size": resultProperties.maxResults,
-                        "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
+                        }), 'relationName'),
+                        filterFields = [],
+                        orderBy,
+                        filterOptions,
+                        query,
+                        action;
+                    _.forEach(options.filterFields, function (value, key) {
+                        value.fieldName = key;
+                        value.type      = getFieldType(columnName, variable, key);
+                        filterFields.push(value);
+                    });
+                    filterOptions = getFilterOptions(variable, filterFields, options);
+                    query         = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ');
+                    action        = query ? 'searchTableDataWithQuery' : 'readTableData';
+                    orderBy       = _.isEmpty(options.orderBy) ? '' : 'sort=' + options.orderBy;
+                    DatabaseService[action]({
+                        'projectID'     : projectID,
+                        'service'       : variable.prefabName ? '' : 'services',
+                        'dataModelName' : variable.liveSource,
+                        'entityName'    : relatedTable.type,
+                        'page'          : options.page || 1,
+                        'size'          : options.pagesize || '',
+                        'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
+                        'query'         : query || '',
+                        'sort'          : orderBy
                     }, function (response) {
                         /*Remove the self related columns from the data. As backend is restricting the self related column to one level, In liveform select, dataset and datavalue object
                         * equality does not work. So, removing the self related columns to acheive the quality*/
                         var data = _.map(response.content, function (o) { return _.omit(o, selfRelatedCols); });
-                        Utils.triggerFn(success, data);
+                        Utils.triggerFn(success, data, undefined, response ? {'dataSize': response.totalElements, 'maxResults': response.size, 'currentPage': response.number + 1} : {});
                     }, function (errMsg) {
                         Utils.triggerFn(error, errMsg);
                     });
                 },
-                getRelatedTablePrimaryKeys: function (variable, columnName, options) {
-                    var relatedVariable,
-                        relatedTable,
-                        primaryKeys;
-                    options = options || {};
-                    options.scope = options.scope || $rootScope;
-                    relatedTable = _.find(variable.relatedTables, function (table) {
-                        /*Comparing column name to support the old projects*/
-                        return table.relationName === columnName || table.columnName === columnName;
-                    });
-                    relatedVariable = relatedTable && options.scope.Variables[relatedTable.watchOn];
-                    primaryKeys = relatedVariable ? relatedVariable.getPrimaryKey() : [];
-                    return primaryKeys;
+                getRelatedTablePrimaryKeys: function (variable, relatedField) {
+                    var primaryKeys,
+                        result,
+                        relatedCols;
+                    if (!variable.propertiesMap) {
+                        return;
+                    }
+                    result = _.find(variable.propertiesMap.columns || [], {'fieldName': relatedField});
+                    // if related field name passed, get its type from columns inside the current field
+                    if (result) {
+                        relatedCols = result.columns;
+                        primaryKeys = _.map(_.filter(relatedCols, 'isPrimaryKey'), 'fieldName');
+                        if (primaryKeys.length) {
+                            return primaryKeys;
+                        }
+                        if (relatedCols && relatedCols.length) {
+                            relatedCols = _.find(relatedCols, {'isRelated': false});
+                            return relatedCols && relatedCols.fieldName;
+                        }
+                    }
                 }
             },
 
@@ -1576,8 +1607,8 @@ wm.variables.services.$liveVariable = [
                 getRelatedTableData: function (columnName, options, success, error) {
                     return methods.getRelatedTableData(this, columnName, options, success, error);
                 },
-                getRelatedTablePrimaryKeys: function (columnName, options) {
-                    return methods.getRelatedTablePrimaryKeys(this, columnName, options);
+                getRelatedTablePrimaryKeys: function (columnName) {
+                    return methods.getRelatedTablePrimaryKeys(this, columnName);
                 },
                 init: function () {
                     if (this.operation === 'read') {
