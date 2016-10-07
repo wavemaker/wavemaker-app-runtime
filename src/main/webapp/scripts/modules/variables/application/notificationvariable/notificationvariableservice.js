@@ -20,6 +20,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
             notify: function (variable, options, success, error) {
                 var variableName = variable.name,
                     dialogId = "notification" + variable.operation + "dialog",
+                    commonPageDialogId = 'Common' + _.capitalize(variable.operation) + 'Dialog',
                     variableOwner = variable.owner,
                     operation = variable.operation,
                     toasterOptions = (WM.element('[toaster-options]').scope() && WM.element('[toaster-options]').scope().config) || {},
@@ -68,7 +69,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     } else {
                         scope = options.scope.$$childTail || {};
                     }
-
+                    dialogId = (variableOwner === 'App' && WM.element('[name=' + commonPageDialogId + ']').length) ? commonPageDialogId : dialogId;
                     DialogService.showDialog(dialogId, {
                         resolve: {
                             dialogParams: function () {

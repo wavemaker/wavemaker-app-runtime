@@ -48,6 +48,16 @@ wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
             url: ":filePath",
             method: "GET"
         }
+    },
+    COMMON_PAGE: {
+        get: {
+            url: 'services/projects/:projectId/pages/Common/Common.html',
+            method: "GET"
+        },
+        post: {
+            url: 'services/projects/:projectId/pages/Common/Common.html',
+            method: "POST"
+        }
     }
 });
 
