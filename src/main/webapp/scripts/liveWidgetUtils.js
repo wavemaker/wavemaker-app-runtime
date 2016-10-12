@@ -368,7 +368,8 @@ WM.module('wm.widgets.live')
                     'action'        :   attrs.action,
                     'accessroles'   :   attrs.accessroles,
                     'shortcutkey'   :   attrs.shortcutkey,
-                    'disabled'      :   attrs.disabled || 'false'
+                    'disabled'      :   attrs.disabled || 'false',
+                    'tabindex'      :   attrs.tabindex ? +attrs.tabindex : undefined
                 };
             }
 

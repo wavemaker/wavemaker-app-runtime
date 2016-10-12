@@ -1243,6 +1243,9 @@ $.widget('wm.datagrid', {
     isDataModified: function ($editableElements, rowData) {
         var isDataChanged = false,
             self          = this;
+        function getEpoch(val) {
+            return val ? moment(val).valueOf() : val;
+        }
         $editableElements.each(function () {
             var $el          = $(this),
                 colId        = $el.attr('data-col-id'),
@@ -1254,7 +1257,17 @@ $.widget('wm.datagrid', {
                 //For upload widget, check if any file is uploaded
                 isDataChanged = document.forms[$el.attr('form-name')][colDef.field].files.length > 0;
             } else {
-                isDataChanged = !text && (originalData === null || originalData === undefined) ? false : !(originalData == text);
+                //If new value and old value are not defined, then data is not changed
+                if (!text && (originalData === null || originalData === undefined)) {
+                    isDataChanged = false;
+                } else {
+                    //For datetime, compare the values in epoch format
+                    if (colDef.editWidgetType === 'datetime') {
+                        isDataChanged =  !(getEpoch(originalData) === getEpoch(text));
+                    } else {
+                        isDataChanged =  !(originalData == text);
+                    }
+                }
             }
             if (isDataChanged) {
                 return !isDataChanged;
@@ -2144,7 +2157,7 @@ $.widget('wm.datagrid', {
                     clsAttr += ' delete delete-row-button ';
                 }
 
-                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + '>'
+                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + ' tabindex="' + def.tabindex + '">'
                     + '<i class="app-icon ' + def.iconclass + '"></i>';
                 if (def.displayName) {
                     actionsTemplate += '<span class="btn-caption">' + def.displayName + '</span>';//Appending display name
