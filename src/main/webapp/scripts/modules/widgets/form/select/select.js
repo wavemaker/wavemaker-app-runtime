@@ -89,7 +89,9 @@ WM.module('wm.widgets.form')
             /*store parsed data in 'data'*/
             var data = dataSet,
                 dataField = scope.datafield,
-                displayField = FormWidgetUtils.getDisplayField(dataSet, scope.displayfield || scope.datafield);
+                displayField = FormWidgetUtils.getDisplayField(dataSet, scope.displayfield || scope.datafield),
+                orderedKeys = [],
+                key;
 
             /*initialize the data, for 'All Fields'*/
             _dataSetModelProxyMap[scope.$id] = {};
@@ -102,7 +104,9 @@ WM.module('wm.widgets.form')
                     data[WidgetUtilService.getObjValueByKey(dataSet, dataField)] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                 } else {
                     _.forEach(dataSet, function (option) {
-                        data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                        key = WidgetUtilService.getObjValueByKey(option, dataField);
+                        orderedKeys.push(key);
+                        data[key] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                     });
                 }
 
@@ -134,6 +138,7 @@ WM.module('wm.widgets.form')
                     });
                 }
             }
+            scope.orderedKeys = orderedKeys;
             return data;
         }
 
@@ -173,16 +178,28 @@ WM.module('wm.widgets.form')
                             scope.selectOptions.push({"key": option, "value": option});
                         });
                     } else if (WM.isObject(dataset)) {
-                        _.forEach(dataset, function (val, key) {
-                            scope.selectOptions.push({"key": key, "value": val});
-                        });
+                        if (scope.orderedKeys.length) {
+                            _.forEach(scope.orderedKeys, function (val) {
+                                scope.selectOptions.push({"key": _.toString(val), "value": dataset[val]});
+                            });
+                        } else {
+                            _.forEach(dataset, function (val, key) {
+                                scope.selectOptions.push({"key": key, "value": val});
+                            });
+                        }
                     }
                 } else if (WM.isObject(dataset)) {
                     /*filter the dataSet based on datafield & displayfield*/
                     dataset = parseDataSet(dataset, scope);
-                    _.forEach(dataset, function (val, key) {
-                        scope.selectOptions.push({"key": key, "value": val});
-                    });
+                    if (scope.orderedKeys.length) {
+                        _.forEach(scope.orderedKeys, function (val) {
+                            scope.selectOptions.push({"key": _.toString(val), "value": dataset[val]});
+                        });
+                    } else {
+                        _.forEach(dataset, function (val, key) {
+                            scope.selectOptions.push({"key": key, "value": val});
+                        });
+                    }
                 } else {
                     /* if dataSet is an string, convert it to object */
                     if (WM.isString(dataset)) {
