@@ -558,8 +558,8 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.time.mobile": {
-                        "hourstep": {"show": false},
-                        "minutestep": {"show": false}
+                        "hourstep": {"type": "number", "value": 1, "show": false},
+                        "minutestep": {"type": "number", "value": 15, "show": false}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time", "bindable": "in-bound"},
@@ -583,10 +583,10 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "showbuttonbar": {"type": "boolean", "value": true}
                     },
-                    "wm.datetime.mobile":{
-                        "datepattern": {"show": false},
-                        "hourstep": {"show": false},
-                        "minutestep": {"show": false}
+                    "wm.datetime.mobile": {
+                        "datepattern": {"value": "yyyy-MM-dd hh:mm:ss a", "type": "list", "show": false},
+                        "hourstep": {"type": "number", "value": 1, "show": false},
+                        "minutestep": {"type": "number", "value": 15, "show": false}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},

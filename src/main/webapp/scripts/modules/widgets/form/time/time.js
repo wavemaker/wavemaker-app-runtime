@@ -130,9 +130,9 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
+                'pre': function (scope, element, attrs) {
                     scope.widgetProps = widgetProps;
-                    if ($rs.isMobileApplicationType) {
+                    if ($rs.isMobileApplicationType && attrs.type !== 'uib-picker') {
                         scope._nativeMode = true;
                     }
                 },

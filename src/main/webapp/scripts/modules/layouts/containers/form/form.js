@@ -175,6 +175,15 @@ WM.module('wm.layouts.containers')
                 break;
             }
         }
+        function resetFormState($s) {
+            var ngForm = $s.elScope.ngform;
+            if (!ngForm) {
+                return;
+            }
+            //Reset the form to original state on cancel/ save
+            ngForm.$setUntouched();
+            ngForm.$setPristine();
+        }
         function resetFormFields(element) {
             var eleScope = element.scope();
             element.find('[role="input"]').each(function () {
@@ -185,6 +194,7 @@ WM.module('wm.layouts.containers')
         /*Called by users programatically.*/
         function resetForm($s, element) {
             resetFormFields(element);
+            resetFormState($s);
             if ($s.formFields) {
                 _.forEach($s.formFields, function (dataValue) {
                     if (dataValue.type === 'blob') {
@@ -260,6 +270,7 @@ WM.module('wm.layouts.containers')
                     template,
                     formData,
                     formVariable = element.scope().Variables[scope.dataset];
+                resetFormState(scope);
                 //Set the values of the widgets inside the form (other than form fields) in form data
                 formData = scope.constructDataObject();
                 LiveWidgetUtils.setFormWidgetsValues(element, formData);

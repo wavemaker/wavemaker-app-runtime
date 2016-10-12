@@ -515,7 +515,8 @@ WM.module('wm.widgets.live')
                                 }
                                 _.forEach(scope.formFields, function (filterField) {
                                     var index,
-                                        filterOn = filterField.filterOn;
+                                        filterOn = filterField.filterOn,
+                                        filterOnField;
                                     if (!dataSetWidgetTypes[filterField.widget] || filterField.tempDataset) {
                                         return;
                                     }
@@ -523,6 +524,11 @@ WM.module('wm.widgets.live')
                                         index = _.findIndex(scope.formFields, function (field) {
                                             return field.field === filterOn;
                                         });
+                                        filterOnField = scope.formFields[index];
+                                        //For related fields, add lookupfield for query generation
+                                        if (filterOnField && filterOnField.isRelated) {
+                                            filterOn += '.' +  filterOnField.lookupField;
+                                        }
                                         scope.$watch('formFields[' + index + '].value', function (newVal, oldVal) {
                                             var filterFields = {},
                                                 query,
@@ -894,7 +900,7 @@ WM.module('wm.widgets.live')
 
                         buttonTemplate = '<wm-button caption="' + buttonDef.displayName + '" show="{{buttonArray[' + index + '].show}}" hint="' + buttonDef.title + '"' +
                             'class="' + buttonDef.class + '" iconclass="' + buttonDef.iconclass + '"' +
-                            'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '" shortcutkey="' + buttonDef.shortcutkey + '" disabled="' + buttonDef.disabled + '"></wm-button>';
+                            'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '" shortcutkey="' + buttonDef.shortcutkey + '" disabled="' + buttonDef.disabled + '" tabindex="' + buttonDef.tabindex + '"></wm-button>';
                         element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         $compile(element.contents())(scope.parentIsolateScope);
                         //Removing the default template for the directive
