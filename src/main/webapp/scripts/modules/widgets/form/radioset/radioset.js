@@ -30,6 +30,10 @@ WM.module('wm.widgets.form')
             var selectedValue;
             /*if radioValue is provided use that to assign model value else use the selectedvalue property if provided*/
             /*Handling the case where the selected value itself is false*/
+            if (scope.selectedvalue === '') {
+                scope._model_ = [];
+                selectedValue = '';
+            }
             if (radioValue || radioValue === false) {
                 selectedValue = radioValue;
             } else {
