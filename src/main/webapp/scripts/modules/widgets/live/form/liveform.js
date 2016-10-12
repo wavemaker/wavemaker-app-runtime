@@ -1,4 +1,4 @@
-/*global WM, window, document, FormData, Blob, _*/
+/*global WM, window, document, FormData, Blob, _, wm*/
 /*Directive for liveform */
 
 WM.module('wm.widgets.live')
@@ -1101,7 +1101,10 @@ WM.module('wm.widgets.live')
                             isLayoutDialog,
                             externalForm = element.closest('form.app-form'),
                             parentEle    = element.parent(),
-                            columnDefProps;
+                            columnDefProps,
+                            boundVariable,
+                            primaryKeys,
+                            displayField;
                         function setDefaultValue() {
                             if (parentScope._widgettype === 'wm-liveform') {
                                 parentScope.setDefaultValueToValue(columnDef);
@@ -1171,31 +1174,36 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!attrs.dataset && attrs.isRelated && CONSTANTS.isRunMode) {
-                            relatedDataWatchHandler = parentScope.$watch(parentScope.binddataset.replace('bind:', ''), function (newVal) {
-                                if (!newVal) {
-                                    return;
+                            boundVariable = elScope.Variables[parentScope.variableName || Utils.getVariableName(parentScope)];
+                            primaryKeys   = boundVariable.getRelatedTablePrimaryKeys(columnDef.key);
+                            //For autocomplete widget, set the dataset and related field. Autocomplete widget will make the call to get related data
+                            if (columnDef.widget === 'autocomplete' || columnDef.widget === 'typeahead') {
+                                columnDef.relatedfield = columnDef.key;
+                                columnDef.dataset      = parentScope.binddataset;
+                                columnDef.datafield    = 'All Fields';
+                                if (primaryKeys.length > 0) {
+                                    displayField = primaryKeys[0];
                                 }
-                                relatedDataWatchHandler();
-                                var boundVariable = elScope.Variables[parentScope.variableName || Utils.getVariableName(parentScope)];
-                                boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
-                                    var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
-                                        relatedFormField = parentScope.formFields[index],
-                                        displayField;
-                                    relatedFormField.datafield = 'All Fields';
-                                    relatedFormField.dataset = response;
-                                    if (primaryKeys.length > 0) {
-                                        displayField = primaryKeys[0];
-                                    } else {
-                                        displayField = _.head(_.keys(_.get(response, '[0]')));
+                                columnDef.searchkey    = columnDef.searchkey || displayField;
+                                columnDef.displaylabel = columnDef.displaylabel || displayField;
+                            } else {
+                                relatedDataWatchHandler = parentScope.$watch(parentScope.binddataset.replace('bind:', ''), function (newVal) {
+                                    if (!newVal) {
+                                        return;
                                     }
-                                    if (relatedFormField.widget === 'typeahead' || relatedFormField.widget === 'autocomplete') { //For search widget, set search key and display label
-                                        relatedFormField.searchkey    = relatedFormField.searchkey || displayField;
-                                        relatedFormField.displaylabel = relatedFormField.displaylabel || displayField;
-                                    } else {
-                                        relatedFormField.displayfield = displayField;
-                                    }
+                                    relatedDataWatchHandler();
+                                    boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
+                                        columnDef.datafield = 'All Fields';
+                                        columnDef.dataset   = response;
+                                        if (primaryKeys.length > 0) {
+                                            displayField = primaryKeys[0];
+                                        } else {
+                                            displayField = _.head(_.keys(_.get(response, '[0]')));
+                                        }
+                                        columnDef.displayfield = displayField;
+                                    });
                                 });
-                            });
+                            }
                         }
 
                         if (isLayoutDialog) {

@@ -1704,6 +1704,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
+                        "loadingdatamsg": {"type": "string", "value": "Loading items...", "bindable": "in-bound"},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},

@@ -22,12 +22,13 @@ WM.module('wm.widgets.basic')
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
                     ' autocomplete="off"' +
-                    ' typeahead-append-to-body="true" ' +
                     ' typeahead-loading="_loadingItems" ' +
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
-                    ' typeahead-template-url="template/widget/form/searchlist.html">' +
+                    ' typeahead-template-url="template/widget/form/searchlist.html"' +
+                    ' typeahead-min-length="minLength" >' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
+                '<span class="fa fa-close form-control-feedback clear-btn" ng-click="closeSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
@@ -47,7 +48,8 @@ WM.module('wm.widgets.basic')
                     ' ng-disabled="disabled" ' +
                     ' uib-typeahead="item.wmDisplayLabel ||item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
-                    ' typeahead-template-url="template/widget/form/searchlist.html">' +
+                    ' typeahead-template-url="template/widget/form/searchlist.html"' +
+                    ' typeahead-min-length="minLength" >' +
                 '<i class="btn-close wi wi-cancel" ng-show="showClosebtn" ng-click="clearText();"></i>' +
             '</div>'
             );
@@ -100,8 +102,9 @@ WM.module('wm.widgets.basic')
         '$servicevariable',
         'VARIABLE_CONSTANTS',
         '$templateCache',
+        '$compile',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS, $templateCache) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS, $templateCache, $compile) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
@@ -112,12 +115,15 @@ WM.module('wm.widgets.basic')
                     'active'         : true,
                     'type'           : true,
                     'width'          : true,
-                    'height'         : true
+                    'height'         : true,
+                    'show'           : true
                 };
 
             // This function updates the query value.
             function updateModel($is, $el, immediate) {
                 if (immediate) {
+                    //Reset the page number 1 on input change
+                    $is.page = 1;
                     $is.query = $el.val();
                 } else {
                     $timeout(function () {
@@ -222,6 +228,8 @@ WM.module('wm.widgets.basic')
 
             // to filter & set the dataset property of the search widget
             function setDataSet(data, $is, element) {
+                var dataSet,
+                    defaultLabel;
                 // sanity check for data availability
                 if (!data) {
                     // remove the searchkey attr when data set is not defined
@@ -238,8 +246,8 @@ WM.module('wm.widgets.basic')
                         updatePropertyOptions($is); //update searchkey options in case of service variables
                     }
                     //Selecting first option by default for displayValue if it is undefined
-                    if(!$is.displaylabel && !$is.binddisplaylabel) {
-                        var defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
+                    if (!$is.displaylabel && !$is.binddisplaylabel) {
+                        defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
                         $is.displaylabel = defaultLabel;
                         $rs.$emit('set-markup-attr', $is.widgetid, {'displaylabel': defaultLabel});
                     }
@@ -249,7 +257,7 @@ WM.module('wm.widgets.basic')
                     // get the variable-data w.r.t the variable type
                     data = (data && data.data) || data;
                     // set data-set
-                    var dataSet = Utils.getClonedObject(data);
+                    dataSet = Utils.getClonedObject(data);
                     // if data-set is an array, show the 'listOfObjects' mode
                     if (WM.isArray(dataSet)) {
                         dataSet = FormWidgetUtils.getOrderedDataSet(dataSet, $is.orderby);
@@ -268,8 +276,8 @@ WM.module('wm.widgets.basic')
                             });
                         }
 
-                        // set the itemList
-                        $is.itemList = dataSet;
+                        // set the itemList. If page number is greater than 1, append the results.
+                        $is.itemList = $is.page > 1 ? $is.itemList.concat(dataSet) : dataSet;
 
                     } else if (WM.isString(dataSet) && dataSet.trim()) {
                         // make the string an array, for ex. => if dataSet is 1,2,3 then make it [1,2,3]
@@ -347,11 +355,19 @@ WM.module('wm.widgets.basic')
 
             //Toggles search icon based on the type of search and dataset type
             function toggleSearchIcon($is, type) {
-                $is.showSearchIcon = type === 'search';
+                if (type === 'search') {
+                    $is.showSearchIcon = true;
+                    $is.minLength      = 1;
+                } else {
+                    $is.showSearchIcon = false;
+                    $is.minLength      = 0; //For autocomplete, set minlength as 0
+                }
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, element, key, newVal) {
+                var typeAheadInput,
+                    typeAheadDropDown;
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
@@ -370,6 +386,15 @@ WM.module('wm.widgets.basic')
                 case 'width':
                 case 'height':
                     element.css(key, newVal);
+                    break;
+                case 'show':
+                    if (newVal) {
+                        $timeout(function () {
+                            typeAheadInput    = element.find('input[uib-typeahead]');
+                            typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
+                            typeAheadDropDown.width(typeAheadInput.width());
+                        });
+                    }
                     break;
                 }
             }
@@ -406,7 +431,8 @@ WM.module('wm.widgets.basic')
 
                 // setup common request param values
                 requestParams = {
-                    'pagesize'           : $is.limit || $is.pagesize || 20,
+                    'pagesize'           : $is.limit || $is.pagesize,
+                    'page'               : $is.page || 1,
                     'skipDataSetUpdate'  : true, //don't update the actual variable
                     'skipToggleState'    : true //Dont change the varibale toggle state as this is a independent call
                 };
@@ -422,6 +448,7 @@ WM.module('wm.widgets.basic')
                     requestParams.filterFields = inputFields;
                     requestParams.logicalOp = 'OR';
                     requestParams.searchWithQuery = true; // search results using the query api
+                    requestParams.orderBy = $is.orderby ? _.replace($is.orderby, /:/g, ' ') : '';
                     break;
                 case 'wm.ServiceVariable':
                     // get request params for service variable
@@ -469,61 +496,76 @@ WM.module('wm.widgets.basic')
                     $is._loadingItems = flag;
                 });
             }
-
+            function isLastPage(page, dataSize, maxResults) {
+                var pageCount = ((dataSize > maxResults) ? (Math.ceil(dataSize / maxResults)) : (dataSize < 0 ? 0 : 1));
+                return page === pageCount;
+            }
             // This function fetch the updated variable data in case search widget is bound to some variable
             function fetchVariableData($is, el, searchValue, $s) {
                 var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s)),  // get the bound variable
                     requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
                     deferred      = $q.defer(),
                     customFilter  = $filter('_custom_search_filter');
-
+                function handleQuerySuccess(response, props, pageOptions) {
+                    var data            = response.content || response,
+                        expressionArray = _.split($is.binddataset, '.'),
+                        dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
+                    if (pageOptions) {
+                        $is.page       = pageOptions.currentPage;
+                        $is.isLastPage = isLastPage($is.page, pageOptions.dataSize, pageOptions.maxResults);
+                    } else if (WM.isObject(response) && Utils.isPageable(response)) {
+                        $is.page       = response.number + 1;
+                        $is.isLastPage = isLastPage($is.page, response.totalElements, response.size);
+                    }
+                    //if data expression exists, extract the data from the expression path
+                    if (dataExpression) {
+                        data = _.get(data, dataExpression);
+                    }
+                    if (!_.isArray(data)) {
+                        data = getTransformedData(variable, data);
+                    }
+                    // in case of no data received, resolve the promise with empty array
+                    if (!data.length) {
+                        deferred.resolve([]);
+                    } else {
+                        if ($is.datavalue) {
+                            $is.isDefaultValueExist = true;
+                        }
+                        /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
+                         with which we are resolving the promise
+                         */
+                        setDataSet(data, $is, el, $s);
+                        // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
+                        if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
+                            deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
+                            $is.isVariableDataAvailable = true;
+                        } else {
+                            deferred.resolve($is.itemList);
+                        }
+                        //Checking if drop up is required for the search results menu, if yes, add class dropup to menu and set top to auto
+                        $timeout(function () {
+                            if (isDropUpRequired(el)) {
+                                el.addClass('dropup').find('ul').css('top', 'auto');
+                            } else {
+                                el.removeClass('dropup').find('ul').css('top', '100%');
+                            }
+                        });
+                    }
+                }
+                function handleQueryError() {
+                    // setting loadingItems to false when some error occurs, so that loading icon is hidden
+                    setLoadingItemsFlag($is, false);
+                }
                 if (variable) {
-
                     // If search key is not specified then perform local search -live variable
                     if (!$is.searchkey) {
                         deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
                     } else {
-                        // call variable update
-                        variable.update(requestParams, function handleQuerySuccess(response) {
-                            var data = response.content || response,
-                                expressionArray = _.split($is.binddataset, '.'),
-                                dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
-
-                            //if data expression exists, extract the data from the expression path
-                            if (dataExpression) {
-                                data = _.get(data, dataExpression);
-                            }
-                            if (!_.isArray(data)) {
-                                data = getTransformedData(variable, data);
-                            }
-                            // in case of no data received, resolve the promise with empty array
-                            if (!data.length) {
-                                deferred.resolve([]);
-                            } else {
-                                /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
-                                 with which we are resolving the promise
-                                 */
-                                setDataSet(data, $is, el, $s);
-                                // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
-                                if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
-                                    deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
-                                    $is.isVariableDataAvailable = true;
-                                } else {
-                                    deferred.resolve($is.itemList);
-                                }
-                                //Checking if drop up is required for the search results menu, if yes, add class dropup to menu and set top to auto
-                                $timeout(function () {
-                                    if (isDropUpRequired(el)) {
-                                        el.addClass('dropup').find('ul').css('top', 'auto');
-                                    } else {
-                                        el.removeClass('dropup').find('ul').css('top', '100%');
-                                    }
-                                });
-                            }
-                        }, function () {
-                            // setting loadingItems to false when some error occurs, so that loading icon is hidden
-                            setLoadingItemsFlag($is, false);
-                        });
+                        if ($is.relatedfield) {
+                            variable.getRelatedTableData($is.relatedfield, requestParams, handleQuerySuccess, handleQueryError);
+                        } else {
+                            variable.update(requestParams, handleQuerySuccess, handleQueryError);
+                        }
                     }
                 }
                 return deferred.promise;
@@ -535,8 +577,15 @@ WM.module('wm.widgets.basic')
                     isBoundToVariable     = Utils.stringStartsWith(tAttrs.dataset, 'bind:Variables.');
 
                 // in case dataSet is bound to variable, add delay of 500ms before the typeahead query kicked-off
-                if (isBoundToVariable && inputTpl) {
-                    inputTpl.attr('typeahead-wait-ms', 500);
+                if ((isBoundToVariable && inputTpl) || tAttrs.type === 'autocomplete') {
+                    inputTpl.attr('typeahead-wait-ms', CONSTANTS.DELAY.SEARCH_WAIT);
+                }
+                //For mobile view, append the typeahead dropdown to element itself.
+                if (Utils.isMobile() || $rs.isMobileApplicationType) {
+                    inputTpl.attr('typeahead-append-to-body', false);
+                    inputTpl.attr('typeahead-focus-on-select', false);
+                } else {
+                    inputTpl.attr('typeahead-append-to-body', true);
                 }
             }
 
@@ -637,8 +686,12 @@ WM.module('wm.widgets.basic')
 
                     },
                     'post': function ($is, element, attrs) {
-                        var wp, searchItem;
-
+                        var searchItem,
+                            typeAheadInput,
+                            typeAheadDropDown;
+                        $is.minLength  = 1;
+                        $is.page       = 1;
+                        $is.isLastPage = true;
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element), $is, notifyFor);
 
@@ -660,6 +713,7 @@ WM.module('wm.widgets.basic')
                             $is.datavalue = ($is.datafield && $is.datafield !== 'All Fields') ? ($item  && _.get($item, $is.datafield)) : $item;
                             $is.queryModel = $item;
                             $is.query = $label;
+                            $is.closeSearch();
                             // call user 'onSubmit & onSelect' fn
                             $is.onSelect({$event: $event, $scope: $is, selectedValue: $is.datavalue});
                             $is.onSubmit({$event: $event, $scope: $is});
@@ -671,12 +725,6 @@ WM.module('wm.widgets.basic')
                             element.find('input').val('');
                             $is.showClosebtn = false;
                         };
-
-                        // set the searchquery if the datavalue exists.
-                        if (CONSTANTS.isRunMode) {
-                            // keyup event to enable/ disable close icon of the search input.
-                            element.bind('keyup', onKeyUp.bind(undefined, $is, element));
-                        }
                         WidgetUtilService.postWidgetCreate($is, element, attrs);
                         element.removeAttr('tabindex');
 
@@ -689,9 +737,40 @@ WM.module('wm.widgets.basic')
                         }
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
-                        $timeout(function () {
-                            WM.element('body').find('> [uib-typeahead-popup]').addClass('app-search');
-                        });
+
+                        // set the searchquery if the datavalue exists.
+                        if (CONSTANTS.isRunMode) {
+                            // keyup event to enable/ disable close icon of the search input.
+                            element.bind('keyup', onKeyUp.bind(undefined, $is, element));
+                            $timeout(function () {
+                                typeAheadInput    = element.find('input[uib-typeahead]');
+                                if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
+                                    typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
+                                    typeAheadDropDown.addClass('app-search');
+                                } else {
+                                    typeAheadDropDown = element.find('> [uib-typeahead-popup]');
+                                    typeAheadInput.bind('focus', function () {
+                                        //Add full screen class on focus of the input element
+                                        element.addClass('full-screen');
+                                        //Manually trigger the search
+                                        typeAheadInput.controller('ngModel').$parsers[0]($is.query);
+                                    });
+                                }
+                                typeAheadDropDown.append($compile('<div class="status" ng-show="_loadingItems"><i class="fa fa-circle-o-notch fa-spin"></i><span>{{loadingdatamsg}}</span></div>')($is));
+                                typeAheadDropDown.bind('scroll', function () {
+                                    var $item = WM.element(this);
+                                    if (!$is._loadingItems && !$is.isLastPage && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
+                                        //Increase the page number and trigger force query update
+                                        $is.page = $is.page + 1;
+                                        //Manually trigger the search
+                                        typeAheadInput.controller('ngModel').$parsers[0]($is.query);
+                                    }
+                                });
+                            });
+                        }
+                        $is.closeSearch = function () {
+                            element.removeClass('full-screen');
+                        };
                         /*Called from form reset when users clicks on form reset*/
                         $is.reset = function () {
                             $is._model_ = undefined;
