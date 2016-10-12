@@ -497,10 +497,11 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "showbuttonbar": {"type": "boolean", "value": true}
                     },
-                    "wm.date.mobile":{
+                    "wm.date.mobile": {
                         "datepattern": {"show": false},
                         "excludedays": {"show": false},
-                        "excludedates": {"show": false}
+                        "excludedates": {"show": false},
+                        "showweeks": {"show": false}
                     },
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -559,7 +560,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.time.mobile": {
                         "hourstep": {"type": "number", "value": 1, "show": false},
-                        "minutestep": {"type": "number", "value": 15, "show": false}
+                        "minutestep": {"type": "number", "value": 15, "show": false},
+                        "timepattern": {"show": false}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time", "bindable": "in-bound"},
@@ -586,7 +588,10 @@ WM.module('wm.widgets.base', [])
                     "wm.datetime.mobile": {
                         "datepattern": {"value": "yyyy-MM-dd hh:mm:ss a", "type": "list", "show": false},
                         "hourstep": {"type": "number", "value": 1, "show": false},
-                        "minutestep": {"type": "number", "value": 15, "show": false}
+                        "minutestep": {"type": "number", "value": 15, "show": false},
+                        "showweeks": {"show": false},
+                        "excludedays": {"show": false},
+                        "excludedates": {"show": false}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -1593,7 +1598,6 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.tabbar" : {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "dropposition": {"type": "list", "options": ["down", "up"], "value": "up"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "morebuttoniconclass": {"type": "string", "widget": "select-icon", "pattern": classRegex, "value": "wi wi-more-horiz"},
                         "morebuttonlabel":  {"type": "string", "value": "more"}
