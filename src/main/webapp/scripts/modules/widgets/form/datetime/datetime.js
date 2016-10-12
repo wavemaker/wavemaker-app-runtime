@@ -205,10 +205,10 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                pre: function (scope) {
+                pre: function (scope, element, attrs) {
                     scope.widgetProps = widgetProps;
                     scope._dateOptions = {};
-                    if ($rs.isMobileApplicationType) {
+                    if ($rs.isMobileApplicationType && attrs.type !== 'uib-picker') {
                         scope._nativeMode = true;
                     }
                 },
@@ -353,7 +353,7 @@ WM.module('wm.widgets.form')
                         set: function (val) {
                             var dateTime;
                             isCurrentDateTime = val === CURRENT_DATETIME;
-                            if (scope._nativeMode && attrs.type !== 'uib-picker') {
+                            if (scope._nativeMode) {
                                 if (val) {
                                     if (isCurrentDateTime) {
                                         dateTime = new Date();
