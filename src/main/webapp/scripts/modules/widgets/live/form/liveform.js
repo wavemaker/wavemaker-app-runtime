@@ -288,9 +288,8 @@ WM.module('wm.widgets.live')
                                     } else {
                                         /*get updated data without refreshing page*/
                                         variable.update({
-                                            "type": "wm.LiveVariable",
-                                            "isNotTriggerForRelated": true
-                                        }, WM.noop);
+                                            'skipToggleState': true
+                                        });
                                         onVariableUpdate(response, newForm, updateMode);
                                     }
                                 }
@@ -324,9 +323,8 @@ WM.module('wm.widgets.live')
                                     } else {
                                         /*get updated data without refreshing page*/
                                         variable.update({
-                                            "type": "wm.LiveVariable",
-                                            "isNotTriggerForRelated": true
-                                        }, WM.noop);
+                                            'skipToggleState': true
+                                        });
                                         onVariableUpdate(response, newForm, updateMode);
                                     }
                                 }
@@ -355,8 +353,8 @@ WM.module('wm.widgets.live')
                                     $scope.$emit('on-result', 'delete', success);
                                 } else {
                                     variable.update({
-                                        'type': 'wm.LiveVariable'
-                                    }, WM.noop);
+                                        'skipToggleState': true
+                                    });
                                 }
 
                             }, function (error) {
@@ -1304,7 +1302,8 @@ WM.module('wm.widgets.live')
         'use strict';
 
         var getTemplate = function (btnField, index) {
-            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" hint="' + btnField.title + '"  shortcutkey="' + btnField.shortcutkey + '" disabled="' + btnField.disabled + '"';
+            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" ' +
+                'hint="' + btnField.title + '"  shortcutkey="' + btnField.shortcutkey + '" disabled="' + btnField.disabled + '"  tabindex="' + btnField.tabindex + '"';
             if (btnField.updateMode) {
                 template  = template + ' show="{{isUpdateMode && buttonArray[' + index + '].show}}"';
             } else {

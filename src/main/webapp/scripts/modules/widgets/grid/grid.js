@@ -190,7 +190,7 @@ WM.module('wm.widgets.grid')
                             '</div>' +
                             '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
                                 '<wm-button ng-repeat="btn in _actions.header" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}"></wm-button>' +
+                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"></wm-button>' +
                                 '<wm-menu caption="Export" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
@@ -202,7 +202,7 @@ WM.module('wm.widgets.grid')
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
                             '<wm-button ng-repeat="btn in _actions.footer" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}"></wm-button>' +
+                                ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
             },
