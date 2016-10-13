@@ -14,6 +14,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/form/search.html',
             '<div class="app-search input-group" role="input" init-widget has-model listen-property="dataset"' +
                 '>' +
+                '<span class="fa fa-arrow-left form-control-feedback back-btn" ng-click="closeSearch()"></span>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
@@ -28,7 +29,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-min-length="minLength" >' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
-                '<span class="fa fa-close form-control-feedback clear-btn" ng-click="closeSearch()"></span>' +
+                '<span class="fa fa-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
@@ -352,7 +353,10 @@ WM.module('wm.widgets.basic')
                     $is.showClosebtn = (inputVal !== '');
                 });
             }
-
+            //Check if the widget is of type autocomplete in mobile view/ app
+            function isMobileAutoComplete(type) {
+                return type === 'autocomplete' && (Utils.isMobile() || $rs.isMobileApplicationType);
+            }
             //Toggles search icon based on the type of search and dataset type
             function toggleSearchIcon($is, type) {
                 if (type === 'search') {
@@ -391,8 +395,11 @@ WM.module('wm.widgets.basic')
                     if (newVal) {
                         $timeout(function () {
                             typeAheadInput    = element.find('input[uib-typeahead]');
-                            typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
-                            typeAheadDropDown.width(typeAheadInput.width());
+                            //If typeahead is appended to the body, set the width dynamically based on the input
+                            if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
+                                typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
+                                typeAheadDropDown.width(typeAheadInput.width());
+                            }
                         });
                     }
                     break;
@@ -496,6 +503,7 @@ WM.module('wm.widgets.basic')
                     $is._loadingItems = flag;
                 });
             }
+            //Check if the page retrieved currently is the last page. If last page, don't send any more request
             function isLastPage(page, dataSize, maxResults) {
                 var pageCount = ((dataSize > maxResults) ? (Math.ceil(dataSize / maxResults)) : (dataSize < 0 ? 0 : 1));
                 return page === pageCount;
@@ -581,21 +589,30 @@ WM.module('wm.widgets.basic')
                     inputTpl.attr('typeahead-wait-ms', CONSTANTS.DELAY.SEARCH_WAIT);
                 }
                 //For mobile view, append the typeahead dropdown to element itself.
-                if (Utils.isMobile() || $rs.isMobileApplicationType) {
+                if (isMobileAutoComplete(tAttrs.type)) {
                     inputTpl.attr('typeahead-append-to-body', false);
                     inputTpl.attr('typeahead-focus-on-select', false);
                 } else {
                     inputTpl.attr('typeahead-append-to-body', true);
                 }
             }
-
+            //Manually trigger the search. Used while fetching next page records.
+            function triggerSearch($is, typeAheadInput, incrementPage) {
+                //Increase the page number and trigger force query update
+                $is.page = incrementPage ? $is.page + 1 : $is.page;
+                //Manually trigger the search
+                typeAheadInput.controller('ngModel').$parsers[0]($is.query);
+            }
             // returns the list of options which will be given to search typeahead
             function _getItems($is, element, searchValue) {
                 var customFilter      = $filter('_custom_search_filter'),
                     boundDataSet      = $is.binddataset,
                     $s                = element.scope(),
                     isBoundToVariable = boundDataSet && Utils.stringStartsWith(boundDataSet, 'bind:Variables.'),
-                    localSearchedData;
+                    localSearchedData,
+                    typeAheadInput,
+                    typeAheadDropDown,
+                    $lastItem;
 
                 setLoadingItemsFlag($is, true);
 
@@ -605,6 +622,20 @@ WM.module('wm.widgets.basic')
                 if (isBoundToVariable && isVariableUpdateRequired($is, $s)) {
                     return fetchVariableData($is, element, searchValue, $s).then(function (data) {
                         setLoadingItemsFlag($is, false);
+                        $timeout(function () {
+                            //In case of autocomplete in mobile, if records do not occupy full screen, scroll will not appear and scroll event will not be triggered
+                            //To overcome this, till records occupy full screen fetch the next page records
+                            if (!isMobileAutoComplete($is.type) || $is._loadingItems || $is.isLastPage || !element.hasClass('full-screen')) {
+                                return;
+                            }
+                            typeAheadInput    = element.find('input[uib-typeahead]');
+                            typeAheadDropDown = element.find('> [uib-typeahead-popup]');
+                            $lastItem = typeAheadDropDown.find('li').last();
+                            //Check if last item is not below the full screen
+                            if ($lastItem.length && typeAheadDropDown.length && (typeAheadDropDown.height() + typeAheadDropDown.position().top >  $lastItem.height() + $lastItem.position().top)) {
+                                triggerSearch($is, typeAheadInput, true);
+                            }
+                        });
                         return data;
                     });
                 }
@@ -738,42 +769,54 @@ WM.module('wm.widgets.basic')
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
 
-                        // set the searchquery if the datavalue exists.
                         if (CONSTANTS.isRunMode) {
                             // keyup event to enable/ disable close icon of the search input.
                             element.bind('keyup', onKeyUp.bind(undefined, $is, element));
                             $timeout(function () {
                                 typeAheadInput    = element.find('input[uib-typeahead]');
+                                //If appended to body, add app search class to typeahead dropdown
                                 if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
                                     typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
                                     typeAheadDropDown.addClass('app-search');
                                 } else {
                                     typeAheadDropDown = element.find('> [uib-typeahead-popup]');
                                     typeAheadInput.bind('focus', function () {
-                                        //Add full screen class on focus of the input element
+                                        //Add full screen class on focus of the input element.
                                         element.addClass('full-screen');
-                                        //Manually trigger the search
-                                        typeAheadInput.controller('ngModel').$parsers[0]($is.query);
                                     });
                                 }
+                                //Append loading items span element at bottom of the dropdown list
                                 typeAheadDropDown.append($compile('<div class="status" ng-show="_loadingItems"><i class="fa fa-circle-o-notch fa-spin"></i><span>{{loadingdatamsg}}</span></div>')($is));
+                                //Attach the scroll event to the drop down
                                 typeAheadDropDown.bind('scroll', function () {
                                     var $item = WM.element(this);
+                                    //If scroll is at the bottom and no request is in progress and next page records are available, fetch next page items.
                                     if (!$is._loadingItems && !$is.isLastPage && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
-                                        //Increase the page number and trigger force query update
-                                        $is.page = $is.page + 1;
-                                        //Manually trigger the search
-                                        typeAheadInput.controller('ngModel').$parsers[0]($is.query);
+                                        triggerSearch($is, typeAheadInput, true);
                                     }
                                 });
                             });
                         }
+                        //Close the full screen mode in mobile view of auto complete
                         $is.closeSearch = function () {
+                            $is.page = 1;
+                            if (!$is.datavalue) {
+                                $is.queryModel = '';
+                            }
                             element.removeClass('full-screen');
+                        };
+                        //Clear the search and trigger the search with empty value
+                        $is.clearSearch = function () {
+                            $is.page = 1;
+                            if ($is.query) {
+                                $is.queryModel = $is.query = '';
+                                triggerSearch($is, element.find('input[uib-typeahead]'));
+                            }
                         };
                         /*Called from form reset when users clicks on form reset*/
                         $is.reset = function () {
                             $is._model_ = undefined;
+                            $is.queryModel = $is.query = '';
                         };
                     }
                 }

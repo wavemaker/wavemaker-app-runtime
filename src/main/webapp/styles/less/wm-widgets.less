@@ -198,12 +198,17 @@ html, body {
   }
   .form-control-feedback {
     right: 3em !important;
-    &.clear-btn {
+    &.clear-btn, &.back-btn {
       display: none;
     }
   }
 }
 .wm-app {
+  .app-search {
+    [uib-typeahead-popup].dropdown-menu {
+      display: none;
+    }
+  }
   .app-search.full-screen {
     &.input-group {
       width: 100% !important;
@@ -214,11 +219,15 @@ html, body {
       z-index: 5000;
       top: 0;
       left: 0;
+      input {
+        padding-left: 2.5em;
+      }
     }
     .input-group-addon {
       display: none;
     }
     .dropdown-menu {
+      display: block;
       position: relative;
       width: 100%;
       .calc('height', ~"calc(100% - 36px)");;
@@ -226,12 +235,15 @@ html, body {
       max-height: initial;
       top: 0 !important;
     }
-    .clear-btn {
+    .clear-btn, .back-btn {
       right: 1em !important;
       cursor: pointer;
       pointer-events: initial;
       display: block;
       z-index: 5001;
+    }
+    .back-btn {
+      left: 0;
     }
   }
 }
