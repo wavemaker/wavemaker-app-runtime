@@ -30,7 +30,7 @@ WM.module('wm.utils', [])
                 MOBILE: /Mobile/i,
                 WINDOWS: /Windows Phone/i,
                 SUPPORTED_IMAGE_FORMAT: /\.(bmp|gif|jpe|jpg|jpeg|tif|tiff|pbm|png|ico)$/i,
-                SUPPORTED_FILE_FORMAT: /\.(txt|js|css|html|script|properties|json|java|xml|smd|xmi|sql|log|wsdl|vm|ftl|jrxml|yml)$/i,
+                SUPPORTED_FILE_FORMAT: /\.(txt|js|css|html|script|properties|json|java|xml|smd|xmi|sql|log|wsdl|vm|ftl|jrxml|yml|yaml)$/i,
                 SUPPORTED_AUDIO_FORMAT: /\.(mp3|ogg|webm|wma|3gp|wav)$/i,
                 SUPPORTED_VIDEO_FORMAT: /\.(mp4|ogg|webm|wmv|mpeg|mpg|avi)$/i,
                 PAGE_RESOURCE_PATH: /^\/pages\/.*\.(js|css|html|json)$/,
