@@ -496,6 +496,7 @@ WM.module('wm.widgets.live')
                                     filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
                                 }
                             }
+
                             /*Function to fetch the data for dataset widgets*/
                             function updateAllowedValues() {
                                 var variable = scope.Variables[scope.variableName];
@@ -706,10 +707,15 @@ WM.module('wm.widgets.live')
                                     applyFilterOnField();
                                     scope.filterConstructed = true;
                                 }
+                                //On canvas update update filter widgets
+                                scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
                             }));
                             scope.$on("$destroy", function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
+                            
+                            //on load set filter widgets
+                            scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                             scope.updateAllowedValues = updateAllowedValues;
                             //Will be called after setting filter property.
