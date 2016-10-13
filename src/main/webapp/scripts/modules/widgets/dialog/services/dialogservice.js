@@ -95,7 +95,7 @@ WM.module('wm.widgets.dialog')
              controller value to be used later.
              */
 
-            dialogContainer.find('wm-dialog, wm-dialog-container, wm-alertdialog, wm-confirmdialog, wm-pagedialog, wm-iframedialog, wm-logindialog').
+            dialogContainer.find('wm-dialog, wm-dialog-container, wm-pagedialog-container, wm-alertdialog, wm-confirmdialog, wm-pagedialog, wm-iframedialog, wm-logindialog').
                 attr({
                     'controller': controller,
                     'dialogid': dialogId
