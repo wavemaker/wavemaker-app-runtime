@@ -1241,6 +1241,14 @@ WM.module('wm.widgets.live')
                     column.customExpression = '<input type="checkbox" ng-model="' + column.widgetConfig.model + '" ng-disabled="' + column.widgetConfig.disabled + '" ' +
                         'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '">';
                     break;
+                case 'anchor':
+                    column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
+                        'class = "' + column.widgetConfig.class + '" ng-class="' + widgetNgClassesExpression + '"></wm-anchor>';
+                    break;
+                case 'label':
+                    column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
+                        'class = "' + column.widgetConfig.class + '" ng-class="' + widgetNgClassesExpression + '"></wm-label>';
+                    break;
                 default:
                     if (column.type === 'blob') {
                         column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
@@ -1278,6 +1286,21 @@ WM.module('wm.widgets.live')
                         'model': defaultModel,
                         'disabled': '{{colDef.readonly || !isGridEditMode}}',
                         'class': '',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'anchor':
+                    column.widgetConfig = {
+                        'title'    : val,
+                        'hyperlink': '',
+                        'class'    : '',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'label':
+                    column.widgetConfig = {
+                        'title'    : val,
+                        'class'    : '',
                         'ngClasses': widgetNgClasses
                     };
                     break;
@@ -1712,6 +1735,19 @@ WM.module('wm.widgets.live')
                 return wid;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getViewModeWidgets
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get view mode widgets for grid
+             */
+            function getViewModeWidgets() {
+                return ['image', 'button', 'checkbox', 'label', 'anchor'];
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -1739,6 +1775,7 @@ WM.module('wm.widgets.live')
             this.setFormWidgetsValues       = setFormWidgetsValues;
             this.getWidgetProps             = getWidgetProps;
             this.getFormFilterWidgets       = getFormFilterWidgets;
+            this.getViewModeWidgets         = getViewModeWidgets;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
