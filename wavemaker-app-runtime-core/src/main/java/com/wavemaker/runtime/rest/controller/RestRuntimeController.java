@@ -19,7 +19,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,12 +81,14 @@ public class RestRuntimeController {
         addPathParams(decodedUriVariables, params);
         RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
-        String s[] = {"Cache-Control", "Last-Modified", "Content-Disposition", "Accept-Ranges"};
+        String s[] = {"Content-Disposition"};
         List<String> defaultResponseHeadersList = Arrays.asList(s);
         for (String responseHeaderKey : responseHeaders.keySet()) {
-            String updatedResponseHeaderKey = WM_HEADER_PREFIX+ responseHeaderKey;
+            String updatedResponseHeaderKey;
             if(defaultResponseHeadersList.contains(responseHeaderKey)) {
                 updatedResponseHeaderKey = responseHeaderKey;
+            } else {
+                updatedResponseHeaderKey = WM_HEADER_PREFIX+ responseHeaderKey;
             }
             List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
             for (String responseHeaderValue : responseHeaderValueList) {
