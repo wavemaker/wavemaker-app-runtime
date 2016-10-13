@@ -27,10 +27,4 @@ public interface ReflectServiceDefinition extends ServiceDefinition {
      */
     public String getServiceClass();
 
-    /**
-     * Returns the package name for the service class.
-     * 
-     * @return The package name.
-     */
-    public String getPackageName();
 }
