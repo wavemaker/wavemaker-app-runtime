@@ -8,6 +8,7 @@ WM.module('wm.widgets.basic')
             'use strict';
             var chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
                 allShapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down'],
+                dateList = ['01-01-2001', '01-01-2002', '01-01-2003'],
                 themes = {
                     'Terrestrial': {
                         colors: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
@@ -717,7 +718,7 @@ WM.module('wm.widgets.basic')
                         if (isLineTypeChart(scope.type)) {
                             chart.xAxis.tickFormat(function (d) {
                                 //get the actual value
-                                xAxisValue = scope.xDataKeyArr[d];
+                                xAxisValue = isPreview ? dateList[d - 1] : scope.xDataKeyArr[d - 1];
                                 return getDateFormatedData(propertyValueMap.xdateformat, xAxisValue);
                             });
                         } else {
@@ -790,6 +791,10 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            function getDateList() {
+                return dateList;
+            }
+
             this.isBarChart           = isBarChart;
             this.isBubbleChart        = isBubbleChart;
             this.isPieType            = isPieType;
@@ -811,5 +816,6 @@ WM.module('wm.widgets.basic')
             this.initProperties       = initProperties;
             this.allShapes            = allShapes;
             this.chartTypes           = chartTypes;
+            this.getDateList          = getDateList;
         }
     ]);
