@@ -810,7 +810,9 @@ WM.module('wm.widgets.base', [])
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
                         "cursor": {"type": "list", "options": ["default", "pointer"]}
                     },
-
+                    "wm.picture.mobile" : {
+                        "offline": {"type": "boolean", "value" : true}
+                    },
                     "wm.textarea": {
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
@@ -1940,7 +1942,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
-                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle"], "parent": "properties"},
+                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat"], "parent": "properties"},

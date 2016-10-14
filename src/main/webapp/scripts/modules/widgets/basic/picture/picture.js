@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/picture.html',
-                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles>'
+                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles wm-image-cache="{{offline ? \'permanant\' : \'\'}}">'
             );
     }])
     .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -121,6 +121,8 @@ WM.module('wm.widgets.basic')
  *                  This property controls the animation of the picture widget. <br>
  *                  The animation is based on the css classes and works only in the run mode. <br>
  *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
+ * @param {boolean=} offline
+ *                  In mobile apps, images are stored on devices based on this option.
  * @param {string=} on-click
  *                  Callback function which will be triggered when the widget is clicked.
  * @param {string=} on-dblclick

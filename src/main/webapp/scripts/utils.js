@@ -168,6 +168,7 @@ WM.module('wm.utils', [])
                 'NETWORK'         : [{'name' : 'cordova-plugin-network-information', 'spec' : '1.3.0'}],
                 'VIBRATE'         : [{'name' : 'cordova-plugin-vibration', 'spec' : '2.1.2'}],
                 'MEDIAPICKER'     : [{'name' : 'cordova-plugin-mediapicker', 'spec' : '0.0.1'}],
+                'MEDIASCANNER'    : [{'name' : 'cordova-plugin-mediascanner', 'spec' : '0.1.3'}],
                 'IMAGEPICKER'     : [{'name' : 'cordova-plugin-imagepicker', 'spec' : '1.3.0', 'variables' : [{'name' : 'PHOTO_LIBRARY_USAGE_DESCRIPTION', 'value' : 'To provide photo browsing picker'}]}],
                 'SPLASHSCREEN'    : [{'name' : 'cordova-plugin-splashscreen', 'spec' : '4.0.0'}],
                 'DEVICE'          : [{'name' : 'cordova-plugin-device', 'spec': '1.1.3'}],

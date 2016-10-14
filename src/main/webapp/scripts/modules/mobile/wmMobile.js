@@ -2,8 +2,10 @@
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'ngAnimate', 'wm.plugins.offline'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
-        function ($rootScope, $location, CONSTANTS, Utils, AppAutoUpdateService) {
+    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService',
+        // Don't remove below services. This is required for initialization
+        'DeviceFileService', 'DeviceFileCacheService',
+        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService) {
             'use strict';
             /* Mark the mobileApplication type to true */
             $rootScope.isMobileApplicationType = true;
