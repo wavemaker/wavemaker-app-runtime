@@ -2142,6 +2142,13 @@ $.widget('wm.datagrid', {
             actionsTemplate = '<span> ',
             saveCancelTemplate = '<button type="button" class="save row-action-button btn app-button btn-transparent save-edit-row-button hidden" title="Save"><i class="wi wi-done"></i></button> ' +
                                  '<button type="button" class="cancel row-action-button btn app-button btn-transparent cancel-edit-row-button hidden" title="Cancel"><i class="wi wi-cancel"></i></button> ';
+        //Generate the expression for properties which have binding expression
+        function generateBindExpr(val) {
+            if (_.startsWith(val, 'bind:')) {
+                return '{{' + _.replace(val, 'bind:', '') + '}}';
+            }
+            return val;
+        }
         if (this.options.rowActions.length) {
             _.forEach(this.options.rowActions, function (def) {
                 var clsAttr = 'row-action row-action-button app-button btn ' + def.class, ngShowAttr = '';
@@ -2157,10 +2164,10 @@ $.widget('wm.datagrid', {
                     clsAttr += ' delete delete-row-button ';
                 }
 
-                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + ' tabindex="' + def.tabindex + '">'
+                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + generateBindExpr(def.title) + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + (def.tabindex ? (' tabindex="' + def.tabindex + '"') : '') + '>'
                     + '<i class="app-icon ' + def.iconclass + '"></i>';
                 if (def.displayName) {
-                    actionsTemplate += '<span class="btn-caption">' + def.displayName + '</span>';//Appending display name
+                    actionsTemplate += '<span class="btn-caption">' + generateBindExpr(def.displayName) + '</span>';//Appending display name
                 }
                 actionsTemplate += '</button>';
                 if (_.includes(def.action, 'editRow()')) {
