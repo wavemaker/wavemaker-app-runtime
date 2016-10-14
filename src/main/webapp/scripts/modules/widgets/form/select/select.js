@@ -33,9 +33,9 @@ WM.module('wm.widgets.form')
 
         /** store the whole object of the selected option - in '_dataSetModelProxyMap' */
             _dataSetModelProxyMap = {},
-            _dataSetModelMap = {},
+            _dataSetModelMap      = {},
             _modelChangedManually = {},
-            ALLFIELDS = 'All Fields';
+            ALLFIELDS             = 'All Fields';
 
         /*
          * gets the key to map the select options out of dataSet
@@ -350,6 +350,14 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel;
                             },
                             set: function (newVal) {
+                                if (iScope._reset) {
+                                    $el.find('option').removeAttr('selected');
+                                    if (iScope.placeholder) {
+                                        $el.find('option:first').attr('selected', 'selected');
+                                    }
+                                    iScope._reset = false;
+                                    return;
+                                }
                                 this._proxyModel = newVal;
                                 _modelChangedManually[iScope.$id] = false;
                                 updateModelProxy(iScope, newVal);
@@ -372,6 +380,7 @@ WM.module('wm.widgets.form')
                     /*Called from form reset when users clicks on form reset*/
                     iScope.reset = function () {
                         //TODO implement custom reset logic here
+                        iScope._reset  = true;
                         iScope._model_ = '';
                     };
 
