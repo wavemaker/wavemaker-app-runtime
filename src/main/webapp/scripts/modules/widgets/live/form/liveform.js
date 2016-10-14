@@ -697,7 +697,7 @@ WM.module('wm.widgets.live')
                         if (!displayExpr) {
                             displayExpr = Object.keys(object)[0];
                         }
-                        return Utils.getEvaluatedExprValue(object, displayExpr, $scope);
+                        return WidgetUtilService.updateAndEvalExp(object, displayExpr, $scope);
                     }
                     return object;
                 };
