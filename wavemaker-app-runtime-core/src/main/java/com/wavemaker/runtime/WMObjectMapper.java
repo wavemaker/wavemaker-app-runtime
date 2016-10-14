@@ -25,7 +25,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.Date;
 
-import com.wavemaker.studio.common.json.serializer.NoOpByteArraySerializer;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 
@@ -40,12 +39,12 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import com.wavemaker.runtime.data.json.WMHibernate4Module;
 import com.wavemaker.runtime.rest.model.RestResponseModule;
 import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
-import com.wavemaker.studio.common.json.serializer.WMLocalDateTimeSerializer;
 import com.wavemaker.studio.common.json.deserializer.WMSqlDateDeSerializer;
+import com.wavemaker.studio.common.json.serializer.NoOpByteArraySerializer;
+import com.wavemaker.studio.common.json.serializer.WMLocalDateTimeSerializer;
 
 public class WMObjectMapper extends ObjectMapper {
 
@@ -259,7 +258,7 @@ public class WMObjectMapper extends ObjectMapper {
             // we are handling self references using @JsonIgnoreProperties
             configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
 
-            WMHibernate4Module hibernate4Module = new WMHibernate4Module();
+            Hibernate4Module hibernate4Module = new Hibernate4Module();
             hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
             registerModule(hibernate4Module);
 
