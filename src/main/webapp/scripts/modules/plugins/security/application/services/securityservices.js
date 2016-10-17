@@ -26,6 +26,9 @@ wm.plugins.security.services.SecurityService = [
             _config,
             _mobileconfig,
             loggedInUser,
+            requestQueue = {
+                'config': []
+            },
             _serviceMap = {},
             /**
              * merge the security config from mobile and web
@@ -100,6 +103,12 @@ wm.plugins.security.services.SecurityService = [
              * @param isPostLogin
              */
             getConfig = function (successCallback, failureCallback, isPostLogin) {
+                function invokeQueuedCallbacks(id, method, data) {
+                    WM.forEach(requestQueue[id], function (fn) {
+                        Utils.triggerFn(fn[method], data);
+                    });
+                    requestQueue[id] = null;
+                }
                 function onSuccess(config) {
                     config.homePage = _WM_APP_PROPERTIES.homePage;
                     if (config.userInfo) {
@@ -109,7 +118,7 @@ wm.plugins.security.services.SecurityService = [
                     _config = config;
                     loggedInUser = config.userInfo;
                     _lastUser = loggedInUser;
-                    Utils.triggerFn(successCallback, _config);
+                    invokeQueuedCallbacks('config', 'success', _config);
                 }
                 function onError(error) {
                     if ($rs.isMobileApplicationType) {
@@ -120,15 +129,25 @@ wm.plugins.security.services.SecurityService = [
                             "userInfo": null,
                             "login": null
                         };
-                        Utils.triggerFn(successCallback, _config);
+                        invokeQueuedCallbacks('config', 'success', _config);
                     } else {
-                        Utils.triggerFn(failureCallback, error);
+                        invokeQueuedCallbacks('config', 'error', error);
                     }
                 }
 
                 if (_config) {
                     // if already fetched, return it
                     Utils.triggerFn(successCallback, _config);
+                    return;
+                }
+
+                // Queue check, if same queue is already in progress, do not send another request
+                requestQueue.config = requestQueue.config || [];
+                requestQueue.config.push({
+                    success: successCallback,
+                    error: failureCallback
+                });
+                if (requestQueue.config.length > 1) {
                     return;
                 }
 
