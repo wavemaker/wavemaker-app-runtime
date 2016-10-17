@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2016 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,6 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
+
+
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.wavemaker.studio.common.CommonConstants;
@@ -62,7 +64,7 @@ import net.sf.json.xml.XMLSerializer;
 
 /**
  * This class provides helper methods for HTTP binding.
- * 
+ *
  * @author Frankie Fu
  */
 public class HTTPBindingSupport {
@@ -76,31 +78,30 @@ public class HTTPBindingSupport {
     private static Logger logger = LoggerFactory.getLogger(HTTPBindingSupport.class);
 
     public static <T extends Object> T getResponseObject(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-        String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties) throws WebServiceException,MalformedURLException {
+                                                         String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties) throws WebServiceException, MalformedURLException {
         return getResponseObject(serviceQName, portQName, endpointAddress, method, contentType, postData, responseType, bindingProperties, null, null);
     }
 
     public static <T extends Object> T getResponseObject(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-        String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties, String partnerName,
-        Map<String, Object> headerParams) throws WebServiceException,MalformedURLException {
+                                                         String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties, String partnerName,
+                                                         Map<String, Object> headerParams) throws WebServiceException, MalformedURLException {
 
         String msg = postData == null ? null : postData instanceof String ? (String) postData : convertToXMLString(postData);
         URL serviceUrl = new URL(endpointAddress);
-        String serviceName = constructServiceName(serviceUrl)+RESPONSE;
+        String serviceName = constructServiceName(serviceUrl) + RESPONSE;
         DataSource postSource = null;
         byte[] bytes = null;
         if (method == HTTPRequestMethod.POST) {
             postSource = createDataSource(contentType, msg);
         }
         DataSource response = getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class,
-            headerParams);
-        String responseContentType =  getContentType(response.getContentType());
+                headerParams);
+        String responseContentType = getContentType(response.getContentType());
         InputStream is = null;
         try {
-            String responseString  = HTTPBindingSupport.convertStreamToString(response.getInputStream());
-            if(MediaType.APPLICATION_JSON.toString().equals(responseContentType))
-            {
-                responseString = convertJSONToXML(responseString,serviceName);
+            String responseString = HTTPBindingSupport.convertStreamToString(response.getInputStream());
+            if (MediaType.APPLICATION_JSON.toString().equals(responseContentType)) {
+                responseString = convertJSONToXML(responseString, serviceName);
             }
             is = new BufferedInputStream(IOUtils.toInputStream(responseString, CommonConstants.UTF8));
             bytes = IOUtils.toByteArray(is);
@@ -108,8 +109,7 @@ public class HTTPBindingSupport {
             throw new WebServiceException(e);
         } catch (JSONException e) {
             throw new WebServiceException(e);
-        }
-        finally {
+        } finally {
             try {
                 if (is != null) {
                     is.close();
@@ -168,7 +168,7 @@ public class HTTPBindingSupport {
 
     @SuppressWarnings("unchecked")
     private static <T extends Object> T getResponse(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-        T postSource, BindingProperties bindingProperties, Class<T> type, Map<String, Object> headerParams) throws WebServiceException {
+                                                    T postSource, BindingProperties bindingProperties, Class<T> type, Map<String, Object> headerParams) throws WebServiceException {
 
         Service service = Service.create(serviceQName);
         URI endpointURI;
@@ -248,27 +248,25 @@ public class HTTPBindingSupport {
         try {
             T result = d.invoke(postSource);
             return result;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new WebServiceException(e);
         }
 
     }
 
     public static String getResponseString(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-	DataSource postSource, BindingProperties bindingProperties) throws WebServiceException {
-		return getResponseString(serviceQName, portQName, endpointAddress,
-				method, postSource, bindingProperties, null);
-	}
+                                           DataSource postSource, BindingProperties bindingProperties) throws WebServiceException {
+        return getResponseString(serviceQName, portQName, endpointAddress,
+                method, postSource, bindingProperties, null);
+    }
 
     public static DataSource getDataSource(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
                                            DataSource postSource, BindingProperties bindingProperties, Map<String, Object> headerParams) throws WebServiceException {
         return getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class, headerParams);
     }
 
-	public static String getResponseString(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-        DataSource postSource, BindingProperties bindingProperties, Map<String, Object> headerParams) throws WebServiceException {
+    public static String getResponseString(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
+                                           DataSource postSource, BindingProperties bindingProperties, Map<String, Object> headerParams) throws WebServiceException {
 
         DataSource response = getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class, headerParams);
         try {
@@ -302,7 +300,14 @@ public class HTTPBindingSupport {
     }
 
     public static String constructServiceName(URL url) {
-        String host = url.getHost();
+        return getServiceName(url.getHost());
+    }
+
+    public static String constructServiceName(URI uri) {
+        return getServiceName(uri.getHost());
+    }
+
+    private static String getServiceName(String host) {
         int i = host.indexOf('.');
         if (i > -1) {
             String s1 = host.substring(i + 1, host.length());
