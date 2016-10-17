@@ -398,7 +398,7 @@ WM.module('wm.widgets.basic')
                             //If typeahead is appended to the body, set the width dynamically based on the input
                             if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
                                 typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
-                                typeAheadDropDown.width(typeAheadInput.width());
+                                typeAheadDropDown.width(typeAheadInput.outerWidth());
                             }
                         });
                     }
@@ -521,9 +521,11 @@ WM.module('wm.widgets.basic')
                     if (pageOptions) {
                         $is.page       = pageOptions.currentPage;
                         $is.isLastPage = isLastPage($is.page, pageOptions.dataSize, pageOptions.maxResults);
+                        $is.isPaginatedData = true;
                     } else if (WM.isObject(response) && Utils.isPageable(response)) {
                         $is.page       = response.number + 1;
                         $is.isLastPage = isLastPage($is.page, response.totalElements, response.size);
+                        $is.isPaginatedData = true;
                     }
                     //if data expression exists, extract the data from the expression path
                     if (dataExpression) {
@@ -786,7 +788,8 @@ WM.module('wm.widgets.basic')
                                     });
                                 }
                                 //Append loading items span element at bottom of the dropdown list
-                                typeAheadDropDown.append($compile('<div class="status" ng-show="_loadingItems"><i class="fa fa-circle-o-notch fa-spin"></i><span>{{loadingdatamsg}}</span></div>')($is));
+                                typeAheadDropDown.append($compile('<div class="status" ng-show="_loadingItems"><i class="fa fa-circle-o-notch fa-spin"></i><span>{{loadingdatamsg}}</span></div>' +
+                                    '<div class="status" ng-show="!_loadingItems && isPaginatedData && isLastPage"><span>{{datacompletemsg}}</span></div>')($is));
                                 //Attach the scroll event to the drop down
                                 typeAheadDropDown.bind('scroll', function () {
                                     var $item = WM.element(this);
