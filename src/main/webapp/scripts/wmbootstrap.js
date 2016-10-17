@@ -85,12 +85,13 @@ Application
                 'use strict';
 
                 var prevRoute,
-                    cache           = $cacheFactory('APP_PAGES'),
-                    NG_LOCALE_PATH  = 'resources/ngLocale/',
-                    APP_LOCALE_PATH = 'resources/i18n/',
+                    cache              = $cacheFactory('APP_PAGES'),
+                    NG_LOCALE_PATH     = 'resources/ngLocale/',
+                    APP_LOCALE_PATH    = 'resources/i18n/',
                     appVariablesLoaded = false,
-                    SSO_URL = '/services/security/ssologin',
-                    landingPageName = '';
+                    SSO_URL            = '/services/security/ssologin',
+                    landingPageName    = '',
+                    pageReqQueue       = {};
 
                 function defaultPageLoadSuccessHandler(pageName, response, isPartial) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
@@ -206,12 +207,30 @@ Application
 
                 function _load(pageName, onSuccess, onError, isPartial) {
 
+                    //If the request to fetch a page info is in progress, do not trigger multiple calls.
+                    if (!WM.isDefined(pageReqQueue[pageName])) {
+                        pageReqQueue[pageName] = [];
+                    }
+
+                    // push the calls into a queue
+                    pageReqQueue[pageName].push({'success': onSuccess, 'error': onError});
+
+                    if (pageReqQueue[pageName].length > 1) {
+                        return;
+                    }
+
                     BaseService.getHttpPromise({
                         'method': 'GET',
                         'url'   : Utils.preventCachingOf('pages/' + pageName + '/' + 'page.min.html')
                     }).then(function (response) {
                         defaultPageLoadSuccessHandler(pageName, response, isPartial);
-                        Utils.triggerFn(onSuccess, cache.get(pageName));
+
+                        // Execute the success handler for all the queued calls
+                        _.forEach(pageReqQueue[pageName], function (handler) {
+                            Utils.triggerFn(handler.success, cache.get(pageName));
+                        });
+                        pageReqQueue[pageName].length = 0;
+
                     }, function (jqxhr) {
                         if ($route.current.params.name === pageName && jqxhr.status === 404) {
                             WM.element('.app-spinner').addClass('ng-hide');

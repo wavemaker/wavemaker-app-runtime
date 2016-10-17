@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
             '<div class="tab-pane" page-container init-widget ng-class="{disabled:disabled, active: isActive}" wm-navigable-element="true"><div class="tab-body" apply-styles="container" page-container-target wmtransclude></div></div>');
 
     }])
-    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile) {
+    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile, $timeout) {
         'use strict';
 
         /* get the properties related to the tabs */
@@ -156,6 +156,7 @@ WM.module('wm.layouts.containers')
                     var tabs = scope.tabs,
                         activeTab,
                         tab,
+                        $li,
                         $ul = element.find('> ul');
                     /* find the first tab which has isdefaulttab set and make it active.
                      * mark the other tabs as inactive
@@ -286,11 +287,19 @@ WM.module('wm.layouts.containers')
                             };
                         }
 
-                        element.find('> ul').on('mousewheel', function (e) {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _scrollHeader(e.originalEvent.wheelDelta);
+                        // wait till the tab headers are rendered
+                        $timeout(function () {
+                            $li = $ul.children();
+
+                            if ($li.last().position().left > $ul.width()) {
+                                $ul.on('mousewheel', function (e) {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    _scrollHeader(e.originalEvent.wheelDelta);
+                                });
+                            }
                         });
+
                     }
 
                     /* register the property change handler */
