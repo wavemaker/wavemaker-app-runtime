@@ -2752,7 +2752,11 @@ WM.module('wm.widgets.base', [])
 
                 return updated;
             }
-
+            //Function to update expression and evaluate in given scope
+            function updateAndEvalExp(dataObj, expressionValue, scope) {
+                var val = Utils.getEvaluatedExprValue(dataObj, expressionValue, scope);
+                return (WM.isDefined(val) && val) || scope.$eval(getUpdatedExpr(expressionValue.replace('bind:', '')), _.assign({}, dataObj, {'__1': dataObj}));
+            }
             /*
             * Function evaluates passed key(expression/bound expression) and returns corresponding value of dataObj
             * @params: {dataObj} object from which values are extracted
@@ -3002,6 +3006,7 @@ WM.module('wm.widgets.base', [])
                  * data is extracted and formatted from the passed option object
                  */
                 getEvaluatedData: getEvaluatedData,
+                updateAndEvalExp: updateAndEvalExp,
 
                 updatePropertyPanelOptions: updatePropertyPanelOptions
             };
