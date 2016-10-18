@@ -2052,6 +2052,8 @@ WM.module('wm.utils', [])
                     'wm-wizardstep',
                     'wm-tabpane'
                 ];
+            } else if (type === 'dialog-widgets') {
+                types = ['wm-dialog', 'wm-alertdialog', 'wm-confirmdialog', 'wm-iframedialog', 'wm-pagedialog', 'wm-logindialog'];
             }
             return types;
         }
