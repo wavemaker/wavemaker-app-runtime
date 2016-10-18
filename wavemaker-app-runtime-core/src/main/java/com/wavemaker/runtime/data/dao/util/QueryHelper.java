@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.dao.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.type.BasicType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -59,6 +62,17 @@ public class QueryHelper {
         }
     }
 
+    public static void configureParameters(
+            final Session session, final String queryName, final Query query, final Map<String, Object> params) {
+        String[] namedParameters = query.getNamedParameters();
+        if (namedParameters != null && namedParameters.length > 0) {
+            for (String namedParameter : namedParameters) {
+                configureNamedParameter(session, queryName, query, params, namedParameter);
+            }
+        }
+
+    }
+
     private static void configureNamedParameter(Query query, Map<String, Object> params, String namedParameter) {
         if (isSystemProperty(namedParameter)) {
             query.setParameter(namedParameter, SystemPropertiesUnit.valueOf(namedParameter).getValue());
@@ -68,6 +82,41 @@ public class QueryHelper {
                 query.setParameterList(namedParameter, (List) val);
             } else {
                 query.setParameter(namedParameter, val);
+            }
+        }
+    }
+
+    private static void configureNamedParameter(
+            Session session, String queryName, Query query, Map<String, Object> params,
+            String namedParameter) {
+
+        if (isSystemProperty(namedParameter)) {
+            query.setParameter(namedParameter, SystemPropertiesUnit.valueOf(namedParameter).getValue());
+        } else {
+            Object val = params.get(namedParameter);
+            if (val != null && val instanceof List) {
+                query.setParameterList(namedParameter, (List) val);
+            } else {
+                if (val == null) {
+                    Map paramTypes = Collections.emptyMap();
+                    if (session.getSessionFactory() instanceof SessionFactoryImplementor) {
+                        final SessionFactoryImplementor factory = (SessionFactoryImplementor) session
+                                .getSessionFactory();
+                        if (factory.getNamedQuery(queryName) != null) {
+                            paramTypes = factory.getNamedQuery(queryName).getParameterTypes();
+                        } else {
+                            paramTypes = factory.getNamedSQLQuery(queryName).getParameterTypes();
+                        }
+                    }
+                    final BasicType type = session.getTypeHelper().basic((String) paramTypes.get(namedParameter));
+                    if (type != null) {
+                        query.setParameter(namedParameter, val, type);
+                    } else {
+                        query.setParameter(namedParameter, val);
+                    }
+                } else {
+                    query.setParameter(namedParameter, val);
+                }
             }
         }
     }
@@ -92,7 +141,8 @@ public class QueryHelper {
             while (iterator.hasNext()) {
                 Sort.Order order = iterator.next();
                 if (StringUtils.isNotBlank(order.getProperty())) {
-                    String direction = (order.getDirection() == null) ? Sort.Direction.ASC.name() : order.getDirection().name();
+                    String direction = (order.getDirection() == null) ? Sort.Direction.ASC.name() : order.getDirection()
+                            .name();
                     queryWithOrderBy.append(count == 0 ? ORDER_BY : ORDER_PROPERTY_SEPARATOR);
                     final String quotedParam = dialect.quote(quoteWithBackTick(order.getProperty()));
                     queryWithOrderBy.append(quotedParam + EMPTY_SPACE + direction);
@@ -131,11 +181,14 @@ public class QueryHelper {
         }
     }
 
-    public static Long getQueryResultCount(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
+    public static Long getQueryResultCount(
+            String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
         return getCountFromCountStringQuery(queryStr, params, isNative, template);
     }
 
-    private static Long getCountFromCountStringQuery(String queryStr, final Map<String, Object> params, final boolean isNative, final HibernateTemplate template) {
+    private static Long getCountFromCountStringQuery(
+            String queryStr, final Map<String, Object> params, final boolean isNative,
+            final HibernateTemplate template) {
         try {
             final String strQuery = getCountQuery(queryStr, params, isNative);
             if (strQuery == null) {
@@ -191,5 +244,4 @@ public class QueryHelper {
     private static long maxCount() {
         return (long) Integer.MAX_VALUE;
     }
-
 }
