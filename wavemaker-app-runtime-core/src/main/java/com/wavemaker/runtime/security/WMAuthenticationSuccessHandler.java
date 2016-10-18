@@ -21,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -64,6 +65,17 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 response.addCookie(cookie);
             }
         }
+    }
+
+    @Override
+    protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
+        String targetUrl = super.determineTargetUrl(request, response);
+        String redirectPage = request.getParameter("redirectPage");
+        if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(targetUrl) && !StringUtils
+                .containsAny(targetUrl, new char[]{'#', '?'}) && StringUtils.endsWith(targetUrl, "/")) {
+            targetUrl += "#" + redirectPage;
+        }
+        return targetUrl;
     }
 }
 
