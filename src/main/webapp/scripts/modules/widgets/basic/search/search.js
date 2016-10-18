@@ -367,11 +367,23 @@ WM.module('wm.widgets.basic')
                     $is.minLength      = 0; //For autocomplete, set minlength as 0
                 }
             }
-
-            /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, element, key, newVal) {
+            //Function to set the width pf typeahead dropdown, when dropdown is appended to body
+            function setDropDownWidth($is, element) {
                 var typeAheadInput,
                     typeAheadDropDown;
+                if ($is.show) {
+                    $timeout(function () {
+                        typeAheadInput    = element.find('input[uib-typeahead]');
+                        //If typeahead is appended to the body, set the width dynamically based on the input
+                        if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
+                            typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
+                            typeAheadDropDown.width(typeAheadInput.outerWidth());
+                        }
+                    });
+                }
+            }
+            /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+            function propertyChangeHandler($is, element, key, newVal) {
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
@@ -392,16 +404,7 @@ WM.module('wm.widgets.basic')
                     element.css(key, newVal);
                     break;
                 case 'show':
-                    if (newVal) {
-                        $timeout(function () {
-                            typeAheadInput    = element.find('input[uib-typeahead]');
-                            //If typeahead is appended to the body, set the width dynamically based on the input
-                            if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
-                                typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
-                                typeAheadDropDown.width(typeAheadInput.outerWidth());
-                            }
-                        });
-                    }
+                    setDropDownWidth($is, element);
                     break;
                 }
             }
@@ -828,6 +831,10 @@ WM.module('wm.widgets.basic')
                         $is.reset = function () {
                             $is._model_ = undefined;
                             $is.queryModel = $is.query = '';
+                        };
+                        //On re-render (in case of tabs or other container), calculate the width again
+                        $is.redraw = function () {
+                            setDropDownWidth($is, element);
                         };
                     }
                 }
