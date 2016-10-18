@@ -116,9 +116,17 @@ WM.module('wm.widgets.live')
                     $scope.ngform.$setUntouched();
                     $scope.ngform.$setPristine();
                 }
+                //Function to get the form element
+                function getFormElement() {
+                    if ($scope.isLayoutDialog) {
+                        return WM.element('body').find('.app-liveform-dialog[dialogid="' + $scope._dialogid + '"]');
+                    }
+                    return $scope.element;
+                }
                 //Reset the values of widgets inside the form
                 function resetFormFields() {
-                    $scope.element.find('[role="input"]').each(function () {
+                    var element = getFormElement();
+                    element.find('[role="input"]').each(function () {
                         WM.element(this).isolateScope().reset();
                     });
                 }
@@ -600,11 +608,7 @@ WM.module('wm.widgets.live')
                         }
                     });
                     if (!isPreviousData) {
-                        if ($scope.isLayoutDialog) {
-                            element = WM.element('body').find('.app-liveform-dialog[dialogid="' + $scope._dialogid + '"]');
-                        } else {
-                            element = $scope.element;
-                        }
+                        element = getFormElement();
                         //Set the values of the widgets inside the live form (other than form fields) in form data
                         LiveWidgetUtils.setFormWidgetsValues(element, dataObject);
                     }

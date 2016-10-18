@@ -575,7 +575,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSearchTemplate(fieldDef, index) {
-                var additionalFields = ' type="autocomplete" relatedfield="{{formFields[' + index + '].relatedfield}}" ' +  getDataSetFields(fieldDef, index);
+                var additionalFields = ' type="autocomplete" relatedfield="{{formFields[' + index + '].relatedfield}}"  width="{{formFields[' + index + '].width}}"' +  getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
             }
             /**
