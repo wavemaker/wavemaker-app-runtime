@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -110,7 +108,7 @@ public class SecurityController {
 
     @RequestMapping(value = "/ssologin", method = RequestMethod.GET)
     @ApiOperation(value = "redirects to sso login")
-    public void ssoLogin(HttpServletResponse httpServletResponse) throws IOException {
-        securityService.ssoLogin(httpServletResponse);
+    public void ssoLogin() throws IOException {
+        securityService.ssoLogin();
     }
 }

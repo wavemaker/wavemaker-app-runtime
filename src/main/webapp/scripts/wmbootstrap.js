@@ -166,9 +166,11 @@ Application
                                 $location.path(loginConfig.pageName);
                                 break;
                             case LOGIN_METHOD.SSO:
+                                // do not provide redirectTo page if fetching HOME page resulted 401
+                                page = (page === _WM_APP_PROPERTIES.homePage) ? undefined : (!page ? $location.path().replace('/', '') : page);
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
-                                ssoUrl = $rs.project.deployedUrl + SSO_URL;
+                                ssoUrl = $rs.project.deployedUrl + SSO_URL + (page ? '?redirectPage=' + page : '');
                                 //In case of CAS redirecting to the sso login page
                                 $window.location.href = ssoUrl;
                                 break;

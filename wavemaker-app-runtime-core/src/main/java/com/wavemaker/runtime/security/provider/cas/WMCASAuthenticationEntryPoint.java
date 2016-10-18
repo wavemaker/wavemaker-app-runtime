@@ -28,7 +28,13 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
             String serviceUrl = HttpRequestUtils.getServiceUrl(request);
             serviceProperties.setService(serviceUrl + "/j_spring_cas_security_check");
         }
-        return CommonUtils.constructServiceUrl(null, response, this.serviceProperties.getService(), null,
+
+        String service = this.serviceProperties.getService();
+        String redirectToPage = request.getParameter("redirectPage");
+        if(StringUtils.isNotEmpty(redirectToPage)) {
+            service = service + "?redirectPage=" + redirectToPage;
+        }
+        return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
                 this.serviceProperties.getArtifactParameter(), true);
     }
 
