@@ -232,8 +232,13 @@ Application
                             WM.element('.app-spinner').addClass('ng-hide');
                             wmToaster.show('error', $rs.appLocale.MESSAGE_PAGE_NOT_FOUND || 'The page you are trying to reach is not available');
                         }
+
+                        // Execute the success handler for all the queued calls
+                        _.forEach(pageReqQueue[pageName], function (handler) {
+                            defaultPageLoadErrorHandler(pageName, handler.success, handler.error, jqxhr);
+                        });
+
                         pageReqQueue[pageName].length = 0;
-                        defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr);
                     });
                 }
 
