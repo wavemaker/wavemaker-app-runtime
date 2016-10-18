@@ -24,7 +24,7 @@ WM.module('wm.widgets.basic')
                     ' ng-disabled="disabled" ' +
                     ' autocomplete="off"' +
                     ' typeahead-loading="_loadingItems" ' +
-                    ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
+                    ' uib-typeahead="_getDisplayLabel(item) for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-min-length="minLength" >' +
@@ -605,6 +605,13 @@ WM.module('wm.widgets.basic')
                 //Manually trigger the search
                 typeAheadInput.controller('ngModel').$parsers[0]($is.query);
             }
+            //Function to return the display label of the item
+            function _getDisplayLabel(item) {
+                if (_.has(item, 'wmDisplayLabel')) {
+                    return item.wmDisplayLabel;
+                }
+                return item;
+            }
             // returns the list of options which will be given to search typeahead
             function _getItems($is, element, searchValue) {
                 var customFilter      = $filter('_custom_search_filter'),
@@ -770,6 +777,7 @@ WM.module('wm.widgets.basic')
                         }
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
+                        $is._getDisplayLabel = _getDisplayLabel.bind(undefined);
 
                         if (CONSTANTS.isRunMode) {
                             // keyup event to enable/ disable close icon of the search input.

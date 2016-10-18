@@ -116,6 +116,12 @@ WM.module('wm.widgets.live')
                     $scope.ngform.$setUntouched();
                     $scope.ngform.$setPristine();
                 }
+                //Reset the values of widgets inside the form
+                function resetFormFields() {
+                    $scope.element.find('[role="input"]').each(function () {
+                        WM.element(this).isolateScope().reset();
+                    });
+                }
                 /*
                  * Extend the properties from the form controller exposed to end user in page script
                  * Kept in try/catch as the controller may not be available sometimes
@@ -415,6 +421,7 @@ WM.module('wm.widgets.live')
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
                     resetFormState();
+                    resetFormFields();
                     if (WM.isArray($scope.formFields)) {
                         $scope.formFields.forEach(function (dataValue) {
                             if (dataValue.type === 'blob') {
