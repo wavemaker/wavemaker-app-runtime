@@ -161,12 +161,12 @@ WM.module('wm.widgets.live')
                                 fieldEle = $el.find(fieldSelector);
                                 if (!field.isRange) {
                                     dataModel[field.field] = {
-                                        'value': fieldEle.scope().datavalue || fieldEle.val() //For autocomplete, set the datavalue. If not present, set query value
+                                        'value': WM.isDefined(field.value) ? field.value : fieldEle.val() //For autocomplete, set the datavalue. If not present, set query value
                                     };
                                 } else {
                                     dataModel[field.field] = {
-                                        'minValue':  fieldEle.first().scope().datavalue || fieldEle.first().val(),
-                                        'maxValue':  fieldEle.last().scope().datavalue || fieldEle.last().val()
+                                        'minValue':  WM.isDefined(field.minValue) ? field.minValue : fieldEle.first().val(),
+                                        'maxValue':  WM.isDefined(field.maxValue) ? field.maxValue : fieldEle.last().val()
                                     };
                                 }
                                 return;
