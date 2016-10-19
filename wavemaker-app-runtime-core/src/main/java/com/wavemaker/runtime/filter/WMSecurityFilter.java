@@ -18,12 +18,12 @@ package com.wavemaker.runtime.filter;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -38,19 +38,19 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
 
     private Boolean isSecurityEnforced;
 
-    private boolean appTestRunMode;
+    private boolean skipSecurityEnabled;
 
     @Override
     protected void initFilterBean() throws ServletException {
-        FilterConfig filterConfig = getFilterConfig();
-        appTestRunMode = !"production".equals(filterConfig.getInitParameter("runMode"));
+        String environment = System.getProperty("wmapp.environment");
+        skipSecurityEnabled = StringUtils.isNotBlank(environment) && StringUtils.equals(environment, "testRun");
         super.initFilterBean();
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
-            if (!isSecurityEnforced() || (appTestRunMode && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
+            if (!isSecurityEnforced() || (skipSecurityEnabled && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
                 // Ignore the DelegatingProxyFilter delegate
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
@@ -58,7 +58,7 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
                 super.doFilter(servletRequest, servletResponse, filterChain);
             }
         } finally {
-            SecurityContextHolder.clearContext();//Cleaning any Threadlocal map values if created
+            SecurityContextHolder.clearContext();//Cleaning any Thread local map values if created
         }
     }
 
