@@ -34,8 +34,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
         if(StringUtils.isNotEmpty(redirectToPage)) {
             service = service + "?redirectPage=" + redirectToPage;
         }
-        return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),
-                this.serviceProperties.getArtifactParameter(), true);
+        return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getArtifactParameter(), true);
     }
 
     public final void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
