@@ -1408,13 +1408,11 @@ body.modal-open {
     }
   }
   .app-datanavigator + .app-livelist-container {
-    display: table-cell;
     vertical-align: middle;
-    width: 100%;
     white-space: nowrap;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden !important;
     .app-list-item {
-      width: auto;
       white-space: normal;
       float: none;
     }
