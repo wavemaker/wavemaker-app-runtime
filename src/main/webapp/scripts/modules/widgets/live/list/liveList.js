@@ -477,7 +477,7 @@ WM.module('wm.widgets.live')
 
             // With given data, creates list items and updates the markup
             function updateFieldDefs($is, $el, data, attrs, listCtrl) {
-                var unbindWatcher, _s, fieldDefs, variable, isBoundToLV;
+                var unbindWatcher, _s, fieldDefs, variable, isBoundToLV, isBoundToSV;
 
                 _s        = $is.$liScope;
                 fieldDefs = _s.fieldDefs;
@@ -490,8 +490,9 @@ WM.module('wm.widgets.live')
                     if ($is.dataNavigator.isFirstPage()) {
                         variable = getVariable($is, Utils.getVariableName($is));
                         isBoundToLV = variable && variable.category === 'wm.LiveVariable';
+                        isBoundToSV = variable && variable.category === 'wm.ServiceVariable';
 
-                        if (isBoundToLV) {
+                        if (isBoundToLV || isBoundToSV) {
                             _s.fieldDefs.length = 0;
                         }
                     }
