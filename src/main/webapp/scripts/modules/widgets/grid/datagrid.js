@@ -587,7 +587,7 @@ $.widget('wm.datagrid', {
         case 'upload':
             formName = colDef.field + '_' + rowId;
             $el.attr('form-name', formName);
-            template = '<form name="' + formName + '"><input ' + dataFieldName  + 'class="file-upload" type="file" name="' + colDef.field + '"/></form>';
+            template = '<form name="' + formName + '"><input focus-target' + dataFieldName  + 'class="file-upload" type="file" name="' + colDef.field + '"/></form>';
             break;
         default:
             template = '<wm-text ' + properties + ' placeholder="' + placeholder + '"></wm-text>';
@@ -1888,10 +1888,15 @@ $.widget('wm.datagrid', {
         if (self.options.editmode === self.CONSTANTS.QUICK_EDIT) {
             //On tab out of a row, save the current row and make next row editable
             $htm.on('focusout', 'tr', function (e) {
-                var $target = $(e.target),
-                    $row    = $target.closest('tr');
-                //Save the row on last column of the data table
+                var $target        = $(e.target),
+                    $row           = $target.closest('tr'),
+                    $relatedTarget = $(e.relatedTarget);
+                //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row.
                 if (!$target.closest('td').is(':last-child') || $row.hasClass('danger')) {
+                    return;
+                }
+                //If focusout is because of input element or row action or current row, dont save the row
+                if ($relatedTarget.attr('focus-target') === '' || $relatedTarget.hasClass('active') || $relatedTarget.hasClass('row-action-button')) {
                     return;
                 }
                 self.toggleEditRow(e, {

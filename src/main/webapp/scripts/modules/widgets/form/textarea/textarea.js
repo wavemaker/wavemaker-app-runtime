@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/textarea.html',
-                '<textarea init-widget has-model class="form-control app-textarea" apply-styles role="input"' +
+                '<textarea init-widget has-model class="form-control app-textarea" apply-styles role="input" focus-target' +
                     ' ng-model="_model_" title="{{hint}}"' +
                     ' ng-disabled="disabled" ' +
                     ' ng-readonly="readonly"' +

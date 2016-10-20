@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/text.html',
-            '<input class="form-control app-textbox" init-widget has-model apply-styles role="input"' +
+            '<input class="form-control app-textbox" init-widget has-model apply-styles role="input" focus-target' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' ng-readonly="readonly" ' +
