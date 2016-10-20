@@ -49,6 +49,7 @@ wm.variables.services.$servicevariable = ['Variables',
             CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
             AUTH_HDR_KEY = "Authorization",
+            CONTROLLER_TYPE_QUERY = 'QueryExecution',
             isPrimitiveType = function (type, modelTypes) {
                 return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1)
                     || _.get(modelTypes, '["' + type + '"].primitiveType')
@@ -218,7 +219,10 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 return _headers;
             },
-
+            //Check if variable is a query service variable
+            isQueryServiceVar = function (variable) {
+              return variable.controller === CONTROLLER_TYPE_QUERY && variable.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA;
+            },
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
             constructRestRequestParams = function (operationInfo, variable) {
@@ -266,6 +270,10 @@ wm.variables.services.$servicevariable = ['Variables',
                     if (WM.isDefined(paramValue) && paramValue !== '') {
                         switch (param.parameterType.toUpperCase()) {
                         case 'QUERY':
+                            //Ignore null valued query params for queryService variable
+                            if (_.isNull(paramValue) && isQueryServiceVar(variable)) {
+                                break;
+                            }
                             if (!queryParams) {
                                 queryParams = "?" + param.name + "=" + encodeURIComponent(paramValue);
                             } else {
