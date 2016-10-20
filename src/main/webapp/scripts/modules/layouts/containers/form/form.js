@@ -327,7 +327,11 @@ WM.module('wm.layouts.containers')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
                 'pre': function (scope, element) {
-                    scope.widgetProps = widgetProps;
+                    if (CONSTANTS.isStudioMode) {
+                        scope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        scope.widgetProps = widgetProps;
+                    }
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
@@ -352,7 +356,12 @@ WM.module('wm.layouts.containers')
                         scope.submit    = submitForm.bind(undefined, scope, element);
                     } else {
                         //binddataset: allowing user click on the binded dataset.
-                        scope.binddataset = 'bind:Variables.' + scope.dataset;
+                        if (scope.dataset) {
+                            scope.widgetProps.dataset.show = true;
+                            scope.binddataset = 'bind:Variables.' + scope.dataset;
+                        } else {
+                            scope.widgetProps.dataset.show = false;
+                        }
                         //event emitted on building new markup from canvasDom
                         handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
                             //as multiple form directives will be listening to the event, apply field-definitions only for current form
