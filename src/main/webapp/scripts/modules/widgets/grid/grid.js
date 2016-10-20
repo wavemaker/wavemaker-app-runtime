@@ -986,7 +986,7 @@ WM.module('wm.widgets.grid')
                         'ignoreCase'   : true,
                         'scope'        : $scope.gridElement.scope()
                     }, WM.noop, function () {
-                        wmToaster.show('error', 'ERROR', 'No results found.');
+                        $scope.toggleMessage(true, 'error', 'No results found.');
                     });
                 },
                 sortHandler = function (sortObj, e) {
@@ -1018,7 +1018,7 @@ WM.module('wm.widgets.grid')
                         }, function () {
                             $scope.onSort({$event: e, $data: $scope.serverData});
                         }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
+                            $scope.toggleMessage(true, 'error', error);
                         });
                     } else if (variable.category === 'wm.ServiceVariable') {
                         /* Will be called only in case of Query service variables */
@@ -1028,7 +1028,7 @@ WM.module('wm.widgets.grid')
                         }, function () {
                             $scope.onSort({$event: e, $data: $scope.serverData});
                         }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
+                            $scope.toggleMessage(true, 'error', error);
                         });
                     }
                 },
@@ -1186,7 +1186,7 @@ WM.module('wm.widgets.grid')
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
-                                wmToaster.show('error', 'ERROR', success.error);
+                                $scope.toggleMessage(true, 'error', $scope.errormessage || success.error);
                                 return;
                             }
                             /*Emit on row delete to handle any events listening to the delete action*/
@@ -1197,7 +1197,7 @@ WM.module('wm.widgets.grid')
                                 $scope.updateVariable(row, callBack);
                             }
                             if ($scope.deletemessage) {
-                                wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
+                                $scope.toggleMessage(true, 'success', $scope.deletemessage);
                             }
                             /*custom EventHandler for row deleted event*/
                             $scope.onRowdeleted({$event: evt, $data: row, $rowData: row});
@@ -1216,11 +1216,11 @@ WM.module('wm.widgets.grid')
                             }, successHandler, function (error) {
                                 Utils.triggerFn(callBack, undefined, true);
                                 Utils.triggerFn(cancelRowDeleteCallback);
-                                wmToaster.show('error', 'ERROR', error);
+                                $scope.toggleMessage(true, 'error', $scope.errormessage || error);
                             });
                         };
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
-                        wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
+                        $scope.toggleMessage(true, 'info', 'Table of type view, not editable', 'Not Editable');
                         $scope.$root.$safeApply($scope);
                         return;
                     }
@@ -1263,14 +1263,14 @@ WM.module('wm.widgets.grid')
                         successHandler = function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
-                                wmToaster.show('error', 'ERROR', response.error);
+                                $scope.toggleMessage(true, 'error', $scope.errormessage || response.error);
                                 Utils.triggerFn(options.error, response);
                             } else {
                                 if (options.event) {
                                     var row = WM.element(options.event.target).closest('tr');
                                     $scope.datagridElement.datagrid('hideRowEditMode', row);
                                 }
-                                wmToaster.show('success', 'SUCCESS', 'Record added successfully');
+                                $scope.toggleMessage(true, 'success', $scope.insertmessage);
                                 $scope.initiateSelectItem('last', response, undefined, isStaticVariable, options.callBack);
                                 if (!isStaticVariable) {
                                     $scope.updateVariable(response, options.callBack);
@@ -1290,7 +1290,7 @@ WM.module('wm.widgets.grid')
                         return;
                     }
                     variable.insertRecord(dataObject, successHandler, function (error) {
-                        wmToaster.show('error', 'ERROR', error);
+                        $scope.toggleMessage(true, 'error', $scope.errormessage || error);
                         Utils.triggerFn(options.error, error);
                         Utils.triggerFn(options.callBack, undefined, true);
                     });
@@ -1315,7 +1315,7 @@ WM.module('wm.widgets.grid')
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
                                 /*disable readonly and show the appropriate error*/
-                                wmToaster.show('error', 'ERROR', response.error);
+                                $scope.toggleMessage(true, 'error', $scope.errormessage || response.error);
                                 Utils.triggerFn(options.error, response);
                             } else {
                                 if (options.event) {
@@ -1323,7 +1323,7 @@ WM.module('wm.widgets.grid')
                                     $scope.datagridElement.datagrid('hideRowEditMode', row);
                                 }
                                 $scope.operationType = "";
-                                wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
+                                $scope.toggleMessage(true, 'success', $scope.updatemessage);
                                 $scope.initiateSelectItem('current', response, undefined, isStaticVariable, options.callBack);
                                 if (!isStaticVariable) {
                                     $scope.updateVariable(response, options.callBack);
@@ -1343,7 +1343,7 @@ WM.module('wm.widgets.grid')
                         return;
                     }
                     variable.updateRecord(dataObject, successHandler, function (error) {
-                        wmToaster.show('error', 'ERROR', error);
+                        $scope.toggleMessage(true, 'error', $scope.errormessage || error);
                         Utils.triggerFn(options.error, error);
                         Utils.triggerFn(options.callBack, undefined, true);
                     });
@@ -1588,7 +1588,7 @@ WM.module('wm.widgets.grid')
                     $rootScope.$safeApply($scope);
                 },
                 noChangesDetected: function () {
-                    wmToaster.show('info', '', 'No changes detected');
+                    $scope.toggleMessage(true, 'info', 'No changes detected', '');
                     $rootScope.$safeApply($scope);
                 },
                 afterSort: function (e) {
@@ -2258,6 +2258,14 @@ WM.module('wm.widgets.grid')
             $scope.showClearIcon = function (field) {
                 var value = $scope.rowFilter[field] && $scope.rowFilter[field].value;
                 return WM.isDefined(value) && value !== '' && value !== null;
+            };
+            //Function to display the toaster type can be error or success
+            $scope.toggleMessage = function (show, type, msg, header) {
+                if (show && msg) {
+                    wmToaster.show(type, WM.isDefined(header) ? header : type.toUpperCase(), msg);
+                } else {
+                    wmToaster.hide();
+                }
             };
         }])
 /**
