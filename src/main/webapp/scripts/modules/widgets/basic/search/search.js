@@ -27,7 +27,7 @@ WM.module('wm.widgets.basic')
                     ' uib-typeahead="_getDisplayLabel(item) for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
-                    ' typeahead-min-length="minLength" >' +
+                    ' typeahead-min-length="minLength" focus-target>' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="fa fa-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
