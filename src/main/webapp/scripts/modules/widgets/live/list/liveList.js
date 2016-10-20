@@ -759,17 +759,21 @@ WM.module('wm.widgets.live')
                     oldClass  = $rs.isMobileApplicationType ? 'xs' : 'sm',
                     $liScope  = $is.$liScope;
 
-                if (isNaN(parseInt($is.itemsperrow, 10))) {
-                    // handling itemsperrow containing string of classes
-                    _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
-                        var keys = _.split(cls, '-');
-                        cls  = keys[0] + '-' + (12 / parseInt(keys[1], 10));
-                        itemClass += ' ' + 'col-' + cls;
-                    });
-                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + itemClass.trim()).trim();
-                } else {
-                    // handling itemsperrow having integer value.
-                    $liScope.itemclass = (($liScope.itemclass || '') + ' ' + 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow, 10))).trim();
+                if ($is.itemsperrow) {
+                    if (isNaN(parseInt($is.itemsperrow, 10))) {
+                        // handling itemsperrow containing string of classes
+                        _.forEach(_.split($is.itemsperrow, ' '), function (cls) {
+                            var keys = _.split(cls, '-');
+                            cls  = keys[0] + '-' + (12 / parseInt(keys[1], 10));
+                            itemClass += ' ' + 'col-' + cls;
+                        });
+                        $liScope.itemsPerRowClass = itemClass.trim();
+                    } else {
+                        // handling itemsperrow having integer value.
+                        $liScope.itemsPerRowClass = 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow, 10));
+                    }
+                } else { //If itemsperrow is not specified make it full width
+                    $liScope.itemsPerRowClass = 'col-' + oldClass + '-12';
                 }
             }
 
@@ -1398,7 +1402,7 @@ WM.module('wm.widgets.live')
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 } else {
-                    $el.find('.app-listtemplate').addClass($liScope.itemclass);
+                    $el.find('.app-listtemplate').addClass($liScope.itemclass + ' ' + $liScope.itemsPerRowClass);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
