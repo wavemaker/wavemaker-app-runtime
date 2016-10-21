@@ -23,11 +23,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
@@ -42,9 +42,8 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
 
     @Override
     protected void initFilterBean() throws ServletException {
-        String environment = System.getProperty("wmapp.environment");
-        skipSecurityEnabled = StringUtils.isNotBlank(environment) && StringUtils.equals(environment, "testRun");
         super.initFilterBean();
+        skipSecurityEnabled = RuntimeEnvironment.isTestRunEnvironment();
     }
 
     @Override
