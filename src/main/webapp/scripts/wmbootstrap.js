@@ -639,6 +639,7 @@ Application
             'LoginVariableService',
             'LogoutVariableService',
             'TimerVariableService',
+            '$websocketvariable',
 
             function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory) {
                 'use strict';

@@ -49,7 +49,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
         /*function to get service operation object matching its name*/
             getServiceOperationObjectById = function (serviceName, operationId) {
                 var serviceObj = getServiceObjectByName(serviceName);
-                return _.find(serviceObj.operations, {'operationId' : operationId}) || {};
+                return (operationId ? (_.find(serviceObj.operations, {'operationId' : operationId})) : serviceObj.operations[0]) || {};
             },
 
         /*function to get list of services from the backend*/
@@ -262,6 +262,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             if (!isList) {
                                 isList = schemaObject.type && schemaObject.type === 'array';
                             }
+                        } else if (!_.isEmpty(operation['x-WM-OUT-PARAMS-TYPE'])) {
+                            returnType = getFullyQualifiedName(operation['x-WM-OUT-PARAMS-TYPE'][0], definitions);
                         } else {
                             returnType = "void";
                         }
@@ -337,6 +339,16 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 isList: isList,
                                 parameterType: param[parameterTypeKey]
                             });
+                        });
+                    }
+
+                    /* push an extra RequestBody param for WebSocketService */
+                    if (!_.isEmpty(operation['x-WM-IN-PARAMS-TYPE'])) {
+                        operationObject.parameter = operationObject.parameter || [];
+                        operationObject.parameter.push({
+                            name: 'RequestBody',
+                            typeRef: getFullyQualifiedName(operation['x-WM-IN-PARAMS-TYPE'][0], definitions),
+                            parameterType: 'BODY'
                         });
                     }
 
@@ -457,7 +469,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
         /*function to get list of params and return type for an operation of a service from the backend*/
             getServiceOperationParams = function (serviceId, operationId, successCallBack, reloadFlag) {
                 /*sanity checking of the params*/
-                if (!serviceId || serviceId === '' || !operationId || operationId === '') {
+                if (_.isEmpty(serviceId)) {
                     return;
                 }
                 reloadFlag = !(!reloadFlag || reloadFlag === 'false');
@@ -466,56 +478,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var serviceObj = getServiceObjectByName(serviceId),
                     operationObj = getServiceOperationObjectById(serviceId, operationId),
                     urlParams,
-                    onOperationParamsFetch = function (response, isRestSupported) {
-                        var parameters = isRestSupported ? response.parameters : response.parameter;
-                        /*Create parameter property for the operations object, if parameters exist.*/
-                        if (!WM.element.isEmptyObject(parameters)) {
-                            operationObj.parameter = [];
-
-                            /*loop through the operation params to append them to the tree*/
-                            WM.forEach(parameters, function (param) {
-                                var paramExists = false,
-                                    paramTypeRefsKey,
-                                    paramTypeListRefsKey,
-                                    isList,
-                                    typeRef,
-                                    isRestSupportedService = isRESTSupported(serviceObj.type);
-                                if (isRestSupportedService) {
-                                    paramTypeRefsKey = "fullyQualifiedType";
-                                    paramTypeListRefsKey = "fullyQualifiedTypeArguments";
-                                } else {
-                                    paramTypeRefsKey = "typeRef";
-                                }
-
-                                /*loop through the existing params for the operation object to check existence of fetched params*/
-                                WM.forEach(operationObj.parameter, function (existingParam) {
-                                    /*if the param already exists, set flag to prevent duplicate entry*/
-                                    if (param.name === existingParam.name) {
-                                        paramExists = true;
-                                    }
-                                });
-
-                                isList = param[IS_LIST_KEY];
-                                if (isRestSupportedService) {
-                                    typeRef = isList ? (param[paramTypeListRefsKey][0] || 'java.lang.Object') : param[paramTypeRefsKey];
-                                } else {
-                                    typeRef = param[paramTypeRefsKey];
-                                }
-
-                                /*if the param is not already fetched push it to the list*/
-                                if (!paramExists) {
-                                    operationObj.parameter.push({
-                                        name: param.name,
-                                        typeRef: typeRef,
-                                        isList: isList,
-                                        parameterType: param[parameterTypeKey]
-                                    });
-                                }
-                            });
-                        }
-
-                        /*append the return types for this operation*/
-                        operationObj['return'] = response['return'] || {'typeRef': 'java.lang.String', 'isList': false};
+                    onOperationParamsFetch = function () {
                         Utils.triggerFn(successCallBack, operationObj);
                     };
 
@@ -527,7 +490,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                 if (isRESTSupported(serviceObj.type)) {
                     getServiceOperations(serviceId, function () {
-                        onOperationParamsFetch(operationObj, true);
+                        operationObj = getServiceOperationObjectById(serviceId, operationId);
+                        Utils.triggerFn(successCallBack, operationObj);
                     }, true);
                 } else {
                     urlParams = {

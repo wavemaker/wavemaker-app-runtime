@@ -2064,7 +2064,7 @@ WM.module('wm.utils', [])
          * @param dialogId
          * @param dialogScope
         * */
-        function openDialog(dialogId, dialogScope) {
+        function openDialog(dialogId, dialogScope, params) {
             if (!dialogScope) {
                 /*case1: Prefab's dialog - setting nearest page's scope
                  *case2: Partials's dialog - setting nearest partials's scope
@@ -2080,7 +2080,7 @@ WM.module('wm.utils', [])
                     dialogScope = $scriptEl.closest('[data-role="partial"]').scope() || parentPageScope;
                 }
             }
-            DialogService.open(dialogId, dialogScope);
+            DialogService.open(dialogId, dialogScope, params);
         }
 
         /* formats the data and returns the array of values.

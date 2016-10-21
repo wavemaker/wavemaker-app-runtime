@@ -11,7 +11,8 @@
 wm.variables.factories.BaseVariablePropertyFactory = [
     'WIDGET_CONSTANTS',
     'Utils',
-    function (WIDGET_CONSTANTS, Utils) {
+    'VARIABLE_CONSTANTS',
+    function (WIDGET_CONSTANTS, Utils, VARIABLE_CONSTANTS) {
 
         "use strict";
         var variableEventOptions = [], /*A copy of the variable to preserve the actual value.*/
@@ -51,10 +52,10 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "service": {"type": "list", "required": true},
                     "operation": {"type": "list", "required": true},
                     "operationType": {"type": "string", "hide": true},
-                    "startUpdate": {"type": "boolean", "value": false},
-                    "autoUpdate": {"type": "boolean", "value": true},
+                    "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false},
+                    "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
                     "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"},
-                    "transformationRequired": {"type": "boolean-labelfirst", "value": false},
+                    "transformationRequired": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false},
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
@@ -150,7 +151,27 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions}
+                },
+                "wm.WebSocketVariable": {
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
+                    "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
+                    "dataSet": {"type": "string", "value": [], "hide": true},
+                    "service": {"type": "list", "required": true},
+                    "type": {"hide": true},
+                    "operation": {"hide": true},
+                    "operationId": {"hide": true},
+                    "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "displayName": "Connect on page load"},
+                    "appendData": {"type": "boolean", "widgettype": "boolean-inputfirst", "displayName": "Append messages to dataSet"},
+                    "dataBinding": {"type": "list", "value": [], "hide": true},
+
+                    /* Events */
+                    "onBeforeOpen": {"type": "list", "options": variableEventOptions},
+                    "onOpen": {"type": "list", "options": variableEventOptions},
+                    "onBeforeMessageSend": {"type": "list", "options": variableEventOptions},
+                    "onMessageReceive": {"type": "list", "options": variableEventOptions},
+                    "onError": {"type": "list", "options": variableEventOptions},
+                    "onBeforeClose": {"type": "list", "options": variableEventOptions},
+                    "onClose": {"type": "list", "options": variableEventOptions}
                 }
             },
 
@@ -165,7 +186,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
-                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
+                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "appendData", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},
@@ -179,7 +200,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */
-                {"properties": ["onBeforeUpdate", "onResult", "onSuccess", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire"], "parent": "events"}
+                {"properties": VARIABLE_CONSTANTS.EVENTS, "parent": "events"}
             ]
         };
         properties = result.properties;

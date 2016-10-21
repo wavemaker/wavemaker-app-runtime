@@ -21,20 +21,25 @@ wm.variables.filter(wm.variables.filters);
 
 /* Defining route path constants for wmCoreModule application */
 wm.variables.constant('VARIABLE_CONSTANTS', {
-    EVENTS: ["onBeforeUpdate", "onResult", "onSuccess", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire"],
+    EVENTS: ["onBeforeUpdate", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire", "onSuccess"],
     EVENT: {
         "CAN_UPDATE": "onCanUpdate",
         "BEFORE_UPDATE": "onBeforeUpdate",
         "PREPARE_SETDATA": "onBeforeDatasetReady",
         "RESULT": "onResult",
-        "SUCCESS": "onSuccess",
         "ERROR": "onError",
         'CLICK': 'onClick',
         'HIDE': 'onHide',
         "OK": "onOk",
         "CANCEL": "onCancel",
         "CLOSE": "onClose",
-        "TIMER_FIRE": "onTimerFire"
+        "TIMER_FIRE": "onTimerFire",
+        "SUCCESS": "onSuccess",
+        "BEFORE_OPEN": "onBeforeOpen",
+        "OPEN": "onOpen",
+        "BEFORE_SEND": "onBeforeMessageSend",
+        "MESSAGE_RECEIVE": "onMessageReceive",
+        "BEFORE_CLOSE": "onBeforeClose"
     },
     OWNER: {"APP": "App", "PAGE": "Page"},
     SERVICE_TYPE_JAVA: "JavaService",
@@ -44,7 +49,8 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_DATA: "DataService",
     SERVICE_TYPE_SECURITY: "SecurityServiceType",
     SERVICE_NAME_FEED: "FeedService",
-    REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService"],
+    SERVICE_TYPE_WEBSOCKET: "WebSocketService",
+    REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService", "WebSocketService"],
     PAGINATION_PARAMS: ["page", "size", "sort"],
     DEFAULT_VAR: {
         "NOTIFICATION": "appNotification"

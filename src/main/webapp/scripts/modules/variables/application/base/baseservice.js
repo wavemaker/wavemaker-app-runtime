@@ -92,6 +92,11 @@ wm.variables.services.Variables = [
                     "category": "wm.LogoutVariable",
                     "defaultName": "logoutVariable",
                     "appOnly": true
+                },
+                {
+                    "collectionType": "data",
+                    "category": "wm.WebSocketVariable",
+                    "defaultName": "webSocketVariable"
                 }
             ],
 
@@ -555,6 +560,9 @@ wm.variables.services.Variables = [
                 case 'wm.ServiceVariable':
                     method = 'update';
                     break;
+                case 'wm.WebSocketVariable':
+                    method = 'open';
+                    break;
                 case 'wm.LiveVariable':
                     /*
                      * For variable with operation other than 'read', call respective method in RUN mode
@@ -672,6 +680,12 @@ wm.variables.services.Variables = [
                             //fetching the meta data in design mode always
                             if (WM.isFunction(variable.update)) {
                                 variable.update();
+                            }
+                        }
+                    }  else if (variable.category === "wm.WebSocketVariable") {
+                        if (runMode) {
+                            if (variable.startUpdate) {
+                                processVariableStartUpdate(variable, scope);
                             }
                         }
                     } else if (variable.category === "wm.LiveVariable") {
@@ -843,7 +857,7 @@ wm.variables.services.Variables = [
                     // removing dataSet for live variable
                     if (!runMode && variable.category === "wm.LiveVariable") {
                         variables[name].dataSet = [];
-                    } else if (variable.category === "wm.ServiceVariable" && runMode) {
+                    } else if (runMode && (variable.category === "wm.ServiceVariable" ||variable.category === "wm.WebSocketVariable")) {
                         // Attaching service operation info to variables if in run mode
                         variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable.prefabName);
                     }

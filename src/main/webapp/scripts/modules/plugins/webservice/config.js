@@ -116,6 +116,14 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
         setSoapServiceSettings: {
             url: "services/projects/:projectId/soapservice/:serviceId/settings",
             method: "POST"
+        },
+        configureWebSocketService: {
+            url: "services/projects/:projectID/websocketservice/settings",
+            method: "POST"
+        },
+        buildWebSocketService: {
+            url: "services/projects/:projectID/websocketservice",
+            method: "POST"
         }
     }
 });
