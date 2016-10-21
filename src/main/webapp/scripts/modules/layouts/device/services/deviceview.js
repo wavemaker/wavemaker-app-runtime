@@ -78,8 +78,17 @@ WM.module("wm.layouts.device")
         function bindLeftPanelEvents() {
             //tap left to show/hide left panel
             bindTapEvtHandler(roleSelector(SWIPE_ELEM_CLASS_NAME), function () {
-                var leftPanel = getLeftPanelScope();
+                var leftPanel   = getLeftPanelScope(),
+                    searchEl    = WM.element(roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME)),
+                    leftPanelEl;
                 leftPanel && leftPanel.toggle();
+                leftPanelEl = WM.element(roleSelector(LEFT_PANEL_CLASS_NAME));
+                //Hide search container when left panel is open
+                if (leftPanelEL && leftPanelEl.hasClass('visible')) {
+                    if (searchEl) {
+                        searchEl.hide();
+                    }
+                }
             });
         }
 
