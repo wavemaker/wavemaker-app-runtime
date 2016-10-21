@@ -232,7 +232,7 @@ WM.module('wm.widgets.form')
                             if (scope.widgetid && isCurrentTime) {
                                 return CURRENT_TIME;
                             }
-                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : '';
                             this.timestamp = timestamp;
                             if (this.outputformat === "timestamp") {
                                 return timestamp;

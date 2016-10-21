@@ -317,7 +317,7 @@ WM.module('wm.widgets.form')
                         if (!isNaN(Date.parse(scope._displayModel))) {
                             setModels(scope._displayModel);
                         } else {
-                            this._proxyModel = undefined;
+                            this._proxyModel = '';
                         }
                         scope._onChange({$event: e, $scope: scope});
                     };
@@ -340,7 +340,7 @@ WM.module('wm.widgets.form')
                             if (!scope._nativeMode) {
                                 return this._proxyModel;
                             }
-                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : '';
                             this.timestamp = timestamp;
                             if (this.outputformat === "timestamp") {
                                 return timestamp;
