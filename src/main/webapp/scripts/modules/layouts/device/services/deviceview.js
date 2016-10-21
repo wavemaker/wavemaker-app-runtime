@@ -84,8 +84,8 @@ WM.module("wm.layouts.device")
                 leftPanel && leftPanel.toggle();
                 leftPanelEl = WM.element(roleSelector(LEFT_PANEL_CLASS_NAME));
                 //Hide search container when left panel is open
-                if (leftPanelEL && leftPanelEl.hasClass('visible')) {
-                    if (searchEl) {
+                if (leftPanelEl.length && leftPanelEl.hasClass('visible')) {
+                    if (searchEl.length) {
                         searchEl.hide();
                     }
                 }
