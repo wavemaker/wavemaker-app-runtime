@@ -160,7 +160,7 @@ WM.module('wm.widgets.form')
                             if (scope.widgetid && isCurrentDate) {
                                 return CURRENT_DATE;
                             }
-                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : '';
                             this.timestamp = timestamp;
                             if (this.outputformat === "timestamp") {
                                 return timestamp;
