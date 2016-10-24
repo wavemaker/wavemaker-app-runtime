@@ -127,7 +127,11 @@ WM.module('wm.widgets.base')
                 $timeout.cancel(iScope._pageLoadTimer);
 
                 iScope._pageLoadTimer = $timeout(function () {
-                    onPageIncludeChange(iScope, element, attrs, iScope.content);
+                    // Check for element's scope before triggering onPageIncludeChange method
+                    // Element might get destroyed when the partial is used inside a list
+                    if (element.scope()) {
+                        onPageIncludeChange(iScope, element, attrs, iScope.content);
+                    }
                 }, 200);
             }
 
