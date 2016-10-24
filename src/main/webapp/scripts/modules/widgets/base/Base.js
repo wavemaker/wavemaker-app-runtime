@@ -1626,7 +1626,7 @@ WM.module('wm.widgets.base', [])
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPaginationchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
+                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"], "bindable": "in-bound"},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex},
                         "navigation": {"type": "select-by-object", "options": [{'value': 'Basic', 'label': 'Basic'}, {'value': 'Pager', 'label': 'Pager'}, {'value': 'Classic', 'label': 'Classic'}, {'value': 'Scroll', 'label': 'Infinite Scroll'}, {'value': 'Inline', 'label': 'Horizontal Slider'}, {'value': 'None', 'label': 'None'}], "value": "None"},
