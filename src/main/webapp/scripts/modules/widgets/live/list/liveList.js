@@ -63,8 +63,10 @@ WM.module('wm.widgets.live')
         'LiveWidgetUtils',
         'FormWidgetUtils',
         '$filter',
+        '$interpolate',
+        '$parse',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation']),
@@ -888,11 +890,42 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            function createChildScope($is, $el) {
+            function createChildScope($is, $el, attrs) {
                 var _scope   = $el.scope(), // scop which inherits controller's scope
-                    $liScope = _scope.$new(); // create a new child scope. List Items will be compiled with this scope.
+                    $liScope = _scope.$new(), // create a new child scope. List Items will be compiled with this scope.
+                    itemClsAttr,
+                    interpolateFn,
+                    bindExpr,
+                    watchFn,
+                    evalFn,
+                    $dummy,
+                    $target;
 
                 $liScope.fieldDefs = [];
+                itemClsAttr   = attrs.$$element.context.getAttribute('itemclass');
+                interpolateFn = $interpolate(itemClsAttr);
+
+                // when the itemclass is binded
+                if (_.startsWith(itemClsAttr, 'bind:')) {
+                    // create a dummy node to get the itemclass attribute value replaced property (ie, Variables.x.y --> item.x.y)
+                    $dummy  = WM.element('<div>');
+                    $target = WM.element('<div>').attr('itemclass', attrs.itemclass);
+                    $dummy.append($target);
+                    Utils.updateTmplAttrs($dummy, attrs.dataset || attrs.scopedataset, $is.name);
+
+                    // get the updated attribute
+                    bindExpr = _.replace($target.attr('itemclass'), 'bind:', '');
+                    watchFn  = $parse(bindExpr);
+                    evalFn   = function ($s) { // evaluate the expression
+                        return watchFn($s);
+                    };
+                } else if (_.includes(itemClsAttr, '{{') && _.includes(itemClsAttr, '}}')) {
+                    evalFn = function ($s) { // use interpolateFn to get the updated value
+                        return interpolateFn($s);
+                    };
+                } else { // when the itemclass doesn't contain any binding or interpolation
+                    evalFn = _.identity.bind(undefined, itemClsAttr);
+                }
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
@@ -905,7 +938,7 @@ WM.module('wm.widgets.live')
                     'onEnterkeypress'    : $is.onEnterkeypress,
                     'onSetrecord'        : $is.onSetrecord,
                     'onPaginationchange' : $is.onPaginationchange,
-                    'itemclass'          : $is.itemclass,
+                    '_itemclass'         : evalFn,
                     'itemsPerRowClass'   : '',
                     'addRow'             : $is.addRow,
                     'updateRow'          : $is.updateRow,
@@ -1336,7 +1369,7 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, _itemclass(this)]" ';
                         liTemplateWrapper_end   = ' ng-init="addCurrentItemWidgets(this);"></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, false, $is.name);
 
