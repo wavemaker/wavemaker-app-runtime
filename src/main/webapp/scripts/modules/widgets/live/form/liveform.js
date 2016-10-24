@@ -127,7 +127,11 @@ WM.module('wm.widgets.live')
                 function resetFormFields() {
                     var element = getFormElement();
                     element.find('[role="input"]').each(function () {
-                        WM.element(this).isolateScope().reset();
+                        var $inputEl = WM.element(this);
+                        //Reset the widgets other than form fields
+                        if (_.isEmpty($inputEl.closest('[data-role="form-field"]'))) {
+                            WM.element(this).isolateScope().reset();
+                        }
                     });
                 }
                 /*
