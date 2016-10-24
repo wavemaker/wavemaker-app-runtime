@@ -43,6 +43,7 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
     @Override
     protected void initFilterBean() throws ServletException {
         String environment = System.getProperty("wmapp.environment");
+        environment = StringUtils.isNotBlank(environment) ? environment : System.getenv("wmapp.environment");
         skipSecurityEnabled = StringUtils.isNotBlank(environment) && StringUtils.equals(environment, "testRun");
         super.initFilterBean();
     }
