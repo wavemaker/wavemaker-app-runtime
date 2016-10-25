@@ -52,7 +52,8 @@ WM.module('wm.widgets.form')
          * @returns value: string
          */
         function stringify(value) {
-            if (!(value === 'true' || value === 'false' || _.includes(value, "'"))) {
+            //For boolean values, numbers and if value contains quotes, do not add quotes
+            if (!(value === 'true' || value === 'false' || _.includes(value, "'") || !isNaN(parseInt(value, 10)))) {
                 value = "'" + value + "'";
             }
             return value;
