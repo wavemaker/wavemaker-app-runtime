@@ -71,7 +71,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                } else if (isPrimitiveType(type, modelTypes)) {
+                } else if (_.isUndefined(typeChain) && isPrimitiveType(type, modelTypes)) {//Set flag to true only if its parent node
                     if (!variable.isList) {
                         parentNode['value'] = '';
                     }
