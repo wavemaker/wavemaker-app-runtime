@@ -1480,7 +1480,7 @@ wm.variables.services.$liveVariable = [
                         'dataModelName' : variable.liveSource,
                         'entityName'    : relatedTable.type,
                         'page'          : options.page || 1,
-                        'size'          : options.pagesize || '',
+                        'size'          : options.pagesize || undefined,
                         'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
                         'query'         : query || '',
                         'sort'          : orderBy
