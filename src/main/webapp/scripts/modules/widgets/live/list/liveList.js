@@ -903,7 +903,6 @@ WM.module('wm.widgets.live')
 
                 $liScope.fieldDefs = [];
                 itemClsAttr   = attrs.$$element.context.getAttribute('itemclass');
-                interpolateFn = $interpolate(itemClsAttr);
 
                 // when the itemclass is binded
                 if (_.startsWith(itemClsAttr, 'bind:')) {
@@ -920,6 +919,7 @@ WM.module('wm.widgets.live')
                         return watchFn($s);
                     };
                 } else if (_.includes(itemClsAttr, '{{') && _.includes(itemClsAttr, '}}')) {
+                    interpolateFn = $interpolate(itemClsAttr);
                     evalFn = function ($s) { // use interpolateFn to get the updated value
                         return interpolateFn($s);
                     };

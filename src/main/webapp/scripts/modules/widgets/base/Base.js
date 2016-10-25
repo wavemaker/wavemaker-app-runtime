@@ -3336,7 +3336,7 @@ WM.module('wm.widgets.base', [])
                 $root = $el.closest('[init-widget]');
                 $is   = $root.isolateScope();
 
-                if ($is.widgetProps.tabindex) {
+                if ($is && $is.widgetProps.tabindex) {
                     $el.attr('tabindex', $is.tabindex);
                     $root.removeAttr('tabindex');
                 }
