@@ -468,7 +468,7 @@ WM.module('wm.widgets.live')
                                                 '</div>' +
                                                 '</h4></li>';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemclass(this)]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 

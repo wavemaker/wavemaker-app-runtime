@@ -715,6 +715,10 @@ WM.module('wm.widgets.live')
                     if (WM.isObject(object)) {
                         if (!displayExpr) {
                             displayExpr = Object.keys(object)[0];
+                            //If dataset is not ready, display expression will not be defined
+                            if (!displayExpr) {
+                                return;
+                            }
                         }
                         return WidgetUtilService.updateAndEvalExp(object, displayExpr, $scope);
                     }

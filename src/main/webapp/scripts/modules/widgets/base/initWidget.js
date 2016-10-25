@@ -982,7 +982,9 @@ WM.module('wm.widgets.base')
                     index;
 
                 function isPageable(variable) {
-                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution'));
+                    //Check if pagination is available for data service variables. isList property will be true for array types.
+                    //But, for procedure variable isList is true and pagination is not available
+                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution' && variable.isList));
                 }
 
                 if (isArrayTypeExpr(watchExpr) || isOnlyDataSet) {
