@@ -1369,6 +1369,8 @@ WM.module('wm.widgets.base', [])
                         "updaterow": {"type": "boolean", "bindable": "in-bound", "show": false},
                         "showheader": {"type": "boolean", "value": true, "showindesigner": true},
                         "gridsearch": {"type": "boolean", "show": false, "showindesigner": false},
+                        "rowclass": {"type": "string", "value": "", "showindesigner": true},
+                        "rowngclass": {"showindesigner": "true", "widget": "conditional-expression"},
                         "filtermode": {"type": "select-by-object", "options": [{"label": "No Filter", "value": ""}, {"label": "Search", "value": "search"}, {"label": "Multi-column", "value": "multicolumn"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "searchlabel": {"type": "string", "value": "Search", "bindable": "in-bound", "show": false, "showindesigner": false, "alignright": true},
                         "enablesort": {"type": "boolean", "value": true, "showindesigner": true},
@@ -1942,6 +1944,7 @@ WM.module('wm.widgets.base', [])
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onDatarender"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
+                {"name": "gridstyles", "properties": ['rowclass', 'rowngclass'], "parent": "properties"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
             ];
             result.advancedPropertyGroups = [
