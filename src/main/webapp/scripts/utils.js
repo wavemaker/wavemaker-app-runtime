@@ -155,7 +155,27 @@ WM.module('wm.utils', [])
                 'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
                 'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
             },
-            indexPage = getIndexPage();
+            indexPage = getIndexPage(),
+            pluginConfig = {
+                'BARCODE_SCANNER' : [{'name' : 'phonegap-plugin-barcodescanner', 'spec' : '6.0.2', 'variables': [{ 'name': 'CAMERA_USAGE_DESCRIPTION', 'value': 'To scan barcodes'}]}],
+                'CALENDAR'        : [{'name' : 'cordova-plugin-calendar', 'spec' : '4.5.5', 'variables': [{'name': 'CALENDAR_USAGE_DESCRIPTION', 'value': 'To show events'}]}],
+                'CAMERA'          : [{'name' : 'cordova-plugin-camera', 'spec' : '2.3.0', 'variables': [{ 'name': 'CAMERA_USAGE_DESCRIPTION', 'value': 'To take photos'}]},
+                                     {'name' : 'cordova-plugin-media-capture', 'spec' : '1.4.0', 'variables': [{'name': 'CAMERA_USAGE_DESCRIPTION', 'value': 'To take videos'}, { 'name' : 'MICROPHONE_USAGE_DESCRIPTION', 'value' : 'To record voice while taking videos'}, {'name' : 'PHOTO_LIBRARY_USAGE_DESCRIPTION', 'value' : 'To provide photo browsing'}]}],
+                'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '2.2.0', 'variables': [{'name' : 'CONTACTS_USAGE_DESCRIPTION', 'value': 'To show phone numbers'}]}],
+                'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.0'}, {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.0'}],
+                'GEOLOCATION'     : [{'name' : 'cordova-plugin-geolocation', 'spec' : '2.4.0'}],
+                'NETWORK'         : [{'name' : 'cordova-plugin-network-information', 'spec' : '1.3.0'}],
+                'VIBRATE'         : [{'name' : 'cordova-plugin-vibration', 'spec' : '2.1.2'}],
+                'MEDIAPICKER'     : [{'name' : 'cordova-plugin-mediapicker', 'spec' : '0.0.1'}],
+                'IMAGEPICKER'     : [{'name' : 'cordova-plugin-imagepicker', 'spec' : '1.3.0', 'variables' : [{'name' : 'PHOTO_LIBRARY_USAGE_DESCRIPTION', 'value' : 'To provide photo browsing picker'}]}],
+                'SPLASHSCREEN'    : [{'name' : 'cordova-plugin-splashscreen', 'spec' : '4.0.0'}],
+                'DEVICE'          : [{'name' : 'cordova-plugin-device', 'spec': '1.1.3'}],
+                'APPVERSION'      : [{'name' : 'cordova-plugin-app-version', 'spec': '0.1.9'}],
+                'WHITELIST'       : [{'name' : 'cordova-plugin-whitelist', 'spec': '1.3.0'}],
+                'COMPAT'          : [{'name' : 'cordova-plugin-compat', 'spec': '1.0.0'}],
+                'INAPPBROWSER'    : [{'name' : 'cordova-plugin-inappbrowser', 'spec' : '1.5.0'}],
+                'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.2.0'}]
+            };
 
         /* set default attrs for link */
         linkEl.rel = 'stylesheet';
@@ -2215,4 +2235,5 @@ WM.module('wm.utils', [])
         this.openDialog                 = openDialog;
         this.evalExp                    = evalExp;
         this.convertToArray             = convertToArray;
+        this.pluginConfig               = pluginConfig;
     }]);
