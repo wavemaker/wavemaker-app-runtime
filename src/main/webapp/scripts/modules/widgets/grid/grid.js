@@ -337,7 +337,7 @@ WM.module('wm.widgets.grid')
                             liveGrid = element.closest('.app-livegrid'),
                             gridController;
                         function isInputBodyWrapper(target) {
-                            var classes = ['.dropdown-menu', '.uib-typeahead-match', '.modal-dialog', '.toast-error'],
+                            var classes = ['.dropdown-menu', '.uib-typeahead-match', '.modal-dialog', '.toast'],
                                 isInput = false;
                             _.forEach(classes, function (cls) {
                                 if (target.closest(cls).length) {

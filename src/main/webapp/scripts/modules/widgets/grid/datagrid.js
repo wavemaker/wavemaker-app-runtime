@@ -1901,13 +1901,21 @@ $.widget('wm.datagrid', {
             $htm.on('focusout', 'tr', function (e) {
                 var $target        = $(e.target),
                     $row           = $target.closest('tr'),
-                    $relatedTarget = $(e.relatedTarget);
+                    $relatedTarget = $(e.relatedTarget),
+                    invalidTargets = '.row-editing, .row-action-button, .app-datagrid-cell, .caption';
+                //Check if the focus out element is outside the grid or some special elements
+                function isInvalidTarget() {
+                    if (!$relatedTarget.closest('.app-grid').length) {
+                        return true;
+                    }
+                    return $relatedTarget.is(invalidTargets);
+                }
                 //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row.
-                if (!$target.closest('td').is(':last-child') || $row.hasClass('danger')) {
+                if (!$target.closest('td').is(':last-child') || $row.hasClass('danger') || e.relatedTarget === null) {
                     return;
                 }
                 //If focusout is because of input element or row action or current row, dont save the row
-                if ($relatedTarget.attr('focus-target') === '' || $relatedTarget.hasClass('active') || $relatedTarget.hasClass('row-action-button')) {
+                if ($relatedTarget.attr('focus-target') === '' || isInvalidTarget()) {
                     return;
                 }
                 self.toggleEditRow(e, {
