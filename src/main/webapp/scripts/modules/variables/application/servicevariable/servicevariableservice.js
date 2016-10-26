@@ -88,7 +88,8 @@ wm.variables.services.$servicevariable = ['Variables',
                          * skipping as it is resulting in endless recursive loop for DataServices
                          */
                         if (modelTypes[field.type] && modelTypes[field.type].fields) {
-                            if (variable.serviceType === 'DataService' && _.get(modelTypes[type].fields, [fieldName, 'isList'])) {
+                            //Exempting procedure variables as cursor might return array of objects
+                            if (variable.serviceType === 'DataService' && _.get(modelTypes[type].fields, [fieldName, 'isList']) && variable.controller !== 'ProcedureExecution') {
                                 return;
                             }
                             parentNode[fieldName] = field.isList ? [{}] : {};
