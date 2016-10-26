@@ -108,9 +108,13 @@ public class QueryHelper {
                             paramTypes = factory.getNamedSQLQuery(queryName).getParameterTypes();
                         }
                     }
-                    final BasicType type = session.getTypeHelper().basic((String) paramTypes.get(namedParameter));
-                    if (type != null) {
-                        query.setParameter(namedParameter, val, type);
+                    if (paramTypes.containsKey(namedParameter)) {
+                        final BasicType type = session.getTypeHelper().basic((String) paramTypes.get(namedParameter));
+                        if (type != null) {
+                            query.setParameter(namedParameter, val, type);
+                        } else {
+                            query.setParameter(namedParameter, val);
+                        }
                     } else {
                         query.setParameter(namedParameter, val);
                     }
