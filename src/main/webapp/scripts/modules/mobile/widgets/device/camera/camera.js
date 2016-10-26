@@ -64,10 +64,12 @@ WM.module('wm.widgets.advanced')
                         };
                     }
                     if (CONSTANTS.isStudioMode) {
-                        wp.imagequality.show = showprops;
+                        wp.imagequality.show      = showprops;
                         wp.imageencodingtype.show = showprops;
-                        wp.savetogallery.show = showprops;
-                        wp.allowedit.show = showprops;
+                        wp.savetogallery.show     = showprops;
+                        wp.allowedit.show         = showprops;
+                        wp.imagetargetwidth.show  = showprops;
+                        wp.imagetargetheight.show = showprops;
                     }
                     break;
                 }
