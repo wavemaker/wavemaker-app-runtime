@@ -1,10 +1,10 @@
-/*global WM*/
+/*global WM, _*/
 /*Directive for Panel*/
 
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', function ($templateCache) {
+    .run(['$templateCache', function ($tc) {
         'use strict';
-        $templateCache.put('template/layout/container/panel.html',
+        $tc.put('template/layout/container/panel.html',
             '<div page-container init-widget listen-property="actions" class="app-panel panel" ng-class="[helpClass, {\'fullscreen\':fullscreen}]" apply-styles="shell" wm-navigable-element="true">' +
                 '<div class="panel-heading" ng-class="helpClass">' +
                     '<h3 class="panel-title">' +
@@ -31,134 +31,147 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>'
             );
-        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" ng-show="expanded" wmtransclude></div>');
+        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" ng-show="expanded" wmtransclude></div>');
     }])
-    .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
-        'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
-            notifyFor = {
-                'actions': true
-            };
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
-            switch (key) {
-            case 'actions':
-                scope.itemlabel = scope.itemlabel || scope.displayfield;
-                break;
-            }
-        }
-        return {
-            'restrict'  : 'E',
-            'replace'   : true,
-            'scope'     : {},
-            'transclude': true,
-            'template'  : function (tElement, tAttrs) {
-                var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
-                    template = WM.element(WidgetUtilService.getPreparedTemplate('template/layout/container/panel.html', tElement, tAttrs));
+    .directive('wmPanel', [
+        'PropertiesFactory',
+        'WidgetUtilService',
+        'Utils',
+        'CONSTANTS',
 
-                if (!isWidgetInsideCanvas) {
-                    if (tAttrs.hasOwnProperty('onEnterkeypress')) {
-                        template.attr('ng-keypress', 'onKeypress({$event: $event, $scope: this})');
-                    }
+        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
+            'use strict';
+
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
+                notifyFor   = {'actions': true};
+
+            function propertyChangeHandler(scope, key) {
+                switch (key) {
+                case 'actions':
+                    scope.itemlabel = scope.itemlabel || scope.displayfield;
+                    break;
                 }
-                return template[0].outerHTML;
-            },
-            'controller': function () {
-                this.registerFooter = function (footer) {
-                    this.footer = footer;
-                };
-            },
-            'compile': function (tElement) {
-                return {
-                    'pre': function (iScope, element, attrs) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                        //handle the backward compatibility for description attributes
-                        if (attrs.description && !attrs.subheading) {
-                            iScope.subheading = attrs.subheading = attrs.description;
-                            WM.element(tElement.context).attr('subheading', iScope.subheading);
-                            delete attrs.description;
-                        }
-                    },
-                    'post': function (scope, element, attrs, panelCtrl) {
-                        if (scope.expanded === undefined) {
-                            scope.expanded = true;
-                        }
-                        /* Expand Collapse the panel */
-                        scope.expandCollapsePanel = function ($event) {
-                            if (scope.collapsible) {
-                                if (scope.expanded) {
-                                    if (scope.onCollapse) {
-                                        scope.onCollapse({$event: $event, $scope: this});
-                                    }
-                                } else {
-                                    if (scope.onExpand) {
-                                        scope.onExpand({$event: $event, $scope: this});
-                                    }
-                                }
-                                /* flip the active flag */
-                                scope.expanded = !scope.expanded;
-                                if (panelCtrl.footer) {
-                                    panelCtrl.footer.isolateScope().expanded = scope.expanded;
-                                }
-                            }
-                        };
-                        /* Toggle FullScreen the panel */
-                        scope.toggleFullScreen = function ($event) {
-                            if (scope.enablefullscreen) {
-                                if (scope.fullscreen) {
-                                    if (scope.onExitfullscreen) {
-                                        scope.onExitfullscreen({$event: $event, $scope: this});
-                                    }
-                                } else {
-                                    if (scope.onFullscreen) {
-                                        scope.onFullscreen({$event: $event, $scope: this});
-                                    }
-                                }
-                                //Re-plot the chart in case if it is inside panel
-                                element.find('.ng-isolate-scope')
-                                    .each(function () {
-                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                                });
-                                /* flip the active flag */
-                                scope.fullscreen = !scope.fullscreen;
-                            }
-                        };
+            }
+            return {
+                'restrict'  : 'E',
+                'replace'   : true,
+                'scope'     : {},
+                'transclude': true,
+                'template'  : function (tElement, tAttrs) {
+                    var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
+                        template = WM.element(WidgetUtilService.getPreparedTemplate('template/layout/container/panel.html', tElement, tAttrs));
 
-                        /* toggle the state of the panel */
-                        scope.toggleHelp = function () {
-                            /* flip the active flag */
-                            scope.helpClass = scope.helpClass ? null : 'show-help';
-                        };
-                        /* Close the panel */
-                        scope.closePanel = function () {
-                            scope.show = false;
-                        };
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    if (!isWidgetInsideCanvas) {
+                        if (tAttrs.hasOwnProperty('onEnterkeypress')) {
+                            template.attr('ng-keypress', 'onKeypress({$event: $event, $scope: this})');
+                        }
+                    }
+                    return template[0].outerHTML;
+                },
+                'controller': function () {
+                    this.registerFooter = function (footer) {
+                        this.footer = footer;
+                    };
+                },
+                'compile': function ($tEl) {
+                    return {
+                        'pre': function ($is, $el, attrs) {
+                            if (CONSTANTS.isStudioMode) {
+                                $is.widgetProps = Utils.getClonedObject(widgetProps);
+                            } else {
+                                $is.widgetProps = widgetProps;
+                            }
+                            //handle the backward compatibility for description attributes
+                            if (attrs.description && !attrs.subheading) {
+                                $is.subheading = attrs.subheading = attrs.description;
+                                WM.element($tEl.context).attr('subheading', $is.subheading);
+                                delete attrs.description;
+                            }
 
-                        if (!scope.widgetid) {
-                            scope.onKeypress = function (args) {
-                                var action = Utils.getActionFromKey(args.$event);
-                                if (action === 'ENTER') {
-                                    scope.onEnterkeypress(args);
+                            if (!attrs.widgetid && attrs.collapsible === 'true' && attrs.content && attrs.expanded === 'false') {
+                                $is.$lazyLoad = _.noop;
+                            }
+
+                        },
+                        'post': function ($is, $el, attrs, panelCtrl) {
+                            if ($is.expanded === undefined) {
+                                $is.expanded = true;
+                            }
+                            /* Expand Collapse the panel */
+                            $is.expandCollapsePanel = function ($event) {
+                                if ($is.collapsible) {
+                                    if ($is.expanded) {
+                                        if ($is.onCollapse) {
+                                            $is.onCollapse({$event: $event, $scope: this});
+                                        }
+                                    } else {
+                                        if ($is.onExpand) {
+                                            $is.onExpand({$event: $event, $scope: this});
+                                        }
+                                    }
+
+                                    Utils.triggerFn($is.$lazyLoad);
+
+                                    /* flip the active flag */
+                                    $is.expanded = !$is.expanded;
+                                    if (panelCtrl.footer) {
+                                        panelCtrl.footer.isolateScope().expanded = $is.expanded;
+                                    }
                                 }
                             };
-                        }
+                            /* Toggle FullScreen the panel */
+                            $is.toggleFullScreen = function ($event) {
+                                if ($is.enablefullscreen) {
+                                    if ($is.fullscreen) {
+                                        if ($is.onExitfullscreen) {
+                                            $is.onExitfullscreen({$event: $event, $scope: this});
+                                        }
+                                    } else {
+                                        if ($is.onFullscreen) {
+                                            $is.onFullscreen({$event: $event, $scope: this});
+                                        }
+                                    }
+                                    //Re-plot the chart in case if it is inside panel
+                                    $el.find('.ng-isolate-scope')
+                                        .each(function () {
+                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                    });
+                                    /* flip the active flag */
+                                    $is.fullscreen = !$is.fullscreen;
+                                }
+                            };
 
-                        if (panelCtrl.footer) {
-                            element.append(panelCtrl.footer);
+                            /* toggle the state of the panel */
+                            $is.toggleHelp = function () {
+                                /* flip the active flag */
+                                $is.helpClass = $is.helpClass ? null : 'show-help';
+                            };
+                            /* Close the panel */
+                            $is.closePanel = function () {
+                                $is.show = false;
+                            };
+                            /* register the property change handler */
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
+                            if (!$is.widgetid) {
+                                $is.onKeypress = function (args) {
+                                    var action = Utils.getActionFromKey(args.$event);
+                                    if (action === 'ENTER') {
+                                        $is.onEnterkeypress(args);
+                                    }
+                                };
+                            }
+
+                            if (panelCtrl.footer) {
+                                $el.append(panelCtrl.footer);
+                            }
                         }
-                    }
-                };
-            }
-        };
+                    };
+                }
+            };
     }])
-    .directive('wmPanelFooter', ['$templateCache', function ($templateCache) {
+    .directive('wmPanelFooter', ['$templateCache', function ($tc) {
         'use strict';
         return {
             'restrict'  : 'E',
@@ -166,10 +179,10 @@ WM.module('wm.layouts.containers')
             'scope'     : {},
             'transclude': true,
             'require'   : '^wmPanel',
-            'template'  : $templateCache.get('template/layout/container/panel-footer.html'),
-            'link'      : function (scope, element, attrs, panelCtrl) {
-                scope.expanded = true;
-                panelCtrl.registerFooter(element);
+            'template'  : $tc.get('template/layout/container/panel-footer.html'),
+            'link'      : function ($is, $el, attrs, panelCtrl) {
+                $is.expanded = true;
+                panelCtrl.registerFooter($el);
             }
         };
     }]);
