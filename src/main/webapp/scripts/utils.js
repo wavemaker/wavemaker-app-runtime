@@ -2035,7 +2035,8 @@ WM.module('wm.utils', [])
                     "wm-chart",
                     "wm-view",
                     "wm-form",
-                    "wm-carousel"
+                    "wm-carousel",
+                    "wm-media-list"
                 ];
             } else if (type === 'page-container-widgets') {
                 types = [
