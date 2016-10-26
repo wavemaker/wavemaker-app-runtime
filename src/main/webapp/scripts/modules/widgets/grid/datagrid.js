@@ -1998,9 +1998,10 @@ $.widget('wm.datagrid', {
             } else {
                 template += ' dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" displayfield="' + fieldName + '"';
             }
+            template += ' orderby="' + fieldName + ':asc"';
             break;
         case 'autocomplete':
-            template += ' type="autocomplete" dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" on-submit="onRowFilterChange()"';
+            template += ' type="autocomplete" dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" on-submit="onRowFilterChange()" orderby="' + fieldName + ':asc"';
             break;
         }
         template += '></wm-' + widget + '>';
