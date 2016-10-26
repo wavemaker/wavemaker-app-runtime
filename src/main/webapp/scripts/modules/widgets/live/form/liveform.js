@@ -732,7 +732,7 @@ WM.module('wm.widgets.live')
                 };
                 /*returns the default output formats for date time types*/
                 $scope.getOutputPatterns = function (type, outputFormat) {
-                    if (type === 'date' || type === 'time' || type === 'datetime') {
+                    if ($scope.isDateTimeWidgets[type]) {
                         return dateTimeFormats[type];
                     }
                     return outputFormat;
@@ -850,7 +850,6 @@ WM.module('wm.widgets.live')
                                                     if (transObj.key === fieldObject.key) {
                                                         fieldObject.isRelated = transObj.isRelated;
                                                         fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
-                                                        fieldObject.outputformat = scope.getOutputPatterns(fieldObject.type, fieldObject.outputformat);
                                                     }
                                                 });
                                             });
@@ -906,8 +905,12 @@ WM.module('wm.widgets.live')
                                     Utils.getService('LiveWidgetsMarkupManager').updateMarkupForLiveForm(gridObj);
                                 }
                                 _.forEach(scope.formFields, function (field) {
-                                    if (field && field.primaryKey) {
-                                        scope.setPrimaryKey(field.key);
+                                    if (field) {
+                                        if (field.primaryKey) {
+                                            scope.setPrimaryKey(field.key);
+                                        }
+                                        //Set output format for date time types
+                                        field.outputformat = scope.getOutputPatterns(field.type, field.outputformat);
                                     }
                                 });
                                 break;
