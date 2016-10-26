@@ -392,10 +392,8 @@ wm.modules.wmCommon.services.BaseService = [
                             OnLogin: function () {
                                 return function () {
                                     executeErrorCallStack();
-
                                     if (CONSTANTS.isStudioMode) {
                                         $rootScope.isStudioDisabled = isStudioDisabled;
-                                        $rootScope.$emit('wms:unblock-wsm');
                                     }
 
                                     DialogService.hideDialog(dialogId);
