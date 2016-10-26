@@ -1195,7 +1195,7 @@ WM.module('wm.widgets.live')
                 });
 
                 // listen on to the dblclick event for the ul element & get li dblclicked of the live-list
-                $el.on('dblclick.wmActive', 'ul', function (evt) {
+                $el.on('dblclick.wmActive', 'ul.app-livelist-container', function (evt) {
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope();
 
