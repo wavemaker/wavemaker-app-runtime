@@ -43,6 +43,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                 requiredCordovaPlugins: ['GEOLOCATION'],
                 properties: [
                     {"target": "startUpdate", "type": "boolean", "value": ""},
+                    {"target": "autoUpdate", "type": "boolean"},
                     {"target": "geolocationHighAccuracy", "type": "boolean", "value": true, "dataBinding": true},
                     {"target": "geolocationMaximumAge", "type": "number", "value": 3, "dataBinding": true},
                     {"target": "geolocationTimeout", "type": "number", "value": 5, "dataBinding": true}

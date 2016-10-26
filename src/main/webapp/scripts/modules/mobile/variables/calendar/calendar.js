@@ -82,7 +82,8 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                     {"target": "eventNotes", "type": "string", "dataBinding": true},
                     {"target": "eventStart", "type": "datetime", "dataBinding": true},
                     {"target": "eventEnd", "type": "datetime", "dataBinding": true},
-                    {"target": "startUpdate", "type": "boolean"}
+                    {"target": "startUpdate", "type": "boolean"},
+                    {"target": "autoUpdate", "type": "boolean"}
                 ],
                 requiredCordovaPlugins: ['CALENDAR'],
                 invoke : function (variable, options, success, error) {
