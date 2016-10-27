@@ -123,6 +123,9 @@
         },
         "angular-websocket": {
             ".": ["dist/angular-websocket.min.js"]
+        },
+        "ng-cordova-oauth": {
+            ".": ["dist/ng-cordova-oauth.min.js"]
         }
     }
 }
