@@ -624,6 +624,28 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 data : connectionParams.data,
                 urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
+        },
+
+        /**
+         * @ngdoc function
+         * @name wm.webservice.$WebService#getWebSocketServiceDetails
+         * @methodOf wm.webservice.$WebService
+         * @function
+         *
+         * @description
+         * gets the details for an existing WebSocket service in a project.
+         *
+         * @param {object} urlParams parameters required for the service
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        getWebSocketServiceDetails: function (urlParams, successCallback, failureCallback) {
+
+            BaseService.send({
+                target: 'WebService',
+                action: 'getWebSocketServiceDetails',
+                urlParams: urlParams
+            }, successCallback, failureCallback);
         }
     };
 };

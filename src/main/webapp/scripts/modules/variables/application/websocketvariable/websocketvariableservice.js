@@ -75,7 +75,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             variable._socketConnected = false;
             freeSocket(variable);
             // EVENT: ON_ERROR
-            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, variable.activeScope, _.get(evt, 'data'), evt);
+            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, variable.activeScope, _.get(evt, 'data') || 'Error while connecting with ' + variable.service, evt);
         }
 
         /**
