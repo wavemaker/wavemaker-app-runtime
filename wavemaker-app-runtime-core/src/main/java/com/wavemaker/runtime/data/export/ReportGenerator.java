@@ -1,17 +1,14 @@
 package com.wavemaker.runtime.data.export;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.wavemaker.runtime.data.Types;
-import com.wavemaker.runtime.data.util.CriteriaUtils;
-import com.wavemaker.runtime.data.util.QueryParser;
+import com.wavemaker.runtime.data.util.HQLQueryUtils;
 import com.wavemaker.runtime.data.util.TypeInformation;
 import com.wavemaker.runtime.data.util.TypeMapBuilder;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
@@ -23,11 +20,9 @@ import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
  */
 public class ReportGenerator {
 
-
     private Class<?> entityClass;
     private Session session;
     private ExportOptions exportOptions;
-
 
     public ReportGenerator(Session session, Class<?> entityClass, ExportOptions exportOptions) {
         this.session = session;
@@ -55,14 +50,7 @@ public class ReportGenerator {
     }
 
     private List constructDataSource() {
-        TypeInformation typeInformation = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass, true);
-        Criteria criteria = session.createCriteria(entityClass);
-        QueryParser queryParser = new QueryParser();
-        String query = exportOptions.getQuery();
-        if (StringUtils.isNotBlank(query)) {
-            criteria.add(queryParser.parse(query, typeInformation, criteria));
-        }
-        CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable(), null);
-        return criteria.list();
+        Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), exportOptions.getQuery(), exportOptions.getPageable(), session);
+        return hqlQuery.list();
     }
 }
