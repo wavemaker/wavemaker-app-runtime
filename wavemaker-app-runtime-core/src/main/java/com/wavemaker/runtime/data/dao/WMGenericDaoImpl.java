@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,9 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -42,6 +43,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
@@ -49,7 +51,7 @@ import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
-import com.wavemaker.runtime.data.util.QueryParser;
+import com.wavemaker.runtime.data.util.HQLQueryUtils;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
@@ -152,12 +154,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
             @Override
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                if (StringUtils.isNotBlank(query)) {
-                    Criterion criterion = new QueryParser().parse(query, entityClass, criteria);
-                    criteria.add(criterion);
-                }
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
+                Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, pageable, session);
+                return HQLQueryUtils.executeHQLQuery(hqlQuery, Collections.EMPTY_MAP, pageable, getTemplate());
             }
         });
     }
@@ -236,12 +234,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().execute(new HibernateCallback<Long>() {
             @Override
             public Long doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                if (StringUtils.isNotBlank(query)) {
-                    Criterion criterion = new QueryParser().parse(query, entityClass, criteria);
-                    criteria.add(criterion);
-                }
-                return CriteriaUtils.getRowCount(criteria);
+                Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
+                return QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), Collections.EMPTY_MAP, false, getTemplate());
             }
         });
     }
