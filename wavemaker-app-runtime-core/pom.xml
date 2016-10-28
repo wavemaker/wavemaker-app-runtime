@@ -331,19 +331,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>net.sourceforge.dynamicreports</groupId>
-            <artifactId>dynamicreports-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.sf.barcode4j</groupId>
-                    <artifactId>barcode4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
         </dependency>
         <!-- Start: Quartz framework -->
         <dependency>

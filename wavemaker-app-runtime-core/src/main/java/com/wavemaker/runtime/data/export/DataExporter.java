@@ -1,56 +1,34 @@
 package com.wavemaker.runtime.data.export;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.IOException;
 
-import org.hibernate.Session;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
-import net.sf.dynamicreports.report.exception.DRException;
+import com.wavemaker.runtime.data.export.util.CSVUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
- * @since 9/5/16
+ * @since 8/11/16
  */
-public class DataExporter<Entity extends Serializable> {
+public abstract class DataExporter {
 
-    private Class<Entity> entityClass;
-    private Session session;
-    private ExportType exportType;
-    private ExportOptions exportOptions;
+    public abstract ByteArrayOutputStream export(ExportType exportType);
 
-    public DataExporter(
-            Session session, Class<Entity> entityClass, ExportType exportType, ExportOptions exportOptions) {
-        this.session = session;
-        this.entityClass = entityClass;
-        this.exportOptions = exportOptions;
-        this.exportType = exportType;
-    }
-
-    public OutputStream build() {
-        ReportGenerator reportGenerator = new ReportGenerator(session, entityClass, exportOptions);
-        JasperReportBuilder jasperReportBuilder = reportGenerator.generateReport();
-
-        jasperReportBuilder
-                .setTemplate(Templates.reportTemplate)
-                .ignorePageWidth()
-                .highlightDetailOddRows()
-                .ignorePagination();
-        OutputStream reportOutputStream = new ByteArrayOutputStream();
+    protected ByteArrayOutputStream exportWorkbook(
+            final XSSFWorkbook workbook, final ExportType exportType) {
         try {
-            switch (exportType) {
-                case EXCEL:
-                    jasperReportBuilder.toXls(reportOutputStream);
-                    break;
-                case CSV:
-                    jasperReportBuilder.toCsv(reportOutputStream);
-                    break;
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            if (exportType == ExportType.EXCEL) {
+                workbook.write(outputStream);
+            } else if (exportType == ExportType.CSV) {
+                CSVUtils CSVUtils = new CSVUtils(workbook);
+                CSVUtils.convertXlsToCSV(outputStream);
             }
-        } catch (DRException e) {
-            throw new RuntimeException("DRException in building jasperReportBuilder ", e);
+            return outputStream;
+        } catch (IOException e) {
+            throw new WMRuntimeException("Error while exporting data",e);
         }
-
-        return reportOutputStream;
     }
 }

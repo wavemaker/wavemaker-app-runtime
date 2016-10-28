@@ -12,6 +12,9 @@
  */
 package com.wavemaker.runtime.data.dao.query;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +35,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.file.model.DownloadResponse;
+import com.wavemaker.runtime.file.model.Downloadable;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.TypeConversionUtils;
@@ -134,6 +141,17 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     }
 
+    @Override
+    public Downloadable exportNamedQueryData(
+            final String queryName, final Map<String, Object> params, final ExportType exportType,
+            final Pageable pageable) {
+        final Pageable _pageable = getValidPageable(pageable);
+        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType, _pageable);
+        ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
+        InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
+        return new DownloadResponse(is, exportType.name(), queryName + exportType.getExtension());
+    }
+
     protected Page<Object> executeNativeQuery(
             final String queryString, final Map<String, Object> params, final Pageable pageable) {
         final Pageable _pageable;
@@ -159,12 +177,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     protected Page<Object> executeHQLQuery(
             final String queryString, final Map<String, Object> params, final Pageable pageable) {
-        final Pageable _pageable;
-        if (pageable == null) {
-            _pageable = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-        } else {
-            _pageable = pageable;
-        }
+        final Pageable _pageable = getValidPageable(pageable);
         return template.execute(new HibernateCallback<Page<Object>>() {
             public Page<Object> doInHibernate(Session session) throws HibernateException {
                 Query hqlQuery = createHQLQuery(queryString, params);
@@ -258,5 +271,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     private Dialect getDialect() {
         return ((SessionFactoryImplementor) template.getSessionFactory()).getDialect();
+    }
+
+    private Pageable getValidPageable(final Pageable pageable) {
+        return pageable == null ? new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE) : pageable;
     }
 }

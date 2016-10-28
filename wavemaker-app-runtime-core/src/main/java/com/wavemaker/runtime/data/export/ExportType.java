@@ -6,7 +6,7 @@ package com.wavemaker.runtime.data.export;
  * @since 9/5/16
  */
 public enum ExportType {
-    EXCEL(".xls"),
+    EXCEL(".xlsx"),
     CSV(".csv");
 
     private String extension;

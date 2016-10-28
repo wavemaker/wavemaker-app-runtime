@@ -18,7 +18,6 @@ package com.wavemaker.runtime.data.dao;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -45,8 +44,8 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
-import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
+import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
@@ -162,21 +161,20 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate()
-                .execute(new HibernateCallback<OutputStream>() {
+        ByteArrayOutputStream reportOutputStream = getTemplate()
+                .execute(new HibernateCallback<ByteArrayOutputStream>() {
                     @Override
-                    public OutputStream doInHibernate(Session session) throws HibernateException {
-                        ExportOptions exportOptions = new ExportOptions();
-                        exportOptions.setPageable(pageable);
-                        exportOptions.setQuery(query);
-                        DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType,
-                                exportOptions);
-                        return exporter.build();
+                    public ByteArrayOutputStream doInHibernate(Session session) throws HibernateException {
+                        Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, pageable, session);
+                        DataExporter exporter = new HQLQueryDataExporter(hqlQuery.scroll(),
+                                HQLQueryUtils.extractMetaForHql(hqlQuery));
+                        return exporter.export(exportType);
                     }
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
         return new DownloadResponse(is, exportType.name(), entityClass.getSimpleName() + exportType.getExtension());
     }
+
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
         if (ArrayUtils.isNotEmpty(queryFilters)) {
@@ -235,7 +233,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             @Override
             public Long doInHibernate(Session session) throws HibernateException {
                 Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
-                return QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), Collections.EMPTY_MAP, false, getTemplate());
+                return QueryHelper
+                        .getQueryResultCount(hqlQuery.getQueryString(), Collections.EMPTY_MAP, false, getTemplate());
             }
         });
     }

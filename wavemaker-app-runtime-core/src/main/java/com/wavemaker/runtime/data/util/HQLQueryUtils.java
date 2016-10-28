@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.type.AbstractStandardBasicType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateCallback;
@@ -15,6 +18,8 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.expression.Type;
+import com.wavemaker.runtime.data.model.returns.ReturnProperty;
+import com.wavemaker.runtime.data.model.returns.ReturnType;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 
 public class HQLQueryUtils {
@@ -80,6 +85,40 @@ public class HQLQueryUtils {
                 return new WMPageImpl(hqlQuery.list());
             }
         });
+    }
+
+    public static List<ReturnProperty> extractMetaForHql(final Query query) {
+        final org.hibernate.type.Type[] returnTypes = query.getReturnTypes();
+        final String[] returnAliases = query.getReturnAliases();
+        List<ReturnProperty> properties = new ArrayList<>(returnTypes.length);
+        for (int i = 0; i < returnTypes.length; i++) {
+            final org.hibernate.type.Type type = returnTypes[i];
+
+            ReturnProperty property = new ReturnProperty();
+            if (returnAliases != null && returnAliases.length >= i) {
+                property.setName(returnAliases[i]);
+            }
+
+            ReturnType returnType = new ReturnType();
+            String typeRef = type.getName();
+            if (type.isCollectionType()) {
+                returnType.setType(ReturnType.Type.COLLECTION);
+            } else if (type.isAssociationType()) {
+                returnType.setType(ReturnType.Type.REFERENCE);
+            } else {
+                returnType.setType(ReturnType.Type.SIMPLE);
+            }
+            if (type instanceof AbstractStandardBasicType) {
+                typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
+            }
+
+            returnType.setRef(typeRef);
+            property.setReturnType(returnType);
+
+            properties.add(property);
+        }
+
+        return properties;
     }
 
 }
