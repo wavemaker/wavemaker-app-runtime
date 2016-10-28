@@ -702,7 +702,10 @@ html, body {
 @app-input-bg-gradient-end-color: #EAEAEA;
 .form-group {
   /*supporting the old projects*/
-  .form-control-static + .form-control, .form-control-static + .form-control + .help-block {
+  .form-control-static + .app-chips li:last-child  {
+    width: 100%;
+  }
+  .form-control-static + .form-control, .form-control-static + .form-control + .help-block, .form-control-static + li:last-child > .app-chip-input  {
     width: 75%;
     margin: 0;
   }
@@ -832,6 +835,64 @@ html, body {
   li span{
     display: inline-block;
     .ellipsis(70%);
+  }
+}
+/**app chips ***/
+.nav.app-chips {
+  position: relative;
+  > li {
+    position: relative;
+    padding: 0 0 2px 0;
+    &.disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .app-chip {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 500px;
+      padding: 0.5em 1em;
+      color: inherit;
+      font-weight: bold;
+      height: 2.4em;
+      .btn {
+        color: inherit;
+        padding-left: 0.4em;
+        opacity: 0.5;
+        margin-top: -5px;
+        &:hover {
+          background-color: initial !important;
+          opacity: 1;
+        }
+      }
+      &.chip-duplicate {
+        background-color: #F44336;
+        color: #fff;
+      }
+      &.chip-picture {
+        img {
+          width: 32px;
+          height: 32px;
+          margin-top: -7px;
+          margin-left: -13px;
+          border-radius: 16px;
+          padding-right: 3px;
+        }
+      }
+    }
+    .app-chip-input {
+        border-color: transparent;
+        box-shadow: none;
+        background-color: transparent;
+        padding-top: 3px;
+        outline: 0;
+    }
+    .dropdown-menu {
+      font-size: 0.9em;
+      img {
+        .width-height(30px, 30px);
+        padding-right: 5px;
+      }
+    }
   }
 }
 

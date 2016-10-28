@@ -728,6 +728,24 @@ WM.module('wm.widgets.base', [])
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
+                    "wm.chips": {
+                        "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "scopedatavalue": {"type": "string"},
+                        "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "scopedataset": {"type": "string"},
+                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
+                        "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "disabled": {"type": "boolean", "bindable": "in-bound"},
+                        "placeholder": {"type": "string", "value": "Type here...", "bindable": "in-bound"},
+                        "maxsize": {"type": "number", "value": ''},
+                        "allowonlyselect": {"type": "boolean", "value": false},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "onBeforeadd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
+
+
                     "wm.select": {
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -1917,7 +1935,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
-                    "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
+                    "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
@@ -1941,7 +1959,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
-                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel","onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
+                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel","onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onSetrecord", "onPaginationchange", "onActionsclick",
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onDatarender"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},

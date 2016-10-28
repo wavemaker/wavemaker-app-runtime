@@ -124,6 +124,7 @@ WM.module('wm.utils', [])
                 'radioset'     : true,
                 'switch'       : true,
                 'autocomplete' : true,
+                'chips'        : true,
                 'typeahead'    : true
             },
             daysOptions = [{
@@ -1361,6 +1362,8 @@ WM.module('wm.utils', [])
                 }
             } else {
                 switch (event.which) {
+                case 8:
+                    return 'BACKSPACE';
                 case 13:
                     return 'ENTER';
                 case 27:
@@ -2023,6 +2026,7 @@ WM.module('wm.utils', [])
                     "wm-radioset",
                     "wm-textarea",
                     "wm-select",
+                    "wm-chips",
                     "wm-button",
                     "wm-picture",
                     "wm-anchor",

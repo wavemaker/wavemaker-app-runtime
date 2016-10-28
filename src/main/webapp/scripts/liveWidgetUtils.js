@@ -255,26 +255,26 @@ WM.module('wm.widgets.live')
              */
             function getFieldTypeWidgetTypesMap() {
                 var fieldTypeWidgetTypeMap = {
-                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
-                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
-                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
-                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
-                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
-                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
-                    'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
-                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete'],
-                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'autocomplete'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete'],
-                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
-                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
-                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
-                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'autocomplete'],
-                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'autocomplete'],
-                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'autocomplete'],
-                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'autocomplete'],
-                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'autocomplete'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete']
+                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'autocomplete', 'chips'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips'],
+                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
+                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
+                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
+                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
+                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'autocomplete', 'chips'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'autocomplete', 'chips'],
+                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
+                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete', 'chips']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -527,6 +527,12 @@ WM.module('wm.widgets.live')
                 return getDefaultTemplate('slider', fieldDef, index, '', '', '', additionalFields);
             }
 
+            /*Returns chips template */
+            function getChipsTemplate(fieldDef, index) {
+                var additionalFields = getDataSetFields(fieldDef, index);
+                return getDefaultTemplate('chips', fieldDef, index, '', '', '', additionalFields);
+            }
+
             /*Returns radioset template */
             function getRadiosetTemplate(fieldDef, index) {
                 var additionalFields = getDataSetFields(fieldDef, index);
@@ -653,6 +659,9 @@ WM.module('wm.widgets.live')
                     break;
                 case 'slider':
                     template += getSliderTemplate(fieldDef, index);
+                    break;
+                case 'chips':
+                    template += getChipsTemplate(fieldDef, index);
                     break;
                 case 'richtext':
                     template += getRichtextTemplate(fieldDef, index);
@@ -1011,6 +1020,10 @@ WM.module('wm.widgets.live')
                 case 'slider':
                     baseProperties      = 'wm.slider';
                     extendedProperties  = ['wm.base', 'wm.base.events.change'];
+                    break;
+                case 'chips':
+                    baseProperties      = 'wm.chips';
+                    extendedProperties  = ['wm.base', 'wm.base.editors.dataseteditors'];
                     break;
                 case 'richtext':
                     baseProperties      = 'wm.richtexteditor';
