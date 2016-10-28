@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                             ' ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
                     '<span title="{{options[selected.index][displayfield || \'label\'] || _model_}}" class="btn btn-primary app-switch-overlay switch-handle" >{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
-                    '<input name={{name}} class="model-holder" ng-disabled="disabled" value="{{_model_}}"  ng-required="required">' +
+                    '<input name={{name}} class="model-holder ng-hide" ng-disabled="disabled" value="{{_model_}}"  ng-required="required">' +
                 '</div>'
                 );
         }
