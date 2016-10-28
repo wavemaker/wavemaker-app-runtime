@@ -149,35 +149,36 @@ WM.module('wm.widgets.grid')
             };
 
         return {
-            "restrict": 'E',
-            "scope": {
-                "scopedataset": '=?',
-                "onSelect": "&",
-                "onDeselect": "&",
-                "onSort": "&",
-                "onClick": "&",
-                "onHeaderclick": "&",
-                "onShow": "&",
-                "onHide": "&",
-                "onRowdeleted": "&",
-                "onRowupdated": "&",
-                "onBeforerowinsert": "&",
-                "onRowinsert": "&",
-                "onRowclick": "&",
-                "onRowdblclick": "&",
-                "onColumnselect": "&",
-                "onColumndeselect": "&",
-                "onEnterkeypress": "&",
-                "onSetrecord": "&",
-                "onBeforerowupdate": "&",
-                "onRowupdate": "&",
-                "onPaginationchange": "&",
-                "onDatarender": "&"
+            'restrict': 'E',
+            'scope'   : {
+                'scopedataset'      : '=?',
+                'onSelect'          : '&',
+                'onDeselect'        : '&',
+                'onSort'            : '&',
+                'onClick'           : '&',
+                'onHeaderclick'     : '&',
+                'onShow'            : '&',
+                'onHide'            : '&',
+                'onRowdeleted'      : '&',
+                'onRowupdated'      : '&',
+                'onBeforerowinsert' : '&',
+                'onRowinsert'       : '&',
+                'onRowclick'        : '&',
+                'onRowdblclick'     : '&',
+                'onColumnselect'    : '&',
+                'onColumndeselect'  : '&',
+                'onEnterkeypress'   : '&',
+                'onSetrecord'       : '&',
+                'onBeforerowupdate' : '&',
+                'onRowupdate'       : '&',
+                'onPaginationchange': '&',
+                'onDatarender'      : '&',
+                'onTap'             : '&'
             },
-            "replace": true,
-            "transclude": false,
-            "controller": 'gridController',
-            "template": function (element) {
+            'replace'   : true,
+            'transclude': false,
+            'controller': 'gridController',
+            'template': function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
                 return '<div data-identifier="grid" init-widget class="app-grid app-panel panel" apply-styles="shell">' +
@@ -1516,6 +1517,9 @@ WM.module('wm.widgets.grid')
                     // For backward compatibility.
                     if (WM.isDefined($scope.onClick)) {
                         $scope.onClick({$data: rowData, $event: e, $rowData: rowData});
+                    }
+                    if (WM.isDefined($scope.onTap)) {
+                        $scope.onTap({$data: rowData, $event: e, $rowData: rowData});
                     }
                     $rootScope.$safeApply($scope);
                 },
