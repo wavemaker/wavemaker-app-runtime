@@ -1174,6 +1174,16 @@ body {
   &.carousel {
     height: inherit;
   }
+  &.hide-navs, &.hide-both {
+    .carousel-control {
+      display: none;
+    }
+  }
+  &.hide-indicators, &.hide-both {
+    .carousel-indicators {
+      display: none;
+    }
+  }
   .carousel-control {
     .wi-chevron-left, .wi-chevron-right {
       position: absolute;

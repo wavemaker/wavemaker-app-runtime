@@ -1,6 +1,6 @@
 /*global WM, window, _, cordova, document*/
 
-WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'ngAnimate', 'wm.plugins.offline'])
+WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService',
         // Don't remove below services. This is required for initialization

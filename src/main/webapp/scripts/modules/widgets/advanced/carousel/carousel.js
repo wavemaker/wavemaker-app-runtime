@@ -1,16 +1,16 @@
-/*global WM,_ */
+/*global WM,_*/
 /*jslint todo: true */
 /*Directive for carousel */
 WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
-                '<div init-widget class="app-carousel carousel slide" apply-styles>' +
+                '<div init-widget class="app-carousel carousel slide" ng-class="navigationClass" apply-styles hm-swipe-left="next()" hm-swipe-right="prev()">' +
                     '<ol class="carousel-indicators">' +
                         '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
                     '<div class="carousel-inner" wmtransclude></div>' +
-                    '<a class="left carousel-control" ng-click="previous()">' +
+                    '<a class="left carousel-control" ng-click="prev()">' +
                         '<i class="wi wi-chevron-left"></i>' +
                     '</a>' +
                     '<a class="right carousel-control" ng-click="next()">' +
@@ -36,7 +36,7 @@ WM.module('wm.widgets.advanced')
             );
 
         $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
-            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
+            '<div class="app-carousel" ng-class="navigationClass" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/carousel-content.html',
@@ -61,18 +61,22 @@ WM.module('wm.widgets.advanced')
                 directiveDefn,
                 notifyFor,
                 slideTemplateWrapper,
-                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
+                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'},
+                isMoving = false;
 
             widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
             notifyFor = CONSTANTS.isStudioMode ? {
                 'dataset': true,
-                'type': true
+                'type': true,
+                'animation': true
             } : {
-                'dataset': true
-            },
+                'dataset': true,
+                'controls': true,
+                'animation': true
+            };
 
             slideTemplateWrapper =
-                '<div uib-carousel interval="interval" active="active" no-wrap="noWrapSlides"> ' +
+                '<div uib-carousel interval="interval" active="active" no-wrap="noWrapSlides" hm-swipe-left="onSwipe(\'left\')" hm-swipe-right="onSwipe(\'right\')"> ' +
                     '<div uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></div>' +
                 '</div>';
 
@@ -141,6 +145,30 @@ WM.module('wm.widgets.advanced')
                 case 'type':
                     widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
                     widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
+                    break;
+                case 'animation':
+                    if ($is.widgetid) {
+                        widgetProperties.animationinterval.show = (newVal === 'auto');
+                    } else {
+                        $is.interval = newVal === 'auto' ? $is.animationinterval * 1000 : 0;
+                        if (!attrs.type) {
+                            $is.play();
+                        }
+                    }
+
+                    break;
+                case 'controls':
+                    switch (newVal) {
+                    case 'indicators':
+                        $is.navigationClass = 'hide-navs';
+                        break;
+                    case 'navs':
+                        $is.navigationClass = 'hide-indicators';
+                        break;
+                    case 'none':
+                        $is.navigationClass = 'hide-both';
+                        break;
+                    }
                     break;
                 }
             }
@@ -213,7 +241,7 @@ WM.module('wm.widgets.advanced')
                             }
                         }
                         $scope.contents.splice(i, 1);
-                        $scope.activeIndex = $scope.contents.length -1;
+                        $scope.activeIndex = $scope.contents.length - 1;
                         $scope.goTo($scope.activeIndex);
                     };
                 },
@@ -229,6 +257,7 @@ WM.module('wm.widgets.advanced')
                             $timeout(function () {
                                 $next.removeClass([type, direction].join(' ')).addClass('active');
                                 $active.removeClass(['active', direction].join(' '));
+                                isMoving = false;
                             }, 600, false);
                         }
                         if (!attrs.type) {
@@ -236,50 +265,53 @@ WM.module('wm.widgets.advanced')
                             $is.contents    = [];
                             $is.activeIndex = 0;
                             //static carousel don't have current slide.
-                            if(attrs.widgetid) {
+                            if (attrs.widgetid) {
                                 widgetProps.currentslide.show = false;
                             }
                             //function for slide  to move to a specific slide index
-                            $is.goTo = function (index) {
-                                if (!$is.contents[$is.activeIndex]) {
-                                    return;
-                                }
-                                var oldElement = $is.contents[$is.activeIndex].getElement(),
-                                    newElement = $is.contents[index].getElement(),
-                                    type = 'next';
-
-                                if ($is.widgetid) {
-                                    oldElement.removeClass('active');
-                                    newElement.addClass('active');
-                                    $is.activeIndex  = index;
-                                } else if(index !== $is.activeIndex) {
-                                    $is.stop();
-                                    if ($is.activeIndex > index) {
-                                        type = 'prev';
+                            $is.goTo = function (index, direction) {
+                                // if the carousel is not animating then move to another slide.
+                                if (!isMoving) {
+                                    if (!$is.contents[$is.activeIndex]) {
+                                        return;
                                     }
-                                    animateSlide(oldElement, newElement, type);
-                                    $is.activeIndex  = index;
-                                    $is.play();
-                                    Utils.triggerFn($is.onChange, {$isolateScope: $is});
-                                }
+                                    isMoving = true;
+                                    var oldElement = $is.contents[$is.activeIndex].getElement(),
+                                        newElement = $is.contents[index].getElement(),
+                                        type = direction || 'next';
 
+                                    if ($is.widgetid) {
+                                        oldElement.removeClass('active');
+                                        newElement.addClass('active');
+                                        $is.activeIndex  = index;
+                                    } else if (index !== $is.activeIndex) {
+                                        $is.stop();
+                                        if ($is.activeIndex > index && !direction) {
+                                            type = 'prev';
+                                        }
+                                        animateSlide(oldElement, newElement, type);
+                                        $is.activeIndex  = index;
+                                        $is.play();
+                                        Utils.triggerFn($is.onChange, {$isolateScope: $is});
+                                    }
+                                }
                             };
 
                             //function to move to next slide
                             $is.next = function () {
                                 if ($is.activeIndex > $is.contents.length - 2) {
-                                    $is.goTo(0);
+                                    $is.goTo(0, 'next');
                                 } else {
-                                    $is.goTo($is.activeIndex + 1);
+                                    $is.goTo($is.activeIndex + 1, 'next');
                                 }
                             };
 
                             //function to move to previous slide
-                            $is.previous = function () {
+                            $is.prev = function () {
                                 if ($is.activeIndex < 1) {
-                                    $is.goTo($is.contents.length - 1);
+                                    $is.goTo($is.contents.length - 1, 'prev');
                                 } else {
-                                    $is.goTo($is.activeIndex - 1);
+                                    $is.goTo($is.activeIndex - 1, 'prev');
                                 }
                             };
 
@@ -297,10 +329,10 @@ WM.module('wm.widgets.advanced')
                             if (CONSTANTS.isRunMode) {
                                 //function to play the slides
                                 $is.play = function () {
-                                    if (!$is.autoPlay && $is.animationinterval >= 1) {
+                                    if (!$is.autoPlay && $is.interval >= 600 && $is.animation === 'auto') {
                                         $is.autoPlay = $interval(function () {
                                             $is.next();
-                                        }, $is.animationinterval * 1000);
+                                        }, $is.interval);
                                     }
                                 };
 
@@ -320,9 +352,9 @@ WM.module('wm.widgets.advanced')
                         var $s = $el.scope(),
                             handlers = [],
                             $slideTemplate,
-                            _onDestroy;
+                            _onDestroy,
+                            $innerCarousel;
 
-                        $is.interval = $is.animationinterval * 1000;
                         Object.defineProperties($is, {
                             'Variables': {
                                 get: function () {
@@ -350,6 +382,15 @@ WM.module('wm.widgets.advanced')
                                         }
                                     }
                                 }));
+                                $is.noWrapSlides = false;
+                                $is.onSwipe = function (direction) {
+                                    $innerCarousel = $el.find('.carousel-inner').scope();
+                                    if (direction === 'left') {
+                                        $innerCarousel.next();
+                                    } else {
+                                        $innerCarousel.prev();
+                                    }
+                                };
                             }
                         }
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);

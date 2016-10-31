@@ -299,6 +299,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/d3/d3.min.js',
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
+                        '<%= config.components %>/angular-animate/angular-animate.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
                         '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',

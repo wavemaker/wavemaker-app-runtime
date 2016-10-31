@@ -304,7 +304,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-default" , "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.rating": {
@@ -790,7 +790,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
-                        "disabled": {"type": "boolean", "show": false , "bindable": "in-bound"},
+                        "disabled": {"type": "boolean", "show": false, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "shape":  {"type": "list", "options": ["", "rounded", "circle", "thumbnail"]},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
@@ -1616,6 +1616,8 @@ WM.module('wm.widgets.base', [])
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
                         "currentslide": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "animation": {"type": "list", "options": ["auto", "none"], "value": "auto"},
+                        "controls": {"type": "list", "options": ["navs", "indicators", "both", "none"], "value": "both"},
 
                         "class": {"type": "string", "pattern": classRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -2070,7 +2072,7 @@ WM.module('wm.widgets.base', [])
             if ($rs.isMobileApplicationType) {
                 mobileProps = properties[widget + '.mobile'];
                 if (mobileProps) {
-                   _.assign(widgetProps, mobileProps);
+                    _.assign(widgetProps, mobileProps);
                 }
             }
 
@@ -2454,7 +2456,7 @@ WM.module('wm.widgets.base', [])
                             _.forEach(deviceSizeArray.all.classToRemove, function (device) {
                                 classesToRemove += ' ' + (device + $is.widgetProps.showindevice.displaytype || 'block');
                             });
-                            $el.removeClass(classesToRemove)
+                            $el.removeClass(classesToRemove);
                         } else {
                             /*If others are selected, add classes accordingly */
                             _.forEach(newValues, function (value) {

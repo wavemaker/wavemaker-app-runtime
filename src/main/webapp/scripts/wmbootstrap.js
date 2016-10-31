@@ -30,7 +30,8 @@ var Application =
             'i18n',
             'angular-gestures',
             'ngSanitize',
-            'angular-websocket'
+            'angular-websocket',
+            'ngAnimate'
         ]);
 
 Application
