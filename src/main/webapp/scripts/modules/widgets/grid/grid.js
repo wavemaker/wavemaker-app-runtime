@@ -124,6 +124,8 @@ WM.module('wm.widgets.grid')
                 'enablesort'         : true,
                 'gridcaption'        : true,
                 'gridclass'          : true,
+                'rowngclass'         : CONSTANTS.isStudioMode,
+                'rowclass'           : CONSTANTS.isStudioMode,
                 'nodatamessage'      : true,
                 'loadingdatamsg'     : true,
                 'filternullrecords'  : true,
@@ -515,6 +517,12 @@ WM.module('wm.widgets.grid')
                             case 'searchlabel':
                                 scope.setDataGridOption('searchLabel', newVal);
                                 break;
+                            case 'rowngclass':
+                                scope.setDataGridOption('rowNgClass', newVal);
+                                break;
+                            case 'rowclass':
+                                scope.setDataGridOption('rowClass', newVal);
+                                break;
                             case 'multiselect':
                                 if (CONSTANTS.isStudioMode) {
                                     if (newVal) {
@@ -737,6 +745,8 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
+                            scope.gridOptions.rowNgClass = scope.rowngclass;
+                            scope.gridOptions.rowClass = scope.rowclass;
                             scope.gridOptions.editmode = scope.editmode;
                             /*Set isMobile value on the datagrid*/
                             scope.gridOptions.isMobile = Utils.isMobile();
@@ -1158,6 +1168,10 @@ WM.module('wm.widgets.grid')
                     rowScope.row.getProperty = function (field) {
                         return row[field];
                     };
+                    //return the compiled template if the template is row i.e when colDef doesn't exist.
+                    if (!colDef) {
+                        return $compile(el)(rowScope);
+                    }
                     rowScope.colDef = colDef;
                     rowScope.columnValue = row[colDef.field];
                     if (refreshImg && colDef.widgetType === 'image') {

@@ -1776,6 +1776,7 @@ WM.module('wm.widgets.live')
             this.getWidgetProps             = getWidgetProps;
             this.getFormFilterWidgets       = getFormFilterWidgets;
             this.getViewModeWidgets         = getViewModeWidgets;
+            this.parseNgClasses             = parseNgClasses;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

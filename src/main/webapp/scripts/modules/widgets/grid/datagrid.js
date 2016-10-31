@@ -26,6 +26,7 @@ $.widget('wm.datagrid', {
         showRowIndex: false,
         enableRowSelection: true,
         enableColumnSelection: false,
+        rowNgClass: '',
         multiselect: false,
         filterNullRecords: true,
         cssClassNames: {
@@ -354,25 +355,31 @@ $.widget('wm.datagrid', {
     /* Returns the tbody markup. */
     _getGridTemplate: function () {
         var self = this,
-            htm;
-        htm = this.preparedData.reduce(function (prev, current) {
-            return prev + self._getRowTemplate(current);
-        }, '<tbody class="' + this.options.cssClassNames.gridBody + '">');
+            $tbody = $('<tbody class="' + this.options.cssClassNames.gridBody + '"></tbody>');
 
-        htm += '</tbody>';
-        return htm;
+        _.forEach(this.preparedData, function (row) {
+            $tbody.append(self._getRowTemplate(row));
+        });
+
+        return $tbody;
     },
 
     /* Returns the table row template. */
     _getRowTemplate: function (row) {
         var htm,
-            self = this;
+            self            = this,
+            gridOptions     = self.options,
+            rowNgClass      = gridOptions.rowNgClass,
+            rowNgClassExpr  = rowNgClass ? 'ng-class="' + rowNgClass + '"' : '';
 
         htm = this.preparedHeaderData.reduce(function (prev, current, colIndex) {
             return prev + self._getColumnTemplate(row, colIndex, current);
-        }, '<tr tabindex="0" class="' + this.options.cssClassNames.tableRow + '" data-row-id="' + row.pk + '">');
+        }, '<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.pk + '" ' + rowNgClassExpr + '>');
 
         htm += '</tr>';
+        if (rowNgClass) {
+            return gridOptions.getCompiledTemplate(htm, row);
+        }
         return htm;
     },
 
@@ -947,6 +954,10 @@ $.widget('wm.datagrid', {
                     '[data-element="dgSearchText"]'
                 ).attr('placeholder', value);
             }
+            break;
+        case 'rowngclass':
+        case 'rowclass':
+            this.refreshGrid();
             break;
         case 'selectFirstRow':
             this.selectFirstRow(value);
