@@ -17,6 +17,28 @@ WM.module('wm.layouts.page')
 
             var appVariableReadyFired = false;
 
+            // Update the title of the page in run mode
+            function updatePageTitle($s, $el, pageTitle) {
+                var expr,
+                    unregister;
+                if (WM.isDefined(pageTitle)) {
+                    if (_.startsWith(pageTitle, 'bind:')) {
+                        expr = _.replace(pageTitle, 'bind:', '');
+                        unregister = $s.$watch(expr, function (nv) {
+                            if (WM.isDefined(nv)) {
+                                document.title = nv;
+                            }
+                        });
+                        $s.$on('$destroy', unregister);
+                        $el.on('$destroy', unregister);
+                    } else {
+                        document.title = pageTitle;
+                    }
+                } else {
+                    document.title = $rs.activePageName + ' - ' + $rs.projectName;
+                }
+            }
+
             return {
                 'restrict'  : 'E',
                 'replace'   : true,
@@ -63,7 +85,7 @@ WM.module('wm.layouts.page')
 
                             // update the title of the application
                             if ($routeParams.name === $rs.activePageName) {
-                                document.title = attrs.pagetitle || $rs.activePageName + ' - ' + $rs.projectName;
+                                updatePageTitle($s, $el, attrs.pagetitle);
                             }
                         }
 
