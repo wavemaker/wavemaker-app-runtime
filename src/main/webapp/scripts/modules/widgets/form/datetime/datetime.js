@@ -391,6 +391,8 @@ WM.module('wm.widgets.form')
                     $timeout(function () {
                         WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
                     });
+                    //Set tab index as -1 for date input, as this should not be focused
+                    element.find('.app-dateinput').attr('tabindex', '-1');
                 }
             }
         };
