@@ -125,6 +125,10 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             url: "services/projects/:projectID/websocketservice",
             method: "POST"
         },
+        updateWebSocketService: {
+            url: "services/projects/:projectID/websocketservice",
+            method: "PUT"
+        },
         getWebSocketServiceDetails: {
             url: "services/projects/:projectID/websocketservice/:serviceID",
             method: "GET"

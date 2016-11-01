@@ -625,6 +625,28 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
+        /**
+         * @ngdoc function
+         * @name wm.webservice.$WebService#updateWebSocketService
+         * @methodOf wm.webservice.$WebService
+         * @function
+         *
+         * @description
+         * takes a REST service url and gives out the default field values required to build/import the REST service
+         *
+         * @param {object} connectionParams object containing parameters for the request (else throws an error message)
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        updateWebSocketService: function (connectionParams, successCallback, failureCallback) {
+
+            BaseService.send({
+                target: 'WebService',
+                action: 'updateWebSocketService',
+                data : connectionParams.data,
+                urlParams: connectionParams.urlParams
+            }, successCallback, failureCallback);
+        },
 
         /**
          * @ngdoc function
