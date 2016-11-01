@@ -12,8 +12,8 @@
  * The '$websocketvariable' provides methods to work with web socket variables
  */
 
-wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils',
-    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils) {
+wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils', '$servicevariable',
+    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils, $servicevariable) {
         "use strict";
 
         var scope_var_socket_map = {},
@@ -144,7 +144,27 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          * @returns {*}
          */
         function getURL(variable) {
-            return variable._wmServiceOperationInfo.directPath;
+            var opInfo = Utils.getClonedObject(variable._wmServiceOperationInfo),
+                inputFields = variable.dataBinding,
+                config;
+
+            // add sample values to the params (url and path)
+            _.forEach(opInfo.parameters, function (param) {
+                param.sampleValue = inputFields[param.name];
+            });
+            // although, no header params will be present, keeping 'skipCloakHeaders' flag if support provided later
+            WM.extend(opInfo, {
+                skipCloakHeaders: true
+            });
+
+            // call common method to prepare config for the service operation info.
+            config = $servicevariable.constructRestRequestParams(opInfo);
+            /* if error found, return */
+            if (config.error && config.error.message) {
+                _onSocketError(variable, {data: config.error.message});
+                return;
+            }
+            return config.url;
         }
 
         /**
