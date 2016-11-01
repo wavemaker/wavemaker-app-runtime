@@ -291,7 +291,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         return       : returnObj,
                         returnFormat : returnFormat,
                         controller   : operation.tags && operation.tags[0].replace(/Controller$/, ''),
-                        operationId  : operation.operationId
+                        operationId  : operation.operationId,
+                        deprecated   : operation.deprecated
                     };
                     serviceObj.operations.push(operationObject);
 
