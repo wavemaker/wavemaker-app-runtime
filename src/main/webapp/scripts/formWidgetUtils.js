@@ -668,10 +668,10 @@ WM.module('wm.widgets.form')
              *
              * @param {$is} isolate scope of the widget
              */
-            function updatePropertyOptionsWithParams($is) {
+            function updatePropertyOptionsWithParams($is, elScope) {
                 var isBoundVariable      = Utils.stringStartsWith($is.binddataset, 'bind:Variables.'),
                     parts                = _.split($is.binddataset, /\W/),
-                    variable             = isBoundVariable && Variables.getVariableByName(parts[2]),
+                    variable             = isBoundVariable && Variables.getVariableByName(parts[2], elScope),
                     queryParams          = [],
                     searchOptions        = [];
 
