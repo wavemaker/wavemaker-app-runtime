@@ -780,7 +780,6 @@ $.widget('wm.datagrid', {
         this._prepareHeaderData();
         this._prepareData();
         this._render();
-        this.setColGroupWidths();
         this.addOrRemoveScroll();
         this._setGridEditMode(false);
     },
@@ -870,6 +869,11 @@ $.widget('wm.datagrid', {
                     colDef       = self.preparedHeaderData[id],
                     definedWidth = colDef.width;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
+                    //Hide the header and column if show is false
+                    $header.hide();
+                    self.gridElement.find('td:nth-child(' + (index + 1) + ')').hide();
+                    $(headerCols[index]).hide();
+                    $(bodyCols[index]).hide();
                     width = 0;
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 50;
@@ -1048,9 +1052,17 @@ $.widget('wm.datagrid', {
         return false;
     },
     /* Marks the first row as selected. */
-    selectFirstRow: function (value) {
-        var $row = this.gridElement.find('tBody tr:first'),
-            id = $row.attr('data-row-id');
+    selectFirstRow: function (value, visible) {
+        var $row,
+            id;
+        //If visible flag is true, select the first visible row item
+        if (visible) {
+            this.__setStatus();
+            $row = this.gridElement.find('tBody tr:visible:first');
+        } else {
+            $row = this.gridElement.find('tBody tr:first');
+        }
+        id = $row.attr('data-row-id');
         // Select the first row if it exists, i.e. it is not the first row being added.
         if ($row.length && this.preparedData.length) {
             this.preparedData[id].selected = !value;
@@ -1143,7 +1155,16 @@ $.widget('wm.datagrid', {
             rowData,
             data,
             selected,
+            self   = this,
             action = options.action;
+        function callRowSelectionEvents() {
+            if (selected && $.isFunction(self.options.onRowSelect)) {
+                self.options.onRowSelect(data, e);
+            }
+            if (!selected && $.isFunction(self.options.onRowDeselect)) {
+                self.options.onRowDeselect(data, e);
+            }
+        }
         if (action || (this.options.editmode === this.CONSTANTS.QUICK_EDIT && $(e.target).hasClass('app-datagrid-cell'))) {
             //In case of advanced edit, Edit the row on click of a row
             options.action = options.action || 'edit';
@@ -1156,19 +1177,14 @@ $.widget('wm.datagrid', {
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
         data = this.options.data[rowId];
-
+        selected = rowData.selected || false;
         if (!options.skipSingleCheck && (($row.hasClass('active') && !this.options.multiselect) || !rowData)) {
+            callRowSelectionEvents();
             return;
         }
-        selected = rowData.selected || false;
         selected = !selected;
         this.toggleRowSelection($row, selected);
-        if (selected && $.isFunction(this.options.onRowSelect)) {
-            this.options.onRowSelect(data, e);
-        }
-        if (!selected && $.isFunction(this.options.onRowDeselect)) {
-            this.options.onRowDeselect(data, e);
-        }
+        callRowSelectionEvents();
     },
     /*Handles the double click of the grid row*/
     rowDblClickHandler: function (e, $row) {
@@ -2247,6 +2263,8 @@ $.widget('wm.datagrid', {
         this._findAndReplaceCompiledTemplates();
         this._appendRowActions($htm);
         this.attachEventHandlers($htm);
+        this.__setStatus();
+        this.setColGroupWidths();
         if ($.isFunction(this.options.onDataRender)) {
             this.options.onDataRender();
         }

@@ -693,8 +693,6 @@ WM.module('wm.widgets.grid')
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                            /*Set the default widths for the colgroup after rendering the grid*/
-                            scope.datagridElement.datagrid('setColGroupWidths');
 
                             if (CONSTANTS.isRunMode && attrs.scopedataset) {
                                 handlers.push(scope.$watch('scopedataset', function (newVal) {
@@ -1128,6 +1126,8 @@ WM.module('wm.widgets.grid')
                     data = getSortResult(data, currentSort);
                     $scope.serverData = data;
                     if ($scope.shownavigation) {
+                        //Reset the page number to 1
+                        $scope.dataNavigator.dn.currentPage = 1;
                         $scope.dataNavigator.setPagingValues(data);
                     } else {
                         setGridData($scope.serverData);
@@ -1154,8 +1154,11 @@ WM.module('wm.widgets.grid')
                     });
                     if (data && data.length) {
                         $scope.datagridElement.datagrid('setStatus', 'ready');
+                        //Select the first row after the search
+                        $scope.datagridElement.datagrid('selectFirstRow', $scope.gridfirstrowselect && !$scope.multiselect, true);
                     } else {
                         $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
+                        $scope.selecteditem = undefined;
                     }
                 },
                 getCompiledTemplate = function (htm, row, colDef, refreshImg) {
