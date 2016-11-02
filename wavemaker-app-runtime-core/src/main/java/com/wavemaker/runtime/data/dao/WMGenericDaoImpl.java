@@ -38,7 +38,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -56,10 +55,6 @@ import com.wavemaker.runtime.file.model.Downloadable;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
         WMGenericDao<Entity, Identifier> {
-
-    private static final int DEFAULT_PAGE_NUMBER = 0;
-    private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final int DESIRED_PAGE_SIZE = 100;
 
     private Class<Entity> entityClass;
 
@@ -169,20 +164,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        final Pageable customPageable;
-        if (pageable == null) {
-            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, DESIRED_PAGE_SIZE);
-        } else if (pageable.getPageNumber() == DEFAULT_PAGE_NUMBER && pageable.getPageSize() == DEFAULT_PAGE_SIZE) {
-            customPageable = new PageRequest(DEFAULT_PAGE_NUMBER, DESIRED_PAGE_SIZE, pageable.getSort());
-        } else {
-            customPageable = pageable;
-        }
         ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate()
                 .execute(new HibernateCallback<OutputStream>() {
                     @Override
                     public OutputStream doInHibernate(Session session) throws HibernateException {
                         ExportOptions exportOptions = new ExportOptions();
-                        exportOptions.setPageable(customPageable);
+                        exportOptions.setPageable(pageable);
                         exportOptions.setQuery(query);
                         DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType,
                                 exportOptions);
