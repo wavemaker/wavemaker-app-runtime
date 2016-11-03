@@ -72,19 +72,20 @@ public abstract class CriteriaUtils {
     }
 
     public static void updateCriteriaForPageable(Criteria criteria, Pageable pageable, Set<String> aliases) {
-        criteria.setFirstResult(pageable.getOffset());
-        criteria.setMaxResults(pageable.getPageSize());
-        if (pageable.getSort() != null) {
-            for (final Sort.Order order : pageable.getSort()) {
-                final String property = order.getProperty();
-                criteriaForRelatedProperty(criteria, property, aliases);
-                if (order.getDirection() == Sort.Direction.DESC) {
-                    criteria.addOrder(Order.desc(property));
-                } else {
-                    criteria.addOrder(Order.asc(property));
+        if(pageable != null) {
+            criteria.setFirstResult(pageable.getOffset());
+            criteria.setMaxResults(pageable.getPageSize());
+            if (pageable.getSort() != null) {
+                for (final Sort.Order order : pageable.getSort()) {
+                    final String property = order.getProperty();
+                    criteriaForRelatedProperty(criteria, property, aliases);
+                    if (order.getDirection() == Sort.Direction.DESC) {
+                        criteria.addOrder(Order.desc(property));
+                    } else {
+                        criteria.addOrder(Order.asc(property));
+                    }
                 }
             }
         }
     }
-
 }
