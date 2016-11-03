@@ -318,6 +318,7 @@ WM.module('wm.widgets.form')
                             setModels(scope._displayModel);
                         } else {
                             this._proxyModel = '';
+                            this.timestamp   = '';
                         }
                         scope._onChange({$event: e, $scope: scope});
                     };

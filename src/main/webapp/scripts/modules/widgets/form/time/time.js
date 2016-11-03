@@ -205,7 +205,7 @@ WM.module('wm.widgets.form')
                             setProxyModel(scope._timeModel);
                             setTimeModel(scope);
                         } else {
-                            this._proxyModel = undefined;
+                            this._proxyModel = '';//setting to empty string so that the variable's watch gets updated
                         }
                     };
                     /*Function to be called on click of time picker*/
