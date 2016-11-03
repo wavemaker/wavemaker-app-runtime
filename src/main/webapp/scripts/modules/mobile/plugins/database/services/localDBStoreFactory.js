@@ -139,12 +139,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         function mapObjToRow(store, entity) {
             var row = {};
             _.forEach(store.schema.columns, function (col) {
-                if (col.targetEntity) {
-                    if (entity[col.sourceFieldName]) {
-                        row[col.name] = entity[col.sourceFieldName][col.targetFieldName];
-                    }
-                } else {
-                    row[col.name] = entity[col.fieldName];
+                row[col.name] = entity[col.fieldName];
+                if (col.targetEntity && entity[col.sourceFieldName]) {
+                    row[col.name] = entity[col.sourceFieldName][col.targetFieldName];
                 }
             });
             return row;

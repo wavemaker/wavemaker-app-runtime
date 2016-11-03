@@ -27,7 +27,6 @@ wm.plugins.offline.controller(wm.plugins.offline.controllers);
 wm.plugins.offline.service(wm.plugins.offline.services);
 wm.plugins.offline.factory(wm.plugins.offline.factories);
 
-
 wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
     'name': 'wavemaker',
     'version': 1,
@@ -50,6 +49,12 @@ wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
         }, {
             'name': 'timestamp',
             'fieldName': 'timestamp'
+        }, {
+            'name': 'hasError',
+            'fieldName': 'hasError'
+        }, {
+            'name': 'errorMessage',
+            'fieldName': 'errorMessage'
         }]
     }]
 });
