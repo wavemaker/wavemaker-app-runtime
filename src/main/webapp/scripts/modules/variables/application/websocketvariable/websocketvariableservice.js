@@ -204,6 +204,12 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
                 return;
             }
             socket = getSocket(variable);
+
+            // close the connection on scope destruction
+            variable.activeScope.$on('$destroy', function () {
+                variable.close();
+            });
+
             return socket;
         }
 
