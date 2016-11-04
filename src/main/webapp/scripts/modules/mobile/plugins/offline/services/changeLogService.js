@@ -52,23 +52,28 @@ wm.plugins.offline.services.ChangeLogService = [
          * Invokes the given list of functions sequentially with the given arguments. If a function returns a promise,
          * then next function will be invoked only if the promise is resolved.
          */
-        function executeDeferChain(fns, args) {
-            var d = $q.defer(),
-                p = d.promise;
-            _.forEach(fns, function (fn) {
-                if (fn) {
-                    p = p.then(function () {
-                        try {
-                            return fn.apply(undefined, args);
-                        } catch (e) {
-                            d.reject(e);
-                            throw e;
-                        }
-                    });
+        function executeDeferChain(fns, args, d, i) {
+            var returnObj;
+            d = d || $q.defer();
+            i = i || 0;
+            if (i === 0) {
+                fns = _.filter(fns, function (fn) {
+                    return !(_.isUndefined(fn) || _.isNull(fn));
+                });
+            }
+            if (fns && i < fns.length) {
+                try {
+                    returnObj = fns[i].apply(undefined, args);
+                    $q.when(returnObj, function () {
+                        executeDeferChain(fns, args, d, i + 1);
+                    }, d.reject);
+                } catch (e) {
+                    d.reject(e);
                 }
-            });
-            d.resolve();
-            return p;
+            } else {
+                d.resolve();
+            }
+            return d.promise;
         }
 
         //Invokes PreCall callbacks
@@ -82,11 +87,15 @@ wm.plugins.offline.services.ChangeLogService = [
             var defer = $q.defer(),
                 service = getService(change.service),
                 operation = service[change.operation];
-            operation(change.params, function () {
-                defer.resolve.apply(defer, arguments);
-            }, function () {
-                defer.reject.apply(defer, arguments);
-            });
+            if (change.hasError === 0) {
+                operation(change.params, function () {
+                    defer.resolve.apply(defer, arguments);
+                }, function () {
+                    defer.reject.apply(defer, arguments);
+                });
+            } else {
+                defer.reject(change);
+            }
             return defer.promise;
         }
 
@@ -106,24 +115,30 @@ wm.plugins.offline.services.ChangeLogService = [
 
         function flushChange(change, onSuccess, onError) {
             preCall(change)
-                .then(invokeService.bind(undefined, change), onError)
+                .then(invokeService.bind(undefined, change))
                 .then(function () {
                     postCallSuccess(change, arguments).then(onSuccess, onError);
-                }, function () {
-                    postCallError(change, arguments).then(onError, onError);
+                }).catch(function () {
+                    postCallError(change, arguments).finally(onError);
                 });
         }
 
         // Flushes the first registered change.
         function flushNextChange(onSuccess, onError) {
-            getStore().filter(null, 'id', {
+            var filterCriteria = [{
+                'attributeName' : 'hasError',
+                'attributeValue' : 0,
+                'attributeType' : 'NUMBER',
+                'filterCondition' : 'EQUALS'
+            }];
+            getStore().filter(filterCriteria, 'id', {
                 offset: 0,
                 limit: 1
             }).then(function (changes) {
                 var change = changes[0];
                 if (change) {
                     change.params = JSON.parse(change.params);
-                    flushChange(change, onSuccess.bind(undefined, change), onError);
+                    flushChange(change, onSuccess.bind(undefined, change), onError.bind(undefined, change));
                 } else {
                     onSuccess();
                 }
@@ -140,7 +155,11 @@ wm.plugins.offline.services.ChangeLogService = [
                 } else {
                     onComplete();
                 }
-            }, onComplete);
+            }, function (change) {
+                change.hasError = 1;
+                getStore().save(change);
+                flush(onComplete, onProgress);
+            });
         }
 
         function onFlushComplete(fn) {
@@ -169,7 +188,8 @@ wm.plugins.offline.services.ChangeLogService = [
                 });
             },
             'postFlush': function () {
-                $log.debug('flush completed. %i/%i call(s) invoked.', stats.completed, stats.total);
+                $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
+                                stats.success, stats.error, stats.completed, stats.total);
             },
             'preCall': function (change) {
                 $log.debug("%i. Invoking call %o", (++stats.completed), change);
@@ -206,7 +226,8 @@ wm.plugins.offline.services.ChangeLogService = [
             change = {
                 'service': service,
                 'operation': operation,
-                'params': JSON.stringify(params)
+                'params': JSON.stringify(params),
+                'hasError' : 0
             };
             getStore().add(change);
             return executeDeferChain(_.map(callbacks, "onAddCall"), [change]);
@@ -313,9 +334,9 @@ wm.plugins.offline.run([
         }
 
         // Exchange primary key  of the given entity
-        function exchangeId(dataModelName, entityName, data) {
+        function exchangeId(dataModelName, entityName, data, keyName) {
             if (data) {
-                var primaryKeyName = LocalDBService.getStore(dataModelName, entityName).primaryKeyName,
+                var primaryKeyName = keyName || LocalDBService.getStore(dataModelName, entityName).primaryKeyName,
                     localId = data[primaryKeyName],
                     remoteId = getEntityIdStore(dataModelName, entityName)[localId];
                 if (remoteId) {
@@ -329,8 +350,12 @@ wm.plugins.offline.run([
         function exchangeIds(dataModelName, entityName, data) {
             exchangeId(dataModelName, entityName, data);
             _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (col) {
-                if (col.targetEntity && data[col.sourceFieldName]) {
-                    exchangeIds(dataModelName, col.targetEntity, data[col.sourceFieldName]);
+                if (col.targetEntity) {
+                    if (data[col.sourceFieldName]) {
+                        exchangeIds(dataModelName, col.targetEntity, data[col.sourceFieldName]);
+                    } else if (data[col.fieldName]) {
+                        exchangeId(dataModelName, col.targetEntity, data, col.fieldName);
+                    }
                 }
             });
         }
@@ -347,7 +372,8 @@ wm.plugins.offline.run([
                     case 'insertTableData':
                         exchangeIds(dataModelName, entityName, change.params.data);
                         primaryKeyName = LocalDBService.getStore(dataModelName, entityName).primaryKeyName;
-                        transactionLocalId = change.params.data[primaryKeyName];
+                        transactionLocalId = change.localId || change.params.data[primaryKeyName];
+                        change.dataLocalId = transactionLocalId;
                         delete change.params.data[primaryKeyName];
                         break;
                     case 'updateTableData':
@@ -372,6 +398,99 @@ wm.plugins.offline.run([
                     entityStore.delete(transactionLocalId);
                     entityStore.save(response[0]);
                     transactionLocalId = undefined;
+                }
+            }
+        });
+    }]);
+
+/**
+ *.On error of a db call, then all subsequent calls related to the failed entity and its child will be blocked.
+ */
+wm.plugins.offline.run([
+    "LocalDBService",
+    "ChangeLogService",
+    function (LocalDBService, ChangeLogService) {
+        'use strict';
+        var errorStore = {};
+
+        function hasError(dataModelName, entityName, id) {
+            if (errorStore[dataModelName]
+                    && errorStore[dataModelName][entityName]
+                    && errorStore[dataModelName][entityName][id]) {
+                return true;
+            }
+            return false;
+        }
+
+        //Save error entity identifier.
+        function recordError(dataModelName, entityName, id) {
+            errorStore[dataModelName] = errorStore[dataModelName] || {};
+            errorStore[dataModelName][entityName] = errorStore[dataModelName][entityName] || {};
+            errorStore[dataModelName][entityName][id] = true;
+        }
+
+        //A helper function to check for earlier failures.
+        function checkForPreviousError(change, dataModelName, entityName, data, key) {
+            var primaryKey = key || LocalDBService.getStore(dataModelName, entityName).primaryKeyName;
+            if (hasError(dataModelName, entityName, data[primaryKey])) {
+                change.hasError = 1;
+                change.errorMessage = "Blocked call due to error in previous call of entity ["
+                                        + entityName + "] with id [" + data[primaryKey] + " ]";
+            }
+        }
+
+        /**
+         * If there is an earlier call of the object or its relations that got failed, then this call will be
+         * marked for discard.
+         *
+         * @param change change to block
+         * @param dataModelName
+         * @param entityName
+         * @param data
+         */
+        function blockCall(change, dataModelName, entityName, data) {
+            if (change.hasError === 0) {
+                checkForPreviousError(change, dataModelName, entityName, data);
+                _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (col) {
+                    if (col.targetEntity) {
+                        if (data[col.sourceFieldName]) {
+                            blockCall(change, dataModelName, col.targetEntity, data[col.sourceFieldName]);
+                        } else if (data[col.fieldName]) {
+                            checkForPreviousError(change, dataModelName, col.targetEntity, data, col.fieldName);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Registers for offline change log events.
+        ChangeLogService.registerCallback({
+            //block all calls related to the error entities
+            'preCall' : function (change) {
+                var entityName, dataModelName;
+                if (change && change.service === 'DatabaseService') {
+                    entityName = change.params.entityName;
+                    dataModelName = change.params.dataModelName;
+                    switch (change.operation) {
+                    case 'insertTableData':
+                    case 'updateTableData':
+                        blockCall(change, dataModelName, entityName, change.params.data);
+                        break;
+                    case 'deleteTableData':
+                        blockCall(change, dataModelName, entityName, change.params);
+                        break;
+                    }
+                }
+            },
+            //store error entity id
+            'postCallError' : function (change) {
+                var entityStore, entityName, dataModelName, id;
+                if (change && change.service === 'DatabaseService') {
+                    entityName = change.params.entityName;
+                    dataModelName = change.params.dataModelName;
+                    entityStore = LocalDBService.getStore(dataModelName, entityName);
+                    id = change.dataLocalId || change.params.data[entityStore.primaryKeyName];
+                    recordError(dataModelName, entityName, id);
                 }
             }
         });
