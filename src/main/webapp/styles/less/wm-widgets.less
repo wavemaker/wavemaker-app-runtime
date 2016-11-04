@@ -1950,6 +1950,21 @@ If the height and width are not specified the video takes the height of the post
     }
   }
 }
+//Styles for custom menu widget within datatable to have menu list visible
+.wm-app .app-grid{
+  .table {
+    tbody {
+      tr {
+        &.active, &:hover, &.active:hover {
+          td {
+            overflow: visible;
+          }
+        }
+      }
+    }
+  }
+}
+
 .app-livegrid {
   position: relative;
   height: auto;
