@@ -1089,7 +1089,7 @@ WM.module('wm.widgets.base')
                 compileFns = [],
                 delayPageReadyByTypeMap = {};
 
-            function _compile($el, $s) {
+            function _compile($el, $s, attrs) {
                 $compile($el)($s);
             }
 
@@ -1125,8 +1125,8 @@ WM.module('wm.widgets.base')
                 'terminal': true,
                 'priority': 100,
                 'link': {
-                    'pre': function ($s, $el) {
-                        var compileFn, config;
+                    'pre': function ($s, $el, attrs) {
+                        var compileFn, config, _clone;
 
                         // delay the invocation of onPageReady till all the lazy-widgets are loaded
                         if (!delayPageReadyByTypeMap[widgetType]) {
@@ -1134,7 +1134,14 @@ WM.module('wm.widgets.base')
                             Utils.triggerFn($s.registerPagePart); // register the widget as page part
                         }
 
-                        compileFn = _compile.bind(undefined, $el, $s);
+                        _.forEach(attrs.$$element.context.attributes, function (attr) {
+                            $el.attr(attr.name, attr.value);
+                        });
+
+                        _clone = $el.clone(true);
+                        $el.replaceWith(_clone);
+
+                        compileFn = _compile.bind(undefined, _clone, $s, attrs);
 
                         compileFns.push(compileFn);
 
