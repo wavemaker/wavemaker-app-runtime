@@ -243,7 +243,37 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
                 return;
             }
             message = WM.isDefined(response) ? response : message;
+            message = WM.isObject(message) ? JSON.stringify(message) : message;
             socket.send(message);
+        }
+
+        /**
+         * this will initialize variable dataSet with model structure prepared from the dataType of the variable
+         * It is being used to carry out field defs for live widgets in widgetconfigdialogconroller.js
+         * this should be removed once typeUtils is utilized
+         */
+        function update() {
+            var variable = this;
+            variable.dataSet = $servicevariable.getServiceModel({
+                variable: variable,
+                typeRef: variable.type
+            });
+        }
+
+        function init() {
+            if (shouldAppendData(this)) {
+                Object.defineProperty(this, 'firstRecord', {
+                    'get': function () {
+                        return this.dataSet[0];
+                    }
+                });
+                Object.defineProperty(this, 'lastRecord', {
+                    'get': function () {
+                        var content = this.dataSet || [];
+                        return content[content.length - 1];
+                    }
+                });
+            }
         }
 
         /* properties of a service variable - should contain methods applicable on this particular object */
@@ -251,7 +281,9 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             open    : open,
             close   : close,
             send    : send,
-            invoke  : send
+            invoke  : send,
+            update  : update,
+            init    : init
         };
 
         /* register the variable to the base service */
