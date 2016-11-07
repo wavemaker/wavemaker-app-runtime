@@ -265,6 +265,17 @@ WM.module('wm.widgets.base')
                         iScope.partialParams.push({'name': param.name, 'value': '', 'type': param.type});
                     }
                 });
+                //Remove the deleted params and load the existing params on to the page
+                var removedParams = _.remove(iScope.partialParams, function (isparam){
+                    return !_.find(partiaParams, function(param){
+                        return isparam.name === param.name;
+                    });
+                });
+                //Apply dirty check to cleanup the markup
+                if(removedParams.length){
+                    $rootScope.$emit('wms:partial-container-params-modified', {params: iScope.partialParams, widgetName: iScope.name});
+                    $rootScope.$emit('wms:change-workspace-sanity', {params: iScope.partialParams, widgetName: iScope.name});
+                }
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
