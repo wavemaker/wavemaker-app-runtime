@@ -683,17 +683,19 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     $scope.formFields.forEach(function (formField) {
+                        var value = _.get(dataObj, formField.key),
+                            primaryKeys;
                         if (isTimeType(formField)) {
-                            formField.value = getValidTime(dataObj[formField.key]);
+                            formField.value = getValidTime(value);
                         } else if (formField.type === "blob") {
                             if ($scope.dataset.propertiesMap) {
-                                var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                                primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
                                 primaryKey = primaryKeys.join();
                                 formField.href = $scope.getBlobURL(dataObj[primaryKey], formField.key);
                             }
-                            formField.value = dataObj[formField.key];
+                            formField.value = value;
                         } else {
-                            formField.value = dataObj[formField.key];
+                            formField.value = value;
                         }
                     });
                     $scope.setPrevDataValues();
