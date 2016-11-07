@@ -161,6 +161,7 @@ $.widget('wm.datagrid', {
             this.gridElement.removeClass('table-condensed');
             this.gridHeaderElement.removeClass('table-condensed');
             if (this.gridSearch) {
+                this.gridSearch.find('.form-group').removeClass('form-group-sm');
                 this.gridSearch.find('select').removeClass('input-sm');
                 this.gridSearch.find('.input-group').removeClass('input-group-sm');
             }
@@ -169,6 +170,7 @@ $.widget('wm.datagrid', {
             this.gridElement.addClass('table-condensed');
             this.gridHeaderElement.addClass('table-condensed');
             if (this.gridSearch) {
+                this.gridSearch.find('.form-group').addClass('form-group-sm');
                 this.gridSearch.find('select').addClass('input-sm');
                 this.gridSearch.find('.input-group').addClass('input-group-sm');
             }
