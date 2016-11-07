@@ -69,12 +69,16 @@ WM.module('wm.widgets.advanced')
                 }
             }
             //to calculate the height for the event limit and parsing the value when it is percentage based.
-            function calculateHeight(calendar, $el) {
-                var parentHeight      = $el.parent().attr('height'),
-                    elHeight          = $el.attr('height'),
+            function calculateHeight(calendar, $el, $is) {
+                var $parentEl    = $el.parent(),
+                    parentHeight = $parentEl.css('height'),
+                    elHeight     = $is.height,
                     computedHeight;
                 if (_.includes(elHeight, '%')) {
-                    computedHeight = (parentHeight * Number(elHeight.replace(/\%/g, ''))) / 100;
+                    if (_.includes(parentHeight, '%')) {
+                        parentHeight = $parentEl.height();
+                    }
+                    computedHeight = (parseInt(parentHeight, 10) * Number(elHeight.replace(/\%/g, ''))) / 100;
                 } else {
                     computedHeight = parseInt(elHeight, 10);
                 }
@@ -139,7 +143,7 @@ WM.module('wm.widgets.advanced')
                     }
                     break;
                 case 'height':
-                    calendar.height = calculateHeight(calendar, $el);
+                    calendar.height = calculateHeight(calendar, $el, $is);
                     break;
                 case 'controls':
                 case 'calendartype':
@@ -449,6 +453,7 @@ WM.module('wm.widgets.advanced')
                             $is.redraw = function () {
                                 $timeout(function () {
                                     $el.children().first().fullCalendar('render');
+                                    propertyChangeHandler($is, $el, 'height');
                                 }, undefined, false);
                             };
                         }
