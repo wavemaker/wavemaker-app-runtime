@@ -20,6 +20,11 @@ public enum VariableType {
         public Object getValue(final Class<?> fieldType) {
             return null;
         }
+
+        @Override
+        public boolean isSystemVariable() {
+            return false;
+        }
     },
     USER_ID {
         @Override
@@ -62,5 +67,16 @@ public enum VariableType {
         }
     };
 
+    private static final String CURRENT_DATE = "CURRENT_DATE";
+    private static final String CURRENT_TIME = "CURRENT_TIME";
+    private static final String CURRENT_USER_NAME = "CURRENT_USER_NAME";
+    private static final String CURRENT_USER_ID = "CURRENT_USER_ID";
+    private static final String QUERY_OR_PROCEDURE_PARAM_PREFIX = ":";
+
+
     public abstract Object getValue(final Class<?> fieldType);
+
+    public boolean isSystemVariable() {
+        return true;
+    }
 }

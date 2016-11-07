@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,31 +15,41 @@
  */
 package com.wavemaker.runtime.data.model;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
 
-import java.util.Map;
+import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 
 /**
- * @Author: sowmyad
+ * @author sowmyad
+ * @author Dilip Kumar
  */
 public class QueryResponse {
-    Page<Object> page;
+    private Object results;
+    private List<ReturnProperty> returnProperties;
 
-    Map<String, String> metaData;
-
-    public Page<Object> getPages() {
-        return page;
+    public QueryResponse() {
     }
 
-    public void setPages(Page<Object> page) {
-        this.page = page;
+    public QueryResponse(
+            final Object results, final List<ReturnProperty> returnProperties) {
+        this.results = results;
+        this.returnProperties = returnProperties;
     }
 
-    public Map getMetaData() {
-        return metaData;
+    public Object getResults() {
+        return results;
     }
 
-    public void setMetaData(Map metaData) {
-        this.metaData = metaData;
+    public void setResults(final Object results) {
+        this.results = results;
+    }
+
+    public List<ReturnProperty> getReturnProperties() {
+        return returnProperties;
+    }
+
+    public void setReturnProperties(
+            final List<ReturnProperty> returnProperties) {
+        this.returnProperties = returnProperties;
     }
 }

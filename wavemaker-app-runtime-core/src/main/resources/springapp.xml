@@ -88,6 +88,8 @@
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
+    <bean id="runtimeQueryMetadataService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
+
     <bean id="serviceDefinitionController" class="com.wavemaker.runtime.servicedef.controller.ServiceDefinitionController" />
 
     <bean id="serviceDefinitionService" class="com.wavemaker.runtime.servicedef.service.ServiceDefinitionService" />

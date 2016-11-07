@@ -15,20 +15,30 @@
  */
 package com.wavemaker.runtime.data.dao.query;
 
-import com.wavemaker.runtime.data.model.CustomQuery;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Map;
+import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 
 public interface WMQueryExecutor {
 
-	public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable);
-	
-	public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable);
+    <T> T executeNamedQuery(String queryName, Map<String, Object> params);
 
-    public int executeNamedQueryForUpdate(String queryName, Map<String, Object> params);
+    <T> Page<T> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable);
 
-    public int executeCustomQueryForUpdate(CustomQuery customQuery);
+    int executeNamedQueryForUpdate(String queryName, Map<String, Object> params);
+
+    Page<Object> executeRuntimeQuery(RuntimeQuery query, Pageable pageable);
+
+    int executeRuntimeQueryForUpdate(RuntimeQuery query);
+
+    @Deprecated
+    Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable);
+
+    @Deprecated
+    int executeCustomQueryForUpdate(CustomQuery customQuery);
 
 }

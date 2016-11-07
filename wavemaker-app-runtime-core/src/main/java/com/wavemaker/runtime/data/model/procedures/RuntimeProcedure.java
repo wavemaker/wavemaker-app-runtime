@@ -11,6 +11,14 @@ public class RuntimeProcedure {
     private String procedureString;
     private List<ProcedureParameter> parameters;
 
+    public RuntimeProcedure() {
+    }
+
+    public RuntimeProcedure(final RuntimeProcedure other) {
+        this.procedureString = other.procedureString;
+        this.parameters = other.parameters;
+    }
+
     public String getProcedureString() {
         return procedureString;
     }

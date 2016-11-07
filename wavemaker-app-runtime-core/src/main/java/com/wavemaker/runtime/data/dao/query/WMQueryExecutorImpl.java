@@ -35,6 +35,8 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
+import com.wavemaker.runtime.data.model.queries.QueryParameter;
+import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
@@ -50,7 +52,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     private HibernateTemplate template;
 
     @Override
-    public Page<Object> executeNamedQuery(
+
+    public <T> Page<T> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Pageable pageable) {
         final Pageable _pageable;
         if (pageable == null) {
@@ -58,14 +61,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         } else {
             _pageable = pageable;
         }
-        return template.execute(new HibernateCallback<Page<Object>>() {
+        return template.execute(new HibernateCallback<Page<T>>() {
             @Override
-            public Page<Object> doInHibernate(Session session) throws HibernateException {
+            public Page<T> doInHibernate(Session session) throws HibernateException {
                 Query namedQuery = session.getNamedQuery(queryName);
                 QueryHelper.setResultTransformer(namedQuery);
                 QueryHelper.configureParameters(namedQuery, params);
-
-
                 Query copyOfNamedQuery = namedQuery;
                 final boolean isNative = namedQuery instanceof SQLQuery;
                 if (isNative) { //adding order by from pagination to query.
@@ -78,18 +79,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                 return new WMPageImpl(namedQuery.list(), _pageable, count);
             }
         });
-    }
-
-    @Override
-    public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        prepareParams(params, customQuery);
-
-        if (customQuery.isNativeSql()) {
-            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
-        } else {
-            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
-        }
     }
 
     @Override
@@ -108,30 +97,33 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     @Override
-    public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
+    public <T> T executeNamedQuery(final String queryName, final Map<String, Object> params) {
+        // TODO
+        return null;
+    }
 
+    @Override
+    public Page<Object> executeRuntimeQuery(final RuntimeQuery query, final Pageable pageable) {
+        final Map<String, Object> prepareParameters = prepareParameters(query);
+        Page<Object> result;
+        if (query.isNativeSql()) {
+            result = executeNativeQuery(query.getQueryString(), prepareParameters, pageable);
+        } else {
+            result = executeHQLQuery(query.getQueryString(), prepareParameters, pageable);
+        }
+
+        return result;
+    }
+
+    @Override
+    public int executeRuntimeQueryForUpdate(final RuntimeQuery runtimeQuery) {
         return template.execute(new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
-                Map<String, Object> params = new HashMap<String, Object>();
-
-                List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-                if (customQueryParams != null && !customQueryParams.isEmpty())
-                    for (CustomQueryParam customQueryParam : customQueryParams) {
-                        Object paramValue = validateAndPrepareObject(customQueryParam);
-                        params.put(customQueryParam.getParamName(), paramValue);
-                    }
-
-                Query query = null;
-                if (customQuery.isNativeSql()) {
-                    query = createNativeQuery(customQuery.getQueryStr(), params);
-                } else {
-                    query = createHQLQuery(customQuery.getQueryStr(), params);
-                }
-                return query.executeUpdate();
+                return createQuery(runtimeQuery, prepareParameters(runtimeQuery)).executeUpdate();
             }
-        });
 
+        });
     }
 
     protected Page<Object> executeNativeQuery(
@@ -186,6 +178,75 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         this.template = template;
     }
 
+    public Map<String, Object> prepareParameters(RuntimeQuery query) {
+        Map<String, Object> params = new HashMap<>(query.getParameters().size());
+        final List<QueryParameter> parameters = query.getParameters();
+        if (!parameters.isEmpty()) {
+            for (final QueryParameter parameter : parameters) {
+                Object convertedValue;
+                if (parameter.isList()) {
+                    convertedValue = new ArrayList<>();
+                    for (final Object object : (List<Object>) parameter.getTestValue()) {
+                        ((List<Object>) convertedValue).add(parameter.getType().convert(object));
+                    }
+                } else {
+                    convertedValue = parameter.getType().convert(parameter.getTestValue());
+                }
+                params.put(parameter.getName(), convertedValue);
+            }
+        }
+        return params;
+    }
+
+    @Override
+    public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
+        Map<String, Object> params = new HashMap<>();
+        prepareParams(params, customQuery);
+
+        if (customQuery.isNativeSql()) {
+            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
+        } else {
+            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
+        }
+    }
+
+    @Override
+    public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
+
+        return template.execute(new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                Map<String, Object> params = new HashMap<String, Object>();
+
+                List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
+                if (customQueryParams != null && !customQueryParams.isEmpty())
+                    for (CustomQueryParam customQueryParam : customQueryParams) {
+                        Object paramValue = validateAndPrepareObject(customQueryParam);
+                        params.put(customQueryParam.getParamName(), paramValue);
+                    }
+
+                Query query = null;
+                if (customQuery.isNativeSql()) {
+                    query = createNativeQuery(customQuery.getQueryStr(), params);
+                } else {
+                    query = createHQLQuery(customQuery.getQueryStr(), params);
+                }
+                return query.executeUpdate();
+            }
+        });
+
+    }
+
+    public Query createQuery(RuntimeQuery runtimeQuery, final Map<String, Object> params) {
+        final Query query;
+        if (runtimeQuery.isNativeSql()) {
+            query = createNativeQuery(runtimeQuery.getCountQueryString(), params);
+        } else {
+            query = createHQLQuery(runtimeQuery.getQueryString(), params);
+        }
+        return query;
+    }
+
     private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
         Session currentSession = template.getSessionFactory().getCurrentSession();
 
@@ -237,9 +298,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             for (Object listParam : listParams) {
                 objectList.add(validateObject(customQueryParam.getParamType(), listParam));
             }
-            return objectList;
+        } else {
+            objectList.add(validateObject(customQueryParam.getParamType(), customQueryParam.getParamValue()));
         }
-        objectList.add(validateObject(customQueryParam.getParamType(), customQueryParam.getParamValue()));
         return objectList;
     }
 

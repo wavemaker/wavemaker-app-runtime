@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.model.queries;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +16,18 @@ public class RuntimeQuery {
 
     private boolean nativeSql;
     private List<QueryParameter> parameters;
+
+    public RuntimeQuery() {
+        parameters = new ArrayList<>();
+    }
+
+    public RuntimeQuery(final RuntimeQuery other) {
+        this.queryString = other.queryString;
+        this.type = other.type;
+        this.countQueryString = other.countQueryString;
+        this.nativeSql = other.nativeSql;
+        this.parameters = other.parameters;
+    }
 
     public String getQueryString() {
         return queryString;
