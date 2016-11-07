@@ -63,10 +63,13 @@ WM.module('wm.widgets.form')
              */
             function setPropertiesTextWidget(widgetProps, newVal) {
                 var datavalueObj = widgetProps.datavalue || widgetProps.defaultvalue;
-                widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
+                widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = widgetProps.displayformat.show = false;
                 widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
                 datavalueObj.type = (newVal === 'date') ? newVal : 'string';
                 switch (newVal) {
+                case 'text':
+                    widgetProps.displayformat.show = true;
+                    break;
                 case 'number':
                     widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
                     widgetProps.placeholder.show = widgetProps.maxchars.show = true;
@@ -407,10 +410,12 @@ WM.module('wm.widgets.form')
 
                     _.forEach(groupedKeys[key].keys, function (dataKey) {
                         dataKey.title    = WM.isString(dataKey.title) ? dataKey.title.trim() : dataKey.title;
+                        //needed to parse the key if the bound dataset is having the key with '\'.
+                        var parsedKey = _.includes(dataKey.key, '\\') ? _.replace(dataKey.key, '\\', '\\\\') : dataKey.key;
                         template = template +
-                            '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey.key + "'" + ']}">' +
+                            '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + parsedKey + "'" + ']}">' +
                                 '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
-                                    '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + dataKey.key + "'" + ']"/>' +
+                                    '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + parsedKey + "'" + ']"/>' +
                                     '<span class="caption">' + dataKey.title + '</span>' +
                                 '</label>' +
                             '</li>';
