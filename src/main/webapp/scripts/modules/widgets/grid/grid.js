@@ -1673,7 +1673,12 @@ WM.module('wm.widgets.grid')
                         });
 
                         $scope.dataNavigatorWatched = true;
-                        $scope.__fullData = $scope.dataset;
+                        //If dataset is a pageable object, data is present inside the content property
+                        if (WM.isObject($scope.dataset) && Utils.isPageable($scope.dataset)) {
+                            $scope.__fullData = $scope.dataset.content;
+                        } else {
+                            $scope.__fullData = $scope.dataset;
+                        }
                         $scope.dataset    = undefined;
                     }
                 }
