@@ -988,10 +988,11 @@ WM.module('wm.widgets.live')
                             defaultProp = 'datavalue';
                         }
                         if (widgetProps[defaultProp]) {
-                            widgetProps.defaultvalue                     = WM.copy(widgetProps[defaultProp]);
-                            widgetProps[defaultProp].ignoreGetterSetters = true;
-                            widgetProps[defaultProp].show                = false;
+                            widgetProps.defaultvalue      = WM.copy(widgetProps[defaultProp]);
+                            widgetProps[defaultProp].show = false;
                         }
+                        //Ignore the default getter setter on datavalue as it is set explicitly for form field
+                        _.set(widgetProps.datavalue, 'ignoreGetterSetters', true);
                     };
                 widgetType = widgetType.toLowerCase();
                 switch (widgetType) {
