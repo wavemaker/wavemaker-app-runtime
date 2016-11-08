@@ -124,9 +124,8 @@ WM.module('wm.widgets.live')
                     return $scope.element;
                 }
                 //Reset the values of widgets inside the form
-                function resetFormFields() {
-                    var element = getFormElement();
-                    element.find('[role="input"]').each(function () {
+                function resetFormFields(formEle) {
+                    formEle.find('[role="input"]').each(function () {
                         var $inputEl = WM.element(this);
                         //Reset the widgets other than form fields
                         if (_.isEmpty($inputEl.closest('[data-role="form-field"]'))) {
@@ -243,6 +242,10 @@ WM.module('wm.widgets.live')
                         deleteFn;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
+                        return;
+                    }
+                    //Disable the form submit if form is in invalid state
+                    if (!$scope.novalidate && $scope.ngform && $scope.ngform.$invalid) {
                         return;
                     }
                     resetFormState();
@@ -441,17 +444,21 @@ WM.module('wm.widgets.live')
                 };
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
+                    var formEle = getFormElement();
                     resetFormState();
-                    resetFormFields();
+                    resetFormFields(formEle);
                     if (WM.isArray($scope.formFields)) {
-                        $scope.formFields.forEach(function (dataValue) {
-                            if (dataValue.type === 'blob') {
-                                resetFileUploadWidget(dataValue);
+                        $scope.formFields.forEach(function (formField) {
+                            if (formField.type === 'blob') {
+                                resetFileUploadWidget(formField);
                             } else {
                                 var prevObj = _.find($scope.prevDataValues, function (obj) {
-                                    return obj.key === dataValue.key;
+                                    return obj.key === formField.key;
                                 });
-                                dataValue.value = prevObj ? prevObj.value : undefined;
+                                formField.value = prevObj ? prevObj.value : undefined;
+                                if (!formField.value && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
+                                    formEle.find('div[name=' + formField.name + '] input').val('');
+                                }
                             }
                         });
                     }
@@ -665,7 +672,7 @@ WM.module('wm.widgets.live')
                             if ($scope.dataset.propertiesMap) {
                                 primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
                                 primaryKey = primaryKeys.join();
-                                formField.href = $scope.getBlobURL(dataObj[primaryKey], formField.key);
+                                formField.href = value === null ? '' : $scope.getBlobURL(dataObj[primaryKey], formField.key);
                             }
                             formField.value = value;
                         } else {
@@ -1065,7 +1072,7 @@ WM.module('wm.widgets.live')
                                             break;
                                         case 'delete':
                                             scope.operationType = 'delete';
-                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject()}, function() {
+                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject()}, function () {
                                                 scope.toggleMessage(true, scope.deletemessage, 'success');
                                             }, function (error) {
                                                 scope.toggleMessage(true, scope.errormessage || error, 'error');
