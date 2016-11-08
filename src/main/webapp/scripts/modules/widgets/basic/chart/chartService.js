@@ -427,9 +427,8 @@ WM.module('wm.widgets.basic')
             //Chooses the line of line/cumulative line and increases the thickness of it
             function setLineThickness(id, thickness) {
                 var chartSvg = id ? d3.select('#wmChart' + id + ' svg') : d3.select(chartId + ' svg');
-                if (thickness) {
-                    chartSvg.selectAll('.nv-line').style({'stroke-width': thickness});
-                }
+                thickness = thickness || 1.5;
+                chartSvg.selectAll('.nv-line').style({'stroke-width': thickness});
             }
 
             //Constructing a common key value map for preview and canvas mode
@@ -708,12 +707,12 @@ WM.module('wm.widgets.basic')
                         chart.valueFormat(d3.format('%'));
                     } else {
                         chart.valueFormat(function (d) {
-                            return getNumberFormatedData(scope.ynumberformat, d);
+                            return getNumberFormatedData(propertyValueMap.ynumberformat, d);
                         });
                     }
                     //Customizing the tooltips in case of the pie and donut when labelType is value
                     chart.tooltip.contentGenerator(function (key) {
-                        yValue = getNumberFormatedData(scope.ynumberformat, key.data.y);
+                        yValue = getNumberFormatedData(propertyValueMap.ynumberformat, key.data.y);
                         return '<table>' +
                                     '<tbody>' +
                                          '<tr>' +
@@ -783,8 +782,8 @@ WM.module('wm.widgets.basic')
                 if (WM.isString(propertyValueMap.customcolors) && propertyValueMap.customcolors) {
                     colors = _.split(propertyValueMap.customcolors, ',');
                 }
-                if (WM.isArray(scope.customcolors)) {
-                    colors = scope.customcolors;
+                if (WM.isArray(propertyValueMap.customcolors)) {
+                    colors = propertyValueMap.customcolors;
                 }
 
                 showLegend = isShowLegend(propertyValueMap.showlegend);
@@ -813,23 +812,24 @@ WM.module('wm.widgets.basic')
                 }
             }
 
-            this.isBarChart = isBarChart;
-            this.isBubbleChart = isBubbleChart;
-            this.isPieType = isPieType;
-            this.isChartDataJSON = isChartDataJSON;
-            this.isChartDataArray = isChartDataArray;
-            this.isLineTypeChart = isLineTypeChart;
-            this.getSampleData = getSampleData;
-            this.initChart = initChart;
-            this.isAxisDomainValid = isAxisDomainValid;
-            this.highlightPoints = highlightPoints;
-            this.setLineThickness = setLineThickness;
-            this.getBarSpacingValue = getBarSpacingValue;
-            this.getRadiusValue = getRadiusValue;
-            this.getLabelValues = getLabelValues;
+            this.isBarChart           = isBarChart;
+            this.isBubbleChart        = isBubbleChart;
+            this.isPieType            = isPieType;
+            this.isChartDataJSON      = isChartDataJSON;
+            this.isChartDataArray     = isChartDataArray;
+            this.isLineTypeChart      = isLineTypeChart;
+            this.getSampleData        = getSampleData;
+            this.initChart            = initChart;
+            this.isAxisDomainValid    = isAxisDomainValid;
+            this.highlightPoints      = highlightPoints;
+            this.setLineThickness     = setLineThickness;
+            this.getBarSpacingValue   = getBarSpacingValue;
+            this.getRadiusValue       = getRadiusValue;
+            this.getLabelValues       = getLabelValues;
             this.modifyLegendPosition = modifyLegendPosition;
-            this.toggleAxisShow = toggleAxisShow;
+            this.toggleAxisShow       = toggleAxisShow;
             this.hideOrShowProperties = hideOrShowProperties;
             this.postPlotChartProcess = postPlotChartProcess;
+            this.initProperties       = initProperties;
         }
     ]);
