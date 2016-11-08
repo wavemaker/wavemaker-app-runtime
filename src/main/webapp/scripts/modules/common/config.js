@@ -49,13 +49,13 @@ wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
             method: "GET"
         }
     },
-    COMMON_PAGE: {
+    MARKUP: {
         get: {
-            url: 'services/projects/:projectId/pages/Common/Common.html',
+            url: "services/projects/:projectId/pages/:pageName/:pageName.html",
             method: "GET"
         },
         post: {
-            url: 'services/projects/:projectId/pages/Common/Common.html',
+            url: 'services/projects/:projectId/pages/:pageName/:pageName.html',
             method: "POST"
         }
     }
