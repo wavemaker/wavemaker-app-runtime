@@ -265,10 +265,13 @@ WM.module('wm.widgets.basic')
                         // check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'
                         if (WM.isObject(dataSet[0])) {
                             _.forEach(dataSet, function (eachItem, index) {
-                                // convert display-label-value to string, as ui.typeahead expects only strings
-                                dataSet[index].wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displaylabel'});
-                                // to save all the image urls
-                                dataSet[index].wmImgSrc = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displayimagesrc'});
+                                var itemValue = dataSet[index];
+                                if (WM.isObject(itemValue)) {
+                                    // convert display-label-value to string, as ui.typeahead expects only strings
+                                    itemValue.wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displaylabel'});
+                                    // to save all the image urls
+                                    itemValue.wmImgSrc = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displayimagesrc'});
+                                }
                             });
                         } else {
                             // convert all the values in the array to strings
@@ -796,6 +799,9 @@ WM.module('wm.widgets.basic')
                                     typeAheadInput.bind('focus', function () {
                                         //Add full screen class on focus of the input element.
                                         element.addClass('full-screen');
+                                        if ($is.query) { //If query is present, get the dropdown results with this query
+                                            triggerSearch($is, typeAheadInput);
+                                        }
                                     });
                                 }
                                 //Append loading items span element at bottom of the dropdown list
