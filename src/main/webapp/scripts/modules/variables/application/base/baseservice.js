@@ -1026,7 +1026,10 @@ wm.variables.services.Variables = [
                 return (variables[$rootScope.activePageName] && variables[$rootScope.activePageName][variableName]) || (variables[VARIABLE_CONSTANTS.OWNER.APP] && variables[VARIABLE_CONSTANTS.OWNER.APP][variableName]) || null;
             },
 
-            /*function to update a variable object*/
+            /*function to update a variable object
+            * variableName name of the variable, old name in case of name change
+            * newProperties varible object with updated properties
+            * isUpdate flag to decide if variable data set has to be update*/
             updateVariable = function (variableName, newProperties, isUpdate) {
                 var newName = newProperties.name,
                     updated = false,
@@ -1034,7 +1037,7 @@ wm.variables.services.Variables = [
                     oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App',
                     scope = pageScopeMap[pageName];
                 /* Condition: Checking for existence of the variable name, updating variable object*/
-                if (self.variableCollection[pageName][variableName]) {
+                if (_.find(self.variableCollection[pageName], {'_id': newProperties._id})) {
                     self.variableCollection[pageName][newName] = newProperties;
                     updated = true;
                     if (!_.includes(CRUDMAP.UPDATE[pageName], newName) && !_.includes(CRUDMAP.CREATE[pageName], newName)) {
@@ -1044,7 +1047,7 @@ wm.variables.services.Variables = [
                         delete self.variableCollection[pageName][variableName];
                         reloadRequired.push(pageName);
                     }
-                } else if (self.variableCollection[oldOwner][variableName]) {
+                } else if (_.find(self.variableCollection[oldOwner], {'_id': newProperties._id})) {
                     /*In case of owner change checking for variable existence in old scope and deleting*/
                     self.variableCollection[pageName][newName] = newProperties;
                     /*Removing those variable from old scope*/
