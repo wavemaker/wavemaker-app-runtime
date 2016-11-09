@@ -797,8 +797,6 @@ WM.module('wm.widgets.live')
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal, oldVal) {
                             var value,
-                                labelElements,
-                                elementScope,
                                 translatedObj,
                                 tempVarName,
                                 gridObj,
@@ -891,12 +889,7 @@ WM.module('wm.widgets.live')
                                 });
                                 break;
                             case 'captionsize':
-                                labelElements = WM.element(element).find('.app-label');
-                                /*Set the width of all labels in the form to the caption size*/
-                                WM.forEach(labelElements, function (childelement) {
-                                    elementScope = WM.element(childelement).isolateScope();
-                                    elementScope.width = newVal;
-                                });
+                                LiveWidgetUtils.setCaptionSize(element, newVal);
                                 break;
                             case 'novalidate':
                                 /*Add or remove the novalidate attribute based on the input*/

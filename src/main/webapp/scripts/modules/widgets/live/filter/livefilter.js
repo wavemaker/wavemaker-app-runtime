@@ -40,7 +40,6 @@ WM.module('wm.widgets.live')
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.base']),
                 filterMarkup = '',
-                notifyFor,
                 FILTER_CONSTANTS = {
                     'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',
                     'EMPTY_VALUE' : 'No Value',
@@ -52,21 +51,14 @@ WM.module('wm.widgets.live')
                 },
                 getEnableEmptyFilter = function (enableemptyfilter) {
                     return enableemptyfilter && _.intersection(enableemptyfilter.split(','), FILTER_CONSTANTS.NULLEMPTY).length > 0;
-                };
-            if (CONSTANTS.isStudioMode) {
+                },
                 notifyFor = {
                     'dataset'        : true,
-                    'pagesize'       : true,
+                    'pagesize'       : CONSTANTS.isStudioMode,
                     'captionalign'   : true,
-                    'captionposition': true
+                    'captionposition': true,
+                    'captionsize'    : true
                 };
-            } else {
-                notifyFor = {
-                    'dataset'        : true,
-                    'captionalign'   : true,
-                    'captionposition': true
-                };
-            }
 
             return {
                 restrict: 'E',
@@ -663,6 +655,9 @@ WM.module('wm.widgets.live')
                                 case 'captionposition':
                                     element.removeClass('position-' + oldVal).addClass('position-' + newVal);
                                     break;
+                                case 'captionsize':
+                                    LiveWidgetUtils.setCaptionSize(element, newVal);
+                                    break;
                                 }
                             }
 
@@ -713,7 +708,6 @@ WM.module('wm.widgets.live')
                             scope.$on("$destroy", function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
-                            
                             //on load set filter widgets
                             scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
@@ -857,7 +851,7 @@ WM.module('wm.widgets.live')
                             if (CONSTANTS.isRunMode) {
                                 _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnsDef));
                             } else {
-                                _.set(parentIsolateScope.formFields, index, undefined);   
+                                _.set(parentIsolateScope.formFields, index, undefined);
                             }
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);

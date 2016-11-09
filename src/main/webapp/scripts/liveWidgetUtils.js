@@ -1748,6 +1748,22 @@ WM.module('wm.widgets.live')
             function getViewModeWidgets() {
                 return ['image', 'button', 'checkbox', 'label', 'anchor'];
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.setCaptionSize
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Set the width of all labels in the form to the caption size
+             * @param {formEle} element from which widgets needs to be retrieved
+             * @param {value} width of the label
+             */
+            function setCaptionSize(formEle, value) {
+                formEle.find('.form-group .app-label.ng-isolate-scope').each(function () {
+                    WM.element(this).isolateScope().width = value;
+                });
+            }
 
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -1778,6 +1794,7 @@ WM.module('wm.widgets.live')
             this.getFormFilterWidgets       = getFormFilterWidgets;
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
+            this.setCaptionSize             = setCaptionSize;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

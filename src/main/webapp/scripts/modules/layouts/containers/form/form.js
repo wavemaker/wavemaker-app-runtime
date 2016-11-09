@@ -111,9 +111,7 @@ WM.module('wm.layouts.containers')
             var value, resetBtnTemplate, $gridLayout;
             switch (key) {
             case 'captionsize':
-                element.find('.form-group .app-label.ng-isolate-scope').each(function () {
-                    WM.element(this).isolateScope().width = newVal;
-                });
+                LiveWidgetUtils.setCaptionSize(element, newVal);
                 break;
             case 'captionalign':
                 scope.captionAlignClass = "align-" + newVal;
