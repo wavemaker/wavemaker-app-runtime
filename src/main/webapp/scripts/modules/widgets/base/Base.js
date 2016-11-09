@@ -1453,6 +1453,7 @@ WM.module('wm.widgets.base', [])
                         "onAbort": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     'wm.fileupload.mobile': {
+                        "fileuploadmessage": {"show": false},
                         "contenttype": {"widget" : "list", "options": ['image', 'audio', 'video', 'files']}
                     },
                     'wm.youtube': {
