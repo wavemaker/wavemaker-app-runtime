@@ -258,6 +258,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
                 variable: variable,
                 typeRef: variable.type
             });
+            variable.dataSet = shouldAppendData(variable) ? [variable.dataSet] : variable.dataSet;
         }
 
         function init() {
