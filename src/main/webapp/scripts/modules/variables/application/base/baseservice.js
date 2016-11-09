@@ -2152,6 +2152,22 @@ wm.variables.services.Variables = [
 
             /**
              * @ngdoc method
+             * @name $Variables#getMappedServiceQueryParams
+             * @methodOf wm.variables.$Variables
+             * @description
+             * returns array of query param names for variable other then page,size,sort
+             * @params {params} params of the variable
+             */
+            getMappedServiceQueryParams: function (params) {
+                return _.map(_.reject(params, function (param) {
+                    return _.includes(VARIABLE_CONSTANTS.PAGINATION_PARAMS, param.name);
+                }), function (param) {
+                    return param.name;
+                });
+            },
+
+            /**
+             * @ngdoc method
              * @name $Variables#initiateCallback
              * @methodOf wm.variables.$Variables
              * @description

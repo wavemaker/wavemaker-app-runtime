@@ -11,10 +11,11 @@ WM.module('wm.widgets.form')
         'WidgetUtilService',
         'Utils',
         'Variables',
+        '$servicevariable',
         '$rootScope',
         '$filter',
 
-        function (WidgetUtilService, Utils, Variables, $rootScope, $filter) {
+        function (WidgetUtilService, Utils, Variables, $servicevariable, $rootScope, $filter) {
             'use strict';
             var ALLFIELDS = 'All Fields';
 
@@ -654,25 +655,61 @@ WM.module('wm.widgets.form')
                 }, 50));
             }
 
-            this.getDisplayField                = getDisplayField;
-            this.setPropertiesTextWidget        = setPropertiesTextWidget;
-            this.createDataKeys                 = createDataKeys;
-            this.getParsedDataSet               = getParsedDataSet;
-            this.getModelValue                  = getModelValue;
-            this.getRadiosetCheckboxsetTemplate = getRadiosetCheckboxsetTemplate;
-            this.getBoundVariableCategory       = getBoundVariableCategory;
-            this.appendMessage                  = appendMessage;
-            this.getProxyEventsMap              = getProxyEventsMap;
-            this.getFocusBlurEvents             = getFocusBlurEvents;
-            this.eventProxy                     = eventProxy;
-            this.getTimestampFromDate           = getTimestampFromDate;
-            this.getProxyExcludeDates           = getProxyExcludeDates;
-            this.getUpdatedModel                = getUpdatedModel;
-            this.updatedCheckedValues           = updatedCheckedValues;
-            this.getOrderedDataSet              = getOrderedDataSet;
-            this.disableDates                   = disableDates;
-            this.setFixedHeader                 = setFixedHeader;
-            this.getGroupedFields               = getGroupedFields;
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#updatePropertyOptionsWithParams
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This function updates the property options for searchkey, in case of query service variable these options are
+             * updated by the input query params that query service variable is expecting.
+             *
+             * @param {$is} isolate scope of the widget
+             */
+            function updatePropertyOptionsWithParams($is) {
+                var isBoundVariable      = Utils.stringStartsWith($is.binddataset, 'bind:Variables.'),
+                    parts                = _.split($is.binddataset, /\W/),
+                    variable             = isBoundVariable && Variables.getVariableByName(parts[2]),
+                    queryParams          = [],
+                    searchOptions        = [];
+
+                if (variable && variable.category === 'wm.ServiceVariable') {
+                    $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
+                        queryParams = serviceOperationInfo.parameters;
+                    });
+                    queryParams = Variables.getMappedServiceQueryParams(queryParams);
+                    // don't update search options if there is no query service param
+                    if (queryParams && queryParams.length > 0) {
+                        searchOptions = _.map(queryParams, function (value) {
+                            return value;
+                        });
+                        _.set($is.widgetProps, 'searchkey.options', searchOptions);
+                    }
+                }
+            }
+
+            this.getDisplayField                 = getDisplayField;
+            this.setPropertiesTextWidget         = setPropertiesTextWidget;
+            this.createDataKeys                  = createDataKeys;
+            this.getParsedDataSet                = getParsedDataSet;
+            this.getModelValue                   = getModelValue;
+            this.getRadiosetCheckboxsetTemplate  = getRadiosetCheckboxsetTemplate;
+            this.getBoundVariableCategory        = getBoundVariableCategory;
+            this.appendMessage                   = appendMessage;
+            this.getProxyEventsMap               = getProxyEventsMap;
+            this.getFocusBlurEvents              = getFocusBlurEvents;
+            this.eventProxy                      = eventProxy;
+            this.getTimestampFromDate            = getTimestampFromDate;
+            this.getProxyExcludeDates            = getProxyExcludeDates;
+            this.getUpdatedModel                 = getUpdatedModel;
+            this.updatedCheckedValues            = updatedCheckedValues;
+            this.getOrderedDataSet               = getOrderedDataSet;
+            this.disableDates                    = disableDates;
+            this.setFixedHeader                  = setFixedHeader;
+            this.getGroupedFields                = getGroupedFields;
+            this.updatePropertyOptionsWithParams = updatePropertyOptionsWithParams;
         }
     ])
     .constant('FIELD_TYPE', {

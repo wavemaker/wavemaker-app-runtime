@@ -100,12 +100,10 @@ WM.module('wm.widgets.basic')
         'Variables',
         '$filter',
         '$q',
-        '$servicevariable',
-        'VARIABLE_CONSTANTS',
         '$templateCache',
         '$compile',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS, $templateCache, $compile) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $templateCache, $compile) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
@@ -163,16 +161,6 @@ WM.module('wm.widgets.basic')
                 $is.updateModel();
             }
 
-            //returns array of query param names for variable other then page,size,sort
-            function getMappedServiceQueryParams(params) {
-
-                return _.map(_.reject(params, function (param) {
-                    return _.includes(VARIABLE_CONSTANTS.PAGINATION_PARAMS, param.name);
-                }), function (param) {
-                    return param.name;
-                });
-            }
-
             // this function checks if the variable bound is a live variable or service variable
             function isVariableUpdateRequired($is, scope, calledFromSetDataSet) {
                 var variable          = Variables.getVariableByName(Utils.getVariableName($is, scope)),
@@ -181,7 +169,7 @@ WM.module('wm.widgets.basic')
 
                 // check if the variable is service variable
                 if (!calledFromSetDataSet && variable && variable.category === 'wm.ServiceVariable') {
-                    queryParams = getMappedServiceQueryParams(_.get(variable, '_wmServiceOperationInfo.parameters'));
+                    queryParams = Variables.getMappedServiceQueryParams(_.get(variable, '_wmServiceOperationInfo.parameters'));
                     if (!queryParams.length) {
                         $is.isQueryWithoutParams = true;
                         // if we don't have any query param and variable data is available then we don't need variable update, so return false
@@ -193,38 +181,6 @@ WM.module('wm.widgets.basic')
                     }
                 }
                 return variable && _.includes(updateRequiredFor, variable.category);
-            }
-
-            // this function checks if the variable bound is a service variable
-            function isServiceVariable($is, scope) {
-                var variable = Variables.getVariableByName(Utils.getVariableName($is, scope));
-
-                return variable && 'wm.ServiceVariable' === variable.category;
-            }
-
-            /* This function updates the property options for searchkey, in case of query service variable these options are
-             updated by the input query params that query service variable is expecting.
-             */
-            function updatePropertyOptions($is) {
-                var isBoundVariable      = Utils.stringStartsWith($is.binddataset, 'bind:Variables.'),
-                    parts                = _.split($is.binddataset, /\W/),
-                    variable             = isBoundVariable && Variables.getVariableByName(parts[2]),
-                    queryParams          = [],
-                    searchOptions        = [];
-
-                if (variable && variable.category === 'wm.ServiceVariable') {
-                    $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
-                        queryParams = serviceOperationInfo.parameters;
-                    });
-                    queryParams = getMappedServiceQueryParams(queryParams);
-                    // don't update search options if there is no query service param
-                    if (queryParams && queryParams.length > 0) {
-                        searchOptions = _.map(queryParams, function (value) {
-                            return value;
-                        });
-                        _.set($is.widgetProps, 'searchkey.options', searchOptions);
-                    }
-                }
             }
 
             // to filter & set the dataset property of the search widget
@@ -243,9 +199,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    if (isServiceVariable($is, element.scope())) {
-                        updatePropertyOptions($is); //update searchkey options in case of service variables
-                    }
+                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                     //Selecting first option by default for displayValue if it is undefined
                     if (!$is.displaylabel && !$is.binddisplaylabel) {
                         defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
@@ -301,7 +255,7 @@ WM.module('wm.widgets.basic')
             }
 
             // update search-key, display-label in the property panel
-            function updatePropertyPanelOptions(dataset, $is, element) {
+            function updatePropertyPanelOptions(dataset, $is) {
 
                 // re-initialize the property values
                 if ($is.newcolumns) {
@@ -315,9 +269,7 @@ WM.module('wm.widgets.basic')
                 // assign all the keys to the options of the search widget
                 if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
-                    if (isServiceVariable($is, element.scope())) {
-                        updatePropertyOptions($is); //update searchkey options in case of service variables
-                    }
+                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                 }
             }
 
@@ -420,7 +372,7 @@ WM.module('wm.widgets.basic')
                     inputFields   = {};
 
                 //get array of query param names for variable
-                queryParams = getMappedServiceQueryParams(queryParams);
+                queryParams = Variables.getMappedServiceQueryParams(queryParams);
 
                 // check if some param value is already available in databinding and update the inputFields accordingly
                 _.map(variable.dataBinding, function (value, key) {
