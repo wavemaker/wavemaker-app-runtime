@@ -933,6 +933,9 @@ WM.module('wm.widgets.live')
                             scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': ''});
                         }
                         WidgetUtilService.updatePropertyPanelOptions(scope);
+                        if (scope.widget === 'autocomplete') {
+                            FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
+                        }
                     }
                     break;
                 case 'inputtype':
