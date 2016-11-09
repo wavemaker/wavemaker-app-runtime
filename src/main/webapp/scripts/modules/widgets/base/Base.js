@@ -1575,7 +1575,8 @@ WM.module('wm.widgets.base', [])
                         "previousbtnlabel": {"type": "string", "value": "Previous", "bindable": "in-bound"},
                         "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"},
                         "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "cancelable": {"type": "boolean", "value": true, "bindable": "in-bound"}
                     },
                     "wm.wizardstep": {
                         "title": {"type": "string", "value": "Step Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1918,7 +1919,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
+                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
