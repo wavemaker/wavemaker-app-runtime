@@ -19,16 +19,16 @@ WM.module('wm.layouts.containers')
                 '<div class="app-wizard-actions panel-footer">' +
                     '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-if="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
                     '<div class="app-wizard-actions-right">' +
-                        '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" ng-click="cancel()" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
-                        '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
+                        '<button type="button" name="cancelBtn_{{name}}" class="btn app-button btn-secondary" ng-click="cancel()" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
+                        '<button type="button" name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
                             '<i class="app-icon wi wi-chevron-left"></i>' +
                             '<span class="btn-caption">{{previousbtnlabel}}</span>' +
                         '</button>' +
-                        '<button name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
+                        '<button type="button" name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
                             '<span class="btn-caption">{{nextbtnlabel}}</span>' +
                             '<i class="app-icon wi wi-chevron-right"></i>' +
                         '</button>' +
-                        '<button name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="(steps.indexOf(currentStep) === steps.length - 1) || currentStep.enabledone" ng-click="done()" ng-disabled="currentStep.isFormInvalid">' +
+                        '<button type="button" name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="(steps.indexOf(currentStep) === steps.length - 1) || currentStep.enabledone" ng-click="done()" ng-disabled="currentStep.isFormInvalid">' +
                             '<i class="app-icon wi wi-done"></i>' +
                             '<span class="btn-caption">{{donebtnlabel}}</span>' +
                         '</button>' +
