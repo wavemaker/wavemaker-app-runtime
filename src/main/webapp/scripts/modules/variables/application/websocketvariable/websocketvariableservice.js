@@ -30,6 +30,16 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
         }
 
         /**
+         * returns upper limit on number of records to be in dataSet
+         * this is applicable only when appendData is true
+         * @param variable
+         * @returns {appendData}
+         */
+        function getDataLimit(variable) {
+            return variable.dataLimit;
+        }
+
+        /**
          * clears the socket variable against the variable in a scope
          * @param variable
          */
@@ -88,13 +98,18 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          * @private
          */
         function _onSocketMessage(variable, evt) {
-            var data = _.get(evt, 'data'), value;
+            var data = _.get(evt, 'data'), value, dataLength, dataLimit;
             data = Utils.getValidJSON(data) || Utils.xmlToJson(data) || data;
             // EVENT: ON_MESSAGE
             value = initiateCallback(VARIABLE_CONSTANTS.EVENT.MESSAGE_RECEIVE, variable, variable.activeScope, data, evt);
             data = WM.isDefined(value) ? value : data;
             if (shouldAppendData(variable)) {
                 variable.dataSet = variable.dataSet || [];
+                dataLength = variable.dataSet.length;
+                dataLimit = getDataLimit(variable);
+                if (dataLimit && (dataLength >= dataLimit)) {
+                    variable.dataSet.shift();
+                }
                 variable.dataSet.push(data);
             } else {
                 variable.dataSet = WM.isDefined(value) ? value : data;

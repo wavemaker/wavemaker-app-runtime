@@ -162,6 +162,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operationId": {"hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "displayName": "Connect on page load"},
                     "appendData": {"type": "boolean", "widgettype": "boolean-inputfirst", "displayName": "Append messages to dataSet"},
+                    "dataLimit": {"type": "number", "displayName": "Max Results in dataSet", "value": 20},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
 
                     /* Events */
@@ -186,7 +187,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
-                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "appendData", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
+                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "appendData", "dataLimit", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},
