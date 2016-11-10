@@ -51,6 +51,38 @@ WM.module('wm.layouts.page')
                     '<footer data-role="page-footer" class="app-footer clearfix" wm-template-container="{{footer}}"></footer>' +
                 '</div>'
             );
+
+        $templateCache.put('template/dialog/common/confirm.html',
+                '<wm-view name="CommonConfirmDialogView" class="dialog-view">' +
+                    '<wm-confirmdialog name="CommonConfirmDialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" canceltext="{{notification.cancelButtonText}}"' +
+                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()">' +
+                    '</wm-confirmdialog>' +
+                '</wm-view>'
+            );
+
+        $templateCache.put('template/dialog/common/alert.html',
+                '<wm-view name="CommonAlertDialogView" class="dialog-view">' +
+                    '<wm-alertdialog name="CommonAlertDialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
+                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
+                    '</wm-alertdialog>' +
+                '</wm-view>'
+            );
+
+        $templateCache.put('template/dialog/page/alert.html',
+                '<wm-view name="notificationAlertDialogView" class="dialog-view">' +
+                    '<wm-alertdialog name="notificationalertdialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
+                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
+                    '</wm-alertdialog>' +
+                '</wm-view>'
+            );
+
+        $templateCache.put('template/dialog/page/confirm.html',
+                '<wm-view name="notificationConfirmDialogView" class="dialog-view">' +
+                    '<wm-confirmdialog name="notificationconfirmdialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}"' +
+                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()" on-close="variableOnClose()">' +
+                    '</wm-confirmdialog>' +
+                '</wm-view>'
+            );
     }])
     .directive('wmTemplate', [
         '$templateCache',
