@@ -155,10 +155,11 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
      * @returns a promise to listen for success, event, onProgress.
      *  One can also abort the upload by simply calling abort function.
      */
-    this.upload = function (files, url, options) {
-        var fileTransfers = [];
+    this.upload = function (files, config, options) {
+        var fileTransfers = [],
+            url = config.uploadUrl;
         options = _.extend({
-            'paramName' : 'files'
+            'paramName' : config.fileParamName
         }, options);
 
         if (CONSTANTS.hasCordova) {
