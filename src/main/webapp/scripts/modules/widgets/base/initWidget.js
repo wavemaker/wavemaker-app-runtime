@@ -983,6 +983,8 @@ WM.module('wm.widgets.base')
                     acceptsArray   = _config.acceptsArray,
                     isOnlyDataSet  = isDataSetTypeExpr(watchExpr, key),
                     deRegister     = {},
+                    isParentVariableExpr    = watchExpr.indexOf('$parent.Variables') !== -1,
+                    variables               = isParentVariableExpr ? _.get($s, '$parent.Variables') : $s.Variables,
                     variableObject,
                     regExp,
                     index;
@@ -1008,7 +1010,7 @@ WM.module('wm.widgets.base')
                     }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
                     watchExpr = watchExpr.replace(regExp, function (match, varName) {
-                        variableObject = _.get($s.Variables, varName);
+                        variableObject = _.get(variables, varName);
                         // In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped
                         // So for procedures the watch expression will not have content in it
                         if (variableObject && isPageable(variableObject)) {
