@@ -428,15 +428,21 @@ WM.module('wm.widgets.base')
                             // when the `show` property is bound to a property/expression do not evaluate that when the widget is in canvas
                             if (isWidgetInsideCanvas && isShowProperty) {
                                 $is.show = true;
+                                _.set($is.widgetProps, 'deferload.show', true);
                             } else {
                                 watchExpr = nv.replace('bind:', '');
                                 listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, propDetails, watchExpr, $el);
                                 _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray}, key);
                             }
                         } else {
-                            if ($is.widgetid) {
+                            if (isWidgetInsideCanvas) {
                                 $el.removeAttr('data-evaluated-' + key);
+
+                                if (isShowProperty) {
+                                    _.set($is.widgetProps, 'deferload.show', false);
+                                }
                             }
+
                             _watchers[key] = undefined;
                         }
 
@@ -1195,8 +1201,51 @@ WM.module('wm.widgets.base')
             }
         };
     }
+
+
     //perform the operation on the uib datepicker, search typeahead and time picker
     module.directive('uibDatepickerPopupWrap', directiveFn)
         .directive('uibTimepicker', directiveFn)
         .directive('uibTypeaheadPopup', directiveFn);
+
+
+    /*
+     * `deferload` directive works with `show` property
+      * when show property is bound and deferload is true, the rendering of the widget will be deferred till the first time show
+     */
+    function deferLoadDirective($compile, BindingManager) {
+
+        // compile the element
+        function compileFn($s, $el) {
+            $compile($el)($s);
+        }
+
+        return {
+            'restrict': 'A',
+            'priority': 1000,
+            'terminal': true,
+            'link': function ($s, $el, attrs) {
+
+                $el.removeAttr('deferload');
+
+                var showExpr, unregisterFn;
+
+                showExpr = attrs.show;
+
+                if (_.startsWith(showExpr, 'bind:') && attrs.deferload === 'true') {
+                    showExpr = _.replace(showExpr, 'bind:', '');
+                    unregisterFn = BindingManager.register($s, showExpr, function (nv) {
+                        if (nv === 'true' || nv === true) {
+                            unregisterFn();
+                            compileFn($s, $el);
+                        }
+                    });
+                } else {
+                    compileFn($s, $el);
+                }
+            }
+        };
+    }
+
+    module.directive('deferload', ['$compile', 'BindingManager', deferLoadDirective]);
 }());

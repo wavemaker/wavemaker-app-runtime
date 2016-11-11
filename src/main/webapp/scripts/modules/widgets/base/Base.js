@@ -151,6 +151,7 @@ WM.module('wm.widgets.base', [])
                     "wm.base": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
+                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
                         "class": {"type": "string", "pattern": classRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
@@ -1935,7 +1936,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
-                    "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
+                    "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
