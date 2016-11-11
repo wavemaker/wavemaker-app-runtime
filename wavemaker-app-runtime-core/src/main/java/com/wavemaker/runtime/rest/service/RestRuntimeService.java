@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2016 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,9 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 
-import com.wavemaker.runtime.helper.SchemaConversionHelper;
+import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
@@ -36,7 +35,6 @@ import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.util.IOUtils;
-import com.wavemaker.studio.common.util.StringUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
@@ -54,6 +52,7 @@ public class RestRuntimeService {
     private static final String AUTHORIZATION = "authorization";
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
+
 
     public RestResponse executeRestCall(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
         RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, methodName, params, originRequest);
@@ -163,6 +162,19 @@ public class RestRuntimeService {
                 first = false;
             }
         }
+
+
+        boolean proxyEnabled = Boolean.valueOf(swagger.getProxyEnabled());
+
+        if (proxyEnabled) {
+
+            String hostName = swagger.getProxyHostName();
+            Integer port = Integer.valueOf(swagger.getProxyPort());
+            String username = swagger.getProxyUsername();
+            String password = swagger.getProxyPassword();
+            restRequestInfo.setProxy(new Proxy(hostName, port, username, password));
+        }
+
         StrSubstitutor strSubstitutor = new StrSubstitutor(pathParams, "{", "}");
         String endpointAddress = strSubstitutor.replace(endpointAddressStringBuilder.toString());
         restRequestInfo.setRequestBody(requestBody);
