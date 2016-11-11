@@ -445,38 +445,31 @@ WM.module('wm.widgets.basic')
             var columns = [],
                 groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                expr;
+                expr,
+                xAxisKey = scope.xaxisdatakey,
+                aggColumn = scope.aggregationcolumn || [],
+                requiredColumns = [];
 
-            // adding groupby columns
-            groupbyColumns.forEach(function (columnName) {
-                if (columnName !== scope.aggregationcolumn) {
-                    columns.push(columnName + ' AS ' + getValidAliasName(columnName));
-                }
-            });
+            /*Merge all columns and filter unique ones and remove empty columns ('', undefined)
+            * 1. X Axis
+            * 2. Y Axis
+            * 3. Aggregation
+            * 4. Group By
+            * */
+            requiredColumns =  _.compact(_.uniq(_.concat(xAxisKey, yAxisKeys, groupbyColumns, aggColumn)));
 
             // adding aggregation column, if enabled
             if (isAggregationEnabled(scope)) {
-                columns.push(getAggregationFunction(scope.aggregation) + '(' + scope.aggregationcolumn + ') AS ' + getValidAliasName(scope.aggregationcolumn));
+                columns.push(getAggregationFunction(scope.aggregation) + '(' + aggColumn + ') AS ' + getValidAliasName(aggColumn));
             }
 
-            // adding x-axis column, if not pushed yet
-            if (scope.aggregationcolumn !== scope.xaxisdatakey) {
-                expr = scope.xaxisdatakey + ' AS ' + getValidAliasName(scope.xaxisdatakey);
-                if (columns.indexOf(expr) === -1) {
-                    columns.push(expr);
-                }
-            }
+            //Remove aggregation column since it is already added
+            requiredColumns = _.without(requiredColumns, aggColumn);
 
-            // adding y-axis columns, if not pushed yet
-            yAxisKeys.forEach(function (yAxisKey) {
-                if (yAxisKey !== scope.aggregationcolumn) {
-                    expr = yAxisKey + ' AS ' + getValidAliasName(yAxisKey);
-                    if (columns.indexOf(expr) === -1) {
-                        columns.push(expr);
-                    }
-                }
+            _.forEach(requiredColumns, function (column) {
+                expr = column + ' AS ' + getValidAliasName(column);
+                columns.push(expr);
             });
-
             return columns;
         }
 
