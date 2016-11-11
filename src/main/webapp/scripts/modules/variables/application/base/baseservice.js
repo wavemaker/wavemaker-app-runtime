@@ -52,51 +52,56 @@ wm.variables.services.Variables = [
             lazySartUpdateQueue = {},
             variableConfig = [
                 {
-                    "collectionType": "call",
-                    "category": "wm.NavigationVariable",
-                    "defaultName": "navigationVariable"
+                    "collectionType"    : "call",
+                    "category"          : "wm.NavigationVariable",
+                    "defaultName"       : "navigationVariable"
                 },
                 {
-                    "collectionType": "call",
-                    "category": "wm.NotificationVariable",
-                    "defaultName": "notificationVariable"
+                    "collectionType"    : "call",
+                    "category"          : "wm.NotificationVariable",
+                    "defaultName"       : "notificationVariable"
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.Variable",
-                    "defaultName": "staticVariable"
+                    "collectionType"    : "data",
+                    "category"          : "wm.Variable",
+                    "defaultName"       : "staticVariable"
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.ServiceVariable",
-                    "defaultName": "serviceVariable"
+                    "collectionType"    : "data",
+                    "category"          : "wm.ServiceVariable",
+                    "defaultName"       : "serviceVariable",
+                    "spinnerInFlight"   : true
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.LiveVariable",
-                    "defaultName": "liveVariable"
+                    "collectionType"    : "data",
+                    "category"          : "wm.LiveVariable",
+                    "defaultName"       : "liveVariable",
+                    "spinnerInFlight"   : true
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.TimerVariable",
-                    "defaultName": "timerVariable"
+                    "collectionType"    : "data",
+                    "category"          : "wm.TimerVariable",
+                    "defaultName"       : "timerVariable"
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.LoginVariable",
-                    "defaultName": "loginVariable",
-                    "appOnly": true
+                    "collectionType"    : "data",
+                    "category"          : "wm.LoginVariable",
+                    "defaultName"       : "loginVariable",
+                    "appOnly"           : true,
+                    "spinnerInFlight"   : true
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.LogoutVariable",
-                    "defaultName": "logoutVariable",
-                    "appOnly": true
+                    "collectionType"    : "data",
+                    "category"          : "wm.LogoutVariable",
+                    "defaultName"       : "logoutVariable",
+                    "appOnly"           : true,
+                    "spinnerInFlight"   : true
                 },
                 {
-                    "collectionType": "data",
-                    "category": "wm.WebSocketVariable",
-                    "defaultName": "webSocketVariable"
+                    "collectionType"    : "data",
+                    "category"          : "wm.WebSocketVariable",
+                    "defaultName"       : "webSocketVariable",
+                    "spinnerInFlight"   : true
                 }
             ],
 
@@ -2276,6 +2281,12 @@ wm.variables.services.Variables = [
                 variableConfig.push(config);
                 variableCategoryToNameMap[config.category] = config.defaultName;
                 self.variableNameIterator[config.category] = 1;
+            },
+
+            isSpinnerType : function(category) {
+                return _.find(variableConfig, function(config) {
+                    return config.category === category;
+                }).spinnerInFlight;
             }
         };
 

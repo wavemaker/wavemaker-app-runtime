@@ -9,7 +9,8 @@ WM.module('wm.widgets.basic')
                 '<div class="spinner-message">' +
                     '<span class="spinner-image animated infinite {{animation}}" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
                     '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
-                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent"></span>' +
+                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent && !spinnerMessages"></span>' +
+                    '<div class="spinner-messages"><p ng-repeat="(key, value) in spinnerMessages">{{value}}</p></div>' +
                 '</div>' +
             '</div>'
             );
