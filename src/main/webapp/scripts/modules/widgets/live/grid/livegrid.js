@@ -159,6 +159,7 @@ WM.module('wm.widgets.live')
                                         scope.gridform.setPrevformFields(scope.gridform.formFields);
                                         scope.gridform.formFields = [];
                                     }
+                                    scope.gridform.isSelected = true;
                                     scope.gridform.edit();
                                     scope.$root.$safeApply(scope);
                                     if (scope.isLayoutDialog) {
