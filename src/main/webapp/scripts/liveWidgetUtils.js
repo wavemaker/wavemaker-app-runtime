@@ -943,7 +943,7 @@ WM.module('wm.widgets.live')
                         }
                         WidgetUtilService.updatePropertyPanelOptions(scope);
                         if (scope.widget === 'autocomplete') {
-                            FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
+                            FormWidgetUtils.updatePropertyOptionsWithParams(scope, element.scope()); //update searchkey options in case of service variables
                         }
                     }
                     break;
