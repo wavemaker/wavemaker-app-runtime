@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -19,6 +21,11 @@ public enum VariableType {
         @Override
         public Object getValue(final Class<?> fieldType) {
             return null;
+        }
+
+        @Override
+        public String toQueryParam() {
+            return "";
         }
 
         @Override
@@ -67,16 +74,27 @@ public enum VariableType {
         }
     };
 
-    private static final String CURRENT_DATE = "CURRENT_DATE";
-    private static final String CURRENT_TIME = "CURRENT_TIME";
-    private static final String CURRENT_USER_NAME = "CURRENT_USER_NAME";
-    private static final String CURRENT_USER_ID = "CURRENT_USER_ID";
-    private static final String QUERY_OR_PROCEDURE_PARAM_PREFIX = ":";
+    private static final String SYSTEM_VARIABLE_PREFIX = "_SYSTEM_CURRENT_";
 
+    private static final Map<String, VariableType> queryParamVsVariableType = new HashMap<>();
 
-    public abstract Object getValue(final Class<?> fieldType);
+    static {
+        for (final VariableType variableType : VariableType.values()) {
+            queryParamVsVariableType.put(variableType.toQueryParam(), variableType);
+        }
+    }
+
+    public String toQueryParam() {
+        return SYSTEM_VARIABLE_PREFIX + name();
+    }
 
     public boolean isSystemVariable() {
         return true;
+    }
+
+    public abstract Object getValue(final Class<?> fieldType);
+
+    public static VariableType fromQueryParameter(String name) {
+        return queryParamVsVariableType.get(name);
     }
 }
