@@ -25,9 +25,18 @@ public enum QueryType {
             return RequestMethod.DELETE;
         }
     },
-    SELECT;
+    SELECT {
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+    };
 
     public RequestMethod getHttpMethod() {
         return RequestMethod.GET;
+    }
+
+    public boolean isReadOnly() {
+        return false;
     }
 }
