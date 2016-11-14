@@ -187,10 +187,13 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/query/validate",
             method: "POST"
         },
+/*
         executeQuery: {
             url: "services/projects/:projectID/datamodels/:dataModelName/query/execute",
             method: "POST"
         },
+*/
+
 
         /*Procedure Related services*/
 
@@ -300,6 +303,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/queryExecutor/queries/wm_custom_update",
             method: "POST"
         },
+        executeQuery: {
+            url: "/:service/:dataModelName/queries/execute",
+            method: "POST"
+        },
+
 
         /*Procedure related properties*/
         executeNamedProcedure: {
