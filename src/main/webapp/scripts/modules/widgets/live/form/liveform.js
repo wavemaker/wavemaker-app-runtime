@@ -234,18 +234,27 @@ WM.module('wm.widgets.live')
                 $scope.formSave = function (event, updateMode, newForm, callBackFn) {
                     var data,
                         prevData,
-                        requestData = {},
-                        elScope = $scope.element.scope(),
+                        requestData  = {},
+                        elScope      = $scope.element.scope(),
                         variableName = $scope.variableName || Utils.getVariableName($scope),
-                        variable = elScope.Variables[variableName],
+                        variable     = elScope.Variables[variableName],
+                        $formEle     = getFormElement(),
+                        formScope    = $scope.isLayoutDialog && $formEle.length ? $formEle.scope() : $scope,
                         isValid,
-                        deleteFn;
+                        deleteFn,
+                        $invalidEle;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         return;
                     }
                     //Disable the form submit if form is in invalid state
-                    if (!$scope.novalidate && $scope.ngform && $scope.ngform.$invalid) {
+                    if (!$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
+                        //Find the first invalid untoched element and set it to touched.
+                        // Safari does not form validations. this will ensure that error is shown for user
+                        $invalidEle = $formEle.find('.ng-untouched.ng-invalid:first');
+                        if ($invalidEle.length) {
+                            formScope.ngform[$invalidEle.attr('name')].$setTouched();
+                        }
                         return;
                     }
                     resetFormState();
