@@ -3,6 +3,9 @@ package com.wavemaker.runtime.data.model.queries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -10,11 +13,14 @@ import java.util.Objects;
  */
 public class RuntimeQuery {
 
+    @NotEmpty
     private String queryString;
-    private QueryType type;
     private String countQueryString;
 
     private boolean nativeSql;
+    @NotNull
+    private QueryType type;
+
     private List<QueryParameter> parameters;
 
     public RuntimeQuery() {
@@ -88,7 +94,7 @@ public class RuntimeQuery {
     public String toString() {
         return "RuntimeQuery{" +
                 "query='" + queryString + '\'' +
-                ", hql=" + nativeSql +
+                ", nativeSql=" + nativeSql +
                 ", parameters=" + parameters +
                 '}';
     }
