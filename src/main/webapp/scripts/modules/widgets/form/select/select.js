@@ -105,7 +105,9 @@ WM.module('wm.widgets.form')
                 } else {
                     _.forEach(dataSet, function (option) {
                         key = WidgetUtilService.getObjValueByKey(option, dataField);
-                        orderedKeys.push(key);
+                        if (!_.includes(orderedKeys, key)) {
+                            orderedKeys.push(key);
+                        }
                         data[key] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                     });
                 }

@@ -233,7 +233,9 @@ WM.module('wm.widgets.form')
                             _.forEach(dataSet, function (option) {
                                 var key = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                                 data[key] = dataField === ALLFIELDS ? option : _.get(option, dataField);
-                                orderedKeys.push(key);
+                                if (!_.includes(orderedKeys, key)) {
+                                    orderedKeys.push(key);
+                                }
                             });
                         }
                     }
