@@ -46,7 +46,7 @@ WM.module('wm.widgets.basic')
             },
             //all properties of the chart
             allOptions = ['bubblesize', 'shape'],
-            chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
+            chartTypes = ChartService.chartTypes,
             styleProps = {
                 'fontunit'      : 'font-size',
                 'fontsize'      : 'font-size',
@@ -56,7 +56,7 @@ WM.module('wm.widgets.basic')
                 'fontstyle'     : 'font-style',
                 'textdecoration': 'text-decoration'
             },
-            allShapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down'],
+            allShapes = ChartService.allShapes,
             notifyFor = {
                 'dataset'           : true,
                 'xaxisdatakey'      : true,
