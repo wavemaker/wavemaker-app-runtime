@@ -3402,7 +3402,7 @@ WM.module('wm.widgets.base', [])
                 return byId(nameIdMap[name]);
             }
 
-            function byType(types) {
+            function $byType(types) {
                 /* if type not provided, return all widgets */
                 if (!types) {
                     return registry;
@@ -3432,7 +3432,7 @@ WM.module('wm.widgets.base', [])
             }
 
             /* checks for the unique constraint of the name, if the given name is not used returns true else false */
-            function isValidName(name) {
+            function $isValidName(name) {
                 var isValid = true, errMsgTitle, errMsgDesc;
 
                 /* isEmpty? */
@@ -3455,7 +3455,7 @@ WM.module('wm.widgets.base', [])
             }
 
             /* checks if the widget name already exists */
-            function isExists(name) {
+            function $isExists(name) {
                 var _isExists = false;
                 /* check for the name */
                 if (nameIdMap[name]) {
@@ -3479,28 +3479,6 @@ WM.module('wm.widgets.base', [])
 
             /**
              * @ngdoc function
-             * @name wm.widgets.$Widgets#byId
-             * @methodOf wm.widgets.$Widgets
-             * @function
-             *
-             * @description
-             * returns the scope of the widget by widgetid
-             */
-            returnObj.byId = byId;
-
-            /**
-             * @ngdoc function
-             * @name wm.widgets.$Widgets#byName
-             * @methodOf wm.widgets.$Widgets
-             * @function
-             *
-             * @description
-             * returns the scope of the widget by name
-             */
-            returnObj.byName = byName;
-
-            /**
-             * @ngdoc function
              * @name wm.widgets.$Widgets#isValidName
              * @methodOf wm.widgets.$Widgets
              * @function
@@ -3508,7 +3486,7 @@ WM.module('wm.widgets.base', [])
              * @description
              * checks for the unique constraint of the name, if the given name is not used returns true else false
              */
-            returnObj.isValidName = isValidName;
+            returnObj.$isValidName = $isValidName;
 
             /**
              * @ngdoc function
@@ -3519,7 +3497,7 @@ WM.module('wm.widgets.base', [])
              * @description
              * checks for the widget with the provided name, if the widget exists return true else false
              */
-            returnObj.isExists = isExists;
+            returnObj.$isExists = $isExists;
             /**
              * @ngdoc function
              * @name wm.widgets.$Widgets#byType
@@ -3529,7 +3507,7 @@ WM.module('wm.widgets.base', [])
              * @description
              * returns an array of scopes of widgets of specified type(returns all if no type specified)
              */
-            returnObj.byType = byType;
+            returnObj.$byType = $byType;
 
             /* listen for the changes in name and update the registry accordingly */
             $rootScope.$on("name-change", function (evt, widgetId, newName, oldName, scope) {
