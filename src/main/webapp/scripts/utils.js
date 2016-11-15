@@ -110,7 +110,8 @@ WM.module('wm.utils', [])
                 'wm.NavigationVariable'  : 'navigation-variable',
                 'wm.NotificationVariable': 'notification-variable',
                 'wm.TimerVariable'       : 'time',
-                'wm.DeviceVariable'      :  'device-variable'
+                'wm.DeviceVariable'      : 'device-variable',
+                'wm.WebSocketVariable'   : 'web-socket-variable'
             },
             dateTimeTypes = {
                 'date'      : true,
