@@ -289,18 +289,6 @@ Application
                     i18nService.setSelectedLocale(_dl);
                 }
 
-                // Returns a promise that will be resolved when device is ready.
-                function isDeviceReady() {
-                    var d = $q.defer();
-                    // Only in case of deployed mobile apps, wait for deviceready event.
-                    if (CONSTANTS.hasCordova) {
-                        $document.one('deviceready', d.resolve);
-                    } else {
-                        d.resolve();
-                    }
-                    return d.promise;
-                }
-
                 // Compile the contents of the common page
                 function compileCommonPageContent($s, pageName, content) {
                     Variables.setPageVariables(pageName, content.variables);
@@ -519,7 +507,6 @@ Application
                 this.initI18nService                    = initI18nService;
                 this.initAppVariablesAndDependencies    = initAppVariablesAndDependencies;
                 this.getPreparedPageContent             = getPreparedPageContent;
-                this.isDeviceReady                      = isDeviceReady;
                 this.loadSecurityConfig                 = loadSecurityConfig;
                 this.handleSessionTimeOut               = handleSessionTimeout;
                 this.showPageSwitchSpinner              = showPageSwitchSpinner;
@@ -629,6 +616,7 @@ Application
             'CONSTANTS',
             'wmSpinner',
             'MetaDataFactory',
+            'DeviceService',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -641,7 +629,7 @@ Application
             'TimerVariableService',
             '$websocketvariable',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
@@ -706,7 +694,7 @@ Application
                  * - Localization Resource
                  */
                 if ($rs.isApplicationType) {
-                    AppManager.isDeviceReady()
+                    DeviceService.whenDeviceReady()
                         .then(function () {
                             return MetaDataFactory.load();
                         })
@@ -796,7 +784,7 @@ Application
                     }
                 });
 
-                AppManager.isDeviceReady().then(function () {
+                DeviceService.whenDeviceReady().then(function () {
                     $rs.$emit('application-ready');
                 });
 
