@@ -182,7 +182,7 @@ $.widget('wm.datagrid', {
         var colSpan = 0,
             self    = this;
         _.forEach(cols, function (col) {
-            if (col.columns) {
+            if (col.isGroup) {
                 colSpan += self._getColSpan(col.columns);
             } else {
                 colSpan += 1;
@@ -194,7 +194,7 @@ $.widget('wm.datagrid', {
     _setColSpan: function (config) {
         var self = this;
         _.forEach(config, function (col) {
-            if (col.columns) {
+            if (col.isGroup) {
                 col.colspan = self._getColSpan(col.columns);
                 self._setColSpan(col.columns);
             }
@@ -283,13 +283,13 @@ $.widget('wm.datagrid', {
             _.forEach(cols, function (col) {
                 var index,
                     value;
-                if (col.columns) {
+                if (col.columns && col.columns.length) {
                     //If columns is present, this is a group header cell.
-                    tl += '<th colspan="' + col.colspan + '" class="' + headerGroupClass + '"><span class="header-data">' + col.caption + '</span></th>';
+                    tl += '<th data-col-group="' + col.field + '" colspan="' + col.colspan + '" class="' + headerGroupClass + '"><span class="header-data">' + col.displayName + '</span></th>';
                     generateRow(col.columns, (i + 1));
                 } else {
                     //For non group cells, fetch the relative field definition and generate the template
-                    index = _.findIndex(self.preparedHeaderData, {'field': col.name});
+                    index = _.findIndex(self.preparedHeaderData, {'field': col.field});
                     value = self.preparedHeaderData[index];
                     if (value) {
                         tl += generateHeaderCell(value, index);
@@ -612,8 +612,8 @@ $.widget('wm.datagrid', {
             return;
         }
         var fieldName = this.customColumnDefs[name].field;
-        _.remove(this.options.headerConfig, {'name': fieldName});
-        this.options.headerConfig.unshift({'name': fieldName});
+        _.remove(this.options.headerConfig, {'field': fieldName});
+        this.options.headerConfig.unshift({'field': fieldName});
     },
     setDefaultColsData: function (header) {
         if (this.options.showRowIndex) {
@@ -2352,12 +2352,16 @@ $.widget('wm.datagrid', {
         this.addOrRemoveScroll();
     },
     /*Change the column header title. function will be called if display name changes in runmode*/
-    setColumnProp: function (fieldName, property, val) {
+    setColumnProp: function (fieldName, property, val, isGroup) {
         var $col;
         switch (property) {
         case 'displayName':
-            $col = this.gridHeader.find('th[data-col-field="' + fieldName + '"]');
-            $col.attr('title', val);
+            if (isGroup) {
+                $col = this.gridHeader.find('th[data-col-group="' + fieldName + '"]');
+            } else {
+                $col = this.gridHeader.find('th[data-col-field="' + fieldName + '"]');
+                $col.attr('title', val);
+            }
             $col.find('.header-data').html(val);
             break;
         }

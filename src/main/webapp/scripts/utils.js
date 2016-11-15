@@ -1965,7 +1965,7 @@ WM.module('wm.utils', [])
 
             val = val || '';
             // replace the unicode equivalent of comma with comma
-            return val.split(',').map(function (v) {
+            return _.split(val, ',').map(function (v) {
                 return _.trim(v).replace(UNICODE_COMMA_REGEX, ',');
             });
         }
