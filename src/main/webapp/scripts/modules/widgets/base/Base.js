@@ -738,7 +738,7 @@ WM.module('wm.widgets.base', [])
                         "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "placeholder": {"type": "string", "value": "Type here...", "bindable": "in-bound"},
-                        "maxsize": {"type": "number", "value": ''},
+                        "maxsize": {"type": "number"},
                         "allowonlyselect": {"type": "boolean", "value": false},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},

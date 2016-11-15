@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
                         '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.wmImgSrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.wmImgSrc}}"  ng-if="chip.wmImgSrc"/>' +
                             '{{chip.key}}' +
-                            '<button class="btn btn-transparent" ng-click="removeItem($event, chip)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
+                            '<button class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
                             ' uib-typeahead="option as option.key for option in chips | filter:$viewValue"' +
                             ' spellcheck="false" autocomplete="off"' +
                             ' typeahead-on-select="addItem($event, $item)"' +
-                            ' ng-disabled="disable"' +
+                            ' ng-disabled="disabled"' +
                             ' typeahead-editable="!allowonlyselect"' +
                             ' typeahead-min-length="1"' +
                             ' ng-model-options="{debounce: 200}" typeahead-is-open="dropdown.open"' +
@@ -44,7 +44,8 @@ WM.module('wm.widgets.form')
         'CONSTANTS',
         'DatabaseService',
         'Variables',
-        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, DatabaseService, Variables) {
+        'FormWidgetUtils',
+        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, DatabaseService, Variables, FormWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -58,6 +59,20 @@ WM.module('wm.widgets.form')
                     'DELETE'    : 'DELETE'
                 };
 
+            //constructs and returns a chip item object
+            function constructChip(displayValue, dataValue, imgSrcValue) {
+                //When data field is not provided, set display value as data value
+                if (!dataValue) {
+                    dataValue   = displayValue;
+                }
+                return {
+                    'key'       : displayValue,
+                    'value'     : dataValue,
+                    'wmImgSrc'  : imgSrcValue,
+                    'fullValue' : displayValue + ' <' + dataValue + '>'
+                };
+            }
+
             //Create list of options for the search
             function createSelectOptions(dataset, $s) {
                 if ($s.binddataset && !$s.displayfield) {
@@ -69,32 +84,30 @@ WM.module('wm.widgets.form')
                     imageField     = $s.displayimagesrc,
                     displayFieldValue,
                     dataFieldValue,
-                    values;
+                    values,
+                    value           = $s.value || $s.datavalue;
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
                     chips = _.map(dataset, function (dataObj) {
-                        displayFieldValue =  Utils.getEvaluatedExprValue(dataObj, displayField);
+                        //Support of display expression
+                        displayFieldValue = WidgetUtilService.getEvaluatedData($s, dataObj, {fieldName: 'displayfield', expressionName: 'displayexpression'});
                         dataFieldValue    =  Utils.getEvaluatedExprValue(dataObj, dataField);
-                        return {
-                            'key'      : displayField ? displayFieldValue : dataObj,
-                            'value'    : dataField ? dataFieldValue : dataObj,
-                            'wmImgSrc' : dataObj[imageField],
-                            'fullValue': displayField ? displayFieldValue + ' <' + dataFieldValue + '>' : dataObj
-                        };
+
+                        if (displayField) {
+                            return constructChip(displayFieldValue, dataFieldValue, dataObj[imageField]);
+                        }
+                        return constructChip(dataObj);
                     });
                 }
-                $s.chips = chips;
+                $s.chips         = chips;
+                $s.selectedChips = [];
                 if (!$s.binddataset) {
                     $s.selectedChips = Utils.getClonedObject(chips);
-                } else if ($s.value) {
+                } else if (value) {
                     //Creating chips in form based on the value
-                    values              = _.split($s.value, ',');
+                    values              = _.split(value, ',');
                     $s.selectedChips    = _.map(values, function (ele) {
-                        return {
-                            'key'       : ele,
-                            'value'     : ele,
-                            'fullValue' : ele + ' <' + ele + '>'
-                        };
+                        return constructChip(ele);
                     });
                 }
             }
@@ -128,10 +141,10 @@ WM.module('wm.widgets.form')
                 var key    = Utils.getActionFromKey($event),
                     values;
                 if (key === KEYS.ENTER) {
-                    chip.edit = false;
-                    values = chip.fullValue.split('<');
+                    chip.edit  = false;
+                    values     = _.split(chip.fullValue, '<');
                     chip.key   = _.trim(values[0]);
-                    chip.value = _.trim(values[1].split('>')[0]);
+                    chip.value = _.trim(_.split(values[1], '>')[0]);
                     //edit chip
                     onModelUpdate($s, $event);
                 }
@@ -156,9 +169,10 @@ WM.module('wm.widgets.form')
             }
 
             //Remove the item from list
-            function removeItem($s, $event, item) {
-                _.remove($s.selectedChips, item);
+            function removeItem($s, $event, index) {
+                var indexes = WM.isArray(index) ? index : [index];
                 //remove chip
+                _.pullAt($s.selectedChips, indexes);
                 onModelUpdate($s, $event);
                 checkMaxSize($s);
             }
@@ -166,7 +180,7 @@ WM.module('wm.widgets.form')
             //handle delete keypress event for chips
             function handleDeleteKeyPressEvent($s, $event) {
                 var key = Utils.getActionFromKey($event),
-                    activeElements;
+                    activeElementIndices = [];
                 if (key === KEYS.DELETE) {
                     if (!$s.selectedChips.length) {
                         return;
@@ -174,10 +188,13 @@ WM.module('wm.widgets.form')
                     if ($s.newItem.name) {
                         return;
                     }
-                    activeElements = _.filter($s.selectedChips, {'active' : true});
-                    _.forEach(activeElements, function (ele) {
-                        $s.removeItem($event, ele);
+                    //Getting indexes of all active chips
+                    _.forEach($s.selectedChips, function (chip, index) {
+                        if (chip.active) {
+                            activeElementIndices.push(index);
+                        }
                     });
+                    $s.removeItem($event, activeElementIndices);
                 }
             }
 
@@ -185,7 +202,6 @@ WM.module('wm.widgets.form')
             function handleKeyPressEvent($s, $el, $event) {
                 var key = Utils.getActionFromKey($event),
                     lastTag,
-                    activeElements,
                     newItem,
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER) {
@@ -201,22 +217,11 @@ WM.module('wm.widgets.form')
                     lastTag = _.last($s.selectedChips);
                     //If last tag is active then delete it
                     if (lastTag.active) {
-                        $s.removeItem($event, lastTag);
+                        $s.removeItem($event, length - 1);
                     } else {
                         //set last tag as active
                         $s.setActiveStates(lastTag);
                     }
-                } else if (key === KEYS.DELETE) {
-                    if (!length) {
-                        return;
-                    }
-                    if (newItem) {
-                        return;
-                    }
-                    activeElements = _.filter($s.selectedChips, {'active' : true});
-                    _.forEach(activeElements, function (ele) {
-                        $s.removeItem($event, ele);
-                    });
                 }
             }
 
@@ -241,7 +246,7 @@ WM.module('wm.widgets.form')
                     value = !$s.selectedChips[index].active;
                 } else {
                     value = true;
-                    resetActiveState(currChip);
+                    $s.resetActiveState(currChip);
                 }
                 if (index > -1) {
                     $s.selectedChips[index].active = value;
@@ -259,7 +264,7 @@ WM.module('wm.widgets.form')
                 }
                 if (!newItem && $s.newItem) {
                     newItemKey    = Utils.getClonedObject($s.newItem.name);
-                    newItemObject = {'key': newItemKey, 'value': newItemKey};
+                    newItemObject = constructChip(newItemKey);
                 }
                 if (!newItemKey && !newItem) {
                     return;
@@ -271,7 +276,7 @@ WM.module('wm.widgets.form')
                     allowAdd = $s.onBeforeadd({$event: 'event', $isolateScope: $s, newItem: newItemObject});
                 }
                 //If onBeforeadd method returns false abort adding chip
-                if (!allowAdd) {
+                if (!WM.isUndefined(allowAdd) && !allowAdd) {
                     return;
                 }
                 $s.selectedChips.push(newItemObject);
@@ -308,6 +313,10 @@ WM.module('wm.widgets.form')
                             data = $s.dataset.data || (WM.isArray($s.dataset) ? $s.dataset : [$s.dataset]);
                         } else {
                             data = _.split($s.dataset, ',');
+                        }
+                        //Support for order by
+                        if ($s.orderby) {
+                            data = FormWidgetUtils.getOrderedDataSet(data, $s.orderby);
                         }
                         createSelectOptions(data, $s);
                     }
