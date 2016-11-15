@@ -32,9 +32,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.data.dao.callbacks.NamedQueryCallback;
+import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
+import com.wavemaker.runtime.data.model.PageableQueryInfo;
+import com.wavemaker.runtime.data.model.QueryInfo;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
@@ -52,33 +56,33 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     private HibernateTemplate template;
 
     @Override
-
-    public <T> Page<T> executeNamedQuery(
+    public Page<Object> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Pageable pageable) {
+        return executeNamedQuery(queryName, params, Object.class, pageable);
+    }
+
+    @Override
+    public <T> T executeNamedQuery(
+            final String queryName, final Map<String, Object> params, final Class<T> returnType) {
+        NamedQueryCallback<T> callback = new NamedQueryCallback<>(new QueryInfo<>(queryName, params, returnType));
+        return template.execute(callback);
+    }
+
+    @Override
+    public <T> Page<T> executeNamedQuery(
+            final String queryName, final Map<String, Object> params, final Class<T> returnType,
+            final Pageable pageable) {
         final Pageable _pageable;
         if (pageable == null) {
             _pageable = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
         } else {
             _pageable = pageable;
         }
-        return template.execute(new HibernateCallback<Page<T>>() {
-            @Override
-            public Page<T> doInHibernate(Session session) throws HibernateException {
-                Query namedQuery = session.getNamedQuery(queryName);
-                QueryHelper.setResultTransformer(namedQuery);
-                QueryHelper.configureParameters(namedQuery, params);
-                Query copyOfNamedQuery = namedQuery;
-                final boolean isNative = namedQuery instanceof SQLQuery;
-                if (isNative) { //adding order by from pagination to query.
-                    namedQuery = createNativeQuery(namedQuery.getQueryString(), _pageable.getSort(), params);
-                }
-                namedQuery.setFirstResult(_pageable.getOffset());
-                namedQuery.setMaxResults(_pageable.getPageSize());
-                Long count = QueryHelper
-                        .getQueryResultCount(copyOfNamedQuery.getQueryString(), params, isNative, template);
-                return new WMPageImpl(namedQuery.list(), _pageable, count);
-            }
-        });
+
+        PaginatedNamedQueryCallback<T> callback = new PaginatedNamedQueryCallback<>(
+                new PageableQueryInfo<>(queryName, params, returnType, _pageable));
+
+        return template.execute(callback);
     }
 
     @Override
@@ -88,18 +92,11 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
                 Query namedQuery = session.getNamedQuery(queryName);
-                QueryHelper.setResultTransformer(namedQuery);
                 QueryHelper.configureParameters(session, queryName, namedQuery, params);
                 return namedQuery.executeUpdate();
             }
         });
 
-    }
-
-    @Override
-    public <T> T executeNamedQuery(final String queryName, final Map<String, Object> params) {
-        // TODO
-        return null;
     }
 
     @Override
@@ -251,7 +248,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         Session currentSession = template.getSessionFactory().getCurrentSession();
 
         SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
-        QueryHelper.setResultTransformer(sqlQuery);
+        QueryHelper.setResultTransformer(sqlQuery, Object.class);
         QueryHelper.configureParameters(sqlQuery, params);
         return sqlQuery;
     }
@@ -268,7 +265,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         Session currentSession = template.getSessionFactory().getCurrentSession();
 
         Query hqlQuery = currentSession.createQuery(queryString);
-        QueryHelper.setResultTransformer(hqlQuery);
+        QueryHelper.setResultTransformer(hqlQuery, Object.class);
         QueryHelper.configureParameters(hqlQuery, params);
         return hqlQuery;
     }

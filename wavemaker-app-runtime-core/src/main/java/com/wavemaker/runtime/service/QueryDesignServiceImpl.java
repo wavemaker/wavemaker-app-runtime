@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.type.AbstractStandardBasicType;
 import org.hibernate.type.Type;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -103,7 +104,7 @@ public class QueryDesignServiceImpl implements QueryDesignService {
             }
 
             ReturnType returnType = new ReturnType();
-            returnType.setRef(type.getName());
+            String typeRef = type.getName();
             if (type.isCollectionType()) {
                 returnType.setType(ReturnType.Type.COLLECTION);
             } else if (type.isAssociationType()) {
@@ -111,6 +112,11 @@ public class QueryDesignServiceImpl implements QueryDesignService {
             } else {
                 returnType.setType(ReturnType.Type.SIMPLE);
             }
+            if (type instanceof AbstractStandardBasicType) {
+                typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
+            }
+
+            returnType.setRef(typeRef);
             property.setReturnType(returnType);
 
             properties.add(property);

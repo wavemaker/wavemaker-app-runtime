@@ -71,7 +71,7 @@ public class HQLQueryUtils {
 
         return template.execute(new HibernateCallback<Page<Object>>() {
             public Page<Object> doInHibernate(Session session) throws HibernateException {
-                QueryHelper.setResultTransformer(hqlQuery);
+                QueryHelper.setResultTransformer(hqlQuery, Object.class);
                 QueryHelper.configureParameters(hqlQuery, params);
                 if (pageable != null) {
                     Long count = QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), params, false, template);

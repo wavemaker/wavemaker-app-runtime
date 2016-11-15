@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,15 +25,18 @@ import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 
 public interface WMQueryExecutor {
 
-    <T> T executeNamedQuery(String queryName, Map<String, Object> params);
+    <T> T executeNamedQuery(String queryName, Map<String, Object> params, Class<T> returnType);
 
-    <T> Page<T> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable);
+    <T> Page<T> executeNamedQuery(String queryName, Map<String, Object> params, Class<T> returnType, Pageable pageable);
 
     int executeNamedQueryForUpdate(String queryName, Map<String, Object> params);
 
     Page<Object> executeRuntimeQuery(RuntimeQuery query, Pageable pageable);
 
     int executeRuntimeQueryForUpdate(RuntimeQuery query);
+
+    @Deprecated
+    Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable);
 
     @Deprecated
     Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable);
