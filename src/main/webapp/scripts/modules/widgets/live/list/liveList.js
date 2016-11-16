@@ -28,7 +28,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="navigation !== \'Inline\'">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(navigation !== \'Inline\') && (navigation !== \'Scroll\')">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                     '</div>' +
                 '</div>'
@@ -694,9 +694,6 @@ WM.module('wm.widgets.live')
             function resetNavigation($is) {
                 $is.navControls = undefined;
                 $is.infScroll   = false;
-                if ($is.widgetid) {
-                    $is.widgetProps.itemsperrow.show = true;
-                }
             }
 
             function enableBasicNavigation($is) {
@@ -704,12 +701,7 @@ WM.module('wm.widgets.live')
             }
 
             function enableInlineNavigation($is) {
-
                 $is.navControls       = NAVIGATION.INLINE;
-                // hides itemsperrow property in studio mode.
-                if ($is.widgetid) {
-                    $is.widgetProps.itemsperrow.show = false;
-                }
             }
 
             function enableClassicNavigation($is) {
@@ -832,6 +824,7 @@ WM.module('wm.widgets.live')
                         $is.navigation = 'Classic';
                         return;
                     }
+                    wp.navigationalign.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
                     wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None'], nv);
                     onNavigationTypeChange($is, nv);
                     break;
