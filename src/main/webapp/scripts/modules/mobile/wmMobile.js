@@ -90,9 +90,9 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 //Notify preview window that application is ready. Otherwise, identify the OS.
                 if (window.top !== window) {
                     window.top.postMessage(Utils.isIE9() ? JSON.stringify(msgContent) : msgContent, '*');
-                } else if (Utils.isAndroid()) {
+                } else if (Utils.isAndroid() || Utils.isAndroidTablet()) {
                     applyOSTheme('android');
-                } else if (Utils.isIphone()) {
+                } else if (Utils.isIphone() || Utils.isIpod() || Utils.isIpad()) {
                     applyOSTheme('ios');
                 }
             });

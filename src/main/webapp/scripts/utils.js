@@ -27,6 +27,8 @@ WM.module('wm.utils', [])
                 ANDROID: /Android/i,
                 IPHONE: /iPhone/i,
                 IPOD: /iPod/i,
+                IPAD: /iPad/i,
+                ANDROID_TABLET: /android|android 3.0|xoom|sch-i800|playbook|tablet|kindle/i,
                 MOBILE: /Mobile/i,
                 WINDOWS: /Windows Phone/i,
                 SUPPORTED_IMAGE_FORMAT: /\.(bmp|gif|jpe|jpg|jpeg|tif|tiff|pbm|png|ico)$/i,
@@ -664,13 +666,25 @@ WM.module('wm.utils', [])
             return (REGEX.IPOD.test(userAgent));
         }
 
+        function isIpad() {
+            return (REGEX.IPAD.test(userAgent));
+        }
+
+        function isAndroidTablet() {
+            return (REGEX.ANDROID_TABLET.test(userAgent));
+        }
+
+        function isTablet() {
+           return isIpad() || isAndroidTablet();
+        }
+
         function isWindowsPhone() {
             return (REGEX.WINDOWS.test(userAgent));
         }
 
         function isMobile() {
             if (APPCONSTANTS.isRunMode) {
-                return isAndroidPhone() || isIphone() || isIpod() || isWindowsPhone() || WM.element('#wm-mobile-display:visible').length > 0;
+                return isAndroidPhone() || isIphone() || isIpod() || isIpad() || isAndroidTablet() || isWindowsPhone() || WM.element('#wm-mobile-display:visible').length > 0;
             }
 
             return false;
@@ -2170,6 +2184,9 @@ WM.module('wm.utils', [])
         this.isAndroidPhone             = isAndroidPhone;
         this.isIphone                   = isIphone;
         this.isIpod                     = isIpod;
+        this.isIpad                     = isIpad;
+        this.isAndroidTablet            = isAndroidTablet;
+        this.isTablet                   = isTablet;
         this.isMobile                   = isMobile;
         this.isScriptLoaded             = isScriptLoaded;
         this.isValidJavaPackageName     = isValidJavaPackageName;
