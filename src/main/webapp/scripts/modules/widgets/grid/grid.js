@@ -2324,11 +2324,14 @@ WM.module('wm.widgets.grid')
                         $parentEl         = element.parent(),
                         parentScope       = scope.$parent,
                         config            = {
-                            'field'       : attrs.name,
-                            'displayName' : attrs.caption,
-                            'columns'     : [],
-                            'isGroup'     : true,
-                            'accessroles' : attrs.accessroles
+                            'field'           : attrs.name,
+                            'displayName'     : attrs.caption,
+                            'columns'         : [],
+                            'isGroup'         : true,
+                            'accessroles'     : attrs.accessroles,
+                            'backgroundColor' : attrs.backgroundcolor,
+                            'textAlignment'   : attrs.textalignment || 'center',
+                            'class'           : attrs.colClass || ''
                         };
                     //Watch any property if it is bound
                     function watchProperty(property, expression) {

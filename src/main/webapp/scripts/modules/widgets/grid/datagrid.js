@@ -282,10 +282,14 @@ $.widget('wm.datagrid', {
             var tl = '';
             _.forEach(cols, function (col) {
                 var index,
-                    value;
+                    value,
+                    classTl,
+                    styleTl;
                 if (col.columns && col.columns.length) {
+                    classTl = 'class="' + headerGroupClass + ' ' + (col.class || '') + '" ';
+                    styleTl = 'style="text-align: ' + col.textAlignment + ';background-color: ' + (col.backgroundColor || '') + ';"';
                     //If columns is present, this is a group header cell.
-                    tl += '<th data-col-group="' + col.field + '" colspan="' + col.colspan + '" class="' + headerGroupClass + '"><span class="header-data">' + col.displayName + '</span></th>';
+                    tl += '<th data-col-group="' + col.field + '" colspan="' + col.colspan + '" ' + classTl + styleTl + '><span class="header-data">' + col.displayName + '</span></th>';
                     generateRow(col.columns, (i + 1));
                 } else {
                     //For non group cells, fetch the relative field definition and generate the template
