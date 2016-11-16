@@ -537,7 +537,7 @@ WM.module('wm.prefabs')
             function publishPrefabToWorkspace() {
                 projectDetails = ProjectService.getDetails();
                 var payload = {
-                    'projectID' : projectDetails.id,
+                    'projectID' : projectDetails.studioProjectId || projectDetails.id,
                     'data'      : {
                         'prefabName' : projectDetails.name,
                         'version'    : projectDetails.version
@@ -549,7 +549,7 @@ WM.module('wm.prefabs')
             function publishPrefabToProject(targetProjectId) {
                 projectDetails = ProjectService.getDetails();
                 var payload = {
-                    'projectID' : projectDetails.id,
+                    'projectID' : projectDetails.studioProjectId || projectDetails.id,
                     'data'      : {
                         'targetProjectId' : targetProjectId,
                         'prefabName'      : projectDetails.name,
