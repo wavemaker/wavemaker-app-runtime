@@ -617,7 +617,7 @@ $.widget('wm.datagrid', {
         }
         var fieldName = this.customColumnDefs[name].field;
         _.remove(this.options.headerConfig, {'field': fieldName});
-        this.options.headerConfig.unshift({'field': fieldName});
+        this.options.headerConfig.unshift({'field': fieldName, 'isPredefined': true});
     },
     setDefaultColsData: function (header) {
         if (this.options.showRowIndex) {
