@@ -137,6 +137,25 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            //Validate all chips and mark duplicates if exists after removing or editing chips
+            function validateDuplicates($s) {
+                var groupedChips = _.groupBy($s.selectedChips, 'key');
+                _.forEach(groupedChips, function (value) {
+                    _.forEach(value, function (dup) {
+                        dup.isDuplicate = false;
+                    });
+                    if (value.length > 1) {
+                        _.last(value).isDuplicate = true;
+                    }
+                });
+            }
+
+            //To avoid form submit on pressing enter key
+            function stopEvent($event) {
+                $event.stopPropagation();
+                $event.preventDefault();
+            }
+
             //handle enter keypress event in case of edit mode
             function handleEnterKeyPressEvent($s, $event, chip) {
                 var key    = Utils.getActionFromKey($event),
@@ -148,7 +167,10 @@ WM.module('wm.widgets.form')
                     chip.value = _.trim(_.split(values[1], '>')[0]);
                     //edit chip
                     onModelUpdate($s, $event);
+                    validateDuplicates($s);
+                    stopEvent($event);
                 }
+
             }
 
             //Check if max size is reached
@@ -176,6 +198,8 @@ WM.module('wm.widgets.form')
                 _.pullAt($s.selectedChips, indexes);
                 onModelUpdate($s, $event);
                 checkMaxSize($s);
+                //validate duplicates
+                validateDuplicates($s);
             }
 
             //handle delete keypress event for chips
@@ -207,6 +231,7 @@ WM.module('wm.widgets.form')
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER) {
                     $s.addItem($event);
+                    stopEvent($event);
                 } else if (key === KEYS.BACKSPACE) {
                     if (!length || $s.dropdown.open) {
                         return;
