@@ -530,7 +530,7 @@ WM.module('wm.widgets.live')
             /*Returns chips template */
             function getChipsTemplate(fieldDef, index) {
                 var additionalFields = getDataSetFields(fieldDef, index);
-                return getDefaultTemplate('chips', fieldDef, index, '', '', '', additionalFields);
+                return getDefaultTemplate('chips', fieldDef, index, '', '', 'Type here...', additionalFields);
             }
 
             /*Returns radioset template */
