@@ -534,7 +534,48 @@ WM.module('wm.prefabs')
                 return $markup[0].outerHTML;
             }
 
+            function publishPrefabToWorkspace() {
+                projectDetails = ProjectService.getDetails();
+                var payload = {
+                    'projectID' : projectDetails.id,
+                    'data'      : {
+                        'prefabName' : projectDetails.name,
+                        'version'    : projectDetails.version
+                    }
+                };
+                return PrefabService.publishPrefabToWorkSpace(payload);
+            }
 
+            function publishPrefabToProject(targetProjectId) {
+                projectDetails = ProjectService.getDetails();
+                var payload = {
+                    'projectID' : projectDetails.id,
+                    'data'      : {
+                        'targetProjectId' : targetProjectId,
+                        'prefabName'      : projectDetails.name,
+                        'version'         : projectDetails.version
+                    }
+                };
+                return PrefabService.publishPrefabToProject(payload);
+            }
+
+            /**
+             *
+             * publishes the prefab to the workspace
+             * @type {publishPrefabToWorkspace}
+             *
+             * @param {version} version
+             */
+            this.publishPrefabToWorkspace = publishPrefabToWorkspace;
+
+            /**
+             *
+             * publishes the prefab to the project
+             * @type {publishPrefabToProject}
+             *
+             * @param {targetProjectId} target project id where the changes have to be published
+             */
+            this.publishPrefabToProject = publishPrefabToProject;
             /**
              * @ngdoc function
              * @name wm.prefab.$PrefabManager#removePrefab
