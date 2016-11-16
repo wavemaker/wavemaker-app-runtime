@@ -1423,7 +1423,8 @@ WM.module('wm.widgets.grid')
                     insertPosition,
                     rowOperationsColumn = LiveWidgetUtils.getRowOperationsColumn(),
                     config = {
-                        'name' : rowOperationsColumn.field
+                        'name'  : rowOperationsColumn.field,
+                        'field' : rowOperationsColumn.field
                     };
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {
@@ -1431,7 +1432,7 @@ WM.module('wm.widgets.grid')
                 }
                 rowActionCol = _.find($scope.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
                 _.remove($scope.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
-                _.remove($scope.headerConfig, {name : rowOperationsColumn.field});
+                _.remove($scope.headerConfig, {field : rowOperationsColumn.field});
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
@@ -2308,7 +2309,7 @@ WM.module('wm.widgets.grid')
  * @param {string=} name
  *                  Sets the name of the column
  */
-    .directive('wmGridColumnGroup', ['LiveWidgetUtils', function (LiveWidgetUtils) {
+    .directive('wmGridColumnGroup', ['LiveWidgetUtils', 'CONSTANTS', 'BindingManager', 'Utils', function (LiveWidgetUtils, CONSTANTS, BindingManager, Utils) {
         'use strict';
 
         return {
@@ -2319,14 +2320,41 @@ WM.module('wm.widgets.grid')
             'transclude': true,
             'link': {
                 'pre': function (scope, element, attrs) {
-                    var $parentEl   = element.parent(),
-                        parentScope = scope.$parent,
-                        config      = {
-                            'name'    : attrs.name,
-                            'caption' : attrs.caption,
-                            'columns' : []
+                    var exprWatchHandlers = [],
+                        $parentEl         = element.parent(),
+                        parentScope       = scope.$parent,
+                        config            = {
+                            'field'       : attrs.name,
+                            'displayName' : attrs.caption,
+                            'columns'     : [],
+                            'isGroup'     : true,
+                            'accessroles' : attrs.accessroles
                         };
+                    //Watch any property if it is bound
+                    function watchProperty(property, expression) {
+                        exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
+                            if (WM.isDefined(newVal)) {
+                                if (property === 'displayName') {
+                                    scope.datagridElement.datagrid('setColumnProp', config.field, property, newVal, true);
+                                }
+                            }
+                        }, {'deepWatch': true, 'allowPageable': true, 'acceptsArray': false});
+                    }
+
                     LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, config, $parentEl);
+
+                    if (CONSTANTS.isRunMode) {
+                        //Check if any property is bound and watch on that expression
+                        _.each(config, function (value, property) {
+                            if (Utils.stringStartsWith(value, 'bind:')) {
+                                watchProperty(property, value.replace('bind:', ''));
+                            }
+                        });
+                        /*destroy watch handler on scope destroy*/
+                        scope.$on('$destroy', function () {
+                            _.forEach(exprWatchHandlers, Utils.triggerFn);
+                        });
+                    }
                 }
             }
         };
@@ -2455,9 +2483,6 @@ WM.module('wm.widgets.grid')
                             },
                             parentScope = scope.$parent,
                             $parentEl   = element.parent(),
-                            colConfig   = {
-                                'name': attrs.binding
-                            },
                             variable,
                             events,
                             fieldDefProps = {
@@ -2471,7 +2496,6 @@ WM.module('wm.widgets.grid')
                                 }
                             }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                         }
-                        LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, colConfig, $parentEl);
 
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = parentScope;
@@ -2530,6 +2554,10 @@ WM.module('wm.widgets.grid')
                             'checkedvalue'      : attrs.checkedvalue,
                             'uncheckedvalue'    : attrs.uncheckedvalue
                         };
+                        LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, {
+                            'field'         : columnDefProps.field,
+                            'displayName'   : columnDefProps.displayName
+                        }, $parentEl);
                         columnDefProps.defaultvalue = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
                         events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
                         _.forEach(events, function (eventName) {

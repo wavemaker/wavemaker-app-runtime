@@ -812,8 +812,8 @@ WM.module('wm.widgets.live')
              * @param {string} key key where the field name is stored in object
              * @param {string} prefix name for the event/ action
              */
-            function getCustomFieldKey(fields, key, prefix) {
-                var keys = fields.map(function (event) {
+            function getCustomFieldKey(fields, key, prefix, definedKeys) {
+                var keys = definedKeys || fields.map(function (event) {
                     return event[key];
                 }), index;
                 if (keys && _.includes(keys, prefix)) {
@@ -1651,13 +1651,13 @@ WM.module('wm.widgets.live')
                 }
             }
             //Method to set the header config of the data table
-            function setHeaderConfig(headerConfig, config, name) {
+            function setHeaderConfig(headerConfig, config, field) {
                 _.forEach(headerConfig, function (cols) {
-                    if (cols.columns) {
-                        if (cols.name === name) {
+                    if (cols.isGroup) {
+                        if (cols.field === field) {
                             cols.columns.push(config);
                         } else {
-                            setHeaderConfig(cols.columns, config, name);
+                            setHeaderConfig(cols.columns, config, field);
                         }
                     }
                 });
