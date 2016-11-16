@@ -431,7 +431,8 @@ WM.module('wm.widgets.grid')
                                     scope.setGridData([], true);
                                 }
                                 scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                                //Set the coldefs. Set forceset to true to rerender the grid
+                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs), true);
                             }
                         }));
                         /* event emitted whenever grid actions are modified */
