@@ -1838,8 +1838,8 @@ WM.module('wm.utils', [])
                 currentItemWidgetsRegEx;
 
             if (name) {
-                currentItemRegEx        = new RegExp('(Widgets.' + name + '.currentItem)', 'g');
-                currentItemWidgetsRegEx = new RegExp('(Widgets.' + name + '.currentItemWidgets)', 'g');
+                currentItemRegEx        = new RegExp('(Widgets.' + name + '.currentItem)\\b', 'g');
+                currentItemWidgetsRegEx = new RegExp('(Widgets.' + name + '.currentItemWidgets)\\b', 'g');
             }
 
             $root.find('*').each(function () {
@@ -1853,15 +1853,17 @@ WM.module('wm.utils', [])
                         if (_.includes(value, _parentDataSet) && value !== 'bind:' + _parentDataSet) {
                             value = value.replace('bind:', '');
                             value = value.replace(regex, 'item');
-                            attr.value = 'bind:' + value;
+                            value = 'bind:' + value;
                         }
                         //Replace item if widget property is bound to livelist currentItem
                         if (currentItemRegEx && currentItemRegEx.test(value)) {
-                            attr.value = value.replace(currentItemRegEx, 'item');
+                            value = value.replace(currentItemRegEx, 'item');
                         }
                         if (currentItemWidgetsRegEx && currentItemWidgetsRegEx.test(value)) {
-                            attr.value = value.replace(currentItemWidgetsRegEx, 'currentItemWidgets');
+                            value = value.replace(currentItemWidgetsRegEx, 'currentItemWidgets');
                         }
+
+                        attr.value = value;
                     }
                 });
             });
