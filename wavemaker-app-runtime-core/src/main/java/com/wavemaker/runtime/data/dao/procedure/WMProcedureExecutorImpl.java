@@ -262,7 +262,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
-                if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2.equalsIgnoreCase(CURSOR))
+                if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2.equalsIgnoreCase(CURSOR) || customProcedureParam.getProcedureParamType().OUT == ProcedureParamType.OUT)
                     continue;
                 Object processedParamValue = getValueObject(customProcedureParam);
                 if (processedParamValue != null) {
