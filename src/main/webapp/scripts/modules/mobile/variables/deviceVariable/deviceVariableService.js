@@ -84,6 +84,10 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 }
                 return operation;
             },
+            initiateCallback : function (eventName, variable, options, eventData) {
+                var callBackScope = getCallBackScope(variable, options);
+                Variables.initiateCallback(eventName, variable, callBackScope, eventData);
+            },
             listAllOperations : function (serviceName) {
                 return _.sortBy(_.keys(availableServices[serviceName]));
             },

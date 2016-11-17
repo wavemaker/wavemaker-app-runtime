@@ -153,11 +153,15 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "object", "value": [], "hide": true},
                     "service": {"type": "list", "options": [], "required": true},
                     "operation": {"type": "list", "hide": true, "options": [], "required": true},
-                    "autoUpdate": {"type": "boolean", "value": false, "hide": true},
-                    "startUpdate": {"type": "boolean", "value": false, "hide": true},
+                    "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
+                    "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions}
+                    "onError": {"type": "list", "options": variableEventOptions},
+                    "onProgress": {"type": "list", "options": variableEventOptions, "hide": true},
+                    "onOnline": {"type": "list", "options": variableEventOptions, "hide": true},
+                    "onOffline": {"type": "list", "options": variableEventOptions, "hide": true},
+                    "onBeforePush": {"type": "list", "options": variableEventOptions, "hide": true}
                 },
                 "wm.WebSocketVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},

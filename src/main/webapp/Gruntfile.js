@@ -639,6 +639,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/variables/contacts/contacts.js',
                         '<%= config.scripts %>/modules/mobile/variables/device/device.js',
                         '<%= config.scripts %>/modules/mobile/variables/camera/camera.js',
+                        '<%= config.scripts %>/modules/mobile/variables/datasync/datasync.js',
                         '<%= config.scripts %>/modules/mobile/variables/file/file.js',
                         '<%= config.scripts %>/modules/mobile/variables/deviceVariable/deviceVariableService.js',
                         '<%= config.scripts %>/modules/mobile/variables/scan/scan.js',

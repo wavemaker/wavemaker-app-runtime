@@ -1,4 +1,4 @@
-/*global WM, wm, _, FileTransfer, window*/
+/*global WM, wm, _, FileTransfer, window, location*/
 
 /**
  * @ngdoc overview
@@ -77,11 +77,9 @@ wm.plugins.offline.run([
     '$cordovaNetwork',
     '$document',
     '$q',
-    '$rootScope',
     'BaseService',
     'BaseServiceManager',
     'DatabaseService',
-    'NavigationService',
     'ChangeLogService',
     'LocalDBService',
     'OfflineFileUploadService',
@@ -89,16 +87,13 @@ wm.plugins.offline.run([
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
     'Utils',
     'wmSpinner',
-    'wmToaster',
     'WebService',
     function ($cordovaNetwork,
               $document,
               $q,
-              $rootScope,
               BaseService,
               BaseServiceManager,
               DatabaseService,
-              NavigationService,
               ChangeLogService,
               LocalDBService,
               OfflineFileUploadService,
@@ -106,7 +101,6 @@ wm.plugins.offline.run([
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
               Utils,
               wmSpinner,
-              wmToaster,
               WebService) {
         'use strict';
         /*
@@ -299,24 +293,6 @@ wm.plugins.offline.run([
             });
         }
 
-        /*
-         * A flush will be triggered on ChangeLogService. Once the flush is completed, user will be navigated to the
-         * main page.
-         */
-        function flushOfflineChaneLog() {
-            var spinnerId = wmSpinner.show('Sending offline changes ... ');
-            ChangeLogService.flush(function (stats) {
-                LocalDBService.clearAll().then(function () {
-                    if (stats.error > 0) {
-                        wmToaster.show('error', 'ERROR', 'Offline flush failed.');
-                    }
-                    wmSpinner.hide(spinnerId);
-                    NavigationService.goToPage('Main');
-                    $rootScope.$emit('on-offline-flush-complete');
-                });
-            });
-        }
-
         function init() {
             BaseServiceManager.register(OFFLINE_SERVICE_URLS);
             loadOfflineDatabaseSchemas().then(function () {
@@ -324,14 +300,19 @@ wm.plugins.offline.run([
                 addOfflineNamedQuerySupport();
                 addOfflineFileUploadSupport();
                 addOfflineDatabaseSupport();
-                // When the device is online, flush ChangeLogService only if there are any changes to flush.
-                $rootScope.$on('$cordovaNetwork:online', function () {
-                    ChangeLogService.getLogLength().then(function (length) {
-                        if (length > 0) {
-                            flushOfflineChaneLog();
+                ChangeLogService.registerCallback({
+                    'preFlush' : function () {
+                        wmSpinner.show('');
+                    },
+                    'postFlush' : function (stats) {
+                        if (stats.total > 0) {
+                            LocalDBService.clearAll().then(function () {
+                                if (stats.error === 0) {
+                                    location.assign(window.location.origin + window.location.pathname);
+                                }
+                            });
                         }
-                    });
-
+                    }
                 });
             });
         }

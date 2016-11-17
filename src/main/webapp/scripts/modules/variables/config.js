@@ -21,7 +21,7 @@ wm.variables.filter(wm.variables.filters);
 
 /* Defining route path constants for wmCoreModule application */
 wm.variables.constant('VARIABLE_CONSTANTS', {
-    EVENTS: ["onBeforeUpdate", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire", "onSuccess"],
+    EVENTS: ["onBeforeUpdate", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onClose", "onTimerFire", "onSuccess", "onProgress", "onOnline", "onOffline", "onBeforePush"],
     EVENT: {
         "CAN_UPDATE": "onCanUpdate",
         "BEFORE_UPDATE": "onBeforeUpdate",

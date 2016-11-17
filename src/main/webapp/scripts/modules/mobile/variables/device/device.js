@@ -1,22 +1,38 @@
 /*global wm, WM, _*/
-WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', '$rootScope', function (DeviceVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaVibration, $cordovaDevice, $cordovaAppVersion, $rootScope) {
-    "use strict";
-    $rootScope.$on('$cordovaNetwork:online', function () {
-        $rootScope.networkStatus = true;
-    });
+WM.module('wm.variables').run([
+    '$cordovaNetwork',
+    '$cordovaGeolocation',
+    '$cordovaVibration',
+    '$cordovaDevice',
+    '$cordovaAppVersion',
+    '$rootScope',
+    'DeviceVariableService',
+    function ($cordovaNetwork,
+              $cordovaGeolocation,
+              $cordovaVibration,
+              $cordovaDevice,
+              $cordovaAppVersion,
+              $rootScope,
+              DeviceVariableService) {
+        "use strict";
+        var operations;
 
-    $rootScope.$on('$cordovaNetwork:offline', function () {
-        $rootScope.networkStatus = false;
-    });
+        $rootScope.$on('$cordovaNetwork:online', function () {
+            $rootScope.networkStatus = true;
+        });
 
-    var operations = {
+        $rootScope.$on('$cordovaNetwork:offline', function () {
+            $rootScope.networkStatus = false;
+        });
+
+        operations = {
             getAppInfo: {
                 model: {
                     appversion: 'X.X.X',
                     cordovaversion: 'X.X.X'
                 },
                 properties: [
-                    {"target": "startUpdate", "type": "boolean", "value": ""}
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true}
                 ],
                 invoke: function (variable, options, success) {
                     $cordovaAppVersion.getVersionNumber().then(function (appversion) {
@@ -42,8 +58,8 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                 },
                 requiredCordovaPlugins: ['GEOLOCATION'],
                 properties: [
-                    {"target": "startUpdate", "type": "boolean", "value": ""},
-                    {"target": "autoUpdate", "type": "boolean"},
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
+                    {"target": "autoUpdate", "type": "boolean", "value": true, "hide" : true},
                     {"target": "geolocationHighAccuracy", "type": "boolean", "value": true, "dataBinding": true},
                     {"target": "geolocationMaximumAge", "type": "number", "value": 3, "dataBinding": true},
                     {"target": "geolocationTimeout", "type": "number", "value": 5, "dataBinding": true}
@@ -79,7 +95,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     deviceUUID: 'DEVICEUUID'
                 },
                 properties: [
-                    {"target": "startUpdate", "type": "boolean", "value": ""}
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true}
                 ],
                 invoke: function (variable, options, success) {
                     success({
@@ -98,9 +114,11 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                 },
                 requiredCordovaPlugins: ['NETWORK'],
                 properties: [
-                    {"target": "autoUpdate", "type": "boolean", "value": true},
-                    {"target": "startUpdate", "type": "boolean", "value": ""},
-                    {"target": "networkStatus", "type": "boolean", value: "bind:$root.networkStatus", "dataBinding": true, hide: true}
+                    {"target": "autoUpdate", "type": "boolean", "value": true, "hide" : true},
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
+                    {"target": "networkStatus", "type": "boolean", value: "bind:$root.networkStatus", "dataBinding": true, hide: true},
+                    {"target": "onOnline", "hide" : false},
+                    {"target": "onOffline", "hide" : false}
                 ],
                 invoke: function (variable, options, success) {
                     success({
@@ -108,6 +126,11 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                         isOnline: $cordovaNetwork.isOnline(),
                         isOffline: $cordovaNetwork.isOffline()
                     });
+                    if ($cordovaNetwork.isOnline()) {
+                        DeviceVariableService.initiateCallback('onOnline', variable, options);
+                    } else {
+                        DeviceVariableService.initiateCallback('onOffline', variable, options);
+                    }
                 }
             },
             vibrate: {
@@ -123,7 +146,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                 }
             }
         };
-    WM.forEach(operations, function (value, key) {
-        DeviceVariableService.addOperation('device', key, value);
-    });
-}]);
+        WM.forEach(operations, function (value, key) {
+            DeviceVariableService.addOperation('device', key, value);
+        });
+    }]);

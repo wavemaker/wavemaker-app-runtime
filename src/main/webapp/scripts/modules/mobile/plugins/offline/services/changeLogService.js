@@ -165,7 +165,7 @@ wm.plugins.offline.services.ChangeLogService = [
         function onFlushComplete(fn) {
             return function () {
                 flushInProgress = false;
-                executeDeferChain(_.map(callbacks, "postFlush"));
+                executeDeferChain(_.map(callbacks, "postFlush"), [stats]);
                 Utils.triggerFn(fn, stats);
             };
         }
@@ -261,6 +261,31 @@ wm.plugins.offline.services.ChangeLogService = [
          */
         this.getLogLength = function () {
             return getStore().count();
+        };
+
+        /**
+         * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#clearLog
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @description
+         * Clears the current log.
+         */
+        this.clearLog = function () {
+            return getStore().clear();
+        };
+
+        /**
+         * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#getChanges
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @description
+         * Returns the complete change list
+         */
+        this.getChanges = function () {
+            return getStore().filter(undefined, 'id', {
+                offset: 0,
+                limit: 500
+            });
         };
 
         /**
