@@ -25,15 +25,18 @@ WM.module('wm.widgets.basic')
                 'oggformat'     : true,
                 'webmformat'    : true,
                 'subtitlesource': true,
-                'controls'      : true
+                'controls'      : true,
+                'autoplay'      : CONSTANTS.isRunMode,
+                'muted'         : CONSTANTS.isRunMode,
+                'loop'          : CONSTANTS.isRunMode
             };
 
-        //Toggles the controls
-        function toggleControls($el, controls) {
-            if (controls === 'false') {
-                $el.children().first().removeAttr('controls');
+        //Toggles the properties 'controls', 'autoplay', 'muted', 'loop'
+        function toggleProperties($el, property, val) {
+            if (val === false || val === 'false') {
+                $el.children().first().removeAttr(property);
             } else {
-                $el.children().first().attr('controls', controls);
+                $el.children().first().attr(property, val);
             }
         }
 
@@ -64,7 +67,10 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case 'controls':
-                toggleControls(element, newVal);
+            case 'autoplay':
+            case 'loop':
+            case 'muted':
+                toggleProperties(element, key, newVal);
                 break;
             }
         }
@@ -87,14 +93,11 @@ WM.module('wm.widgets.basic')
                     },
                     'post': function (scope, element, attrs) {
                         if (attrs.controls) {
-                            toggleControls(element, attrs.controls);
+                            toggleProperties(element, 'controls', attrs.controls);
                         }
+                        
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-
-                        // update the mute property manually
-                        element.removeAttr('muted');
-                        element[0].muted = attrs.hasOwnProperty('muted') && attrs.muted !== 'false';
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
