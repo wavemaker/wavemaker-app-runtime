@@ -1429,7 +1429,8 @@ WM.module('wm.widgets.grid')
                     rowOperationsColumn = LiveWidgetUtils.getRowOperationsColumn(),
                     config = {
                         'name'  : rowOperationsColumn.field,
-                        'field' : rowOperationsColumn.field
+                        'field' : rowOperationsColumn.field,
+                        'isPredefined' : true
                     };
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {

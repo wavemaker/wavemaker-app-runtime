@@ -283,13 +283,23 @@ $.widget('wm.datagrid', {
             _.forEach(cols, function (col) {
                 var index,
                     value,
-                    classTl,
-                    styleTl;
+                    classes,
+                    styles,
+                    $groupTl;
                 if (col.columns && col.columns.length) {
-                    classTl = 'class="' + headerGroupClass + ' ' + (col.class || '') + '" ';
-                    styleTl = 'style="text-align: ' + col.textAlignment + ';background-color: ' + (col.backgroundColor || '') + ';"';
                     //If columns is present, this is a group header cell.
-                    tl += '<th data-col-group="' + col.field + '" colspan="' + col.colspan + '" ' + classTl + styleTl + '><span class="header-data">' + col.displayName + '</span></th>';
+                    $groupTl = $('<th></th>');
+                    classes  = headerGroupClass + ' ' + (col.class || '');
+                    styles   = 'text-align: ' + col.textAlignment + ';background-color: ' + (col.backgroundColor || '') + ';';
+                    $groupTl.attr({
+                        'data-col-group' : col.field,
+                        'colspan'        : col.colspan,
+                        'class'          : classes,
+                        'style'          : styles,
+                        'title'          : col.displayName
+                    });
+                    $groupTl.append('<span class="header-data">' + col.displayName + '</span>');
+                    tl += $groupTl.get(0).outerHTML;
                     generateRow(col.columns, (i + 1));
                 } else {
                     //For non group cells, fetch the relative field definition and generate the template
@@ -2379,8 +2389,8 @@ $.widget('wm.datagrid', {
                 $col = this.gridHeader.find('th[data-col-group="' + fieldName + '"]');
             } else {
                 $col = this.gridHeader.find('th[data-col-field="' + fieldName + '"]');
-                $col.attr('title', val);
             }
+            $col.attr('title', val);
             $col.find('.header-data').html(val);
             break;
         }
