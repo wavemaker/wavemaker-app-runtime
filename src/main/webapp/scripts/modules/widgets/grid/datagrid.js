@@ -435,6 +435,7 @@ $.widget('wm.datagrid', {
             value,
             isCellCompiled = false,
             columnValue;
+
         if (colDef.field) {
             //setting the default value
             columnValue = row[colDef.field];
@@ -446,6 +447,20 @@ $.widget('wm.datagrid', {
         if (ngClass) {
             isCellCompiled = true;
         }
+
+        if (!colDef.formatpattern) {
+            if (colDef.type === 'date' && this.options.dateFormat) {
+                colDef.formatpattern = 'toDate';
+                colDef.datepattern  = this.options.dateFormat;
+            } else if (colDef.type === 'time' && this.options.timeFormat) {
+                colDef.formatpattern = 'toDate';
+                colDef.datepattern  = this.options.timeFormat;
+            } else if (colDef.type === 'datetime' && this.options.dateTimeFormat) {
+                colDef.formatpattern = 'toDate';
+                colDef.datepattern  = this.options.dateTimeFormat;
+            }
+        }
+
         /*constructing the expression based on the choosen format options*/
         if (colDef.formatpattern && colDef.formatpattern !== "None" && !colExpression) {
             switch (colDef.formatpattern) {
@@ -485,6 +500,7 @@ $.widget('wm.datagrid', {
             }
             htm += 'title="' + colExpression + '"';
         }
+
         if (colExpression) {
             if (isCellCompiled) {
                 htm += '>';
@@ -523,8 +539,7 @@ $.widget('wm.datagrid', {
                     htm += '';
                     break;
                 default:
-                    htm += ((_.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
-                    break;
+                    htm += (_.isUndefined(columnValue) || columnValue === null) ? '' : columnValue;
                 }
             }
         }

@@ -21,17 +21,18 @@ WM.module('wm.widgets.base')
     .directive('initWidget', [
         '$rootScope',
         'WidgetUtilService',
-        'DialogService',
         'Utils',
         'CONSTANTS',
         '$parse',
-        '$timeout',
         '$routeParams',
         'BindingManager',
         '$compile',
-        'DataFormatService', /*Do not remove*/
+        'AppDefaults',
 
-        function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, $routeParams, BindingManager, $compile) {
+        /*Do not remove*/
+        'DataFormatService',
+
+        function ($rs, WidgetUtilService, Utils, CONSTANTS, $parse, $routeParams, BindingManager, $compile, AppDefaults) {
             'use strict';
 
             var BOOLEAN_ATTRS = {},
@@ -700,6 +701,25 @@ WM.module('wm.widgets.base')
                 }
             };
 
+            // read appDefault config from the attributes
+            // Parse the json, get the corresponding values from AppDefaults Service and update them in isolateScope of the widget
+            // Update them in _initState also, so the propertyChangeListener will be triggered.
+            function applyAppDefaults($is, attrs) {
+
+                var config = JSON.parse(attrs.appDefaults);
+
+                _.forEach(config, function (val, key) {
+                    var appSetting = AppDefaults.get(val);
+                    if (_.trim(appSetting).length) {
+                        if (!attrs.hasOwnProperty(key)) {
+                            $is[key]   = appSetting;
+                            $is._initState[key] = appSetting;
+                            attrs[key] = appSetting;
+                        }
+                    }
+                });
+            }
+
             return {
                 'restrict': 'A',
                 'compile': function ($tEl, $tAttrs) {
@@ -735,6 +755,10 @@ WM.module('wm.widgets.base')
                             }
 
                             $is._initState = {};
+
+                            if (attrs.appDefaults) {
+                                applyAppDefaults($is, attrs);
+                            }
 
                             if (attrs.hasOwnProperty('hasModel') && !attrs.widgetid) {
                                 scopeVarName = $tEl.context.attributes.scopedatavalue;

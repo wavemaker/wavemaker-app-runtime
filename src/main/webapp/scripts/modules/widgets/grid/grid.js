@@ -100,7 +100,7 @@
  </example>
  */
 WM.module('wm.widgets.grid')
-    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils, $document) {
+    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
             gridColumnMarkup = '',
@@ -752,6 +752,10 @@ WM.module('wm.widgets.grid')
                             scope.gridOptions.isMobile = Utils.isMobile();
                             scope.renderOperationColumns();
                         }
+
+                        scope.gridOptions.dateFormat     = AppDefaults.get('dateFormat');
+                        scope.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
+                        scope.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         scope.datagridElement.datagrid(scope.gridOptions);
                     }
                 };

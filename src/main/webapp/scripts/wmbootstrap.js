@@ -618,6 +618,7 @@ Application
             'wmSpinner',
             'MetaDataFactory',
             'DeviceService',
+            'AppDefaults',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -630,18 +631,33 @@ Application
             'TimerVariableService',
             '$websocketvariable',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
                     appProperties  = Utils.getClonedObject(_WM_APP_PROPERTIES),
-                    pageReadyDeregister;
+                    pageReadyDeregister,
+                    dateFormat,
+                    timeFormat,
+                    dateTimeFormat;
 
                 $rs.projectName             = appProperties.name;
 
                 $rs.isPrefabType            = appProperties.type === 'PREFAB';
                 $rs.isApplicationType       = appProperties.type === 'APPLICATION';
                 $rs.isTemplateBundleType    = appProperties.type === 'TEMPLATEBUNDLE';
+
+
+                dateFormat = appProperties.dateFormat;
+                timeFormat = appProperties.timeFormat;
+
+                dateTimeFormat = (dateFormat && timeFormat) ? dateFormat + ' ' + timeFormat : undefined;
+
+                AppDefaults.set({
+                    'dateFormat'    : dateFormat,
+                    'timeFormat'    : timeFormat,
+                    'dateTimeFormat': dateTimeFormat
+                });
 
                 $rs.project = {
                     'id'          : projectID,
