@@ -2,7 +2,7 @@ package com.wavemaker.runtime.service;
 
 import java.util.List;
 
-import com.wavemaker.runtime.data.model.QueryResponse;
+import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 
@@ -14,5 +14,5 @@ public interface QueryDesignService {
 
     List<ReturnProperty> extractMeta(String serviceId, RuntimeQuery query);
 
-    QueryResponse executeQuery(String serviceId, RuntimeQuery query);
+    DesignServiceResponse executeQuery(String serviceId, RuntimeQuery query);
 }

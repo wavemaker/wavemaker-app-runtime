@@ -23,14 +23,14 @@ import com.wavemaker.runtime.data.model.returns.ReturnProperty;
  * @author sowmyad
  * @author Dilip Kumar
  */
-public class QueryResponse {
+public class DesignServiceResponse {
     private Object results;
     private List<ReturnProperty> returnProperties;
 
-    public QueryResponse() {
+    public DesignServiceResponse() {
     }
 
-    public QueryResponse(
+    public DesignServiceResponse(
             final Object results, final List<ReturnProperty> returnProperties) {
         this.results = results;
         this.returnProperties = returnProperties;

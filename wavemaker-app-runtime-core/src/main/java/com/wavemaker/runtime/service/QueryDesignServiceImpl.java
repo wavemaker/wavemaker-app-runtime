@@ -11,15 +11,12 @@ import org.hibernate.type.AbstractStandardBasicType;
 import org.hibernate.type.Type;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
-import com.wavemaker.runtime.data.model.QueryResponse;
+import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.QueryType;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
@@ -31,14 +28,10 @@ import com.wavemaker.studio.common.util.StringTemplate;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 3/11/16
  */
-public class QueryDesignServiceImpl implements QueryDesignService {
+public class QueryDesignServiceImpl extends AbstractDesignService implements QueryDesignService {
 
     private static final StringTemplate QUERY_EXECUTOR_BEAN_ST = new StringTemplate("${serviceId}WMQueryExecutor");
     private static final StringTemplate SESSION_FACTORY_BEAN_ST = new StringTemplate("${serviceId}SessionFactory");
-
-    private static final StringTemplate TRANSACTION_MANAGER_BEAN_ST = new StringTemplate(
-            "${serviceId}TransactionManager");
-
 
     @Override
     public List<ReturnProperty> extractMeta(final String serviceId, final RuntimeQuery query) {
@@ -60,25 +53,26 @@ public class QueryDesignServiceImpl implements QueryDesignService {
     }
 
     @Override
-    public QueryResponse executeQuery(final String serviceId, final RuntimeQuery query) {
+    public DesignServiceResponse executeQuery(final String serviceId, final RuntimeQuery query) {
         final Map<String, String> map = getStringTemplateMap(serviceId);
         final String queryExecutorBeanName = QUERY_EXECUTOR_BEAN_ST.substitute(map);
-        return executeInTransaction(serviceId, new TransactionCallback<QueryResponse>() {
+        return executeInTransaction(serviceId, new TransactionCallback<DesignServiceResponse>() {
             @Override
-            public QueryResponse doInTransaction(TransactionStatus status) {
+            public DesignServiceResponse doInTransaction(TransactionStatus status) {
 
                 WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
-                QueryResponse response;
+                DesignServiceResponse response;
                 if (isDMLOrUpdateQuery(query)) {
                     final int results = queryExecutor.executeRuntimeQueryForUpdate(query);
-                    response = new QueryResponse(results, getMetaForDML());
+                    response = new DesignServiceResponse(results, getMetaForDML());
                 } else {
                     final PageRequest pageable = new PageRequest(0, 5, null);
                     Page<Object> pageResponse = queryExecutor.executeRuntimeQuery(query, pageable);
                     if (query.isNativeSql()) {
-                        response = new QueryResponse(pageResponse, extractMetaFromResults(pageResponse));
+                        response = new DesignServiceResponse(pageResponse,
+                                extractMetaFromResults(pageResponse.getContent()));
                     } else {
-                        response = new QueryResponse(pageResponse, extractMetaForHql(serviceId, query));
+                        response = new DesignServiceResponse(pageResponse, extractMetaForHql(serviceId, query));
                     }
                 }
                 return response;
@@ -125,38 +119,6 @@ public class QueryDesignServiceImpl implements QueryDesignService {
         return properties;
     }
 
-    protected List<ReturnProperty> extractMetaFromResults(Page<Object> paginatedResults) {
-        final List<Object> results = paginatedResults.getContent();
-
-        List<ReturnProperty> properties = new ArrayList<>();
-
-        if (!results.isEmpty()) {
-            final Object result = results.get(0);
-
-            if (result instanceof Map) {// always returns map
-                final Map<String, Object> resultMap = (Map<String, Object>) result;
-                for (final Map.Entry<String, Object> entry : resultMap.entrySet()) {
-                    String type = entry.getValue() == null ? String.class.getName() : entry.getValue().getClass()
-                            .getName();
-                    properties.add(new ReturnProperty(entry.getKey(), new ReturnType(ReturnType.Type.SIMPLE, type)));
-                }
-            }
-        }
-
-        return properties;
-    }
-
-    protected <T> T executeInTransaction(String serviceId, TransactionCallback<T> callback) {
-        final String transactionManagerBeanName = TRANSACTION_MANAGER_BEAN_ST
-                .substitute(getStringTemplateMap(serviceId));
-        PlatformTransactionManager transactionManager = WMAppContext.getInstance()
-                .getSpringBean(transactionManagerBeanName);
-        TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-
-        return txTemplate.execute(callback);
-    }
-
     private boolean isDMLOrUpdateQuery(RuntimeQuery query) {
         return query.getType() != QueryType.SELECT || DataServiceUtils.isDML(query.getQueryString());
     }
@@ -164,9 +126,5 @@ public class QueryDesignServiceImpl implements QueryDesignService {
     private List<ReturnProperty> getMetaForDML() {
         return Collections.singletonList(new ReturnProperty(null, new ReturnType(ReturnType.Type.SIMPLE, Integer
                 .class.getName())));
-    }
-
-    private Map<String, String> getStringTemplateMap(final String serviceId) {
-        return Collections.singletonMap("serviceId", serviceId);
     }
 }
