@@ -1342,6 +1342,7 @@ WM.module('wm.widgets.live')
                     widgetNgClasses,
                     widgetSrc,
                     widgetModel,
+                    widgetHyperlink,
                     el;
                 column.widgetConfig = {};
                 /* If custom expression does not contain any HTML tags, append span. */
@@ -1378,6 +1379,24 @@ WM.module('wm.widgets.live')
                     column.widgetConfig = {
                         'model'     : widgetModel,
                         'disabled'  : widgetDisabled,
+                        'class'     : widgetClass,
+                        'ngClasses' : widgetNgClasses
+                    };
+                    break;
+                case 'anchor':
+                    widgetTitle     = el.attr('caption');
+                    widgetHyperlink = el.attr('hyperlink');
+                    column.widgetConfig = {
+                        'title'     : widgetTitle,
+                        'hyperlink' : widgetHyperlink,
+                        'class'     : widgetClass,
+                        'ngClasses' : widgetNgClasses
+                    };
+                    break;
+                case 'label':
+                    widgetTitle  = el.attr('caption');
+                    column.widgetConfig = {
+                        'title'     : widgetTitle,
                         'class'     : widgetClass,
                         'ngClasses' : widgetNgClasses
                     };
