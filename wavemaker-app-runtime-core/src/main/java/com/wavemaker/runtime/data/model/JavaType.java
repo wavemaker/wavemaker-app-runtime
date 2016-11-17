@@ -3,7 +3,6 @@ package com.wavemaker.runtime.data.model;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.dialect.OracleTypesHelper;
 import org.hibernate.type.*;
 import org.joda.time.LocalDateTime;
 
@@ -27,103 +25,103 @@ import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer
  */
 public enum JavaType {
 
-    BYTE(byte.class.getName(), Byte.class.getName(), Types.TINYINT) {
+    BYTE(byte.class.getName(), Byte.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return ByteType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    SHORT(short.class.getName(), Short.class.getName(), Types.SMALLINT) {
+    SHORT(short.class.getName(), Short.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return ShortType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    INTEGER(int.class.getName(), Integer.class.getName(), Types.INTEGER) {
+    INTEGER(int.class.getName(), Integer.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return IntegerType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    LONG(long.class.getName(), Long.class.getName(), Types.INTEGER) {
+    LONG(long.class.getName(), Long.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return LongType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    BIG_INTEGER(BigInteger.class.getName(), Types.BIGINT) {
+    BIG_INTEGER(BigInteger.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return BigIntegerType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    FLOAT(float.class.getName(), Float.class.getName(), Types.FLOAT) {
+    FLOAT(float.class.getName(), Float.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return FloatType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    DOUBLE(double.class.getName(), Double.class.getName(), Types.DOUBLE) {
+    DOUBLE(double.class.getName(), Double.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return DoubleType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    BIG_DECIMAL(BigDecimal.class.getName(), Types.DECIMAL) {
+    BIG_DECIMAL(BigDecimal.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return BigDecimalType.INSTANCE.fromString(fromValue.toString());
         }
     },// OR NUMBER
-    BOOLEAN(boolean.class.getName(), Boolean.class.getName(), Types.BOOLEAN) {
+    BOOLEAN(boolean.class.getName(), Boolean.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return BooleanType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    YES_OR_NO(boolean.class.getName(), Boolean.class.getName(), Types.CHAR) {
+    YES_OR_NO(boolean.class.getName(), Boolean.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return YesNoType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    TRUE_OR_FALSE(boolean.class.getName(), Boolean.class.getName(), Types.CHAR) {
+    TRUE_OR_FALSE(boolean.class.getName(), Boolean.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return TrueFalseType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    CHARACTER(char.class.getName(), Character.class.getName(), Types.CHAR) {
+    CHARACTER(char.class.getName(), Character.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return CharacterType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    STRING(String.class.getName(), Types.VARCHAR) {
+    STRING(String.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return fromValue.toString();
         }
     },
-    TEXT(String.class.getName(), Types.LONGNVARCHAR) {
+    TEXT(String.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return TextType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    CLOB(String.class.getName(), Types.CLOB) {
+    CLOB(String.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return ClobType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    BLOB("byte[]", Types.BLOB) {
+    BLOB("byte[]") {
         @Override
         public Object convert(final Object fromValue) {
             return BlobType.INSTANCE.fromString(fromValue.toString());
         }
     },
-    DATE(Date.class.getName(), Types.DATE) {
+    DATE(Date.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             if (fromValue instanceof Number) {
@@ -133,7 +131,7 @@ public enum JavaType {
             }
         }
     },
-    TIME(Date.class.getName(), Types.TIME) {
+    TIME(Date.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             if (fromValue instanceof Number) {
@@ -143,13 +141,13 @@ public enum JavaType {
             }
         }
     },
-    DATETIME(LocalDateTime.class.getName(), Types.TIMESTAMP) {
+    DATETIME(LocalDateTime.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return WMLocalDateTimeDeSerializer.getLocalDateTime((String) fromValue);
         }
     },
-    TIMESTAMP(Date.class.getName(), Types.TIMESTAMP) {
+    TIMESTAMP(Date.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return new Timestamp(((Number) fromValue).longValue());
@@ -160,13 +158,13 @@ public enum JavaType {
 //    CURRENCY(),
 //    LOCALE(),
 //    TIMEZONE(),
-    CURSOR(Object.class.getName(), OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType()) {
+    CURSOR(Object.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return fromValue;
         }
     },
-    OBJECT(Object.class.getName(), Types.JAVA_OBJECT) {
+    OBJECT(Object.class.getName()) {
         @Override
         public Object convert(final Object fromValue) {
             return fromValue;
@@ -197,16 +195,14 @@ public enum JavaType {
 
     private final String className;
     private final String primitiveClassName;
-    private final int sqlTypeCode;
 
-    JavaType(final String primitiveClassName, final String wrapperClassName, final int sqlTypeCode) {
+    JavaType(final String primitiveClassName, final String wrapperClassName) {
         this.primitiveClassName = primitiveClassName;
         this.className = wrapperClassName;
-        this.sqlTypeCode = sqlTypeCode;
     }
 
-    JavaType(final String className, final int sqlTypeCode) {
-        this(className, className, sqlTypeCode);
+    JavaType(final String className) {
+        this(className, className);
     }
 
     public String getClassName() {
@@ -219,10 +215,6 @@ public enum JavaType {
         } catch (ClassNotFoundException e) {
             throw new WMRuntimeException(e);
         }
-    }
-
-    public int getSqlTypeCode() {
-        return sqlTypeCode;
     }
 
     public String getPrimitiveClassName() {

@@ -14,6 +14,9 @@ import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
 
 import com.wavemaker.runtime.data.model.JavaType;
+import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
+import com.wavemaker.runtime.data.util.JDBCUtils;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.IOUtils;
 
@@ -23,9 +26,8 @@ import com.wavemaker.studio.common.util.IOUtils;
  */
 public class NativeProcedureExecutor {
 
-    public static List<Object> execute(
-            Session session, String jdbcQuery, List<ResolvableParam>
-            params) {
+    public static <T> List<T> execute(
+            Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
         Connection connection = null;
         try {
             connection = ((SessionImpl) session).connection();
@@ -34,13 +36,13 @@ public class NativeProcedureExecutor {
             configureParameters(statement, params);
 
             final boolean resultSetType = statement.execute();
-            List<Object> result;
+            List<Map<String, Object>> result;
             if (resultSetType) {
                 result = readResultSet(statement.getResultSet());
             } else {
                 result = Collections.singletonList(readResponse(statement, params));
             }
-            return result;
+            return convert(result, type);
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
         } finally {
@@ -48,12 +50,24 @@ public class NativeProcedureExecutor {
         }
     }
 
+    @SuppressWarnings(value = "unchecked")
+    protected static <T> List<T> convert(final List<Map<String, Object>> list, final Class<T> type) {
+        List<T> convertedList = new ArrayList<>(list.size());
+
+        final WMResultTransformer transformer = Transformers.aliasToMappedClass(type);
+        for (final Map<String, Object> objectMap : list) {
+            convertedList.add((T) transformer.transformFromMap(objectMap));
+        }
+
+        return convertedList;
+    }
+
     protected static void configureParameters(
             final CallableStatement statement, final List<ResolvableParam> params) throws SQLException {
         for (int i = 0; i < params.size(); i++) {
             final ResolvableParam param = params.get(i);
             if (param.getParameter().getParameterType().isOutParam()) {
-                statement.registerOutParameter(i + 1, param.getParameter().getType().getSqlTypeCode());
+                statement.registerOutParameter(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
             if (param.getParameter().getParameterType().isInParam()) {
                 statement.setObject(i + 1, param.getValue());
@@ -61,7 +75,7 @@ public class NativeProcedureExecutor {
         }
     }
 
-    private static Object readResponse(
+    private static Map<String, Object> readResponse(
             CallableStatement statement, final List<ResolvableParam> params) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
 
@@ -80,9 +94,9 @@ public class NativeProcedureExecutor {
         return result;
     }
 
-    private static List<Object> readResultSet(Object resultSet) {
+    private static List<Map<String, Object>> readResultSet(Object resultSet) {
         ResultSet rset = (ResultSet) resultSet;
-        List<Object> result = new ArrayList<>();
+        List<Map<String, Object>> result = new ArrayList<>();
 
         // Dump the cursor
         try {

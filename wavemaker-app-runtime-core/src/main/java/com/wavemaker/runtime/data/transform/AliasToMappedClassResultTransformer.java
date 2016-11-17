@@ -19,7 +19,8 @@ import com.wavemaker.studio.common.WMRuntimeException;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 15/11/16
  */
-public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResultTransformer {
+public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResultTransformer implements
+        WMResultTransformer {
 
     private final Class resultClass;
 
@@ -51,6 +52,20 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     @Override
     public boolean isTransformedValueATupleElement(final String[] aliases, final int tupleLength) {
         return false;
+    }
+
+    @Override
+    public Object transformFromMap(final Map<String, Object> resultMap) {
+        try {
+            Object object = resultClass.newInstance();
+            for (final Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(entry.getKey());
+                descriptor.getWriteMethod().invoke(object, entry.getValue());
+            }
+            return object;
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
+        }
     }
 
     private void initialize() {

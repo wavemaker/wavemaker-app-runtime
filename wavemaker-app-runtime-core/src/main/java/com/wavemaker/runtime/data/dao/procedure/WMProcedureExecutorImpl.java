@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.data.dao.callbacks.NativeProcedureExecutor;
 import com.wavemaker.runtime.data.dao.callbacks.ResolvableParam;
 import com.wavemaker.runtime.data.dao.callbacks.RuntimeParameter;
@@ -53,6 +52,7 @@ import com.wavemaker.runtime.system.SystemPropertiesUnit;
 import com.wavemaker.studio.common.CommonConstants;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.StringUtils;
 import com.wavemaker.studio.common.util.TypeConversionUtils;
@@ -107,9 +107,8 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
 
-            procedureMap = WMAppObjectMapper.getInstance().readValue(resourceStream,
-                    new TypeReference<Map<String, RuntimeProcedure>>() {
-                    });
+            procedureMap = JSONUtils.toObject(resourceStream, new TypeReference<Map<String, RuntimeProcedure>>() {
+            });
         } catch (WMRuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -122,14 +121,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     @Override
     public <T> List<T> executeNamedProcedure(
             final String procedureName, final Map<String, Object> params, final Class<T> type) {
-        final List<Object> results = executeNamedProcedure(procedureName, params);
-
-        // convert
-        return null;
-    }
-
-    @Override
-    public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params) {
         final RuntimeProcedure procedure = procedureMap.get(procedureName);
 
         try {
@@ -139,10 +130,15 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             }
 
             return NativeProcedureExecutor.execute(template.getSessionFactory().openSession(),
-                    procedure.getProcedureString(), resolvableParams);
+                    procedure.getProcedureString(), resolvableParams, type);
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to execute Named Procedure", e);
         }
+    }
+
+    @Override
+    public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params) {
+        return executeNamedProcedure(procedureName, params, Object.class);
     }
 
     @Override
@@ -158,7 +154,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 procedure.getParameters());
 
         return NativeProcedureExecutor
-                .execute(template.getSessionFactory().openSession(), procedureString, testParameters);
+                .execute(template.getSessionFactory().openSession(), procedureString, testParameters, Object.class);
     }
 
     @Override

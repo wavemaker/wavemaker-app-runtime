@@ -9,7 +9,8 @@ import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 27/6/16
  */
-public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetResultTransformer {
+public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetResultTransformer implements
+        WMResultTransformer {
 
     public static final AliasToEntityLinkedHashMapTransformer INSTANCE = new AliasToEntityLinkedHashMapTransformer();
 
@@ -25,6 +26,15 @@ public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetRes
             if (alias != null) {
                 result.put(alias, tuple[i]);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public Object transformFromMap(final Map<String, Object> resultMap) {
+        Map<String, Object> result = resultMap;
+        if (!(resultMap instanceof LinkedHashMap)) {
+            result = new LinkedHashMap<>(resultMap);
         }
         return result;
     }
