@@ -192,8 +192,8 @@ WM.module('wm.widgets.grid')
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
                             '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
-                                '<wm-button ng-repeat="btn in _actions.header" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}" hint="{{btn.title}}"></wm-button>' +
+                                '<wm-button ng-repeat="btn in _actions.header" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\'}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
+                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}} tabindex="{{btn.tabindex}}" hint="{{btn.title}}"></wm-button>' +
                                 '<wm-menu caption="Export" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
@@ -201,11 +201,11 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || _actions.footer.length">' +
                         '<div class="app-datagrid-paginator" data-ng-show="show && shownavigation">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
-                            '<wm-button ng-repeat="btn in _actions.footer" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
-                                ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}"></wm-button>' +
+                            '<wm-button ng-repeat="btn in _actions.footer" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\'}" iconclass="{{btn.iconclass}}" disabled="{{btn.key === \'addNewRow\' && isGridEditMode}}"' +
+                                ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}} tabindex="{{btn.tabindex}}"  hint="{{btn.title}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
             },
@@ -621,9 +621,9 @@ WM.module('wm.widgets.grid')
                             case 'spacing':
                                 scope.datagridElement.datagrid('option', 'spacing', newVal);
                                 if (newVal === 'condensed') {
-                                    scope.navigationClass = 'pagination-sm';
+                                    scope.navigationSize = 'small';
                                 } else {
-                                    scope.navigationClass = '';
+                                    scope.navigationSize = '';
                                 }
                                 break;
                             case 'exportformat':

@@ -1827,6 +1827,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPaginationchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "number", "value": "0"},
+                        "navigationsize": {"type": "string", "show": false},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg"]}
                     },
                     "wm.login": {
