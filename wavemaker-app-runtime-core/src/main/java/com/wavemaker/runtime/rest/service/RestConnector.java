@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.rest.service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -39,12 +40,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -54,6 +50,8 @@ import org.springframework.web.client.ResponseErrorHandler;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.SSLUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 
@@ -118,7 +116,12 @@ public class RestConnector {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
         httpClientBuilder.setDefaultRequestConfig(requestConfig);
 
-        String endpointAddress = URLDecoder.decode(restRequestInfo.getEndpointAddress());
+        String endpointAddress = null;
+        try {
+            endpointAddress = URLDecoder.decode(restRequestInfo.getEndpointAddress(), CommonConstants.UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new WMRuntimeException("Failed to decode url " + restRequestInfo.getEndpointAddress(), e);
+        }
         if (endpointAddress.startsWith("https")) {
             httpClientBuilder.setSSLSocketFactory(
                     new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), hostnameVerifier));
