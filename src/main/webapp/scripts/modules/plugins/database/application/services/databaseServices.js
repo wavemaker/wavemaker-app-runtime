@@ -2097,6 +2097,55 @@ wm.plugins.database.services.DatabaseService = [
 
             executeCustomUpdateQuery: function (params, successCallback, failureCallback) {
                 return initiateAction("executeCustomUpdateQuery", params, successCallback, failureCallback);
+            },
+
+            /**
+             * Internal function
+             * @name wm.database.$DatabaseService#getOfflineConfig
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to retrieve the offline configuration data.
+             *
+             * @param {object} params
+             *                 Object containing the offline config json.
+             */
+
+            getOfflineConfig: function (params) {
+                return BaseService.execute({
+                    target: "Database",
+                    action: "getOfflineConfig",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.dataModelName
+                    }
+                });
+            },
+
+            /**
+             * Internal function
+             * @name wm.database.$DatabaseService#updateOfflineConfig
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to update offline configuration data.
+             *
+             * @param {object} params
+             *                 Object containing the offline config json.
+             */
+
+            updateOfflineConfig: function (params) {
+                return BaseService.execute({
+                    target: "Database",
+                    action: "updateOfflineConfig",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.dataModelName
+                    },
+                    data: params.data
+                });
             }
         };
     }

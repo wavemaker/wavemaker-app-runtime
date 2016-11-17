@@ -152,12 +152,12 @@ WM.module('wm.utils', [])
                 'name': 'Saturday',
                 'value': '6'
             }],
-            dateTimeDefaultFormats = {
-                'date'           : 'yyyy-MM-dd',
-                'time'           : 'HH:mm:ss',
-                'timestamp'      : 'timestamp',
-                'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
-                'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
+            DEFAULT_FORMATS = {
+                'DATE'           : 'yyyy-MM-dd',
+                'TIME'           : 'HH:mm:ss',
+                'TIMESTAMP'      : 'timestamp',
+                'DATETIME'       : 'yyyy-MM-ddTHH:mm:ss',
+                'DATETIME_ORACLE': 'yyyy-MM-dd HH:mm:ss'
             },
             indexPage = getIndexPage(),
             pluginConfig = {
@@ -1535,7 +1535,7 @@ WM.module('wm.utils', [])
         }
         /*Function to get date time default formats*/
         function getDateTimeDefaultFormats() {
-            return dateTimeDefaultFormats;
+            return DEFAULT_FORMATS;
         }
 
         /*Function that checks if the dataset is valid or not*/

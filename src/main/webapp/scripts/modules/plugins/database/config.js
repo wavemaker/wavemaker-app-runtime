@@ -327,6 +327,16 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         updateConnectionProperties: {
             url: "services/projects/:projectID/database/services/:serviceId/properties",
             method: "PUT"
+        },
+
+        // read and update offline configuration
+        updateOfflineConfig: {
+            url: "services/projects/:projectID/database/services/:serviceId/offline",
+            method: "POST"
+        },
+        getOfflineConfig: {
+            url: "services/projects/:projectID/database/services/:serviceId/offline",
+            method: "GET"
         }
     }
 });
