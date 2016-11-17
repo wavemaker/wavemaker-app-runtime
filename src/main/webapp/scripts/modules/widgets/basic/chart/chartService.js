@@ -7,6 +7,7 @@ WM.module('wm.widgets.basic')
         function (Utils) {
             'use strict';
             var chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
+                allShapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down'],
                 themes = {
                     'Terrestrial': {
                         colors: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
@@ -215,7 +216,7 @@ WM.module('wm.widgets.basic')
             }
 
             //Construct the sample data
-            function constructSampleData(dataType, yaxisLength) {
+            function constructSampleData(dataType, yaxisLength, shape) {
                 var first_series = [],
                     second_series = [],
                     third_series = [],
@@ -327,20 +328,21 @@ WM.module('wm.widgets.basic')
                     }
                     break;
                 case 'bubbleFormat':
+                    shape = shape === 'random' ?  allShapes[Math.floor(Math.random() * allShapes.length)] : shape;
                     first_series_bubble = [
-                        {'x': 80.66, 'y': 33739900,  'size': 78},
-                        {'x': 79.84, 'y': 81902300,  'size': 90},
-                        {'x': 78.6,  'y': 5523100,   'size': 45}
+                        {'x': 80.66, 'y': 33739900,  'size': 78, 'shape': shape},
+                        {'x': 79.84, 'y': 81902300,  'size': 90, 'shape': shape},
+                        {'x': 78.6,  'y': 5523100,   'size': 45, 'shape': shape}
                     ];
                     second_series_bubble = [
-                        {'x': 72.73, 'y': 79716200,  'size': 98},
-                        {'x': 80.05, 'y': 61801600,  'size': 20},
-                        {'x': 72.49, 'y': 73137200,  'size': 34}
+                        {'x': 72.73, 'y': 79716200,  'size': 98, 'shape': shape},
+                        {'x': 80.05, 'y': 61801600,  'size': 20, 'shape': shape},
+                        {'x': 72.49, 'y': 73137200,  'size': 34, 'shape': shape}
                     ];
                     third_series_bubble = [
-                        {'x': 68.09, 'y': 33739900,  'size': 45},
-                        {'x': 81.55, 'y': 7485600,   'size': 78},
-                        {'x': 68.60, 'y': 141850000, 'size': 56}
+                        {'x': 68.09, 'y': 33739900,  'size': 45, 'shape': shape},
+                        {'x': 81.55, 'y': 7485600,   'size': 78, 'shape': shape},
+                        {'x': 68.60, 'y': 141850000, 'size': 56, 'shape': shape}
                     ];
                     data[0] = {
                         values: first_series_bubble,
@@ -387,8 +389,7 @@ WM.module('wm.widgets.basic')
 
             // Sample data to populate when no data is bound
             function getSampleData(scope) {
-                var dataType = getDataType(scope);
-                return constructSampleData(dataType, _.split(scope.yaxisdatakey, ',').length);
+                return constructSampleData(getDataType(scope), _.split(scope.yaxisdatakey, ',').length, scope.shape);
             }
 
             //Check whether X/Y Domain was set to Min and is supported for the present chart
@@ -831,5 +832,7 @@ WM.module('wm.widgets.basic')
             this.hideOrShowProperties = hideOrShowProperties;
             this.postPlotChartProcess = postPlotChartProcess;
             this.initProperties       = initProperties;
+            this.allShapes            = allShapes;
+            this.chartTypes           = chartTypes;
         }
     ]);
