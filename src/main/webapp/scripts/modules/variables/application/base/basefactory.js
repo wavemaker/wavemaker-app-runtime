@@ -157,6 +157,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
+                    "onError": {"type": "list", "options": variableEventOptions}
                 },
                 "wm.WebSocketVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
