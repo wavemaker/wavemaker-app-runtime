@@ -27,7 +27,7 @@ wm.modules.wmCommon.services.BaseService = [
         /*to store the failed function calls due to 401 error*/
             errorCallStack = [],
             localeObject,
-            serviceCallPatterns = [new RegExp('^services'), new RegExp('j_spring_security_check'), new RegExp('j_spring_security_logout')],
+            serviceCallPatterns = [new RegExp('^/?services/'), new RegExp('j_spring_security_check'), new RegExp('j_spring_security_logout')],
         /*Function to log actions performed; using the wmLogger*/
             logAction = function (type, message, description) {
                 /*Return if wmLogger does not exist*/

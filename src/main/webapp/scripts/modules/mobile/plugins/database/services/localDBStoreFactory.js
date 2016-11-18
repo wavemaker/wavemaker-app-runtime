@@ -352,17 +352,19 @@ wm.plugins.database.services.LocalDBStoreFactory = [
          * @param {object} dbConnection an database connection created using SQLite api.
          * @param {object} entitySchema schema of the entity
          * @param {boolean} drop if true, existing store will be deleted.
-         * @returns {object} Store
+         * @returns {object} a promise that will be resolved with store object
          */
         this.createStore = function (dbConnection, entitySchema, drop) {
             var store = new Store(dbConnection, entitySchema);
             if (drop) {
-                store.drop().then(function () {
-                    store.create();
+                return store.drop().then(function () {
+                    store.create().then(function () {
+                        return store;
+                    });
                 });
-            } else {
-                store.create();
             }
-            return store;
+            return store.create().then(function () {
+                return store;
+            });
         };
     }];
