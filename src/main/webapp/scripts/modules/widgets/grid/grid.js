@@ -2563,10 +2563,6 @@ WM.module('wm.widgets.grid')
                             'checkedvalue'      : attrs.checkedvalue,
                             'uncheckedvalue'    : attrs.uncheckedvalue
                         };
-                        LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, {
-                            'field'         : columnDefProps.field,
-                            'displayName'   : columnDefProps.displayName
-                        }, $parentEl);
                         columnDefProps.defaultvalue = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
                         events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
                         _.forEach(events, function (eventName) {
@@ -2624,6 +2620,11 @@ WM.module('wm.widgets.grid')
                                 return;
                             }
                         }
+                        //Set the headet config for grouping structure
+                        LiveWidgetUtils.setHeaderConfigForTable(parentScope.headerConfig, {
+                            'field'         : columnDefProps.field,
+                            'displayName'   : columnDefProps.displayName
+                        }, $parentEl);
                         /* push the fieldDef in the object meant for actual display in the grid (this will be passed to ng-grid) */
                         parentScope.fieldDefs.push(columnDef);
                         element.remove();
