@@ -237,7 +237,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     public Query createQuery(RuntimeQuery runtimeQuery, final Map<String, Object> params) {
         final Query query;
         if (runtimeQuery.isNativeSql()) {
-            query = createNativeQuery(runtimeQuery.getCountQueryString(), params);
+            query = createNativeQuery(runtimeQuery.getQueryString(), params);
         } else {
             query = createHQLQuery(runtimeQuery.getQueryString(), params);
         }
