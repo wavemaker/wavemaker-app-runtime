@@ -249,13 +249,23 @@ WM.module('wm.widgets.live')
                     }
                     //Disable the form submit if form is in invalid state
                     if (!$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
-                        //Find the first invalid untoched element and set it to touched.
-                        // Safari does not form validations. this will ensure that error is shown for user
-                        $invalidEle = $formEle.find('.ng-untouched.ng-invalid:first');
-                        if ($invalidEle.length) {
-                            formScope.ngform[$invalidEle.attr('name')].$setTouched();
+                        //For blob type required fields, even if file is present, required error is shown.
+                        //To prevent this, if value is present set the required validity to true
+                        WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
+                            var $blobEL = WM.element(this);
+                            if ($blobEL.val()) {
+                                formScope.ngform[$blobEL.attr('name')].$setValidity('required', true);
+                            }
+                        });
+                        if (formScope.ngform.$invalid) {
+                            //Find the first invalid untoched element and set it to touched.
+                            // Safari does not form validations. this will ensure that error is shown for user
+                            $invalidEle = $formEle.find('.ng-untouched.ng-invalid:first');
+                            if ($invalidEle.length) {
+                                formScope.ngform[$invalidEle.attr('name')].$setTouched();
+                            }
+                            return;
                         }
-                        return;
                     }
                     resetFormState();
                     /*If live-form is in a dialog, then always fetch the formElement by name
@@ -1397,7 +1407,24 @@ WM.module('wm.widgets.live')
                 };
             }
         };
-    }]);
+    }])
+    .directive('wmValidFile', function () {
+        'use strict';
+        //For blob type required fields, even if file is present, required error is shown.
+        //To prevent this, if value is present call render to apply validation
+        return {
+            'require' : 'ngModel',
+            'link'    : function (scope, el, attrs, ngModel) {
+                //change event is fired when file is selected
+                el.bind('change', function () {
+                    scope.$apply(function () {
+                        ngModel.$setViewValue(el.val());
+                        ngModel.$render();
+                    });
+                });
+            }
+        };
+    });
 
 /**
  * @ngdoc directive
