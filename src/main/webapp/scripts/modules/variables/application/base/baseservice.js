@@ -100,8 +100,7 @@ wm.variables.services.Variables = [
                 {
                     "collectionType"    : "data",
                     "category"          : "wm.WebSocketVariable",
-                    "defaultName"       : "webSocketVariable",
-                    "spinnerInFlight"   : true
+                    "defaultName"       : "webSocketVariable"
                 }
             ],
 
