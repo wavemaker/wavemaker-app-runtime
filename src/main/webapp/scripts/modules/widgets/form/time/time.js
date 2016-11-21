@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/time.html',
             '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input" title="{{hint}}"' +
-            " app-defaults='{\"timepattern\": \"timeFormat\", \"outputformat\": \"timeFormat\"}'"+
+            " app-defaults='{\"timepattern\": \"timeFormat\", \"outputformat\": \"timeFormat\"}'>"+
                 '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target>' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
@@ -39,9 +39,8 @@ WM.module('wm.widgets.form')
         'Utils',
         '$interval',
         'CONSTANTS',
-        'AppDefaults',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils, $interval, CONSTANTS, AppDefaults) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils, $interval, CONSTANTS) {
 
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),

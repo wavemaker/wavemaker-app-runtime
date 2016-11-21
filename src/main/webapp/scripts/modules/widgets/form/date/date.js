@@ -42,9 +42,8 @@ WM.module('wm.widgets.form')
         'FormWidgetUtils',
         '$timeout',
         'CONSTANTS',
-        'AppDefaults',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, AppDefaults) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
