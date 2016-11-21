@@ -2229,7 +2229,7 @@ WM.module('wm.widgets.grid')
                     variable     = $scope.gridElement.scope().Variables[$scope.variableName],
                     sortOptions  = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                 if ($scope.isBoundToFilter) {
-                    $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label});
+                    $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $scope.exportdatasize});
                 } else {
                     filterFields = $scope.filterFields || {};
                     variable.download({
@@ -2237,7 +2237,8 @@ WM.module('wm.widgets.grid')
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
                         'exportFormat' : $item.label,
-                        'logicalOp'    : 'AND'
+                        'logicalOp'    : 'AND',
+                        'size'         : $scope.exportdatasize
                     });
                 }
             };

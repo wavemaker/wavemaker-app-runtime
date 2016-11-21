@@ -1341,7 +1341,8 @@ wm.variables.services.$liveVariable = [
                         'sort'          : tableOptions.sort,
                         'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
                         'query'         : tableOptions.query || '',
-                        'exportFormat'  : options.exportFormat
+                        'exportFormat'  : options.exportFormat,
+                        'size'          : options.size
                     });
                 },
             /*Function to update the data associated with the related tables of the live variable*/

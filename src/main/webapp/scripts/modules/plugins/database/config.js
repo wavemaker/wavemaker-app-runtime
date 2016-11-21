@@ -277,7 +277,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "GET"
         },
         exportTableData: {
-            url: "/:service/:dataModelName/:entityName/export/:exportFormat?q=:query&:sort",
+            url: "/:service/:dataModelName/:entityName/export/:exportFormat?q=:query&size=:size&:sort",
             method: "GET"
         },
         readTableRelatedData: {

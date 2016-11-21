@@ -286,7 +286,8 @@ WM.module('wm.widgets.live')
                                 'filterFields' : formFields,
                                 'orderBy'      : orderBy,
                                 'exportFormat' : options.exportFormat,
-                                'logicalOp'    : 'AND'
+                                'logicalOp'    : 'AND',
+                                'size'         : options.exportdatasize
                             });
                             return;
                         }

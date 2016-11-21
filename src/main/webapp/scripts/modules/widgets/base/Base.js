@@ -1417,6 +1417,7 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
                         "exportformat": {"type": "list", "widget": "select-all", "options": ["EXCEL", "CSV"], "showindesigner": true},
+                        "exportdatasize": {"type": "number",  "showindesigner": true},
                         "margin": {"type": "string", "widget": "box-model", "show": false}, //Deprecated margin property for data table
 
                         /* Events */
@@ -1948,7 +1949,7 @@ WM.module('wm.widgets.base', [])
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
-                {"name": "datagrid", "properties": ["showrowindex", "exportformat"], "parent": "properties"},
+                {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "taborder"], "parent": "properties"},
