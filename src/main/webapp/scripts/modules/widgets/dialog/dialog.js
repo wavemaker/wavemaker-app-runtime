@@ -25,6 +25,7 @@ WM.module('wm.widgets.dialog')
                     '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
                     '</div>' +
                     '<div ng-transclude="footer"></div>' +
+                '</div>' +
             '</div>'
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",

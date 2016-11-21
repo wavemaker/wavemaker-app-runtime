@@ -18,8 +18,9 @@ WM.module('wm.widgets.live')
         'WidgetUtilService',
         'Variables',
         'QueryBuilder',
+        'DialogService',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables, QueryBuilder) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables, QueryBuilder, DialogService) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 focusEvents            = ['onBlur', 'onFocus'],
@@ -1800,6 +1801,25 @@ WM.module('wm.widgets.live')
                 });
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.closeDialog
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function closes the design dialog that form is wrapped
+             *
+             * @param {ele} element whose parent is dialog
+             */
+            function closeDialog(ele) {
+                var dialogEle;
+                dialogEle = ele.closest('.app-dialog');
+                if (dialogEle.length) {
+                    DialogService.hideDialog(dialogEle.attr('dialogid'));
+                }
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -1830,6 +1850,7 @@ WM.module('wm.widgets.live')
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
             this.setCaptionSize             = setCaptionSize;
+            this.closeDialog                = closeDialog;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

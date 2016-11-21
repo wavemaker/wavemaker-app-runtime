@@ -285,6 +285,7 @@ WM.module('wm.layouts.containers')
                     }, function (data) {
                         toggleMessage(scope, scope.postmessage, 'success');
                         onResult(scope, data, 'success', event);
+                        LiveWidgetUtils.closeDialog(element);
                     }, function (errMsg) {
                         template = scope.errormessage || errMsg;
                         toggleMessage(scope, template, 'error');
@@ -295,6 +296,7 @@ WM.module('wm.layouts.containers')
                     $timeout(function () {
                         $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
                     });
+                    LiveWidgetUtils.closeDialog(element);
                 }
                 //If on submit is there execute it and if it returns true do service variable invoke else return
                 if (scope.onSubmit && scope.onSubmit(params) === false) {

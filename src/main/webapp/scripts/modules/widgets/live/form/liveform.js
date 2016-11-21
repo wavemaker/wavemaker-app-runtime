@@ -338,6 +338,7 @@ WM.module('wm.widgets.live')
                                         });
                                         onVariableUpdate(response, newForm, updateMode);
                                     }
+                                    LiveWidgetUtils.closeDialog($formEle);
                                 }
                             }, function (error) {
                                 $scope.toggleMessage(true, error, 'error');
@@ -376,6 +377,7 @@ WM.module('wm.widgets.live')
                                         });
                                         onVariableUpdate(response, newForm, updateMode);
                                     }
+                                    LiveWidgetUtils.closeDialog($formEle);
                                 }
                             }, function (error) {
                                 $scope.toggleMessage(true, error, 'error');
