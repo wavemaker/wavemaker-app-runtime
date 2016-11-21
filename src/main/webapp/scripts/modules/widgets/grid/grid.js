@@ -2342,10 +2342,9 @@ WM.module('wm.widgets.grid')
                     //Watch any property if it is bound
                     function watchProperty(property, expression) {
                         exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
-                            if (WM.isDefined(newVal)) {
-                                if (property === 'displayName') {
-                                    scope.datagridElement.datagrid('setColumnProp', config.field, property, newVal, true);
-                                }
+                            newVal = WM.isDefined(newVal) ? newVal : '';
+                            if (property === 'displayName') {
+                                scope.datagridElement.datagrid('setColumnProp', config.field, property, newVal, true);
                             }
                         }, {'deepWatch': true, 'allowPageable': true, 'acceptsArray': false});
                     }
@@ -2500,10 +2499,9 @@ WM.module('wm.widgets.grid')
                             skipWatchProps = ['dataset', 'defaultvalue', 'disabled', 'readonly'];
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
-                                if (WM.isDefined(newVal)) {
-                                    columnDef.setProperty(property, newVal);
-                                }
-                            }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
+                                newVal = WM.isDefined(newVal) ? newVal : '';
+                                columnDef.setProperty(property, newVal);
+                            }, {'deepWatch': true, 'allowPageable': true, 'acceptsArray': false});
                         }
 
                         //Will be used in ColumnDef prototype methods to re-render grid.

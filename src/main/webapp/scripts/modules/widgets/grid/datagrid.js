@@ -898,10 +898,11 @@ $.widget('wm.datagrid', {
             this.gridHeaderElement.find('th.app-datagrid-header-cell').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header      = $(this),
-                    width        = $header.width(),
+                    width,
                     id           = $header.attr('data-col-id'),
                     colDef       = self.preparedHeaderData[id],
-                    definedWidth = colDef.width;
+                    definedWidth = colDef.width,
+                    tempWidth;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     //Hide the header and column if show is false
                     $header.hide();
@@ -913,7 +914,13 @@ $.widget('wm.datagrid', {
                     width = 50;
                 } else {
                     if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
-                        width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
+                        tempWidth = $(headerCols[index]).css('width');
+                        if (tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
+                            width = $header.width();
+                            width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
+                        } else {
+                            width = tempWidth;
+                        }
                     } else {
                         width = definedWidth;
                     }
