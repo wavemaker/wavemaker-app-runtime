@@ -2609,13 +2609,15 @@ WM.module('wm.widgets.grid')
                          *  1. PC view in STUDIO mode
                          *  2. Mobile/tablet view in RUN mode
                          */
-                        if (Utils.isMobile()) {
-                            if (!columnDef.mobileDisplay) {
-                                return;
-                            }
-                        } else {
-                            if (!columnDef.pcDisplay) {
-                                return;
+                        if (CONSTANTS.isRunMode) {
+                            if (Utils.isMobile()) {
+                                if (!columnDef.mobileDisplay) {
+                                    return;
+                                }
+                            } else {
+                                if (!columnDef.pcDisplay) {
+                                    return;
+                                }
                             }
                         }
                         //Set the headet config for grouping structure
