@@ -59,13 +59,22 @@ WM.module("wm.widgets.basic")
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             switch (key) {
-            case 'dataset':
+                case 'dataset':
+                var parentScope = scope.$parent;
                 /*This is to prevent the data-navigator from getting triggered if newVal is undefined or ""*/
                 if (CONSTANTS.isStudioMode && !newVal) {
                     return;
                 }
                 if (CONSTANTS.isRunMode) {
                     scope.show = newVal ? newVal.dataValue !== '' : false;
+                }
+                //For grid, data watch is set on navigator. So, update the grid full data of grid on dataset change.
+                if (parentScope._widgettype === 'wm-grid') {
+                    if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                        parentScope.__fullData = newVal.content;
+                    } else {
+                        parentScope.__fullData = newVal;
+                    }
                 }
                 scope.setPagingValues(newVal);
                 break;
