@@ -1440,6 +1440,16 @@ WM.module('wm.widgets.live')
                 $is.clear = function () {
                     _.set($is, '$liScope.fieldDefs', undefined);
                 };
+                //On pagination change through datanavigator
+                $is._onPaginationchange = function (options) {
+                    //On pagination change, scroll the page to top
+                    if (_.includes([NAVIGATION.BASIC, NAVIGATION.CLASSIC, NAVIGATION.ADVANCED, NAVIGATION.PAGER], $is.navigation)) {
+                        $is.$element.find('[data-identifier="list"]').scrollTop(0);
+                    }
+                    if ($is.onPaginationchange) {
+                        $is.onPaginationchange(options);
+                    }
+                };
 
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.

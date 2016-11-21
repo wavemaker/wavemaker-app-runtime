@@ -173,7 +173,6 @@ WM.module('wm.widgets.grid')
                 'onSetrecord'       : '&',
                 'onBeforerowupdate' : '&',
                 'onRowupdate'       : '&',
-                'onPaginationchange': '&',
                 'onDatarender'      : '&',
                 'onTap'             : '&'
             },
@@ -2298,6 +2297,10 @@ WM.module('wm.widgets.grid')
                 } else {
                     wmToaster.hide();
                 }
+            };
+            //On pagination change, scroll the page to top
+            $scope.onPaginationchange = function () {
+                $scope.datagridElement.find('.app-grid-content').scrollTop(0);
             };
         }])
 /**
