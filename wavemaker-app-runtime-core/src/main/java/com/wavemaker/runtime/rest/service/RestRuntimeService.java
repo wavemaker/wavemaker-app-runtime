@@ -18,19 +18,24 @@ package com.wavemaker.runtime.rest.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
 import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
@@ -113,6 +118,7 @@ public class RestRuntimeService {
         Map<String, String> pathParams = new HashMap<>();
         String requestBody = null;
         if (params != null) {
+            Set<String> unboundedQueryParams = new HashSet();
             for (Parameter parameter : parameters) {
                 String paramName = parameter.getName();
                 Object value = params.get(paramName);
@@ -133,9 +139,20 @@ public class RestRuntimeService {
                     } else if (ParameterType.BODY.name().equals(type)) {
                         requestBody = (String) value;
                     }
+                } else if(ParameterType.QUERY.name().equals(type)) {
+                    unboundedQueryParams.add(paramName);
                 }
             }
 
+            if (StringUtils.isNotBlank(requestBody) && isFormUrlencodedContentType(restRequestInfo.getContentType())) {
+                for (String unboundedQueryParam : unboundedQueryParams) {
+                    Map<String, Object> map = HttpRequestUtils.getFormUrlencodedDataAsMap(requestBody);
+                    Object value = map.get(unboundedQueryParam);
+                    if (value != null) {
+                        queryParams.put(unboundedQueryParam, value);
+                    }
+                }
+            }
         }
 
         String[] defaultHeaders = {"User-Agent"};
@@ -199,6 +216,10 @@ public class RestRuntimeService {
 
     private String getNormalizedString(String str) {
         return (str != null) ? str.trim() : "";
+    }
+
+    private boolean isFormUrlencodedContentType(String contentType) {
+        return StringUtils.equals(MediaType.APPLICATION_FORM_URLENCODED_VALUE, contentType);
     }
 
 }

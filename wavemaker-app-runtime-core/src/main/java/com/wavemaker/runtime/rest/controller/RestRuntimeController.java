@@ -18,7 +18,6 @@ package com.wavemaker.runtime.rest.controller;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -76,8 +75,8 @@ public class RestRuntimeController {
                                  HttpServletResponse httpServletResponse) throws IOException {
         Map<String, Object> params = new HashMap<>();
         addHeaders(httpServletRequest, params);
-        addRequestParams(httpServletRequest, params);
         addRequestBody(httpServletRequest, params);
+        addRequestParams(httpServletRequest, params);
         addPathParams(decodedUriVariables, params);
         RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
@@ -140,7 +139,6 @@ public class RestRuntimeController {
     private void addRequestBody(HttpServletRequest httpServletRequest, Map<String, Object> params) throws IOException {
         String method = httpServletRequest.getMethod();
         if (!StringUtils.equals(method, HttpMethod.GET.name()) && !StringUtils.equals(method, HttpMethod.HEAD.name())) {
-            StringWriter writer = new StringWriter();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             IOUtils.copy(httpServletRequest.getInputStream(), byteArrayOutputStream, true, true);
             updateParams(params, RestConstants.REQUEST_BODY_KEY, byteArrayOutputStream.toString());
