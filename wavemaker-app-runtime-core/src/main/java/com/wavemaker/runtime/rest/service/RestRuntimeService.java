@@ -41,6 +41,7 @@ import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
+import com.wavemaker.tools.apidocs.tools.core.model.Info;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -180,15 +181,15 @@ public class RestRuntimeService {
             }
         }
 
-
-        boolean proxyEnabled = Boolean.valueOf(swagger.getProxyEnabled());
+        Info info = swagger.getInfo();
+        boolean proxyEnabled = Boolean.valueOf(info.getProxyEnabled());
 
         if (proxyEnabled) {
 
-            String hostName = swagger.getProxyHostName();
-            Integer port = Integer.valueOf(swagger.getProxyPort());
-            String username = swagger.getProxyUsername();
-            String password = swagger.getProxyPassword();
+            String hostName = info.getProxyHostName();
+            Integer port = Integer.valueOf(info.getProxyPort());
+            String username = info.getProxyUsername();
+            String password = info.getProxyPassword();
             restRequestInfo.setProxy(new Proxy(hostName, port, username, password));
         }
 
