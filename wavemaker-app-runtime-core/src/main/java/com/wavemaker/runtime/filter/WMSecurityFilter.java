@@ -42,7 +42,9 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
 
     @Override
     protected void initFilterBean() throws ServletException {
-        super.initFilterBean();
+        if (isSecurityEnforced()) {
+            super.initFilterBean();
+        }
         skipSecurityEnabled = RuntimeEnvironment.isTestRunEnvironment();
     }
 

@@ -15,12 +15,10 @@
  */
 package com.wavemaker.runtime.security.config;
 
-import java.util.Map;
-
+import com.wavemaker.studio.common.model.security.RolesConfig;
 import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RememberMeConfig;
-import com.wavemaker.studio.common.model.security.RoleConfig;
 import com.wavemaker.studio.common.model.security.SSLConfig;
 import com.wavemaker.studio.common.model.security.XSSConfig;
 
@@ -36,7 +34,7 @@ public class WMAppSecurityConfig {
 
     private LoginConfig loginConfig;
 
-    private Map<String, RoleConfig> roleMap;
+    private RolesConfig rolesConfig;
 
     private RememberMeConfig rememberMeConfig;
 
@@ -54,12 +52,12 @@ public class WMAppSecurityConfig {
         this.enforceSecurity = enforceSecurity;
     }
 
-    public Map<String, RoleConfig> getRoleMap() {
-        return roleMap;
+    public RolesConfig getRolesConfig() {
+        return rolesConfig;
     }
 
-    public void setRoleMap(final Map<String, RoleConfig> roleMap) {
-        this.roleMap = roleMap;
+    public void setRolesConfig(RolesConfig rolesConfig) {
+        this.rolesConfig = rolesConfig;
     }
 
     public LoginConfig getLoginConfig() {
@@ -107,7 +105,6 @@ public class WMAppSecurityConfig {
         return "WMAppSecurityConfig{" +
                 "enforceSecurity=" + enforceSecurity +
                 ", loginConfig=" + loginConfig +
-                ", roleMap=" + roleMap +
                 ", rememberMeConfig=" + rememberMeConfig +
                 ", sslConfig=" + sslConfig +
                 ", xssConfig=" + xssConfig +
