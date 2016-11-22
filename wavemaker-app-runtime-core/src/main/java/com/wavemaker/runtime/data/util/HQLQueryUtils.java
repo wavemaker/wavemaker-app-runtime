@@ -30,7 +30,7 @@ public class HQLQueryUtils {
     private static final String FROM = " from ";
     private static final String WHERE = " where ";
     private static final String WILDCARD_ENTRY = "%";
-    private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startsWith|endsWith|containing)[\\s]+[\"'](([^(\\\\)[\"']])*)[\"']";
+    private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startswith|endswith|containing)[\\s]+[\"'](([^(\\\\)[\"']])*)[\"']";
     private static Pattern pattern = Pattern.compile(QUERY_EXPRESSION);
 
     public static String buildHQL(String entityClass, String query) {
