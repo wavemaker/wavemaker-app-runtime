@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
+import com.wavemaker.studio.common.model.security.RolesConfig;
 import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
@@ -54,12 +56,53 @@ public class SecurityService {
     private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
 
     private static final String ROLE_PREFIX = "ROLE_";
-    private List<String> roles;
+
     private Boolean securityEnabled;
 
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
 
     public SecurityService() {
+    }
+
+    private static Authentication getAuthenticatedAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
+    }
+
+    /**
+     * If authentication is null then it returns 0. Otherwise, it retrieves tenantId from the authentication cobject and return that value.
+     *
+     * @return The tenant Id or 0 if authentication is null.
+     */
+    public static int getTenantId() {
+        Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof WMUserDetails) {
+                WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
+                return principal.getTenantId();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * This method returns a proxy ticket to the caller. The serviceUrl must be the EXACT url of the service that you
+     * are using the ticket to call.
+     *
+     * @param serviceUrl The url of the service, protected by CAS, that you want to call.
+     * @return A 'use once' proxy service ticket, or null if a ticket cannot be retrieved.
+     */
+    public static String getCASProxyTicket(String serviceUrl) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String ticket = null;
+        try {
+            if (auth instanceof CasAuthenticationToken) {
+                ticket = ((CasAuthenticationToken) auth).getAssertion().getPrincipal().getProxyTicketFor(serviceUrl);
+            }
+        } catch (Exception e) {
+            logger.error("The CASSecurityService.getServiceTicket() has failed", e);
+        }
+        return ticket;
     }
 
     /**
@@ -70,7 +113,7 @@ public class SecurityService {
     public Boolean isSecurityEnabled() {
         if (securityEnabled == null) {
             try {
-                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+                WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
                 securityEnabled = wmAppSecurityConfig.isEnforceSecurity();
             } catch (NoSuchBeanDefinitionException e) {
                 securityEnabled = false;
@@ -80,7 +123,7 @@ public class SecurityService {
     }
 
     public LoginConfig getLoginConfig() {
-        WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+        WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
         return wmAppSecurityConfig.getLoginConfig();
     }
 
@@ -214,69 +257,31 @@ public class SecurityService {
 
         String[] userRoles = getUserRoles();
         if (userRoles.length > 0) {
-            WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
-            Map<String, RoleConfig> roleMap = wmAppSecurityConfig.getRoleMap();
+            WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
+            RolesConfig rolesConfig = wmAppSecurityConfig.getRolesConfig();
+            if (rolesConfig != null) {
+                Map<String, RoleConfig> roleMap = rolesConfig.getRoleMap();
 
-            if(userRoles.length == 1) {
-                final RoleConfig roleConfig = roleMap.get(userRoles[0]);
-                if(roleConfig != null){
-                    landingPage = roleConfig.getLandingPage();
-                }
-            } else {
-                Iterator<Map.Entry<String, RoleConfig>> roleEntryIterator = roleMap.entrySet().iterator();
-                while (roleEntryIterator.hasNext() && landingPage == null){
-                    Map.Entry<String, RoleConfig> roleEntry = roleEntryIterator.next();
-                    for (int i = 0; i < userRoles.length; i++) {
-                        if(userRoles[i].equals(roleEntry.getKey())) {
-                            landingPage = roleEntry.getValue().getLandingPage();
-                            break;
+                if (userRoles.length == 1) {
+                    final RoleConfig roleConfig = roleMap.get(userRoles[0]);
+                    if (roleConfig != null) {
+                        landingPage = roleConfig.getLandingPage();
+                    }
+                } else {
+                    Iterator<Map.Entry<String, RoleConfig>> roleEntryIterator = roleMap.entrySet().iterator();
+                    while (roleEntryIterator.hasNext() && landingPage == null) {
+                        Map.Entry<String, RoleConfig> roleEntry = roleEntryIterator.next();
+                        for (int i = 0; i < userRoles.length; i++) {
+                            if (userRoles[i].equals(roleEntry.getKey())) {
+                                landingPage = roleEntry.getValue().getLandingPage();
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
         return landingPage;
-    }
-
-    private static Authentication getAuthenticatedAuthentication() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
-    }
-
-    /**
-     * If authentication is null then it returns 0. Otherwise, it retrieves tenantId from the authentication cobject and return that value.
-     *
-     * @return The tenant Id or 0 if authentication is null.
-     */
-    public static int getTenantId() {
-        Authentication authentication = getAuthenticatedAuthentication();
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof WMUserDetails) {
-                WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
-                return principal.getTenantId();
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * This method returns a proxy ticket to the caller. The serviceUrl must be the EXACT url of the service that you
-     * are using the ticket to call.
-     *
-     * @param serviceUrl The url of the service, protected by CAS, that you want to call.
-     * @return A 'use once' proxy service ticket, or null if a ticket cannot be retrieved.
-     */
-    public static String getCASProxyTicket(String serviceUrl) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String ticket = null;
-        try {
-            if (auth instanceof CasAuthenticationToken) {
-                ticket = ((CasAuthenticationToken) auth).getAssertion().getPrincipal().getProxyTicketFor(serviceUrl);
-            }
-        } catch (Exception e) {
-            logger.error("The CASSecurityService.getServiceTicket() has failed", e);
-        }
-        return ticket;
     }
 
     /**
@@ -292,11 +297,9 @@ public class SecurityService {
     }
 
     public List<String> getRoles() {
-        return this.roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+        WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
+        RolesConfig rolesConfig = wmAppSecurityConfig.getRolesConfig();
+        return (rolesConfig == null) ? Collections.EMPTY_LIST : new ArrayList<>(rolesConfig.getRoleMap().keySet());
     }
 
     public SecurityInfo getSecurityInfo() {
@@ -342,5 +345,9 @@ public class SecurityService {
     public void ssoLogin() {
         //DUMMY METHOD to redirect to cas entry point...
         //When this method is invoked, the CAS Filter is intercepted and sends the user to the CAS Login page through CASAuthenticationEntryPoint.
+    }
+
+    private WMAppSecurityConfig getWmAppSecurityConfig() {
+        return WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
     }
 }
