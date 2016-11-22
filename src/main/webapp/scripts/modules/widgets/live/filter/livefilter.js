@@ -250,6 +250,7 @@ WM.module('wm.widgets.live')
                                     }
                                     break;
                                 case 'checkboxset':
+                                case 'chips':
                                     if (filterField._value && filterField._value.length) {
                                         fieldValue = filterField._value;
                                     }

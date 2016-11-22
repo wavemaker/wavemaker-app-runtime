@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
-                        '<input ng-if="!studioMode" name="app-chip-search" class="app-chip-input form-control" type="text" ng-attr-placeholder="{{placeholder}}" ng-model="newItem.name" ng-keydown="handleKeyPressEvent($event)" ng-click="resetActiveState()"' +
+                        '<input ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input form-control" type="text" ng-attr-placeholder="{{placeholder}}" ng-model="newItem.name" ng-keydown="handleKeyPressEvent($event)" ng-click="resetActiveState()"' +
                             ' uib-typeahead="option as option.key for option in chips | filter:$viewValue"' +
                             ' spellcheck="false" autocomplete="off"' +
                             ' typeahead-on-select="addItem($event, $item)"' +
@@ -27,7 +27,7 @@ WM.module('wm.widgets.form')
                             ' ng-model-options="{debounce: 200}" typeahead-is-open="dropdown.open"' +
                             ' typeahead-template-url="template/widget/form/chipsSearch.html"' +
                             ' autofocus="false">' +
-                        '<input type="text" class="form-control" ng-if="studioMode" ng-attr-placeholder="{{placeholder}}">' +
+                        '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
             '</ul>'
             );
@@ -58,7 +58,8 @@ WM.module('wm.widgets.form')
                     'BACKSPACE' : 'BACKSPACE',
                     'ENTER'     : 'ENTER',
                     'DELETE'    : 'DELETE'
-                };
+                },
+                ignoreUpdate;
 
             //constructs and returns a chip item object
             function constructChip(displayValue, dataValue, imgSrcValue) {
@@ -74,9 +75,27 @@ WM.module('wm.widgets.form')
                 };
             }
 
+            //Update the selected chips
+            function updateSelectedChips(chips, $s) {
+                //Ignore _model_ update when it triggered by within the widget
+                if (ignoreUpdate) {
+                    ignoreUpdate = false;
+                    return;
+                }
+                var values;
+                if (!WM.isArray(chips)) {
+                    values  = _.split(chips, ',');
+                    chips   = _.map(values, function (ele) {
+                        return constructChip(ele);
+                    });
+                }
+                $s.selectedChips = chips;
+            }
+
             //Create list of options for the search
             function createSelectOptions(dataset, $s) {
-                if ($s.binddataset && !$s.displayfield) {
+                //Avoiding resetting empty values
+                if (($s.binddataset || $s.scopedataset) && (!$s.displayfield && !$s.datavalue && !$s.displayexpression)) {
                     return;
                 }
                 var chips          = [],
@@ -102,19 +121,21 @@ WM.module('wm.widgets.form')
                 }
                 $s.chips         = chips;
                 $s.selectedChips = [];
-                if (!$s.binddataset) {
-                    $s.selectedChips = Utils.getClonedObject(chips);
+                //Default chips showing Option1, Option2, Option3 on drag and drop where it has only dataset but not binddataset or scopedataset
+                if (!$s.binddataset && !$s.scopedataset) {
+                    updateSelectedChips(Utils.getClonedObject(chips), $s);
                 } else if (value) {
                     //Creating chips in form based on the value
-                    values              = _.split(value, ',');
-                    $s.selectedChips    = _.map(values, function (ele) {
-                        return constructChip(ele);
-                    });
+                    updateSelectedChips(values);
                 }
             }
 
             //Handle editable state of chip
             function makeEditable($s, chip) {
+                //In case of readonly user cannot edit chips
+                if ($s.readonly) {
+                    return;
+                }
                 //Making all non-editable false
                 _.forEach($s.selectedChips, function (chip) {
                     chip.edit = false;
@@ -126,7 +147,7 @@ WM.module('wm.widgets.form')
             //Update the datavalue on add, edit and delete of the chips
             function onModelUpdate($s, $event) {
                 var values = [];
-                $s._onChange($event);
+                ignoreUpdate = true;
                 if ($s.datafield === 'All Fields') {
                     $s._model_ = Utils.getClonedObject($s.selectedChips);
                 } else {
@@ -135,18 +156,20 @@ WM.module('wm.widgets.form')
                     });
                     $s._model_ = values;
                 }
+                $s._onChange($event);
             }
 
             //Validate all chips and mark duplicates if exists after removing or editing chips
             function validateDuplicates($s) {
                 var groupedChips = _.groupBy($s.selectedChips, 'key');
-                _.forEach(groupedChips, function (value) {
-                    _.forEach(value, function (dup) {
-                        dup.isDuplicate = false;
-                    });
-                    if (value.length > 1) {
-                        _.last(value).isDuplicate = true;
+                _.forEach(groupedChips, function (chips) {
+                    //If more than one duplicates exists then mark them all as duplicates
+                    if (chips.length > 1) {
+                        _.forEach(chips, function (chip) {
+                            chip.isDuplicate = true;
+                        });
                     }
+                    _.first(chips).isDuplicate = false;
                 });
             }
 
@@ -318,12 +341,12 @@ WM.module('wm.widgets.form')
             }
 
             //Intialize $s level variables
-            function init($s) {
-                $s.newItem       = {};
-                $s.dropdown      = {};
-                $s.selectedChips = [];
-                $s.chips         = [];
-                $s.studioMode    = CONSTANTS.isStudioMode;
+            function init($s, widgetId) {
+                $s.newItem              = {};
+                $s.dropdown             = {};
+                $s.selectedChips        = [];
+                $s.chips                = [];
+                $s.isWidgetInsideCanvas = !!widgetId;
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
@@ -333,12 +356,13 @@ WM.module('wm.widgets.form')
                 case 'dataset':
                 case 'displayfield':
                 case 'datafield':
-                    var data;
-                    if ($s.dataset) {
+                    var data = $s.dataset;
+                    if (data) {
                         if ($s.binddataset) {
-                            data = $s.dataset.data || (WM.isArray($s.dataset) ? $s.dataset : [$s.dataset]);
-                        } else {
-                            data = _.split($s.dataset, ',');
+                            data = data.data || (WM.isArray(data) ? data : [data]);
+                        } else if (!WM.isArray(data)) {
+                            //Filter usecase where data is array but there is no binding
+                            data = _.split(data, ',');
                         }
                         //Support for order by
                         if ($s.orderby) {
@@ -374,19 +398,19 @@ WM.module('wm.widgets.form')
                                     if (!newVal) {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
-                                    } else if (!$is.binddataset) {
-                                        //Handling the script usecase
-                                        data = _.split(newVal, ',');
-                                        createSelectOptions(data, $is);
+                                    } else {
+                                        /*Handling the script usecase
+                                        Update the selected options when the _model_ is updated while adding or deleting or editing a chip*/
+                                        updateSelectedChips(newVal, $is);
                                     }
                                 }
                             });
                         }
                     },
                     'post': function ($s, $el, attrs) {
-                        init($s);
+                        init($s, attrs.widgetid);
 
-                        if (!$s.studioMode) {
+                        if (!$s.isWidgetInsideCanvas) {
                             $s.handleEnterKeyPressEvent  = handleEnterKeyPressEvent.bind(undefined, $s);
                             $s.setActiveStates           = setActiveStates.bind(undefined, $s);
                             $s.makeEditable              = makeEditable.bind(undefined, $s);
@@ -396,6 +420,15 @@ WM.module('wm.widgets.form')
                             $s.addItem                   = addItem.bind(undefined, $s);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
+                        }
+
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            //Form and filter usecase where scopedataset is updated programatically
+                            $s.$watch('scopedataset', function () {
+                                if ($s.scopedataset) {
+                                    $s.dataset = $s.scopedataset;
+                                }
+                            }, true);
                         }
 
                         // register the property change handler
