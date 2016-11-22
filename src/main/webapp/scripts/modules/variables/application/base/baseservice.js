@@ -100,7 +100,8 @@ wm.variables.services.Variables = [
                 {
                     "collectionType"    : "data",
                     "category"          : "wm.WebSocketVariable",
-                    "defaultName"       : "webSocketVariable"
+                    "defaultName"       : "webSocketVariable",
+                    "methods"           : ['open', 'send', 'close']
                 }
             ],
 
@@ -1203,6 +1204,7 @@ wm.variables.services.Variables = [
         /*function to retrieve service and live variables from the collection, other than the variable name provided.*/
             retrieveEventCallbackVariables = function (variableName, context) {
                 var variableArray = [],
+                    methods,
                     varCollection = self.variableCollection,
                     contextsVariables = context ? [varCollection[context]] : [varCollection[VARIABLE_CONSTANTS.OWNER.APP], varCollection[$rootScope.activePageName]];
 
@@ -1215,7 +1217,8 @@ wm.variables.services.Variables = [
                         if (isEventCallbackVariable(curVariable.category)) {
                             /*checking if current variable name is not equal to the variable name provided.*/
                             if (!variableName || curVariableName !== variableName) {
-                                variableArray.push({name: curVariableName, category: curVariable.category});
+                                methods = _.find(variableConfig, {'category' : curVariable.category}).methods;
+                                variableArray.push({name: curVariableName, category: curVariable.category, methods : methods});
                             }
                         }
                     });
