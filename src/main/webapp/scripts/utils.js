@@ -179,7 +179,8 @@ WM.module('wm.utils', [])
                 'WHITELIST'       : [{'name' : 'cordova-plugin-whitelist', 'spec': '1.3.0'}],
                 'COMPAT'          : [{'name' : 'cordova-plugin-compat', 'spec': '1.0.0'}],
                 'INAPPBROWSER'    : [{'name' : 'cordova-plugin-inappbrowser', 'spec' : '1.5.0'}],
-                'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.2.0'}]
+                'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.2.0'}],
+                'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : '1.4.8'}]
             };
 
         /* set default attrs for link */
