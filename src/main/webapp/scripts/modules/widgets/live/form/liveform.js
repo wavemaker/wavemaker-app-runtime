@@ -31,7 +31,6 @@ WM.module('wm.widgets.live')
                 }
                 return undefined;
             },
-            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
             pageTemplate,
             defaultTemplate;
 
@@ -737,7 +736,7 @@ WM.module('wm.widgets.live')
                 /*returns the default output formats for date time types*/
                 $scope.getOutputPatterns = function (type, outputFormat) {
                     if ($scope.isDateTimeWidgets[type]) {
-                        return dateTimeFormats[type];
+                        return Utils.getDateTimeFormatForType(type);
                     }
                     return outputFormat;
                 };

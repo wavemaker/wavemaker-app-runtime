@@ -95,8 +95,6 @@ WM.module('wm.widgets.live')
                         }
 
                     };
-                    $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
-                    $scope.isDateTime = Utils.getDateTimeTypes();
                     $scope.isUpdateMode = true;
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {

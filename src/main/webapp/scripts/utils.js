@@ -1538,6 +1538,11 @@ WM.module('wm.utils', [])
             return DEFAULT_FORMATS;
         }
 
+        // This function returns the default format of the selected type from the DEFAULT_FORMATS obj
+        function getDateTimeFormatForType(type) {
+            return DEFAULT_FORMATS[_.toUpper(type)];
+        }
+
         /*Function that checks if the dataset is valid or not*/
         function isValidDataSet(dataset) {
             return ((WM.isArray(dataset) && dataset.length > 0) || (WM.isObject(dataset) && Object.keys(dataset).length > 0));
@@ -2257,6 +2262,7 @@ WM.module('wm.utils', [])
         this.getDataSetWidgets          = getDataSetWidgets;
         this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  = getDateTimeDefaultFormats;
+        this.getDateTimeFormatForType   = getDateTimeFormatForType;
         this.isValidDataSet             = isValidDataSet;
         this.parseCombinedPageContent   = parseCombinedPageContent;
         this.extractType                = extractType;

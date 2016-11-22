@@ -49,7 +49,6 @@ wm.variables.services.$liveVariable = [
             invalidVariables = [],
             isDeployReqSourceChanged,
             packageDetails = {},
-            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
             isDateTime = Utils.getDateTimeTypes(),
             emptyArr = [],
         /*Function to clear set variables*/
@@ -76,7 +75,7 @@ wm.variables.services.$liveVariable = [
                     if (type === 'time' && !epoch) {
                         epoch = moment(new Date().toDateString() + ' ' + dateValue).valueOf();
                     }
-                    return dateValue && $filter('date')(epoch, dateTimeFormats[type]);
+                    return dateValue && $filter('date')(epoch, Utils.getDateTimeFormatForType(type));
                 };
                 if (WM.isArray(value)) {
                     return _.map(value, function (val) {
