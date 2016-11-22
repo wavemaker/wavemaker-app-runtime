@@ -17,7 +17,7 @@ import com.wavemaker.studio.common.WMRuntimeException;
  * @since 23/6/16
  */
 public enum VariableType {
-    NONE {
+    PROMPT {
         @Override
         public Object getValue(final Class<?> fieldType) {
             return null;

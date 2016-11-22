@@ -19,8 +19,8 @@ import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.queries.QueryType;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
+import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.runtime.data.model.returns.ReturnType;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
 import com.wavemaker.studio.common.util.StringTemplate;
 
@@ -97,21 +97,21 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
                 property.setName(returnAliases[i]);
             }
 
-            ReturnType returnType = new ReturnType();
+            FieldType fieldType = new FieldType();
             String typeRef = type.getName();
             if (type.isCollectionType()) {
-                returnType.setType(ReturnType.Type.COLLECTION);
+                fieldType.setType(FieldType.Type.COLLECTION);
             } else if (type.isAssociationType()) {
-                returnType.setType(ReturnType.Type.REFERENCE);
+                fieldType.setType(FieldType.Type.REFERENCE);
             } else {
-                returnType.setType(ReturnType.Type.SIMPLE);
+                fieldType.setType(FieldType.Type.SIMPLE);
             }
             if (type instanceof AbstractStandardBasicType) {
                 typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
             }
 
-            returnType.setRef(typeRef);
-            property.setReturnType(returnType);
+            fieldType.setRef(typeRef);
+            property.setFieldType(fieldType);
 
             properties.add(property);
         }
@@ -124,7 +124,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     }
 
     private List<ReturnProperty> getMetaForDML() {
-        return Collections.singletonList(new ReturnProperty(null, new ReturnType(ReturnType.Type.SIMPLE, Integer
+        return Collections.singletonList(new ReturnProperty(null, new FieldType(FieldType.Type.SIMPLE, Integer
                 .class.getName())));
     }
 }

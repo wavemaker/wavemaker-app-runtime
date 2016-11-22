@@ -18,6 +18,8 @@ public class RuntimeQuery {
     private String countQueryString;
 
     private boolean nativeSql;
+    private boolean fetchCount;
+
     @NotNull
     private QueryType type;
 
@@ -31,6 +33,7 @@ public class RuntimeQuery {
         this.queryString = other.queryString;
         this.type = other.type;
         this.countQueryString = other.countQueryString;
+        this.fetchCount = other.fetchCount;
         this.nativeSql = other.nativeSql;
         this.parameters = other.parameters;
     }
@@ -57,6 +60,14 @@ public class RuntimeQuery {
 
     public void setCountQueryString(final String countQueryString) {
         this.countQueryString = countQueryString;
+    }
+
+    public boolean isFetchCount() {
+        return fetchCount;
+    }
+
+    public void setFetchCount(final boolean fetchCount) {
+        this.fetchCount = fetchCount;
     }
 
     public boolean isNativeSql() {
