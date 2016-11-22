@@ -1352,20 +1352,24 @@ $.widget('wm.datagrid', {
     setFocusOnElement: function (e, $el) {
         var $firstEl,
             $target = $(e.target);
-        if (!$el) {
-            $el = $target.closest('tr').find('td.cell-editing');
-        }
-        $firstEl = $($el).first().find('input');
-        if (!$firstEl.length) {
-            $firstEl = $($el).first().find('textarea');
-        }
-        if (!$firstEl.length) {
-            $firstEl = $($el).first().find('select');
-        }
+        //If focused directly on the cell, focus the input in the cell
         if ($target.hasClass('app-datagrid-cell')) {
-            $target.find('input').focus();
+            $firstEl = $target.find('input');
         } else {
-            $firstEl.focus();
+            if (!$el) {
+                $el = $target.closest('tr').find('td.cell-editing');
+            }
+            $firstEl = $($el).first().find('input');
+            if (!$firstEl.length) {
+                $firstEl = $($el).first().find('textarea');
+            }
+            if (!$firstEl.length) {
+                $firstEl = $($el).first().find('select');
+            }
+        }
+        //Focus the fiest element
+        if ($firstEl.length) {
+            $firstEl.first().focus();
         }
     },
     removeNewRow: function ($row) {
