@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -2172,6 +2172,16 @@ WM.module('wm.utils', [])
             }
         }
 
+        function loadActiveTheme() {
+            var themeName =  $rootScope.project.activeTheme || CONSTANTS.DEFAULT_THEME;
+            $rootScope.activeTheme = themeName;
+            WM.element('link[theme="wmtheme"]').remove();
+            if ($rootScope.isMobileApplicationType) {
+                themeName += '/android';
+            }
+            loadStyleSheet(getProjectResourcePath($rootScope.project.id) + 'themes/' + themeName + '/style.css', {name: "theme", value: "wmtheme"});
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2293,4 +2303,5 @@ WM.module('wm.utils', [])
         this.evalExp                    = evalExp;
         this.convertToArray             = convertToArray;
         this.pluginConfig               = pluginConfig;
+        this.loadActiveTheme            = loadActiveTheme;
     }]);
