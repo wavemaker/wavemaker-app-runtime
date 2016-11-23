@@ -423,18 +423,15 @@ WM.module("wm.widgets.basic")
                 };
 
                 $scope.pageChanged = function () {
-                    var callbackFn = $scope.$parent.onPaginationchange || $scope.onPaginationchange;
+                    var callbackFn = $scope.$parent._onPaginationchange || $scope.$parent.onPaginationchange || $scope.onPaginationchange;
                     $scope.goToPage();
                     callbackFn({$event: undefined, $scope: this, $index: $scope.dn.currentPage});
                 };
 
                 /*Function to navigate to the respective pages.*/
                 $scope.navigatePage = function (index, event, isRefresh, callback) {
-                    if ($scope.$parent.onPaginationchange) {
-                        $scope.$parent.onPaginationchange({$event: event, $scope: this, $index: $scope.dn.currentPage});
-                    } else if ($scope.onPaginationchange) {
-                        $scope.onPaginationchange({$event: event, $scope: this, $index: $scope.dn.currentPage});
-                    }
+                    var callbackFn = $scope.$parent._onPaginationchange || $scope.$parent.onPaginationchange || $scope.onPaginationchange;
+                    callbackFn({$event: undefined, $scope: this, $index: $scope.dn.currentPage});
 
                     /*Convert the current page to a valid page number.*/
                     $scope.dn.currentPage = parseInt($scope.dn.currentPage, 10);
