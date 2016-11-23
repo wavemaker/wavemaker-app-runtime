@@ -394,7 +394,7 @@ WM.module('wm.widgets.live')
                                     onResult(success, false);
                                     return;
                                 }
-                                onResult(success, true);
+                                onResult(requestData.row, true);
                                 $scope.clearData();
                                 $scope.toggleMessage(true, $scope.deletemessage, 'success');
                                 $scope.isSelected = false;
