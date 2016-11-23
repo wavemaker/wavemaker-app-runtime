@@ -11,6 +11,7 @@ WM.module('wm.widgets.form')
                 ' ng-readonly="readonly" ' +
                 ' ng-required="required" ' +
                 ' ng-disabled="disabled" ' +
+                ' step="{{step}}"' +
                 ' accesskey="{{::shortcutkey}}"' +
                 ' ng-change="_onChange({$event: $event, $scope: this})">' +
             '</div>'

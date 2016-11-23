@@ -577,7 +577,9 @@ WM.module('wm.widgets.live')
             }
 
             function getCurrencyTemplate(fieldDef, index) {
-                var additionalFields = 'currency="{{formFields[' + index + '].currency}}"';
+                var additionalFields,
+                    stepVal = fieldDef.step || getStepValue(fieldDef.type);
+                additionalFields = 'currency="{{formFields[' + index + '].currency}}" ' + stepVal ? ' step="' + stepVal + '" ' : '';
                 return getDefaultTemplate('currency', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
 
