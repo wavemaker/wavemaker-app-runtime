@@ -1218,7 +1218,7 @@ $.widget('wm.datagrid', {
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
         data = this.options.data[rowId];
-        selected = rowData.selected || false;
+        selected = (rowData && rowData.selected) || false;
         if (!options.skipSingleCheck && (($row.hasClass('active') && !this.options.multiselect) || !rowData)) {
             callRowSelectionEvents();
             return;

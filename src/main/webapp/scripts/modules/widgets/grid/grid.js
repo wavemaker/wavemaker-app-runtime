@@ -587,15 +587,6 @@ WM.module('wm.widgets.grid')
                                     }
                                 }
                                 scope.populateActions();
-                                if (CONSTANTS.isStudioMode) {
-                                    actionsObj = {
-                                        type: 'GRID',
-                                        widgetName: scope.name,
-                                        scopeId: scope.$id,
-                                        buttonDefs: scope.actions
-                                    };
-                                    scope.updateMarkupForGrid(actionsObj);
-                                }
                                 break;
                             case 'show':
                                 /* handle show/hide events based on show property change */
