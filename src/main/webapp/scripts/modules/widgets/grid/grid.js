@@ -330,7 +330,9 @@ WM.module('wm.widgets.grid')
                                 'greaterthan'      : scope.appLocale.LABEL_GREATER_THAN,
                                 'greaterthanequal' : scope.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
                                 'null'             : scope.appLocale.LABEL_IS_NULL,
+                                'isnotnull'        : scope.appLocale.LABEL_IS_NOT_NULL,
                                 'empty'            : scope.appLocale.LABEL_IS_EMPTY,
+                                'isnotempty'       : scope.appLocale.LABEL_IS_NOT_EMPTY,
                                 'nullorempty'      : scope.appLocale.LABEL_IS_NULL_OR_EMPTY
                             },
                             handlers = [],
@@ -361,7 +363,7 @@ WM.module('wm.widgets.grid')
                             scope.title = scope.gridcaption;
                         }
                         scope.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
-                        scope.emptyMatchModes   = ['null', 'empty', 'nullorempty'];
+                        scope.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
                         scope.matchModesMap     = matchModesMap;
                         scope.gridElement       = element;
                         scope.gridColumnCount   = gridColumnCount;
@@ -996,7 +998,6 @@ WM.module('wm.widgets.grid')
                         'page'         : 1,
                         'filterFields' : $scope.filterFields,
                         'matchMode'    : 'anywhere',
-                        'ignoreCase'   : true,
                         'scope'        : $scope.gridElement.scope()
                     }, WM.noop, function () {
                         $scope.toggleMessage(true, 'error', $scope.nodatamessage);
@@ -1026,7 +1027,6 @@ WM.module('wm.widgets.grid')
                             'filterFields' : filterFields,
                             'orderBy'      : sortOptions,
                             'matchMode'    : 'anywhere',
-                            'ignoreCase'   : true,
                             'scope'        : $scope.gridElement.scope()
                         }, function () {
                             $scope.onSort({$event: e, $data: $scope.serverData});

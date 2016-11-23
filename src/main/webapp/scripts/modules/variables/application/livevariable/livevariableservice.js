@@ -444,40 +444,92 @@ wm.variables.services.$liveVariable = [
                     Utils.triggerFn(callback, projectID, variable, options, success);
                 }, WM.noop);
             },
+            //Check if the type is string or text
+            isStringType = function (type) {
+                return _.includes(['text', 'string'], _.toLower(type));
+            },
+            //Wrap the field name and value in lower() in ignore case scenario
+            wrapInLowerCase = function (value, options, ignoreCase) {
+                //If ignore case is true and type is string/ text and match mode is string type, wrap in lower()
+                if (ignoreCase && isStringType(options.attributeType) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
+                    return 'lower(' + value + ')';
+                }
+                return value;
+            },
+            //Encode the value and wrap it inside single quotes
+            encodeWithQuotes = function (value) {
+                return '\'' + encodeURIComponent(value) + '\'';
+            },
+            //Get the param value based on the filter condition
+            getParamValue = function (value, options, ignoreCase) {
+                var param,
+                    filterCondition = options.filterCondition,
+                    dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES;
+                if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                    //For empty matchmodes, no value is required
+                    return '';
+                }
+                switch (filterCondition) {
+                case dbModes.start:
+                    param = encodeWithQuotes(value + '%');
+                    param = wrapInLowerCase(param, options, ignoreCase);
+                    break;
+                case dbModes.end:
+                    param = encodeWithQuotes('%' + value);
+                    param = wrapInLowerCase(param, options, ignoreCase);
+                    break;
+                case dbModes.anywhere:
+                    param = encodeWithQuotes('%' + value + '%');
+                    param = wrapInLowerCase(param, options, ignoreCase);
+                    break;
+                case dbModes.exact:
+                case dbModes.notequals:
+                    param = encodeWithQuotes(value);
+                    param = wrapInLowerCase(param, options, ignoreCase);
+                    break;
+                case dbModes.between:
+                    param = _.join(_.map(value, function (val) {
+                        return encodeWithQuotes(val);
+                    }), ' and ');
+                    break;
+                case dbModes.in:
+                    param = _.join(_.map(value, function (val) {
+                        return encodeWithQuotes(val);
+                    }), ', ');
+                    param = '(' + param + ')';
+                    break;
+                default:
+                    param = encodeWithQuotes(value);
+                    break;
+                }
+                return param || '';
+            },
             //Generate the search query based on the filter options
-            getSearchQuery = function (filterOptions, operator) {
+            getSearchQuery = function (filterOptions, operator, ignoreCase) {
                 var query,
                     params = [];
                 _.forEach(filterOptions, function (fieldValue) {
-                    var param           = fieldValue.attributeName + ' ',
+                    var fieldName       = fieldValue.attributeName,
                         value           = fieldValue.attributeValue,
                         filterCondition = fieldValue.filterCondition,
-                        matchMode       = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition],
-                        isValArray      = _.isArray(value);
+                        isValArray      = _.isArray(value),
+                        dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES,
+                        matchModeExpr,
+                        paramValue;
                     // If value is an empty array, do not generate the query
                     // If values is NaN and number type, do not generate query for this field
                     if ((isValArray && _.isEmpty(value)) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
                         return;
                     }
                     if (isValArray) {
-                        matchMode = matchMode === 'between' ? matchMode : 'in';
+                        //If array is value and mode is between, pass between. Else pass as in query
+                        filterCondition            = filterCondition === dbModes.between ? filterCondition : dbModes.in;
+                        fieldValue.filterCondition = filterCondition;
                     }
-                    param = param + matchMode;
-                    //For null empty match modes value is not required
-                    if (!_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
-                        //If value is an array, generate query with values between ()
-                        if (isValArray) {
-                            param = param + ' (';
-                            _.forEach(value, function (val) {
-                                param = param + ' ' + '\'' + encodeURIComponent(val) + '\'' + ' ,';
-                            });
-                            param = param.slice(0, -2);
-                            param = param + ' )';
-                        } else {
-                            param = param + ' ' + '\'' + encodeURIComponent(value) + '\'';
-                        }
-                    }
-                    params.push(param);
+                    matchModeExpr  = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
+                    paramValue     = getParamValue(value, fieldValue, ignoreCase);
+                    fieldName      = wrapInLowerCase(fieldName, fieldValue, ignoreCase);
+                    params.push(Utils.replace(matchModeExpr, [fieldName, paramValue]));
                 });
                 query = _.join(params, operator); //empty space added intentionally around OR
                 return query;
@@ -572,7 +624,7 @@ wm.variables.services.$liveVariable = [
                         filterOptions.push(filterOption);
                     } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                         attributeName = getAttributeName(variable, fieldName);
-                        if (fieldType && fieldType !== 'string') {
+                        if (fieldType && !isStringType(fieldType)) {
                             filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
                         }
                         filterOption = {
@@ -605,8 +657,8 @@ wm.variables.services.$liveVariable = [
                 _.forEach(clonedFields, function (value, key) {
                     if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
                         value.fieldName = key;
-                        if (getSQLFieldType(variable, value) === 'string') {
-                            value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                        if (isStringType(getSQLFieldType(variable, value))) {
+                            value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || variable.matchMode];
                         }
                         value.isVariableFilter = true;
                         filterFields.push(value);
@@ -626,9 +678,9 @@ wm.variables.services.$liveVariable = [
                  */
                 if (options.searchWithQuery && filterOptions.length) {
                     //Generate query for variable filter fields. This has AND logical operator
-                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ');
+                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ', variable.ignoreCase);
                     //Generate query for option filter fields. This has default logical operator as OR
-                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ');
+                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
                     if (optionsQuery) {
                         //If both variable and option query are present, merge them with AND
                         query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
@@ -1497,7 +1549,7 @@ wm.variables.services.$liveVariable = [
                         filterFields.push(value);
                     });
                     filterOptions = getFilterOptions(variable, filterFields, options);
-                    query         = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ');
+                    query         = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
                     action        = query ? 'searchTableDataWithQuery' : 'readTableData';
                     orderBy       = _.isEmpty(options.orderBy) ? '' : 'sort=' + options.orderBy;
                     DatabaseService[action]({
