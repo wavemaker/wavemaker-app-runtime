@@ -172,7 +172,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     }
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
-        return new DownloadResponse(is, exportType.name(), entityClass.getSimpleName() + exportType.getExtension());
+        return new DownloadResponse(is, exportType.getContentType(),
+                entityClass.getSimpleName() + exportType.getExtension());
     }
 
 

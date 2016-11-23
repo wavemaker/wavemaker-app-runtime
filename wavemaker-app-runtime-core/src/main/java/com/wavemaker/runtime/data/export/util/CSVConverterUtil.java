@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,10 +14,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 /**
+ * This code is taken from org.apache.poi.ss.examples
+ *
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 3/11/16
  */
-public class CSVUtils {
+public class CSVConverterUtil {
 
     private Workbook workbook;
     private DataFormatter formatter = new DataFormatter(true);
@@ -29,13 +32,13 @@ public class CSVUtils {
 
     public static final int EXCEL_STYLE_ESCAPING = 0;
 
-    public CSVUtils(final Workbook workbook) {
+    public CSVConverterUtil(final Workbook workbook) {
         this.workbook = workbook;
         this.csvData = new ArrayList<>();
         this.evaluator = this.workbook.getCreationHelper().createFormulaEvaluator();
     }
 
-    public void convertXlsToCSV(OutputStream outputStream) {
+    public void convert(OutputStream outputStream) {
         try {
             convertToCSV();
             toCSV(outputStream);
@@ -54,7 +57,7 @@ public class CSVUtils {
             sheet = this.workbook.getSheetAt(index);
             if (sheet.getPhysicalNumberOfRows() > 0) {
                 lastRowNum = sheet.getLastRowNum();
-                for (int i = 0; i < lastRowNum; i++) {
+                for (int i = 0; i <= lastRowNum; i++) {
                     row = sheet.getRow(i);
                     rowToCSV(row);
                 }
@@ -134,7 +137,7 @@ public class CSVUtils {
                 if (cell == null) {
                     csvLine.add("");
                 } else {
-                    if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
+                    if (cell.getCellTypeEnum() != CellType.FORMULA) {
                         csvLine.add(this.formatter.formatCellValue(cell));
                     } else {
                         csvLine.add(this.formatter.formatCellValue(cell, this.evaluator));

@@ -15,7 +15,7 @@ import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
 import com.wavemaker.runtime.data.export.nativesql.NativeSQLDataExporter;
-import com.wavemaker.runtime.data.export.util.ReportDataSourceUtils;
+import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
 
 /**
@@ -48,8 +48,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
         namedQuery.setFirstResult(pageable.getOffset());
         namedQuery.setMaxResults(pageable.getPageSize());
         if (isNative) {
-            exporter = new NativeSQLDataExporter(
-                    ReportDataSourceUtils.constructResultSet(namedQuery.scroll()));
+            exporter = new NativeSQLDataExporter(DataSourceExporterUtil.constructResultSet(namedQuery.scroll()));
         } else {
             exporter = new HQLQueryDataExporter(namedQuery.scroll(), HQLQueryUtils.extractMetaForHql(namedQuery));
         }

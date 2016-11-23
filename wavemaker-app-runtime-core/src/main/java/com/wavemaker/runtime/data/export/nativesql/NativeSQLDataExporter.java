@@ -3,12 +3,11 @@ package com.wavemaker.runtime.data.export.nativesql;
 import java.io.ByteArrayOutputStream;
 import java.sql.ResultSet;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.data.export.DataExporter;
-import com.wavemaker.runtime.data.export.ExportBuilder;
 import com.wavemaker.runtime.data.export.ExportType;
 
 /**
@@ -29,9 +28,9 @@ public class NativeSQLDataExporter extends DataExporter {
 
     @Override
     public ByteArrayOutputStream export(ExportType exportType) {
-        logger.info("Exporting all Records matching the given input query to the given exportType format");
-        ExportBuilder exportBuilder = new NativeSQLExportBuilder(results);
-        XSSFWorkbook workbook = exportBuilder.build();
+        logger.info(
+                "Exporting all Records matching the given input query to the given exportType format " + exportType);
+        Workbook workbook = NativeSQLExportBuilder.build(results);
         return exportWorkbook(workbook, exportType);
     }
 }

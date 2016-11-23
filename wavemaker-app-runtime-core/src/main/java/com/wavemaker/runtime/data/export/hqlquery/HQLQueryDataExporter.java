@@ -3,15 +3,13 @@ package com.wavemaker.runtime.data.export.hqlquery;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.data.export.DataExporter;
-import com.wavemaker.runtime.data.export.ExportBuilder;
 import com.wavemaker.runtime.data.export.ExportType;
-import com.wavemaker.runtime.data.export.nativesql.NativeSQLDataExporter;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 
 /**
@@ -20,7 +18,7 @@ import com.wavemaker.runtime.data.model.returns.ReturnProperty;
  */
 public class HQLQueryDataExporter extends DataExporter {
 
-    private static final Logger logger = LoggerFactory.getLogger(NativeSQLDataExporter.class);
+    private static final Logger logger = LoggerFactory.getLogger(HQLQueryDataExporter.class);
 
 
     private ScrollableResults results;
@@ -35,9 +33,9 @@ public class HQLQueryDataExporter extends DataExporter {
 
     @Override
     public ByteArrayOutputStream export(final ExportType exportType) {
-        logger.info("Exporting all Records matching the given input query to the given exportType format");
-        ExportBuilder exportBuilder = new HQLQueryExportBuilder(results, returnPropertyList);
-        XSSFWorkbook workbook = exportBuilder.build();
+        logger.info(
+                "Exporting all Records matching the given input query to the given exportType format " + exportType);
+        Workbook workbook = HQLQueryExportBuilder.build(results, returnPropertyList);
         return exportWorkbook(workbook, exportType);
     }
 }

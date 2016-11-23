@@ -59,12 +59,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public Page<Object> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Pageable pageable) {
-        final Pageable _pageable;
-        if (pageable == null) {
-            _pageable = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-        } else {
-            _pageable = pageable;
-        }
+        final Pageable _pageable = getValidPageable(pageable);
         return template.execute(new HibernateCallback<Page<Object>>() {
             @Override
             public Page<Object> doInHibernate(Session session) throws HibernateException {
@@ -149,22 +144,16 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType, _pageable);
         ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
         InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
-        return new DownloadResponse(is, exportType.name(), queryName + exportType.getExtension());
+        return new DownloadResponse(is, exportType.getContentType(), queryName + exportType.getExtension());
     }
 
     protected Page<Object> executeNativeQuery(
             final String queryString, final Map<String, Object> params, final Pageable pageable) {
-        final Pageable _pageable;
-        if (pageable == null) {
-            _pageable = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-        } else {
-            _pageable = pageable;
-        }
+        final Pageable _pageable = getValidPageable(pageable);
         return template.execute(new HibernateCallback<Page<Object>>() {
             @Override
             public Page<Object> doInHibernate(final Session session) throws HibernateException {
                 SQLQuery sqlQuery;
-
                 Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
                 sqlQuery = createNativeQuery(queryString, _pageable.getSort(), params);
                 sqlQuery.setFirstResult(_pageable.getOffset());

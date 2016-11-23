@@ -4,12 +4,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellUtil;
 
 import com.wavemaker.runtime.data.export.ExportBuilder;
-import com.wavemaker.runtime.data.export.util.ReportDataSourceUtils;
+import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -20,24 +22,26 @@ public class NativeSQLExportBuilder extends ExportBuilder {
 
     private ResultSet resultSet;
 
-    public NativeSQLExportBuilder(final ResultSet resultSet) {
+    private NativeSQLExportBuilder(final ResultSet resultSet) {
         this.resultSet = resultSet;
     }
 
+    public static Workbook build(ResultSet results) {
+        NativeSQLExportBuilder builder = new NativeSQLExportBuilder(results);
+        return builder.build();
+    }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addFields(
-            XSSFSheet sheet) throws SQLException {
+    public void addColumnHeaders(Sheet sheet) throws SQLException {
         int rowNum = STARTING_ROW_NUMBER;
-        XSSFRow titleRow = sheet.createRow(rowNum);
+        Row colHeaderRow = sheet.createRow(rowNum);
         Integer colNum = STARTING_COLUMN_NUMBER;
         ResultSetMetaData metaData = resultSet.getMetaData();
 
         for (int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
-            XSSFCell cell = titleRow.createCell(colNum);
             String columnName = metaData.getColumnName(columnIndex);
-            ReportDataSourceUtils.addColumnTitleCell(cell, columnName);
+            CellUtil.createCell(colHeaderRow, colNum, columnName, columnHeaderStyle(sheet.getWorkbook()));
             colNum++;
         }
         sheet.autoSizeColumn(rowNum);
@@ -45,18 +49,17 @@ public class NativeSQLExportBuilder extends ExportBuilder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addData(
-            XSSFSheet spreadSheet) throws SQLException {
+    public void addColumnData(Sheet spreadSheet) throws SQLException {
         int rowNum = START_ROW_NUMBER_OF_DATA;
         ResultSetMetaData metaData = resultSet.getMetaData();
         while (resultSet.next()) {
-            XSSFRow row = spreadSheet.createRow(rowNum);
+            Row row = spreadSheet.createRow(rowNum);
             row.setHeightInPoints(ROW_HEIGHT);
             Integer colNum = STARTING_COLUMN_NUMBER;
             for (int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
                 Object columnValue = resultSet.getObject(columnIndex);
-                XSSFCell cell = row.createCell(colNum);
-                ReportDataSourceUtils.addCell(columnValue, cell);
+                Cell cell = row.createCell(colNum);
+                DataSourceExporterUtil.setCellValue(columnValue, cell);
                 colNum++;
             }
             spreadSheet.autoSizeColumn(rowNum);

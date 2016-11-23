@@ -3,9 +3,9 @@ package com.wavemaker.runtime.data.export;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 
-import com.wavemaker.runtime.data.export.util.CSVUtils;
+import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
 import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
@@ -16,19 +16,18 @@ public abstract class DataExporter {
 
     public abstract ByteArrayOutputStream export(ExportType exportType);
 
-    protected ByteArrayOutputStream exportWorkbook(
-            final XSSFWorkbook workbook, final ExportType exportType) {
+    protected ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             if (exportType == ExportType.EXCEL) {
                 workbook.write(outputStream);
             } else if (exportType == ExportType.CSV) {
-                CSVUtils CSVUtils = new CSVUtils(workbook);
-                CSVUtils.convertXlsToCSV(outputStream);
+                CSVConverterUtil CSVConverterUtil = new CSVConverterUtil(workbook);
+                CSVConverterUtil.convert(outputStream);
             }
             return outputStream;
         } catch (IOException e) {
-            throw new WMRuntimeException("Error while exporting data",e);
+            throw new WMRuntimeException("Error while exporting data", e);
         }
     }
 }
