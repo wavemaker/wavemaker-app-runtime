@@ -42,7 +42,7 @@ WM.module('wm.widgets.live')
                 filterMarkup = '',
                 FILTER_CONSTANTS = {
                     'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',
-                    'EMPTY_VALUE' : 'No Value',
+                    'EMPTY_VALUE' : $rootScope.appLocale.LABEL_NO_VALUE,
                     'NULLEMPTY'   : ['null', 'empty'],
                     'NULL'        : 'null',
                     'EMPTY'       : 'empty',

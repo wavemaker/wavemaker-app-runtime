@@ -321,18 +321,18 @@ WM.module('wm.widgets.grid')
                                 'enablecolumnselection' : 'enableColumnSelection'
                             },
                             matchModesMap = {
-                                'start'            : 'Starts with',
-                                'end'              : 'Ends with',
-                                'anywhere'         : 'Contains',
-                                'exact'            : 'Is equal to',
-                                'notequals'        : 'Is not equal to',
-                                'lessthan'         : 'Less than',
-                                'lessthanequal'    : 'Less than or equals to',
-                                'greaterthan'      : 'Greater than',
-                                'greaterthanequal' : 'Greater than or equals to',
-                                'null'             : 'Is null',
-                                'empty'            : 'Is empty',
-                                'nullorempty'      : 'Is null or empty'
+                                'start'            : scope.appLocale.LABEL_STARTS_WITH,
+                                'end'              : scope.appLocale.LABEL_ENDS_WITH,
+                                'anywhere'         : scope.appLocale.LABEL_CONTAINS,
+                                'exact'            : scope.appLocale.LABEL_IS_EQUAL_TO,
+                                'notequals'        : scope.appLocale.LABEL_IS_NOT_EQUAL_TO,
+                                'lessthan'         : scope.appLocale.LABEL_LESS_THAN,
+                                'lessthanequal'    : scope.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
+                                'greaterthan'      : scope.appLocale.LABEL_GREATER_THAN,
+                                'greaterthanequal' : scope.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
+                                'null'             : scope.appLocale.LABEL_IS_NULL,
+                                'empty'            : scope.appLocale.LABEL_IS_EMPTY,
+                                'nullorempty'      : scope.appLocale.LABEL_IS_NULL_OR_EMPTY
                             },
                             handlers = [],
                             liveGrid = element.closest('.app-livegrid'),
@@ -1000,7 +1000,7 @@ WM.module('wm.widgets.grid')
                         'ignoreCase'   : true,
                         'scope'        : $scope.gridElement.scope()
                     }, WM.noop, function () {
-                        $scope.toggleMessage(true, 'error', 'No results found.');
+                        $scope.toggleMessage(true, 'error', $scope.nodatamessage);
                     });
                 },
                 sortHandler = function (sortObj, e) {
@@ -1614,7 +1614,7 @@ WM.module('wm.widgets.grid')
                     $rootScope.$safeApply($scope);
                 },
                 noChangesDetected: function () {
-                    $scope.toggleMessage(true, 'info', 'No changes detected', '');
+                    $scope.toggleMessage(true, 'info', $scope.appLocale.MESSAGE_NO_CHANGES, '');
                     $rootScope.$safeApply($scope);
                 },
                 afterSort: function (e) {
