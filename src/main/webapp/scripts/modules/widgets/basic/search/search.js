@@ -163,7 +163,7 @@ WM.module('wm.widgets.basic')
 
             // this function checks if the variable bound is a live variable or service variable
             function isVariableUpdateRequired($is, scope, calledFromSetDataSet) {
-                var variable          = Variables.getVariableByName(Utils.getVariableName($is, scope), scope),
+                var variable          = _.get(scope, ['Variables', Utils.getVariableName($is, scope)]),
                     updateRequiredFor = ['wm.LiveVariable', 'wm.ServiceVariable'],
                     queryParams       = [];
 
@@ -199,7 +199,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is, element.scope()); //update searchkey options in case of service variables
+                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                     //Selecting first option by default for displayValue if it is undefined
                     if (!$is.displaylabel && !$is.binddisplaylabel) {
                         defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
@@ -255,7 +255,7 @@ WM.module('wm.widgets.basic')
             }
 
             // update search-key, display-label in the property panel
-            function updatePropertyPanelOptions(dataset, $is, element) {
+            function updatePropertyPanelOptions(dataset, $is) {
 
                 // re-initialize the property values
                 if ($is.newcolumns) {
@@ -269,7 +269,7 @@ WM.module('wm.widgets.basic')
                 // assign all the keys to the options of the search widget
                 if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is, element.scope()); //update searchkey options in case of service variables
+                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                 }
             }
 
@@ -468,7 +468,7 @@ WM.module('wm.widgets.basic')
             }
             // This function fetch the updated variable data in case search widget is bound to some variable
             function fetchVariableData($is, el, searchValue, $s) {
-                var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s), $s),  // get the bound variable
+                var variable      = _.get($s, ['Variables', Utils.getVariableName($is, $s)]),  // get the bound variable
                     requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
                     deferred      = $q.defer(),
                     customFilter  = $filter('_custom_search_filter');
