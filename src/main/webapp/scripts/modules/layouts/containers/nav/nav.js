@@ -99,7 +99,11 @@ WM.module('wm.layouts.containers')
                                 $a.append($badge.html(itemBadge));
                             }
                             $a.append($caret);
-                            $li.append($a).attr('uib-dropdown', '').addClass('dropdown');
+                            var $wrapper = WM.element('<div uib-dropdown class="dropdown app-menu">');
+                            $wrapper.append($a);
+                            $li.append($wrapper);
+
+                            //$li.append($a).attr('uib-dropdown', '').addClass('dropdown');
                             $ul = WM.element('<ul uib-dropdown-menu></ul>');
                             itemChildren.forEach(function (child) {
                                 var $a_inner         = WM.element('<a class="app-anchor"></a>'),
@@ -121,7 +125,7 @@ WM.module('wm.layouts.containers')
                                 $li_inner.append($a_inner);
                                 $ul.append($li_inner);
                             });
-                            $li.append($ul);
+                            $wrapper.append($ul);
                             $el.append($li);
                         } else {
                             $i.addClass(itemClass);
