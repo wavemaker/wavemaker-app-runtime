@@ -29,7 +29,7 @@ import com.wavemaker.studio.common.util.CoreFilterUtil;
  */
 public class SSLSecureFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(SSLSecureFilter.class);
-    private final SSLConfig sslConfig = new SSLConfig();
+    private SSLConfig sslConfig = new SSLConfig();
     private List<URLPattern> excludedUrlsList = null;
     @Autowired
     private WMAppSecurityConfig wmAppSecurityConfig;
@@ -38,9 +38,7 @@ public class SSLSecureFilter extends GenericFilterBean {
     protected void initFilterBean() throws ServletException {
         SSLConfig sslConfig = wmAppSecurityConfig.getSslConfig();
         if (sslConfig != null) {
-            this.sslConfig.setUseSSL(sslConfig.isUseSSL());
-            this.sslConfig.setSslPort(sslConfig.getSslPort());
-            this.sslConfig.setExcludedUrls(sslConfig.getExcludedUrls());
+            this.sslConfig = sslConfig;
             excludedUrlsList = CoreFilterUtil.extractExcludedUrlsList(this.sslConfig.getExcludedUrls());
             logger.info("SSLConfig set in filter {}", sslConfig);
         }

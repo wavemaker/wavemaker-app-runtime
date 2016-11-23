@@ -25,6 +25,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -40,10 +41,10 @@ import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import com.wavemaker.studio.common.model.security.RolesConfig;
 import com.wavemaker.studio.common.model.security.CSRFConfig;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
+import com.wavemaker.studio.common.model.security.RolesConfig;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -60,6 +61,9 @@ public class SecurityService {
     private Boolean securityEnabled;
 
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
+
+    @Autowired
+    private WMAppSecurityConfig wmAppSecurityConfig;
 
     public SecurityService() {
     }
@@ -113,7 +117,6 @@ public class SecurityService {
     public Boolean isSecurityEnabled() {
         if (securityEnabled == null) {
             try {
-                WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
                 securityEnabled = wmAppSecurityConfig.isEnforceSecurity();
             } catch (NoSuchBeanDefinitionException e) {
                 securityEnabled = false;
@@ -123,7 +126,6 @@ public class SecurityService {
     }
 
     public LoginConfig getLoginConfig() {
-        WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
         return wmAppSecurityConfig.getLoginConfig();
     }
 
@@ -257,7 +259,6 @@ public class SecurityService {
 
         String[] userRoles = getUserRoles();
         if (userRoles.length > 0) {
-            WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
             RolesConfig rolesConfig = wmAppSecurityConfig.getRolesConfig();
             if (rolesConfig != null) {
                 Map<String, RoleConfig> roleMap = rolesConfig.getRoleMap();
@@ -297,7 +298,6 @@ public class SecurityService {
     }
 
     public List<String> getRoles() {
-        WMAppSecurityConfig wmAppSecurityConfig = getWmAppSecurityConfig();
         RolesConfig rolesConfig = wmAppSecurityConfig.getRolesConfig();
         return (rolesConfig == null) ? Collections.EMPTY_LIST : new ArrayList<>(rolesConfig.getRoleMap().keySet());
     }
@@ -345,9 +345,5 @@ public class SecurityService {
     public void ssoLogin() {
         //DUMMY METHOD to redirect to cas entry point...
         //When this method is invoked, the CAS Filter is intercepted and sends the user to the CAS Login page through CASAuthenticationEntryPoint.
-    }
-
-    private WMAppSecurityConfig getWmAppSecurityConfig() {
-        return WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
     }
 }
