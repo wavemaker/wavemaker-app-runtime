@@ -1285,7 +1285,9 @@ WM.module('wm.widgets.live')
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
                             template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition);
-                            element.html(template);
+                            //Remove only live-field so that overlay won't get overrided
+                            element.find('.live-field').remove();
+                            element.append(template);
                             $compile(element.contents())(parentScope);
                         } else {
                             template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);

@@ -2432,6 +2432,8 @@ WM.module('wm.widgets.base', [])
             }
 
             function onScopeValueChangeProxy($is, $el, attrs, key, nv, ov, listeners) {
+                var $hiddenEleNode,
+                    $hiddenEl;
 
                 if (key === 'placeholder' || key === 'type') {
                     if ($el.is('input') || $el.is('textarea')) {
@@ -2475,10 +2477,21 @@ WM.module('wm.widgets.base', [])
                         $el.addClass('animated ' + nv);
                     }
                 } else if (key === 'show') {
-                    if (nv) {
-                        $el.removeClass('ng-hide');
-                    } else {
-                        $el.addClass('ng-hide');
+                    //If Studio mode and form ele don't add ng-hide add a wrapper to show hidden field message
+                    if ($is.widgetid && $is.widgettype === 'wm-form-field') {
+                        $hiddenEleNode = WM.element('<div class="wm-widget-hidden-msg-overlay"><span class="pull-right badge">' + $rootScope.locale.MESSAGE_HIDDEN_FIELD + '</span></div>');
+                        if (nv) {
+                            $hiddenEl = $el.find('.wm-widget-hidden-msg-overlay');
+                            $hiddenEl.remove();
+                        } else {
+                            $el.append($hiddenEleNode);
+                        }
+                    } else { //Except form-fields in studio mode for all other widgets in studio and run mode honor show property
+                        if (nv) {
+                            $el.removeClass('ng-hide');
+                        } else {
+                            $el.addClass('ng-hide');
+                        }
                     }
                 }
 

@@ -625,7 +625,8 @@ WM.module('wm.widgets.live')
                     widgetType,
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
                     labelLayout,
-                    controlLayout;
+                    controlLayout,
+                    show = CONSTANTS.isRunMode ? 'show="{{formFields[' + index + '].show}}"' : '';
                 captionPosition = captionPosition || 'top';
                 //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
@@ -647,7 +648,7 @@ WM.module('wm.widgets.live')
                 widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType = widgetType.toLowerCase();
                 template = template +
-                    '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
+                    '<wm-composite widget="' + widgetType + '" ' + show + ' class="live-field">' +
                     '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '" show="{{!isUpdateMode}}"></wm-label>';
@@ -940,12 +941,14 @@ WM.module('wm.widgets.live')
                         if (CONSTANTS.isRunMode) {
                             /*On changing of a property in studio mode, generate the template again so that change is reflected*/
                             template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
-                            element.html(template);
+                            //Remove only live-field so that overlay won't get overrided
+                            element.find('.live-field').remove();
+                            element.append(template);
                             $compile(element.contents())(parentScope);
                         }
                     },
                     formWidget = parentScope.Widgets[scope.name + '_formWidget'];
-                if (formWidget) {
+                if (formWidget && key !== 'show') {
                     formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
                 }
                 switch (key) {
