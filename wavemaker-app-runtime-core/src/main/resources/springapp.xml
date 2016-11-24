@@ -108,4 +108,6 @@
 
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
 
+    <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
+
 </beans>
