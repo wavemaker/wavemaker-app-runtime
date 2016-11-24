@@ -104,7 +104,6 @@ WM.module('wm.widgets.form')
                     imageField     = $s.displayimagesrc,
                     displayFieldValue,
                     dataFieldValue,
-                    values,
                     value           = $s.value || $s.datavalue;
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
@@ -126,7 +125,7 @@ WM.module('wm.widgets.form')
                     updateSelectedChips(Utils.getClonedObject(chips), $s);
                 } else if (value) {
                     //Creating chips in form based on the value
-                    updateSelectedChips(values);
+                    updateSelectedChips(value, $s);
                 }
             }
 

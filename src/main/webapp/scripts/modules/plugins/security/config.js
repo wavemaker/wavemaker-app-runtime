@@ -142,6 +142,14 @@ wm.plugins.security.constant('SECURITY_URLS', {
         testADConnection: {
             url: "services/projects/:projectID/securityservice/providers/ad/testconnection",
             method: "POST"
+        },
+        getPolicyConfig: {
+            url: "services/projects/:projectID/securityservice/xss/policy",
+            method: "GET"
+        },
+        setPolicyConfig: {
+            url: "services/projects/:projectID/securityservice/xss/policy",
+            method: "PUT"
         }
     }
 });

@@ -13,8 +13,9 @@ wm.plugins.security.services.SecurityService = [
     "Utils",
     "$rootScope",
     "CONSTANTS",
+    "$q",
 
-    function (BaseService, Utils, $rs, CONSTANTS) {
+    function (BaseService, Utils, $rs, CONSTANTS, $q) {
         'use strict';
 
         /* to store general options & roles */
@@ -1116,6 +1117,52 @@ wm.plugins.security.services.SecurityService = [
                     },
                     data: params.config
                 }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getPolicyConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * get the policy config
+             *
+             * @param {object} params to be used for getting policy config
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+            getPolicyConfig : function (projectID) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: 'Security',
+                    action: 'getPolicyConfig',
+                    urlParams: {
+                        projectID: projectID
+                    }
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
+            },
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#setPolicyConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * set the policy config
+             *
+             * @param {object} params object containing parameters for the request
+             */
+            setPolicyConfig : function (params) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'setPolicyConfig',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                });
             },
 
             /**
