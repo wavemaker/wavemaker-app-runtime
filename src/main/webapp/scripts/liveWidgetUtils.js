@@ -1263,8 +1263,8 @@ WM.module('wm.widgets.live')
                         column.widgetConfig.src = "{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}";
                         column.customExpression = '<img ng-if="columnValue != null" width="48px" class="" data-ng-src="' + column.widgetConfig.src + '"/>';
                     } else {
-                        column.customExpression = '<img data-ng-src="' + column.widgetConfig.src + '" alt="' + column.widgetConfig.src + '" class="' + column.widgetConfig.class +
-                            '" data-ng-class="' + widgetNgClassesExpression + '"/>';
+                        column.customExpression = '<wm-picture picturesource="' + column.widgetConfig.src + '" hint="' + column.widgetConfig.src + '"' +
+                            ' class="' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-picture>';
                     }
                     break;
                 case 'button':
@@ -1272,8 +1272,8 @@ WM.module('wm.widgets.live')
                         column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-button>';
                     break;
                 case 'checkbox':
-                    column.customExpression = '<input type="checkbox" ng-model="' + column.widgetConfig.model + '" ng-disabled="' + column.widgetConfig.disabled + '" ' +
-                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '">';
+                    column.customExpression = '<wm-checkbox scopedatavalue="' + column.widgetConfig.model + '" disabled="' + column.widgetConfig.disabled + '" ' +
+                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-checkbox>';
                     break;
                 case 'anchor':
                     column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
@@ -1371,7 +1371,7 @@ WM.module('wm.widgets.live')
                 widgetNgClasses = parseNgClasses(el.attr('data-ng-class'));
                 switch (widgetType) {
                 case 'image':
-                    widgetSrc = el.attr('data-ng-src');
+                    widgetSrc = el.attr('data-ng-src') || el.attr('picturesource');
                     column.widgetConfig = {
                         'src': widgetSrc,
                         'class': widgetClass,
@@ -1391,8 +1391,8 @@ WM.module('wm.widgets.live')
                     };
                     break;
                 case 'checkbox':
-                    widgetModel    = el.attr('ng-model');
-                    widgetDisabled = el.attr('ng-disabled');
+                    widgetModel    = el.attr('ng-model') || el.attr('scopedatavalue');
+                    widgetDisabled = el.attr('ng-disabled') || el.get(0).getAttribute('disabled');
                     column.widgetConfig = {
                         'model'     : widgetModel,
                         'disabled'  : widgetDisabled,
