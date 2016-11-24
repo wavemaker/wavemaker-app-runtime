@@ -23,8 +23,8 @@ WM.module('wm.widgets.live')
         function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables, QueryBuilder, DialogService) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
-                focusEvents            = ['onBlur', 'onFocus'],
-                eventTypes             = focusEvents.concat(['onChange', 'onMouseleave', 'onMouseenter', 'onClick', 'onSelect', 'onSubmit']),
+                definedEvents          = ['onBlur', 'onFocus', 'onChange'],
+                eventTypes             = definedEvents.concat(['onMouseleave', 'onMouseenter', 'onClick', 'onSelect', 'onSubmit']),
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets();
@@ -415,10 +415,18 @@ WM.module('wm.widgets.live')
             }
 
             function getFormFields(fieldDef) {
-                var fields    = '',
-                    evtTypes  = _.pull(getEventTypes(), focusEvents),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'onFocus', 'onBlur', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted'],
-                    fieldKeys = _.pullAll(_.keys(fieldDef), excludeProperties);
+                var fields = '',
+                    evtTypes,
+                    excludeProperties,
+                    fieldKeys;
+                if (fieldDef.widget === 'autocomplete') {
+                    //For autocomplete, change is triggered using onSubmit event
+                    definedEvents = _.pull(definedEvents, 'onChange');
+                    definedEvents.push('onSubmit');
+                }
+                evtTypes          = _.pull(getEventTypes(), definedEvents);
+                excludeProperties = definedEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted']);
+                fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
                     if (!fieldDef[field]) {
                         return;
@@ -446,8 +454,8 @@ WM.module('wm.widgets.live')
                         }
                     }
                 });
-                _.forEach(focusEvents, function (evt) {
-                    fields += ' ' + Utils.hyphenate(evt) + '="' + evt + 'Field($event, $scope);' + fieldDef[evt] + '"';
+                _.forEach(definedEvents, function (evt) {
+                    fields += ' ' + Utils.hyphenate(evt) + '="_' + evt + 'Field($event, $scope);' + (fieldDef[evt] || '') + '"';
                 });
                 return fields;
             }

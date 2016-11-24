@@ -22,7 +22,7 @@ WM.module('wm.widgets.live')
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
                         '<div class="hidden-filter-elements"></div>' +
                     '</div>' +
-                    '<div ng-show="expanded" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                    '<div ng-show="expanded && buttonArray" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
@@ -411,11 +411,23 @@ WM.module('wm.widgets.live')
                             $scope.expanded = !$scope.expanded;
                         }
                     };
-                    $scope.onFocusField = function ($event) {
+                    $scope._onFocusField = function ($event) {
                         WM.element($event.target).closest('.live-field').addClass('active');  //On focus of the field, add active class
                     };
-                    $scope.onBlurField = function ($event) {
+                    $scope._onBlurField = function ($event) {
                         WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
+                    };
+                    //On change of a field, if autoupdate is set, trigger the filter
+                    $scope._onChangeField = function () {
+                        if ($scope.autoupdate) {
+                            $scope.filter();
+                        }
+                    };
+                    //On submit of a autocomplete field, if autoupdate is set, trigger the filter
+                    $scope._onSubmitField = function () {
+                        if ($scope.autoupdate) {
+                            $scope.filter();
+                        }
                     };
                 },
                 template: function (element) {

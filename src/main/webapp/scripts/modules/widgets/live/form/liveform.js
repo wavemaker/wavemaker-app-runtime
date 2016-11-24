@@ -1295,10 +1295,10 @@ WM.module('wm.widgets.live')
                                 element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentScope));
                             }
                         }
-                        parentScope.onFocusField = parentScope.onFocusField ||  function ($event) {
+                        parentScope._onFocusField = parentScope._onFocusField ||  function ($event) {
                             WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
                         };
-                        parentScope.onBlurField = parentScope.onBlurField || function ($event) {
+                        parentScope._onBlurField = parentScope._onBlurField || function ($event) {
                             var $field     = WM.element($event.target).closest('.live-field'),
                                 fieldScope = $field.parent('[data-role="form-field"]').isolateScope();
                             $field.removeClass('active');
