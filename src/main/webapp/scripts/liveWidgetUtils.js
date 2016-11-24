@@ -83,6 +83,9 @@ WM.module('wm.widgets.live')
              * @param {string} type column type of the value
              */
             function getDefaultValue(value, type, widget) {
+                if (_.startsWith(value, 'bind:')) {
+                    return value;
+                }
                 if (widget) {
                     if (widget === 'number' || widget === 'slider' || widget === 'currency') {
                         return isNaN(Number(value)) ? null : Number(value);
