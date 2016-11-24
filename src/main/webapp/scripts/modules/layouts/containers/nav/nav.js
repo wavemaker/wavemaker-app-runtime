@@ -67,6 +67,8 @@ WM.module('wm.layouts.containers')
             function constructNav($el, $is) {
                 $el.empty();
 
+                $is._nodes = [];
+
                 if ($is.nodes && $is.nodes.length) {
                     var iconField     = $is.itemicon     || 'icon',
                         labelField    = $is.itemlabel    || 'label',
@@ -74,58 +76,45 @@ WM.module('wm.layouts.containers')
                         badgeField    = $is.itembadge    || 'badge',
                         childrenField = $is.itemchildren || 'children';
 
-                    $is.nodes.forEach(function (node) {
+                    $is.nodes.forEach(function (node, index) {
+
                         var $a           = WM.element('<a class="app-anchor"></a>'),
                             $a_caption   = WM.element('<span class="anchor-caption"></span>'),
                             $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
                             $i           = WM.element('<i class="app-nav-icon"></i>'),
-                            $caret       = WM.element('<span class="caret"></span>'),
                             $badge       = WM.element('<span class="badge"></span>'),
                             itemLabel    = node[labelField],
                             itemClass    = node[iconField],
                             itemLink     = node[itemField],
                             itemBadge    = node[badgeField],
                             itemChildren = node[childrenField],
-                            $ul;
+                            $menu;
+
+                        // menu widget expects data as an array.
+                        // push the current object as an array into the internal array
+                        $is._nodes.push([node]);
 
                         if ($routeParams.name === (itemLink && itemLink.substring(1))) {
                             $a.addClass('active');
                         }
 
                         if (itemChildren && WM.isArray(itemChildren)) {
-                            $i.addClass(itemClass);
-                            $a.append($a_caption.html(itemLabel)).attr('uib-dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($i);
-                            if (itemBadge) {
-                                $a.append($badge.html(itemBadge));
-                            }
-                            $a.append($caret);
-                            var $wrapper = WM.element('<div uib-dropdown class="dropdown app-menu">');
-                            $wrapper.append($a);
-                            $li.append($wrapper);
 
-                            //$li.append($a).attr('uib-dropdown', '').addClass('dropdown');
-                            $ul = WM.element('<ul uib-dropdown-menu></ul>');
-                            itemChildren.forEach(function (child) {
-                                var $a_inner         = WM.element('<a class="app-anchor"></a>'),
-                                    $a_caption_inner = WM.element('<span class="anchor-caption"></span>'),
-                                    $li_inner        = WM.element('<li class="app-nav-item"></li>').data('node-data', child),
-                                    $i_inner         = WM.element('<i class="app-nav-icon"></i>'),
-                                    $badge_inner     = WM.element('<span class="badge"></span>');
+                            $menu = WM.element('<wm-menu>');
 
-                                itemLabel = child[labelField];
-                                itemClass = child[iconField];
-                                itemLink  = child[itemField];
-                                itemBadge = child[badgeField];
-
-                                $i_inner.addClass(itemClass);
-                                $a_inner.append($a_caption_inner.html(itemLabel)).attr('href', itemLink).prepend($i_inner);
-                                if (itemBadge) {
-                                    $a_inner.append($badge_inner.html(itemBadge));
-                                }
-                                $li_inner.append($a_inner);
-                                $ul.append($li_inner);
+                            $menu.attr({
+                                'caption'     : itemLabel,
+                                'dataset'     : 'bind:_nodes['+ index +']',
+                                'itemlabel'   : labelField,
+                                'itemlink'    : itemField,
+                                'itemicon'    : iconField,
+                                'itemchildren': childrenField,
+                                'type'        : 'anchor',
+                                'iconclass'   : itemClass || '',
+                                'on-select'   : '_onMenuItemSelect($event, $item)'
                             });
-                            $wrapper.append($ul);
+
+                            $li.append($menu);
                             $el.append($li);
                         } else {
                             $i.addClass(itemClass);
@@ -136,8 +125,10 @@ WM.module('wm.layouts.containers')
                             $li.append($a);
                             $el.append($li);
                         }
-                        $compile($li)($is);
+
                     });
+
+                    $compile($el.contents())($is);
                 }
             }
 
@@ -237,6 +228,13 @@ WM.module('wm.layouts.containers')
                                     Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
                                 });
                             });
+
+                            // this function will be triggered when an option is selected in a menu
+                            // call the on-select handler of nav
+                            $is._onMenuItemSelect = function (e, $item) {
+                                $is.selecteditem = $item;
+                                Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $item});
+                            };
                         }
                     }
                 }
