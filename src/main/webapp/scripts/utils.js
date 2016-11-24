@@ -711,10 +711,59 @@ WM.module('wm.utils', [])
             return REGEX.SPECIAL_CHARACTERS.test(str);
         }
 
+        /**
+         * Encodes the query params and returns the encoded url
+         * @param url
+         * @returns {*} returns encoded url
+         */
+        function encodeUrlParams(url) {
+            var queryParams, encodedParams = '', queryParamsString, index;
+            index = url.indexOf('?');
+            if (index > -1) {
+                index += 1;
+                queryParamsString = url.substring(index);
+                //Encoding the query params if exist
+                if (queryParamsString) {
+                    queryParams = queryParamsString.split('&');
+                    _.forEach(queryParams, function (param) {
+                        var index = param.indexOf('='),
+                            paramName = param.substr(0, index),
+                            paramValue = param.substr(index + 1);
+                        encodedParams += paramName + '=' + encodeURIComponent(paramValue) + '&';
+                    });
+                    encodedParams = encodedParams.slice(0, -1);
+                    url = url.replace(queryParamsString, encodedParams);
+                }
+            }
+            return url;
+        }
+
+        /**
+         * Encodes the url as follows
+         *  - the path part is encoded through encodeURI
+         *  - the url params are encoded through encodeURIComponent. This is done to encode special characters not encoded through encodeURI
+         *  
+         * @param url
+         * @returns {*}
+         */
+        function encodeUrl(url) {
+            var index = url.indexOf('?');
+            if (index > -1) {
+                // encode the relative path
+                url = encodeURI(url.substring(0, index)) + url.substring(index);
+                // encode url params, not encoded through encodeURI
+                url = encodeUrlParams(url);
+            } else {
+                url = encodeURI(url);
+            }
+
+            return url;
+        }
+
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString) {
             if (APPCONSTANTS.isRunMode) {
-                return urlString;
+                return encodeUrl(urlString);
             }
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
              * When page is refreshed, loader.gif will be loaded first and it will be in 'style/images/'.
@@ -2193,6 +2242,8 @@ WM.module('wm.utils', [])
         this.getVariableName            = getVariableName;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
+        this.encodeUrlParams            = encodeUrlParams;
+        this.encodeUrl                  = encodeUrl;
         this.formatVariableIconClass    = formatVariableIconClass;
         this.getBackGroundImageUrl      = getBackGroundImageUrl;
         this.getParentOverlayElZIndex   = getParentOverlayElZIndex;
