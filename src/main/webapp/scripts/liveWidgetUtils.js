@@ -418,14 +418,15 @@ WM.module('wm.widgets.live')
                 var fields = '',
                     evtTypes,
                     excludeProperties,
-                    fieldKeys;
+                    fieldKeys,
+                    formEvents = Utils.getClonedObject(definedEvents);
                 if (fieldDef.widget === 'autocomplete') {
                     //For autocomplete, change is triggered using onSubmit event
-                    definedEvents = _.pull(definedEvents, 'onChange');
-                    definedEvents.push('onSubmit');
+                    _.pull(formEvents, 'onChange');
+                    formEvents.push('onSubmit');
                 }
-                evtTypes          = _.pull(getEventTypes(), definedEvents);
-                excludeProperties = definedEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted']);
+                evtTypes          = _.pull(getEventTypes(), formEvents);
+                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted']);
                 fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
                     if (!fieldDef[field]) {
@@ -454,8 +455,8 @@ WM.module('wm.widgets.live')
                         }
                     }
                 });
-                _.forEach(definedEvents, function (evt) {
-                    fields += ' ' + Utils.hyphenate(evt) + '="_' + evt + 'Field($event, $scope);' + (fieldDef[evt] || '') + '"';
+                _.forEach(formEvents, function (evt) {
+                    fields += ' ' + Utils.hyphenate(evt) + '="_' + evt + 'Field($event, $scope, newVal, oldVal);' + (fieldDef[evt] || '') + '"';
                 });
                 return fields;
             }
