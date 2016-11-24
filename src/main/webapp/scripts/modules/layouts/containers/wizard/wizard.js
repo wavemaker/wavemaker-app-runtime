@@ -10,7 +10,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/wizard.html',
             '<div class="app-wizard panel clearfix" init-widget apply-styles="container">' +
                 '<div class="app-wizard-heading">' +
-                    '<ul class="app-wizard-steps nav nav-pills"></ul>' +
+                    '<ul class="app-wizard-steps nav nav-pills {{stepClass}}"></ul>' +
                 '</div>' +
                 '<div class="app-wizard-body panel-body">' +
                     '<wm-message scopedataset="message"></wm-message>' +
@@ -53,8 +53,21 @@ WM.module('wm.layouts.containers')
 
             //Get the properties related to the wizard
             var widgetProps  = PropertiesFactory.getPropertiesOf('wm.wizard', ['wm.base', 'wm.layouts', 'wm.containers']),
-                STEP_STATUS  = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'};
+                STEP_STATUS  = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'},
+                notifyFor    = {
+                    'stepstyle': true
+                };
 
+            // Define the property change handler. This function will be triggered when there is a change in the widget property
+            function propertyChangeHandler($s, key, newVal, oldVal) {
+                //Monitoring changes for properties and accordingly handling respective changes
+                switch (key) {
+                case 'stepstyle':
+                    $s.stepClass = newVal && newVal === 'justified' ? 'nav-justified': '';
+                    break;
+                }
+            }
+            
             function navigateToStep($is, stepIndex) {
                 $is.currentStep        = $is.steps[stepIndex];
                 $is.currentStep.status = STEP_STATUS.CURRENT;
@@ -159,6 +172,7 @@ WM.module('wm.layouts.containers')
                     'post': function ($is, element, attrs) {
                         $is.currentStep = $is.steps[0];
                         $is.currentStep.status = STEP_STATUS.CURRENT;
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                         //initialize the widget
                         WidgetUtilService.postWidgetCreate($is, element, attrs);
                     }

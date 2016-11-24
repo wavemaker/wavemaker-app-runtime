@@ -1599,7 +1599,8 @@ WM.module('wm.widgets.base', [])
                         "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"},
                         "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "cancelable": {"type": "boolean", "value": true, "bindable": "in-bound"}
+                        "cancelable": {"type": "boolean", "value": true, "bindable": "in-bound"},
+                        "stepstyle":  {"type": "list", "options": ["auto", "justified"], "value": "auto"}
                     },
                     "wm.wizardstep": {
                         "title": {"type": "string", "value": "Step Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1927,7 +1928,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "picture", "properties": ["imageheight", "picturesource", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "imgsrc", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "filtermode", "searchlabel"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "imgsrc", "layoutkind", "columns", "layout", "stepstyle", "navtype", "stacked", "justified", "formlayout", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "filtermode", "searchlabel"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},

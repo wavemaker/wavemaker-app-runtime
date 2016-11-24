@@ -336,23 +336,25 @@ body {
       .step-title {
         position: relative;
       }
-      .arrow {
-        width: 28px;
-        height: 28px;
-        display: inline-block;
-        background-color: inherit;
-        right: -15px;
-        position: absolute;
-        top: 9px;
-        z-index: 1;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-bottom-width: 0;
-        border-left-width: 0;
-        -ms-transform: rotate(45deg) skew(11deg, 11deg);
-        -o-transform: rotate(45deg) skew(11deg, 11deg);
-        -moz-transform: rotate(45deg) skew(11deg, 11deg);
-        -webkit-transform: rotate(45deg) skew(11deg, 11deg);
-        transform: rotate(45deg) skew(11deg, 11deg);
+      &:not(:last-child) {
+        .arrow {
+          width: 28px;
+          height: 28px;
+          display: inline-block;
+          background-color: inherit;
+          right: -15px;
+          position: absolute;
+          top: 9px;
+          z-index: 1;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-bottom-width: 0;
+          border-left-width: 0;
+          -ms-transform: rotate(45deg) skew(11deg, 11deg);
+          -o-transform: rotate(45deg) skew(11deg, 11deg);
+          -moz-transform: rotate(45deg) skew(11deg, 11deg);
+          -webkit-transform: rotate(45deg) skew(11deg, 11deg);
+          transform: rotate(45deg) skew(11deg, 11deg);
+        }
       }
     }
   }
