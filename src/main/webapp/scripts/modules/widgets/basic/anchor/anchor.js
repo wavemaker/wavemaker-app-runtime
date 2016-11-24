@@ -35,6 +35,7 @@ WM.module('wm.widgets.basic')
                 attrs.$set('icon-position', newVal);
                 break;
             case 'hyperlink':
+                newVal = Utils.encodeUrl(newVal);
                 attrs.$set('href', newVal);
                 /* if hyperlink starts with 'www.' append '//' in the beginning */
                 if (Utils.stringStartsWith(newVal, 'www.')) {
