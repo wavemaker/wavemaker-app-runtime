@@ -36,7 +36,8 @@ WM.module('wm.widgets.live')
         'wmToaster',
         '$controller',
         'LiveWidgetUtils',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Utils, wmToaster, $controller, LiveWidgetUtils) {
+        '$timeout',
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Utils, wmToaster, $controller, LiveWidgetUtils, $timeout) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.base']),
                 filterMarkup = '',
@@ -105,15 +106,18 @@ WM.module('wm.widgets.live')
                                     $scope.$element.find('div[name=' + filterField.name + '] input').val('');
                                 }
                                 if (filterField.isRange) {
-                                    filterField.minValue = undefined;
-                                    filterField.maxValue = undefined;
+                                    filterField.minValue = '';
+                                    filterField.maxValue = '';
                                 } else {
-                                    filterField.value = undefined;
+                                    filterField.value = '';
                                 }
                             }
                         });
-                        /*Setting result to the default data*/
-                        $scope.filter();
+                        //If variable has any bindings, wait for the bindings to be updated
+                        $timeout(function () {
+                            //Setting result to the default data
+                            $scope.filter();
+                        });
                     };
                     $scope.applyFilter = function (options) {
                         options = options || {};
