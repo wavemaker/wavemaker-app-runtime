@@ -62,7 +62,7 @@ public class SecurityService {
 
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
 
-    @Autowired
+    @Autowired(required = false)
     private WMAppSecurityConfig wmAppSecurityConfig;
 
     public SecurityService() {
