@@ -17,12 +17,12 @@
  *   3) onError callback(function)
  */
 wm.plugins.offline.services.ChangeLogService = [
-    "LocalDBService",
+    "LocalDBManager",
     "$q",
     "Utils",
     "$log",
     "$injector",
-    function (LocalDBService, $q, Utils, $log, $injector) {
+    function (LocalDBManager, $q, Utils, $log, $injector) {
         'use strict';
         var services = {},
             callbacks = [],
@@ -45,7 +45,7 @@ wm.plugins.offline.services.ChangeLogService = [
          * Retrieves the entity store to use by ChangeLogService.
          */
         function getStore() {
-            return LocalDBService.getStore('wavemaker', 'offlineChangeLog');
+            return LocalDBManager.getStore('wavemaker', 'offlineChangeLog');
         }
 
         /*
@@ -119,7 +119,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 .then(function () {
                     postCallSuccess(change, arguments).then(onSuccess, onError);
                 }).catch(function () {
-                    postCallError(change, arguments).finally(onError);
+                    postCallError(change, arguments).finally(onError.bind(undefined, arguments));
                 });
         }
 
@@ -157,6 +157,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 }
             }, function (change) {
                 change.hasError = 1;
+                change.params = JSON.stringify(change.params);
                 getStore().save(change);
                 flush(onComplete, onProgress);
             });
@@ -192,13 +193,15 @@ wm.plugins.offline.services.ChangeLogService = [
                                 stats.success, stats.error, stats.completed, stats.total);
             },
             'preCall': function (change) {
-                $log.debug("%i. Invoking call %o", (++stats.completed), change);
+                $log.debug("%i. Invoking call %o", (1 + stats.completed), change);
             },
             'postCallError': function (change, response) {
+                stats.completed++;
                 stats.error++;
                 $log.error('call failed with the response %o.', response);
             },
             'postCallSuccess': function (change, response) {
+                stats.completed++;
                 stats.success++;
                 $log.debug('call returnd the following response %o.', response);
             }
@@ -285,6 +288,11 @@ wm.plugins.offline.services.ChangeLogService = [
             return getStore().filter(undefined, 'id', {
                 offset: 0,
                 limit: 500
+            }).then(function (changes) {
+                _.forEach(changes, function (change) {
+                    change.params = JSON.parse(change.params);
+                });
+                return changes;
             });
         };
 
@@ -332,10 +340,10 @@ wm.plugins.offline.services.ChangeLogService = [
  * call, Id has to be replaced with that of new one.
  */
 wm.plugins.offline.run([
-    "LocalDBService",
+    "LocalDBManager",
     "ChangeLogService",
     "$log",
-    function (LocalDBService, ChangeLogService, $log) {
+    function (LocalDBManager, ChangeLogService, $log) {
         'use strict';
         var idStore = {},
             transactionLocalId;
@@ -361,7 +369,7 @@ wm.plugins.offline.run([
         // Exchange primary key  of the given entity
         function exchangeId(dataModelName, entityName, data, keyName) {
             if (data) {
-                var primaryKeyName = keyName || LocalDBService.getStore(dataModelName, entityName).primaryKeyName,
+                var primaryKeyName = keyName || LocalDBManager.getStore(dataModelName, entityName).primaryKeyName,
                     localId = data[primaryKeyName],
                     remoteId = getEntityIdStore(dataModelName, entityName)[localId];
                 if (remoteId) {
@@ -374,7 +382,7 @@ wm.plugins.offline.run([
         //Looks primary key changes in the given entity or in the relations
         function exchangeIds(dataModelName, entityName, data) {
             exchangeId(dataModelName, entityName, data);
-            _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (col) {
+            _.forEach(LocalDBManager.getStore(dataModelName, entityName).schema.columns, function (col) {
                 if (col.targetEntity) {
                     if (data[col.sourceFieldName]) {
                         exchangeIds(dataModelName, col.targetEntity, data[col.sourceFieldName]);
@@ -396,7 +404,7 @@ wm.plugins.offline.run([
                     switch (change.operation) {
                     case 'insertTableData':
                         exchangeIds(dataModelName, entityName, change.params.data);
-                        primaryKeyName = LocalDBService.getStore(dataModelName, entityName).primaryKeyName;
+                        primaryKeyName = LocalDBManager.getStore(dataModelName, entityName).primaryKeyName;
                         transactionLocalId = change.localId || change.params.data[primaryKeyName];
                         change.dataLocalId = transactionLocalId;
                         delete change.params.data[primaryKeyName];
@@ -417,7 +425,7 @@ wm.plugins.offline.run([
                 if (change && change.service === 'DatabaseService' && change.operation === 'insertTableData') {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
-                    entityStore = LocalDBService.getStore(dataModelName, entityName);
+                    entityStore = LocalDBManager.getStore(dataModelName, entityName);
                     primaryKeyName = entityStore.primaryKeyName;
                     pushIdToStore(dataModelName, entityName, transactionLocalId, response[0][primaryKeyName]);
                     entityStore.delete(transactionLocalId);
@@ -432,9 +440,9 @@ wm.plugins.offline.run([
  *.On error of a db call, then all subsequent calls related to the failed entity and its child will be blocked.
  */
 wm.plugins.offline.run([
-    "LocalDBService",
+    "LocalDBManager",
     "ChangeLogService",
-    function (LocalDBService, ChangeLogService) {
+    function (LocalDBManager, ChangeLogService) {
         'use strict';
         var errorStore = {};
 
@@ -456,7 +464,7 @@ wm.plugins.offline.run([
 
         //A helper function to check for earlier failures.
         function checkForPreviousError(change, dataModelName, entityName, data, key) {
-            var primaryKey = key || LocalDBService.getStore(dataModelName, entityName).primaryKeyName;
+            var primaryKey = key || LocalDBManager.getStore(dataModelName, entityName).primaryKeyName;
             if (hasError(dataModelName, entityName, data[primaryKey])) {
                 change.hasError = 1;
                 change.errorMessage = "Blocked call due to error in previous call of entity ["
@@ -476,7 +484,7 @@ wm.plugins.offline.run([
         function blockCall(change, dataModelName, entityName, data) {
             if (change.hasError === 0) {
                 checkForPreviousError(change, dataModelName, entityName, data);
-                _.forEach(LocalDBService.getStore(dataModelName, entityName).schema.columns, function (col) {
+                _.forEach(LocalDBManager.getStore(dataModelName, entityName).schema.columns, function (col) {
                     if (col.targetEntity) {
                         if (data[col.sourceFieldName]) {
                             blockCall(change, dataModelName, col.targetEntity, data[col.sourceFieldName]);
@@ -513,7 +521,7 @@ wm.plugins.offline.run([
                 if (change && change.service === 'DatabaseService') {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
-                    entityStore = LocalDBService.getStore(dataModelName, entityName);
+                    entityStore = LocalDBManager.getStore(dataModelName, entityName);
                     id = change.dataLocalId || change.params.data[entityStore.primaryKeyName];
                     recordError(dataModelName, entityName, id);
                 }

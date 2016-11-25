@@ -269,6 +269,43 @@ wm.modules.wmCommon.services.DeviceFileService = [
 
         /**
          * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceFileService#listFiles
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileService
+         * @description
+         * Returns a list of files present in that directory.
+         *
+         * @param {string} folder path of the folder
+         * @param {string} search regex pattern to search for files
+         * @returns {object} returns a promise.
+         */
+        this.listFiles = function (folder, search) {
+            var defer = $q.defer();
+            window.resolveLocalFileSystemURL(folder, function (directory) {
+                if (!directory.files) {
+                    directory.createReader().readEntries(function (entries) {
+                        if (search) {
+                            entries = _.filter(entries, function (e) {
+                                return e.name.match(search);
+                            });
+                        }
+                        entries = _.map(entries, function (e) {
+                            return {
+                                name : e.name,
+                                isDirectory : e.isDirectory,
+                                path : e.nativeURL
+                            };
+                        });
+                        defer.resolve(entries);
+                    }, defer.reject);
+                } else {
+                    defer.resolve([]);
+                }
+            }, defer.reject);
+            return defer.promise;
+        };
+
+        /**
+         * @ngdoc method
          * @name wm.modules.wmCommon.services.$DeviceFileService#newFileName
          * @methodOf wm.modules.wmCommon.services.$DeviceFileService
          * @description
