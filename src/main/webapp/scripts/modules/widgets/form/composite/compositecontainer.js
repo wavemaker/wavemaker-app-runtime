@@ -12,74 +12,81 @@ WM.module('wm.widgets.form')
                 ' wmtransclude></div>'
             );
     }])
-    .directive('wmComposite', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
-        'use strict';
-        /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.composite', ['wm.base', 'wm.containers']),
-            notifyFor = {
-                'required': true
-            };
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, key, newVal) {
-            switch (key) {
-            case 'required':
-                /*When a composite widget is set to required then it's label and input also set to required*/
-                var labelEle = element.find('.app-label.ng-isolate-scope'),
+    .directive('wmComposite', [
+        'PropertiesFactory',
+        '$templateCache',
+        'WidgetUtilService',
+        'Utils',
+
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
+            'use strict';
+            /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.composite', ['wm.base', 'wm.containers']),
+                notifyFor   = {'required': true};
+
+            /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+            function propertyChangeHandler(element, key, newVal) {
+                var labelEle, inputElements;
+                switch (key) {
+                case 'required':
+                    /*When a composite widget is set to required then it's label and input also set to required*/
+                    labelEle      = element.find('.app-label.ng-isolate-scope');
                     inputElements = ['.input-group.ng-isolate-scope', '.form-control.ng-isolate-scope', 'app-radio.ng-isolate-scope', '.list-group', '.app-checkbox.ng-isolate-scope'];
-                if (labelEle.length) {
-                    WM.element(labelEle).first().isolateScope().required = newVal;
-                }
-                inputElements.forEach(function (ele) {
-                    var inputEle = element.find(ele);
-                    if (inputEle.length) {
-                        inputEle.each(function () {
-                            WM.element(this).isolateScope().required = newVal;
-                        });
+                    if (labelEle.length) {
+                        WM.element(labelEle).first().isolateScope().required = newVal;
                     }
-                });
-                break;
-            }
-        }
-
-        return {
-            'restrict'  : 'E',
-            'replace'   : true,
-            'transclude': true,
-            'scope'     : {},
-            'template'  : $templateCache.get('template/widget/form/composite.html'),
-            'link'      : {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
-                },
-                'post': function (scope, element, attrs) {
-
-                    /* register the property change handler */
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
-
-                    //if the widget is not inside canvas.
-                    if (!scope.widgetid) {
-                        /* add for attribute for label and id attribute for the input elements */
-                        var labelEl = element.find('label'),
-                            inputEl = element.find('input, select, textarea'),
-                            inputName;
-
-                        if (labelEl.length === 1 && inputEl.length === 1) {
-                            inputName = inputEl.attr('name');
-                            inputEl.attr('id', inputName);
-                            labelEl.attr('for', inputName);
+                    inputElements.forEach(function (ele) {
+                        var inputEle = element.find(ele);
+                        if (inputEle.length) {
+                            inputEle.each(function () {
+                                WM.element(this).isolateScope().required = newVal;
+                            });
                         }
-                    }
-
-                    /*Called from form reset when users clicks on form reset*/
-                    scope.reset = function () {
-                        //TODO implement custom reset logic here
-                    };
-
-                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    });
+                    break;
                 }
             }
-        };
-    }]);
+
+            return {
+                'restrict'  : 'E',
+                'replace'   : true,
+                'transclude': true,
+                'scope'     : {},
+                'template'  : $templateCache.get('template/widget/form/composite.html'),
+                'link'      : {
+                    'pre': function (scope) {
+                        scope.widgetProps = Utils.getClonedObject(widgetProps);
+                    },
+                    'post': function (scope, element, attrs) {
+
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+
+                        //if the widget is not inside canvas.
+                        if (!scope.widgetid) {
+                            /* add for attribute for label and id attribute for the input elements */
+                            var labelEl = element.find('label'),
+                                inputEl = element.find('input, select, textarea'),
+                                inputName;
+
+                            if (labelEl.length === 1 && inputEl.length === 1) {
+                                inputName = inputEl.attr('name');
+                                inputEl.attr('id', inputName);
+                                labelEl.attr('for', inputName);
+                            }
+                        }
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    }
+                }
+            };
+        }
+    ]);
 
 
 /**
