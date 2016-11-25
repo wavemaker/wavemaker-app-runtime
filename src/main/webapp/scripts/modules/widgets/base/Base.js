@@ -865,7 +865,9 @@ WM.module('wm.widgets.base', [])
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-warning", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am an alert box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "alerttype": {"type": "list", "options": ["error", "information", "success", "warning"], "value": "error"}
+                        "alerttype": {"type": "list", "options": ["error", "information", "success", "warning"], "value": "error"},
+                        "modal": {"type": "boolean", "value": false},
+                        "keyboard": {"type": "boolean", "value": true}
                     },
                     "wm.confirmdialog": {
                         "title": {"type": "string", "value": "Confirm", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -873,7 +875,9 @@ WM.module('wm.widgets.base', [])
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-done", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am confirm box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "modal": {"type": "boolean", "value": false},
+                        "keyboard": {"type": "boolean", "value": true}
                     },
                     "wm.iframedialog": {
                         "title": {"type": "string", "value": "External Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -884,20 +888,25 @@ WM.module('wm.widgets.base', [])
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "closable": {"type": "boolean", "value": true},
                         "showactions": {"type": "boolean", "value": true},
-                        "showheader": {"type": "boolean", "value": true}
+                        "showheader": {"type": "boolean", "value": true},
+                        "modal": {"type": "boolean", "value": false},
+                        "keyboard": {"type": "boolean", "value": true}
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value" : "wi wi-file", "pattern": classRegex},
                         "closable": {"type": "boolean", "value": true},
-                        "showactions": {"type": "boolean", "value": true}
+                        "showactions": {"type": "boolean", "value": true},
+                        "modal": {"type": "boolean", "value": false},
+                        "keyboard": {"type": "boolean", "value": true}
                     },
                     "wm.logindialog": {
                         "tabindex": {"show": false},
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "closable": {"type": "boolean", "value": true},
                         "modal": {"type": "boolean", "value": true},
+                        "keyboard": {"type": "boolean", "value": true},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
@@ -907,6 +916,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},
+                        "keyboard": {"type": "boolean", "value": true},
                         "closable": {"type": "boolean", "value": true},
                         "title": {"type": "string"},
                         "showheader": {"type": "boolean", "value": true}
@@ -1955,7 +1965,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
-                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl"], "parent": "properties"},
+                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
