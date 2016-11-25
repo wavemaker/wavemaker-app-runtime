@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                         '<i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
-                        '<span class="caret"></span>' +
+                        '<span class="pull-right caret fa fa-caret-down"></span>' +
                     '</button>' +
                     '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
                     '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
-                        '<span class="caret"></span>' +
+                        '<span class="pull-right caret fa fa-caret-down"></span>' +
                     '</a>' +
                     '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'

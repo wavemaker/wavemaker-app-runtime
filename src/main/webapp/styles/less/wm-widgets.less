@@ -352,6 +352,11 @@ html, body {
 .app-menu {
   display: inline-block;
   position: relative;
+  .app-button >.caret, .app-anchor >.caret {
+    border: none;
+    margin-top: 0.25em;
+    margin-right: 0.3em;
+  }
   .dropdown-toggle {
     white-space: nowrap;
     /**hiding the caret if there is only icon and no caption***/
@@ -369,6 +374,7 @@ html, body {
   .dropdown-menu {
     z-index: 1040 !important;
     width: 100%;
+    padding: 0;
     &.dropinline-menu {
       position: relative;
       float: none;
