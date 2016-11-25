@@ -761,9 +761,9 @@ WM.module('wm.utils', [])
         }
 
         /*This function returns the url to the image after checking the validity of url*/
-        function getImageUrl(urlString) {
+        function getImageUrl(urlString, shouldEncode) {
             if (APPCONSTANTS.isRunMode) {
-                return encodeUrl(urlString);
+                return shouldEncode ? encodeUrl(urlString) : urlString;
             }
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
              * When page is refreshed, loader.gif will be loaded first and it will be in 'style/images/'.

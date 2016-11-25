@@ -32,7 +32,7 @@ WM.module('wm.widgets.basic')
                 /*monitoring the iframe src property*/
                 if (newVal && WM.isString(newVal) && newVal.indexOf('Variables') === -1) {
                     /*applying the property value as src attribute value only if newVal is string */
-                    newVal = Utils.encodeUrl(newVal);
+                    newVal = scope.encodeurl ? Utils.encodeUrl(newVal) : newVal;
                     scope._iframesrc = $sce.trustAsResourceUrl(newVal);
 
                     /* check for 'http' urls in studio mode of SAAS studio version */

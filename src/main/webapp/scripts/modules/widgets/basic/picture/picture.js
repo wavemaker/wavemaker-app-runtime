@@ -37,7 +37,7 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case 'picturesource':
-                scope.imagesource = Utils.getImageUrl(newVal);
+                scope.imagesource = Utils.getImageUrl(newVal, scope.encodeurl);
                 break;
             case 'shape':
                 scope.imgClass = "img-" + newVal;

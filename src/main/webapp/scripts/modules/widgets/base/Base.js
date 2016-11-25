@@ -285,6 +285,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.iframe": {
                         "iframesrc": {"type": "string", "bindable": "in-bound", "widget": "string"},
+                        "encodeurl": {"type": "boolean", "value": false},
                         "width": {"type": "string", "value": '300px', "pattern": dimensionRegex},
                         "height": {"type": "string", "value": '150px', "pattern": dimensionRegex},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all"}
@@ -790,6 +791,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
+                        "encodeurl": {"type": "boolean", "value": false},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
                         "disabled": {"type": "boolean", "show": false, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
@@ -876,6 +878,7 @@ WM.module('wm.widgets.base', [])
                     "wm.iframedialog": {
                         "title": {"type": "string", "value": "External Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "url": {"type": "string", "value": "http://www.wavemaker.com", "bindable": "in-out-bound"},
+                        "encodeurl": {"type": "boolean", "value": false},
                         "height": {"type": "string", "value": "400", "pattern": dimensionRegex},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-globe", "pattern": classRegex},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
@@ -1494,6 +1497,7 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "hyperlink": {"type": "string", "bindable": "in-out-bound"},
+                        "encodeurl": {"type": "boolean", "value": false},
                         "target": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_self", "widget": "data-list"},
                         "tabindex": {"type": "number", "value": "0"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
@@ -1949,7 +1953,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
-                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline"], "parent": "properties"},
+                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
