@@ -30,7 +30,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events']);
 
         return {
             'restrict': 'E',
