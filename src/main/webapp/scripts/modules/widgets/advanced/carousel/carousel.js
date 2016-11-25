@@ -271,29 +271,27 @@ WM.module('wm.widgets.advanced')
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index, direction) {
                                 // if the carousel is not animating then move to another slide.
-                                if (!isMoving) {
-                                    if (!$is.contents[$is.activeIndex]) {
-                                        return;
-                                    }
-                                    isMoving = true;
-                                    var oldElement = $is.contents[$is.activeIndex].getElement(),
-                                        newElement = $is.contents[index].getElement(),
-                                        type = direction || 'next';
+                                if (!$is.contents[$is.activeIndex]) {
+                                    return;
+                                }
+                                var oldElement = $is.contents[$is.activeIndex].getElement(),
+                                    newElement = $is.contents[index].getElement(),
+                                    type = direction || 'next';
 
-                                    if ($is.widgetid) {
-                                        oldElement.removeClass('active');
-                                        newElement.addClass('active');
-                                        $is.activeIndex  = index;
-                                    } else if (index !== $is.activeIndex) {
-                                        $is.stop();
-                                        if ($is.activeIndex > index && !direction) {
-                                            type = 'prev';
-                                        }
-                                        animateSlide(oldElement, newElement, type);
-                                        $is.activeIndex  = index;
-                                        $is.play();
-                                        Utils.triggerFn($is.onChange, {$isolateScope: $is});
+                                if ($is.widgetid) {
+                                    oldElement.removeClass('active');
+                                    newElement.addClass('active');
+                                    $is.activeIndex  = index;
+                                } else if (index !== $is.activeIndex && !isMoving) {
+                                    isMoving = true;
+                                    $is.stop();
+                                    if ($is.activeIndex > index && !direction) {
+                                        type = 'prev';
                                     }
+                                    animateSlide(oldElement, newElement, type);
+                                    $is.activeIndex  = index;
+                                    $is.play();
+                                    Utils.triggerFn($is.onChange, {$isolateScope: $is});
                                 }
                             };
 
