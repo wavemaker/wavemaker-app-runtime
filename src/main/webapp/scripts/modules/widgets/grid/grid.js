@@ -295,9 +295,6 @@ WM.module('wm.widgets.grid')
                         iScope.appLocale  = $rootScope.appLocale;
                         iScope.columns    = {};
                         iScope.formfields = {};
-                        $rootScope.$on('locale-change', function () {
-                            iScope.appLocale = $rootScope.appLocale;
-                        });
 
                         Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
@@ -318,22 +315,6 @@ WM.module('wm.widgets.grid')
                                 'enablesort'            : 'enableSort',
                                 'showheader'            : 'showHeader',
                                 'enablecolumnselection' : 'enableColumnSelection'
-                            },
-                            matchModesMap = {
-                                'start'            : scope.appLocale.LABEL_STARTS_WITH,
-                                'end'              : scope.appLocale.LABEL_ENDS_WITH,
-                                'anywhere'         : scope.appLocale.LABEL_CONTAINS,
-                                'exact'            : scope.appLocale.LABEL_IS_EQUAL_TO,
-                                'notequals'        : scope.appLocale.LABEL_IS_NOT_EQUAL_TO,
-                                'lessthan'         : scope.appLocale.LABEL_LESS_THAN,
-                                'lessthanequal'    : scope.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
-                                'greaterthan'      : scope.appLocale.LABEL_GREATER_THAN,
-                                'greaterthanequal' : scope.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
-                                'null'             : scope.appLocale.LABEL_IS_NULL,
-                                'isnotnull'        : scope.appLocale.LABEL_IS_NOT_NULL,
-                                'empty'            : scope.appLocale.LABEL_IS_EMPTY,
-                                'isnotempty'       : scope.appLocale.LABEL_IS_NOT_EMPTY,
-                                'nullorempty'      : scope.appLocale.LABEL_IS_NULL_OR_EMPTY
                             },
                             handlers = [],
                             liveGrid = element.closest('.app-livegrid'),
@@ -358,13 +339,32 @@ WM.module('wm.widgets.grid')
                             }
                             scope.datagridElement.datagrid('saveRow');
                         }
+                        //Populate the filter options with localized messages
+                        function getMatchModeMsgs() {
+                            return {
+                                'start'            : scope.appLocale.LABEL_STARTS_WITH,
+                                'end'              : scope.appLocale.LABEL_ENDS_WITH,
+                                'anywhere'         : scope.appLocale.LABEL_CONTAINS,
+                                'exact'            : scope.appLocale.LABEL_IS_EQUAL_TO,
+                                'notequals'        : scope.appLocale.LABEL_IS_NOT_EQUAL_TO,
+                                'lessthan'         : scope.appLocale.LABEL_LESS_THAN,
+                                'lessthanequal'    : scope.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
+                                'greaterthan'      : scope.appLocale.LABEL_GREATER_THAN,
+                                'greaterthanequal' : scope.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
+                                'null'             : scope.appLocale.LABEL_IS_NULL,
+                                'isnotnull'        : scope.appLocale.LABEL_IS_NOT_NULL,
+                                'empty'            : scope.appLocale.LABEL_IS_EMPTY,
+                                'isnotempty'       : scope.appLocale.LABEL_IS_NOT_EMPTY,
+                                'nullorempty'      : scope.appLocale.LABEL_IS_NULL_OR_EMPTY
+                            };
+                        }
                         /****condition for old property name for grid title*****/
                         if (attrs.gridcaption && !attrs.title) {
                             scope.title = scope.gridcaption;
                         }
                         scope.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
                         scope.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
-                        scope.matchModesMap     = matchModesMap;
+                        scope.matchModeMsgs     = getMatchModeMsgs();
                         scope.gridElement       = element;
                         scope.gridColumnCount   = gridColumnCount;
                         scope.displayAllFields  = attrs.displayall === '';
@@ -749,6 +749,10 @@ WM.module('wm.widgets.grid')
                         scope.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
                         scope.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         scope.datagridElement.datagrid(scope.gridOptions);
+                        handlers.push($rootScope.$on('locale-change', function () {
+                            scope.appLocale     = $rootScope.appLocale;
+                            scope.matchModeMsgs = getMatchModeMsgs();
+                        }));
                     }
                 };
             }

@@ -7,21 +7,21 @@ WM.module("wm.widgets.basic")
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" init-widget apply-styles>' +
                 '<ul class="pagination advanced {{navigationClass}}" ng-if="navcontrols === \'Classic\'">' +
-                    '<li ng-class="{\'disabled\':isDisableFirst}"><a title="{{::$root.appLocale.LABEL_FIRST}}" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
-                    '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="{{::$root.appLocale.LABEL_PREVIOUS}}" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
+                    '<li ng-class="{\'disabled\':isDisableFirst}"><a title="{{$root.appLocale.LABEL_FIRST}}" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
+                    '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="{{$root.appLocale.LABEL_PREVIOUS}}" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
                     '<li class="pagecount disabled"><a><input type="number" ng-disabled="isDisableCurrent" ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" ng-change="onModelChange($event)" class="form-control" /></a></li>' +
                     '<li class="disabled"><a ng-hide="isDisableCount"> / {{pageCount}}</a></li>' +
-                    '<li ng-class="{\'disabled\':isDisableNext}"><a title="{{::$root.appLocale.LABEL_NEXT}}" name="next" href="javascript:void(0);" aria-label="Next" ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li>' +
-                    '<li ng-class="{\'disabled\':isDisableLast}"><a title="{{::$root.appLocale.LABEL_LAST}}" name="last" href="javascript:void(0);" aria-label="Last" ng-click="navigatePage(\'last\', $event)"><i class="wi wi-last-page"></i></a></li>' +
-                    '<li ng-if="showrecordcount" class="totalcount disabled"><a>{{::$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li>' +
+                    '<li ng-class="{\'disabled\':isDisableNext}"><a title="{{$root.appLocale.LABEL_NEXT}}" name="next" href="javascript:void(0);" aria-label="Next" ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li>' +
+                    '<li ng-class="{\'disabled\':isDisableLast}"><a title="{{$root.appLocale.LABEL_LAST}}" name="last" href="javascript:void(0);" aria-label="Last" ng-click="navigatePage(\'last\', $event)"><i class="wi wi-last-page"></i></a></li>' +
+                    '<li ng-if="showrecordcount" class="totalcount disabled"><a>{{$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li>' +
                 '</ul>' +
                 '<ul class="pager {{navigationClass}}" ng-if="navcontrols === \'Pager\'">' +
-                    '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span>{{::$root.appLocale.LABEL_PREVIOUS}}</a></li>' +
-                    '<li class="next" ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" ng-click="navigatePage(\'next\', $event)">{{::$root.appLocale.LABEL_NEXT}}<span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
+                    '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span>{{$root.appLocale.LABEL_PREVIOUS}}</a></li>' +
+                    '<li class="next" ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" ng-click="navigatePage(\'next\', $event)">{{$root.appLocale.LABEL_NEXT}}<span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
                 '</ul>' +
                 '<ul uib-pagination class="basic pagination {{navigationClass}}" ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
                         ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="." next-text="." first-text="." last-text="."></ul>' +
-                '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>{{::$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li></ul>' +
+                '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>{{$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
     }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS) {
