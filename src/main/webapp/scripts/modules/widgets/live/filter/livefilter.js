@@ -422,8 +422,9 @@ WM.module('wm.widgets.live')
                         WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
                     };
                     //On change of a field, if autoupdate is set, trigger the filter
-                    $scope._onChangeField = function () {
-                        if ($scope.autoupdate) {
+                    $scope._onChangeField = function (event, $is, newVal, oldVal) {
+                        //If old and new val are undefined/null/empty do not trigger the filter
+                        if ($scope.autoupdate && !(!newVal && !oldVal)) {
                             $scope.filter();
                         }
                     };
