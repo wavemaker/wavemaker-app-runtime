@@ -43,10 +43,8 @@ WM.module('wm.widgets.form')
         'WidgetUtilService',
         'Utils',
         'CONSTANTS',
-        'DatabaseService',
-        'Variables',
         'FormWidgetUtils',
-        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, DatabaseService, Variables, FormWidgetUtils) {
+        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, FormWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -437,3 +435,75 @@ WM.module('wm.widgets.form')
                 }
             };
         }]);
+
+/**
+ * @ngdoc directive
+ * @name wm.widgets.basic.directive:wmChips
+ * @restrict E
+ *
+ * @description
+ * The `wmChips` directive defines the chips widget. <br>
+ *
+ * @scope
+ *
+ * @requires PropertiesFactory
+ * @requires WidgetUtilService
+ * @requires Utils
+ * @requires CONSTANTS
+ * @requires FormWidgetUtils
+ *
+ * @param {string=}  name
+ *                   Name of the chips widget.
+ * @param {string=}  placeholder
+ *                   Placeholder for the chips widget.
+ * @param {string=}  scopedataset
+ *                   The script variable that contains the data to be provided the chips widget that can be searched onto.
+ * @param {array||string=}  dataset
+ *                   The data to be provided the chips widget from a variable that can be searched onto. <br>
+ *                   This is a bindable property.
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by the chips widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the chips widget when the list is populated using the dataSet property.
+ * @param {expression=} displayexpression
+ *                      This is an advanced property that gives more control over what is displayed in the chips widget drop-down list. <br>
+ *                      A Display Expression uses a Javascript expression to format exactly what is shown. <br>
+ *                      This property is bindable.
+ * @param {string=}  imagesource
+ *                  This property sets the image to be displayed in the search results.
+ * @param {string=}  orderby
+ *                  This allows for multiple selection for ordering the display of rows based on fields in asc or desc order - up arrow for asc and down arrow for desc.
+ * @param {boolean=} readonly
+ *                  Readonly is a bindable property. <br>
+ *                  This property will be used to make the chips widget non-editable on the web page. <br>
+ *                  Default value: `false`. <br>
+ * @param {number=}  maxsize
+ *                   Limits the chips to be displayed in the chips widget.
+ * @param {boolean=}  allowonlyselect
+ *                   If Allow Only Select is set to true, chips will restrict adding values other than in the selection. By default there is no restriction
+ * @param {boolean=} show
+ *                  This is a bindable property. <br>
+ *                  This property will be used to show/hide the chips widget on the web page. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} disabled
+ *                  Disabled is a bindable property. <br>
+ *                  This property will be used to disable/enable the chips widget on the web page. <br>
+ *                  Default value: `false`. <br>
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
+ * @param {string=}  on-beforeadd
+ *                  Callback function which will be triggered while adding new chip
+ *
+ * @example
+ <example module="wmCore">
+    <file name="index.html">
+        <div ng-controller="Ctrl" class="wm-app">
+            <wm-label caption='chips widget with an array of fruits list:' width='300px' color='#919191'></wm-label>
+            <wm-chips name='fruits' dataset="Apples, Grapes, Bananas"></wm-chips>
+        </div>
+    </file>
+    <file name="script.js">
+        function Ctrl($scope) {}
+    </file>
+ </example>
+ */
