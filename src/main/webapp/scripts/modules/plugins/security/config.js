@@ -72,6 +72,18 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/providers/cas",
             method: "POST"
         },
+        getSAMLOptions: {
+            url: "services/projects/:projectID/securityservice/providers/saml",
+            method: "GET"
+        },
+        configSAML: {
+            url: "services/projects/:projectID/securityservice/providers/saml",
+            method: "POST"
+        },
+        loadIdpMatadata: {
+            url: "services/projects/:projectID/securityservice/providers/saml/loadidpmetadata?idpMetadataUrl=:idpMetadataUrl",
+            method: "get"
+        },
         configCustomAuth: {
             url: "services/projects/:projectID/securityservice/providers/customauth",
             method: "POST"
