@@ -4,7 +4,7 @@
 /* adding events and event options as constants*/
 WM.module('wm.widgets.base', [])
     .constant('WIDGET_CONSTANTS', {
-        EVENTS_OPTIONS: ["No Event", "Javascript", "New ServiceVariable", "New LiveVariable", "New NavigationCall", "New NotificationCall"]
+        EVENTS_OPTIONS: ["No Event", "Javascript", "New ServiceVariable", "New LiveVariable", "New NavigationCall", "New NotificationCall", "Stop Propagation"]
     })
 
     /**
