@@ -24,7 +24,7 @@
         "lodash": "https://github.com/lodash/lodash.git#4.16.4",
         "hammerjs": "2.0.8",
         "animate.css": "4.0.0.alpha-1",
-        "fullcalendar": "3.0.1",
+        "fullcalendar": "2.7.1",
         "angular-ui-calendar": "1.0.1",
         "moment": "2.15.1",
         "ngCordova":"v0.1.27-alpha",
@@ -36,7 +36,7 @@
     "resolutions": {
         "d3": "v3.5.17",
         "angular": "1.5.8",
-        "fullcalendar": "3.0.1"
+        "fullcalendar": "2.7.1"
     },
     "exportsOverride": {
         "jquery-ui": {
