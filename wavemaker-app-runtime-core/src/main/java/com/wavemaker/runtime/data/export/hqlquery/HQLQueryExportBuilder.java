@@ -47,88 +47,79 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         Row colHeaderRow = sheet.createRow(STARTING_ROW_NUMBER);
         for (final ReturnProperty returnProperty : returnPropertyList) {
             ReturnType returnType = returnProperty.getReturnType();
-            if (returnType.getType() == ReturnType.Type.SIMPLE) {
+            ReturnType.Type type = returnType.getType();
+            if (type == ReturnType.Type.SIMPLE) {
                 CellUtil.createCell(colHeaderRow, colNum, returnProperty.getName(),
                         columnHeaderStyle(sheet.getWorkbook()));
                 colNum++;
-            } else if (returnType.getType() == ReturnType.Type.REFERENCE) {
-                colNum = addEntityTypeColumnHeaders(colHeaderRow, colNum, returnType.getRef(), "", true);
+            } else if (type == ReturnType.Type.REFERENCE) {
+                colNum = addEntityTypeColumnHeaders(colHeaderRow, colNum, returnType.getTypeClass(), "", true);
             }
         }
     }
 
     @Override
-    public void addColumnData(Sheet sheet) {
+    public void addColumnData(final Sheet sheet) throws Exception {
         int rowNum = START_ROW_NUMBER_OF_DATA;
-        try {
-            while (results.next()) {
-                Row row = sheet.createRow(rowNum);
-                int colNum = STARTING_COLUMN_NUMBER;
-                for (final ReturnProperty returnProperty : returnPropertyList) {
-                    Cell cell = row.createCell(colNum);
-                    ReturnType.Type type = returnProperty.getReturnType().getType();
-                    if (type == ReturnType.Type.SIMPLE) {
-                        DataSourceExporterUtil.setCellValue(results.get(colNum), cell);
-                        colNum++;
-                    } else if (type == ReturnType.Type.REFERENCE) {
-                        Object dataObject = results.get(0);
-                        if (dataObject != null) {
-                            colNum = addEntityTypeColumnData(row, colNum, dataObject, true);
-                        }
-                    }
+        while (results.next()) {
+            Row dataRow = sheet.createRow(rowNum);
+            int colNum = STARTING_COLUMN_NUMBER;
+            for (final ReturnProperty returnProperty : returnPropertyList) {
+                Object data = results.get(colNum);
+                ReturnType returnType = returnProperty.getReturnType();
+                ReturnType.Type type = returnType.getType();
+                Cell cell = dataRow.createCell(colNum);
+                if (type == ReturnType.Type.SIMPLE) {
+                    DataSourceExporterUtil.setCellValue(data, cell);
+                    colNum++;
+                } else if (type == ReturnType.Type.REFERENCE) {
+                    colNum = addEntityTypeColumnData(data, dataRow, colNum, returnType.getTypeClass(), true);
                 }
-                sheet.autoSizeColumn(rowNum);
-                rowNum++;
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Error while exporting data to report", e);
+            rowNum++;
         }
     }
 
-    private int addEntityTypeColumnHeaders(
-            Row row, int colNum, String className, String prefix, boolean loopOnce) throws
-            ClassNotFoundException {
-        Class<?> aClass = Class.forName(className);
-        for (final Field field : aClass.getDeclaredFields()) {
+    private int addEntityTypeColumnHeaders(Row row, int colNum, Class<?> typeClass, String prefix, boolean addChildEntityHeaders)
+            throws ClassNotFoundException {
+        for (final Field field : typeClass.getDeclaredFields()) {
             String typeName = field.getType().getName();
             DataType dataType = DataType.valueFor(typeName);
             String cellValue = field.getName();
-            if (dataType != null) {
-                if (dataType != DataType.LIST && dataType != DataType.OBJECT) {
-                    if (StringUtils.isNotBlank(prefix)) {
-                        cellValue = prefix + '.' + cellValue;
-                    }
-                    CellUtil.createCell(row, colNum, cellValue, columnHeaderStyle(row.getSheet().getWorkbook()));
+            if (dataType != null && isDataTypeWritable(dataType)) {
+                if (StringUtils.isNotBlank(prefix)) {
+                    cellValue = prefix + '.' + cellValue;
                 }
-            } else if (loopOnce) {
-                addEntityTypeColumnHeaders(row, colNum, typeName, cellValue, false);
+                CellUtil.createCell(row, colNum, cellValue, columnHeaderStyle(row.getSheet().getWorkbook()));
+                colNum++;
+            } else if (dataType == null && addChildEntityHeaders) {
+                colNum = addEntityTypeColumnHeaders(row, colNum, Class.forName(typeName), cellValue, false);
             }
-            colNum++;
         }
         return colNum;
     }
 
-
-    private int addEntityTypeColumnData(
-            final Row row, int colNum, final Object dataObject,
-            final boolean loopOnce) throws IllegalAccessException, InvocationTargetException {
-        Class<?> aClass = dataObject.getClass();
-        for (final Field field : aClass.getDeclaredFields()) {
-            Cell cell = row.createCell(colNum);
-            PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(aClass, field.getName());
+    private int addEntityTypeColumnData(final Object dataObject, Row row, int colNum, Class<?> typeClass, boolean addChildEntityData)
+            throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+        for (final Field field : typeClass.getDeclaredFields()) {
             String typeName = field.getType().getName();
-            Object dataValue = descriptor.getReadMethod().invoke(dataObject);
             DataType dataType = DataType.valueFor(typeName);
-            if (dataType != null) {
-                if (dataType != DataType.LIST && dataType != DataType.OBJECT) {
-                    DataSourceExporterUtil.setCellValue(dataValue, cell);
+            PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(typeClass, field.getName());
+            Object data = (dataObject == null) ? null : propertyDescriptor.getReadMethod().invoke(dataObject);
+            if (dataType != null && isDataTypeWritable(dataType)) {
+                if (dataObject != null) {
+                    Cell cell = row.createCell(colNum);
+                    DataSourceExporterUtil.setCellValue(data, cell);
                 }
-            } else if (loopOnce) {
-                addEntityTypeColumnData(row, colNum, dataValue, false);
+                colNum++;
+            } else if (dataType == null && addChildEntityData) {
+                colNum = addEntityTypeColumnData(data, row, colNum, Class.forName(typeName), false);
             }
-            colNum++;
         }
         return colNum;
+    }
+
+    private boolean isDataTypeWritable(DataType dataType) {
+        return dataType != DataType.LIST && dataType != DataType.OBJECT;
     }
 }
-

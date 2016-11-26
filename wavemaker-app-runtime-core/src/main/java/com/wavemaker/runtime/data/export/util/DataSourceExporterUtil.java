@@ -33,11 +33,9 @@ public class DataSourceExporterUtil {
 
     public static void setCellValue(Object data, final Cell cell) {
         try {
-            Row row = cell.getRow();
-            Sheet sheet = row.getSheet();
-            if (data == null) {
-                cell.setCellValue("");
-            } else {
+            if (data != null) {
+                Row row = cell.getRow();
+                Sheet sheet = row.getSheet();
                 if (!byte[].class.equals(data.getClass())) {
                     cell.setCellValue(data.toString());
                 } else {
@@ -47,7 +45,6 @@ public class DataSourceExporterUtil {
 
                 }
             }
-            sheet.autoSizeColumn(cell.getColumnIndex());
         } catch (Exception e) {
             throw new RuntimeException("Error while exporting data to report", e);
         }

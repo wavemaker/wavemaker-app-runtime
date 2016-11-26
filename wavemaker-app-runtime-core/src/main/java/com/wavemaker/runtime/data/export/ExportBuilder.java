@@ -2,6 +2,7 @@ package com.wavemaker.runtime.data.export;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -39,9 +40,22 @@ public abstract class ExportBuilder {
             Sheet spreadSheet = workbook.createSheet("Data");
             addColumnHeaders(spreadSheet);
             addColumnData(spreadSheet);
+            autoSizeAllColumns(workbook);
             return workbook;
         } catch (Exception e) {
             throw new RuntimeException("Exception while building report", e);
+        }
+    }
+
+    private void autoSizeAllColumns(Workbook workbook) {
+        for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+            Sheet sheet = workbook.getSheetAt(sheetIndex);
+            int firstRowNum = sheet.getFirstRowNum();
+            Row row = sheet.getRow(firstRowNum);
+            int lastCellNum = row.getLastCellNum();
+            for (int i = 0; i < lastCellNum; i++) {
+                sheet.autoSizeColumn(row.getCell(lastCellNum).getColumnIndex());
+            }
         }
     }
 }

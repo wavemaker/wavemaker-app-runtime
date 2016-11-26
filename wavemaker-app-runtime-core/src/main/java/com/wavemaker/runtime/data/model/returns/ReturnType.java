@@ -8,6 +8,7 @@ public class ReturnType {
 
     private Type type;
     private String ref;
+    private Class<?> typeClass;
 
     public ReturnType() {
     }
@@ -31,6 +32,14 @@ public class ReturnType {
 
     public void setRef(final String ref) {
         this.ref = ref;
+    }
+
+    public Class<?> getTypeClass() {
+        return typeClass;
+    }
+
+    public void setTypeClass(final Class<?> typeClass) {
+        this.typeClass = typeClass;
     }
 
     public enum Type {

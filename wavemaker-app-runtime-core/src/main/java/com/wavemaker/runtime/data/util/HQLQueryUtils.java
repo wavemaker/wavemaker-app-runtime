@@ -23,6 +23,7 @@ import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.model.returns.ReturnType;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 public class HQLQueryUtils {
 
@@ -51,9 +52,9 @@ public class HQLQueryUtils {
     public static String replaceExpressionWithHQL(String query) {
         Matcher matcher = pattern.matcher(query);
         StringBuffer hqlQuery = new StringBuffer();
-        while(matcher.find()) {
+        while (matcher.find()) {
             String value = "";
-            switch(Type.valueFor(matcher.group(EXPRESSION))) {
+            switch (Type.valueFor(matcher.group(EXPRESSION))) {
                 case STARTING_WITH:
                     value = matcher.group(VALUE) + WILDCARD_ENTRY;
                     break;
@@ -98,34 +99,39 @@ public class HQLQueryUtils {
         final org.hibernate.type.Type[] returnTypes = query.getReturnTypes();
         final String[] returnAliases = query.getReturnAliases();
         List<ReturnProperty> properties = new ArrayList<>(returnTypes.length);
-        for (int i = 0; i < returnTypes.length; i++) {
-            final org.hibernate.type.Type type = returnTypes[i];
+        try {
+            for (int i = 0; i < returnTypes.length; i++) {
+                final org.hibernate.type.Type type = returnTypes[i];
 
-            ReturnProperty property = new ReturnProperty();
-            if (returnAliases != null && returnAliases.length >= i) {
-                property.setName(returnAliases[i]);
+                ReturnProperty property = new ReturnProperty();
+                if (returnAliases != null && returnAliases.length >= i) {
+                    property.setName(returnAliases[i]);
+                }
+
+                ReturnType returnType = new ReturnType();
+                String typeRef = type.getName();
+                if (type.isCollectionType()) {
+                    returnType.setType(ReturnType.Type.COLLECTION);
+                } else if (type.isAssociationType()) {
+                    returnType.setType(ReturnType.Type.REFERENCE);
+                    returnType.setTypeClass(Class.forName(typeRef));
+                } else {
+                    returnType.setType(ReturnType.Type.SIMPLE);
+                }
+                if (type instanceof AbstractStandardBasicType) {
+                    typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
+                }
+
+                returnType.setRef(typeRef);
+                property.setReturnType(returnType);
+
+                properties.add(property);
             }
-
-            ReturnType returnType = new ReturnType();
-            String typeRef = type.getName();
-            if (type.isCollectionType()) {
-                returnType.setType(ReturnType.Type.COLLECTION);
-            } else if (type.isAssociationType()) {
-                returnType.setType(ReturnType.Type.REFERENCE);
-            } else {
-                returnType.setType(ReturnType.Type.SIMPLE);
-            }
-            if (type instanceof AbstractStandardBasicType) {
-                typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
-            }
-
-            returnType.setRef(typeRef);
-            property.setReturnType(returnType);
-
-            properties.add(property);
+            return properties;
+        } catch (Exception e) {
+            throw new WMRuntimeException("Error occurred while preparing returnProperty details for hql query: " +
+                    query.getQueryString(), e);
         }
-
-        return properties;
     }
 
     private static String buildOrderByClause(Sort sort) {
