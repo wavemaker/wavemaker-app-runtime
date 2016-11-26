@@ -305,6 +305,76 @@ wm.plugins.database.services.LocalDBManager = [
         };
 
         /**
+         * Deletes any existing databases and copies the databases that are packaged with the app. After db creation,
+         * appInfo is saved.
+         *
+         * @param appInfo
+         * @param currentBuildTime
+         * @returns {*}
+         */
+        function cleanAndCopyDatabases(appInfo, currentBuildTime) {
+            var databasesCreated = $q.defer(),
+                dbSeedFolder = cordova.file.applicationDirectory + META_LOCATION,
+                dbInstallPath = cordova.file.dataDirectory + 'databases';
+            $cordovaFile.createDir(cordova.file.dataDirectory, "databases", false).finally(function () {
+                DeviceFileService.listFiles(dbInstallPath, /.+\.db$/).then(function (files) {
+                    if (files && files.length > 0) {
+                        return $q.all(_.map(files, function (f) {
+                            if (f.name !== 'wavemaker') {
+                                return $cordovaFile.removeFile(dbInstallPath, f.name);
+                            }
+                        }));
+                    }
+                }).then(function () {
+                    return DeviceFileService.listFiles(dbSeedFolder, /.+\.db$/)
+                        .then(function (files) {
+                            var filesCopied = $q.defer();
+                            if (files && files.length > 0) {
+                                $cordovaFile.createDir(cordova.file.dataDirectory, "databases", false)
+                                    .finally(function () {
+                                        $q.all(_.map(files, function (f) {
+                                            return $cordovaFile.copyFile(dbSeedFolder, f.name, dbInstallPath, f.name);
+                                        })).then(filesCopied.resolve);
+                                    });
+                            } else {
+                                filesCopied.resolve();
+                            }
+                            return filesCopied.promise;
+                        });
+                }).then(function () {
+                    if (!appInfo) {
+                        appInfo = {};
+                    }
+                    appInfo.createdOn = currentBuildTime || _.now();
+                    return $cordovaFile.writeFile(cordova.file.dataDirectory, "app.info", JSON.stringify(appInfo), true)
+                        .then(databasesCreated.resolve);
+                }).catch(databasesCreated.reject);
+            });
+            return databasesCreated.promise;
+        }
+
+        /**
+         * When app is opened for first time, then old databases are removed and new databases are created using
+         * bundled databases.
+         *
+         * @returns {*}
+         */
+        function setupDatabases() {
+            var currentBuildTime;
+            return $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', "config.json")
+                .then(function (appConfig) {
+                    currentBuildTime = JSON.parse(appConfig).buildTime;
+                    return $cordovaFile.readAsText(cordova.file.dataDirectory, "app.info")
+                        .then(function (appInfo) {
+                            appInfo = JSON.parse(appInfo);
+                            if (appInfo.createdOn < currentBuildTime) {
+                                return cleanAndCopyDatabases(appInfo, currentBuildTime);
+                            }
+                        }, cleanAndCopyDatabases.bind(undefined, null, currentBuildTime));
+                });
+        }
+
+        /**
          * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBManager#loadDatabases
          * @methodOf wm.plugins.database.services.$LocalDBManager
@@ -321,7 +391,8 @@ wm.plugins.database.services.LocalDBManager = [
                 d.resolve(databases);
             } else {
                 databases = {};
-                loadDBSchemas()
+                setupDatabases()
+                    .then(loadDBSchemas)
                     .then(loadNamedQueries)
                     .then(loadOfflineConfig)
                     .then(function (metadata) {
@@ -432,18 +503,38 @@ wm.plugins.database.services.LocalDBManager = [
 
         /**
          * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#isBundled
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @param {string} dataModelName Name name of the data model
+         * @param {string} entityName Name of the entity
+         * @returns {boolean} returns true, if the given entity's data is bundled along with application installer.
+         */
+        this.isBundled = function (dataModelName, entityName) {
+            var store = this.getStore(dataModelName, entityName);
+            if (store) {
+                return store.schema.syncType === 'BUNDLED';
+            }
+            return false;
+        };
+
+        /**
+         * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBManager#clearAll
          * @methodOf wm.plugins.database.services.$LocalDBManager
          * @description
          * clear data in all databases.
+         *
+         * @param {array} except array of all datamodels that should not be cleared.
          * @returns {object} a promise that is resolved when data is cleared.
          */
-        this.clearAll = function () {
+        this.clearAll = function (except) {
             var promises = [];
             _.forEach(databases, function (database) {
-                _.forEach(database.stores, function (store) {
-                    promises.push(store.clear());
-                });
+                if (!_.includes(except, database.schema.name)) {
+                    _.forEach(database.stores, function (store) {
+                        promises.push(store.clear());
+                    });
+                }
             });
             return $q.all(promises);
         };

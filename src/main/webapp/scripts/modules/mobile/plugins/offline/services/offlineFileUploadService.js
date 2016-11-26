@@ -12,7 +12,8 @@
 wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeLogService', '$q', '$log',
     function ($cordovaFile, ChangeLogService, $q, $log) {
         'use strict';
-        var fileStore = {},
+        var storeKey  = 'offlineFileUpload',
+            fileStore = {},
             uploadDir,
             initialized = false;
 
@@ -92,6 +93,9 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
         };
 
         ChangeLogService.registerCallback({
+            'preFlush' : function (flushContext) {
+                fileStore = flushContext.get(storeKey);
+            },
             /**
              * Replaces all local paths with the remote path using mappings created during 'uploadToServer'.
              */

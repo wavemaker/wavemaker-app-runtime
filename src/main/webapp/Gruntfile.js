@@ -658,7 +658,8 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBService.js',
                         '<%= config.scripts %>/modules/mobile/plugins/offline/config.js',
                         '<%= config.scripts %>/modules/mobile/plugins/offline/services/changeLogService.js',
-                        '<%= config.scripts %>/modules/mobile/plugins/offline/services/offlineFileUploadService.js'
+                        '<%= config.scripts %>/modules/mobile/plugins/offline/services/offlineFileUploadService.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/offline/services/offlineSecurityService.js'
                     ],
                     '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js': [
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'
