@@ -224,6 +224,23 @@ wm.variables.services.$servicevariable = ['Variables',
             isQueryServiceVar = function (variable) {
               return variable.controller === CONTROLLER_TYPE_QUERY && variable.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA;
             },
+
+            /**
+             * prepare a blob object based on the content and content type provided
+             * if content is blob itself, simply returns it back
+             * @param val
+             * @param valContentType
+             * @returns {*}
+             */
+            getBlob = function (val, valContentType) {
+                var valConstructorType = _.toLower(_.get(val, 'constructor.name'));
+                if (valConstructorType === 'string' || valConstructorType === 'number') {
+                    val = new Blob([val], {type: valContentType || 'text/plain'});
+                } else if (valConstructorType === 'object' && Utils.getValidJSON(val)) {
+                    val = new Blob([val], {type: valContentType || 'application/json'});
+                }
+                return val;
+            },
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
             constructRestRequestParams = function (operationInfo, variable) {
@@ -308,10 +325,10 @@ wm.variables.services.$servicevariable = ['Variables',
                                 if (param.type === "file") {
                                     if (WM.isArray(paramValue)) {
                                         WM.forEach(paramValue, function (fileObject) {
-                                            getFormDataObj().append(param.name, fileObject, fileObject.name);
+                                            getFormDataObj().append(param.name, getBlob(fileObject), fileObject.name);
                                         });
                                     } else {
-                                        getFormDataObj().append(param.name, paramValue, paramValue.name);
+                                        getFormDataObj().append(param.name, getBlob(paramValue), paramValue.name);
                                     }
                                 } else {
                                     if (WM.isObject(paramValue)) {
@@ -805,11 +822,21 @@ wm.variables.services.$servicevariable = ['Variables',
                         variable.promise.abort();
                     }
                 },
-                setInput: function (variable, key, val) {
+                setInput: function (variable, key, val, options) {
                     var targetObj = variable.dataBinding,
                         keys,
                         lastKey,
                         paramObj = {};
+                    if (WM.isObject(options)) {
+                        switch(options.type) {
+                            case 'file':
+                                val = getBlob(val, options.contentType);
+                                break;
+                            case 'number':
+                                val = _.isNumber(val) ? val : parseInt(val);
+                                break;
+                        }
+                    }
                     if (WM.isObject(key)) {
                         paramObj = key;
                     } else if (key.indexOf('.') > -1) {
@@ -824,7 +851,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
 
                     WM.forEach(paramObj, function (paramVal, paramKey) {
-                        targetObj[paramKey] = paramVal
+                        targetObj[paramKey] = paramVal;
                     });
                     return variable.dataBinding;
                 }
@@ -847,8 +874,8 @@ wm.variables.services.$servicevariable = ['Variables',
                 cancel: function () {
                     return methods.cancel(this);
                 },
-                setInput: function (key, val) {
-                    return methods.setInput(this, key, val);
+                setInput: function (key, val, options) {
+                    return methods.setInput(this, key, val, options);
                 },
                 init: function () {
                     if (this.isList) {
