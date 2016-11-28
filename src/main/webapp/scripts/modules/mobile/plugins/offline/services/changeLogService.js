@@ -24,7 +24,9 @@ wm.plugins.offline.services.ChangeLogService = [
     "$injector",
     function (LocalDBManager, $q, Utils, $log, $injector) {
         'use strict';
-        var services = {},
+        var contextKey = 'changeLogService.flushContext',
+            flushContext,
+            services = {},
             callbacks = [],
             flushInProgress = false,
             stats = {
@@ -165,10 +167,57 @@ wm.plugins.offline.services.ChangeLogService = [
 
         function onFlushComplete(fn) {
             return function () {
+                var cbs = _.reverse(_.map(callbacks, "postFlush"));
                 flushInProgress = false;
-                executeDeferChain(_.map(callbacks, "postFlush"), [stats]);
-                Utils.triggerFn(fn, stats);
+                executeDeferChain(cbs, [stats]).finally(function () {
+                    Utils.triggerFn(fn, stats);
+                });
             };
+        }
+
+        function prepareForFlush() {
+            return LocalDBManager.executeSQLQuery('wavemaker', 'UPDATE offlineChangeLog SET hasError = 0 WHERE hasError = 1')
+                .then(function () {
+                    var filterCriteria = [{
+                        'attributeName' : 'key',
+                        'attributeValue' : contextKey,
+                        'attributeType' : 'STRING',
+                        'filterCondition' : 'EQUALS'
+                    }];
+                    return LocalDBManager.getStore('wavemaker', 'key-value').filter(filterCriteria).then(function (result) {
+                        var id,
+                            context = {};
+                        if (result && result.length > 0) {
+                            id = result[0].id;
+                            context = JSON.parse(result[0].value) || {};
+                        }
+                        return {
+                            'clear' : function () {
+                                var defer = $q.defer();
+                                if (id > 0) {
+                                    return LocalDBManager.getStore('wavemaker', 'key-value').delete(id);
+                                }
+                                defer.resolve();
+                                return defer.promise;
+                            },
+                            'get' : function (key) {
+                                var value = context[key];
+                                if (!value) {
+                                    value = {};
+                                    context[key] = value;
+                                }
+                                return value;
+                            },
+                            'save' : function () {
+                                return LocalDBManager.getStore('wavemaker', 'key-value').save({
+                                    'id' : id,
+                                    'key' : contextKey,
+                                    'value' : JSON.stringify(context)
+                                });
+                            }
+                        };
+                    });
+                });
         }
 
         /**
@@ -191,6 +240,12 @@ wm.plugins.offline.services.ChangeLogService = [
             'postFlush': function () {
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
                                 stats.success, stats.error, stats.completed, stats.total);
+                if (stats.error === 0) {
+                    return flushContext.clear().then(function () {
+                        flushContext = undefined;
+                    });
+                }
+
             },
             'preCall': function (change) {
                 $log.debug("%i. Invoking call %o", (1 + stats.completed), change);
@@ -199,11 +254,13 @@ wm.plugins.offline.services.ChangeLogService = [
                 stats.completed++;
                 stats.error++;
                 $log.error('call failed with the response %o.', response);
+                return flushContext.save();
             },
             'postCallSuccess': function (change, response) {
                 stats.completed++;
                 stats.success++;
                 $log.debug('call returnd the following response %o.', response);
+                return flushContext.save();
             }
         });
 
@@ -307,10 +364,13 @@ wm.plugins.offline.services.ChangeLogService = [
             if (!flushInProgress) {
                 onComplete = onFlushComplete(onComplete);
                 flushInProgress = true;
-                executeDeferChain(_.map(callbacks, "preFlush"))
-                    .then(function () {
+                prepareForFlush()
+                    .then(function (context) {
+                        flushContext = context;
+                        return executeDeferChain(_.map(callbacks, "preFlush"), [flushContext]);
+                    }).then(function () {
                         flush(onComplete, onProgress);
-                    }, onComplete);
+                    }).catch(onComplete);
             } else {
                 Utils.triggerFn(onComplete, stats);
             }
@@ -345,7 +405,8 @@ wm.plugins.offline.run([
     "$log",
     function (LocalDBManager, ChangeLogService, $log) {
         'use strict';
-        var idStore = {},
+        var storeKey  = 'idConflictResolution',
+            idStore = {},
             transactionLocalId;
 
         function getEntityIdStore(dataModelName, entityName) {
@@ -395,6 +456,9 @@ wm.plugins.offline.run([
 
         // Registers for offline change log events.
         ChangeLogService.registerCallback({
+            'preFlush' : function (flushContext) {
+                idStore = flushContext.get(storeKey);
+            },
             // Exchane Ids, Before any database operation.
             'preCall': function (change) {
                 var primaryKeyName, entityName, dataModelName;

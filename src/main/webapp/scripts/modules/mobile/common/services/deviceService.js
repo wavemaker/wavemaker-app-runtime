@@ -7,7 +7,12 @@
  * @description
  * The 'wm.modules.wmCommon.services.$DeviceService' provides high-level API to interact with device.
  */
-wm.modules.wmCommon.services.DeviceService = ['$document', '$q', 'Utils',
+wm.modules.wmCommon.services.DeviceService = [
+    '$document',
+    '$q',
+    'Utils',
+    //This is required for initialization
+    'OfflineSecurityService',
     function ($document, $q, Utils) {
         'use strict';
 

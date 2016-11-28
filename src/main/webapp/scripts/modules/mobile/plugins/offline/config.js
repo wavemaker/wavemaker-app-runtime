@@ -30,33 +30,50 @@ wm.plugins.offline.factory(wm.plugins.offline.factories);
 wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
     'name': 'wavemaker',
     'version': 1,
-    'tables': [{
-        'name': 'offlineChangeLog',
-        'entityName': 'offlineChangeLog',
-        'columns': [{
-            'fieldName': 'id',
-            'name': 'id',
-            'primaryKey': true
-        }, {
-            'name': 'service',
-            'fieldName': 'service'
-        }, {
-            'name': 'operation',
-            'fieldName': 'operation'
-        }, {
-            'name': 'params',
-            'fieldName': 'params'
-        }, {
-            'name': 'timestamp',
-            'fieldName': 'timestamp'
-        }, {
-            'name': 'hasError',
-            'fieldName': 'hasError'
-        }, {
-            'name': 'errorMessage',
-            'fieldName': 'errorMessage'
-        }]
-    }]
+    'tables': [
+        {
+            'name': 'key_value',
+            'entityName': 'key-value',
+            'columns': [{
+                'fieldName': 'id',
+                'name': 'id',
+                'primaryKey': true
+            }, {
+                'fieldName': 'key',
+                'name': 'key'
+            }, {
+                'name': 'value',
+                'fieldName': 'value'
+            }]
+        },
+        {
+            'name': 'offlineChangeLog',
+            'entityName': 'offlineChangeLog',
+            'columns': [{
+                'fieldName': 'id',
+                'name': 'id',
+                'primaryKey': true
+            }, {
+                'name': 'service',
+                'fieldName': 'service'
+            }, {
+                'name': 'operation',
+                'fieldName': 'operation'
+            }, {
+                'name': 'params',
+                'fieldName': 'params'
+            }, {
+                'name': 'timestamp',
+                'fieldName': 'timestamp'
+            }, {
+                'name': 'hasError',
+                'fieldName': 'hasError'
+            }, {
+                'name': 'errorMessage',
+                'fieldName': 'errorMessage'
+            }]
+        }
+    ]
 });
 
 /*Bootstrapping the offline module*/
@@ -179,10 +196,8 @@ wm.plugins.offline.run([
                         },
                         'postFlush' : function (stats) {
                             if (stats.total > 0) {
-                                LocalDBManager.clearAll().then(function () {
-                                    if (stats.error === 0) {
-                                        location.assign(window.location.origin + window.location.pathname);
-                                    }
+                                LocalDBManager.clearAll(['wavemaker']).then(function () {
+                                    location.assign(window.location.origin + window.location.pathname);
                                 });
                             }
                         }

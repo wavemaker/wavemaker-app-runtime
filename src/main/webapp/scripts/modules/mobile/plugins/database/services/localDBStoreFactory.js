@@ -243,7 +243,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 params.push(pk);
                 $cordovaSQLite.execute(this.dbConnection, this.updateRecordSqlTemplate, params).then(function (result) {
                     if (result.rowsAffected === 0) {
-                        self.add(entity, function (result) {
+                        self.add(entity).then(function (result) {
                             defer.resolve(result);
                         });
                     } else {

@@ -8,38 +8,58 @@
  */
 wm.plugins.database.services.LocalDBService = [
     '$cordovaNetwork',
+    '$q',
     'DatabaseService',
     'ChangeLogService',
     'LocalDBManager',
     "Utils",
-    function ($cordovaNetwork, DatabaseService, ChangeLogService, LocalDBManager, Utils) {
+    function ($cordovaNetwork, $q, DatabaseService, ChangeLogService, LocalDBManager, Utils) {
         'use strict';
 
-        var self = this;
+        var self = this,
+            supportedOperations = [{
+                'name' : 'insertTableData',
+                'update' : true
+            }, {
+                'name' : 'updateTableData',
+                'update' : true
+            }, {
+                'name' : 'deleteTableData',
+                'update' : true
+            }, {
+                'name' : 'readTableData',
+                'update' : false
+            }, {
+                'name' : 'searchTableData',
+                'update' : false
+            }, {
+                'name' : 'searchTableDataWithQuery',
+                'update' : false
+            }];
 
         /*
          * During offline, LocalDBService will answer to all the calls. All data modifications will be recorded
          * and will be reported to DatabaseService when device goes online.
          */
-        function handleOfflineDBcall(operation, params, successCallback, failureCallback) {
-            self[operation](params, function (response) {
-                if (_.includes(['insertTableData', 'updateTableData', 'deleteTableData'], operation)) {
-                    ChangeLogService.add('DatabaseService', operation, params).then(function () {
+        function localDBcall(operation, params, successCallback, failureCallback) {
+            self[operation.name](params, function (response) {
+                if (operation.update) {
+                    ChangeLogService.add('DatabaseService', operation.name, params).then(function () {
                         Utils.triggerFn(successCallback, response);
                     }, failureCallback);
                 } else {
                     Utils.triggerFn(successCallback, response);
                 }
-            }, failureCallback, true);
+            }, failureCallback);
         }
 
         /*
          * During online, all read operations data will be pushed to offline database. Similarly, Update and Delete
          * operations are synced with the offline database.
          */
-        function handleOnlineDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
+        function remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
             onlineHandler.call(DatabaseService, params, function (response) {
-                if (_.includes(['readTableData', 'searchTableData', 'searchTableDataWithQuery'], operation)) {
+                if (!operation.update) {
                     _.forEach(response.content, function (r) {
                         var updateParams = {
                             dataModelName: params.dataModelName,
@@ -48,10 +68,10 @@ wm.plugins.database.services.LocalDBService = [
                         };
                         self.updateTableData(updateParams, WM.noop, WM.noop, false);
                     });
-                } else if (_.includes(['updateTableData', 'deleteTableData'], operation)) {
-                    self[operation](params, WM.noop, WM.noop);
+                } else if (operation.name !== 'insertTableData') {
+                    self[operation.name](params, WM.noop, WM.noop);
                 }
-                successCallback(response);
+                Utils.triggerFn(successCallback, response);
             }, failureCallback);
         }
 
@@ -63,27 +83,40 @@ wm.plugins.database.services.LocalDBService = [
          * DatabaseService calls will be routed through LocalDBService module.
          */
         this.handleOfflineDBCalls = function () {
-            var operations = ['insertTableData',
-                'updateTableData',
-                'deleteTableData',
-                'readTableData',
-                'searchTableData',
-                'searchTableDataWithQuery'];
-            _.forEach(operations, function (operation) {
-                var onlineHandler = DatabaseService[operation];
+            _.forEach(supportedOperations, function (operation) {
+                var onlineHandler = DatabaseService[operation.name];
                 if (onlineHandler) {
-                    DatabaseService[operation] = function (params, successCallback, failureCallback) {
-                        if ($cordovaNetwork.isOffline() && !params.onlyOnline) {
-                            handleOfflineDBcall(operation, params, successCallback, function () {
-                                handleOnlineDBcall(operation, onlineHandler, params, successCallback, failureCallback);
-                            });
+                    DatabaseService[operation.name] = function (params, successCallback, failureCallback) {
+                        var isBundleData = LocalDBManager.isBundled(params.dataModelName, params.entityName);
+                        if (isBundleData || ($cordovaNetwork.isOffline() && !params.onlyOnline)) {
+                            if (isBundleData && operation.update) {
+                                Utils.triggerFn(failureCallback, "Data modification is not allowed on bundled data.");
+                            } else {
+                                localDBcall(operation, params, successCallback, function () {
+                                    remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback);
+                                });
+                            }
+
                         } else {
-                            handleOnlineDBcall(operation, onlineHandler, params, successCallback, failureCallback);
+                            remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback);
                         }
                     };
                 }
             });
         };
+
+        function getStore(params) {
+            var deferredStore = $q.defer(),
+                store = LocalDBManager.getStore(params.dataModelName, params.entityName);
+            if (store) {
+                deferredStore.resolve(store);
+            } else {
+                deferredStore.reject("No store is found with name \'" + params.entityName + "\' in database \'"
+                    + params.dataModelName + "\'.");
+            }
+            return deferredStore.promise;
+
+        }
 
         /**
          * @ngdoc method
@@ -100,17 +133,13 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
         this.insertTableData = function (params, successCallback, failureCallback) {
-            var store = LocalDBManager.getStore(params.dataModelName, params.entityName);
-            if (store) {
-                store.add(params.data)
-                    .then(function (localId) {
-                        var primaryKeyName = store.primaryKeyName;
-                        params.data[primaryKeyName] = localId;
-                        successCallback(params.data);
-                    }, failureCallback);
-            } else {
-                Utils.triggerFn(failureCallback, "Store not found.");
-            }
+            getStore(params).then(function (store) {
+                return store.add(params.data).then(function (localId) {
+                    var primaryKeyName = store.primaryKeyName;
+                    params.data[primaryKeyName] = localId;
+                    successCallback(params.data);
+                });
+            }).catch(failureCallback);
         };
 
         /**
@@ -129,15 +158,11 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
         this.updateTableData = function (params, successCallback, failureCallback) {
-            var store = LocalDBManager.getStore(params.dataModelName, params.entityName);
-            if (store) {
-                store.save(params.data)
-                    .then(function () {
-                        successCallback(params.data);
-                    }, failureCallback);
-            } else {
-                Utils.triggerFn(failureCallback, "Store not found.");
-            }
+            getStore(params).then(function (store) {
+                store.save(params.data).then(function () {
+                    successCallback(params.data);
+                });
+            }).catch(failureCallback);
         };
 
         /**
@@ -156,12 +181,9 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
         this.deleteTableData = function (params, successCallback, failureCallback) {
-            var store = LocalDBManager.getStore(params.dataModelName, params.entityName);
-            if (store) {
-                store.delete(params.id).then(successCallback, failureCallback);
-            } else {
-                Utils.triggerFn(failureCallback, "Store not found.");
-            }
+            getStore(params).then(function (store) {
+                store.delete(params.id).then(successCallback);
+            }).catch(failureCallback);
         };
 
         /**
@@ -180,8 +202,7 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
         this.readTableData = function (params, successCallback, failureCallback) {
-            var store = LocalDBManager.getStore(params.dataModelName, params.entityName);
-            if (store) {
+            getStore(params).then(function (store) {
                 store.filter(params.data, params.sort.split('=')[1], {
                     offset: (params.page - 1) * params.size,
                     limit: params.size
@@ -189,10 +210,8 @@ wm.plugins.database.services.LocalDBService = [
                     successCallback({
                         'content': data
                     });
-                }, failureCallback);
-            } else {
-                Utils.triggerFn(failureCallback, "Store not found.");
-            }
+                });
+            }).catch(failureCallback);
         };
 
         /**
