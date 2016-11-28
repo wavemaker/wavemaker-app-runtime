@@ -103,7 +103,7 @@ wm.plugins.security.services.SecurityService = [
              * @param failureCallback
              * @param isPostLogin
              */
-            getConfig = function (successCallback, failureCallback, isPostLogin) {
+            getConfig = function (successCallback, failureCallback) {
                 function invokeQueuedCallbacks(id, method, data) {
                     WM.forEach(requestQueue[id], function (fn) {
                         Utils.triggerFn(fn[method], data);
@@ -615,6 +615,99 @@ wm.plugins.security.services.SecurityService = [
                     },
                     data: params.config
                 }, successCallback, failureCallback);
+            },
+
+
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getCASOptions
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to get the values of configured CAS (Central Authentication Service) security provider.
+             * This API returns appropriate values on the basis of what is set earlier using configureCAS API.
+             *
+             * Following are the fields which need to be set for using CAS:
+             * a) casURL - A CAS url
+             * b) projectURL - projects url.
+             * c) userDetailsProvider - A string which contains the value “CAS”.
+             * d) DatabaseOptions - DatabaseOptions object
+             *
+             * @param {string} projectID project id
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            getSAMLOptions: function (projectID) {
+                return BaseService.execute({
+                    target: 'Security',
+                    action: 'getSAMLOptions',
+                    urlParams: {
+                        projectID: projectID
+                    }
+                });
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#configSAML
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The URL configures the SAML as the service provider. This mechanism enables the
+             * Configuration parameters should be sent through json object using RequestBody.
+             * Following 3 data members value to be set for using SAML:
+             * e) samlURL - A CAS url.
+             * f) projectURL - project url.
+             * g) userDetailsProvider - A string which contains the value “SAML”.
+             *
+             * @param {object} params object containing parameters for the request
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            configSAML: function (params) {
+                return BaseService.execute({
+                    target: 'Security',
+                    action: 'configSAML',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                });
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#configSAML
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The URL configures the SAML as the service provider. This mechanism enables the
+             * Configuration parameters should be sent through json object using RequestBody.
+             * Following 3 data members value to be set for using SAML:
+             * e) samlURL - A CAS url.
+             * f) projectURL - project url.
+             * g) userDetailsProvider - A string which contains the value “SAML”.
+             *
+             * @param {object} params object containing parameters for the request
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            loadIdpMatadata: function (params) {
+                return BaseService.execute({
+                    target: 'Security',
+                    action: 'loadIdpMatadata',
+                    urlParams: {
+                        projectID: params.projectID,
+                        idpMetadataUrl: params.idpMetadataUrl
+                    }
+                });
             },
 
             /**
