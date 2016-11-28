@@ -33,9 +33,9 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
                     '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}" ng-href="{{item.link}}" target="{{linktarget}}">' +
+                    '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '<i class="app-icon {{item.icon}}"></i>' +
                     '{{item.label}}' +
-                    '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '</a>' +
                 '</li>'
             );
