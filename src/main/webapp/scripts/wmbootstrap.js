@@ -135,8 +135,17 @@ Application
                         },
                         ssoUrl;
 
+                    function getRedirectPage(config) {
+                        var homePage = _WM_APP_PROPERTIES.homePage,
+                            loginPage = _.get(config, 'login.pageName');
+                        page = page || $location.path().replace('/', '');
+                        if (page === homePage || page === loginPage) {
+                            return undefined;
+                        }
+                    }
+
                     SecurityService.getConfig(function (config) {
-                        // if no user found, 401 was thrown for first time login
+                        // if user found, 401 was thrown after session time
                         if (config.userInfo && config.userInfo.userName) {
                             sessionTimeoutConfig = config.login.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
@@ -147,7 +156,6 @@ Application
                                     }, WM.noop);
                                 }
                                 showLoginDialog();
-
                             } else if (sessionTimeoutMethod === LOGIN_METHOD.PAGE) {
                                 if (!page) {
                                     page = $location.path().replace('/', '');
@@ -156,6 +164,7 @@ Application
                                 $location.search('redirectTo', page);
                             }
                         } else {
+                            // if no user found, 401 was thrown for first time login
                             loginConfig = config.login;
                             loginMethod = loginConfig.type.toUpperCase();
                             switch (loginMethod) {
@@ -166,13 +175,13 @@ Application
                             case LOGIN_METHOD.PAGE:
                                 // do not provide redirectTo page if fetching HOME page resulted 401
                                 // on app load, by default Home page is loaded
-                                page = (page === _WM_APP_PROPERTIES.homePage) ? undefined : (!page ? $location.path().replace('/', '') : page);
+                                page = getRedirectPage(config);
                                 $location.path(loginConfig.pageName);
                                 $location.search('redirectTo', page);
                                 break;
                             case LOGIN_METHOD.SSO:
                                 // do not provide redirectTo page if fetching HOME page resulted 401
-                                page = (page === _WM_APP_PROPERTIES.homePage) ? undefined : (!page ? $location.path().replace('/', '') : page);
+                                page = getRedirectPage(config);
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
                                 ssoUrl = $rs.project.deployedUrl + SSO_URL + (page ? '?redirectPage=' + page : '');
