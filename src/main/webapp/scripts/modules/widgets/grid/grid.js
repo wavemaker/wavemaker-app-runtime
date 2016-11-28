@@ -2029,6 +2029,7 @@ WM.module('wm.widgets.grid')
                 defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
                 /*append additional properties*/
                 WM.forEach(defaultFieldDefs, function (columnDef) {
+                    var newColumn;
                     columnDef.pcDisplay = true;
                     columnDef.mobileDisplay = true;
                     WM.forEach($scope.fullFieldDefs, function (column) {
@@ -2055,11 +2056,11 @@ WM.module('wm.widgets.grid')
                     });
                     /* if properties map is provided, append the same to column defs*/
                     if (propertiesMap) {
-                        columnDef.type = columns[columnDef.field].type;
-                        columnDef.primaryKey = columns[columnDef.field].isPrimaryKey;
-                        columnDef.generator = columns[columnDef.field].generator;
-                        columnDef.readonly = WM.isDefined(columns[columnDef.field].readonly) ?
-                                    columns[columnDef.field].readonly === 'true' : (_.includes(['identity', 'uniqueid'], columnDef.generator) && columns[columnDef.field].isRelatedPk !== 'true');
+                        newColumn            = columns[columnDef.field];
+                        columnDef.type       = newColumn.type;
+                        columnDef.primaryKey = newColumn.isPrimaryKey;
+                        columnDef.generator  = newColumn.generator;
+                        columnDef.readonly   = WM.isDefined(newColumn.readonly) ? newColumn.readonly === 'true' : newColumn.relatedEntityName ? !newColumn.isPrimaryKey : _.includes(['identity', 'uniqueid'], newColumn.generator);
                         if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date') {
                             if (!columnDef.formatpattern) {
                                 columnDef.formatpattern = 'toDate';
@@ -2425,7 +2426,7 @@ WM.module('wm.widgets.grid')
  */
     .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', 'LiveWidgetUtils', function ($parse, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
-
+        var isDataSetWidgets = Utils.getDataSetWidgets();
         return {
             'restrict': 'E',
             'scope': true,
@@ -2492,6 +2493,7 @@ WM.module('wm.widgets.grid')
                             $parentEl   = element.parent(),
                             variable,
                             events,
+                            bindings,
                             fieldDefProps = {
                                 'field': attrs.binding
                             },
@@ -2529,7 +2531,6 @@ WM.module('wm.widgets.grid')
                             'type'              : attrs.type || 'string',
                             'primaryKey'        : attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
                             'generator'         : attrs.generator,
-                            'isRelatedPk'       : attrs.isRelatedPk === 'true',
                             'widgetType'        : attrs.widgetType,
                             'style'             : styleDef,
                             'class'             : attrs.colClass || '',
@@ -2541,7 +2542,6 @@ WM.module('wm.widgets.grid')
                             'suffix'            : attrs.suffix,
                             'prefix'            : attrs.prefix,
                             'accessroles'       : attrs.accessroles || '',
-                            'editWidgetType'    : attrs.editWidgetType || (fieldTypeWidgetTypeMap[attrs.type] && fieldTypeWidgetTypeMap[attrs.type][0]) || 'text',
                             'dataset'           : attrs.dataset,
                             'datafield'         : attrs.datafield,
                             'placeholder'       : attrs.placeholder,
@@ -2560,7 +2560,8 @@ WM.module('wm.widgets.grid')
                             'checkedvalue'      : attrs.checkedvalue,
                             'uncheckedvalue'    : attrs.uncheckedvalue
                         };
-                        columnDefProps.defaultvalue = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
+                        columnDefProps.defaultvalue   = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
+                        columnDefProps.editWidgetType = attrs.editWidgetType || LiveWidgetUtils.getEditModeWidget(columnDefProps);
                         events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
                         _.forEach(events, function (eventName) {
                             columnDefProps[eventName] = attrs[eventName];
@@ -2572,7 +2573,7 @@ WM.module('wm.widgets.grid')
                         if (tElement.context.innerHTML) {
                             columnDef.customExpression = tElement.context.innerHTML;
                         }
-                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === 'true' : (_.includes(['identity', 'uniqueid'], columnDef.generator) && !columnDef.isRelatedPk);
+                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === 'true' : columnDef.relatedEntityName ? !columnDef.primaryKey : _.includes(['identity', 'uniqueid'], columnDef.generator);
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
@@ -2603,12 +2604,10 @@ WM.module('wm.widgets.grid')
                                     watchProperty(property, value.replace('bind:', ''));
                                 }
                             });
-                        }
-                        /* this condition will run for:
-                         *  1. PC view in STUDIO mode
-                         *  2. Mobile/tablet view in RUN mode
-                         */
-                        if (CONSTANTS.isRunMode) {
+                            /* this condition will run for:
+                             *  1. PC view in STUDIO mode
+                             *  2. Mobile/tablet view in RUN mode
+                             */
                             if (Utils.isMobile()) {
                                 if (!columnDef.mobileDisplay) {
                                     return;
@@ -2617,6 +2616,11 @@ WM.module('wm.widgets.grid')
                                 if (!columnDef.pcDisplay) {
                                     return;
                                 }
+                            }
+                            //Fetch the data for the related fields
+                            if (!attrs.dataset && columnDef.relatedEntityName && columnDef.primaryKey && isDataSetWidgets[columnDef.editWidgetType]) {
+                                bindings = _.split(columnDef.field, '.');
+                                LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
                             }
                         }
                         //Set the headet config for grouping structure
