@@ -1837,7 +1837,71 @@ WM.module('wm.widgets.live')
                     DialogService.hideDialog(dialogEle.attr('dialogid'));
                 }
             }
-
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.fetchRelatedFieldData
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function fetches the data for the related field in live form/ grid
+             *
+             * @param {object} columnDef field definition
+             * @param {string} relatedField related field name
+             * @param {string} datafield Datafield to be set on widget
+             * @param {string} widget Type of the widget
+             * @param {object} elScope element scope
+             * @param {object} parentScope live form// grid scope
+             */
+            function fetchRelatedFieldData(columnDef, relatedField, datafield, widget, elScope, parentScope) {
+                var boundVariable = elScope.Variables[parentScope.variableName || Utils.getVariableName(parentScope)],
+                    primaryKeys,
+                    displayField;
+                if (!boundVariable) {
+                    return;
+                }
+                primaryKeys = boundVariable.getRelatedTablePrimaryKeys(relatedField);
+                columnDef.datafield = datafield;
+                //For autocomplete widget, set the dataset and related field. Autocomplete widget will make the call to get related data
+                if (widget === 'autocomplete' || widget === 'typeahead') {
+                    columnDef.relatedfield = relatedField;
+                    columnDef.dataset      = parentScope.binddataset;
+                    if (primaryKeys.length > 0) {
+                        displayField = primaryKeys[0];
+                    }
+                    columnDef.searchkey    = columnDef.searchkey || displayField;
+                    columnDef.displaylabel = columnDef.displaylabel || displayField;
+                } else {
+                    boundVariable.getRelatedTableData(relatedField, {}, function (response) {
+                        columnDef.dataset       = response;
+                        columnDef.isDefinedData = true;
+                        if (primaryKeys.length > 0) {
+                            displayField = primaryKeys[0];
+                        } else {
+                            displayField = _.head(_.keys(_.get(response, '[0]')));
+                        }
+                        columnDef.displayfield =  columnDef.displayfield || displayField;
+                    });
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getEditModeWidget
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function returns the default widget for grid
+             *
+             * @param {object} colDef field definition
+             */
+            function getEditModeWidget(colDef) {
+                var fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap();
+                if (colDef.relatedEntityName && colDef.primaryKey) {
+                    return 'select';
+                }
+                return (fieldTypeWidgetTypeMap[colDef.type] && fieldTypeWidgetTypeMap[colDef.type][0]) || 'text';
+            }
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -1869,6 +1933,8 @@ WM.module('wm.widgets.live')
             this.parseNgClasses             = parseNgClasses;
             this.setCaptionSize             = setCaptionSize;
             this.closeDialog                = closeDialog;
+            this.fetchRelatedFieldData      = fetchRelatedFieldData;
+            this.getEditModeWidget          = getEditModeWidget;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

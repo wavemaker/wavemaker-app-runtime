@@ -1115,6 +1115,7 @@ WM.module('wm.widgets.live')
     }])
     .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "WidgetUtilService", function (Utils, $compile, CONSTANTS, BindingManager, LiveWidgetUtils, WidgetUtilService) {
         'use strict';
+        var isDataSetWidgets = Utils.getDataSetWidgets();
         return {
             "restrict": 'E',
             "template": "<div init-widget data-role='form-field'></div>",
@@ -1136,16 +1137,12 @@ WM.module('wm.widgets.live')
                             columnDef = new scope.FieldDef(),
                             expr,
                             exprWatchHandler,
-                            relatedDataWatchHandler,
                             elScope = element.scope(),
                             defaultObj,
                             isLayoutDialog,
                             externalForm = element.closest('form.app-form'),
                             parentEle    = element.parent(),
-                            columnDefProps,
-                            boundVariable,
-                            primaryKeys,
-                            displayField;
+                            columnDefProps;
                         function setDefaultValue() {
                             if (parentScope._widgettype === 'wm-liveform') {
                                 parentScope.setDefaultValueToValue(columnDef);
@@ -1214,37 +1211,9 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        if (!attrs.dataset && attrs.isRelated && CONSTANTS.isRunMode) {
-                            boundVariable = elScope.Variables[parentScope.variableName || Utils.getVariableName(parentScope)];
-                            primaryKeys   = boundVariable.getRelatedTablePrimaryKeys(columnDef.key);
-                            //For autocomplete widget, set the dataset and related field. Autocomplete widget will make the call to get related data
-                            if (columnDef.widget === 'autocomplete' || columnDef.widget === 'typeahead') {
-                                columnDef.relatedfield = columnDef.key;
-                                columnDef.dataset      = parentScope.binddataset;
-                                columnDef.datafield    = 'All Fields';
-                                if (primaryKeys.length > 0) {
-                                    displayField = primaryKeys[0];
-                                }
-                                columnDef.searchkey    = columnDef.searchkey || displayField;
-                                columnDef.displaylabel = columnDef.displaylabel || displayField;
-                            } else {
-                                relatedDataWatchHandler = parentScope.$watch(parentScope.binddataset.replace('bind:', ''), function (newVal) {
-                                    if (!newVal) {
-                                        return;
-                                    }
-                                    relatedDataWatchHandler();
-                                    boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
-                                        columnDef.datafield = 'All Fields';
-                                        columnDef.dataset   = response;
-                                        if (primaryKeys.length > 0) {
-                                            displayField = primaryKeys[0];
-                                        } else {
-                                            displayField = _.head(_.keys(_.get(response, '[0]')));
-                                        }
-                                        columnDef.displayfield = displayField;
-                                    });
-                                });
-                            }
+                        //Fetch the data for the related fields
+                        if (CONSTANTS.isRunMode && !attrs.dataset && attrs.isRelated && isDataSetWidgets[columnDef.widget]) {
+                            LiveWidgetUtils.fetchRelatedFieldData(columnDef, columnDef.key, 'All Fields', columnDef.widget, elScope, parentScope);
                         }
 
                         if (isLayoutDialog) {
@@ -1311,9 +1280,6 @@ WM.module('wm.widgets.live')
                         parentScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();
-                            }
-                            if (relatedDataWatchHandler) {
-                                relatedDataWatchHandler();
                             }
                         });
                         // when the form-field element is removed, remove the corresponding entry from parentIScope.formFields
