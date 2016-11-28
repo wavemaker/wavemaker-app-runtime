@@ -764,7 +764,8 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "", "bindable": "in-bound"},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
-                        "backgroundcolor": {"type": "string", "widget": "color"}
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "displayvalue": {"type": "string", "value": "", "bindable": "out-bound"}
                     },
 
                     "wm.marquee": {

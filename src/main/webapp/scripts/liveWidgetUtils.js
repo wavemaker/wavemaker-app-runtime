@@ -1113,6 +1113,7 @@ WM.module('wm.widgets.live')
                 if (isDataSetWidgets[widgetType]) {
                     widgetProps.dataset.value   = '';
                     widgetProps.datafield.value = '';
+                    _.set(widgetProps.displayvalue, 'ignoreGetterSetters', true);
                 }
                 if (widgetType === 'upload') {
                     widgetProps = WM.extend(widgetProps, {

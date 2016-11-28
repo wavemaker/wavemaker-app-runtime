@@ -883,6 +883,14 @@ WM.module('wm.widgets.live')
                                 }
                             });
                         }
+                        // show displayvalue property in formwidgets.
+                        if (scope.widget === 'select' && !scope.hasOwnProperty('displayvalue')) {
+                            Object.defineProperty(scope, 'displayvalue', {
+                                get: function () {
+                                    return _.get(parentIsolateScope, ['Widgets', scope.name + '_formWidget', 'displayvalue']);
+                                }
+                            });
+                        }
                         //tabindex should be only on the input fields, remove tabindex on filter field
                         element.removeAttr('tabindex');
                     }

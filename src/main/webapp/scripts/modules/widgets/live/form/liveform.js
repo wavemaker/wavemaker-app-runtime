@@ -1336,6 +1336,14 @@ WM.module('wm.widgets.live')
                                 }
                             });
                         }
+                        // show displayvalue property in formwidgets.
+                        if (scope.widget === 'select' && !scope.hasOwnProperty('displayvalue')) {
+                            Object.defineProperty(scope, 'displayvalue', {
+                                get: function () {
+                                    return _.get(parentScope, ['Widgets', scope.name + '_formWidget', 'displayvalue']);
+                                }
+                            });
+                        }
                         scope.setValidationMessage = function (val) {
                             scope.validationmessage = val;
                             setValidity(scope.name, false);
