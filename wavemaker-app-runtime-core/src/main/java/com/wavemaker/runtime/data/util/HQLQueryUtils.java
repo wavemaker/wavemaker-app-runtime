@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.type.AbstractStandardBasicType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
@@ -29,16 +31,21 @@ public class HQLQueryUtils {
     private static final byte VALUE = 3;
     private static final String FROM = " from ";
     private static final String WHERE = " where ";
+    private static final String ORDER_BY = " order by ";
     private static final String WILDCARD_ENTRY = "%";
     private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startswith|endswith|containing)[\\s]+[\"'](([^(\\\\)[\"']])*)[\"']";
     private static Pattern pattern = Pattern.compile(QUERY_EXPRESSION);
 
-    public static String buildHQL(String entityClass, String query) {
+    public static String buildHQL(String entityClass, String query, Pageable pageable) {
         String queryFilter = StringUtils.EMPTY;
+        String orderBy     = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(query)) {
             queryFilter = WHERE + replaceExpressionWithHQL(query);
         }
-        return FROM + entityClass + queryFilter;
+        if(isSortAppliedOnPageable(pageable)) {
+            orderBy = buildOrderByClause(pageable.getSort());
+        }
+        return FROM + entityClass + queryFilter + orderBy;
     }
 
     public static String replaceExpressionWithHQL(String query) {
@@ -64,7 +71,7 @@ public class HQLQueryUtils {
     }
 
     public static Query createHQLQuery(String entityClass, String query, Pageable pageable, Session session) {
-        Query hqlQuery = session.createQuery(buildHQL(entityClass, query));
+        Query hqlQuery = session.createQuery(buildHQL(entityClass, query, pageable));
         if(pageable != null) {
             hqlQuery.setFirstResult(pageable.getOffset());
             hqlQuery.setMaxResults(pageable.getPageSize());
@@ -119,6 +126,26 @@ public class HQLQueryUtils {
         }
 
         return properties;
+    }
+
+    private static String buildOrderByClause(Sort sort) {
+        StringBuilder orderBy = new StringBuilder(ORDER_BY);
+        Iterator<Sort.Order> orderItr = sort.iterator();
+        while(orderItr.hasNext()) {
+            Sort.Order order = orderItr.next();
+            orderBy.append(" ")
+                    .append(order.getProperty())
+                    .append(" ")
+                    .append(order.getDirection());
+            if(orderItr.hasNext()) {
+                orderBy.append(",");
+            }
+        }
+        return orderBy.toString();
+    }
+
+    private static boolean isSortAppliedOnPageable(Pageable pageable) {
+        return (pageable != null) && (pageable.getSort() != null);
     }
 
 }
