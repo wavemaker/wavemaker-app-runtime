@@ -304,12 +304,19 @@ body {
   .app-wizard-steps {
     position: relative;
     border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+    &.nav-justified { //Fix for mobile layout which causing steps to show one below other
+      .app-wizard-step {
+        display: table-cell;
+        width: 1%;
+      }
+    }
     .app-wizard-step {
       position: relative;
       a {
         cursor: not-allowed;
         padding: 0 20px;
         line-height: 46px;
+        margin-bottom: 0;
       }
       &.current {
         pointer-events: none;
@@ -335,6 +342,9 @@ body {
       }
       .step-title {
         position: relative;
+        line-height: 1;
+        display: inline-block;
+        vertical-align: middle;
       }
       &:not(:last-child) {
         .arrow {
