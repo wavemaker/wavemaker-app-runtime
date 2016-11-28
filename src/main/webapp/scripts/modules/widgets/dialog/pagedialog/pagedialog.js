@@ -8,7 +8,7 @@ WM.module('wm.widgets.dialog')
             '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget page-container>' +
                 '<div class="modal-content">' +
                     '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
-                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target></div>' +
+                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
                     '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
                         '<wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                     '</div>' +
@@ -23,7 +23,7 @@ WM.module('wm.widgets.dialog')
                 'height': true,
                 'width' : true
             };
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+        // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case "height":
@@ -45,26 +45,23 @@ WM.module('wm.widgets.dialog')
             }
         }
         return {
-            "restrict": "E",
-            "controller": "DialogController",
-            "scope": {
-                dialogid: '@',
-                onOk: '&',
-                onClose: '&'
-            },
-            "replace": true,
-            "template": function (template, attrs) {
-                /*if the script tag has not been created already, set inscript to false*/
+            "restrict"  : "E",
+            "replace"   : true,
+            "scope"     : {'dialogid': '@'},
+            "transclude": CONSTANTS.isStudioMode,
+            "template"  : function (template, attrs) {
+                //if the script tag has not been created already, set inscript to false
                 if (template.attr('inscript') === undefined) {
                     template.attr('inscript', false);
                 }
-                /* in run mode, when script tag is not created, create script, else return normal template*/
+                // in run mode, when script tag is not created, create script, else return normal template
                 if (CONSTANTS.isRunMode && (template.attr('inscript') === "false")) {
-                    /*once script tag is created, set inscript attribute to true*/
+                    //once script tag is created, set inscript attribute to true
                     template.attr('inscript', true);
-                    var transcludedContent = template[0].outerHTML,
+                    var transcludedContent = template[0].outerHTML.replace("<wm-pagedialog ", "<wm-pagedialog-container "),
                         id = attrs.name;
-                    /*page dialog is always modal, so setting backdrop to static*/
+                    transcludedContent = transcludedContent.replace("</<wm-pagedialog>", "</<wm-pagedialog-container>");
+                    //page dialog is always modal, so setting backdrop to static
                     return '<script backdrop="static" type="text/ng-template" id="' + id + '">' + transcludedContent + "</script>";
                 }
                 return $templateCache.get("template/widget/dialog/pagedialog.html");
@@ -78,13 +75,13 @@ WM.module('wm.widgets.dialog')
                     }
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
-                    /* handles ok button click*/
+                    // handles ok button click
                     if (!scope.okButtonHandler) {
                         scope.okButtonHandler = function () {
                             dialogCtrl._OkButtonHandler(attrs.onOk);
                         };
                     }
-                    /* register the property change handler */
+                    // register the property change handler
                     if (scope.propertyManager) {
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                     }
@@ -92,7 +89,69 @@ WM.module('wm.widgets.dialog')
                 }
             }
         };
-    }]);
+    }]).directive('wmPagedialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
+    'use strict';
+    var widgetProps = PropertiesFactory.getPropertiesOf("wm.pagedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
+        notifyFor = {
+            'height': true,
+            'width' : true
+        };
+    // Define the property change handler. This function will be triggered when there is a change in the widget property
+    function propertyChangeHandler(scope, element, key, newVal) {
+        switch (key) {
+        case "height":
+            if (scope.height) {
+                //set the height for the Run Mode
+                if (newVal.indexOf('%') > 0) {
+                    scope.bodyHeight = ($window.innerHeight * (parseInt(newVal, 10) / 100) - 112);
+                } else {
+                    scope.bodyHeight = parseInt(newVal - 112, 10);
+                }
+            }
+            break;
+        case "width":
+            if (newVal) {
+                //update the modal element in the UI for getting shadow and width set
+                element.closest('.modal-dialog').css('width', newVal);
+            }
+            break;
+        }
+    }
+    return {
+        "restrict"  : "E",
+        "transclude": true,
+        "controller": "DialogController",
+        "scope"     : {
+            dialogid: '@',
+            onOk    : '&',
+            onClose : '&'
+        },
+        "replace"   : true,
+        "template"  : $templateCache.get("template/widget/dialog/pagedialog.html"),
+        "link"      : {
+            "pre": function (iScope) {
+                if (CONSTANTS.isStudioMode) {
+                    iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                } else {
+                    iScope.widgetProps = widgetProps;
+                }
+            },
+            "post": function (scope, element, attrs, dialogCtrl) {
+                // handles ok button click
+                if (!scope.okButtonHandler) {
+                    scope.okButtonHandler = function () {
+                        dialogCtrl._OkButtonHandler(attrs.onOk);
+                    };
+                }
+                // register the property change handler
+                if (scope.propertyManager) {
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                }
+                WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            }
+        }
+    };
+}]);
 
 /**
  * @ngdoc directive
