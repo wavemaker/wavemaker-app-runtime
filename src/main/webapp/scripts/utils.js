@@ -2232,6 +2232,10 @@ WM.module('wm.utils', [])
             loadStyleSheet(getProjectResourcePath($rootScope.project.id) + 'themes/' + themeName + '/style.css', {name: "theme", value: "wmtheme"});
         }
 
+        function isInsecureContentRequest(url) {
+            return stringStartsWith($location.$$absUrl, 'https://') && !stringStartsWith(url, 'https://') && !stringStartsWith(url, 'wss://');
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2356,4 +2360,5 @@ WM.module('wm.utils', [])
         this.convertToArray             = convertToArray;
         this.pluginConfig               = pluginConfig;
         this.loadActiveTheme            = loadActiveTheme;
+        this.isInsecureContentRequest   = isInsecureContentRequest;
     }]);

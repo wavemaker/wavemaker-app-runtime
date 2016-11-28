@@ -36,7 +36,7 @@ WM.module('wm.widgets.basic')
                     scope._iframesrc = $sce.trustAsResourceUrl(newVal);
 
                     /* check for 'http' urls in studio mode of SAAS studio version */
-                    if (Utils.stringStartsWith(newVal, 'http://') && Utils.stringStartsWith($location.$$absUrl, 'https://')) {
+                    if (Utils.isInsecureContentRequest(newVal)) {
                         scope.showContentLoadError = true;
                         scope.errMsg = $rootScope.locale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
                         scope.hintMsg = $rootScope.locale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
