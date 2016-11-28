@@ -42,8 +42,9 @@ WM.module('wm.widgets.form')
         'FormWidgetUtils',
         '$timeout',
         'CONSTANTS',
+        'Utils',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
@@ -154,7 +155,12 @@ WM.module('wm.widgets.form')
                 },
                 'link': {
                     'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                        if (CONSTANTS.isStudioMode) {
+                            $is.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            $is.widgetProps = widgetProps;
+                        }
+
                         $is._dateOptions = {};
                         if ($rs.isMobileApplicationType) {
                             $is._nativeMode = true;
