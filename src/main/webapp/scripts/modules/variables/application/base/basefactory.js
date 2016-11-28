@@ -99,7 +99,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "list", "value": [{"target": "username", "type": "string"}, {"target": "password", "type": "string"}, {"target": "rememberme", "type": "boolean"}], "hide": true},
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
-                    "useDefaultSuccessHandler": {"type": "boolean", "value": true},
+                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
                     "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
                     "spinnerMessage": {"type": "string"}
                 },
@@ -115,7 +115,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "startUpdate": {"hide": true, "value": ""},
                     "autoUpdate": {"hide": true, "value": ""},
                     "redirectTo": {"type": "list", "options": [], value: "", "istypeahead": "true"},
-                    "useDefaultSuccessHandler": {"type": "boolean", "value": true},
+                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
                     "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
                     "spinnerMessage": {"type": "string"}
                 },
