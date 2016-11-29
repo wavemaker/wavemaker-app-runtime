@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                 ' ng-required="required"' +
                 ' accesskey="{{::shortcutkey}}"' +
                 ' ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
-                ' ng-options="option as $root.locale[option.value] || option.value for option in selectOptions">' +
+                ' ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
                 '<option selected value="" ng-if="placeholder">{{placeholder}}</option>' +
             '</select>'
                 );
@@ -31,7 +31,10 @@ WM.module('wm.widgets.form')
                 'displayfield'      : true
             },
 
-            _modelChangedManually = false,
+        /** store the whole object of the selected option - in '_dataSetModelProxyMap' */
+            _dataSetModelProxyMap = {},
+            _dataSetModelMap = {},
+            _modelChangedManually = {},
             ALLFIELDS = 'All Fields';
 
         /*
@@ -50,42 +53,45 @@ WM.module('wm.widgets.form')
             return 'dataValue';
         }
 
-        // This function returns the key value pair for the selected option.
-        function getProxyModel(scope, _model_) {
-            var selectedOption,
-                selectedIndex;
-            if (scope.datafield !== ALLFIELDS) {
-                selectedOption = _.find(scope.selectOptions, function (option) {
-                    return _model_ === option.key;
-                });
-            } else {
-                selectedIndex = _.findIndex(scope.updatedDataSet, _model_);
-                selectedOption = scope.selectOptions[selectedIndex];
-            }
-            return selectedOption;
-        }
-
         /*
          * watch the model
          * and update the modelProxy,
          * */
         function updateModelProxy(scope, _model_) {
-            var selectedOption;
-            if (!_modelChangedManually) {
-                if (scope.multiple) {
-                    scope.modelProxy = [];
-                    scope.displayvalue = [];
-                    _.forEach(_model_, function (model) {
-                        selectedOption = getProxyModel(scope, model);
-                        scope.modelProxy.push(selectedOption);
-                        scope.displayvalue.push(selectedOption.value);
-                    });
-                } else {
-                    scope.modelProxy = getProxyModel(scope, _model_);
-                    scope.displayvalue = (scope.modelProxy && scope.modelProxy.value) || '';
+            var index;
+            /* to check if the function is not triggered from onChangeProxy */
+            if (!_modelChangedManually[scope.$id]) {
+                if (scope.datafield !== ALLFIELDS) {
+                    index = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
+                    scope.modelProxy = index;
+                    scope.displayvalue = _.get(scope.selectOptions, [index, 'value']);
+                } else if (_dataSetModelMap[scope.$id]) {  /* check for sanity */
+                    //For multiple select with data field as All Fields, set model as array of objects
+                    if (scope.multiple && WM.isArray(_model_)) {
+                        if (!WM.isDefined(scope.modelProxy)) {
+                            scope.modelProxy = [];
+                        } else if (WM.isArray(scope.modelProxy)) {
+                            scope.modelProxy.length = 0;
+                        }
+                        if (!WM.isDefined(scope.displayvalue)) {
+                            scope.displayvalue = [];
+                        } else if (WM.isArray(scope.displayvalue)) {
+                            scope.displayvalue.length = 0;
+                        }
+                        _.forEach(_model_, function (modelObj) {
+                            index = _dataSetModelMap[scope.$id][WM.toJson(modelObj)];
+                            scope.modelProxy.push(index);
+                            scope.displayvalue.push(_.get(scope.selectOptions, [index, 'value']));
+                        });
+                    } else {
+                        index = _dataSetModelMap[scope.$id][WM.toJson(_model_)];
+                        scope.modelProxy = index;
+                        scope.displayvalue = _.get(scope.selectOptions, [index, 'value']);
+                    }
                 }
             }
-            _modelChangedManually = false;
+            /* reset the value */
+            _modelChangedManually[scope.$id] = false;
         }
 
         /*
@@ -99,6 +105,9 @@ WM.module('wm.widgets.form')
                 orderedKeys = [],
                 key;
 
+            /*initialize the data, for 'All Fields'*/
+            _dataSetModelProxyMap[scope.$id] = {};
+            _dataSetModelMap[scope.$id] = {};
             /*if filter dataSet if dataField is selected other than 'All Fields'*/
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
@@ -119,11 +128,17 @@ WM.module('wm.widgets.form')
                 data = {};
                 if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1) {
                     data[0] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                    /*store parsed dataSet in scope*/
+                    _dataSetModelProxyMap[scope.$id][0] = dataSet;
+                    _dataSetModelMap[scope.$id][JSON.stringify(dataSet)] = '0';
                 } else {
                     _.forEach(dataSet, function (option, index) {
                         if (WM.isObject(option)) {
                             if (scope.datafield === ALLFIELDS) {
                                 data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                                /*store parsed dataSet in scope*/
+                                _dataSetModelProxyMap[scope.$id][index] = option;
+                                _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
                             } else {
                                 data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                             }
@@ -137,7 +152,6 @@ WM.module('wm.widgets.form')
                     });
                 }
             }
-            scope.updatedDataSet = dataSet;
             scope.orderedKeys = orderedKeys;
             return data;
         }
@@ -243,10 +257,6 @@ WM.module('wm.widgets.form')
             }
         }
 
-        function getModelValueFromDataSet(scope, key) {
-            return scope.datafield === ALLFIELDS ? scope.updatedDataSet[key] : key;
-        }
-
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
             /*if "All Fields" is found in the widget mark up, then make the '_model_', an object*/
@@ -256,17 +266,23 @@ WM.module('wm.widgets.form')
                 return;
             }
 
-            if (scope.multiple) {
-                /*For multiple select with data field as All Fields, set model as array of objects*/
-                var modelHolder = [];
-                _.forEach(scope.modelProxy, function (proxy) {
-                    modelHolder.push(getModelValueFromDataSet(scope, proxy.key));
-                });
-                scope._model_ = modelHolder;
-            } else {
-                scope._model_ = getModelValueFromDataSet(scope, (scope.modelProxy && scope.modelProxy.key));
+            /* assign the modelProxy to the model when the selected datafield isn't all-fields*/
+            if (scope.datafield !== ALLFIELDS || (scope.dataset && WM.isString(scope.dataset))) {
+                scope._model_ = scope.modelProxy;
+            } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
+                if (scope.multiple) {
+                    /*For multiple select with data field as All Fields, set model as array of objects*/
+                    var modelHolder = [];
+                    _.each(scope.modelProxy, function (proxy) {
+                        modelHolder.push(_dataSetModelProxyMap[scope.$id][proxy]);
+                    });
+                    scope._model_ = modelHolder;
+                } else {
+                    scope._model_ = _dataSetModelProxyMap[scope.$id][scope.modelProxy];
+                }
             }
-            _modelChangedManually = true;
+            _modelChangedManually[scope.$id] = true;
+
             if (WM.isFunction(scope._onChange)) {
                 scope._onChange({$event: args.$event, $scope: args.$scope});
             }
@@ -303,7 +319,7 @@ WM.module('wm.widgets.form')
                             },
                             set: function (newVal) {
                                 this._proxyModel = newVal;
-                                _modelChangedManually = false;
+                                _modelChangedManually[iScope.$id] = false;
                                 updateModelProxy(iScope, newVal);
                             }
                         });
