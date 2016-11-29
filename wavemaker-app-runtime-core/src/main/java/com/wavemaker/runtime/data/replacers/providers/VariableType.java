@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.joda.time.LocalDateTime;
 
 import com.wavemaker.runtime.system.SystemDefinedPropertiesBean;
@@ -28,7 +29,8 @@ public enum VariableType {
 
             if (!String.class.equals(fieldType)) {
                 try {
-                    id = fieldType.getMethod("valueOf", String.class).invoke(null, id);
+                    final Class<?> wrapper = ClassUtils.primitiveToWrapper(fieldType);
+                    id = wrapper.getMethod("valueOf", String.class).invoke(null, id);
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     throw new WMRuntimeException("Error while assigning value from Server defined property", e);
                 }
