@@ -89,6 +89,33 @@ WM.module('wm.widgets.form')
                     break;
                 }
             }
+
+            /**
+             * This function sets the display values of the checkboxset and radioset.
+             * Display values are obtained from the dataKeys of checkedValues in scope.
+             * displayvalue will be array of strings for checkboxset and string for radioset.
+             * @param scope
+             */
+            function setDisplayValues(scope) {
+                _.forEach(scope.checkedValues, function (value, dataKey) {
+                    // displayvalue will contains all the dataKeys whose checked value is true, Checkboxset will contain multiple selected values.
+                    if (scope._widgettype === 'wm-checkboxset') {
+                        scope.displayvalue = scope.displayvalue || [];
+                        if (value && !_.includes(scope.displayvalue, dataKey)) {
+                            scope.displayvalue.push(dataKey);
+                        } else if (!value && _.includes(scope.displayvalue, dataKey)) {
+                            _.remove(scope.displayvalue, function (value) {
+                                return value === dataKey;
+                            });
+                        }
+                    }
+                    if (scope._widgettype === 'wm-radioset' && value) {
+                        // radioset will contain only one selected value.
+                        scope.displayvalue = dataKey;
+                    }
+                });
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#updatedCheckedValues
@@ -110,6 +137,7 @@ WM.module('wm.widgets.form')
                     _.forEach(scope.dataKeys, function (dataKey) {
                         scope.checkedValues[dataKey] = scope.valueInModel(model, dataKey, dataObj[dataKey]);
                     });
+                    setDisplayValues(scope);
                 }
             }
 
