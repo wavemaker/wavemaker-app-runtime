@@ -853,6 +853,7 @@ $.widget('wm.datagrid', {
             this.gridElement.find('tbody.app-datagrid-body').append($row);
             this._appendRowActions($row, true, rowData);
             this.attachEventHandlers($row);
+            this._findAndReplaceCompiledTemplates();
             $row.trigger('click', [undefined, {action: 'edit', operation: 'new', skipFocus: skipFocus}]);
             this.updateSelectAllCheckboxState();
             this.addOrRemoveScroll();
