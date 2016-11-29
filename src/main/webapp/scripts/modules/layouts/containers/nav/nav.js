@@ -24,7 +24,8 @@ WM.module('wm.layouts.containers')
                     'itemlabel'    : true,
                     'itemlink'     : true,
                     'itemchildren' : true,
-                    'orderby'      : true
+                    'orderby'      : true,
+                    'autoclose'    : CONSTANTS.isRunMode
                 };
 
             function getNodes($is, nv) {
@@ -111,7 +112,8 @@ WM.module('wm.layouts.containers')
                                 'itemchildren': childrenField,
                                 'type'        : 'anchor',
                                 'iconclass'   : itemClass || '',
-                                'on-select'   : '_onMenuItemSelect($event, $item)'
+                                'on-select'   : '_onMenuItemSelect($event, $item)',
+                                'autoclose'   : $is.autoclose
                             });
 
                             $li.append($menu);
@@ -150,6 +152,7 @@ WM.module('wm.layouts.containers')
                         $rs.$emit('nav-dataset-modified', {'widgetName': $is.name});
                     }
                     break;
+                case 'autoclose':
                 case 'itemicon':
                 case 'itemlabel':
                 case 'itemlink':

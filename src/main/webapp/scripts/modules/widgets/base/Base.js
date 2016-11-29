@@ -397,7 +397,8 @@ WM.module('wm.widgets.base', [])
                         "animateitems": {"type": "list", "options": ['', 'slide', 'fade', 'scale']},
                         "shortcutkey": {"type": "string"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
-                        "class": {"type": "string", "pattern": classRegex, "show": false}
+                        "class": {"type": "string", "pattern": classRegex, "show": false},
+                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
                     },
 
                     "wm.menu.dataProps": {
@@ -1044,7 +1045,8 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
-                        "margin": {"type": "string", "widget": "box-model"}
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1149,7 +1151,8 @@ WM.module('wm.widgets.base', [])
                         "onExitfullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
                     },
                     'wm.layouts.card': {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1760,7 +1763,7 @@ WM.module('wm.widgets.base', [])
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
-                        "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": false},
+                        "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": true},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "loadingdatamsg": {"type": "string", "value": "Loading items...", "bindable": "in-bound"},
                         "datacompletemsg": {"type": "string", "value": "No more data to load", "bindable": "in-bound"},
@@ -1965,7 +1968,7 @@ WM.module('wm.widgets.base', [])
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
-                    "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},

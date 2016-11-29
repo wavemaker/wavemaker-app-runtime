@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
                     '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles focus-target accesskey="{{::shortcutkey}}">' +
                         '<i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
@@ -16,7 +16,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
-                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
                     '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
@@ -346,7 +346,7 @@ WM.module('wm.widgets.form')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
-               <wm-menu scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="wi wi-align-justify"></wm-menu>
+               <wm-menu autoclose="outsideClick" scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="wi wi-align-justify"></wm-menu>
             </div>
         </file>
         <file name="script.js">
