@@ -24,8 +24,7 @@ WM.module('wm.layouts.containers')
                     'itemlabel'    : true,
                     'itemlink'     : true,
                     'itemchildren' : true,
-                    'orderby'      : true,
-                    'autoclose'    : CONSTANTS.isRunMode
+                    'orderby'      : true
                 };
 
             function getNodes($is, nv) {
@@ -152,7 +151,6 @@ WM.module('wm.layouts.containers')
                         $rs.$emit('nav-dataset-modified', {'widgetName': $is.name});
                     }
                     break;
-                case 'autoclose':
                 case 'itemicon':
                 case 'itemlabel':
                 case 'itemlink':
