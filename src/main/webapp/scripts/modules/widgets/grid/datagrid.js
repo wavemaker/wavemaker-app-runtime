@@ -915,8 +915,8 @@ $.widget('wm.datagrid', {
                     width = 50;
                 } else {
                     if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
-                        tempWidth = $(headerCols[index]).css('width');
-                        if (tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
+                        tempWidth = $(headerCols[index])[0].style.width;
+                        if (tempWidth === '' || tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
                             width = $header.width();
                             width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
                         } else {
