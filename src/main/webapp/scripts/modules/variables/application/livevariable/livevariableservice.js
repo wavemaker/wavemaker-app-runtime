@@ -1035,6 +1035,15 @@ wm.variables.services.$liveVariable = [
 
                 if (options.row) {
                     rowObject = options.row;
+                    //For datetime types, convert the value to the format accepted by backend
+                    _.forEach(rowObject, function (value, key) {
+                        var fieldType = getFieldType(key, variableDetails),
+                            fieldValue;
+                        if (isDateTime[fieldType]) {
+                            fieldValue = getDateInDefaultFormat(value, fieldType);
+                            rowObject[key] = fieldValue;
+                        }
+                    });
                     //Merge inputFields along with dataObj while making Insert/Update/Delete
                     _.forEach(inputFields, function (attrValue, attrName) {
                         if (attrValue && !rowObject[attrName]) {
@@ -1061,7 +1070,7 @@ wm.variables.services.$liveVariable = [
                             }
                             if (action !== "deleteTableData" || variableDetails.isCompositeKey(primaryKey)) {
                                 fieldType = getFieldType(fieldName, variableDetails);
-                                if (isDateTime[fieldType] && fieldType !== 'timestamp') {
+                                if (isDateTime[fieldType]) {
                                     fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 }
                                 rowObject[fieldName] = fieldValue;
