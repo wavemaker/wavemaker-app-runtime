@@ -911,19 +911,25 @@ $.widget('wm.datagrid', {
                     $(headerCols[index]).hide();
                     $(bodyCols[index]).hide();
                     width = 0;
-                } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
-                    width = 50;
                 } else {
-                    if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
-                        tempWidth = $(headerCols[index])[0].style.width;
-                        if (tempWidth === '' || tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
-                            width = $header.width();
-                            width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
-                        } else {
-                            width = tempWidth;
-                        }
+                    $header.show();
+                    self.gridElement.find('td:nth-child(' + (index + 1) + ')').show();
+                    $(headerCols[index]).show();
+                    $(bodyCols[index]).show();
+                    if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
+                        width = 50;
                     } else {
-                        width = definedWidth;
+                        if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
+                            tempWidth = $(headerCols[index])[0].style.width;
+                            if (tempWidth === '' || tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
+                                width = $header.width();
+                                width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
+                            } else {
+                                width = tempWidth;
+                            }
+                        } else {
+                            width = definedWidth;
+                        }
                     }
                 }
                 $(headerCols[index]).css('width', width);
