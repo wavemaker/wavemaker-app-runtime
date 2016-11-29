@@ -54,7 +54,7 @@ public abstract class ExportBuilder {
             Row row = sheet.getRow(firstRowNum);
             int lastCellNum = row.getLastCellNum();
             for (int i = 0; i < lastCellNum; i++) {
-                sheet.autoSizeColumn(row.getCell(lastCellNum).getColumnIndex());
+                sheet.autoSizeColumn(row.getCell(i).getColumnIndex());
             }
         }
     }
