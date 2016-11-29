@@ -45,7 +45,8 @@ WM.module('wm.utils', [])
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i,
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
-                SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i
+                SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
+                APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -303,6 +304,10 @@ WM.module('wm.utils', [])
         }
         function isValidWebURL(url) {
             return (REGEX.VALID_WEB_URL).test(url);
+        }
+
+        function isValidAppServerUrl(url) {
+            return (REGEX.APP_SERVER_URL_FORMAT).test(url);
         }
 
         /* returns the zIndex of the parent elements overlay */
@@ -2361,4 +2366,5 @@ WM.module('wm.utils', [])
         this.pluginConfig               = pluginConfig;
         this.loadActiveTheme            = loadActiveTheme;
         this.isInsecureContentRequest   = isInsecureContentRequest;
+        this.isValidAppServerUrl        = isValidAppServerUrl;
     }]);
