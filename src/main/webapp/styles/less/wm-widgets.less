@@ -1848,11 +1848,20 @@ If the height and width are not specified the video takes the height of the post
         }
         .input-group-addon {
           .app-icon {
-            font-size: 1.3em;
+            font-size: 1.2em;
           }
+          padding-right: 0.3em;
+          padding-left: 0.3em;
         }
         .input-group-btn:last-child > .btn {
           z-index: 0;
+        }
+        &.input-group-sm .input-group-btn {
+          padding: 0;
+        }
+        .app-datetime, .app-date, .app-timeinput {
+          max-width: inherit;
+          width: 100%;
         }
       }
     }

@@ -2055,10 +2055,11 @@ $.widget('wm.datagrid', {
         var widget      = field.filterwidget || 'text',
             placeholder = field.filterplaceholder || '',
             fieldName   = field.field,
+            widgetName  = ' name="' + this.options.name + '_filter_' + fieldName + '"',
             template;
         widget = widget === 'number' ? 'text' : widget;
         widget = widget === 'autocomplete' ? 'search' : widget;
-        template =  '<wm-' + widget + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange()" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
+        template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange()" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
         switch (field.filterwidget) {
         case 'number':
             template += ' type="number" ';
@@ -2084,19 +2085,20 @@ $.widget('wm.datagrid', {
             self = this;
         this.gridHeaderElement.find('.filter-row').remove();
         this.preparedHeaderData.forEach(function (field) {
-            var fieldName = field.field;
+            var fieldName = field.field,
+                widget    = field.filterwidget || 'text';
             if (!field.searchable) {
                 htm += '<th></th>';
                 return;
             }
             htm += '<th>' +
-                        '<span class="input-group">' +
+                        '<span class="input-group ' + widget + '">' +
                             self._getFilterWidgetTemplate(field) +
+                            '<span class="input-group-addon filter-clear-icon" ng-if="showClearIcon(\'' + fieldName + '\')"><button class="btn-transparent btn app-button" type="button" ng-click="clearRowFilter(\'' + fieldName + '\')"><i class="app-icon wi wi-clear"></i></button></span>' +
                             '<span class="input-group-addon" uib-dropdown dropdown-append-to-body>' +
                                 '<button class="btn-transparent btn app-button" type="button"  uib-dropdown-toggle><i class="app-icon wi wi-filter-list"></i></button>' +
-                                '<ul class="matchmode-dropdown dropdown-menu pull-right" uib-dropdown-menu> <li ng-repeat="matchMode in matchModeTypesMap[\'' + field.type + '\' || \'string\']" ng-class="{active: matchMode === (rowFilter[\'' + fieldName + '\'].matchMode || matchModeTypesMap[\'' + field.type + '\' || \'string\'][0])}"><a href="javascript:void(0);" ng-click="onFilterConditionSelect(\'' + fieldName + '\', matchMode)">{{matchModeMsgs[matchMode]}}</a></li> </ul>' +
+                                '<ul class="matchmode-dropdown dropdown-menu" uib-dropdown-menu> <li ng-repeat="matchMode in matchModeTypesMap[\'' + field.type + '\' || \'string\']" ng-class="{active: matchMode === (rowFilter[\'' + fieldName + '\'].matchMode || matchModeTypesMap[\'' + field.type + '\' || \'string\'][0])}"><a href="javascript:void(0);" ng-click="onFilterConditionSelect(\'' + fieldName + '\', matchMode)">{{matchModeMsgs[matchMode]}}</a></li> </ul>' +
                             '</span>' +
-                            '<span class="input-group-addon" ng-if="showClearIcon(\'' + fieldName + '\')"><button class="btn-transparent btn app-button" type="button" ng-click="clearRowFilter(\'' + fieldName + '\')"><i class="app-icon wi wi-clear"></i></button></span>' +
                         '</span>' +
                     '</th>';
         }, this);
