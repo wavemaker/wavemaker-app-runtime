@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', '$http', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS, $http) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -2241,6 +2241,16 @@ WM.module('wm.utils', [])
             return stringStartsWith($location.$$absUrl, 'https://') && !stringStartsWith(url, 'https://') && !stringStartsWith(url, 'wss://');
         }
 
+        //Adding default headers required for the ajax request
+        function addDefaultHeaders(xhr) {
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            //While sending a explict ajax request xsrf token need to be added manually
+            var xsrfCookieValue = getCookieByName($http.defaults.xsrfCookieName);
+            if (xsrfCookieValue) {
+                xhr.setRequestHeader($http.defaults.xsrfHeaderName, xsrfCookieValue);
+            }
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2367,4 +2377,5 @@ WM.module('wm.utils', [])
         this.loadActiveTheme            = loadActiveTheme;
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
+        this.addDefaultHeaders          = addDefaultHeaders;
     }]);
