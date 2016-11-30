@@ -756,6 +756,12 @@
                 <version>${commons.validator.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.security.extensions</groupId>
+                <artifactId>spring-security-saml2-core</artifactId>
+                <version>1.0.2.RELEASE</version>
+            </dependency>
+
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>org.springframework</groupId>
