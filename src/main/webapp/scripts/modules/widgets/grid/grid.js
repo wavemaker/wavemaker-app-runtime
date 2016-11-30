@@ -476,8 +476,7 @@ WM.module('wm.widgets.grid')
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
-                            var actionsObj,
-                                addNewRowButtonIndex;
+                            var addNewRowButtonIndex;
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
@@ -639,11 +638,38 @@ WM.module('wm.widgets.grid')
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
                          * the "dataNavigatorWatched" value is reset.*/
                         handlers.push(scope.$watch('binddataset', function (newVal, oldVal) {
+                            var widgetName,
+                                variableType;
                             if (newVal !== oldVal) {
                                 scope.dataNavigatorWatched = false;
                                 if (scope.dataNavigator) {
                                     scope.dataNavigator.result = undefined;
                                 }
+                            }
+                            //Set the variable and widget flags on scope
+                            scope.isBoundToVariable = _.startsWith(newVal, 'bind:Variables.');
+                            scope.isBoundToWidget   = _.startsWith(newVal, 'bind:Widgets.');
+                            scope.variableName      = Utils.getVariableName(scope);
+                            scope.variable          = _.get(element.scope().Variables, scope.variableName);
+                            if (scope.isBoundToVariable && scope.variable) {
+                                variableType = scope.variable.category;
+                                scope.isBoundToStaticVariable = variableType === 'wm.Variable';
+                                scope.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
+                                if (scope.isBoundToLiveVariable) {
+                                    scope.isBoundToLiveVariableRoot = newVal.indexOf('dataSet.') === -1 && newVal.indexOf('selecteditem') === -1;
+                                } else {
+                                    scope.isBoundToServiceVariable = variableType === 'wm.ServiceVariable';
+                                    if (scope.isBoundToServiceVariable && scope.variable.serviceType === 'DataService') {
+                                        scope.isBoundToProcedureServiceVariable = scope.variable.controller === 'ProcedureExecution';
+                                        scope.isBoundToQueryServiceVariable     = scope.variable.controller === 'QueryExecution';
+                                    }
+                                }
+                            } else if (scope.isBoundToWidget) {
+                                widgetName                        = _.split(newVal, '.')[1];
+                                scope.widgetName                  = widgetName;
+                                scope.isBoundToSelectedItem       = newVal.indexOf('selecteditem') !== -1;
+                                scope.isBoundToSelectedItemSubset = newVal.indexOf('selecteditem.') !== -1;
+                                scope.isBoundToFilter             = scope.Widgets[widgetName] && (scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || scope.Widgets[widgetName].widgettype === 'wm-livefilter');
                             }
                             //In run mode, If grid is bound to selecteditem subset, dataset is undefined and dataset watch will not be triggered. So, set the dataset to empty value
                             if (_.includes(newVal, 'selecteditem.')) {
@@ -666,18 +692,12 @@ WM.module('wm.widgets.grid')
                             }
                         }));
                         handlers.push($rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
-                            var variableName = scope.variableName || Utils.getVariableName(scope);
-                            /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
-                            if (boundVariableName === variableName) {
-                                scope.variableInflight = active;
-                                if (active) {
-                                    scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
-                                } else {
-                                    //If grid is in edit mode or grid has data, dont show the no data message
-                                    if (!scope.isGridEditMode && scope.gridData && scope.gridData.length === 0) {
-                                        scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
-                                    } else {
-                                        scope.datagridElement.datagrid('setStatus', 'ready');
+                            //based on the active state and response toggling the 'loading data...' and 'no data found' messages.
+                            if (scope.isBoundToLiveVariable || scope.isBoundToServiceVariable || scope.isBoundToFilter) {
+                                if (boundVariableName === scope.variableName) {
+                                    scope.variableInflight = active;
+                                    if (active) {
+                                        scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
                                     }
                                 }
                             }
@@ -749,6 +769,7 @@ WM.module('wm.widgets.grid')
                         scope.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
                         scope.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         scope.datagridElement.datagrid(scope.gridOptions);
+                        scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
                         handlers.push($rootScope.$on('locale-change', function () {
                             scope.appLocale     = $rootScope.appLocale;
                             scope.matchModeMsgs = getMatchModeMsgs();
@@ -789,11 +810,6 @@ WM.module('wm.widgets.grid')
                 },
                 currentSearch,
                 currentSort,
-                isBoundToVariable,
-                isBoundToWidget,
-                isBoundToLiveVariable,
-                isBoundToLiveVariableRoot,
-                isBoundToServiceVariable,
                 navigatorResultWatch,
                 navigatorMaxResultWatch,
             /* Check whether it is non-empty row. */
@@ -828,9 +844,8 @@ WM.module('wm.widgets.grid')
                 setGridData = function (serverData, forceSet) {
                     var data = serverData;
                     /*If serverData has data but is undefined, then return*/
-                    if (!forceSet && (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap))) {
+                    if (!forceSet && ($scope.isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap))) {
                         if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
-                            $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                             return;
                         }
                         data = serverData.data;
@@ -840,26 +855,29 @@ WM.module('wm.widgets.grid')
                     } else {
                         $scope.gridData = data;
                     }
-                    if ($scope.gridData && $scope.gridData.length === 0) {
-                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                    } else {
-                        $scope.datagridElement.datagrid('setStatus', 'ready');
+                    if (!$scope.variableInflight) {
+                        if ($scope.gridData && $scope.gridData.length === 0) {
+                            $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
+                        } else {
+                            $scope.datagridElement.datagrid('setStatus', 'ready');
+                        }
                     }
                     $scope.$root.$safeApply($scope);
                 },
             /*function to transform the service data to grid acceptable data*/
-                transformData = function (dataObject, variableName) {
+                transformData = function (dataObject) {
                     var newObj,
                         tempArr,
                         keys,
                         oldKeys,
                         numKeys,
                         newObject,
-                        tempObj;
+                        tempObj,
+                        variableName;
 
                     /*data sanity testing*/
                     dataObject = dataObject || [];
-
+                    variableName = $scope.variableName;
                     /*if the dataObject is not an array make it an array*/
                     if (!WM.isArray(dataObject)) {
                         /*if the data returned is of type string, make it an object inside an array*/
@@ -903,17 +921,10 @@ WM.module('wm.widgets.grid')
             /* Function to populate the grid with data. */
                 populateGridData = function (serviceData) {
                     var dataValid,
-                        variableName,
                         gridElement,
                         parent;
 
                     if ($scope.binddataset) {
-                        if (isBoundToVariable) {
-                            variableName = $scope.binddataset.substr($scope.binddataset.lastIndexOf("bind:Variables.") + 15);
-                        } else if (isBoundToWidget) {
-                            variableName = serviceData.variableName;
-                        }
-
                         /* Retrieve the variable details specific to the project in the root-scope */
                         /* As this event is registered on rootscope, it is triggered on destroy hence the object.keys length check is put skip
                          cases when the project object doesn't have variables */
@@ -929,7 +940,7 @@ WM.module('wm.widgets.grid')
                             }
                         } else {
                             /*Transform the data if it is a object*/
-                            serviceData = transformData(serviceData, variableName);
+                            serviceData = transformData(serviceData);
                             $scope.serverData = serviceData;
                         }
 
@@ -985,7 +996,7 @@ WM.module('wm.widgets.grid')
                     return filterFields;
                 },
                 searchGrid = function (searchObj) {
-                    var variable  = $scope.gridElement.scope().Variables[$scope.variableName];
+                    var variable  = $scope.variable;
                     currentSearch = searchObj;
                     $scope.filterFields = getFilterFields(searchObj);
                     variable.update({
@@ -1000,7 +1011,7 @@ WM.module('wm.widgets.grid')
                 },
                 sortHandler = function (sortObj, e) {
                     var filterFields,
-                        variable     = $scope.gridElement.scope().Variables[$scope.variableName],
+                        variable     = $scope.variable,
                         fieldName    = sortObj.field,
                         sortOptions  = sortObj.direction ? (fieldName + ' ' + sortObj.direction) : '';
                     /* Update the sort info for passing to datagrid */
@@ -1011,7 +1022,7 @@ WM.module('wm.widgets.grid')
                     if ($scope.isBoundToFilter && $scope.widgetName) {
                         /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
                         $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
-                    } else if (variable.category === 'wm.LiveVariable') {
+                    } else if ($scope.isBoundToLiveVariable) {
                         if ($scope.filtermode && currentSearch) {
                             filterFields = getFilterFields(currentSearch);
                         }
@@ -1028,7 +1039,7 @@ WM.module('wm.widgets.grid')
                         }, function (error) {
                             $scope.toggleMessage(true, 'error', error);
                         });
-                    } else if (variable.category === 'wm.ServiceVariable') {
+                    } else if ($scope.isBoundToServiceVariable) {
                         /* Will be called only in case of Query service variables */
                         variable.update({
                             'orderBy' : sortOptions,
@@ -1198,7 +1209,6 @@ WM.module('wm.widgets.grid')
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback, evt, callBack) {
                     var variable,
-                        isStaticVariable,
                         successHandler = function (success) {
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
@@ -1210,7 +1220,7 @@ WM.module('wm.widgets.grid')
                             $scope.$emit('on-row-delete', row);
 
                             $scope.onRecordDelete(callBack);
-                            if (!isStaticVariable) {
+                            if (!$scope.isBoundToStaticVariable) {
                                 $scope.updateVariable(row, callBack);
                             }
                             if ($scope.deletemessage) {
@@ -1220,7 +1230,7 @@ WM.module('wm.widgets.grid')
                             $scope.onRowdeleted({$event: evt, $data: row, $rowData: row});
                         },
                         deleteFn = function () {
-                            if (isStaticVariable) {
+                            if ($scope.isBoundToStaticVariable) {
                                 variable.removeItem(row);
                                 successHandler(row);
                                 return;
@@ -1241,11 +1251,10 @@ WM.module('wm.widgets.grid')
                         $scope.$root.$safeApply($scope);
                         return;
                     }
-                    variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    variable = $scope.variable;
                     if (!variable) {
                         return;
                     }
-                    isStaticVariable = variable.category === 'wm.Variable';
                     if (!$scope.confirmdelete) {
                         deleteFn();
                         Utils.triggerFn(cancelRowDeleteCallback);
@@ -1268,14 +1277,13 @@ WM.module('wm.widgets.grid')
                     });
                 },
                 insertRecord = function (options) {
-                    var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                    var variable = $scope.variable,
                         dataObject = {
                             'row'              : options.row,
                             'transform'        : true,
                             'scope'            : $scope.gridElement.scope(),
                             'skipNotification' : true
                         },
-                        isStaticVariable,
                         successHandler = function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
@@ -1287,8 +1295,8 @@ WM.module('wm.widgets.grid')
                                     $scope.datagridElement.datagrid('hideRowEditMode', row);
                                 }
                                 $scope.toggleMessage(true, 'success', $scope.insertmessage);
-                                $scope.initiateSelectItem('last', response, undefined, isStaticVariable, options.callBack);
-                                if (!isStaticVariable) {
+                                $scope.initiateSelectItem('last', response, undefined, $scope.isBoundToStaticVariable, options.callBack);
+                                if (!$scope.isBoundToStaticVariable) {
                                     $scope.updateVariable(response, options.callBack);
                                 }
                                 Utils.triggerFn(options.success, response);
@@ -1299,8 +1307,7 @@ WM.module('wm.widgets.grid')
                     if (!variable) {
                         return;
                     }
-                    isStaticVariable = variable.category === 'wm.Variable';
-                    if (isStaticVariable) {
+                    if ($scope.isBoundToStaticVariable) {
                         variable.addItem(options.row);
                         successHandler(options.row);
                         return;
@@ -1317,8 +1324,7 @@ WM.module('wm.widgets.grid')
                         $scope.onRowupdated(rowData);
                         return;
                     }*/
-                    var variable = $scope.gridElement.scope().Variables[$scope.variableName],
-                        isStaticVariable,
+                    var variable = $scope.variable,
                         dataObject = {
                             'row'              : options.row,
                             'prevData'         : options.prevData,
@@ -1339,8 +1345,8 @@ WM.module('wm.widgets.grid')
                                 }
                                 $scope.operationType = "";
                                 $scope.toggleMessage(true, 'success', $scope.updatemessage);
-                                $scope.initiateSelectItem('current', response, undefined, isStaticVariable, options.callBack);
-                                if (!isStaticVariable) {
+                                $scope.initiateSelectItem('current', response, undefined, $scope.isBoundToStaticVariable, options.callBack);
+                                if (!$scope.isBoundToStaticVariable) {
                                     $scope.updateVariable(response, options.callBack);
                                 }
                                 Utils.triggerFn(options.success, response);
@@ -1351,8 +1357,7 @@ WM.module('wm.widgets.grid')
                     if (!variable) {
                         return;
                     }
-                    isStaticVariable = variable.category === 'wm.Variable';
-                    if (isStaticVariable) {
+                    if ($scope.isBoundToStaticVariable) {
                         variable.setItem(options.prevData, options.row);
                         successHandler(options.row);
                         return;
@@ -1389,7 +1394,7 @@ WM.module('wm.widgets.grid')
                 }
             };
             $scope.updateVariable = function (row, callBack) {
-                var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                var variable = $scope.variable,
                     sortOptions;
                 if ($scope.isBoundToFilter) {
                     //If grid is bound to filter, call the apply fiter and update filter options
@@ -1740,15 +1745,7 @@ WM.module('wm.widgets.grid')
                 /* TODO: In studio mode, service variable data should initially
                     be empty array, and metadata should be passed separately. */
                 var variableName,
-                    widgetName,
-                    variableObj,
-                    elScope,
                     result,
-                    isBoundToSelectedItem,
-                    isBoundToSelectedItemSubset,
-                    isBoundToQueryServiceVariable,
-                    isBoundToProcedureServiceVariable,
-                    isBoundToFilter,
                     gridSortString,
                     variableSortString,
                     columns,
@@ -1756,7 +1753,6 @@ WM.module('wm.widgets.grid')
                     widgetBindingDetails,
                     relatedTables,
                     wp;
-                $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
                 //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
                 if ($scope.dataNavigatorWatched && _.isUndefined(newVal) && $scope.__fullData) {
                     return;
@@ -1764,10 +1760,6 @@ WM.module('wm.widgets.grid')
                 result = Utils.getValidJSON(newVal);
 
                 /*Reset the values to undefined so that they are calculated each time.*/
-                isBoundToLiveVariable                = undefined;
-                isBoundToLiveVariableRoot            = undefined;
-                isBoundToServiceVariable             = undefined;
-                isBoundToFilter                      = undefined;
                 $scope.gridVariable                  = '';
                 /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
                 if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
@@ -1805,25 +1797,9 @@ WM.module('wm.widgets.grid')
                     }
                 }
                 if ($scope.binddataset) {
-                    isBoundToVariable = $scope.binddataset.indexOf('bind:Variables.') !== -1;
-                    isBoundToWidget = $scope.binddataset.indexOf('bind:Widgets.') !== -1;
-                    if (isBoundToVariable) {
-                        /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
-                        variableName = $scope.binddataset.replace('bind:Variables.', '');
-                        variableName = variableName.substr(0, variableName.indexOf('.'));
-                    } else if (isBoundToWidget) {
-                        widgetName = $scope.binddataset.replace('bind:Widgets.', '').split(".")[0];
-                        isBoundToFilter = $scope.Widgets[widgetName] && ($scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || $scope.Widgets[widgetName].widgettype === 'wm-livefilter');
-
-                        $scope.isBoundToFilter = isBoundToFilter;
-                        $scope.widgetName = widgetName;
-
-                        variableName = Utils.getVariableName($scope);
-                        variableObj = element.scope().Variables && element.scope().Variables[variableName];
-                        isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
-                        isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
-                        if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
-                            if (variableName === null) {
+                    if ($scope.isBoundToWidget) {
+                        if ($scope.isBoundToSelectedItemSubset || $scope.isBoundToSelectedItem) {
+                            if ($scope.variableName === null) {
                                 widgetBindingDetails = LiveWidgetUtils.fetchReferenceDetails($scope);
                                 if (!widgetBindingDetails.fields) {
                                     relatedTables = (widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables) || [];
@@ -1833,6 +1809,8 @@ WM.module('wm.widgets.grid')
                                             variableName = val.watchOn;
                                         }
                                     });
+                                    $scope.variableName = variableName;
+                                    $scope.variable     = _.get(element.scope().Variables, $scope.variableName);
                                 }
                             }
                             /*Check for studio mode.*/
@@ -1846,35 +1824,14 @@ WM.module('wm.widgets.grid')
                             }
                         }
                     }
-                    elScope = element.scope();
-
-                    /*TODO to remove is studiomode check*/
-                    if ($scope.variableName && (variableName !== $scope.variableName) && CONSTANTS.isStudioMode) {
-                        $scope.fullFieldDefs = [];
-                        $scope.headerConfig   = [];
-                    }
-                    $scope.variableName = variableName;
-                    variableObj = elScope.Variables && elScope.Variables[$scope.variableName];
 
                     $scope.setDataGridOption('searchHandler', defaultSearchHandler);
-                    if (variableObj && isBoundToVariable) {
-                        $scope.variableType = variableObj.category;
+                    if ($scope.isBoundToVariable && $scope.variable) {
 
-                        /*Check if the variable is a liveVariable*/
-                        isBoundToLiveVariable = $scope.variableType === 'wm.LiveVariable';
-                        isBoundToLiveVariableRoot = isBoundToLiveVariable &&
-                            $scope.binddataset.indexOf('dataSet.') === -1 &&
-                            $scope.binddataset.indexOf('selecteditem') === -1;
-                        isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
-                        if (isBoundToServiceVariable && variableObj.serviceType === 'DataService') {
-                            isBoundToProcedureServiceVariable = variableObj.controller === 'ProcedureExecution';
-                            isBoundToQueryServiceVariable     = variableObj.controller === 'QueryExecution';
-                        }
-
-                        if (isBoundToLiveVariable || isBoundToQueryServiceVariable) {
+                        if ($scope.isBoundToLiveVariable || $scope.isBoundToQueryServiceVariable) {
                             if (!_.isEmpty($scope.sortInfo)) {
                                 gridSortString = $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
-                                variableSortString = _.get(variableObj, ['_options', 'orderBy']) || variableSortString;
+                                variableSortString = _.get($scope.variable, ['_options', 'orderBy']) || variableSortString;
                                 if (gridSortString !== variableSortString) {
                                     $scope.datagridElement.datagrid('resetSortIcons');
                                     $scope.sortInfo = {};
@@ -1882,14 +1839,14 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                         }
-                        if (isBoundToLiveVariable) {
+                        if ($scope.isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
                             $scope.setDataGridOption('sortHandler', sortHandler);
-                            setImageProperties(variableObj);
-                        } else if (isBoundToQueryServiceVariable) {
+                            setImageProperties($scope.variable);
+                        } else if ($scope.isBoundToQueryServiceVariable) {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('sortHandler', sortHandler);
-                        } else if (isBoundToProcedureServiceVariable) {
+                        } else if ($scope.isBoundToProcedureServiceVariable) {
                             $scope.setDataGridOption('searchHandler', handleOperation);
                             $scope.setDataGridOption('sortHandler', handleOperation);
                         } else {
@@ -1901,10 +1858,10 @@ WM.module('wm.widgets.grid')
                                 $scope.setDataGridOption('sortHandler', handleOperation);
                             }
                         }
-                    } else if (isBoundToFilter) {
+                    } else if ($scope.isBoundToFilter) {
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
                         $scope.setDataGridOption('sortHandler', sortHandler);
-                        setImageProperties(variableObj);
+                        setImageProperties($scope.variable);
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
                         /*if the grid is not bound to widgets*/
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
@@ -1915,11 +1872,11 @@ WM.module('wm.widgets.grid')
                 if (CONSTANTS.isStudioMode) {
                     wp = $scope.widgetProps;
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    wp.pagesize.show    = !(isBoundToLiveVariable || isBoundToQueryServiceVariable || isBoundToFilter);
-                    wp.exportformat.show  = wp.exportformat.showindesigner  = isBoundToLiveVariable || isBoundToFilter;
+                    wp.pagesize.show    = !($scope.isBoundToLiveVariable || $scope.isBoundToQueryServiceVariable || $scope.isBoundToFilter);
+                    wp.exportformat.show  = wp.exportformat.showindesigner  = $scope.isBoundToLiveVariable || $scope.isBoundToFilter;
                     wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
                     /* If bound to live filter result, disable grid search. */
-                    if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
+                    if ($scope.isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
                         if ($scope.filtermode) {
                             $rootScope.$emit('update-widget-property', 'filtermode', '');
                         }
@@ -1947,7 +1904,7 @@ WM.module('wm.widgets.grid')
 
                 if (newVal) {
                     if (CONSTANTS.isStudioMode) {
-                        $scope.createGridColumns(isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
+                        $scope.createGridColumns($scope.isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
                         $scope.newcolumns = false;
                     }
                     /*Set the type of the column to the default variable type*/
@@ -1962,7 +1919,7 @@ WM.module('wm.widgets.grid')
                         });
                     }
                     populateGridData(newVal);
-                    if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {
+                    if ($scope.isBoundToServiceVariable && CONSTANTS.isStudioMode) {
                         /*Checking if grid is bound to service variable, for which data cannot be loaded in studio mode,
                         in studio mode and if the fieldDefs are generated. */
                         $scope.gridData = [];
@@ -2221,7 +2178,7 @@ WM.module('wm.widgets.grid')
             //On click of item in export menu, download the file in respective format
             $scope.export = function ($item) {
                 var filterFields,
-                    variable     = $scope.gridElement.scope().Variables[$scope.variableName],
+                    variable     = $scope.variable,
                     sortOptions  = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
                 if ($scope.isBoundToFilter) {
                     $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $scope.exportdatasize});
@@ -2638,7 +2595,7 @@ WM.module('wm.widgets.grid')
                         //Fetch the filter options for select widget when filtermode is row
                         if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && columnDef.filterwidget === 'select') {
                             variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
-                            if (variable && variable.category === 'wm.LiveVariable') {
+                            if (scope.isBoundToLiveVariable) {
                                 columnDef.isLiveVariable = true;
                                 if (columnDef.relatedEntityName) {
                                     columnDef.isRelated   = true;
