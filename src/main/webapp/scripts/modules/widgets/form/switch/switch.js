@@ -66,7 +66,12 @@ WM.module('wm.widgets.form')
                         }
                     });
                 } else {
-                    scope.selected.index = -1;
+                    //If no value is provided, set first value as default if options are available else set -1 ie no selection
+                    if (scope.options && scope.options.length) {
+                        scope.selectOptAtIndex(0);
+                    } else {
+                        scope.selected.index = -1;
+                    }
                 }
             }
 
