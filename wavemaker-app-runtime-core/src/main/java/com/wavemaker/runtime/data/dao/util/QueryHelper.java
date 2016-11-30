@@ -43,6 +43,7 @@ public class QueryHelper {
 
     public static final String EMPTY_SPACE = " ";
     public static final String ORDER_PROPERTY_SEPARATOR = ",";
+    public static final String BACK_TICK = "`";
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
     private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) wmTempTable";
@@ -51,7 +52,6 @@ public class QueryHelper {
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
-    public static final String BACK_TICK = "`";
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
@@ -227,18 +227,18 @@ public class QueryHelper {
             int index = StringUtils.indexOfIgnoreCase(query, GROUP_BY);
             if (index == -1) { //we generate count query if there is no group by in it..
                 index = StringUtils.indexOfIgnoreCase(query, FROM_HQL);
-                if (index == 0) {
-                    countQuery = SELECT_COUNT1 + query;
-                } else {
-                    index = StringUtils.indexOfIgnoreCase(query, FROM);
-                    if (index > 0) {
-                        String subQuery = query.substring(index, query.length());
-                        index = StringUtils.indexOfIgnoreCase(subQuery, ORDER_BY);
-                        if (index >= 0) {
-                            subQuery = subQuery.substring(0, index);
+                if (index >= 0) {
+                    if (index != 0) {
+                        index = StringUtils.indexOfIgnoreCase(query, FROM);
+                        if (index > 0) {
+                            query = query.substring(index, query.length());
                         }
-                        countQuery = SELECT_COUNT1 + subQuery;
                     }
+                    index = StringUtils.indexOfIgnoreCase(query, ORDER_BY);
+                    if (index >= 0) {
+                        query = query.substring(0, index);
+                    }
+                    countQuery = SELECT_COUNT1 + query;
                 }
             }
         }
