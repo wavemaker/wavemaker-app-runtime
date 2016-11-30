@@ -402,8 +402,13 @@ WM.module('wm.prefabs')
                         }
 
                         function compileTemplate(prefabContent) {
-                            var prefabEle = WM.element('<div class="full-width full-height">' + prefabContent + '</div>');
-                            $el.append(prefabEle);
+                            var versionMsg    = PrefabManager.getVersionMismatchMessage(prefabName),
+                                versionMsgEle = '<div class="badge prefab-version" ng-if="showVersionMismatch"><span class="bold">' + versionMsg + '</span></div>',
+                                prefabEle     = ($is.widgetid ? versionMsgEle : '') + '<div class="full-width full-height">' + prefabContent + '</div>',
+                                $prefabEle    = WM.element(prefabEle);
+
+                            $is.showVersionMismatch = versionMsg ? true : false;
+                            $el.append($prefabEle);
                             $compile($el.children())($is);
                             $timeout(onTemplateLoad);
                         }
