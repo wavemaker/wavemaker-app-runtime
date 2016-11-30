@@ -698,6 +698,13 @@ WM.module('wm.widgets.grid')
                                     scope.variableInflight = active;
                                     if (active) {
                                         scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
+                                    } else {
+                                        //If grid is in edit mode or grid has data, dont show the no data message
+                                        if (!scope.isGridEditMode && scope.gridData && scope.gridData.length === 0) {
+                                            scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
+                                        } else {
+                                            scope.datagridElement.datagrid('setStatus', 'ready');
+                                        }
                                     }
                                 }
                             }
@@ -1756,6 +1763,10 @@ WM.module('wm.widgets.grid')
                 //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
                 if ($scope.dataNavigatorWatched && _.isUndefined(newVal) && $scope.__fullData) {
                     return;
+                }
+                //If variable is in loading state, show loading icon
+                if ($scope.variableInflight) {
+                    $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
                 }
                 result = Utils.getValidJSON(newVal);
 
