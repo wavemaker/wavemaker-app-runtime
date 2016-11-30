@@ -24,7 +24,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
             requestQueue = {
                 'services': [],
                 'operations': {},
-                'serviceDef': {}
+                'serviceDef': {},
+                'prefabTypes': {}
             },
             serviceDefMap = {},
             supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function(method){return method.toLowerCase();}),
@@ -548,12 +549,22 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     Utils.triggerFn(success, prefabDataTypes[prefabName]);
                     return;
                 }
+                requestQueue.prefabTypes[prefabName] = requestQueue.prefabTypes[prefabName] || [];
+
+                requestQueue.prefabTypes[prefabName].push(success);
+                if (requestQueue.prefabTypes[prefabName].length > 1) {
+                    return;
+                }
                 WebService.listPrefabTypes({
                     projectID: $rootScope.project.id,
                     prefabName: prefabName
                 }, function (response) {
                     prefabDataTypes[prefabName] = response.types;
-                    Utils.triggerFn(success, prefabDataTypes[prefabName]);
+                    /*send the services to the callback*/
+                    WM.forEach(requestQueue.prefabTypes[prefabName], function (fn) {
+                        Utils.triggerFn(fn, prefabDataTypes[prefabName]);
+                    });
+                    requestQueue.prefabTypes[prefabName] = null;
                 });
             };
 
