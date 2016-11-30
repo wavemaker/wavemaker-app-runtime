@@ -12,8 +12,8 @@
  * The '$websocketvariable' provides methods to work with web socket variables
  */
 
-wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils', '$servicevariable',
-    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils, $servicevariable) {
+wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils', '$servicevariable', 'ServiceFactory',
+    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils, $servicevariable, ServiceFactory) {
         "use strict";
 
         var scope_var_socket_map = {},
@@ -269,11 +269,22 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          */
         function update() {
             var variable = this;
-            variable.dataSet = $servicevariable.getServiceModel({
-                variable: variable,
-                typeRef: variable.type
-            });
-            variable.dataSet = shouldAppendData(variable) ? [variable.dataSet] : variable.dataSet;
+            if (variable.prefabName) {
+                ServiceFactory.getPrefabTypes(variable.prefabName, function (types) {
+                    variable.dataSet = $servicevariable.getServiceModel({
+                        variable: variable,
+                        typeRef: variable.type,
+                        types: types
+                    });
+                    variable.dataSet = shouldAppendData(variable) ? [variable.dataSet] : variable.dataSet;
+                });
+            } else {
+                variable.dataSet = $servicevariable.getServiceModel({
+                    variable: variable,
+                    typeRef: variable.type
+                });
+                variable.dataSet = shouldAppendData(variable) ? [variable.dataSet] : variable.dataSet;
+            }
         }
 
         function init() {

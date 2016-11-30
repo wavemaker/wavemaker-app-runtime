@@ -34,6 +34,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
             parameterTypeKey = 'in',
             AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
+            prefabDataTypes = {},
 
         /*function to get service object matching its name*/
             getServiceObjectByName = function (name) {
@@ -540,6 +541,20 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var service = getServiceObjectByName(serviceId);
 
                 service.sampleResponse = response;
+            },
+
+            getPrefabTypes = function (prefabName, success) {
+                if (prefabDataTypes[prefabName]) {
+                    Utils.triggerFn(success, prefabDataTypes[prefabName]);
+                    return;
+                }
+                WebService.listPrefabTypes({
+                    projectID: $rootScope.project.id,
+                    prefabName: prefabName
+                }, function (response) {
+                    prefabDataTypes[prefabName] = response.types;
+                    Utils.triggerFn(success, prefabDataTypes[prefabName]);
+                });
             };
 
         return {
@@ -659,7 +674,21 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param {serviceId} service id
              * @param {object} having service output
              */
-            getServiceDef: getServiceDef
+            getServiceDef: getServiceDef,
+
+            /**
+             * @ngdoc function
+             * @name wm.webservice.$ServiceFactory#getPrefabTypes
+             * @methodOf wm.webservice.$ServiceFactory
+             * @function
+             *
+             * @description
+             * gets the data types for a prefab
+             *
+             * @param {prefabName} prefab name
+             * @param {object} having service output
+             */
+            getPrefabTypes: getPrefabTypes
         };
     }
 ];

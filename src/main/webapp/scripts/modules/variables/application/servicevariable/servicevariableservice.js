@@ -775,23 +775,13 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                     } else if (variable.prefabName) {
                         var serviceModel = {};
-                        if (prefabDataTypes[variable.prefabName]) {
+                        ServiceFactory.getPrefabTypes(variable.prefabName, function (types) {
+                            prefabDataTypes[variable.prefabName] = types;
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(variable.type, serviceModel, null, variable);
                             variable.dataSet = serviceModel;
                             Utils.triggerFn(success, serviceModel);
-                        } else {
-                            WebService.listPrefabTypes({
-                                projectID: $rootScope.project.id,
-                                prefabName: variable.prefabName
-                            }, function (response) {
-                                prefabDataTypes[variable.prefabName] = response.types;
-                                /* prepare sample data-structure for the service */
-                                prepareServiceModel(variable.type, serviceModel, null, variable);
-                                variable.dataSet = serviceModel;
-                                Utils.triggerFn(success, serviceModel);
-                            });
-                        }
+                        });
                     } else {
                         getDataInStudio(variable, startNode, success, error);
                     }
@@ -899,7 +889,12 @@ wm.variables.services.$servicevariable = ['Variables',
 
         return {
             getServiceModel           : function (params) {
-                var model = {};
+                var model = {},
+                    variable = params.variable,
+                    prefabName = _.get(variable, 'prefabName');
+                if (prefabName) {
+                    prefabDataTypes[prefabName] = params.types;
+                }
                 prepareServiceModel(params.typeRef, model, null, params.variable);
 
                 return model;
