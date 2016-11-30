@@ -414,6 +414,51 @@ WM.module('wm.widgets.form')
                         });
                         //Set tab index as -1 for date input, as this should not be focused
                         $el.find('.app-dateinput').attr('tabindex', '-1');
+
+
+                        // Close the date picker popup on document click in capture phase
+                        function docClickListenerForDate(e) {
+                            var $target = WM.element(e.target);
+
+                            // if the click event is on the date widget or on the date popover, do nothing
+                            // else close the popover
+                            if (!$target.closest('.uib-datepicker-popup').length && !$el[0].contains(e.target)) {
+                                document.removeEventListener('click', docClickListenerForDate, true);
+                                $rs.$evalAsync(function () {
+                                    $is.isDateOpen = false;
+                                });
+                            }
+                        }
+
+                        // Close the date picker popup on document click in capture phase
+                        function docClickListenerForTime(e) {
+                            var $target = WM.element(e.target);
+
+                            // if the click event is on the date widget or on the date popover, do nothing
+                            // else close the popover
+                            if (!$target.closest('[uib-timepicker]').length && !$el[0].contains(e.target)) {
+                                document.removeEventListener('click', docClickListenerForTime, true);
+                                $rs.$evalAsync(function () {
+                                    $is.isTimeOpen = false;
+                                });
+                            }
+                        }
+
+                        if (!$is.widgetid) {
+                            // watch is isOpen flag on the scope and when the flag is true register a click event listener on document
+                            $is.$watch('isDateOpen', function (nv) {
+                                if (nv) {
+                                    document.addEventListener('click', docClickListenerForDate, true);
+                                }
+                            });
+
+                            // watch is isOpen flag on the scope and when the flag is true register a click event listener on document
+                            $is.$watch('isTimeOpen', function (nv) {
+                                if (nv) {
+                                    document.addEventListener('click', docClickListenerForTime, true);
+                                }
+                            });
+                        }
                     }
                 }
             };

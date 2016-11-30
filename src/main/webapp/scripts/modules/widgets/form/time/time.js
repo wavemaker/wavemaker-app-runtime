@@ -304,6 +304,29 @@ WM.module('wm.widgets.form')
                         $timeout(function () {
                             WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
                         });
+
+                        // Close the time picker popup on document click in capture phase
+                        function docClickListener(e) {
+                            var $target = WM.element(e.target);
+
+                            // if the click event is on the time widget or on the time popover, do nothing
+                            // else close the popover
+                            if (!$target.closest('[uib-timepicker]').length && !$el[0].contains(e.target)) {
+                                document.removeEventListener('click', docClickListener, true);
+                                $rs.$evalAsync(function () {
+                                    $is.isOpen = false;
+                                });
+                            }
+                        }
+
+                        if (!$is.widgetid) {
+                            // watch is isOpen flag on the scope and when the flag is true register a click event listener on document
+                            $is.$watch('isOpen', function (nv) {
+                                if (nv) {
+                                    document.addEventListener('click', docClickListener, true);
+                                }
+                            });
+                        }
                     }
                 }
             };
