@@ -168,7 +168,8 @@ WM.module('wm.widgets.live')
                 };
                 $scope.prevDataValues = {};
                 $scope.findOperationType = function (variable) {
-                    var operation;
+                    var operation,
+                        isPrimary = false;
                     if (variable && variable.operation && variable.operation !== 'read') {
                         return variable.operation;
                     }
@@ -183,18 +184,24 @@ WM.module('wm.widgets.live')
                             }
                         /*If only no column is primary key*/
                         } else if ($scope.primaryKey.length === 0) {
-                            operation = WM.forEach($scope.formdata, function (value) {
+                            _.forEach($scope.formdata, function (value) {
                                 if (value) {
-                                    return 'update';
+                                    isPrimary = true;
                                 }
                             });
+                            if (isPrimary) {
+                                operation = 'update';
+                            }
                         /*If multiple columns are primary key*/
                         } else {
-                            operation = $scope.primaryKey.some(function (primarykey) {
+                            isPrimary = _.some($scope.primaryKey, function (primarykey) {
                                 if ($scope.formdata[primarykey]) {
-                                    return 'update';
+                                    return true;
                                 }
                             });
+                            if (isPrimary) {
+                                operation = 'update';
+                            }
                         }
                     }
                     return operation || 'insert';
@@ -246,8 +253,9 @@ WM.module('wm.widgets.live')
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         return;
                     }
-                    //Disable the form submit if form is in invalid state
-                    if (!$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
+                    $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
+                    //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
+                    if ($scope.operationType !== 'delete' && !$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
                         //For blob type required fields, even if file is present, required error is shown.
                         //To prevent this, if value is present set the required validity to true
                         WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
@@ -271,7 +279,6 @@ WM.module('wm.widgets.live')
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
 
-                    $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
                     /*Construct the data object with required values from the formFields*/
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
                     constructed out of the previous object*/
