@@ -156,7 +156,7 @@ WM.module('wm.widgets.form')
                             return true;
                         }
                         /*If the dataobject is equal in model, return true*/
-                        return (WM.isObject(dataObject) ? WM.equals(model, dataObject) : false);
+                        return WM.equals(model, dataObject);
                     };
                     /*Watch on the model, to check or uncheck the values of checkboxset*/
                     if (!scope.widgetid) {
