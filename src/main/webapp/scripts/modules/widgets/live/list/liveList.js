@@ -1422,6 +1422,7 @@ WM.module('wm.widgets.live')
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 } else {
+                    $is.widgetProps.enablereorder.show = !$rs.isMobileApplicationType;
                     $el.find('.app-listtemplate').addClass($liScope.itemclass + ' ' + $liScope.itemsPerRowClass);
                 }
 
