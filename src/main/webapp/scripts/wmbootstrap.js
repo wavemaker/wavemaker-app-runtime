@@ -766,10 +766,10 @@ Application
                     }
 
                     var variable;
-                    if (!options || !options.scope || !options.scope.Variables || !options.scope.Variables[name]) {
+                    options = options || {};
+                    variable = _.get(options, ['scope', 'Variables', name]);
+                    if (!variable) {
                         variable = Variables.getVariableByName(name);
-                    } else {
-                        variable = options.scope.Variables[name];
                     }
 
                     if (!variable) {
@@ -806,6 +806,9 @@ Application
                         break;
                     case 'wm.DeviceVariable':
                         variable.invoke(options, onSuccess, onError);
+                        break;
+                    case 'wm.WebSocketVariable':
+                        variable[options.method || 'invoke']();
                         break;
                     }
                 });

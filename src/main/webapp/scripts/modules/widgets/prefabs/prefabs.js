@@ -352,6 +352,12 @@ WM.module('wm.prefabs')
                                                     DialogService.showDialog(dialogId, {'scope': $is.ctrlScope});
                                                 } else if (subParts[1] === 'hide') {
                                                     DialogService.hideDialog(dialogId);
+                                                } else if (_.includes(['send', 'open', 'close'], subParts[1])) {
+                                                    /*
+                                                     * TODO: remove this block once event migration for prefabs is done
+                                                     * this is to handle expression: websocketVariable.send/open/close
+                                                     */
+                                                    $rs.$emit('invoke-service', subParts[0], {'scope': $is.ctrlScope, method: subParts[1]});
                                                 }
                                             } else { // Handle other events.
                                                 $rs.$emit('invoke-service', fnName, {'scope': $is.ctrlScope});
