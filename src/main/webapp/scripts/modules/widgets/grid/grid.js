@@ -775,6 +775,7 @@ WM.module('wm.widgets.grid')
                         scope.gridOptions.dateFormat     = AppDefaults.get('dateFormat');
                         scope.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
                         scope.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
+                        scope.gridOptions.name           = scope.name || scope.$id;
                         scope.datagridElement.datagrid(scope.gridOptions);
                         scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
                         handlers.push($rootScope.$on('locale-change', function () {
@@ -2234,13 +2235,23 @@ WM.module('wm.widgets.grid')
                 $scope.gridOptions.searchHandler(searchObj, undefined, 'search');
             };
             //Function to be executed on filter condition change
-            $scope.onFilterConditionSelect = function (field, value) {
+            $scope.onFilterConditionSelect = function (field, condition) {
                 $scope.rowFilter[field] = $scope.rowFilter[field] || {};
-                $scope.rowFilter[field].matchMode = value;
-                if (_.includes($scope.emptyMatchModes, value)) {
+                $scope.rowFilter[field].matchMode = condition;
+                //For empty match modes, clear off the value and call filter
+                if (_.includes($scope.emptyMatchModes, condition)) {
                     $scope.rowFilter[field].value = undefined;
+                    $scope.onRowFilterChange();
+                } else {
+                    //If value is present, call the filter. Else, focus on the field
+                    if ($scope.rowFilter[field].value) {
+                        $scope.onRowFilterChange();
+                    } else {
+                        $timeout(function () {
+                            $scope.Widgets[($scope.name || $scope.$id) + '_filter_' + field].focus();
+                        });
+                    }
                 }
-                $scope.onRowFilterChange();
             };
             //Function to be executed on clearing a row filter
             $scope.clearRowFilter = function (field) {
@@ -2606,7 +2617,7 @@ WM.module('wm.widgets.grid')
                         //Fetch the filter options for select widget when filtermode is row
                         if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && columnDef.filterwidget === 'select') {
                             variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
-                            if (scope.isBoundToLiveVariable) {
+                            if (variable && variable.category === 'wm.LiveVariable') {
                                 columnDef.isLiveVariable = true;
                                 if (columnDef.relatedEntityName) {
                                     columnDef.isRelated   = true;
