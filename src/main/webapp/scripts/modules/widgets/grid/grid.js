@@ -652,7 +652,7 @@ WM.module('wm.widgets.grid')
                             scope.variableName      = Utils.getVariableName(scope);
                             scope.variable          = _.get(element.scope().Variables, scope.variableName);
                             if (scope.isBoundToVariable && scope.variable) {
-                                variableType = scope.variable.category;
+                                scope.variableType            = variableType = scope.variable.category;
                                 scope.isBoundToStaticVariable = variableType === 'wm.Variable';
                                 scope.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
                                 if (scope.isBoundToLiveVariable) {
