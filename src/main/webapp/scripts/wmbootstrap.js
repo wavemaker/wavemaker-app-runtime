@@ -148,6 +148,8 @@ Application
                         if (page === homePage || page === loginPage) {
                             return undefined;
                         }
+
+                        return page;
                     }
 
                     SecurityService.getConfig(function (config) {

@@ -398,8 +398,11 @@ wm.modules.wmCommon.services.BaseService = [
 
                                     DialogService.hideDialog(dialogId);
                                 };
-
                             }
+                        },
+                        onClose: function () {
+                            // unset the flag if dialog closed without sign-in
+                            isUnAuthorized = false;
                         }
                     });
                     isUnAuthorized = true;
