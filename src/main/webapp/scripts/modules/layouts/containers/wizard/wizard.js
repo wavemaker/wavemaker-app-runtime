@@ -8,11 +8,11 @@ WM.module('wm.layouts.containers')
 
         //Define the template for the wizard directive
         $templateCache.put('template/layout/container/wizard.html',
-            '<div class="app-wizard panel clearfix" init-widget apply-styles="container">' +
+            '<div class="app-wizard panel clearfix" init-widget apply-styles="shell">' +
                 '<div class="app-wizard-heading">' +
                     '<ul class="app-wizard-steps nav nav-pills {{stepClass}}"></ul>' +
                 '</div>' +
-                '<div class="app-wizard-body panel-body">' +
+                '<div class="app-wizard-body panel-body" apply-styles="inner-shell">' +
                     '<wm-message scopedataset="message"></wm-message>' +
                     '<div wmtransclude></div>' +
                 '</div>' +
@@ -39,7 +39,7 @@ WM.module('wm.layouts.containers')
 
         //Define the template for the wizard step directive
         $templateCache.put('template/layout/container/wizard-step.html',
-            '<form apply-styles="container" init-widget wmtransclude class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" data-step-id="{{stepIndex}}"></form>');
+            '<form init-widget wmtransclude class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" data-step-id="{{stepIndex}}"></form>');
     }])
     .directive('wmWizard', [
         'PropertiesFactory',
