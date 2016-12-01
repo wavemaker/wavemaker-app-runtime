@@ -556,6 +556,9 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         },
         "timestamp": {
             "java_type": "timestamp"
+        },
+        "object": {
+            "java_type": "object"
         }
     },
     "DATABASE_SECONDARY_DATA_TYPES": {
