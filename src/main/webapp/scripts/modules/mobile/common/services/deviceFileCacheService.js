@@ -105,18 +105,12 @@ wm.modules.wmCommon.services.DeviceFileCacheService = [
             return defer.promise;
         };
 
-        if (window.cordova) {
+        if (window.cordova && window.cordova.file) {
             initializationDone = DeviceService.waitForInitialization('DeviceFileCacheService');
-            DeviceService.whenCordovaReady().then(function () {
-                if (cordova.file) {
-                    $cordovaFile.readAsText(cordova.file.dataDirectory, CACHE_FILE_INDEX_NAME).then(function (content) {
-                        initializationDone();
-                        cacheIndex = JSON.parse(content);
-                    }, initializationDone);
-                } else {
-                    initializationDone();
-                }
-            });
+            $cordovaFile.readAsText(cordova.file.dataDirectory, CACHE_FILE_INDEX_NAME)
+                .then(function (content) {
+                    cacheIndex = JSON.parse(content);
+                }).finally(initializationDone);
         }
 
     }];

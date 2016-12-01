@@ -355,15 +355,9 @@ wm.modules.wmCommon.services.DeviceFileService = [
             return d;
         };
 
-        if (window.cordova) {
+        if (window.cordova && window.cordova.file) {
             initializationDone = DeviceService.waitForInitialization('DeviceFileService');
-            DeviceService.whenCordovaReady().then(function () {
-                if (cordova.file) {
-                    init().then(initializationDone);
-                } else {
-                    initializationDone();
-                }
-            });
+            init().then(initializationDone);
         }
 
     }];

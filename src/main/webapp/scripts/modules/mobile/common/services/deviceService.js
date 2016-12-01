@@ -8,19 +8,15 @@
  * The 'wm.modules.wmCommon.services.$DeviceService' provides high-level API to interact with device.
  */
 wm.modules.wmCommon.services.DeviceService = [
-    '$document',
     '$q',
     'Utils',
     //This is required for initialization
     'OfflineSecurityService',
-    function ($document, $q, Utils) {
+    function ($q, Utils) {
         'use strict';
 
-        var isDeviceReady = window.cordova ? false : true,
-            isCordovaReady = false,
+        var isDeviceReady = true,
             isDeviceReadyEventListeners   = [],
-            isCordovaReadyEventListeners   = [],
-            deviceReadyCallBack,
             waitingFor = {};
 
         function triggerListeners(listeners) {
@@ -54,27 +50,6 @@ wm.modules.wmCommon.services.DeviceService = [
                 }
             };
         };
-
-        /**
-         * @ngdoc method
-         * @name wm.modules.wmCommon.services.$DeviceService#whenCordovaReady
-         * @methodOf wm.modules.wmCommon.services.$DeviceService
-         * @description
-         * Returns a promise that will be resolved when all cordova modules are loaded.
-         *
-         * @returns {object} a promise that will be resolved when cordova api is ready..
-         */
-        this.whenCordovaReady = function () {
-            var d = $q.defer();
-            // Only in case of deployed mobile apps, wait for deviceready event.
-            if (isCordovaReady) {
-                d.resolve();
-            } else {
-                isCordovaReadyEventListeners.push(d.resolve);
-            }
-            return d.promise;
-        };
-
         /**
          * @ngdoc method
          * @name wm.modules.wmCommon.services.$DeviceService#whenDeviceReady
@@ -94,13 +69,4 @@ wm.modules.wmCommon.services.DeviceService = [
             }
             return d.promise;
         };
-
-        if (!isDeviceReady) {
-            deviceReadyCallBack = this.waitForInitialization('cordova ready');
-            $document.one('deviceready', function () {
-                isCordovaReady = true;
-                deviceReadyCallBack();
-                triggerListeners(isCordovaReadyEventListeners);
-            });
-        }
     }];
