@@ -36,7 +36,12 @@ WM.module('wm.prefabs')
                 pendingTasks = {
                     resources: {}
                 },
-                projectDetails;
+                projectDetails,
+                versionMismatchMessages = {},
+                appPrefabs,
+                workspacePrefabs,
+                projectPrefabsNameConfigMap   = {},
+                workspacePrefabsNameConfigMap = {};
 
             function getProjectId() {
                 if (projectDetails) {
@@ -193,7 +198,149 @@ WM.module('wm.prefabs')
              * returns true if the version of the studio-prefab is not same as the app-prefab
              */
             function isPrefabVersionMismatch(prefabName) {
-                return studioPrefabNamePropertiesMap[prefabName].version !== appPrefabNamePropertiesMap[prefabName].version;
+                var prefab = getProjectPrefab(prefabName);
+                return prefab.status === 'DEV' || prefab.version !== prefab.workspaceVersion;
+            }
+
+            /**
+             * this function returns the filtered prefabs in development mode
+             * @param prefabs
+             */
+            function getDevStatusPrefabs(prefabs) {
+                return _.filter(prefabs, function (prefabConfig) {
+                    return prefabConfig.status === 'DEV';
+                });
+            }
+            //prepares the project prefabs map
+            function prepareAppPrefabsNameConfigMap() {
+                _.forEach(appPrefabs, function (prefabConfig) {
+                    projectPrefabsNameConfigMap[prefabConfig.name] = prefabConfig;
+                });
+            }
+            /**
+             * this function sets the project prefabs
+             * @param prefabs prefabs config array
+             */
+            function setProjectPrefabs(prefabs) {
+                appPrefabs = prefabs;
+                prepareAppPrefabsNameConfigMap();
+            }
+
+            /**
+             * this function returns the project prefab config
+             * @param prefabName name of the prefab
+             * @returns {Object} prefab config
+             */
+            function getProjectPrefab(prefabName) {
+                return Utils.getClonedObject(projectPrefabsNameConfigMap[prefabName]) || {};
+            }
+
+            //returns the raw project prefabs array
+            function getProjectPrefabs() {
+                return Utils.getClonedObject(appPrefabs) || [];
+            }
+
+            /**
+             * this function is used to fetch the project prefabs
+             * @returns {*|{url, method}} promise object
+             */
+            function fetchProjectPrefabs() {
+                return ProjectService.getProjectPrefabs($rs.project.id)
+                    .then(setProjectPrefabs);
+            }
+
+            function prepareWorkspacePrefabsNameConfigMap() {
+                _.forEach(workspacePrefabs, function (prefabConfig) {
+                    workspacePrefabsNameConfigMap[prefabConfig.name] = prefabConfig;
+                });
+            }
+            /**
+             * this function sets the workspace prefabs
+             * @param prefabs prefabs config array
+             */
+            function setWorkspacePrefabs(prefabs) {
+                workspacePrefabs = prefabs;
+                prepareWorkspacePrefabsNameConfigMap();
+            }
+
+            /**
+             * this function returns the workspace prefab config
+             * @returns {prefab} prefab object
+             */
+            function getWorkspacePrefab(prefabName) {
+                return Utils.getClonedObject(workspacePrefabsNameConfigMap[prefabName]) || {};
+            }
+
+            /**
+             * this function is used to fetch the project prefabs
+             * @returns {*|{url, method}} promise object
+             */
+            function fetchWorkspacePrefabs() {
+                return ProjectService.getWorkspacePrefabs($rs.project.id)
+                    .then(setWorkspacePrefabs);
+            }
+            //constructs the prefab message for the prefabs
+            function constructPrefabConflictMessage(prefab) {
+                if (prefab.status === 'DEV') {
+                    return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_DEVELOPMENT', prefab.name, prefab.version, prefab.workspaceVersion);
+                }
+                if (Number(prefab.version) && Number(prefab.workspaceVersion)) {
+                    if (prefab.version < prefab.workspaceVersion) {
+                        return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_OLDER', prefab.name, prefab.version, prefab.workspaceVersion);
+                    }
+                }
+                if (prefab.version !== prefab.workspaceVersion) {
+                    return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_CONFLICT', prefab.name, prefab.workspaceVersion);
+                }
+            }
+            /**
+             *
+             * @returns {Array}
+             */
+            function getPrefabVersionConflicts() {
+                var conflicts = [],
+                    prefabs = getProjectPrefabs();
+                //prefab list consists of workspace version, project version and also status of the prefab
+                _.forEach(prefabs, function (prefab) {
+                    //if prefab workspace version doesn't exist do not show it as a conflict, might be the prefab is not published in the workspace yet
+                    if (prefab.workspaceVersion && (prefab.version !== prefab.workspaceVersion || prefab.status === 'DEV')) {
+                        prefab.versionMessage = constructPrefabConflictMessage(prefab);
+                        conflicts.push(prefab);
+                    }
+                });
+                return conflicts;
+            }
+
+            //assigns the version mismatch message for the prefabs.
+            function setVersionMismatchMessages() {
+                _.forEach(getProjectPrefabs(), function (prefab) {
+                    var messageMap = versionMismatchMessages,
+                        prefabName = prefab.name,
+                        prefabProjectVersion = parseFloat(prefab.version),
+                        prefabWorkspaceVersion  = parseFloat(prefab.workspaceVersion);
+                    //if the prefab version is in draft condition show the message
+                    if (prefab.status === 'DEV') {
+                        messageMap[prefabName] = $rs.locale.MESSAGE_PREFAB_VERSION_DEVELOPMENT_STATE;
+                    } //@TODO:Implement these versions older, future, conflict
+                    /*else if (_.isNumber(prefabProjectVersion) && _.isNumber(prefabWorkspaceVersion)) { //compare the version if they can be parsed
+                        if (prefabProjectVersion > prefabWorkspaceVersion) {
+                            messageMap[prefabName] = $rs.locale.MESSAGE_FUTURE_VERSION_PREFAB;
+                        } else if (prefabProjectVersion < prefabWorkspaceVersion) {
+                            messageMap[prefabName] = $rs.locale.MESSAGE_OLDER_VERSION_PREFAB;
+                        }
+                    } else if (prefab.version !== prefab.workspaceVersion) { //show the conflict message if they're not equal
+                        messageMap[prefabName] = $rs.locale.MESSAGE_CONFLICT_VERSION_PREFAB;
+                    }*/
+                });
+            }
+
+            /**
+             * this function gets the prefab version mismatch message
+             * @param prefabName
+             * @returns {string} version mismatch message
+             */
+            function getVersionMismatchMessage(prefabName) {
+                return versionMismatchMessages[prefabName];
             }
 
             /*
@@ -559,6 +706,13 @@ WM.module('wm.prefabs')
                 return PrefabService.publishPrefabToProject(payload);
             }
 
+            function register(prefabId, successHandler, errorHandler) {
+                PrefabService.register({
+                    'projectId': $rs.project.studioProjectId || $rs.project.id,
+                    'prefabId': prefabId
+                }, successHandler, errorHandler);
+            }
+
             /**
              *
              * publishes the prefab to the workspace
@@ -685,5 +839,85 @@ WM.module('wm.prefabs')
              * @param {string|object} markup prefab html content(string/jQuery Object)
              */
             this.updateHTMLImportRefs = updateHTMLImportRefs;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#fetchProjectPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will fetch the prefabs in the project
+             */
+            this.fetchProjectPrefabs = fetchProjectPrefabs;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getProjectPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will get the prefabs in the project
+             * @param {string} name of the prefab
+             */
+            this.getProjectPrefab = getProjectPrefab;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#fetchWorkspacePrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will fetch the prefabs in the workspace
+             */
+            this.fetchWorkspacePrefabs = fetchWorkspacePrefabs;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getProjectPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will get the prefab in the projects
+             * @param {string} name of the prefab
+             */
+            this.getWorkspacePrefab = getWorkspacePrefab;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getPrefabVersionConflicts
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will sort and return the conflicts in the prefabs in project
+             * @param {prefabs} prefab list
+             */
+            this.getPrefabVersionConflicts = getPrefabVersionConflicts;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getDevStatusPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will get the prefabs with dev status
+             * @param {prefabs} prefab list
+             */
+            this.getDevStatusPrefabs = getDevStatusPrefabs;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#setVersionMismatchMessages
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will assign the version mismatch
+             */
+            this.setVersionMismatchMessages = setVersionMismatchMessages;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getVersionMismatchMessage
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will get the version mismatch message for the prefab
+             * @param {prefab} prefab name for which the version message is needed
+             */
+            this.getVersionMismatchMessage = getVersionMismatchMessage;
+            /**
+             * @ngdoc function
+             * @name PrefabManager#register
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will get the version mismatch message for the prefab
+             * @param {prefabId} prefab id for the project
+             * @param {success} success callback
+             * @param {error} error callback
+             */
+            this.register = register;
         }
     ]);
