@@ -100,18 +100,18 @@ WM.module('wm.widgets.form')
                 _.forEach(scope.checkedValues, function (value, dataKey) {
                     // displayvalue will contains all the dataKeys whose checked value is true, Checkboxset will contain multiple selected values.
                     if (scope._widgettype === 'wm-checkboxset') {
-                        scope.displayvalue = scope.displayvalue || [];
-                        if (value && !_.includes(scope.displayvalue, dataKey)) {
-                            scope.displayvalue.push(dataKey);
-                        } else if (!value && _.includes(scope.displayvalue, dataKey)) {
-                            _.remove(scope.displayvalue, function (value) {
+                        scope.displayValue = scope.displayValue || [];
+                        if (value && !_.includes(scope.displayValue, dataKey)) {
+                            scope.displayValue.push(dataKey);
+                        } else if (!value && _.includes(scope.displayValue, dataKey)) {
+                            _.remove(scope.displayValue, function (value) {
                                 return value === dataKey;
                             });
                         }
                     }
                     if (scope._widgettype === 'wm-radioset' && value) {
                         // radioset will contain only one selected value.
-                        scope.displayvalue = dataKey;
+                        scope.displayValue = dataKey;
                     }
                 });
             }
@@ -130,7 +130,7 @@ WM.module('wm.widgets.form')
             function updatedCheckedValues(scope) {
                 if (scope.dataKeys && scope.checkedValues) {
                     var model = scope._model_,
-                        dataObj = WM.isArray(scope.dataObject) ? {} : scope.dataObject;
+                        dataObj = (WM.isArray(scope.dataObject) ||  WM.isString(scope.dataObject)) ? {} : scope.dataObject;
                     if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
                         model = model.split(',');
                     }

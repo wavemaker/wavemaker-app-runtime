@@ -59,10 +59,10 @@ WM.module('wm.widgets.form')
                 val = _.get(scope.selectOptions, [selectedIndex, 'value']);
             if (isList) {
                 scope.modelProxy.push(selectedIndex);
-                scope.displayvalue.push(val);
+                scope.displayValue.push(val);
             } else {
                 scope.modelProxy = selectedIndex;
-                scope.displayvalue = val;
+                scope.displayValue = val;
             }
         }
 
@@ -71,16 +71,16 @@ WM.module('wm.widgets.form')
             var selectedModelObj;
             // Retrieve display values from model.
             if (scope.multiple) {
-                scope.displayvalue = [];
+                scope.displayValue = [];
                 _.forEach(_modelProxy, function (model) {
                     selectedModelObj = _.find(scope.selectOptions, ['key', model]);
                     if (selectedModelObj) {
-                        scope.displayvalue.push(selectedModelObj.value);
+                        scope.displayValue.push(selectedModelObj.value);
                     }
                 });
             } else {
                 selectedModelObj = _.find(scope.selectOptions, ['key', _modelProxy]);
-                scope.displayvalue = WM.isDefined(selectedModelObj) ? selectedModelObj.value : '';
+                scope.displayValue = WM.isDefined(selectedModelObj) ? selectedModelObj.value : '';
             }
         }
 
@@ -106,10 +106,10 @@ WM.module('wm.widgets.form')
                         } else if (WM.isArray(scope.modelProxy)) {
                             scope.modelProxy.length = 0;
                         }
-                        if (!WM.isDefined(scope.displayvalue)) {
-                            scope.displayvalue = [];
-                        } else if (WM.isArray(scope.displayvalue)) {
-                            scope.displayvalue.length = 0;
+                        if (!WM.isDefined(scope.displayValue)) {
+                            scope.displayValue = [];
+                        } else if (WM.isArray(scope.displayValue)) {
+                            scope.displayValue.length = 0;
                         }
                         // Retrieve display values from model.
                         _.forEach(_model_, function (modelObj) {

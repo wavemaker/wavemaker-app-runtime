@@ -31,13 +31,12 @@ WM.module('wm.widgets.form')
             /*if radioValue is provided use that to assign model value else use the selectedvalue property if provided*/
             /*Handling the case where the selected value itself is false*/
             if (scope.selectedvalue === '') {
-                scope._model_ = [];
-                selectedValue = '';
+                scope._model_ = selectedValue = undefined;
             }
             if (radioValue || radioValue === false) {
                 selectedValue = radioValue;
             } else {
-                selectedValue = scope.selectedvalue || (WM.isDefined(scope._model_) ? scope._model_ : '');
+                selectedValue = scope.selectedvalue || (WM.isDefined(scope._model_) ? scope._model_ : undefined);
             }
 
             scope._model_ = FormWidgetUtils.getModelValue(scope, dataSet, selectedValue, radioValue);
@@ -167,7 +166,7 @@ WM.module('wm.widgets.form')
 
                     /*Called from form reset when users clicks on form reset*/
                     scope.reset = function () {
-                        scope._model_ = [];
+                        scope._model_ = '';
                     };
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
