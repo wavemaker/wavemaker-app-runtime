@@ -53,18 +53,51 @@ WM.module('wm.widgets.form')
             return 'dataValue';
         }
 
+        // This function sets the display value and modelProxy from _model_
+        function setModelProxyAndDisplayVal(scope, _model_, isList) {
+            var selectedIndex = _dataSetModelMap[scope.$id][WM.toJson(_model_)],
+                val = _.get(scope.selectOptions, [selectedIndex, 'value']);
+            if (isList) {
+                scope.modelProxy.push(selectedIndex);
+                scope.displayvalue.push(val);
+            } else {
+                scope.modelProxy = selectedIndex;
+                scope.displayvalue = val;
+            }
+        }
+
+        // This function sets the display value from modelProxy.
+        function setDisplayValFromModelProxy(scope, _modelProxy) {
+            var selectedModelObj;
+            // Retrieve display values from model.
+            if (scope.multiple) {
+                scope.displayvalue = [];
+                _.forEach(_modelProxy, function (model) {
+                    selectedModelObj = _.find(scope.selectOptions, ['key', model]);
+                    if (selectedModelObj) {
+                        scope.displayvalue.push(selectedModelObj.value);
+                    }
+                });
+            } else {
+                selectedModelObj = _.find(scope.selectOptions, ['key', _modelProxy]);
+                scope.displayvalue = WM.isDefined(selectedModelObj) ? selectedModelObj.value : '';
+            }
+        }
+
         /*
          * watch the model
          * and update the modelProxy,
          * */
         function updateModelProxy(scope, _model_) {
-            var index;
+            var _modelProxy;
             /* to check if the function is not triggered from onChangeProxy */
             if (!_modelChangedManually[scope.$id]) {
                 if (scope.datafield !== ALLFIELDS) {
-                    index = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
-                    scope.modelProxy = index;
-                    scope.displayvalue = _.get(scope.selectOptions, [index, 'value']);
+                    _modelProxy = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
+                    scope.modelProxy = _modelProxy;
+                    if (WM.isDefined(_modelProxy)) {
+                        setDisplayValFromModelProxy(scope, _modelProxy);
+                    }
                 } else if (_dataSetModelMap[scope.$id]) {  /* check for sanity */
                     //For multiple select with data field as All Fields, set model as array of objects
                     if (scope.multiple && WM.isArray(_model_)) {
@@ -78,15 +111,12 @@ WM.module('wm.widgets.form')
                         } else if (WM.isArray(scope.displayvalue)) {
                             scope.displayvalue.length = 0;
                         }
+                        // Retrieve display values from model.
                         _.forEach(_model_, function (modelObj) {
-                            index = _dataSetModelMap[scope.$id][WM.toJson(modelObj)];
-                            scope.modelProxy.push(index);
-                            scope.displayvalue.push(_.get(scope.selectOptions, [index, 'value']));
+                            setModelProxyAndDisplayVal(scope, modelObj, true);
                         });
                     } else {
-                        index = _dataSetModelMap[scope.$id][WM.toJson(_model_)];
-                        scope.modelProxy = index;
-                        scope.displayvalue = _.get(scope.selectOptions, [index, 'value']);
+                        setModelProxyAndDisplayVal(scope, _model_);
                     }
                 }
             }
@@ -269,6 +299,7 @@ WM.module('wm.widgets.form')
             /* assign the modelProxy to the model when the selected datafield isn't all-fields*/
             if (scope.datafield !== ALLFIELDS || (scope.dataset && WM.isString(scope.dataset))) {
                 scope._model_ = scope.modelProxy;
+                setDisplayValFromModelProxy(scope, scope.modelProxy);
             } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
                 if (scope.multiple) {
                     /*For multiple select with data field as All Fields, set model as array of objects*/

@@ -653,7 +653,7 @@ WM.module('wm.widgets.base', [])
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "value": "", "bindable": "in-bound"},
-                        "displayvalue": {"type": "string", "value": "", "show": false, "bindable": "out-bound"}
+                        "displayvalue": {"type": "string, array", "show": false, "bindable": "out-bound"}
                     },
                     "wm.colorpicker": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -731,7 +731,7 @@ WM.module('wm.widgets.base', [])
                         "usekeys": {"type": "boolean"},
                         "selectedvalues": {"type": "string, object", "bindable": "in-bound", "widget": "string"},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "displayvalue": {"type": "string", "value": "", "show": false, "bindable": "out-bound"}
+                        "displayvalue": {"type": "string, array", "show": false, "bindable": "out-bound"}
                     },
 
                     "wm.chips": {
@@ -768,7 +768,7 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
-                        "displayvalue": {"type": "string", "value": "", "show": false, "bindable": "out-bound"}
+                        "displayvalue": {"type": "string, array", "show": false, "bindable": "out-bound"}
                     },
 
                     "wm.marquee": {
