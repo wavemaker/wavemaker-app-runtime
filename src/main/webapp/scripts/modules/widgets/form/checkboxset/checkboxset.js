@@ -39,11 +39,11 @@ WM.module('wm.widgets.form')
                 scope._model_ = [];
             } else {
                 if ((!selectedValues || selectedValues.length === 0) && !WM.isDefined(scope._model_)) {
-                    scope._model_ = [];
+                    scope._model_ = undefined;
                 } else if (WM.isDefined(scope._model_)) {
                     scope._model_ = Utils.convertToArray(scope._model_);
                 } else {
-                    scope._model_ = [];
+                    scope._model_ = undefined;
                 }
             }
             /*iterating over the selectedvalues to push to model*/
