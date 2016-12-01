@@ -577,7 +577,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 ServiceFactory.getServicesWithType(function () {
                     ServiceFactory.getServiceOperations(service, function () {
                         ServiceFactory.getServiceOperationParams(service, operationId, function (response) {
-                            var typeRef = response['return'].typeRef,
+                            var typeRef = _.get(response, ['return', 'typeRef']),
                                 fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode,
                                 variableTypeNode,
                                 transformationCols;
