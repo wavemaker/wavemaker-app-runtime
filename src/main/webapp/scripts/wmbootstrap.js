@@ -8,7 +8,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // add a node to the DOM to determine the mobile view
     WM.element('<i id="wm-mobile-display"></i>').appendTo('.wm-app');
 
-    WM.element.holdReady(false);
+    if (window.cordova) {
+        document.addEventListener("deviceready", function () {
+            WM.element.holdReady(false);
+        }, false);
+    } else {
+        WM.element.holdReady(false);
+    }
 });
 
 var Application =

@@ -208,15 +208,9 @@ wm.plugins.offline.run([
                 });
         }
 
-        if (window.cordova) {
+        if (window.cordova && window.SQLitePlugin) {
             initializationDone = DeviceService.waitForInitialization('Offline Storage');
-            DeviceService.whenCordovaReady().then(function () {
-                if (window.SQLitePlugin) {
-                    init().finally(initializationDone);
-                } else {
-                    initializationDone();
-                }
-            });
+            init().finally(initializationDone);
         }
     }
 ]);
