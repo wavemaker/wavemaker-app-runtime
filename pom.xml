@@ -7,7 +7,7 @@
 
     <groupId>com.wavemaker.studio</groupId>
     <artifactId>wavemaker-app-runtime</artifactId>
-    <version>8.3.4</version>
+    <version>8.4.0</version>
 
     <packaging>pom</packaging>
 
