@@ -907,13 +907,13 @@ $.widget('wm.datagrid', {
                     tempWidth;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     //Hide the header and column if show is false
-                    $header.hide();
+                    self.gridHeaderElement.find('th:nth-child(' + (index + 1) + ')').hide();
                     self.gridElement.find('td:nth-child(' + (index + 1) + ')').hide();
                     $(headerCols[index]).hide();
                     $(bodyCols[index]).hide();
                     width = 0;
                 } else {
-                    $header.show();
+                    self.gridHeaderElement.find('th:nth-child(' + (index + 1) + ')').show();
                     self.gridElement.find('td:nth-child(' + (index + 1) + ')').show();
                     $(headerCols[index]).show();
                     $(bodyCols[index]).show();
@@ -922,7 +922,7 @@ $.widget('wm.datagrid', {
                     } else {
                         if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
                             tempWidth = $(headerCols[index])[0].style.width;
-                            if (tempWidth === '' || tempWidth === '0px') { //If width is not 0px, width is already set. So, set the same width again
+                            if (tempWidth === '' || tempWidth === '90px' || _.includes(tempWidth, '%')) { //If width is not 0px, width is already set. So, set the same width again
                                 width = $header.width();
                                 width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
                             } else {
