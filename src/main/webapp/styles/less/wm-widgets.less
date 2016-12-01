@@ -1927,6 +1927,12 @@ If the height and width are not specified the video takes the height of the post
       &.scroll-visible {
         padding-right: 17px;
       }
+      /*Edge has scroll width of 12px*/
+      @supports (-ms-ime-align: auto) {
+        &.scroll-visible {
+          padding-right: 12px;
+        }
+      }
     }
 
     .app-grid-content {
@@ -1943,6 +1949,7 @@ If the height and width are not specified the video takes the height of the post
       position: relative;
       text-overflow: ellipsis;
       overflow: hidden;
+      background-clip: padding-box;
       .ui-resizable-handle {
         right: -1px;
         width: 4px;
