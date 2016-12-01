@@ -468,7 +468,7 @@ WM.module('wm.widgets.live')
                                                 '</div>' +
                                                 '</h4></li>';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemclass(this)]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 
@@ -883,42 +883,55 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            function createChildScope($is, $el, attrs) {
-                var _scope   = $el.scope(), // scop which inherits controller's scope
-                    $liScope = _scope.$new(), // create a new child scope. List Items will be compiled with this scope.
-                    itemClsAttr,
-                    interpolateFn,
+            function getEvalFn($is, attrs, property, val, itemAttr) {
+                var watchFn,
                     bindExpr,
-                    watchFn,
                     evalFn,
+                    interpolateFn,
                     $dummy,
                     $target;
 
-                $liScope.fieldDefs = [];
-                itemClsAttr   = attrs.$$element.context.getAttribute('itemclass');
-
-                // when the itemclass is binded
-                if (_.startsWith(itemClsAttr, 'bind:')) {
-                    // create a dummy node to get the itemclass attribute value replaced property (ie, Variables.x.y --> item.x.y)
+                itemAttr = itemAttr === 'false' ? false : itemAttr;
+                // when the property is binded
+                if (_.startsWith(itemAttr, 'bind:')) {
                     $dummy  = WM.element('<div>');
-                    $target = WM.element('<div>').attr('itemclass', attrs.itemclass);
+                    $target = WM.element('<div>').attr(property, val);
                     $dummy.append($target);
                     Utils.updateTmplAttrs($dummy, attrs.dataset || attrs.scopedataset, $is.name);
 
                     // get the updated attribute
-                    bindExpr = _.replace($target.attr('itemclass'), 'bind:', '');
+                    bindExpr = _.replace($target.attr(property), 'bind:', '');
                     watchFn  = $parse(bindExpr);
                     evalFn   = function ($s) { // evaluate the expression
                         return watchFn($s);
                     };
-                } else if (_.includes(itemClsAttr, '{{') && _.includes(itemClsAttr, '}}')) {
-                    interpolateFn = $interpolate(itemClsAttr);
+                } else if (_.includes(itemAttr, '{{') && _.includes(itemAttr, '}}')) {
+                    interpolateFn = $interpolate(itemAttr);
                     evalFn = function ($s) { // use interpolateFn to get the updated value
                         return interpolateFn($s);
                     };
-                } else { // when the itemclass doesn't contain any binding or interpolation
-                    evalFn = _.identity.bind(undefined, itemClsAttr);
+                } else { // when the property doesn't contain any binding or interpolation
+                    evalFn = _.identity.bind(undefined, itemAttr);
                 }
+
+                return evalFn;
+            }
+
+            function createChildScope($is, $el, attrs) {
+                var _scope      = $el.scope(), // scop which inherits controller's scope
+                    $liScope    = _scope.$new(), // create a new child scope. List Items will be compiled with this scope.
+                    $contextEl  = attrs.$$element.context,
+                    itemClsAttr,
+                    evalItemClassFn,
+                    evalDisableItemFn,
+                    disableItemAttr;
+
+                $liScope.fieldDefs = [];
+                itemClsAttr        = $contextEl.getAttribute('itemclass');
+                disableItemAttr    = $contextEl.getAttribute('disableitem');
+
+                evalItemClassFn   = getEvalFn($is, attrs, 'itemclass', attrs.itemclass, itemClsAttr);
+                evalDisableItemFn = getEvalFn($is, attrs, 'disableitem', attrs.disableitem, disableItemAttr);
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
@@ -931,13 +944,14 @@ WM.module('wm.widgets.live')
                     'onEnterkeypress'    : $is.onEnterkeypress,
                     'onSetrecord'        : $is.onSetrecord,
                     'onPaginationchange' : $is.onPaginationchange,
-                    '_itemclass'         : evalFn,
+                    '_itemClass'         : evalItemClassFn,
                     'itemsPerRowClass'   : '',
                     'addRow'             : $is.addRow,
                     'updateRow'          : $is.updateRow,
                     'deleteRow'          : $is.deleteRow,
                     'showcount'          : $is.showcount,
-                    'collapsible'        : $is.collapsible
+                    'collapsible'        : $is.collapsible,
+                    '_disableItem'       : evalDisableItemFn
                 });
 
                 return $liScope;
@@ -1049,69 +1063,70 @@ WM.module('wm.widgets.live')
                         last,
                         $liItems;
 
-                    $is.firstSelectedItem = $is.firstSelectedItem || $li;
-                    // Setting selectCount value based number of items selected.
-                    selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
-                    if ($liScope) {
-                        if ($is.multiselect && $rs.isMobileApplicationType) {
-                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
-                                $li.toggleClass('active');
-                                setItems($li, $is);
-                            } else {
-                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
-                            }
-                        } else if ((evt.ctrlKey || evt.metaKey) && $is.multiselect) {
-                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
-                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
-                                $li.toggleClass('active');
-                                setItems($li, $is);
-                            } else {
-                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
-                            }
-                        } else if (evt.shiftKey && $is.multiselect) {
-                            $liItems = $el.find('li.app-list-item');
-                            first    = $liItems.index($li);
-                            last     = $liItems.index($is.firstSelectedItem);
+                    if ($liScope && !$liScope._disableItem($liScope)) {
+                        $is.firstSelectedItem = $is.firstSelectedItem || $li;
+                        // Setting selectCount value based number of items selected.
+                        selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
+                        if ($liScope) {
+                            if ($is.multiselect && $rs.isMobileApplicationType) {
+                                if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
+                                    $li.toggleClass('active');
+                                    setItems($li, $is);
+                                } else {
+                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                }
+                            } else if ((evt.ctrlKey || evt.metaKey) && $is.multiselect) {
+                                if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
+                                    $is.lastSelectedItem = $is.firstSelectedItem = $li;
+                                    $li.toggleClass('active');
+                                    setItems($li, $is);
+                                } else {
+                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                }
+                            } else if (evt.shiftKey && $is.multiselect) {
+                                $liItems = $el.find('li.app-list-item');
+                                first    = $liItems.index($li);
+                                last     = $liItems.index($is.firstSelectedItem);
 
-                            // if first is greater than last, then swap values
-                            if (first > last) {
-                                last = [first, first = last][0];
-                            }
-                            if (checkSelectionLimit($is, last - first)) {
-                                clearItems($is, $el);
-                                _.forEach($liItems, function (element, index) {
-                                    var $currentLi;
-                                    if (index >= first && index <= last) {
-                                        $currentLi = WM.element($liItems[index]);
-                                        $currentLi.addClass('active');
-                                        setItems($currentLi, $is);
-                                    }
-                                });
-                                $is.lastSelectedItem = $li;
+                                // if first is greater than last, then swap values
+                                if (first > last) {
+                                    last = [first, first = last][0];
+                                }
+                                if (checkSelectionLimit($is, last - first)) {
+                                    clearItems($is, $el);
+                                    _.forEach($liItems, function (element, index) {
+                                        var $currentLi;
+                                        if (index >= first && index <= last) {
+                                            $currentLi = WM.element($liItems[index]);
+                                            $currentLi.addClass('active');
+                                            setItems($currentLi, $is);
+                                        }
+                                    });
+                                    $is.lastSelectedItem = $li;
+                                } else {
+                                    Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                }
                             } else {
-                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                                if (!isActive || selectCount > 1) {
+                                    clearItems($is, $el);
+                                    $li.addClass('active');
+                                    setItems($li, $is);
+                                    $is.lastSelectedItem = $is.firstSelectedItem = $li;
+                                }
                             }
-                        } else {
-                            if (!isActive || selectCount > 1) {
-                                clearItems($is, $el);
-                                $li.addClass('active');
-                                setItems($li, $is);
-                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
+
+                            // trigger $apply, as 'click' or 'tap' is out of angular-scope
+                            if (attrs.onClick) {
+                                Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                            }
+                            if (attrs.onTap) {
+                                Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
                             }
                         }
 
-                        // trigger $apply, as 'click' or 'tap' is out of angular-scope
-                        if (attrs.onClick) {
-                            Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
-                        }
-                        if (attrs.onTap) {
-                            Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
-                        }
+                        updateSelectedItemsWidgets($is, $el);
+                        $rs.$safeApply($is);
                     }
-
-
-                    updateSelectedItemsWidgets($is, $el);
-                    $rs.$safeApply($is);
                 }, true);
 
                 $el.on('keydown', 'li.app-list-item', function (evt) {
@@ -1191,14 +1206,16 @@ WM.module('wm.widgets.live')
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope();
 
-                    // trigger $apply, as 'dblclick' or 'doubleTap' is out of angular-scope
-                    if (attrs.onDblclick) {
-                        Utils.triggerFn($liScope.onDblclick, {$event: evt, $scope: $liScope});
+                    if ($liScope && !$liScope._disableItem($liScope)) {
+                        // trigger $apply, as 'dblclick' or 'doubleTap' is out of angular-scope
+                        if (attrs.onDblclick) {
+                            Utils.triggerFn($liScope.onDblclick, {$event: evt, $scope: $liScope});
+                        }
+                        if (attrs.onDoubletap) {
+                            Utils.triggerFn($liScope.onDoubletap, {$event: evt, $scope: $liScope});
+                        }
+                        $rs.$safeApply($is);
                     }
-                    if (attrs.onDoubletap) {
-                        Utils.triggerFn($liScope.onDoubletap, {$event: evt, $scope: $liScope});
-                    }
-                    $rs.$safeApply($is);
                 });
 
                 $hammerEl.on('pressup', function (evt) {
@@ -1303,17 +1320,21 @@ WM.module('wm.widgets.live')
                 }
                 var listItems = $el.find('.list-group li.app-list-item'),
                     itemIndex = WM.isNumber(item) ? item : getItemIndex(listItems, item),
-                    $li       = WM.element(listItems[itemIndex]);
-                if (!$is.multiselect) {
-                    clearItems($is, $el);
+                    $li       = WM.element(listItems[itemIndex]),
+                    $liScope  = $li.length && $li.scope();
+                //If deselectitem is true on item don't select item
+                if ($liScope && !$liScope._disableItem($liScope)) {
+                    if (!$is.multiselect) {
+                        clearItems($is, $el);
+                    }
+                    if (isSelect) {
+                        $li.addClass('active');
+                    } else {
+                        $li.removeClass('active');
+                    }
+                    setItems($li, $is);
+                    updateSelectedItemsWidgets($is, $el);
                 }
-                if (isSelect) {
-                    $li.addClass('active');
-                } else {
-                    $li.removeClass('active');
-                }
-                setItems($li, $is);
-                updateSelectedItemsWidgets($is, $el);
             }
 
             function onDestroy($is, $el, handlers) {
@@ -1363,7 +1384,7 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, _itemclass(this)]" ';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
                         liTemplateWrapper_end   = ' ng-init="addCurrentItemWidgets(this);"></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, false, $is.name);
 
