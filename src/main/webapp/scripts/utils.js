@@ -2243,8 +2243,17 @@ WM.module('wm.utils', [])
             loadStyleSheet(getProjectResourcePath($rootScope.project.id) + 'themes/' + themeName + '/style.css', {name: "theme", value: "wmtheme"});
         }
 
+        // returns false if the application is served on https and the requested url is not secure
         function isInsecureContentRequest(url) {
-            return stringStartsWith($location.$$absUrl, 'https://') && !stringStartsWith(url, 'https://') && !stringStartsWith(url, 'wss://');
+
+            var parser  = document.createElement('a');
+            parser.href = url;
+
+            if (stringStartsWith($location.$$absUrl, 'https://')) {
+                return parser.protocol !== 'https:' && parser.protocol !== 'wss:';
+            }
+
+            return false;
         }
 
         //Adding default headers required for the ajax request
