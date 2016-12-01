@@ -127,11 +127,22 @@ WM.module('wm.widgets.dialog')
 
             // save a reference to the scope which with dialog got compiled.
             $uibModalInstances[dialogId].opened.then(function () {
-                var dialogCtrlScope = $uibModalStack.getTop().value.modalScope;
+                var dialogCtrlScope = $uibModalStack.getTop().value.modalScope,
+                    onCloseFn       = params.onClose;
+
+                // onClose function defined in _props (from .open method) will take precedence
                 if (params._props) {
+                    onCloseFn = params._props.onClose;
                     WM.extend(dialogCtrlScope, params._props);
                 }
+
                 $uibModalInstances[dialogId].scope = dialogCtrlScope;
+
+                if (dialogCtrlScope) {
+                    if (WM.isFunction(onCloseFn)) {
+                        dialogCtrlScope.$on('$destroy', onCloseFn);
+                    }
+                }
 
                 if (WM.isFunction(params.onOpen)) {
                     params.onOpen($uibModalInstances[dialogId].scope);
