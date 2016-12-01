@@ -1020,23 +1020,22 @@ WM.module('wm.widgets.live')
                         }
                     });
             }
-
+            function setItems($li, $is) {
+                var _item = $li.scope().item;
+                if ($li.hasClass('active')) {
+                    $is._items.push(_item);
+                } else {
+                    $is._items = _.pullAllWith($is._items, [_item], _.isEqual);
+                }
+            }
+            function clearItems($is, $el) {
+                $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
+                $is._items.length = 0;
+            }
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl   = new Hammer($el[0], {}),
                     selectCount = 0;// Setting to true on first long press
-                function setItems($li) {
-                    var _item = $li.scope().item;
-                    if ($li.hasClass('active')) {
-                        $is._items.push(_item);
-                    } else {
-                        $is._items = _.pullAllWith($is._items, [_item], _.isEqual);
-                    }
-                }
-                function clearItems() {
-                    $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
-                    $is._items.length = 0;
-                }
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el[0].addEventListener('click', function (evt) {
                     // returning if click event is triggered within 50ms after pressup event occurred
@@ -1057,7 +1056,7 @@ WM.module('wm.widgets.live')
                         if ($is.multiselect && $rs.isMobileApplicationType) {
                             if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $li.toggleClass('active');
-                                setItems($li);
+                                setItems($li, $is);
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
@@ -1065,7 +1064,7 @@ WM.module('wm.widgets.live')
                             if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                                 $li.toggleClass('active');
-                                setItems($li);
+                                setItems($li, $is);
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
@@ -1079,13 +1078,13 @@ WM.module('wm.widgets.live')
                                 last = [first, first = last][0];
                             }
                             if (checkSelectionLimit($is, last - first)) {
-                                clearItems();
+                                clearItems($is, $el);
                                 _.forEach($liItems, function (element, index) {
                                     var $currentLi;
                                     if (index >= first && index <= last) {
                                         $currentLi = WM.element($liItems[index]);
                                         $currentLi.addClass('active');
-                                        setItems($currentLi);
+                                        setItems($currentLi, $is);
                                     }
                                 });
                                 $is.lastSelectedItem = $li;
@@ -1094,9 +1093,9 @@ WM.module('wm.widgets.live')
                             }
                         } else {
                             if (!isActive || selectCount > 1) {
-                                clearItems();
+                                clearItems($is, $el);
                                 $li.addClass('active');
-                                setItems($li);
+                                setItems($li, $is);
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                             }
                         }
@@ -1137,11 +1136,11 @@ WM.module('wm.widgets.live')
                                 if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit($is, selectCount)) {
                                     $currentLi = $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
                                     $currentLi.toggleClass('active');
-                                    setItems($currentLi);
+                                    setItems($currentLi, $is);
                                 } else if (presentIndex > firstIndex) {
                                     $currentLi = WM.element($liItems[presentIndex]);
                                     $currentLi.toggleClass('active');
-                                    setItems($currentLi);
+                                    setItems($currentLi, $is);
                                     $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
                                 } else {
                                     Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
@@ -1154,11 +1153,11 @@ WM.module('wm.widgets.live')
                                 if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit($is, selectCount)) {
                                     $currentLi = $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
                                     $currentLi.toggleClass('active');
-                                    setItems($currentLi);
+                                    setItems($currentLi, $is);
                                 } else if (presentIndex < firstIndex) {
                                     $currentLi = WM.element($liItems[presentIndex]);
                                     $currentLi.toggleClass('active');
-                                    setItems($currentLi);
+                                    setItems($currentLi, $is);
                                     $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
                                 } else {
                                     Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
@@ -1207,7 +1206,7 @@ WM.module('wm.widgets.live')
                         var $li = WM.element(evt.target).closest('li.app-list-item');
                         $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         $li.addClass('active'); // adding active class to current selectedItem
-                        setItems($li);
+                        setItems($li, $is);
                         $rs.$safeApply($is);
                         pressStartTimeStamp = Date.now();//Recording pressup event's timestamp
                     }
@@ -1304,15 +1303,17 @@ WM.module('wm.widgets.live')
                 }
                 var listItems = $el.find('.list-group li.app-list-item'),
                     itemIndex = WM.isNumber(item) ? item : getItemIndex(listItems, item),
-                    $li       = WM.element(listItems[itemIndex]),
-                    _item     = $li.scope().item;
+                    $li       = WM.element(listItems[itemIndex]);
+                if (!$is.multiselect) {
+                    clearItems($is, $el);
+                }
                 if (isSelect) {
-                    $is._items.push(_item);
                     $li.addClass('active');
                 } else {
-                    $is._items = _.pullAllWith($is._items, [_item], _.isEqual);
                     $li.removeClass('active');
                 }
+                setItems($li, $is);
+                updateSelectedItemsWidgets($is, $el);
             }
 
             function onDestroy($is, $el, handlers) {
