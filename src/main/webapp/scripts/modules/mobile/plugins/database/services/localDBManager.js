@@ -1,4 +1,4 @@
-/*global wm, WM, _, cordova*/
+/*global wm, WM, _, window*/
 /*jslint sub: true, unparam:true*/
 
 /**
@@ -17,10 +17,26 @@ wm.plugins.database.services.LocalDBManager = [
     'DeviceFileService',
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
-    function ($cordovaFile, $cordovaSQLite, $q, $rootScope, BaseService, DatabaseService, DeviceFileService, LocalDBStoreFactory,  OFFLINE_WAVEMAKER_DATABASE_SCHEMA) {
+    'Utils',
+    function ($cordovaFile, $cordovaSQLite, $q, $rootScope, BaseService, DatabaseService, DeviceFileService, LocalDBStoreFactory,  OFFLINE_WAVEMAKER_DATABASE_SCHEMA, Utils) {
         'use strict';
         var META_LOCATION = 'www/metadata/app',
+            cordova = window.cordova,
+            dbInstallParentDirectory,
+            dbInstallDirectory,
+            dbInstallDirectoryName,
             databases;
+
+        if (cordova) {
+            if (Utils.isIOS()) {
+                dbInstallDirectoryName = 'LocalDatabase';
+                dbInstallParentDirectory = cordova.file.applicationStorageDirectory +  'Library/';
+            } else {
+                dbInstallDirectoryName = 'databases';
+                dbInstallParentDirectory = cordova.file.applicationStorageDirectory;
+            }
+            dbInstallDirectory = dbInstallParentDirectory + dbInstallDirectoryName;
+        }
 
         //Picks essential details from the given schema.
         function compactEntitySchema(schema, entity, transformedSchemas) {
@@ -314,14 +330,13 @@ wm.plugins.database.services.LocalDBManager = [
          */
         function cleanAndCopyDatabases(appInfo, currentBuildTime) {
             var databasesCreated = $q.defer(),
-                dbSeedFolder = cordova.file.applicationDirectory + META_LOCATION,
-                dbInstallPath = cordova.file.dataDirectory + 'databases';
-            $cordovaFile.createDir(cordova.file.dataDirectory, "databases", false).finally(function () {
-                DeviceFileService.listFiles(dbInstallPath, /.+\.db$/).then(function (files) {
+                dbSeedFolder = cordova.file.applicationDirectory + META_LOCATION;
+            $cordovaFile.createDir(dbInstallParentDirectory, dbInstallDirectoryName, false).finally(function () {
+                DeviceFileService.listFiles(dbInstallDirectory, /.+\.db$/).then(function (files) {
                     if (files && files.length > 0) {
                         return $q.all(_.map(files, function (f) {
-                            if (f.name !== 'wavemaker') {
-                                return $cordovaFile.removeFile(dbInstallPath, f.name);
+                            if (f.name !== 'wavemaker.db') {
+                                return $cordovaFile.removeFile(dbInstallDirectory, f.name);
                             }
                         }));
                     }
@@ -330,10 +345,10 @@ wm.plugins.database.services.LocalDBManager = [
                         .then(function (files) {
                             var filesCopied = $q.defer();
                             if (files && files.length > 0) {
-                                $cordovaFile.createDir(cordova.file.dataDirectory, "databases", false)
+                                $cordovaFile.createDir(dbInstallParentDirectory, dbInstallDirectoryName, false)
                                     .finally(function () {
                                         $q.all(_.map(files, function (f) {
-                                            return $cordovaFile.copyFile(dbSeedFolder, f.name, dbInstallPath, f.name);
+                                            return $cordovaFile.copyFile(dbSeedFolder, f.name, dbInstallDirectory, f.name);
                                         })).then(filesCopied.resolve);
                                     });
                             } else {
@@ -402,7 +417,7 @@ wm.plugins.database.services.LocalDBManager = [
                                 storePromises = [],
                                 database = _.extend({}, dbMetadata);
                             database.connection = $cordovaSQLite.openDB({
-                                name: database.schema.name,
+                                name: database.schema.name + '.db',
                                 location: 'default'
                             });
                             database.stores = {};
