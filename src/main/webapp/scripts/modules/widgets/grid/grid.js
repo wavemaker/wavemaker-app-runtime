@@ -1672,12 +1672,18 @@ WM.module('wm.widgets.grid')
                         navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
                             if (WM.isDefined(newVal)) {
-                                if (WM.isArray(newVal)) {
-                                    $scope.dataset = [].concat(newVal);
-                                } else if (WM.isObject(newVal)) {
-                                    $scope.dataset = WM.extend({}, newVal);
+                                //Watch will not be triggered if dataset and new value are equal. So trigger the property change handler manually
+                                //This happens in case, if dataset is directly updated.
+                                if (_.isEqual($scope.dataset, newVal)) {
+                                    $scope.watchVariableDataSet(newVal, $scope.gridElement);
                                 } else {
-                                    $scope.dataset = newVal;
+                                    if (WM.isArray(newVal)) {
+                                        $scope.dataset = [].concat(newVal);
+                                    } else if (WM.isObject(newVal)) {
+                                        $scope.dataset = WM.extend({}, newVal);
+                                    } else {
+                                        $scope.dataset = newVal;
+                                    }
                                 }
                             }
                         }, true);
