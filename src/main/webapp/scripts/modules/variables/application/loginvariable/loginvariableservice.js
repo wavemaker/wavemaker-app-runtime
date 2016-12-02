@@ -117,6 +117,10 @@ wm.variables.services.LoginVariableService = ['Variables',
                                 }
                             });
 
+                            // get redirectTo page from URL and remove it from URL
+                            var redirectPage = $location.search().redirectTo;
+                            $location.search('redirectTo', undefined);
+
                             /* if first time user loggin in or same user re-logging in, execute n/w calls failed before logging in */
                             if (!lastLoggedinUser || lastLoggedinUser === params.username) {
                                 BaseService.executeErrorCallStack();
@@ -131,12 +135,11 @@ wm.variables.services.LoginVariableService = ['Variables',
                                      */
                                     redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
                                 }
-                                var redirectPage = $location.search().redirectTo;
                                 /* if redirectPage found in url, case of re-login on session timeout*/
                                 if (redirectPage && WM.isString(redirectPage)) {
                                     if (!lastLoggedinUser || lastLoggedinUser === params.username) {
                                         /* if first time login OR same user re-logging in, navigate to provided redirectPage */
-                                        $location.url(redirectPage);
+                                        $location.path(redirectPage);
                                     } else {
                                         /* else, re-load the app, navigation will be taken care in wmbootstrap.js' */
                                         $window.location = $window.location.pathname;
