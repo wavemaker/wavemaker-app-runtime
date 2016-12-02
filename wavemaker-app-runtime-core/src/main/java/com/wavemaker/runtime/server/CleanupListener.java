@@ -16,7 +16,9 @@
 package com.wavemaker.runtime.server;
 
 import java.beans.Introspector;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.lang.management.PlatformManagedObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -24,6 +26,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -33,6 +36,8 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -42,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.util.ReflectionUtils;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.sun.jndi.ldap.Connection;
@@ -51,8 +57,8 @@ import com.sun.naming.internal.ResourceManager;
 import com.sun.org.apache.xml.internal.resolver.Catalog;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
-import com.wavemaker.studio.common.util.CastUtils;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 
@@ -95,6 +101,7 @@ public class CleanupListener implements ServletContextListener {
             clearReaderArrCatalogManager();
             clearCacheSourceAbstractClassGenerator();
             clearThreadConnections();
+            cleanupMBeanNotificationListeners();
 
             //Release all open references for logging
             LogFactory.release(this.getClass().getClassLoader());
@@ -190,6 +197,55 @@ public class CleanupListener implements ServletContextListener {
         keys.put("name", nameValue);
         mbs.unregisterMBean(new ObjectName("com.oracle.jdbc", keys));
         logger.info("Deregistered OracleDiagnosabilityMBean {}", nameValue);
+    }
+
+    /**
+     * Clears any notification listeners registered with memory mx bean
+     */
+    private void cleanupMBeanNotificationListeners() {
+        cleanupNotificationListener(ManagementFactory.getMemoryMXBean());
+        List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
+            cleanupNotificationListener(garbageCollectorMXBean);
+        }
+    }
+
+    private void cleanupNotificationListener(PlatformManagedObject platformManagedObject) {
+        try {
+            NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
+            Field listenerListField = ReflectionUtils.findField(notificationEmitter.getClass(), "listenerList");
+            if (listenerListField == null) {
+                throw new WMRuntimeException("Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
+            }
+            listenerListField.setAccessible(true);
+            List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
+            for (Object o : listenerInfoList) {
+                Field listenerField = o.getClass().getDeclaredField("listener");
+                if (listenerListField == null) {
+                    throw new WMRuntimeException("Unrecognized ListenerInfo class " + o.getClass().getName());
+                }
+                listenerField.setAccessible(true);
+                NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
+                if (notificationListener.getClass().getClassLoader() == Thread.currentThread().getContextClassLoader()) {
+                    logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
+                    notificationEmitter.removeNotificationListener(notificationListener);
+                }
+            }
+        } catch (Exception e) {
+            String className = "oracle.jdbc.driver.BlockSource";
+            Class loadedClass = null;
+            try {
+                loadedClass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            } catch (Exception e1) {
+                logger.warn("Failed to find loaded class for class {}", className, e1);
+            }
+            if (loadedClass == null) {
+                logger.info("MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                logger.trace("Exception Stack trace", e);
+            } else {
+                logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
+            }
+        }
     }
 
     /**
