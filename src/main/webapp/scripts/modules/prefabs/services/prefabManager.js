@@ -281,17 +281,25 @@ WM.module('wm.prefabs')
             }
             //constructs the prefab message for the prefabs
             function constructPrefabConflictMessage(prefab) {
-                if (prefab.status === 'DEV') {
-                    return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_DEVELOPMENT', prefab.name, prefab.version, prefab.workspaceVersion);
-                }
+                var msg,
+                    actionsBtnMsg = 'Update';
                 if (Number(prefab.version) && Number(prefab.workspaceVersion)) {
                     if (prefab.version < prefab.workspaceVersion) {
-                        return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_OLDER', prefab.name, prefab.version, prefab.workspaceVersion);
+                        msg = $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_OLDER', prefab.name, prefab.version, prefab.workspaceVersion, actionsBtnMsg);
+                    } else {
+                        actionsBtnMsg = 'Revert';
+                        msg = $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_FUTURE', prefab.name, prefab.version, prefab.workspaceVersion, actionsBtnMsg);
+                    }
+                } else {
+                    if (prefab.version !== prefab.workspaceVersion) {
+                        msg = $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_CONFLICT', prefab.name, prefab.workspaceVersion, actionsBtnMsg);
                     }
                 }
-                if (prefab.version !== prefab.workspaceVersion) {
-                    return $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_CONFLICT', prefab.name, prefab.workspaceVersion);
+                if (prefab.status === 'DEV') {
+                    msg = $rs.getLocalizedMessage('MESSAGE_PREFAB_VERSION_MISMATCH_DEVELOPMENT', prefab.name, prefab.version, prefab.workspaceVersion, actionsBtnMsg);
                 }
+                prefab.actionsBtnMsg = actionsBtnMsg;
+                return msg;
             }
             /**
              *
