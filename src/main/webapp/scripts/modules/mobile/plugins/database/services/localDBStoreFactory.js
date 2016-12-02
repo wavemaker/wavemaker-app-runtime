@@ -70,7 +70,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     columns.push(schema.name + '.' + col.name + ' as ' + col.fieldName);
                 }
             });
-            return 'SELECT ' + columns.join(',') + ' FROM ' + schema.name + ' ' + joins.join(',');
+            return 'SELECT ' + columns.join(',') + ' FROM ' + schema.name + ' ' + joins.join(' ');
         }
 
         function countQuery(schema) {
@@ -116,7 +116,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function geneateLimitClause(page) {
-            return page ? ' LIMIT ' + page.limit + ' OFFSET ' + page.offset : '';
+            page = page || {};
+            return ' LIMIT ' + (page.limit || 100) + ' OFFSET ' + (page.offset || 0);
         }
 
         function mapRowDataToObj(schema, dataObj) {
