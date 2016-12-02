@@ -676,6 +676,10 @@ WM.module('wm.utils', [])
             return (REGEX.IPAD.test(userAgent));
         }
 
+        function isIOS() {
+            return isIphone() || isIpod() || isIpad();
+        }
+
         function isAndroidTablet() {
             return (REGEX.ANDROID_TABLET.test(userAgent));
         }
@@ -2288,6 +2292,7 @@ WM.module('wm.utils', [])
         this.isIphone                   = isIphone;
         this.isIpod                     = isIpod;
         this.isIpad                     = isIpad;
+        this.isIOS                      = isIOS;
         this.isAndroidTablet            = isAndroidTablet;
         this.isTablet                   = isTablet;
         this.isMobile                   = isMobile;
