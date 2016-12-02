@@ -177,7 +177,14 @@ Application
                             loginMethod = loginConfig.type.toUpperCase();
                             switch (loginMethod) {
                             case LOGIN_METHOD.DIALOG:
-                                // Through loginDialog, user will be redirected to respective landing page as it is a first time login
+                                // Through loginDialog, user will remain in the current state and failed calls will be executed post login through LoginVariableService.
+                                // NOTE: user will be redirected to respective landing page only if dialog is opened manually(not through a failed 401 call).
+                                $rs._noRedirect = true;
+                                if (page) {
+                                    BaseService.pushToErrorCallStack(null, function () {
+                                        _load(page, onSuccess, onError);
+                                    }, WM.noop);
+                                }
                                 showLoginDialog();
                                 break;
                             case LOGIN_METHOD.PAGE:
