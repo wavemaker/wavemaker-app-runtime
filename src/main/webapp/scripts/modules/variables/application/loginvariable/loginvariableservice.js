@@ -121,13 +121,13 @@ wm.variables.services.LoginVariableService = ['Variables',
                             var redirectPage = $location.search().redirectTo;
                             $location.search('redirectTo', undefined);
 
-                            /* if first time user loggin in or same user re-logging in, execute n/w calls failed before logging in */
-                            if (!lastLoggedinUser || lastLoggedinUser === params.username) {
-                                BaseService.executeErrorCallStack();
-                            }
-
                             /* handle navigation if defaultSuccessHandler on variable is true */
                             if (variable.useDefaultSuccessHandler) {
+                                /* if first time user logging in or same user re-logging in, execute n/w calls failed before logging in */
+                                if (!lastLoggedinUser || lastLoggedinUser === params.username) {
+                                    BaseService.executeErrorCallStack();
+                                }
+
                                 if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
                                     /*
                                      * when the application is running as a mobile application,
@@ -144,13 +144,14 @@ wm.variables.services.LoginVariableService = ['Variables',
                                         /* else, re-load the app, navigation will be taken care in wmbootstrap.js' */
                                         $window.location = $window.location.pathname;
                                     }
-                                } else if (options.mode === 'dialog' && lastLoggedinUser !== params.username) {
+                                } else if (options.mode === 'dialog' && lastLoggedinUser !== params.username && !$rootScope._noRedirect) {
                                     /* else, re-load the app, navigation will be taken care in wmbootstrap.js' */
                                     $window.location = $window.location.pathname;
                                 } else if (options.mode !== 'dialog') {
                                     appManager.navigateOnLogin();
                                 }
                             }
+                            $rootScope._noRedirect = undefined;
                         });
                 }, function (errorMsg) {
                     errorMsg = errorMsg || "Invalid credentials.";

@@ -391,8 +391,8 @@ wm.modules.wmCommon.services.BaseService = [
                         resolve: {
                             OnLogin: function () {
                                 return function () {
-                                    executeErrorCallStack();
                                     if (CONSTANTS.isStudioMode) {
+                                        executeErrorCallStack();
                                         $rootScope.isStudioDisabled = isStudioDisabled;
                                     }
 
