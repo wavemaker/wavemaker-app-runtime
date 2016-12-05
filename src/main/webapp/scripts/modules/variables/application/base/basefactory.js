@@ -32,7 +32,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             "properties": {
                 "wm.Variable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
-                    "type": {"type": "list", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true, "istypeahead": "true"},
+                    "type": {"type": "list", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true, "istypeahead": true},
                     "isList": {"type": "boolean", "value": false},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "editJson": {"type": "json"},
@@ -49,8 +49,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
                     "designMaxResults": {"type": "number", "value": 10, "disabled": true, "hide": true},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": true},
-                    "service": {"type": "list", "required": true, "istypeahead": "true"},
-                    "operation": {"type": "list", "required": true, "istypeahead": "true"},
+                    "service": {"type": "list", "required": true, "istypeahead": true},
+                    "operation": {"type": "list", "required": true, "istypeahead": true},
                     "operationType": {"type": "string", "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false},
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
@@ -59,7 +59,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
                     "spinnerMessage": {"type": "string"},
 
                     /* Events */
@@ -74,9 +74,9 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "service": {"hide": true, "required": false},
                     "editJson": {"hide": true},
                     "transformationRequired": {"hide": true},
-                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read"},
-                    "liveSource": {"type": "list", "required": true, "istypeahead": "true"},
-                    "type": {"hide": false, "options": {}, value: "", "required": true, "istypeahead": "true"},
+                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "istypeahead": false},
+                    "liveSource": {"type": "list", "required": true, "istypeahead": true},
+                    "type": {"hide": false, "options": {}, value: "", "required": true, "istypeahead": true},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"disabled": false, "hide": false},
                     "ignoreCase": {"type": "boolean", "value": true},
@@ -84,7 +84,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": false, "widgettype": "order-by", "order": "desc"},
                     "autoUpdate": {"value": true},
                     "startUpdate": {"value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
                     "spinnerMessage": {"type": "string"},
                     "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"}
                 },
@@ -100,7 +100,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
                     "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
                     "spinnerMessage": {"type": "string"}
                 },
                 "wm.LogoutVariable": {
@@ -114,9 +114,9 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"value": ""},
                     "startUpdate": {"hide": true, "value": ""},
                     "autoUpdate": {"hide": true, "value": ""},
-                    "redirectTo": {"type": "list", "options": [], value: "", "istypeahead": "true"},
+                    "redirectTo": {"type": "list", "options": [], value: "", "istypeahead": true},
                     "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": "true"},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
                     "spinnerMessage": {"type": "string"}
                 },
                 "wm.NavigationVariable": {
@@ -167,7 +167,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": [], "hide": true},
-                    "service": {"type": "list", "required": true},
+                    "service": {"type": "list", "required": true, "istypeahead": true},
                     "type": {"hide": true},
                     "operation": {"hide": true},
                     "operationId": {"hide": true},
