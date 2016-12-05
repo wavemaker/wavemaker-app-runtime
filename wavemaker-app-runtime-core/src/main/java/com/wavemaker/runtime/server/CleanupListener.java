@@ -24,8 +24,10 @@ import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,6 +104,7 @@ public class CleanupListener implements ServletContextListener {
             clearCacheSourceAbstractClassGenerator();
             clearThreadConnections();
             cleanupMBeanNotificationListeners();
+            cleanupJULIReferences();
 
             //Release all open references for logging
             LogFactory.release(this.getClass().getClassLoader());
@@ -244,6 +247,64 @@ public class CleanupListener implements ServletContextListener {
                 logger.trace("Exception Stack trace", e);
             } else {
                 logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
+            }
+        }
+    }
+
+    /**
+     * Clears up the references for the TCL in java.util.Logging.Level$KnownLevel class
+     */
+    private void cleanupJULIReferences() {
+        String className = "java.util.logging.Level$KnownLevel";
+        try {
+            Class klass = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+            Field nameToKnownLevelsField = klass.getDeclaredField("nameToLevels");
+            Field intToKnownLevelsField = klass.getDeclaredField("intToLevels");
+            Field levelObjectField = klass.getDeclaredField("levelObject");
+            Field mirroredLevelField = klass.getDeclaredField("mirroredLevel");
+            nameToKnownLevelsField.setAccessible(true);
+            intToKnownLevelsField.setAccessible(true);
+            levelObjectField.setAccessible(true);
+            mirroredLevelField.setAccessible(true);
+            synchronized (klass) {
+                Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
+                removeTCLKnownLevels(nameToKnownLevels, levelObjectField, mirroredLevelField);
+
+                Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
+                removeTCLKnownLevels(intToKnownLevels, levelObjectField, mirroredLevelField);
+
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to clean up juli references in the class " + className, e);
+        }
+    }
+
+    private void removeTCLKnownLevels(Map<Object, List> nameToKnownLevels, Field levelObjectField, Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
+        Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
+        Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
+        while (mapEntryIterator.hasNext()) {
+            Map.Entry<Object, List> entry = mapEntryIterator.next();
+            List knownLevels = entry.getValue();
+            Iterator iterator = knownLevels.iterator();
+            List<Object> mirroredObjects = new ArrayList<>();
+            while (iterator.hasNext()) {
+                Object knownLevelObject = iterator.next();
+                Object levelObject = levelObjectField.get(knownLevelObject);
+                if (levelObject.getClass().getClassLoader() == Thread.currentThread().getContextClassLoader()) {
+                    iterator.remove();
+                }
+                mirroredObjects.add(mirroredLevelField.get(knownLevelObject));
+            }
+            iterator = knownLevels.iterator();
+            while (iterator.hasNext()) {
+                Object knownLevelObject = iterator.next();
+                Object levelObject = levelObjectField.get(knownLevelObject);
+                if (mirroredObjects.contains(levelObject)) {
+                    iterator.remove();
+                }
+            }
+            if (knownLevels.isEmpty()) {
+                mapEntryIterator.remove();
             }
         }
     }
