@@ -107,13 +107,13 @@ wm.variables.services.LoginVariableService = ['Variables',
                      * Update loggedInUser variable with new user details
                      */
                     appManager.resetSecurityConfig().
-                        then(function () {
+                        then(function (config) {
                             $rootScope.isUserAuthenticated = true;
                             Utils.triggerFn(success);
 
                             WM.forEach(variableEvents, function (event) {
                                 if (event !== 'onError' && event !== VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE) {
-                                    initiateCallback(event, variable, callBackScope);
+                                    initiateCallback(event, variable, callBackScope, _.get(config, 'userInfo'));
                                 }
                             });
 
