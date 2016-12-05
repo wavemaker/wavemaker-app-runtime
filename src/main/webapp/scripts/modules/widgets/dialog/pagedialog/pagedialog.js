@@ -74,13 +74,7 @@ WM.module('wm.widgets.dialog')
                         iScope.widgetProps = widgetProps;
                     }
                 },
-                "post": function (scope, element, attrs, dialogCtrl) {
-                    // handles ok button click
-                    if (!scope.okButtonHandler) {
-                        scope.okButtonHandler = function () {
-                            dialogCtrl._OkButtonHandler(attrs.onOk);
-                        };
-                    }
+                "post": function (scope, element, attrs) {
                     // register the property change handler
                     if (scope.propertyManager) {
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
