@@ -1787,6 +1787,7 @@ WM.module('wm.widgets.base', [])
                         "type": {"type": "string", "widget": "list", "options": ["Area", "Bar", "Bubble", "Column", "Cumulative Line", "Donut", "Line", "Pie"], "bindable": "in-out-bound", "show": false},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                        "formattype": {"type": "select-by-object", "options": [{"label": "toNumber", "value": "integer"}, {"label": "toDate", "value": "date"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": false},
                         "xaxisdatakey": {"type": "list", "widget": "list", "datasetfilter" : "custom"},
                         "xaxislabel": {"type": "string"},
                         "xunits": {"type": "string"},
@@ -2014,7 +2015,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["tooltips", "viewtype", "areaviewtype", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},
                 //x axis groups
                 {"name": "", "properties": ["showxaxis", "xaxislabel", "xunits", "xaxislabeldistance", "xdomain", "showvalues", "staggerlabels", "reducexticks", 'barspacing', 'showxdistance'], "parent": "xaxis"},
-                {"name": "xaxisformat", "properties": ["xnumberformat", "xdateformat"], "parent": "xaxis"},
+                {"name": "xaxisformat", "properties": ["formattype", "xnumberformat", "xdateformat"], "parent": "xaxis"},
                 //y axis groups
                 {"name": "", "properties": ["showyaxis", "yaxislabel", "yunits", "yaxislabeldistance", "ydomain", 'showydistance'], "parent": "yaxis"},
                 {"name": "yaxisformat", "properties": ["ynumberformat"], "parent": "yaxis"},
