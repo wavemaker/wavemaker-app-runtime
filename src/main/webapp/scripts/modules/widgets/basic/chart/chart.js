@@ -1108,7 +1108,7 @@ WM.module('wm.widgets.basic')
                     //Updating the numeric and non primary columns when dataset is changed
                     setNumericandNonPrimaryColumns(scope);
                 }
-                scope.isServiceVariable = variableObj && variableObj.category === 'wm.ServiceVariable';
+                scope.isServiceVariable = variableObj && (variableObj.category === 'wm.ServiceVariable' || variableObj.category === 'wm.WebSocketVariable');
 
                 //liveVariables contain data in 'data' property' of the variable
                 scope.chartData = scope.isLiveVariable ? newVal && (newVal.data || '') : (newVal && newVal.dataValue === '' && _.keys(newVal).length === 1) ? '' : newVal;
