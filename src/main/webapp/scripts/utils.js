@@ -1692,14 +1692,23 @@ WM.module('wm.utils', [])
          * @params: {element} element to be scrolled in to view
          * @params: {container} container of the element
          */
-        function scrollIntoView(element, container) {
+        function scrollIntoView(element, container, offSetParent) {
             var $container = WM.element(container),
                 $element = WM.element(element),
                 containerTop = $container.scrollTop(),
                 containerHeight = $container.height(),
                 containerBottom = containerTop + containerHeight,
                 elemTop = $element[0] && $element[0].offsetTop,
-                elemBottom = elemTop + $element.height();
+                elemBottom,
+                $parent;
+            //If parent is passed, conside the parent offset element also
+            if (offSetParent) {
+                $parent = $element.parents(offSetParent);
+                if ($parent.length) {
+                    elemTop = elemTop + $parent[0].offsetTop + $element.height();
+                }
+            }
+            elemBottom = elemTop + $element.height();
             if (elemTop < containerTop) {
                 $container.scrollTop(elemTop);
             } else if (elemBottom > containerBottom) {
