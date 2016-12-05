@@ -381,7 +381,7 @@ Application
                                 loggedInUser.name            = config.userInfo.userName;
                                 loggedInUser.id              = config.userInfo.userId;
                                 loggedInUser.tenantId        = config.userInfo.tenantId;
-                                deferred.resolve();
+                                deferred.resolve(config);
                                 return;
                             }
                         }
