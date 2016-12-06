@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.spring.converters;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 
@@ -66,6 +67,14 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
         @Override
         public LocalDateTime convert(String source) {
             return WMLocalDateTimeDeSerializer.getLocalDateTime(source);
+        }
+    }
+
+    public static class WMStringToTimestampConverter implements Converter<String, Timestamp> {
+
+        @Override
+        public Timestamp convert(final String source) {
+            return new Timestamp(Long.valueOf(source));
         }
     }
 }
