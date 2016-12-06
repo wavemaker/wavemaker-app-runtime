@@ -16,6 +16,7 @@ WM.module('wm.widgets.dialog')
                         '<h4 class="app-dialog-title modal-title">' +
                             '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
                             '<span name="wm-{{dialogid}}-title">{{title}}</span>' +
+                            '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading">{{subheading}}</span>' +
                         '</h4>' +
                         '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
                             '<i title="{{actiontitle}}" class="wm-icon24 help"></i>' +
