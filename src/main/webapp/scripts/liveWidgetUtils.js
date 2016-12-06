@@ -1161,7 +1161,7 @@ WM.module('wm.widgets.live')
                 if (!attrs.displayname && attrs.displayName) {
                     changeAttr('displayname', 'displayName');
                 }
-                if (attrs.maxvalue && (attrs.inputtype === 'text' || attrs.inputtype === 'password' || attrs.widget === 'textarea')) {
+                if (!attrs.maxchars && attrs.maxvalue && (attrs.inputtype === 'text' || attrs.inputtype === 'password' || attrs.widget === 'textarea')) {
                     changeAttr('maxchars', 'maxvalue');
                 }
                 if (attrs.widget === 'date' || attrs.widget === 'datetime') {
