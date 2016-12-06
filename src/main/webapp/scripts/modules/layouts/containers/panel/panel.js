@@ -45,6 +45,23 @@ WM.module('wm.layouts.containers')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
                 notifyFor   = {'actions': true};
 
+            //Eval content height on toggle of full screen
+            function toggleFullScreen(element, val, panelHeight) {
+                var headerHeight = element.find('.panel-heading').outerHeight(),
+                    $footerEl    = element.find('.panel-footer'),
+                    $contentEl   = element.find('.panel-content'),
+                    vwHeight     = WM.element(window).height(),
+                    inlineHeight;
+
+                if (val) {
+                    inlineHeight = $footerEl.length ? vwHeight - ($footerEl.outerHeight() + headerHeight) : (vwHeight - headerHeight) ;
+                } else {
+                    inlineHeight = panelHeight || '';
+                }
+
+                $contentEl.css('height', inlineHeight);
+            }
+
             function propertyChangeHandler(scope, key) {
                 switch (key) {
                 case 'actions':
@@ -139,6 +156,8 @@ WM.module('wm.layouts.containers')
                                     /* flip the active flag */
                                     $is.fullscreen = !$is.fullscreen;
                                 }
+                                //Eval content height on toggle of fullscreen
+                                toggleFullScreen($el, $is.fullscreen, $is.height);
                             };
 
                             /* toggle the state of the panel */
