@@ -298,12 +298,17 @@ Application
                     return (cache.get(pageName) || {})[type];
                 }
 
+                // This function returns the accepted languages list
+                function getAcceptedLanguages() {
+                    var languages = CONSTANTS.hasCordova ? navigator.languages : (Utils.getCookieByName('X-Accept-Language') || '').split(',');
+                    return _.map(languages, _.toLower);
+                }
+
                 // initialize the i18nService
                 function initI18nService(supportedLocale, defaultLocale) {
-                    var _acceptLang = (Utils.getCookieByName('X-Accept-Language') || '').split(','),
+                    var _acceptLang = getAcceptedLanguages(),
                         _sl         = supportedLocale,
                         _dl;
-
                     _acceptLang.push(defaultLocale);
 
                     _dl = _.intersection(_acceptLang, _sl)[0] || 'en';
