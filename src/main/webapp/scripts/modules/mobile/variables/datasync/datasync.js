@@ -58,7 +58,7 @@ WM.module('wm.variables').run(['$cordovaNetwork', 'ChangeLogService', 'DeviceVar
                     });
                 }
             },
-            getChanges : {
+            getOfflineChanges : {
                 model: {
                     'total' : 0,
                     'database' : {
