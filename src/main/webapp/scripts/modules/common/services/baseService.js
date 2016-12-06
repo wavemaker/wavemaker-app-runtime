@@ -282,7 +282,12 @@ wm.modules.wmCommon.services.BaseService = [
                 promiseObj = getHttpPromise(config)
                     .then(
                         successHandler.bind(undefined, config, successCallback),
-                        failureHandler.bind(undefined, config, successCallback, failureCallback)
+                        function (err) {
+                            var deferred = $q.defer();
+                            failureHandler(config, successCallback, failureCallback, err);
+                            deferred.reject(err);
+                            return deferred.promise;
+                        }
                     );
 
                 /* assign abort method to the http request promise object */
