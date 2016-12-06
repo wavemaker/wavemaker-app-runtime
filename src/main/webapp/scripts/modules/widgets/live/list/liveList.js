@@ -744,7 +744,6 @@ WM.module('wm.widgets.live')
             */
             function setListClass($is) {
                 var itemClass = '',
-                    oldClass  = $rs.isMobileApplicationType ? 'xs' : 'sm',
                     $liScope  = $is.$liScope;
 
                 if ($is.itemsperrow) {
@@ -758,10 +757,10 @@ WM.module('wm.widgets.live')
                         $liScope.itemsPerRowClass = itemClass.trim();
                     } else {
                         // handling itemsperrow having integer value.
-                        $liScope.itemsPerRowClass = 'col-' + oldClass + '-' + (12 / parseInt($is.itemsperrow, 10));
+                        $liScope.itemsPerRowClass = 'col-xs-' + (12 / parseInt($is.itemsperrow, 10));
                     }
                 } else { //If itemsperrow is not specified make it full width
-                    $liScope.itemsPerRowClass = 'col-' + oldClass + '-12';
+                    $liScope.itemsPerRowClass = 'col-xs-12';
                 }
             }
 
