@@ -1087,6 +1087,7 @@ WM.module('wm.widgets.basic')
             switch (key) {
             case 'dataset':
                 elScope = element.scope();
+                scope.errMsg = '';
                 //Set the variable name based on whether the widget is bound to a variable opr widget
                 if (scope.binddataset && scope.binddataset.indexOf('bind:Variables.') !== -1) {
                     variableName = scope.binddataset.replace('bind:Variables.', '');
