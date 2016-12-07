@@ -2521,7 +2521,7 @@ WM.module('wm.widgets.grid')
                             'class'             : attrs.colClass || '',
                             'ngclass'           : attrs.colNgClass || '',
                             'datepattern'       : attrs.datepattern,
-                            'formatpattern'     : attrs.formatpattern,
+                            'formatpattern'     : attrs.formatpattern === 'toNumber' ? 'numberToString' : attrs.formatpattern,
                             'currencypattern'   : attrs.currencypattern,
                             'fractionsize'      : attrs.fractionsize,
                             'suffix'            : attrs.suffix,

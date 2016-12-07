@@ -1,4 +1,4 @@
-/*global WM, studio, window, wm, _*/
+/*global WM, studio, window, wm, _, moment*/
 /*jslint todo: true */
 /**
  * @ngdoc service
@@ -369,12 +369,33 @@ WM.module('i18n')
                 });
                 return deferred.promise;
             }
-
+            //Load the moment locale file
+            function loadMomentLocaleBundle() {
+                var path,
+                    deferred = $q.defer();
+                if (!_appLocaleRootPath || _selectedLocale === 'en') {
+                    moment.locale('en');
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+                path = _appLocaleRootPath + 'moment/' +  _selectedLocale + '.js';
+                // load the script tag
+                WM.element.ajax({
+                    'dataType' : 'script',
+                    'url'      : path,
+                    'cache'    : true // read the script tag from the cache when available
+                }).always(function () {
+                    moment.locale(_selectedLocale);
+                    deferred.resolve();
+                });
+                return deferred.promise;
+            }
             // loads the locale bundles
             function loadLocaleBundles(emitEvent) {
                 loadNgLocaleBundle()
                     .then(loadComponentLocaleBundles)
                     .then(loadAppLocaleBundle)
+                    .then(loadMomentLocaleBundle)
                     .then(function () {
                         $rs.selectedLocale = _selectedLocale;
                         if (emitEvent) {

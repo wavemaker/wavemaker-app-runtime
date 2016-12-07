@@ -16,7 +16,7 @@ WM.module('wm.utils')
                 DATE_TIME_PATTERNS = ["dd/MM/yyyy", "yyyy-MM-dd", "yyyy-M-dd", "M-dd-yyyy", "M/d/yyyy", "MM/dd/yyyy", "yyyy, MMM dd", "yyyy, dd MMMM", "yyyy-MM-ddTHH:mm:ss", "MM-dd-yy hh:mm:ss a", "MM-dd-yy hh:mm:ss a Z", "dd-MMM-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH:mm:ss:sss", "yyyy-MM-dd hh:mm a", "yyyy-MM-dd hh:mm:ss a", "yyyy-MM-dd hh:mm:ss:sss Z", "yyyy-MM-dd hh:mm:ss:sss a", "EEE MMM dd hh:mm:ss Z yyyy", "EEE, dd MMM yyyy HH:mm:ss Z", "EEEE, MMMM dd, yyyy", "timestamp", "MMM, yyyy", "w 'Week',  yyyy"],
                 TIME_PATTERNS = ['HH:mm:ss', 'HH:mm', 'hh:mm:ss', 'hh:mm', 'hh:mm a', 'H:m:s', 'h:m:s', 'timestamp'],
                 CURRENCY_OPTIONS = ["AED", "AFN", "ALL", "AMD", "ARS", "AUD", "AZN", "BAM", "BDT", "BGN", "BHD", "BIF", "BND", "BOB", "BRL", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EEK", "EGP", "ERN", "ETB", "EUR", "GBP", "GEL", "GHS", "GNF", "GTQ", "HKD", "HNL", "HRK", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KHR", "KMF", "KRW", "KWD", "KZT", "LBP", "LKR", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MOP", "MUR", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SDG", "SEK", "SGD", "SOS", "SYP", "THB", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "XAF", "XOF", "YER", "ZAR", "ZMK"],
-                FORMAT_OPTIONS = ["toDate", "toCurrency", "prefix", "suffix", "toNumber", "None"],
+                FORMAT_OPTIONS = ["toDate", "toCurrency", "prefix", "suffix", "numberToString", "stringToNumber", "timeFromNow", "None"],
                 customFilters = {};
             function getDateTimePatterns() {
                 return DATE_TIME_PATTERNS;
@@ -34,18 +34,28 @@ WM.module('wm.utils')
                 return FORMAT_OPTIONS;
             }
             /* converts given string to number */
-            function string2number(data, fracSize) {
+            function numberToString(data, fracSize) {
                 return $filter('number')(data, fracSize);
             }
 
             /* converts given number to currency */
             function number2currency(data, currencySymbol, fractionSize) {
                 var _sym = currencySymbol || '',
-                    _val = string2number(data, fractionSize);
+                    _val = numberToString(data, fractionSize);
 
                 return _val ? _sym + _val : '';
             }
-
+            //Get the give date value in epoch format
+            function getEpochValue(data) {
+                var epoch;
+                //For data in form of string number ('123'), convert to number (123). And don't parse date objects.
+                if (!WM.isDate(data) && !isNaN(data)) {
+                    data = parseInt(data, 10);
+                }
+                //get the timestamp value. If data is time string, append date string to the time value
+                epoch = moment(data).valueOf() || moment(new Date().toDateString() + ' ' + data).valueOf();
+                return epoch;
+            }
             // converts epoch or date object to date-string in the given format
             function toDate(data, format) {
                 var timestamp;
@@ -56,12 +66,7 @@ WM.module('wm.utils')
                 if (!WM.isDefined(data)) {
                     return undefined;
                 }
-                //For data in form of string number ('123'), convert to number (123). And don't parse date objects.
-                if (!WM.isDate(data) && !isNaN(data)) {
-                    data = parseInt(data, 10);
-                }
-                //get the timestamp value. If data is time string, append date string to the time value
-                timestamp = moment(data).valueOf() || moment(new Date().toDateString() + ' ' + data).valueOf();
+                timestamp = getEpochValue(data);
                 if (timestamp) {
                     if (format === 'timestamp') {
                         return timestamp;
@@ -70,10 +75,22 @@ WM.module('wm.utils')
                 }
                 return undefined;
             }
-
+            /* converts given input to number */
+            function stringToNumber(data) {
+                return Number(data) || undefined;
+            }
             /* converts given input to string */
             function toNumber(data, fracSize) {
-                return string2number(data, fracSize);
+                return numberToString(data, fracSize);
+            }
+            /* converts given date time to relative time */
+            function timeFromNow(data) {
+                var timestamp;
+                if (!WM.isDefined(data)) {
+                    return undefined;
+                }
+                timestamp = getEpochValue(data);
+                return timestamp ? moment(timestamp).fromNow() : undefined;
             }
 
             /* converts given input to currency */
@@ -113,6 +130,9 @@ WM.module('wm.utils')
             customFilters.rpad = rpad;
             customFilters.prefix = prefix;
             customFilters.suffix = suffix;
+            customFilters.timeFromNow = timeFromNow;
+            customFilters.numberToString = toNumber;
+            customFilters.stringToNumber = stringToNumber;
 
             Object.keys(customFilters).forEach(function (filterName) {
                 WM.module('wm.utils').$filter(filterName, function () {
