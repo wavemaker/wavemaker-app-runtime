@@ -23,13 +23,14 @@ WM.module('wm.widgets.live')
                     '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
-                    '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
+                    '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin" ng-show="loadingicon"></i><span ng-show="!loadingicon">{{loadingdatamsg}}</span></span></div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'">' +
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (navigation !== \'Inline\') && (navigation !== \'Scroll\')">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="((widgetid || dataNavigator.dataSize) && (navigation !== \'Inline\') && (navigation !== \'Scroll\')) && (navigation === \'On-Demand\' && !variableInflight)">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                        '<a ng-show="navigation === \'On-Demand\'" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified">{{ondemandmessage}}</a>' +
                     '</div>' +
                 '</div>'
             );
@@ -88,7 +89,8 @@ WM.module('wm.widgets.live')
                     'ADVANCED' : 'Advanced',
                     'SCROLL'   : 'Scroll',
                     'INLINE'   : 'Inline',
-                    'PAGER'    : 'Pager'
+                    'PAGER'    : 'Pager',
+                    'ONDEMAND' : 'On-Demand'
                 };
 
             //Based on the given item, find the index of the list item
@@ -484,7 +486,7 @@ WM.module('wm.widgets.live')
                 _s        = $is.$liScope;
                 fieldDefs = _s.fieldDefs;
 
-                if ($is.infScroll) {
+                if ($is.infScroll || $is.onDemandLoad) {
                     if (WM.isUndefined(fieldDefs)) {
                         _s.fieldDefs = fieldDefs = [];
                     }
@@ -499,7 +501,8 @@ WM.module('wm.widgets.live')
 
                     $rs.$evalAsync(function () {
                         setFetchInProgress($is, false);
-                        if (fieldDefs.length) {
+                        //Functionality of On-Demand and Scroll will be same except we don't attach scroll events
+                        if (fieldDefs.length && !$is.onDemandLoad) {
                             bindScrollEvt($is, $el);
                         }
                     });
@@ -622,7 +625,7 @@ WM.module('wm.widgets.live')
                     dataNavigator,  // dataNavigator scope
                     binddataset;
 
-                if ($is.navControls || $is.infScroll) {
+                if ($is.navigation !== 'None') {
 
                     $is.clear();
 
@@ -692,8 +695,9 @@ WM.module('wm.widgets.live')
             }
 
             function resetNavigation($is) {
-                $is.navControls = undefined;
-                $is.infScroll   = false;
+                $is.navControls  = undefined;
+                $is.infScroll    = false;
+                $is.onDemandLoad = false;
             }
 
             function enableBasicNavigation($is) {
@@ -716,6 +720,10 @@ WM.module('wm.widgets.live')
                 $is.infScroll = true;
             }
 
+            function enableOnDemandLoad($is) {
+                $is.onDemandLoad = true;
+            }
+
             function onNavigationTypeChange($is, type) {
                 resetNavigation($is);
                 switch (type) {
@@ -734,6 +742,9 @@ WM.module('wm.widgets.live')
                     break;
                 case NAVIGATION.PAGER:
                     enablePagerNavigation($is);
+                    break;
+                case NAVIGATION.ONDEMAND:
+                    enableOnDemandLoad($is);
                     break;
                 }
             }
@@ -823,8 +834,9 @@ WM.module('wm.widgets.live')
                         $is.navigation = 'Classic';
                         return;
                     }
-                    wp.navigationalign.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
-                    wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None'], nv);
+                    wp.navigationalign.show = !_.includes(['None', 'Scroll', 'Inline', 'On-Demand'], nv);
+                    wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None', 'On-Demand'], nv);
+                    wp.ondemandmessage.show = nv === 'On-Demand';
                     onNavigationTypeChange($is, nv);
                     break;
                 case 'groupby':
