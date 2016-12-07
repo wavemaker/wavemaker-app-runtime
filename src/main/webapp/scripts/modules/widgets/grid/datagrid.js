@@ -492,10 +492,16 @@ $.widget('wm.datagrid', {
                     }
                 }
                 break;
-            case 'toNumber':
+            case 'numberToString':
                 if (colDef.fractionsize) {
-                    colExpression = "{{'" + columnValue + "' | toNumber:'" + colDef.fractionsize + "'}}";
+                    colExpression = "{{'" + columnValue + "' | numberToString:'" + colDef.fractionsize + "'}}";
                 }
+                break;
+            case 'stringToNumber':
+                colExpression = "{{'" + columnValue + "' | stringToNumber}}";
+                break;
+            case 'timeFromNow':
+                colExpression = "{{'" + columnValue + "' | timeFromNow}}";
                 break;
             case 'prefix':
                 if (colDef.prefix) {
