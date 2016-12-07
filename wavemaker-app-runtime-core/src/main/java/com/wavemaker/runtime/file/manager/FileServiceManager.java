@@ -15,14 +15,16 @@
  */
 package com.wavemaker.runtime.file.manager;
 
-import com.wavemaker.studio.common.util.IOUtils;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.wavemaker.studio.common.util.IOUtils;
 
 
 @Service
@@ -130,13 +132,17 @@ public class FileServiceManager {
                 new java.io.FileFilter() {
                     @Override
                     public boolean accept(final File pathname) {
-                        if(pathname.isDirectory()){
+                        if (pathname.isDirectory()) {
                             return false;
                         }
                         return (pathname.getName().indexOf(".") != 0);
                     }
 
                 });
+
+        if (files == null) {
+            throw new FileNotFoundException("Given directory " + uploadDirectory + " does not exist.");
+        }
 
 
         return files;
@@ -185,7 +191,7 @@ public class FileServiceManager {
         if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0)
             throw new Exception("File not in uploadDir");
 
-        if(!f.exists())
+        if (!f.exists())
             throw new Exception("File with name " + file + "  not found");
 
         return f;
