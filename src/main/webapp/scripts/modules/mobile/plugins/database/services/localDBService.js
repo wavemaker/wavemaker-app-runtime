@@ -135,8 +135,9 @@ wm.plugins.database.services.LocalDBService = [
         this.insertTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
                 return store.add(params.data).then(function (localId) {
-                    var primaryKeyName = store.primaryKeyName;
-                    params.data[primaryKeyName] = localId;
+                    if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
+                        params.data[store.primaryKeyName] = localId;
+                    }
                     successCallback(params.data);
                 });
             }).catch(failureCallback);

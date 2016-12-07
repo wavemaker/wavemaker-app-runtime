@@ -13,29 +13,40 @@ wm.plugins.database.services.LocalDBStoreFactory = [
     function ($q, $cordovaSQLite) {
         'use strict';
 
+        function escapeName(name) {
+            if (name) {
+                name = name.replace(/"/g, '""');
+                return '"' + name + '"';
+            }
+        }
+
         function createTableSql(schema) {
             var fieldStr = _.reduce(schema.columns, function (result, f) {
-                var str = f.name;
+                var str = escapeName(f.name);
                 if (f.primaryKey) {
-                    str += ' INTEGER PRIMARY KEY   AUTOINCREMENT';
+                    if (f.sqlType === 'number' && f.generatorType === 'identity') {
+                        str += ' INTEGER PRIMARY KEY AUTOINCREMENT';
+                    } else {
+                        str += ' PRIMARY KEY';
+                    }
                 }
                 return result ? result + ',' + str : str;
             }, false);
-            return 'CREATE TABLE IF NOT EXISTS ' + schema.name + ' (' + fieldStr + ')';
+            return 'CREATE TABLE IF NOT EXISTS ' + escapeName(schema.name) + ' (' + fieldStr + ')';
         }
 
         function dropTable(schema) {
-            return 'DROP TABLE IF EXISTS ' + schema.name;
+            return 'DROP TABLE IF EXISTS ' + escapeName(schema.name);
         }
 
         function insertRecordSqlTemplate(schema) {
             var columnNames = [],
                 placeHolder = [];
             _.forEach(schema.columns, function (col) {
-                columnNames.push(col.name);
+                columnNames.push(escapeName(col.name));
                 placeHolder.push('?');
             });
-            return 'INSERT INTO ' + schema.name + ' (' + columnNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
+            return 'INSERT INTO ' + escapeName(schema.name) + ' (' + columnNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
         }
 
         function updateRecordSqlTemplate(schema) {
@@ -43,16 +54,16 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 fields = [];
             _.forEach(schema.columns, function (field) {
                 if (field.primaryKey) {
-                    idClause = field.name + ' = ?';
+                    idClause = escapeName(field.name) + ' = ?';
                 } else {
-                    fields.push(field.name + ' = ?');
+                    fields.push(escapeName(field.name) + ' = ?');
                 }
             });
-            return 'UPDATE ' + schema.name + ' SET ' + fields.join(',') + ' WHERE ' + idClause;
+            return 'UPDATE ' + escapeName(schema.name) + ' SET ' + fields.join(',') + ' WHERE ' + idClause;
         }
 
         function deleteRecordTemplate(schema) {
-            return 'DELETE FROM ' + schema.name + ' WHERE ' + _.find(schema.columns, 'primaryKey').name + ' = ?';
+            return 'DELETE FROM ' + escapeName(schema.name) + ' WHERE ' + escapeName(_.find(schema.columns, 'primaryKey').name) + ' = ?';
         }
 
         function selectSqlTemplate(schema) {
@@ -63,18 +74,20 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 if (col.targetEntity) {
                     childTableName = col.sourceFieldName;
                     _.forEach(col.dataMapper, function (childCol, childFiledName) {
-                        columns.push(childTableName + '.' + childCol.name + ' as \'' + childFiledName + '\'');
+                        columns.push(childTableName + '.' + escapeName(childCol.name) + ' as \'' + childFiledName + '\'');
                     });
-                    joins.push(' LEFT JOIN ' + col.targetTable + ' ' + childTableName + ' ON ' + childTableName + '.' + col.targetColumn + ' = ' + schema.name + '.' +  col.name);
+                    joins.push(' LEFT JOIN ' + escapeName(col.targetTable) + ' ' + childTableName
+                        + ' ON ' + childTableName + '.' + escapeName(col.targetColumn)
+                        + ' = ' + escapeName(schema.name) + '.' +  escapeName(col.name));
                 } else {
-                    columns.push(schema.name + '.' + col.name + ' as ' + col.fieldName);
+                    columns.push(escapeName(schema.name) + '.' + escapeName(col.name) + ' as ' + col.fieldName);
                 }
             });
-            return 'SELECT ' + columns.join(',') + ' FROM ' + schema.name + ' ' + joins.join(' ');
+            return 'SELECT ' + columns.join(',') + ' FROM ' + escapeName(schema.name) + ' ' + joins.join(' ');
         }
 
         function countQuery(schema) {
-            return 'SELECT COUNT(*) as count FROM ' + schema.name;
+            return 'SELECT COUNT(*) as count FROM ' + escapeName(schema.name);
         }
 
         function generateWherClause(store, filterCriteria) {
@@ -99,7 +112,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     }
                     target = "'" + target + "'";
                 }
-                return tableName + '.' + colName + ' ' + operator + ' ' + target;
+                return escapeName(tableName) + '.' + escapeName(colName) + ' ' + operator + ' ' + target;
             });
             return conditions && conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
         }
@@ -108,7 +121,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             if (sort) {
                 return ' ORDER BY ' + _.map(sort.split(','), function (field) {
                     var splits =  _.trim(field).split(' ');
-                    splits[0] = store.fieldToColumnMapping[splits[0]];
+                    splits[0] = escapeName(store.fieldToColumnMapping[splits[0]]);
                     return splits.join(' ');
                 }).join(',');
             }
@@ -156,7 +169,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             this.dbConnection = dbConnection;
             this.schema = schema;
             this.fieldToColumnMapping = {};
-            this.primaryKeyName = _.find(schema.columns, 'primaryKey').fieldName;
+            this.primaryKeyField = _.find(schema.columns, 'primaryKey');
+            this.primaryKeyName = this.primaryKeyField ? this.primaryKeyField.fieldName : undefined;
             this.insertRecordSqlTemplate = insertRecordSqlTemplate(schema);
             this.updateRecordSqlTemplate = updateRecordSqlTemplate(schema);
             this.deleteRecordTemplate = deleteRecordTemplate(schema);
@@ -206,9 +220,14 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 var defer = $q.defer(),
                     params = [],
                     rowData,
+                    idValue;
+                if (this.primaryKeyName) {
                     idValue = entity[this.primaryKeyName];
-                if (_.isString(idValue) && _.isEmpty(_.trim(idValue))) {
-                    entity[this.primaryKeyName] = undefined;
+                    if (this.primaryKeyField.sqlType === 'number'
+                            && _.isString(idValue)
+                            && _.isEmpty(_.trim(idValue))) {
+                        entity[this.primaryKeyName] = undefined;
+                    }
                 }
                 rowData = mapObjToRow(this, entity);
                 _.forEach(this.schema.columns, function (f) {
