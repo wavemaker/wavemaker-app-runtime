@@ -1207,7 +1207,7 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger", "bordered"]},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]}
                     },
                     'wm.layouts.tile': {
@@ -1231,7 +1231,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.layoutgrid': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "condensed", "options": ["condensed", "standard"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "condensed", "options": ["condensed", "standard", "bordered"]},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1265,11 +1265,11 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'add-column-right'}]},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["visible-xs-block", "visible-sm-block", "visible-md-block", "visible-lg-block", "hidden-xs", "hidden-sm", "hidden-md", "hidden-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["visible-xs-block", "visible-sm-block", "visible-md-block", "visible-lg-block", "hidden-xs", "hidden-sm", "hidden-md", "hidden-lg", "bordered", "bordered-left", "bordered-right", "bordered-top", "bordered-bottom"]}
                     },
                     'wm.layouts.gridrow': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "class": {"type": "string", "pattern": classRegex},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["bordered-top", "bordered-bottom"]},
                         "borderwidth": {"type": "string", "widget": "box-model", "show": false},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "border-style", "show": false},
                         "bordercolor": {"type": "string", "widget": "color", "show": false},
