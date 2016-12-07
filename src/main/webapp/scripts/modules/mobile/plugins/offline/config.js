@@ -37,6 +37,8 @@ wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
             'columns': [{
                 'fieldName': 'id',
                 'name': 'id',
+                'generatorType' : 'identity',
+                'sqlType' : 'number',
                 'primaryKey': true
             }, {
                 'fieldName': 'key',
@@ -52,6 +54,8 @@ wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
             'columns': [{
                 'fieldName': 'id',
                 'name': 'id',
+                'generatorType' : 'identity',
+                'sqlType' : 'number',
                 'primaryKey': true
             }, {
                 'name': 'service',

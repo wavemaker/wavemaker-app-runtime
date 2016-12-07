@@ -429,10 +429,12 @@ wm.plugins.offline.run([
 
         // Exchange primary key  of the given entity
         function exchangeId(dataModelName, entityName, data, keyName) {
-            if (data) {
-                var primaryKeyName = keyName || LocalDBManager.getStore(dataModelName, entityName).primaryKeyName,
-                    localId = data[primaryKeyName],
-                    remoteId = getEntityIdStore(dataModelName, entityName)[localId];
+            var primaryKeyName = keyName || LocalDBManager.getStore(dataModelName, entityName).primaryKeyName,
+                localId,
+                remoteId;
+            if (data && primaryKeyName) {
+                localId = data[primaryKeyName];
+                remoteId = getEntityIdStore(dataModelName, entityName)[localId];
                 if (remoteId) {
                     data[primaryKeyName] = remoteId;
                     logResolution(entityName, localId, remoteId);
@@ -445,9 +447,9 @@ wm.plugins.offline.run([
             exchangeId(dataModelName, entityName, data);
             _.forEach(LocalDBManager.getStore(dataModelName, entityName).schema.columns, function (col) {
                 if (col.targetEntity) {
-                    if (data[col.sourceFieldName]) {
+                    if (data[col.sourceFieldName]) {// if object reference
                         exchangeIds(dataModelName, col.targetEntity, data[col.sourceFieldName]);
-                    } else if (data[col.fieldName]) {
+                    } else if (data[col.fieldName]) {// if id value
                         exchangeId(dataModelName, col.targetEntity, data, col.fieldName);
                     }
                 }
@@ -461,17 +463,22 @@ wm.plugins.offline.run([
             },
             // Exchane Ids, Before any database operation.
             'preCall': function (change) {
-                var primaryKeyName, entityName, dataModelName;
+                var primaryKeyName, entityName, dataModelName, store;
                 if (change && change.service === 'DatabaseService') {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
                     switch (change.operation) {
                     case 'insertTableData':
+                        store = LocalDBManager.getStore(dataModelName, entityName);
                         exchangeIds(dataModelName, entityName, change.params.data);
-                        primaryKeyName = LocalDBManager.getStore(dataModelName, entityName).primaryKeyName;
-                        transactionLocalId = change.localId || change.params.data[primaryKeyName];
-                        change.dataLocalId = transactionLocalId;
-                        delete change.params.data[primaryKeyName];
+                        if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
+                            primaryKeyName = store.primaryKeyName;
+                            transactionLocalId = change.localId || change.params.data[primaryKeyName];
+                            change.dataLocalId = transactionLocalId;
+                            delete change.params.data[primaryKeyName];
+                        } else {
+                            transactionLocalId = undefined;
+                        }
                         break;
                     case 'updateTableData':
                         exchangeId(dataModelName, entityName, change.params);
@@ -486,7 +493,9 @@ wm.plugins.offline.run([
             // After every database insert, track the Id change.
             'postCallSuccess': function (change, response) {
                 var entityName, primaryKeyName, dataModelName, entityStore;
-                if (change && change.service === 'DatabaseService' && change.operation === 'insertTableData') {
+                if (change && change.service === 'DatabaseService'
+                        && change.operation === 'insertTableData'
+                        && transactionLocalId) {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
                     entityStore = LocalDBManager.getStore(dataModelName, entityName);

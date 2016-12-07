@@ -50,6 +50,8 @@ wm.plugins.database.services.LocalDBManager = [
                 reqEntity.columns.push({
                     'name' : col['name'],
                     'fieldName' : col['fieldName'],
+                    'generatorType' : col['generatorType'],
+                    'sqlType' : col['sqlType'],
                     'primaryKey' : col['primaryKey']
                 });
             });
