@@ -1685,7 +1685,7 @@ WM.module('wm.widgets.base', [])
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"], "bindable": "in-bound"},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex},
-                        "navigation": {"type": "select-by-object", "options": [{'value': 'Basic', 'label': 'Basic'}, {'value': 'Pager', 'label': 'Pager'}, {'value': 'Classic', 'label': 'Classic'}, {'value': 'Scroll', 'label': 'Infinite Scroll'}, {'value': 'Inline', 'label': 'Horizontal Slider'}, {'value': 'None', 'label': 'None'}], "value": "None"},
+                        "navigation": {"type": "select-by-object", "options": [{'value': 'Basic', 'label': 'Basic'}, {'value': 'Pager', 'label': 'Pager'}, {'value': 'Classic', 'label': 'Classic'}, {'value': 'Scroll', 'label': 'Infinite Scroll'}, {'value': 'Inline', 'label': 'Horizontal Slider'}, {'value': 'None', 'label': 'None'}, {'value': 'On-Demand', 'label': 'On Demand'}], "value": "None"},
                         "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "value": "left"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
@@ -1702,7 +1702,9 @@ WM.module('wm.widgets.base', [])
                         "multiselect": {"type": "boolean", "value": false},
                         "collapsible": {"type": "boolean", "show": false},
                         "showcount": {"type": "boolean", "show": false},
-                        "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false}
+                        "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false},
+                        "ondemandmessage": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true, "value": "Load More"},
+                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1974,11 +1976,11 @@ WM.module('wm.widgets.base', [])
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard"], "parent": "properties"},
-                {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
+                {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
-                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
+                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "loadingicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},

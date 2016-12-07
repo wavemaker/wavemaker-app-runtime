@@ -1580,6 +1580,47 @@ body.modal-open {
   .no-data-msg, .loading-data-msg {
     text-align: center;
   }
+
+  .loading-data-msg {
+    .app-icon {
+      font-size: 16pt;
+    }
+  }
+
+  &:not(.On-Demand):not(.Scroll) {
+    .loading-data-msg {
+      position: absolute;
+      top: 0;
+      bottom: 5.3em;
+      width: 100%;
+      > span {
+        position: absolute;
+        top: 50%;
+      }
+    }
+  }
+
+  &.On-Demand, &.Scroll {
+    .loading-data-msg {
+      height: 4em;
+      display: table;
+      width: 100%;
+      > span {
+        display: table-cell;
+        height: 100%;
+        vertical-align: middle;
+      }
+    }
+  }
+  &.On-Demand {
+    .panel-footer {
+      padding: 0;
+      .btn-justified {
+        display: block;
+        padding: 12px;
+      }
+    }
+  }
 }
 .app-iframe {
   position: relative;
