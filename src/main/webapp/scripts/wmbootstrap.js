@@ -530,6 +530,16 @@ Application
                     });
                 }
 
+                /**
+                 * Fix for iOS10 issue: Keyboard opens up whenever the page is navigated on form submission.
+                 * Refer: https://discussions.apple.com/thread/7692319?start=0&tstart=0
+                 */
+                if (Utils.isIOS()) {
+                    $document.on('submit', 'form', function () {
+                        document.activeElement.blur();
+                    });
+                }
+
                 this.loadPage                           = loadPage;
                 this.loadPartial                        = loadPartial;
                 this.getPageContent                     = getPageContent;
