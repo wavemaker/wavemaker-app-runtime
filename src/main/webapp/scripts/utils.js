@@ -2049,8 +2049,12 @@ WM.module('wm.utils', [])
 
             /* append form to iFrame and iFrame to the document and submit the form */
             WM.element('body').append(iFrameElement);
-            iFrameElement.contents().find('body').append(formEl);
-            formEl.submit();
+
+            // timeout for IE 10, iframeElement.contents() is empty in IE 10 without timeout
+            $timeout(function () {
+                iFrameElement.contents().find('body').append(formEl);
+                formEl.submit();
+            }, 100);
         }
 
 
