@@ -65,7 +65,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     _.forEach(col.dataMapper, function (childCol, childFiledName) {
                         columns.push(childTableName + '.' + childCol.name + ' as \'' + childFiledName + '\'');
                     });
-                    joins.push(' INNER JOIN ' + col.targetTable + ' ' + childTableName + ' ON ' + childTableName + '.' + col.targetColumn + ' = ' + schema.name + '.' +  col.name);
+                    joins.push(' LEFT JOIN ' + col.targetTable + ' ' + childTableName + ' ON ' + childTableName + '.' + col.targetColumn + ' = ' + schema.name + '.' +  col.name);
                 } else {
                     columns.push(schema.name + '.' + col.name + ' as ' + col.fieldName);
                 }

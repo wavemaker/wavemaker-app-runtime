@@ -196,9 +196,7 @@ wm.plugins.offline.run([
                         },
                         'postFlush' : function (stats) {
                             if (stats.total > 0) {
-                                LocalDBManager.clearAll(['wavemaker']).then(function () {
-                                    location.assign(window.location.origin + window.location.pathname);
-                                });
+                                location.assign(window.location.origin + window.location.pathname);
                             }
                         }
                     });
