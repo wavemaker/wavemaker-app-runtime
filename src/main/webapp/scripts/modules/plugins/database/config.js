@@ -633,6 +633,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "UPDATE": ["INSERT INTO", "UPDATE", "DELETE FROM"]
     },
     "DDL_QUERY_INDICATORS": ["CREATE", "ALTER", "RENAME", "DROP"],
+    "PROCEDURE_INDICATORS": {
+        "CALL": "CALL",
+        "EXECUTE": "EXEC"
+    },
     "SERVER_SIDE_PROPERTIES": {
         "CURRENT_DATE": {
             "property": "Current Date",
