@@ -115,9 +115,12 @@ WM.module('wm.prefabs')
                     config = {};
                     if (appPrefabNameConfigMap[prefabName]) {
                         config = _.merge({'config': appPrefabNameConfigMap[prefabName]}, appPrefabNamePropertiesMap[prefabName]);
-                        config.isProjectPrefab = true;
+                        config.loadPrefabResource = true;
                     } else {
                         config = _.merge({'config': studioPrefabNameConfigMap[prefabName]}, studioPrefabNamePropertiesMap[prefabName]);
+                    }
+                    if (appPrefabNameConfigMap[prefabName] && !studioPrefabNamePropertiesMap[prefabName]) { //if the prefab is not in studio and exists in the project then categorize it as project prefab
+                        config.isProjectPrefab = true;
                     }
                     mergedPrefabsConfig[prefabName] = config;
                 });
