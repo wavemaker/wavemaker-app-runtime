@@ -182,10 +182,13 @@ $.widget('wm.datagrid', {
         var colSpan = 0,
             self    = this;
         _.forEach(cols, function (col) {
+            var colDef;
             if (col.isGroup) {
                 colSpan += self._getColSpan(col.columns);
             } else {
-                colSpan += 1;
+                colDef =  _.find(self.preparedHeaderData, {'field': col.field});
+                //If show is false, don't increment the col span
+                colSpan = (!_.isUndefined(colDef.show) && !colDef.show) ? colSpan : colSpan + 1;
             }
         });
         return colSpan;
@@ -196,6 +199,7 @@ $.widget('wm.datagrid', {
         _.forEach(config, function (col) {
             if (col.isGroup) {
                 col.colspan = self._getColSpan(col.columns);
+                self.gridHeaderElement.find('th[data-col-group="' + col.field + '"]').attr('colspan', col.colspan);
                 self._setColSpan(col.columns);
             }
         });
@@ -293,7 +297,6 @@ $.widget('wm.datagrid', {
                     styles   = 'text-align: ' + col.textAlignment + ';background-color: ' + (col.backgroundColor || '') + ';';
                     $groupTl.attr({
                         'data-col-group' : col.field,
-                        'colspan'        : col.colspan,
                         'class'          : classes,
                         'style'          : styles,
                         'title'          : col.displayName
@@ -321,7 +324,6 @@ $.widget('wm.datagrid', {
             });
             $htm.append($row);
         } else {
-            this._setColSpan(headerConfig);
             generateRow(headerConfig, 0);
             //Combine all the row templates to generate the header
             $htm.append(_.reduce(rowTemplates, function (template, rowTl, index) {
@@ -941,7 +943,7 @@ $.widget('wm.datagrid', {
                     } else {
                         if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
                             tempWidth = $(headerCols[id])[0].style.width;
-                            if (tempWidth === '' || tempWidth === '90px' || _.includes(tempWidth, '%')) { //If width is not 0px, width is already set. So, set the same width again
+                            if (tempWidth === '' || tempWidth === '0px' || tempWidth === '90px' || _.includes(tempWidth, '%')) { //If width is not 0px, width is already set. So, set the same width again
                                 width = $header.width();
                                 width = width > 90 ? ((colLength === id + 1) ? width - 17 : width) : 90; //columnSanity check to prevent width being too small and Last column, adjust for the scroll width
                             } else {
@@ -955,6 +957,8 @@ $.widget('wm.datagrid', {
                 $(headerCols[id]).css('width', width);
                 $(bodyCols[id]).css('width', width);
             });
+            //Set the col spans for the header groups
+            this._setColSpan(this.options.headerConfig);
         }
     },
 
