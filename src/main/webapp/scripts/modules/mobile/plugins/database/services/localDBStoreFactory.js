@@ -63,7 +63,11 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function deleteRecordTemplate(schema) {
-            return 'DELETE FROM ' + escapeName(schema.name) + ' WHERE ' + escapeName(_.find(schema.columns, 'primaryKey').name) + ' = ?';
+            var primaryKeyField = _.find(schema.columns, 'primaryKey');
+            if (primaryKeyField) {
+                return 'DELETE FROM ' + escapeName(schema.name) + ' WHERE ' + escapeName(primaryKeyField.name) + ' = ?';
+            }
+            return '';
         }
 
         function selectSqlTemplate(schema) {
