@@ -900,37 +900,50 @@ $.widget('wm.datagrid', {
     /*Set the default widths for the colgroup*/
     setColGroupWidths : function () {
         if (this.options.showHeader) {
-            var self       = this,
-                headerCols = this.gridHeaderElement.find('col'),
-                bodyCols   = this.gridElement.find('col');
-            this.gridHeaderElement.find('th.app-datagrid-header-cell').each(function (index) {
-                /***setting the header col width based on the content width***/
+            var self        = this,
+                headerCols  = this.gridHeaderElement.find('col'),
+                bodyCols    = this.gridElement.find('col'),
+                headerCells = this.gridHeaderElement.find('th.app-datagrid-header-cell'),
+                colLength   = this.preparedHeaderData.length;
+            //First Hide or show the column based on the show property so that width is calculated correctly
+            headerCells.each(function () {
+                var id           = Number($(this).attr('data-col-id')),
+                    colDef       = self.preparedHeaderData[id],
+                    $headerCell  = self.gridHeaderElement.find('th[data-col-id="' + id + '"]'),
+                    $tdCell      = self.gridElement.find('td.app-datagrid-cell[data-col-id="' + id + '"]');
+                if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
+                    //Hide the header and column if show is false
+                    $headerCell.hide();
+                    $tdCell.hide();
+                    $(headerCols[id]).hide();
+                    $(bodyCols[id]).hide();
+                } else {
+                    $headerCell.show();
+                    $tdCell.show();
+                    $(headerCols[id]).show();
+                    $(bodyCols[id]).show();
+                }
+            });
+            //setting the header col width based on the content width
+            headerCells.each(function () {
                 var $header      = $(this),
-                    width,
-                    id           = $header.attr('data-col-id'),
+                    id           = Number($header.attr('data-col-id')),
                     colDef       = self.preparedHeaderData[id],
                     definedWidth = colDef.width,
+                    width,
                     tempWidth;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     //Hide the header and column if show is false
-                    self.gridHeaderElement.find('th:nth-child(' + (index + 1) + ')').hide();
-                    self.gridElement.find('td:nth-child(' + (index + 1) + ')').hide();
-                    $(headerCols[index]).hide();
-                    $(bodyCols[index]).hide();
                     width = 0;
                 } else {
-                    self.gridHeaderElement.find('th:nth-child(' + (index + 1) + ')').show();
-                    self.gridElement.find('td:nth-child(' + (index + 1) + ')').show();
-                    $(headerCols[index]).show();
-                    $(bodyCols[index]).show();
                     if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                         width = 50;
                     } else {
                         if (_.isUndefined(definedWidth) || definedWidth === '' || _.includes(definedWidth, '%')) {
-                            tempWidth = $(headerCols[index])[0].style.width;
+                            tempWidth = $(headerCols[id])[0].style.width;
                             if (tempWidth === '' || tempWidth === '90px' || _.includes(tempWidth, '%')) { //If width is not 0px, width is already set. So, set the same width again
                                 width = $header.width();
-                                width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
+                                width = width > 90 ? ((colLength === id + 1) ? width - 17 : width) : 90; //columnSanity check to prevent width being too small and Last column, adjust for the scroll width
                             } else {
                                 width = tempWidth;
                             }
@@ -939,8 +952,8 @@ $.widget('wm.datagrid', {
                         }
                     }
                 }
-                $(headerCols[index]).css('width', width);
-                $(bodyCols[index]).css('width', width);
+                $(headerCols[id]).css('width', width);
+                $(bodyCols[id]).css('width', width);
             });
         }
     },
@@ -2093,14 +2106,14 @@ $.widget('wm.datagrid', {
         var htm  = '<tr class="filter-row">',
             self = this;
         this.gridHeaderElement.find('.filter-row').remove();
-        this.preparedHeaderData.forEach(function (field) {
+        this.preparedHeaderData.forEach(function (field, index) {
             var fieldName = field.field,
                 widget    = field.filterwidget || 'text';
             if (!field.searchable) {
                 htm += '<th></th>';
                 return;
             }
-            htm += '<th>' +
+            htm += '<th data-col-id="' + index + '">' +
                         '<span class="input-group ' + widget + '">' +
                             self._getFilterWidgetTemplate(field) +
                             '<span class="input-group-addon filter-clear-icon" ng-if="showClearIcon(\'' + fieldName + '\')"><button class="btn-transparent btn app-button" type="button" ng-click="clearRowFilter(\'' + fieldName + '\')"><i class="app-icon wi wi-clear"></i></button></span>' +
