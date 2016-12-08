@@ -1348,12 +1348,31 @@ body {
       color: initial;
     }
   }
-  .btn.btn-rounded {
-    border-radius: 500px;
-    padding: 0.45em 0.75em;
-    height: auto;
-    > * {
-      vertical-align: middle;
+  .btn {
+    &.btn-rounded {
+      border-radius: 500px;
+      padding: 0.45em 0.75em;
+      height: auto;
+      > * {
+        vertical-align: middle;
+      }
+    }
+    &.btn-fab {
+      font-size: 21pt;
+      height: 42pt;
+      width: 42pt;
+      box-shadow: rgba(0, 0, 0, 0.117647) 0 1px 2px 0, rgba(0, 0, 0, 0.239216) 0 1px 1px 0;
+      border-radius: 500px;
+      overflow: hidden;
+      padding: 0;
+    }
+    &.btn-raised {
+      &:hover {
+        box-shadow: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.2);
+      }
+      &:active {
+        box-shadow: 0 0 8px rgba(0,0,0,.18), 0 8px 16px rgba(0,0,0,.36);
+      }
     }
   }
   /********for buttons, anchors with icon on top****/
