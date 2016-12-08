@@ -34,7 +34,7 @@ public class HQLQueryUtils {
     private static final String WHERE = " where ";
     private static final String ORDER_BY = " order by ";
     private static final String WILDCARD_ENTRY = "%";
-    private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startswith|endswith|containing)[\\s]+[\"'](([^(\\\\)[\"']])*)[\"']";
+    private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startswith|endswith|containing)[\\s][\"']([^']+)+([\"'])";
     private static Pattern pattern = Pattern.compile(QUERY_EXPRESSION);
 
     public static String buildHQL(String entityClass, String query, Pageable pageable) {
