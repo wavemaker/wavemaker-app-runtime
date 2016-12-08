@@ -28,9 +28,9 @@ WM.module('wm.prefabs')
         function ($rs, $timeout, $ocLazyLoad, PrefabService, ProjectService, Variables, Utils, wmToaster, CONSTANTS, i18nService, $q, $interval, DialogService, FileService) {
             'use strict';
 
-            var studioPrefabNamePropertiesMap,
+            var studioPrefabNamePropertiesMap = {},
                 studioPrefabNameConfigMap = {},
-                appPrefabNamePropertiesMap,
+                appPrefabNamePropertiesMap = {},
                 appPrefabNameConfigMap = {},
                 activePrefabConfig,
                 pendingTasks = {
@@ -39,9 +39,7 @@ WM.module('wm.prefabs')
                 projectDetails,
                 versionMismatchMessages = {},
                 appPrefabs,
-                workspacePrefabs,
-                projectPrefabsNameConfigMap   = {},
-                workspacePrefabsNameConfigMap = {};
+                workspacePrefabs;
 
             function getProjectId() {
                 if (projectDetails) {
@@ -52,7 +50,7 @@ WM.module('wm.prefabs')
                 return projectDetails && projectDetails.id;
             }
 
-            /*
+            /*@TODO: Deprecated. to be removed
              * update the studio-prefab properties in studioPrefabNamePropertiesMap
              */
             function onStudioPrefabsLoad(prefabs) {
@@ -61,7 +59,7 @@ WM.module('wm.prefabs')
                 });
             }
 
-            /*
+            /*@TODO: Deprecated. to be removed
              * Get the list of studio-prefabs and update studioPrefabNamePropertiesMap.
              * returns promise.
              */
@@ -102,6 +100,29 @@ WM.module('wm.prefabs')
                 );
             }
 
+            /**
+             * function merges the prefab configs from the studio and project
+             * @returns prefab list
+             */
+            function processPrefabsList() {
+                var projectPrefabs = Object.keys(appPrefabNamePropertiesMap),
+                    studioPrefabs  = Object.keys(studioPrefabNamePropertiesMap),
+                    prefabList     = _.union(projectPrefabs, studioPrefabs),
+                    mergedPrefabsConfig = {},
+                    config;
+                //this will merge the prefabs, first priority is given for the prefabs in project
+                _.forEach(prefabList, function (prefabName) {
+                    config = {};
+                    if (appPrefabNameConfigMap[prefabName]) {
+                        config = _.merge({'config': appPrefabNameConfigMap[prefabName]}, appPrefabNamePropertiesMap[prefabName]);
+                        config.isProjectPrefab = true;
+                    } else {
+                        config = _.merge({'config': studioPrefabNameConfigMap[prefabName]}, studioPrefabNamePropertiesMap[prefabName]);
+                    }
+                    mergedPrefabsConfig[prefabName] = config;
+                });
+                return mergedPrefabsConfig;
+            }
             /*
              * Get the config.json of application prefab in synchronous way and trigger the callback with the response.
              */
@@ -161,6 +182,69 @@ WM.module('wm.prefabs')
             }
 
             /*
+             * Get the config.json of prefabs in project in asynchronous way.
+             * Returns a promise.
+             */
+            function loadProjectPrefabsConfig(prefabName) {
+                var configUrl,
+                    deferred = $q.defer();
+
+                projectDetails = ProjectService.getDetails();
+                configUrl      = 'services/projects/' + (projectDetails.studioProjectId || projectDetails.id) + '/prefabs/' + prefabName + '/files/config.json';
+                //fetch the content from the prefab files directory in the project
+                Utils.fetchContent(
+                    'json',
+                    Utils.preventCachingOf(configUrl),
+                    function (response) {
+                        appPrefabNameConfigMap[prefabName] = response;
+                        deferred.resolve(response);
+                    },
+                    function (error) {
+                        delete appPrefabs[prefabName];
+                        delete appPrefabNameConfigMap[prefabName];
+                        deferred.reject(error);
+                    }
+                );
+                return deferred.promise;
+            }
+
+            /*
+             * Get the config.json of all prefabs in project.
+             * Configs are loaded in asynchronous way.
+             * returns a promise
+             */
+            function getAppPrefabsConfig() {
+                var deferred    = $q.defer(),
+                    prefabNames = Object.keys(appPrefabNamePropertiesMap),
+                    count       = prefabNames.length;
+
+                appPrefabNameConfigMap = {};
+
+                function onConfigLoad() {
+                    count -= 1;
+                    if (!count) {
+                        var content = Utils.getClonedObject(appPrefabNamePropertiesMap);
+                        prefabNames
+                            .forEach(function (prefabName) {
+                                content[prefabName].config = appPrefabNameConfigMap[prefabName];
+                            });
+                        deferred.resolve(content);
+                    }
+                }
+
+                prefabNames.forEach(function (prefabName) {
+                    loadProjectPrefabsConfig(prefabName)
+                        .finally(onConfigLoad);
+                });
+
+                if (_.isEmpty(appPrefabNamePropertiesMap)) {
+                    deferred.resolve();
+                }
+                return deferred.promise;
+            }
+
+
+            /*
              * Get the config.json of all studio-prefabs.
              * Configs are loaded in asynchronous way.
              * returns a promise
@@ -187,6 +271,11 @@ WM.module('wm.prefabs')
                 }
 
                 prefabNames.forEach(function (prefabName) {
+                    //if the prefab config exists in the project then just ignore the workspace
+                    if (appPrefabNamePropertiesMap[prefabName]) {
+                        count -= 1;
+                        return;
+                    }
                     loadStudioPrefabConfig(prefabName)
                         .finally(onConfigLoad);
                 });
@@ -212,9 +301,9 @@ WM.module('wm.prefabs')
                 });
             }
             //prepares the project prefabs map
-            function prepareAppPrefabsNameConfigMap() {
-                _.forEach(appPrefabs, function (prefabConfig) {
-                    projectPrefabsNameConfigMap[prefabConfig.name] = prefabConfig;
+            function prepareAppPrefabsNamePropertiesMap() {
+                _.forEach(appPrefabs, function (prefabObj) {
+                    appPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
                 });
             }
             /**
@@ -223,7 +312,7 @@ WM.module('wm.prefabs')
              */
             function setProjectPrefabs(prefabs) {
                 appPrefabs = prefabs;
-                prepareAppPrefabsNameConfigMap();
+                prepareAppPrefabsNamePropertiesMap();
             }
 
             /**
@@ -232,7 +321,7 @@ WM.module('wm.prefabs')
              * @returns {Object} prefab config
              */
             function getProjectPrefab(prefabName) {
-                return Utils.getClonedObject(projectPrefabsNameConfigMap[prefabName]) || {};
+                return Utils.getClonedObject(appPrefabNamePropertiesMap[prefabName]) || {};
             }
 
             //returns the raw project prefabs array
@@ -249,9 +338,9 @@ WM.module('wm.prefabs')
                     .then(setProjectPrefabs);
             }
 
-            function prepareWorkspacePrefabsNameConfigMap() {
-                _.forEach(workspacePrefabs, function (prefabConfig) {
-                    workspacePrefabsNameConfigMap[prefabConfig.name] = prefabConfig;
+            function prepareWorkspacePrefabsNamePropertiesMap() {
+                _.forEach(workspacePrefabs, function (prefabObj) {
+                    studioPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
                 });
             }
             /**
@@ -260,7 +349,7 @@ WM.module('wm.prefabs')
              */
             function setWorkspacePrefabs(prefabs) {
                 workspacePrefabs = prefabs;
-                prepareWorkspacePrefabsNameConfigMap();
+                prepareWorkspacePrefabsNamePropertiesMap();
             }
 
             /**
@@ -268,7 +357,7 @@ WM.module('wm.prefabs')
              * @returns {prefab} prefab object
              */
             function getWorkspacePrefab(prefabName) {
-                return Utils.getClonedObject(workspacePrefabsNameConfigMap[prefabName]) || {};
+                return Utils.getClonedObject(studioPrefabNamePropertiesMap[prefabName]) || {};
             }
 
             /**
@@ -780,21 +869,30 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
-             * @name PrefabManager#listStudioPrefabs
-             * @methodOf wm.prefab.$PrefabManager
-             * @description
-             * this function will load the list of prefabs in studio
-             */
-            this.listStudioPrefabs = listStudioPrefabs;
-
-            /**
-             * @ngdoc function
              * @name PrefabManager#getAllStudioPrefabsConfig
              * @methodOf wm.prefab.$PrefabManager
              * @description
              * this function will load config.json files of all the prefabs in studio
              */
             this.getAllStudioPrefabsConfig = getAllStudioPrefabsConfig;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getAppPrefabsConfig
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load config.json files of all the prefabs in project
+             */
+            this.getAppPrefabsConfig = getAppPrefabsConfig;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#processPrefabsList
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will process the studio and app prefabs list and returns the processed prefabs list
+             */
+            this.processPrefabsList = processPrefabsList;
 
             /**
              * @ngdoc function
