@@ -1212,8 +1212,9 @@ $.widget('wm.datagrid', {
             rowData,
             data,
             selected,
-            self   = this,
-            action = options.action;
+            self        = this,
+            action      = options.action,
+            isQuickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT;
         function callRowSelectionEvents() {
             if (selected && $.isFunction(self.options.onRowSelect)) {
                 self.options.onRowSelect(data, e);
@@ -1222,7 +1223,7 @@ $.widget('wm.datagrid', {
                 self.options.onRowDeselect(data, e);
             }
         }
-        if (action || (this.options.editmode === this.CONSTANTS.QUICK_EDIT && $(e.target).hasClass('app-datagrid-cell'))) {
+        if (action || (isQuickEdit && $(e.target).hasClass('app-datagrid-cell'))) {
             //In case of advanced edit, Edit the row on click of a row
             options.action = options.action || 'edit';
             this.toggleEditRow(e, options);
@@ -1236,7 +1237,9 @@ $.widget('wm.datagrid', {
         data = this.options.data[rowId];
         selected = (rowData && rowData.selected) || false;
         if (!options.skipSingleCheck && (($row.hasClass('active') && !this.options.multiselect) || !rowData)) {
-            callRowSelectionEvents();
+            if (!isQuickEdit) { //For quick edit, row will be in edit mode. So,, no need to call events.
+                callRowSelectionEvents();
+            }
             return;
         }
         selected = !selected;
