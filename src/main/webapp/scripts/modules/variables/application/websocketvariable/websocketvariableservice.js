@@ -18,22 +18,42 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
 
         var scope_var_socket_map = {},
             initiateCallback = Variables.initiateCallback,
-            serviceVariableObj;
+            serviceVariableObj,
+            PROPERTY = {
+                'SERVICE': 'service',
+                'DATA_UPDATE_STRATEGY': 'dataUpdateStrategy',
+                'DATA_LIMIT': 'dataLimit'
+            },
+            DATA_UPDATE_STRATEGY = {
+                'REFRESH': 'refresh',
+                'PREPEND': 'prepend',
+                'APPEND': 'append'
+            };
 
         /**
          * returns the state of property to decide weather to append new messages to dataSet or not
          * @param variable
-         * @returns {appendData}
+         * @returns boolean
          */
         function shouldAppendData(variable) {
-            return variable.appendData;
+            variable = variable || this;
+            return variable[PROPERTY.DATA_UPDATE_STRATEGY] !== DATA_UPDATE_STRATEGY.REFRESH;
+        }
+
+        /**
+         * returns the state of property to decide weather to APPEND or PREPEND new messages to dataSet
+         * @param variable
+         * @returns boolean
+         */
+        function shouldAppendLast(variable) {
+            return variable[PROPERTY.DATA_UPDATE_STRATEGY] === DATA_UPDATE_STRATEGY.APPEND;
         }
 
         /**
          * returns upper limit on number of records to be in dataSet
          * this is applicable only when appendData is true
          * @param variable
-         * @returns {appendData}
+         * @returns {dataLimit}
          */
         function getDataLimit(variable) {
             return variable.dataLimit;
@@ -98,7 +118,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          * @private
          */
         function _onSocketMessage(variable, evt) {
-            var data = _.get(evt, 'data'), value, dataLength, dataLimit;
+            var data = _.get(evt, 'data'), value, dataLength, dataLimit, shouldAddToLast, insertIdx;
             data = Utils.getValidJSON(data) || Utils.xmlToJson(data) || data;
             // EVENT: ON_MESSAGE
             value = initiateCallback(VARIABLE_CONSTANTS.EVENT.MESSAGE_RECEIVE, variable, variable.activeScope, data, evt);
@@ -107,10 +127,16 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
                 variable.dataSet = variable.dataSet || [];
                 dataLength = variable.dataSet.length;
                 dataLimit = getDataLimit(variable);
+                shouldAddToLast = shouldAppendLast(variable);
                 if (dataLimit && (dataLength >= dataLimit)) {
-                    variable.dataSet.shift();
+                    if (shouldAddToLast) {
+                        variable.dataSet.shift();
+                    } else {
+                        variable.dataSet.pop();
+                    }
                 }
-                variable.dataSet.push(data);
+                insertIdx = shouldAddToLast ? dataLength : 0;
+                variable.dataSet.splice(insertIdx, 0, data);
             } else {
                 variable.dataSet = WM.isDefined(value) ? value : data;
             }
@@ -310,7 +336,8 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             send    : send,
             invoke  : send,
             update  : update,
-            init    : init
+            init    : init,
+            shouldAppendData: shouldAppendData
         };
 
         /* register the variable to the base service */
