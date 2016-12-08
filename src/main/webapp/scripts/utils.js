@@ -2016,6 +2016,12 @@ WM.module('wm.utils', [])
                 encType         = _.get(requestParams.headers, CONTENT_TYPE),
                 params          = _.pickBy(requestParams.headers, function (val, key) {return key !== CONTENT_TYPE; });
 
+            // Mobile app is not downloading the file via form submit. So using window.open method for mobile app.
+            if (CONSTANTS.hasCordova) {
+                window.open(url, '_system');
+                return;
+            }
+
             /* look for existing iframe. If exists, remove it first */
             iFrameElement = $(IFRAME_NAME);
             if (iFrameElement.length) {
