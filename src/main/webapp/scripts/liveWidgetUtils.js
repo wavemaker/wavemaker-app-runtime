@@ -1860,27 +1860,22 @@ WM.module('wm.widgets.live')
                 if (!boundVariable) {
                     return;
                 }
-                primaryKeys = boundVariable.getRelatedTablePrimaryKeys(relatedField);
+                primaryKeys         = boundVariable.getRelatedTablePrimaryKeys(relatedField);
                 columnDef.datafield = datafield;
+                displayField        = datafield === 'All Fields' ? undefined : datafield;
                 //For autocomplete widget, set the dataset and related field. Autocomplete widget will make the call to get related data
                 if (widget === 'autocomplete' || widget === 'typeahead') {
                     columnDef.relatedfield = relatedField;
                     columnDef.dataset      = parentScope.binddataset;
-                    if (primaryKeys.length > 0) {
-                        displayField = primaryKeys[0];
-                    }
+                    displayField           = displayField || (_.isEmpty(primaryKeys) ? undefined : primaryKeys[0]);
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displaylabel || displayField;
                 } else {
                     boundVariable.getRelatedTableData(relatedField, {}, function (response) {
                         columnDef.dataset       = response;
                         columnDef.isDefinedData = true;
-                        if (primaryKeys.length > 0) {
-                            displayField = primaryKeys[0];
-                        } else {
-                            displayField = _.head(_.keys(_.get(response, '[0]')));
-                        }
-                        columnDef.displayfield =  columnDef.displayfield || displayField;
+                        displayField            = displayField || (_.isEmpty(primaryKeys) ? _.head(_.keys(_.get(response, '[0]'))) : primaryKeys[0]);
+                        columnDef.displayfield  = columnDef.displayfield || displayField;
                     });
                 }
             }
