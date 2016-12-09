@@ -14,10 +14,10 @@ public class LoadKeyStoreInitializer {
     private static final String SAML_HTTP_METADATA_PROVIDER_CLAZZ = "org.opensaml.saml2.metadata.provider.HTTPMetadataProvider";
 
     public LoadKeyStoreInitializer() {
-        contextInitialized();
+        init();
     }
 
-    public void contextInitialized() {
+    public void init() {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             logger.info("saml keystore for profile does not load in test environment");
             return;

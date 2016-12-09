@@ -16,13 +16,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml2.metadata.impl.EntityDescriptorImpl;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.FileBackedHTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.parse.BasicParserPool;
@@ -55,17 +56,22 @@ public class LoadKeyStore {
             final String idpMetadataUrl = properties.getProperty(PROVIDERS_SAML_IDP_METADATA_URL);
             final String keyStoreFileName = properties.getProperty(PROVIDERS_SAML_KEY_STORE_FILE);
             final String keyStorePassword = properties.getProperty(PROVIDERS_SAML_KEY_STORE_PASSWORD);
-            if (StringUtils.isNotBlank(idpMetadataUrl) && StringUtils.isNotBlank(keyStoreFileName) && StringUtils.isNotBlank(
-                    keyStorePassword)) {
+            if (StringUtils.isNotBlank(idpMetadataUrl) && StringUtils.isNotBlank(keyStoreFileName) && StringUtils.isNotBlank(keyStorePassword)) {
                 File keyStoreFile = new File(getFileURI("saml/" + keyStoreFileName));
-                InputStream resourceAsStream = null;
+                InputStream resourceAsStream = null; // stream closed in load method.
                 try {
                     resourceAsStream = new FileInputStream(keyStoreFile);
                 } catch (FileNotFoundException e) {
                     new WMRuntimeException("File" + keyStoreFileName + "not found", e);
                 }
                 final KeyStore keyStore = load(resourceAsStream, keyStorePassword);
-                final String idpPublicKey = loadSAMLIdpMetadataUrl(idpMetadataUrl);
+
+                final String idpPublicKey = loadSAMLIdpMetadataUrl(idpMetadataUrl,
+                        new File(getFileURI("/saml/metadata/" + SAMLConstants.IDP_METADATA_XML)).getAbsolutePath());
+                if (idpPublicKey == null) {
+                    throw new WMRuntimeException("Could not find public key in " + keyStoreFile.getAbsolutePath());
+                }
+
                 final boolean success = importCertificate(keyStore, KEY, idpPublicKey);
                 if (success) {
                     saveKeyStore(keyStore, keyStoreFile, keyStorePassword);
@@ -93,12 +99,12 @@ public class LoadKeyStore {
         return keystore;
     }
 
-    private String loadSAMLIdpMetadataUrl(final String url) {
+    private String loadSAMLIdpMetadataUrl(final String url, String filePath) {
         logger.info("load metadata for {}", url);
         String x509CertificateValue = null;
         XMLObject metadata = null;
         try {
-            HTTPMetadataProvider httpMetadataProvider = new HTTPMetadataProvider(url, 15000);
+            FileBackedHTTPMetadataProvider httpMetadataProvider = new FileBackedHTTPMetadataProvider(url, 15000, filePath);
             httpMetadataProvider.setParserPool(new BasicParserPool());
             httpMetadataProvider.initialize();
             metadata = httpMetadataProvider.getMetadata();
@@ -107,12 +113,14 @@ public class LoadKeyStore {
         }
         final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
                 .getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
-        final KeyDescriptor keyDescriptor = idpssoDescriptor.getKeyDescriptors().get(0);
-        if (UsageType.SIGNING == keyDescriptor.getUse()) {
-            final KeyInfo keyInfo = keyDescriptor.getKeyInfo();
-            final X509Data x509Data = keyInfo.getX509Datas().get(0);
-            final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates().get(0);
-            x509CertificateValue = x509Certificate.getValue();
+        final List<KeyDescriptor> keyDescriptors = idpssoDescriptor.getKeyDescriptors();
+        for (KeyDescriptor keyDescriptor : keyDescriptors) {
+            if (UsageType.SIGNING == keyDescriptor.getUse()) {
+                final KeyInfo keyInfo = keyDescriptor.getKeyInfo();
+                final X509Data x509Data = keyInfo.getX509Datas().get(0);
+                final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates().get(0);
+                x509CertificateValue = x509Certificate.getValue();
+            }
         }
 
         return x509CertificateValue;
