@@ -158,66 +158,75 @@ wm.plugins.offline.services.ChangeLogService = [
                     onComplete();
                 }
             }, function (change) {
-                change.hasError = 1;
-                change.params = JSON.stringify(change.params);
-                getStore().save(change);
-                flush(onComplete, onProgress);
+                LocalDBManager.canConnectToServer().then(function () {
+                    change.hasError = 1;
+                }, function () {
+                    //failed due to lack of network
+                    change.hasError = -1;
+                }).finally(function () {
+                    change.params = JSON.stringify(change.params);
+                    getStore().save(change);
+                    flush(onComplete, onProgress);
+                });
             });
+        }
+
+        function resetNetworkFailures() {
+            return LocalDBManager.executeSQLQuery('wavemaker', 'UPDATE offlineChangeLog SET hasError = 0 WHERE hasError = -1');
         }
 
         function onFlushComplete(fn) {
             return function () {
                 var cbs = _.reverse(_.map(callbacks, "postFlush"));
                 flushInProgress = false;
-                executeDeferChain(cbs, [stats]).finally(function () {
+                return resetNetworkFailures().then(function () {
+                    return executeDeferChain(cbs, [stats, flushContext]);
+                }).finally(function () {
                     Utils.triggerFn(fn, stats);
                 });
             };
         }
 
         function prepareForFlush() {
-            return LocalDBManager.executeSQLQuery('wavemaker', 'UPDATE offlineChangeLog SET hasError = 0 WHERE hasError = 1')
-                .then(function () {
-                    var filterCriteria = [{
-                        'attributeName' : 'key',
-                        'attributeValue' : contextKey,
-                        'attributeType' : 'STRING',
-                        'filterCondition' : 'EQUALS'
-                    }];
-                    return LocalDBManager.getStore('wavemaker', 'key-value').filter(filterCriteria).then(function (result) {
-                        var id,
-                            context = {};
-                        if (result && result.length > 0) {
-                            id = result[0].id;
-                            context = JSON.parse(result[0].value) || {};
+            var filterCriteria = [{
+                'attributeName' : 'key',
+                'attributeValue' : contextKey,
+                'attributeType' : 'STRING',
+                'filterCondition' : 'EQUALS'
+            }];
+            return LocalDBManager.getStore('wavemaker', 'key-value').filter(filterCriteria).then(function (result) {
+                var id,
+                    context = {};
+                if (result && result.length > 0) {
+                    id = result[0].id;
+                    context = JSON.parse(result[0].value) || {};
+                }
+                return {
+                    'clear' : function () {
+                        var defer = $q.defer();
+                        if (id > 0) {
+                            return LocalDBManager.getStore('wavemaker', 'key-value').delete(id);
                         }
-                        return {
-                            'clear' : function () {
-                                var defer = $q.defer();
-                                if (id > 0) {
-                                    return LocalDBManager.getStore('wavemaker', 'key-value').delete(id);
-                                }
-                                defer.resolve();
-                                return defer.promise;
-                            },
-                            'get' : function (key) {
-                                var value = context[key];
-                                if (!value) {
-                                    value = {};
-                                    context[key] = value;
-                                }
-                                return value;
-                            },
-                            'save' : function () {
-                                return LocalDBManager.getStore('wavemaker', 'key-value').save({
-                                    'id' : id,
-                                    'key' : contextKey,
-                                    'value' : JSON.stringify(context)
-                                });
-                            }
-                        };
-                    });
-                });
+                        defer.resolve();
+                        return defer.promise;
+                    },
+                    'get' : function (key) {
+                        var value = context[key];
+                        if (!value) {
+                            value = {};
+                            context[key] = value;
+                        }
+                        return value;
+                    },
+                    'save' : function () {
+                        return LocalDBManager.getStore('wavemaker', 'key-value').save({
+                            'id' : id,
+                            'key' : contextKey,
+                            'value' : JSON.stringify(context)
+                        });
+                    }
+                };
+            });
         }
 
         /**
@@ -233,11 +242,16 @@ wm.plugins.offline.services.ChangeLogService = [
                 stats.error = 0;
                 stats.completed = 0;
                 $log.debug('Starting flush');
-                return getStore().count().then(function (count) {
+                return getStore().count([{
+                    'attributeName' : 'hasError',
+                    'attributeValue' : 0,
+                    'attributeType' : 'NUMBER',
+                    'filterCondition' : 'EQUALS'
+                }]).then(function (count) {
                     stats.total = count;
                 });
             },
-            'postFlush': function () {
+            'postFlush': function (stats, flushContext) {
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
                                 stats.success, stats.error, stats.completed, stats.total);
                 if (stats.error === 0) {
@@ -245,7 +259,6 @@ wm.plugins.offline.services.ChangeLogService = [
                         flushContext = undefined;
                     });
                 }
-
             },
             'preCall': function (change) {
                 $log.debug("%i. Invoking call %o", (1 + stats.completed), change);
@@ -259,7 +272,7 @@ wm.plugins.offline.services.ChangeLogService = [
             'postCallSuccess': function (change, response) {
                 stats.completed++;
                 stats.success++;
-                $log.debug('call returnd the following response %o.', response);
+                $log.debug('call returned the following response %o.', response);
                 return flushContext.save();
             }
         });
@@ -315,12 +328,32 @@ wm.plugins.offline.services.ChangeLogService = [
 
         /**
          * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#getErrors
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @returns {array} an array of changes that failed with error.
+         */
+        this.getErrors = function () {
+            return getStore().filter([{
+                'attributeName' : 'hasError',
+                'attributeValue' : 1,
+                'attributeType' : 'NUMBER',
+                'filterCondition' : 'EQUALS'
+            }]);
+        };
+
+        /**
+         * @ngdoc method
          * @name  wm.plugins.offline.services.$ChangeLogService#getLogLength
          * @methodOf  wm.plugins.offline.services.$ChangeLogService
-         * @returns {number} log length.
+         * @returns {number} number of changes that are pending to push.
          */
         this.getLogLength = function () {
-            return getStore().count();
+            return getStore().count([{
+                'attributeName' : 'hasError',
+                'attributeValue' : 0,
+                'attributeType' : 'NUMBER',
+                'filterCondition' : 'EQUALS'
+            }]);
         };
 
         /**
@@ -505,6 +538,18 @@ wm.plugins.offline.run([
                     entityStore.save(response[0]);
                     transactionLocalId = undefined;
                 }
+            },
+            //store error entity id
+            'postCallError' : function (change) {
+                var entityStore, entityName, dataModelName;
+                if (change && change.service === 'DatabaseService'
+                        && change.operation === 'insertTableData'
+                        && transactionLocalId) {
+                    entityName = change.params.entityName;
+                    dataModelName = change.params.dataModelName;
+                    entityStore = LocalDBManager.getStore(dataModelName, entityName);
+                    change.params.data[entityStore.primaryKeyName] = transactionLocalId;
+                }
             }
         });
     }]);
@@ -517,7 +562,8 @@ wm.plugins.offline.run([
     "ChangeLogService",
     function (LocalDBManager, ChangeLogService) {
         'use strict';
-        var errorStore = {};
+        var storeKey  = 'errorBlockerStore',
+            errorStore = {};
 
         function hasError(dataModelName, entityName, id) {
             if (errorStore[dataModelName]
@@ -571,6 +617,9 @@ wm.plugins.offline.run([
 
         // Registers for offline change log events.
         ChangeLogService.registerCallback({
+            'preFlush' : function (flushContext) {
+                errorStore = flushContext.get(storeKey);
+            },
             //block all calls related to the error entities
             'preCall' : function (change) {
                 var entityName, dataModelName;

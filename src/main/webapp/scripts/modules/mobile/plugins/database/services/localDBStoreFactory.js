@@ -333,7 +333,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'clear': function () {
-                return $cordovaSQLite.execute(this.dbConnection, 'DELETE FROM ' + this.schema.name);
+                return $cordovaSQLite.execute(this.dbConnection, 'DELETE FROM ' + escapeName(this.schema.name));
             },
             /**
              * @ngdoc method
