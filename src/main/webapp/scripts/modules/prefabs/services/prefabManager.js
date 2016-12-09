@@ -872,6 +872,15 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
+             * @name PrefabManager#listStudioPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the list of prefabs in studio
+             */
+            this.listStudioPrefabs = listStudioPrefabs;
+
+            /**
+             * @ngdoc function
              * @name PrefabManager#getAllStudioPrefabsConfig
              * @methodOf wm.prefab.$PrefabManager
              * @description
