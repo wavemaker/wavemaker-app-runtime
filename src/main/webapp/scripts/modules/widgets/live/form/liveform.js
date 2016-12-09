@@ -540,7 +540,6 @@ WM.module('wm.widgets.live')
                     "video": "video/*",
                     "audio": "audio/*"
                 };
-                $scope.isDateTimeWidgets = Utils.getDateTimeTypes();
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
                     $scope.formFields.forEach(function (fieldObj) {
@@ -613,7 +612,7 @@ WM.module('wm.widgets.live')
                         var dateTime;
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
-                        if ((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type]) {
+                        if ((field.widget && Utils.isDateTimeType(field.widget)) || Utils.isDateTimeType(field.type)) {
                             if (field.value) {
                                 dateTime = Utils.getValidDateObject(field.value);
                                 if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
@@ -742,7 +741,7 @@ WM.module('wm.widgets.live')
                 };
                 /*returns the default output formats for date time types*/
                 $scope.getOutputPatterns = function (type, outputFormat) {
-                    if ($scope.isDateTimeWidgets[type]) {
+                    if (Utils.isDateTimeType(type)) {
                         return Utils.getDateTimeFormatForType(type);
                     }
                     return outputFormat;

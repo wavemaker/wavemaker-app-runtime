@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', '$http', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS, $http) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', '$http', '$filter', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS, $http, $filter) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -116,12 +116,6 @@ WM.module('wm.utils', [])
                 'wm.DeviceVariable'      : 'device-variable',
                 'wm.WebSocketVariable'   : 'web-socket-variable'
             },
-            dateTimeTypes = {
-                'date'      : true,
-                'time'      : true,
-                'timestamp' : true,
-                'datetime'  : true
-            },
             dataSetWidgets = {
                 'select'       : true,
                 'checkboxset'  : true,
@@ -158,6 +152,7 @@ WM.module('wm.utils', [])
                 'TIME'           : 'HH:mm:ss',
                 'TIMESTAMP'      : 'timestamp',
                 'DATETIME'       : 'yyyy-MM-ddTHH:mm:ss',
+                'LOCALDATETIME'  : 'yyyy-MM-ddTHH:mm:ss',
                 'DATETIME_ORACLE': 'yyyy-MM-dd HH:mm:ss'
             },
             indexPage = getIndexPage(),
@@ -1581,9 +1576,12 @@ WM.module('wm.utils', [])
 
             return content;
         }
-        /*Function to get date time types*/
-        function getDateTimeTypes() {
-            return dateTimeTypes;
+        /*Function to check if date time type*/
+        function isDateTimeType(type) {
+            if (_.includes(type, '.')) {
+                type = _.toLower(extractType(type));
+            }
+            return _.includes(['date', 'time', 'timestamp', 'datetime', 'localdatetime'], type);
         }
         function getDataSetWidgets() {
             return dataSetWidgets;
@@ -1641,7 +1639,7 @@ WM.module('wm.utils', [])
             if (!typeRef) {
                 return 'string';
             }
-            return typeRef.substring(typeRef.lastIndexOf('.') + 1);
+            return typeRef && typeRef.substring(typeRef.lastIndexOf('.') + 1);
         }
 
         /* returns true if the provided data type matches number type */
@@ -2289,6 +2287,38 @@ WM.module('wm.utils', [])
             }
         }
 
+        //Format value for datetime types
+        function _formatDate(dateValue, type) {
+            var epoch;
+            if (WM.isDate(dateValue)) {
+                epoch = dateValue.getTime();
+            } else {
+                if (!isNaN(dateValue)) {
+                    dateValue = parseInt(dateValue, 10);
+                }
+                epoch = moment(dateValue).valueOf();
+            }
+            if (type === 'timestamp') {
+                return epoch;
+            }
+            if (type === 'time' && !epoch) {
+                epoch = moment(new Date().toDateString() + ' ' + dateValue).valueOf();
+            }
+            return dateValue && $filter('date')(epoch, getDateTimeFormatForType(type));
+        }
+        /*Function to convert values of date time types into default formats*/
+        function formatDate(value, type) {
+            if (_.includes(type, '.')) {
+                type = _.toLower(extractType(type));
+            }
+            if (WM.isArray(value)) {
+                return _.map(value, function (val) {
+                    return _formatDate(val);
+                });
+            }
+            return _formatDate(value, type);
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2378,7 +2408,7 @@ WM.module('wm.utils', [])
         this.isNumberType               = isNumberType;
         this.isFileUploadSupported      = isFileUploadSupported;
         this.processMarkup              = processMarkup;
-        this.getDateTimeTypes           = getDateTimeTypes;
+        this.isDateTimeType             = isDateTimeType;
         this.getDataSetWidgets          = getDataSetWidgets;
         this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  = getDateTimeDefaultFormats;
@@ -2417,4 +2447,5 @@ WM.module('wm.utils', [])
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
+        this.formatDate                 = formatDate;
     }]);

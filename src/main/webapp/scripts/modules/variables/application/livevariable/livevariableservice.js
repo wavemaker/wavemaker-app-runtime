@@ -30,10 +30,9 @@ wm.variables.services.$liveVariable = [
     "ProjectService",
     "DB_CONSTANTS",
     "wmToaster",
-    "$filter",
     "ServiceFactory",
     "$timeout",
-    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, $filter, ServiceFactory, $timeout) {
+    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, ServiceFactory, $timeout) {
         "use strict";
 
         /*Set a flag based on whether the project is deployed or not.
@@ -49,40 +48,12 @@ wm.variables.services.$liveVariable = [
             invalidVariables = [],
             isDeployReqSourceChanged,
             packageDetails = {},
-            isDateTime = Utils.getDateTimeTypes(),
             emptyArr = [],
         /*Function to clear set variables*/
             reset = function () {
                 isProjectDeployed = (CONSTANTS.isRunMode);
                 /*Set the "isDeployReqSourceChanged" flag to true so that the deploy request queue is populated only when the deploy source changes.*/
                 isDeployReqSourceChanged = true;
-            },
-        /*Function to convert values of date time types into default formats*/
-            getDateInDefaultFormat = function (value, type) {
-                var formatDate = function (dateValue) {
-                    var epoch;
-                    if (WM.isDate(dateValue)) {
-                        epoch = dateValue.getTime();
-                    } else {
-                        if (!isNaN(dateValue)) {
-                            dateValue = parseInt(dateValue, 10);
-                        }
-                        epoch = moment(dateValue).valueOf();
-                    }
-                    if (type === 'timestamp') {
-                        return epoch;
-                    }
-                    if (type === 'time' && !epoch) {
-                        epoch = moment(new Date().toDateString() + ' ' + dateValue).valueOf();
-                    }
-                    return dateValue && $filter('date')(epoch, Utils.getDateTimeFormatForType(type));
-                };
-                if (WM.isArray(value)) {
-                    return _.map(value, function (val) {
-                        return formatDate(val);
-                    });
-                }
-                return formatDate(value);
             },
             // Generate the URL based on the primary keys and their values
             getCompositeIDURL = function (primaryKeysData) {
@@ -596,7 +567,7 @@ wm.variables.services.$liveVariable = [
                         case 'date':
                         case 'datetime':
                         case 'timestamp':
-                            fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
+                            fieldValue      = Utils.formatDate(fieldValue, fieldType);
                             filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
                             break;
                         case 'text':
@@ -1039,8 +1010,8 @@ wm.variables.services.$liveVariable = [
                     _.forEach(rowObject, function (value, key) {
                         var fieldType = getFieldType(key, variableDetails),
                             fieldValue;
-                        if (isDateTime[fieldType]) {
-                            fieldValue = getDateInDefaultFormat(value, fieldType);
+                        if (Utils.isDateTimeType(fieldType)) {
+                            fieldValue = Utils.formatDate(value, fieldType);
                             rowObject[key] = fieldValue;
                         }
                     });
@@ -1070,8 +1041,8 @@ wm.variables.services.$liveVariable = [
                             }
                             if (action !== "deleteTableData" || variableDetails.isCompositeKey(primaryKey)) {
                                 fieldType = getFieldType(fieldName, variableDetails);
-                                if (isDateTime[fieldType]) {
-                                    fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
+                                if (Utils.isDateTimeType(fieldType)) {
+                                    fieldValue = Utils.formatDate(fieldValue, fieldType);
                                 }
                                 rowObject[fieldName] = fieldValue;
                             }
