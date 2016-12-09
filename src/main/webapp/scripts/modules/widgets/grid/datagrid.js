@@ -1380,9 +1380,16 @@ $.widget('wm.datagrid', {
         return isDataChanged;
     },
     disableActions: function (val) {
-        //Disable edit and delete actions while editing a row
-        this.gridBody.find('.edit-row-button').prop('disabled', val);
-        this.gridBody.find('.delete-row-button').prop('disabled', val);
+        var $deleteBtns = this.gridBody.find('.delete-row-button'),
+            $editBtns   =  this.gridBody.find('.edit-row-button');
+        if (val) {
+            //Disable edit and delete actions while editing a row
+            $editBtns.addClass('disabled-action');
+            $deleteBtns.addClass('disabled-action');
+        } else {
+            $editBtns.removeClass('disabled-action');
+            $deleteBtns.removeClass('disabled-action');
+        }
     },
     //Function to the first input element in a row
     setFocusOnElement: function (e, $el) {
@@ -1466,7 +1473,7 @@ $.widget('wm.datagrid', {
             }
             this._setGridEditMode(true);
             this.disableActions(true);
-            $deleteButton.prop('disabled', false);
+            $deleteButton.removeClass('disabled-action');
 
             $originalElements.each(function () {
                 var $el = $(this),
@@ -2256,7 +2263,9 @@ $.widget('wm.datagrid', {
         }
         if (this.options.rowActions.length) {
             _.forEach(this.options.rowActions, function (def) {
-                var clsAttr = 'row-action row-action-button app-button btn ' + def.class, ngShowAttr = '';
+                var clsAttr    = 'row-action row-action-button app-button btn ' + def.class,
+                    ngShowAttr = '',
+                    ngDisabled = def.disabled ? ' ng-disabled="' + _.replace(def.disabled, 'bind:', '') + '" ' : '';
                 if (def.show === 'true' || def.show === 'false') {
                     clsAttr += def.show === 'true' ? '' : ' ng-hide ';
                 } else if (_.includes(def.show, 'bind:')) {
@@ -2269,7 +2278,7 @@ $.widget('wm.datagrid', {
                     clsAttr += ' delete delete-row-button ';
                 }
 
-                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + generateBindExpr(def.title) + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + (def.tabindex ? (' tabindex="' + def.tabindex + '"') : '') + '>'
+                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + generateBindExpr(def.title) + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + (def.tabindex ? (' tabindex="' + def.tabindex + '"') : '') + ngDisabled + '>'
                     + '<i class="app-icon ' + def.iconclass + '"></i>';
                 if (def.displayName) {
                     actionsTemplate += '<span class="btn-caption">' + generateBindExpr(def.displayName) + '</span>';//Appending display name
