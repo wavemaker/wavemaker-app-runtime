@@ -9,6 +9,7 @@
  */
 wm.plugins.database.services.LocalDBManager = [
     '$cordovaFile',
+    '$cordovaNetwork',
     '$cordovaSQLite',
     '$q',
     '$rootScope',
@@ -18,14 +19,25 @@ wm.plugins.database.services.LocalDBManager = [
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
     'Utils',
-    function ($cordovaFile, $cordovaSQLite, $q, $rootScope, BaseService, DatabaseService, DeviceFileService, LocalDBStoreFactory,  OFFLINE_WAVEMAKER_DATABASE_SCHEMA, Utils) {
+    function ($cordovaFile,
+              $cordovaNetwork,
+              $cordovaSQLite,
+              $q,
+              $rootScope,
+              BaseService,
+              DatabaseService,
+              DeviceFileService,
+              LocalDBStoreFactory,
+              OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
+              Utils) {
         'use strict';
         var META_LOCATION = 'www/metadata/app',
             cordova = window.cordova,
             dbInstallParentDirectory,
             dbInstallDirectory,
             dbInstallDirectoryName,
-            databases;
+            databases,
+            connectivityChecker;
 
         if (cordova) {
             if (Utils.isIOS()) {
@@ -270,11 +282,12 @@ wm.plugins.database.services.LocalDBManager = [
         }
 
         /**
-         * Checks whether server connection can be made by sending a database request.
+         * return an object with only one function that checks whether connection be made
+         * to the remote server.
          *
-         * @returns {*} a promise that is resolved when connection attempt is successful..
+         * @returns {{check: function}}
          */
-        function canConnectToServer() {
+        function createConnectivityChecker() {
             var datamodelName, entitySchema;
             iterateExternalEntities(function (database, eSchema) {
                 if (eSchema.syncType === 'APP_START') {
@@ -283,7 +296,30 @@ wm.plugins.database.services.LocalDBManager = [
                     return false;
                 }
             });
-            return pullDataFromServer(datamodelName, entitySchema, 1);
+            return {
+                "check" : function () {
+                    var defer = $q.defer();
+                    if ($cordovaNetwork.isOnline()) {
+                        if (datamodelName) {
+                            return pullDataFromServer(datamodelName, entitySchema, 1);
+                        }
+                        defer.resolve();
+                    } else {
+                        defer.reject();
+                    }
+                    return defer.promise;
+                }
+            };
+        }
+
+        /**
+         * Checks whether server connection can be made by sending a database request.
+         *
+         * @returns {*} a promise that is resolved when connection attempt is successful..
+         */
+        function canConnectToServer() {
+            connectivityChecker = connectivityChecker || createConnectivityChecker();
+            return connectivityChecker.check();
         }
 
         /**
@@ -390,6 +426,20 @@ wm.plugins.database.services.LocalDBManager = [
                         }, cleanAndCopyDatabases.bind(undefined, null, currentBuildTime));
                 });
         }
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#canConnectToServer
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         *
+         *
+         * @description
+         * Checks whether the remote server can be connected. A sample request will be sent to the server to check
+         * network connectivity.
+         *
+         * @returns {object} a promise.
+         */
+        this.canConnectToServer = canConnectToServer;
 
         /**
          * @ngdoc method
