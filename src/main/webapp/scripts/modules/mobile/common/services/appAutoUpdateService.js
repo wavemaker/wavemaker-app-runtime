@@ -93,9 +93,9 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
         }
 
         this.start = function () {
-            $http.get('./build_meta.json')
-                .then(function (response) {
-                    config = response.data;
+            $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', 'build_meta.json')
+                .then(function (data) {
+                    config = JSON.parse(data)
                     if (config.buildMode === 'DEVELOPMENT_MODE') {
                         cleanAutoUpdateFile();
                         checkForUpdate().then(getUserConfirmationAndInstall.bind(undefined));
