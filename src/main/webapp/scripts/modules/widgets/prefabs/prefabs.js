@@ -279,6 +279,13 @@ WM.module('wm.prefabs')
                 }
             }
 
+            function exposeMethodsOnWidget($is) {
+                //for each method name property exposed,assign a method in the prefab widget scope
+                _.forEach(prefabMethodsMap[$is.prefabname], function (methodObj, methodName) {
+                    $is[methodName] = $is.ctrlScope[methodObj.method];
+                });
+            }
+
             return {
                 'restrict': 'E',
                 'scope'   : {'prefabname': '@'},
@@ -399,6 +406,8 @@ WM.module('wm.prefabs')
                             }
 
                             $is.ctrlScope = pfScope;
+                            //once the template is loaded, expose methods on the prefab widget
+                            exposeMethodsOnWidget($is);
                         }
 
                         function compileTemplate(prefabContent) {
