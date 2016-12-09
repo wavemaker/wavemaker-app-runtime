@@ -285,7 +285,12 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* loop through all the parameters */
                 _.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
+
                     if (WM.isDefined(paramValue) && paramValue !== '') {
+                        //Format dateTime params for dataService variables
+                        if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
+                            paramValue = Utils.formatDate(paramValue, param.type);
+                        }
                         switch (param.parameterType.toUpperCase()) {
                         case 'QUERY':
                             //Ignore null valued query params for queryService variable
