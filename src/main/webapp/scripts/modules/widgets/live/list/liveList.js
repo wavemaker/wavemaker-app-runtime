@@ -28,7 +28,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="((widgetid || dataNavigator.dataSize) && (navigation !== \'Inline\') && (navigation !== \'Scroll\')) && (navigation === \'On-Demand\' && !variableInflight)">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (navigation === \'Basic\' || navigation === \'Pager\' || navigation === \'Inline\' || navigation === \'Classic\' || (navigation === \'On-Demand\' && !variableInflight))">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '<a ng-show="navigation === \'On-Demand\'" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified">{{ondemandmessage}}</a>' +
                     '</div>' +
