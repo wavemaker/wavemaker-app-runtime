@@ -103,13 +103,17 @@ public class LoadKeyStore {
         logger.info("load metadata for {}", url);
         String x509CertificateValue = null;
         XMLObject metadata = null;
+        FileBackedHTTPMetadataProvider httpMetadataProvider = null;
         try {
-            FileBackedHTTPMetadataProvider httpMetadataProvider = new FileBackedHTTPMetadataProvider(url, 15000, filePath);
+            httpMetadataProvider = new FileBackedHTTPMetadataProvider(url, 15000, filePath);
             httpMetadataProvider.setParserPool(new BasicParserPool());
             httpMetadataProvider.initialize();
             metadata = httpMetadataProvider.getMetadata();
         } catch (MetadataProviderException e) {
             throw new WMRuntimeException("Failed to read idp metadata from url " + url, e);
+        }finally {
+            if (httpMetadataProvider != null)
+                httpMetadataProvider.destroy();
         }
         final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
                 .getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
@@ -182,4 +186,5 @@ public class LoadKeyStore {
         }
         return uri;
     }
+
 }
