@@ -76,7 +76,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', '$sce', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse, $sce) {
+    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, CONSTANTS) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
@@ -94,7 +94,13 @@ WM.module('wm.layouts.containers')
                         if (attrs.heading && !attrs.title) {
                             attrs.title = attrs.heading;
                         }
-                        scope.widgetProps = widgetProps;
+
+                        if (CONSTANTS.isStudioMode) {
+                            scope.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            scope.widgetProps = widgetProps;
+                        }
+
                         scope.$lazyLoad   = WM.noop;
                         element.removeAttr('title');
                     },
