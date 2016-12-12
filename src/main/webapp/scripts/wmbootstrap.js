@@ -531,10 +531,11 @@ Application
                 }
 
                 /**
+                 * Fix for issue: Keypad opens for all mobile browsers on form submit.
                  * Fix for iOS10 issue: Keyboard opens up whenever the page is navigated on form submission.
                  * Refer: https://discussions.apple.com/thread/7692319?start=0&tstart=0
                  */
-                if (Utils.isIOS()) {
+                if (Utils.isMobile()) {
                     $document.on('submit', 'form', function () {
                         document.activeElement.blur();
                     });
