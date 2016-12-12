@@ -202,7 +202,7 @@ wm.modules.wmCommon.services.BaseService = [
                     return;
                 }
                 isUnAuthorized = false;
-                if (error.status === 403) {
+                if (error.status === 403 && !config.isDirectCall) {
                     pushToErrorCallStack(config, successCallback, failureCallback);
                     displayMessage('failure', $rootScope.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', $rootScope.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.');
                     /* In runtime, the variable error handler needs to be invoked to hide the spinner */
