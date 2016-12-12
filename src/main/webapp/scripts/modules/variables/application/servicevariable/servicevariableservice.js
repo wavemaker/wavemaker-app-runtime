@@ -225,22 +225,6 @@ wm.variables.services.$servicevariable = ['Variables',
               return variable.controller === CONTROLLER_TYPE_QUERY && variable.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA;
             },
 
-            /**
-             * prepare a blob object based on the content and content type provided
-             * if content is blob itself, simply returns it back
-             * @param val
-             * @param valContentType
-             * @returns {*}
-             */
-            getBlob = function (val, valContentType) {
-                var valConstructorType = _.toLower(_.get(val, 'constructor.name'));
-                if (valConstructorType === 'string' || valConstructorType === 'number') {
-                    val = new Blob([val], {type: valContentType || 'text/plain'});
-                } else if (valConstructorType === 'object' && Utils.getValidJSON(val)) {
-                    val = new Blob([val], {type: valContentType || 'application/json'});
-                }
-                return val;
-            },
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
             constructRestRequestParams = function (operationInfo, variable) {
@@ -330,10 +314,10 @@ wm.variables.services.$servicevariable = ['Variables',
                                 if (param.type === "file") {
                                     if (WM.isArray(paramValue)) {
                                         WM.forEach(paramValue, function (fileObject) {
-                                            getFormDataObj().append(param.name, getBlob(fileObject), fileObject.name);
+                                            getFormDataObj().append(param.name, Utils.getBlob(fileObject), fileObject.name);
                                         });
                                     } else {
-                                        getFormDataObj().append(param.name, getBlob(paramValue), paramValue.name);
+                                        getFormDataObj().append(param.name, Utils.getBlob(paramValue), paramValue.name);
                                     }
                                 } else {
                                     if (WM.isObject(paramValue)) {
@@ -825,7 +809,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     if (WM.isObject(options)) {
                         switch(options.type) {
                             case 'file':
-                                val = getBlob(val, options.contentType);
+                                val = Utils.getBlob(val, options.contentType);
                                 break;
                             case 'number':
                                 val = _.isNumber(val) ? val : parseInt(val);
