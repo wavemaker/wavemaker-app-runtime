@@ -16,8 +16,9 @@ WM.module('wm.widgets.advanced')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, $tc, WidgetUtilService) {
+        function (PropertiesFactory, $tc, WidgetUtilService, Utils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.marquee', ['wm.base']);
 
@@ -28,8 +29,8 @@ WM.module('wm.widgets.advanced')
                 'replace'   : true,
                 'template'  : $tc.get('template/widget/advanced/marquee/marquee.html'),
                 'link'      : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);

@@ -91,8 +91,9 @@ WM.module('wm.layouts.page')
         'CONSTANTS',
         '$compile',
         '$rootScope',
+        'Utils',
 
-        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $compile, $rootScope) {
+        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $compile, $rootScope, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.template', []),
@@ -106,8 +107,8 @@ WM.module('wm.layouts.page')
                 'template': $templateCache.get('template/layouts/template.html'),
                 'compile': function () {
                     return {
-                        'pre': function (scope) {
-                            scope.widgetProps = widgetProps;
+                        'pre': function (scope, $el, attrs) {
+                            scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         },
                         'post': function (scope, element, attrs) {
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);

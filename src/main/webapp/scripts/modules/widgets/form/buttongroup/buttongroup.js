@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
                 '<div class="btn-group app-button-group" wmtransclude init-widget ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" role="input"></div>'
             );
     }])
-    .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {
+    .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.buttongroup', ['wm.base']);
@@ -20,8 +20,8 @@ WM.module('wm.widgets.form')
             'template'  : $templateCache.get('template/widget/form/button-group.html'),
             'transclude': true,
             'link'      : {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
 

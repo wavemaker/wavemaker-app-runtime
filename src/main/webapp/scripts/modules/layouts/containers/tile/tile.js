@@ -7,7 +7,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/tile/tile.html',
             '<div init-widget class="app-tile" apply-styles="container" ng-style="{width:width}" wm-navigable-element="true" wmtransclude></div>');
     }])
-    .directive('wmTile', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
+    .directive('wmTile', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.tile', ['wm.containers', 'wm.base.events.touch']);
 
@@ -28,12 +28,8 @@ WM.module('wm.layouts.containers')
                 return $template[0].outerHTML;
             },
             'link': {
-                'pre': function (iScope) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                'pre': function (iScope, $el, attrs) {
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);

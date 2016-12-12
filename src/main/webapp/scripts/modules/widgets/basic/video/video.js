@@ -88,8 +88,8 @@ WM.module('wm.widgets.basic')
                 }
 
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         if (attrs.controls) {

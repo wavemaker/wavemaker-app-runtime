@@ -249,8 +249,9 @@ WM.module('wm.widgets.basic')
             'replace' : true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/progress.html'),
             'link'    : {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                     Object.defineProperty(scope, 'binddataset', {
                         'configurable': true
                     });

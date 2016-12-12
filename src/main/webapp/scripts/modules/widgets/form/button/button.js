@@ -59,8 +59,8 @@ WM.module('wm.widgets.form')
                             WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
                             attrs.iconclass = 'glyphicon glyphicon-' + attrs.iconname;
                         }
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);

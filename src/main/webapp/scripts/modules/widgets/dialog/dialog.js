@@ -44,7 +44,7 @@ WM.module('wm.widgets.dialog')
             '<div class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
             );
 
-    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', '$window', 'DialogService', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, $window, DialogService) {
+    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', '$window', 'DialogService', 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, $window, DialogService, Utils) {
         'use strict';
         var transcludedContent = "",
             id,
@@ -123,8 +123,9 @@ WM.module('wm.widgets.dialog')
             "replace": true,
             "compile": function () {
                 return {
-                    "pre": function (scope) {
-                        scope.widgetProps = widgetProps;
+                    "pre": function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                         scope.hideDialog = function () {
                           DialogService.hideDialog(scope.dialogid);
                         };
@@ -290,7 +291,7 @@ WM.module('wm.widgets.dialog')
                 return {
                     "pre": function (scope, element, attrs, ctrl) {
                         scope.__readyQueue = [];
-                        scope.widgetProps = widgetProps;
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         scope.whenReady = function (fn) {
                             scope.__readyQueue.push(fn);
                         };
@@ -329,7 +330,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogheader', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
+    }]).directive('wmDialogheader', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "CONSTANTS", 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
@@ -363,8 +364,8 @@ WM.module('wm.widgets.dialog')
             "template": $templateCache.get("template/widget/dialog/dialog-header.html"),
             "compile": function () {
                 return {
-                    "pre": function (scope) {
-                        scope.widgetProps = widgetProps;
+                    "pre": function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     "post": function (scope, element, attrs, dialogCtrl) {
                         var parentEl,
@@ -408,7 +409,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogactions', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "DialogService", "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $templateCache, DialogService, CONSTANTS) {
+    }]).directive('wmDialogactions', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "DialogService", 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, DialogService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogactions", ["wm.base"]);
 
@@ -420,8 +421,8 @@ WM.module('wm.widgets.dialog')
             "template": $templateCache.get("template/widget/dialog/dialog-footer.html"),
             "compile": function () {
                 return {
-                    "pre": function (scope) {
-                        scope.widgetProps = widgetProps;
+                    "pre": function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     "post": function (iScope, element, attrs) {
                         var parentEl,

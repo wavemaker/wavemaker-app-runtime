@@ -18,7 +18,7 @@ WM.module('wm.widgets.dialog')
             '</div>'
             );
     }])
-    .directive('wmIframedialog', ["$templateCache", 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$sce', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $sce, $window) {
+    .directive('wmIframedialog', ["$templateCache", 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$sce', '$window', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $sce, $window, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.iframedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -78,8 +78,8 @@ WM.module('wm.widgets.dialog')
                 return $templateCache.get("template/widget/dialog/iframedialog.html");
             },
             "link": {
-                "pre": function (scope) {
-                    scope.widgetProps = widgetProps;
+                "pre": function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
                     /* handles ok button click*/

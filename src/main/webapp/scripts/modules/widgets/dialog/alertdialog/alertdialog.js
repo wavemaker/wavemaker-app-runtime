@@ -87,11 +87,7 @@ WM.module('wm.widgets.dialog')
             },
             "link": {
                 "pre": function (iScope, element, attrs) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
                     if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas

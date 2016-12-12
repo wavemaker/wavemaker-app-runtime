@@ -260,8 +260,8 @@ WM.module('wm.widgets.advanced')
                                 isMoving = false;
                             }, 600, false);
                         }
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         if (!attrs.type) {
-                            $is.widgetProps = widgetProps;
                             $is.contents    = [];
                             $is.activeIndex = 0;
                             //static carousel don't have current slide.
@@ -342,8 +342,6 @@ WM.module('wm.widgets.advanced')
                                     $is.autoPlay = undefined;
                                 };
                             }
-                        } else {
-                            $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         }
                     },
                     'post': function ($is, $el, attrs, listCtrl) {
@@ -407,8 +405,9 @@ WM.module('wm.widgets.advanced')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.containers']);
@@ -420,8 +419,8 @@ WM.module('wm.widgets.advanced')
                 'replace'   : true,
                 'require'   : '^wmCarousel',
                 'link'      : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs, controller) {
                         $is.getElement = function () {
@@ -442,14 +441,15 @@ WM.module('wm.widgets.advanced')
         '$templateCache',
         'WidgetUtilService',
         'CONSTANTS',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, Utils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.containers']),
                 directiveDefn;
 
-            function preLinkFn($is) {
-                $is.widgetProps = widgetProps;
+            function preLinkFn($is, $el, attrs) {
+                $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
             }
 
             function studioMode_postLinkFn($is, $el, attrs) {

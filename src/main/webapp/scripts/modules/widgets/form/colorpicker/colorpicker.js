@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
                 '><span class="input-group-addon" ng-style="{backgroundColor:_model_}">&nbsp;</span></div>');
     }])
     /*Colorpicker widget directive definition*/
-    .directive('wmColorpicker', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
+    .directive('wmColorpicker', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
         'use strict';
         /*Obtaining the widget properties from the Base configurations, by combining widget properties and it's parent group's properties.*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.colorpicker', ['wm.base', 'wm.base.events', 'wm.base.events.focus', 'wm.base.events.change']);
@@ -60,9 +60,8 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    /*Assigning the obtained widgetProps to the widget scope.*/
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     /*Called from form reset when users clicks on form reset*/

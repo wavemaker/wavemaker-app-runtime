@@ -51,12 +51,8 @@ WM.module('wm.layouts.containers')
                 };
             }],
             'link': {
-                'pre': function (iScope) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                'pre': function (iScope, $el, attrs) {
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     //To support backward compatibility for old projects
@@ -73,8 +69,9 @@ WM.module('wm.layouts.containers')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base', 'wm.containers']);
@@ -86,8 +83,8 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'require'   : '^wmCard',
                 'link'   : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs, controller) {
                         controller.register('content', $el);
@@ -101,8 +98,9 @@ WM.module('wm.layouts.containers')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardactions', ['wm.base']);
@@ -114,8 +112,8 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'require'   : '^wmCard',
                 'link'   : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs, controller) {
                         controller.register('action', $el);
@@ -129,8 +127,9 @@ WM.module('wm.layouts.containers')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardfooter', ['wm.base']);
@@ -142,8 +141,8 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'require'   : '^wmCard',
                 'link'   : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs, controller) {
                         controller.register('footer', $el);

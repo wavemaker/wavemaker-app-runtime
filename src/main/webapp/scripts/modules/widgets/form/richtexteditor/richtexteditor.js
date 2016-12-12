@@ -17,8 +17,9 @@ WM.module('wm.widgets.form')
         '$templateCache',
         'WidgetUtilService',
         '$injector',
+        'Utils',
 
-        function (PropertiesFactory, $tc, WidgetUtilService, $injector) {
+        function (PropertiesFactory, $tc, WidgetUtilService, $injector, Utils) {
             'use strict';
 
             // Specific to textAngular.
@@ -102,8 +103,8 @@ WM.module('wm.widgets.form')
                     return template[0].outerHTML;
                 },
                 'link': {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
                         /* register the property change handler */

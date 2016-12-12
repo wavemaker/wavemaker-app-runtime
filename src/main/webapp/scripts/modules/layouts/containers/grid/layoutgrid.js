@@ -9,8 +9,9 @@ WM.module('wm.layouts.containers')
         'CONSTANTS',
         '$rootScope',
         '$compile',
+        'Utils',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $compile) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $compile, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid'),
@@ -78,8 +79,8 @@ WM.module('wm.layouts.containers')
                 'transclude': true,
                 'template'  : '<div init-widget class="app-grid-layout clearfix" apply-styles="container" wmtransclude></div>',
                 'link'      : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
 
                     'post': function ($is, $el, attrs) {

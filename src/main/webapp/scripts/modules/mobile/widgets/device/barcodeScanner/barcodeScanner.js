@@ -23,8 +23,9 @@ WM.module('wm.widgets.advanced')
         'CONSTANTS',
         '$rootScope',
         '$cordovaBarcodeScanner',
+        'Utils',
 
-        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaBarcodeScanner) {
+        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaBarcodeScanner, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.advancedformwidgets']);
@@ -50,8 +51,8 @@ WM.module('wm.widgets.advanced')
                 'scope'   : {onSuccess: '&'},
                 'template': $tc.get('template/widget/advanced/barcodeScanner.html'),
                 'link'    : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
                         $is.openBarcodeScanner = openBarcodeScanner.bind(undefined, $is);

@@ -64,12 +64,8 @@ WM.module('wm.widgets.live')
                     tAttr.gridColumnMarkup = gridMarkup;
 
                     return {
-                        pre: function (iScope) {
-                            if (CONSTANTS.isStudioMode) {
-                                iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                            } else {
-                                iScope.widgetProps = widgetProps;
-                            }
+                        pre: function (iScope, $el, attrs) {
+                            iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         },
                         post: function (scope, element, attrs) {
                             var handlers = [],

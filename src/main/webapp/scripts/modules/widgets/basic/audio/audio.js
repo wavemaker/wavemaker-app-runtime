@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
                 '</audio>' +
             '</div>');
     }])
-    .directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
+    .directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.audio', ['wm.base']),
             notifyFor = {
@@ -62,8 +62,8 @@ WM.module('wm.widgets.basic')
                 }
 
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         if (attrs.controls) {

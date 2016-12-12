@@ -24,7 +24,9 @@ WM.module('wm.widgets.advanced')
         '$rootScope',
         '$cordovaCamera',
         '$cordovaCapture',
-        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture) {
+        'Utils',
+
+        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base','wm.base.advancedformwidgets']),
@@ -123,8 +125,8 @@ WM.module('wm.widgets.advanced')
                 'scope'   : {'onSuccess' : '&'},
                 'template': $tc.get('template/widget/advanced/camera.html'),
                 'link'    : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
                         $is.openCamera = openCamera.bind(undefined, $is);

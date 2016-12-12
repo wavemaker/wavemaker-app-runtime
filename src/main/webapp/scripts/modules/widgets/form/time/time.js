@@ -147,11 +147,7 @@ WM.module('wm.widgets.form')
                 'link': {
                     'pre': function ($is, $el, attrs) {
 
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         if ($rs.isMobileApplicationType && attrs.type !== 'uib-picker') {
                             $is._nativeMode = true;

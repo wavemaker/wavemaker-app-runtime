@@ -62,8 +62,8 @@ WM.module('wm.layouts.containers')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs, ctrl) {
                         var defaultPane;
@@ -76,7 +76,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, CONSTANTS) {
+    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
@@ -95,11 +95,7 @@ WM.module('wm.layouts.containers')
                             attrs.title = attrs.heading;
                         }
 
-                        if (CONSTANTS.isStudioMode) {
-                            scope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            scope.widgetProps = widgetProps;
-                        }
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         scope.$lazyLoad   = WM.noop;
                         element.removeAttr('title');

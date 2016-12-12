@@ -165,8 +165,8 @@ WM.module('wm.layouts.containers')
             }
 
             // pre link function of studio directive
-            function preLinkFn($is) {
-                $is.widgetProps = CONSTANTS.isStudioMode ? Utils.getClonedObject(widgetProps) : widgetProps;
+            function preLinkFn($is, $el, attrs) {
+                $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
             }
 
             // Create child scope out of the isolateScope

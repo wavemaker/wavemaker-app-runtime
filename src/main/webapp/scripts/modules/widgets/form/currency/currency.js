@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
             '</div>'
             );
     }])
-    .directive('wmCurrency', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$locale', 'CURRENCYCONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $locale, CURRENCYCONSTANTS) {
+    .directive('wmCurrency', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$locale', 'CURRENCYCONSTANTS', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, $locale, CURRENCYCONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.currency', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
@@ -86,8 +86,8 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     /* to get the currency symbol from current locale*/

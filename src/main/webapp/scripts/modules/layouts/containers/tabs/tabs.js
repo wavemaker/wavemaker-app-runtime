@@ -127,8 +127,7 @@ WM.module('wm.layouts.containers')
             },
             link: {
                 'pre': function (scope, element, attrs) {
-                    /* save the reference to widgetProps in scope */
-                    scope.widgetProps = widgetProps;
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     // In run mode when the tabs position is horizontal and transition is setup add 'has-transition' class
                     if (CONSTANTS.isRunMode && attrs.transition && attrs.transition !== 'none' && (!attrs.tabsposition || attrs.tabsposition === 'top' || attrs.tabsposition === 'bottom')) {
@@ -351,11 +350,7 @@ WM.module('wm.layouts.containers')
                             attrs.title = attrs.heading;
                         }
 
-                        if (CONSTANTS.isStudioMode) {
-                            scope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            scope.widgetProps = widgetProps;
-                        }
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         scope.$lazyLoad = WM.noop;
                     },

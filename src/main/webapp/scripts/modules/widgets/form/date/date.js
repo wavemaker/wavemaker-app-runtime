@@ -154,12 +154,8 @@ WM.module('wm.widgets.form')
                     return template[0].outerHTML;
                 },
                 'link': {
-                    'pre': function ($is) {
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         $is._dateOptions = {};
                         if ($rs.isMobileApplicationType) {

@@ -1250,11 +1250,8 @@ WM.module('wm.widgets.live')
             }
 
             function preLinkFn($is, $el, attrs) {
-                if (CONSTANTS.isStudioMode) {
-                    $is.widgetProps = Utils.getClonedObject(widgetProps);
-                } else {
-                    $is.widgetProps = widgetProps;
-                }
+
+                $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
                 $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;
