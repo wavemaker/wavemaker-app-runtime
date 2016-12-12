@@ -350,8 +350,13 @@ WM.module('wm.layouts.containers')
                         if (attrs.heading && !attrs.title) {
                             attrs.title = attrs.heading;
                         }
-                        /* save the reference to widgetProps in scope */
-                        scope.widgetProps = widgetProps;
+
+                        if (CONSTANTS.isStudioMode) {
+                            scope.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            scope.widgetProps = widgetProps;
+                        }
+
                         scope.$lazyLoad = WM.noop;
                     },
                     'post': function (scope, element, attrs, ctrl) {

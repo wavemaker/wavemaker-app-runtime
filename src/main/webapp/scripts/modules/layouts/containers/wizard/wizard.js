@@ -213,7 +213,12 @@ WM.module('wm.layouts.containers')
                 'require'   : '^wmWizard',
                 'link'      : {
                     'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+
+                        if (CONSTANTS.isStudioMode) {
+                            $is.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            $is.widgetProps = widgetProps;
+                        }
                     },
                     'post': function ($is, $el, attrs, ctrl) {
                         var $parentElement = $el.parent().closest('.app-wizard'),

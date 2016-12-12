@@ -1291,6 +1291,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.view': {
                         "show": {"type": "boolean", "value": true, "bindable" : "in-out-bound"},
+                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
                         "viewgroup": {"type": "string", "value": "default"},
                         "animation": {"type": "list", "options": animationOptions}
                     },
