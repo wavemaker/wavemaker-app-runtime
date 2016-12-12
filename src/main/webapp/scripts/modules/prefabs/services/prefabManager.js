@@ -291,7 +291,7 @@ WM.module('wm.prefabs')
              */
             function isPrefabVersionMismatch(prefabName) {
                 var prefab = getProjectPrefab(prefabName);
-                return prefab.status === 'DEV' || prefab.version !== prefab.workspaceVersion;
+                return prefab.workspaceVersion && (prefab.status === 'DEV' || prefab.version !== prefab.workspaceVersion);
             }
 
             /**
