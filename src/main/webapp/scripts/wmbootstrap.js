@@ -3,16 +3,20 @@
 WM.element.holdReady(true);
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
-    WM.element('#wm-app-content').attr('ng-view', '');
+
+    var $appView = WM.element('#wm-app-content');
+
+    $appView.attr('ng-view', '');
 
     // add a node to the DOM to determine the mobile view
     WM.element('<i id="wm-mobile-display"></i>').appendTo('.wm-app');
 
     if (window.cordova) {
-        document.addEventListener("deviceready", function () {
+        document.addEventListener('deviceready', function () {
             WM.element.holdReady(false);
         }, false);
     } else {
+        $appView.attr('no-animate', '');
         WM.element.holdReady(false);
     }
 });
