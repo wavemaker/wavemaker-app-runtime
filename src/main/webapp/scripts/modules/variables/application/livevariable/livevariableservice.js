@@ -1468,9 +1468,22 @@ wm.variables.services.$liveVariable = [
                         variable.promise.abort();
                     }
                 },
-                setInput: function (variable, key, val) {
+                setInput: function (variable, key, val, options) {
                     var paramObj = {},
                         targetObj = {};
+
+                    // process, if extra options provided for input
+                    if (WM.isObject(options)) {
+                        switch (options.type) {
+                        case 'file':
+                            val = Utils.getBlob(val, options.contentType);
+                            break;
+                        case 'number':
+                            val = _.isNumber(val) ? val : parseInt(val);
+                            break;
+                        }
+                    }
+
                     if (WM.isObject(key)) {
                         paramObj = key;
                     } else {
@@ -1656,8 +1669,8 @@ wm.variables.services.$liveVariable = [
                 cancel: function () {
                     return methods.cancel(this);
                 },
-                setInput: function (key, val) {
-                    return methods.setInput(this, key, val);
+                setInput: function (key, val, options) {
+                    return methods.setInput(this, key, val, options);
                 },
                 setFilter: function (key, val) {
                     return methods.setFilter(this, key, val);
