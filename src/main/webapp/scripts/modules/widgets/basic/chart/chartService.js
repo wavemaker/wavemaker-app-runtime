@@ -501,57 +501,29 @@ WM.module('wm.widgets.basic')
             }
 
             function modifyLegendPosition(scope, position, id) {
-                var showLegend = isShowLegend(scope.showlegend);
-                //Return when showlegend is false
-                if (!showLegend) {
-                    return;
-                }
-                var chart_Id = id ? '#wmChart' + id : chartId,
+                var showLegend = isShowLegend(scope.showlegend),
+                    chart_Id = id ? '#wmChart' + id : chartId,
                     legendWrap = d3.select(chart_Id + ' .nv-legendWrap'),
-                    legendWrapHeight,
-                    legendWrapTransform,
-                    coordinates,
-                    y,
-                    getChartHeight = function () {
-                        var chartHeight = WM.element(chart_Id + ' svg>.nvd3.nv-wrap')[0].getBoundingClientRect().height;
-                        if (chartHeight === 0) { //fix for IE
-                            chartHeight = (WM.element(chart_Id + ' svg')[0].getBoundingClientRect().height - (legendWrapHeight + 15));
-                        }
-                        return chartHeight;
-                    },
-                    getAxisLabelHeight = function (axis) {
-                        var axisLabel = d3.select(chart_Id + ' .nv-' + axis + '.nv-axis .nv-axislabel')[0][0];
-                        return axisLabel ? axisLabel.getBoundingClientRect().height : 0;
-                    };
-
-                if (!legendWrap[0][0]) {
+                    legendPadding = 5;
+                //Return when showlegend is false
+                if (!showLegend || !legendWrap[0][0]) {
                     return;
                 }
-
-                legendWrapHeight = legendWrap[0][0].getBoundingClientRect().height;
-                legendWrapTransform = (legendWrap && legendWrap.attr('transform')) ? legendWrap.attr('transform').replace(/, /g, ',') : '';
-                coordinates = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(legendWrapTransform);
-
-                switch (position) {
-                case 'top':
-                    y = -(legendWrapHeight + 15);
-                    break;
-                case 'bottom':
-                    if (scope.offsetbottom > legendWrapHeight) {
-                        y = getChartHeight() - (legendWrapHeight + 15);
-
-                        if (scope.type !== 'Bar') {
-                            y = y - getAxisLabelHeight('x');
-                        } else if (scope.type === 'Bar') {
-                            y = y - getAxisLabelHeight('y');
-                        }
-                    }
-                    break;
-                default:
-                    y = +coordinates[2];
+                if (position === 'bottom') {
+                    var legendWrapHeight = legendWrap[0][0].getBoundingClientRect().height,
+                        wrap = d3.select(chart_Id + ' .nv-wrap'),
+                        wrapTransform = (wrap && wrap.attr('transform')) ? wrap.attr('transform').replace(/, /g, ',') : '',
+                        coordinates = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(wrapTransform),
+                        getChartHeight = function () {
+                            var chartHeight = WM.element(chart_Id + ' svg>.nvd3.nv-wrap')[0].getBoundingClientRect().height;
+                            if (chartHeight === 0) { //fix for IE
+                                chartHeight = (WM.element(chart_Id + ' svg')[0].getBoundingClientRect().height - (legendWrapHeight + 15));
+                            }
+                            return chartHeight;
+                        };
+                    legendWrap.attr('transform', 'translate(0 , ' + (getChartHeight() - legendWrapHeight - legendPadding) + ')');
+                    wrap.attr('transform', 'translate(' + coordinates[1] + ',' + legendPadding + ')');
                 }
-
-                legendWrap.attr('transform', 'translate(' + coordinates[1] + ', ' + y + ')');
             }
 
             //Returns value if legend need to shown or not
