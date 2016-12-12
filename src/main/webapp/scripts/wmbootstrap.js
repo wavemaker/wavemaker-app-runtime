@@ -1,4 +1,4 @@
-/*global WM, window, device, _, _WM_APP_PROPERTIES, navigator, document */
+/*global WM, window, device, _, _WM_APP_PROPERTIES, navigator, document*/
 
 WM.element.holdReady(true);
 document.addEventListener('DOMContentLoaded', function () {
@@ -204,8 +204,15 @@ Application
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
                                 ssoUrl = $rs.project.deployedUrl + SSO_URL + (page ? '?redirectPage=' + page : '');
-                                //In case of CAS redirecting to the sso login page
-                                $window.location.href = ssoUrl;
+                                /*
+                                 * remove iFrame when redirected to IdP login page.
+                                 * this is being done as IDPs do not allow to get themselves loaded into iFrames.
+                                 */
+                                if ($window.self !== $window.top) {
+                                    $window.parent.location.href = ssoUrl;
+                                } else {
+                                    $window.location.href = ssoUrl;
+                                }
                                 break;
                             }
                         }
