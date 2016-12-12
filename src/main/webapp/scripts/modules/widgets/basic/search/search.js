@@ -285,7 +285,7 @@ WM.module('wm.widgets.basic')
             // onkeyup show the close icon.
             function onKeyUp($is, element, event) {
                 var $navbarElScope,
-                    _action,
+                    _action = Utils.getActionFromKey(event),
                     inputVal = element.find('input').val();
 
                 if (element.hasClass('app-mobile-search')) {
@@ -294,7 +294,6 @@ WM.module('wm.widgets.basic')
                     $navbarElScope.query = inputVal;
                     $is.query = inputVal;
 
-                    _action = Utils.getActionFromKey(event);
                     if (_action === 'ENTER') {
                         onsearchSubmit($navbarElScope, element);
                     }
@@ -308,6 +307,11 @@ WM.module('wm.widgets.basic')
                 $is.query = inputVal;
                 $rs.$evalAsync(function () {
                     $is.showClosebtn = (inputVal !== '');
+
+                    // hide the keypad on submit.
+                    if (_action === 'ENTER') {
+                        element.find('input[uib-typeahead]').blur();
+                    }
                 });
             }
             //Check if the widget is of type autocomplete in mobile view/ app
