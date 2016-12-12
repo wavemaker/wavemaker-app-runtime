@@ -305,6 +305,7 @@ WM.module('wm.prefabs')
             }
             //prepares the project prefabs map
             function prepareAppPrefabsNamePropertiesMap() {
+                appPrefabNamePropertiesMap = {};
                 _.forEach(appPrefabs, function (prefabObj) {
                     appPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
                 });
@@ -342,6 +343,7 @@ WM.module('wm.prefabs')
             }
 
             function prepareWorkspacePrefabsNamePropertiesMap() {
+                studioPrefabNamePropertiesMap = {};
                 _.forEach(workspacePrefabs, function (prefabObj) {
                     studioPrefabNamePropertiesMap[prefabObj.name] = prefabObj;
                 });
