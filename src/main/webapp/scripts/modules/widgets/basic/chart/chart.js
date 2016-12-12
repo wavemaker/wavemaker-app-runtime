@@ -831,6 +831,7 @@ WM.module('wm.widgets.basic')
                 scope._resizeFn = nv.utils.windowResize(function () {
                     if (element[0].getBoundingClientRect().height) {
                         chart.update();
+                        ChartService.postPlotChartProcess(scope);
                         if (!ChartService.isPieType(scope.type)) {
                             setLabelsMaxWidth(scope);
                         }
@@ -894,8 +895,11 @@ WM.module('wm.widgets.basic')
             if (!element[0].getBoundingClientRect().height) {
                 return;
             }
-            //empty svg to add-new chart
-            element.find('svg').replaceWith('<svg></svg>');
+            if (scope.clearCanvas) {
+                //empty svg to add-new chart
+                element.find('svg').replaceWith('<svg></svg>');
+                scope.clearCanvas = false;
+            }
 
             nv.addGraph(function () {
                 configureChart(scope, element, datum);
@@ -1160,6 +1164,9 @@ WM.module('wm.widgets.basic')
                     scope.offsetleft = 75;
                 }
 
+                if (oldVal !== newVal) {
+                    scope.clearCanvas = true;
+                }
                 // In studio mode, configure properties dependent on chart type
                 if (CONSTANTS.isStudioMode) {
                     togglePropertiesByChartType(scope);
