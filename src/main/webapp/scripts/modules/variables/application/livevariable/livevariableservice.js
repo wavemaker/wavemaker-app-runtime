@@ -1261,6 +1261,19 @@ wm.variables.services.$liveVariable = [
                     Utils.triggerFn(error, errMsg);
                 });
             },
+            updatePagination = function (variable, flag) {
+                // update pagination locally, to reflect on pagination
+                var pagination = _.get(variable.dataSet, 'pagingOptions');
+                if (pagination) {
+                    if (flag) {
+                        pagination.dataSize += 1;
+                        pagination.maxResults += 1;
+                    } else {
+                        pagination.dataSize -= 1;
+                        pagination.maxResults -= 1;
+                    }
+                }
+            },
         /* properties of a basic variable - should contain methods applicable on this particular object */
             methods = {
                 /*Function to get the primary key of the specified variable.*/
@@ -1584,6 +1597,45 @@ wm.variables.services.$liveVariable = [
                             return relatedCols && relatedCols.fieldName;
                         }
                     }
+                },
+                addItem: function (variable, item, index) {
+                    var data = _.get(variable.dataSet, 'data') || [];
+                    index = index !== undefined ? index : data.length;
+                    data.splice(index, 0, item);
+
+                    // update pagination locally, to reflect on pagination
+                    updatePagination(variable, true);
+                },
+                removeItem: function (variable, item) {
+                    var data = _.get(variable.dataSet, 'data') || [];
+                    item = item !== undefined ? item : data.length - 1;
+
+                    if (WM.isObject(item)) {
+                        item = _.findIndex(data, item);
+                        if (item > -1) {
+                            data.splice(item, 1);
+                        }
+                    } else {
+                        /* set the value against the specified index */
+                        data.splice(item, 1);
+                    }
+
+                    // update pagination locally, to reflect on pagination
+                    updatePagination(variable);
+                },
+                updateItem: function (variable, item, newItem) {
+                    var data = _.get(variable.dataSet, 'data') || [];
+                    item = item !== undefined ? item : data.length - 1;
+
+                    if (WM.isObject(item)) {
+                        item = _.findIndex(data, item);
+                        if (item > -1) {
+                            data[item] = newItem;
+                        }
+                    } else {
+                        /* set the value against the specified index */
+                        data[item] = newItem;
+                    }
                 }
             },
 
@@ -1680,6 +1732,15 @@ wm.variables.services.$liveVariable = [
                 },
                 getRelatedTablePrimaryKeys: function (columnName) {
                     return methods.getRelatedTablePrimaryKeys(this, columnName);
+                },
+                addItem: function (item, index) {
+                    return methods.addItem(this, item, index);
+                },
+                updateItem: function (item, newItem) {
+                    return methods.updateItem(this, item, newItem);
+                },
+                removeItem: function (item) {
+                    return methods.removeItem(this, item);
                 },
                 init: function () {
                     if (this.operation === 'read') {
