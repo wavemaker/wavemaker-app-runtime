@@ -28,9 +28,9 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (navigation === \'Basic\' || navigation === \'Pager\' || navigation === \'Inline\' || navigation === \'Classic\' || (navigation === \'On-Demand\' && !variableInflight))">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight))">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
-                        '<a ng-show="navigation === \'On-Demand\'" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified">{{ondemandmessage}}</a>' +
+                        '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified">{{ondemandmessage}}</a>' +
                     '</div>' +
                 '</div>'
             );
@@ -695,25 +695,29 @@ WM.module('wm.widgets.live')
             }
 
             function resetNavigation($is) {
-                $is.navControls  = undefined;
-                $is.infScroll    = false;
-                $is.onDemandLoad = false;
+                $is.showNavigation = false;
+                $is.navControls    = undefined;
+                $is.infScroll      = false;
+                $is.onDemandLoad   = false;
             }
 
             function enableBasicNavigation($is) {
-                $is.navControls = NAVIGATION.BASIC;
+                $is.navControls    = NAVIGATION.BASIC;
+                $is.showNavigation = true;
             }
 
             function enableInlineNavigation($is) {
-                $is.navControls       = NAVIGATION.INLINE;
+                $is.navControls = NAVIGATION.INLINE;
             }
 
             function enableClassicNavigation($is) {
-                $is.navControls = NAVIGATION.CLASSIC;
+                $is.navControls    = NAVIGATION.CLASSIC;
+                $is.showNavigation = true;
             }
 
             function enablePagerNavigation($is) {
-                $is.navControls = NAVIGATION.PAGER;
+                $is.navControls    = NAVIGATION.PAGER;
+                $is.showNavigation = true;
             }
 
             function enableInfiniteScroll($is) {
@@ -1477,7 +1481,7 @@ WM.module('wm.widgets.live')
                 //On pagination change through datanavigator
                 $is._onPaginationchange = function (options) {
                     //On pagination change, scroll the page to top
-                    if (_.includes([NAVIGATION.BASIC, NAVIGATION.CLASSIC, NAVIGATION.ADVANCED, NAVIGATION.PAGER], $is.navigation)) {
+                    if ($is.showNavigation) {
                         $is.$element.find('[data-identifier="list"]').scrollTop(0);
                     }
                     if ($is.onPaginationchange) {
