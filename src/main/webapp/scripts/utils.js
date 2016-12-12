@@ -2319,6 +2319,23 @@ WM.module('wm.utils', [])
             return _formatDate(value, type);
         }
 
+        /**
+         * prepare a blob object based on the content and content type provided
+         * if content is blob itself, simply returns it back
+         * @param val
+         * @param valContentType
+         * @returns {*}
+         */
+        function getBlob(val, valContentType) {
+            var valConstructorType = _.toLower(_.get(val, 'constructor.name'));
+            if (valConstructorType === 'string' || valConstructorType === 'number') {
+                val = new Blob([val], {type: valContentType || 'text/plain'});
+            } else if (valConstructorType === 'object' && getValidJSON(val)) {
+                val = new Blob([val], {type: valContentType || 'application/json'});
+            }
+            return val;
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2448,4 +2465,5 @@ WM.module('wm.utils', [])
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
         this.formatDate                 = formatDate;
+        this.getBlob                    = getBlob;
     }]);
