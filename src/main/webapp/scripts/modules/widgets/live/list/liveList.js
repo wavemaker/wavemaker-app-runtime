@@ -231,47 +231,71 @@ WM.module('wm.widgets.live')
                 $is.$liScope.fetchInProgress = inProgress;
             }
 
+            function _fetchNextOnScroll($is, $el) {
+                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
+                    navigator      = $dataNavigator.isolateScope();
+
+                $rs.$evalAsync(function () {
+                    setFetchInProgress($is, true);
+                    navigator.navigatePage('next');
+                    if (navigator.isLastPage()) {
+                        setFetchInProgress($is, false);
+                    }
+                });
+            }
+
 
             function bindScrollEvt($is, $el) {
-                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
-                    navigator      = $dataNavigator.isolateScope(),
-                    lastScrollTop  = 0,
-                    $scrollParent;
+                var lastScrollTop  = 0,
+                    $ul            = $el.find('> ul'),
+                    $scrollParent,
+                    scrollNode;
 
-                $scrollParent = $el.find('> ul')
-                    .children()
-                    .first()
-                    .scrollParent(false)
-                    .each(function () {
-                        //scrollTop property is 0 or undefined for body in IE, safari.
-                        lastScrollTop = this === document ? (this.body.scrollTop || WM.element(window).scrollTop()) : this.scrollTop;
-                    })
-                    .off('scroll.livelist')
-                    .on('scroll.livelist', function (evt) {
-                        var target = evt.target,
-                            clientHeight,
-                            totalHeight,
-                            scrollTop;
-                        //scrollingElement is undefined for IE, safari. use body as target Element
-                        target =  target === document ? (target.scrollingElement || document.body) : target;
+                $scrollParent = $ul.children().first().scrollParent(false);
 
-                        clientHeight = target.clientHeight;
-                        totalHeight  = target.scrollHeight;
-                        scrollTop    = target === document.body ? WM.element(window).scrollTop() : target.scrollTop;
+                if ($scrollParent[0] === document) {
+                    scrollNode = document.body;
+                } else {
+                    scrollNode = $scrollParent[0];
+                }
 
-                        if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
-                            WM.element(this).off('scroll.livelist');
-                            $rs.$evalAsync(function () {
-                                setFetchInProgress($is, true);
-                                navigator.navigatePage('next');
-                                if (navigator.isLastPage()) {
-                                    setFetchInProgress($is, false);
-                                }
-                            });
+                // has scroll
+                if (scrollNode.scrollHeight > scrollNode.clientHeight) {
+                    $scrollParent
+                        .each(function () {
+                            //scrollTop property is 0 or undefined for body in IE, safari.
+                            lastScrollTop = this === document ? (this.body.scrollTop || WM.element(window).scrollTop()) : this.scrollTop;
+                        })
+                        .off('scroll.scroll_evt')
+                        .on('scroll.scroll_evt', function (evt) {
+                            var target = evt.target,
+                                clientHeight,
+                                totalHeight,
+                                scrollTop;
+                            //scrollingElement is undefined for IE, safari. use body as target Element
+                            target =  target === document ? (target.scrollingElement || document.body) : target;
+
+                            clientHeight = target.clientHeight;
+                            totalHeight  = target.scrollHeight;
+                            scrollTop    = target === document.body ? WM.element(window).scrollTop() : target.scrollTop;
+
+                            if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
+                                WM.element(this).off('scroll.scroll_evt');
+                                _fetchNextOnScroll($is, $el);
+                            }
+
+                            lastScrollTop = scrollTop;
+                        });
+                } else {
+                    // if there is no scrollable element register wheel event on ul element
+                    $scrollParent = $ul;
+                    $ul.on('wheel.scroll_evt', function (e) {
+                        if (e.originalEvent.deltaY > 0) {
+                            $ul.off('wheel.scroll_evt');
+                            _fetchNextOnScroll($is, $el);
                         }
-
-                        lastScrollTop = scrollTop;
                     });
+                }
 
                 $el.data('$scrollParent', $scrollParent);
             }
@@ -503,7 +527,9 @@ WM.module('wm.widgets.live')
                         setFetchInProgress($is, false);
                         //Functionality of On-Demand and Scroll will be same except we don't attach scroll events
                         if (fieldDefs.length && !$is.onDemandLoad) {
-                            bindScrollEvt($is, $el);
+                            $timeout(function () {
+                                bindScrollEvt($is, $el);
+                            }, 100);
                         }
                     });
                 } else {
@@ -1357,7 +1383,7 @@ WM.module('wm.widgets.live')
                 Object.defineProperty($is, 'selecteditem', {'get': _.noop, 'set': _.noop});
                 handlers.forEach(Utils.triggerFn);
                 if ($scrollParent) { //In case of infinite scroll, get the scroll element and remove the scroll event
-                    $scrollParent.off('scroll.livelist');
+                    $scrollParent.off('.scroll_evt');
                 }
             }
 
