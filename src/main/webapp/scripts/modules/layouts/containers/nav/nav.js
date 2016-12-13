@@ -232,6 +232,10 @@ WM.module('wm.layouts.containers')
                                 $is.selecteditem = $item;
                                 Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $item});
                             };
+                        } else if ($el.parent().closest('[widgetid]').is('.app-navbar')) {
+                            //this hides type and layout properties only for top-nav
+                            $is.widgetProps.type.show = false;
+                            $is.widgetProps.layout.show = false;
                         }
                     }
                 }
