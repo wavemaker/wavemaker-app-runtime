@@ -2360,7 +2360,7 @@ $.widget('wm.datagrid', {
                 //Set selectFirstRow to false, to prevent first item being selected in next page
                 this.options.selectFirstRow = false;
             }
-            this.selectFirstRow(true);
+            this.selectFirstRow(true, true);
         }
     },
 
