@@ -374,12 +374,12 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 /*
                  * for proxy calls:
-                 * cloak the proper headers
-                 * prepare complete url from relativeUrl
+                 *  - cloak the proper headers (required only for REST services)
+                 *  - prepare complete url from relativeUrl
                  */
                 if (isProxyCall) {
                     //avoiding cloakHeadersForProxy when the method is invoked from apidesigner.
-                    headers = operationInfo.skipCloakHeaders ? headers : cloakHeadersForProxy(headers);
+                    headers = variable.serviceType !== SERVICE_TYPE_REST || operationInfo.skipCloakHeaders ? headers : cloakHeadersForProxy(headers);
                     if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
                         /* if it is a prefab variable (used in a normal project), modify the url */
                         url = "/prefabs/" + variable.prefabName + url;
