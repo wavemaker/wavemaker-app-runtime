@@ -243,6 +243,7 @@ WM.module('wm.widgets.base')
                                 parentName: iScope.name
                             }, true);
                         }
+                        element.find('> .app-partial-info').remove();
                         unbindEvtHandler(element);
                     }
                 }
