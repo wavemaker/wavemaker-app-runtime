@@ -397,7 +397,7 @@ wm.plugins.database.services.DatabaseService = [
                         "password": params.password,
                         "url": params.url,
                         "schemaFilter": params.schemaFilter,
-                        "tableFilter": null,
+                        "tableFilter": [],
                         "driverClass": params.driverClass,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
