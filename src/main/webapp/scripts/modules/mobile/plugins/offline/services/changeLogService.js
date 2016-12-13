@@ -645,7 +645,9 @@ wm.plugins.offline.run([
                     dataModelName = change.params.dataModelName;
                     entityStore = LocalDBManager.getStore(dataModelName, entityName);
                     id = change.dataLocalId || change.params.data[entityStore.primaryKeyName];
-                    recordError(dataModelName, entityName, id);
+                    if (!(_.isUndefined(id) || _.isNull(id))) {
+                        recordError(dataModelName, entityName, id);
+                    }
                 }
             }
         });
