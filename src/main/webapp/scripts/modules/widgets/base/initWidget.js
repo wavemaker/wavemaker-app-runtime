@@ -1,4 +1,4 @@
-/*global WM, _, wm, $, document*/
+/*global WM, _, wm, $, document, moment*/
 /**
  * @ngdoc directive
  * @name wm.widgets.directive:initWidget
@@ -891,16 +891,21 @@ WM.module('wm.widgets.base')
         '$rootScope',
         'Utils',
         'CONSTANTS',
+        '$interval',
 
-        function ($rs, Utils, CONSTANTS) {
+        function ($rs, Utils, CONSTANTS, $interval) {
             'use strict';
 
-            var regex          = /\[\$i\]/g,
-                $I             = '[$i]',
-                $0             = '[0]',
-                watchers       = [],
-                VARIABLE_REGEX = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
-                DATASET_REGEX  = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
+            var regex            = /\[\$i\]/g,
+                $I               = '[$i]',
+                $0               = '[0]',
+                watchers         = [],
+                intervalWatchers = [],
+                VARIABLE_REGEX   = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
+                DATASET_REGEX    = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
+                TIMER_REGEX      = /\s*\|\s*timeFromNow/, //Reg exp to match expr which has | timeFromNow filter applied
+                TIMER_INTERVAL   = 60000, //One minute
+                interval,
                 _registerWatchers;
 
             function isArrayTypeExpr(expr) {
@@ -913,6 +918,50 @@ WM.module('wm.widgets.base')
                     return false;
                 }
                 return DATASET_REGEX.test(expr);
+            }
+
+            /**
+             * destroy the watcher that is fired in intervals
+             * remove the watcher from the intervalWatchers array
+             * watcher.index is the identifier index for the watcher
+             * @param watcher, the watcher that is destroyed
+             */
+            function destroyWatcherInInterval(watcher) {
+                var watcherIdx = watcher.index,
+                    i,
+                    wtchr;
+
+                // remove the watcher from array.
+                intervalWatchers.splice(watcherIdx, 1);
+
+                // decrement indexes for watchers in the arrays after the removed watcher
+                for (i = 0; i < intervalWatchers.length; i++) {
+                    wtchr = intervalWatchers[i];
+                    if (wtchr.index > watcherIdx) {
+                        wtchr.index -= 1;
+                    }
+                }
+
+                // if no watchers left, destroy the interval
+                if (intervalWatchers.length === 0) {
+                    $interval.cancel(interval);
+                    interval = undefined;
+                }
+            }
+
+            /**
+             * execute all watchers to be fired in an interval
+             * watchers fired for the first time will be assigned a destroy method, to be called on scope destruction
+             */
+            function executeIntervalWatchers() {
+                var i, watcher;
+                for (i = 0; i < intervalWatchers.length; i++) {
+                    watcher = intervalWatchers[i];
+                    watcher.listener(moment(watcher.$s.$eval(watcher.expr.substr(0, watcher.expr.indexOf('|')).trim())).fromNow());
+                    if (!WM.isFunction(watcher.deRegister.destroy)) {
+                        watcher.deRegister.destroy = destroyWatcherInInterval.bind(undefined, watcher);
+                    }
+                }
             }
 
             // register the watchers.
@@ -931,6 +980,17 @@ WM.module('wm.widgets.base')
                                     watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
                                 }
                             }
+                        }
+                    }
+
+                    // loop interval watchers
+                    if (intervalWatchers.length) {
+                        // execute watchers first time, before the interval
+                        executeIntervalWatchers();
+
+                        // keep only one interval all the time, the interval will execute all watchers together
+                        if (!interval) {
+                            interval = $interval(executeIntervalWatchers, TIMER_INTERVAL);
                         }
                     }
 
@@ -1002,6 +1062,7 @@ WM.module('wm.widgets.base')
              */
             function register($s, watchExpr, listenerFn, config, key) {
                 var watchInfo,
+                    watcher,
                     _config        = config || {},
                     deepWatch      = _config.deepWatch,
                     allowPageable  = _config.allowPageable,
@@ -1055,13 +1116,21 @@ WM.module('wm.widgets.base')
                     };
                 }
 
-                watchers.push({
+                // gather watcher details
+                watcher = {
                     '$s'         : $s,
                     'expr'       : watchInfo.expr,
                     'listener'   : watchInfo.listener,
                     'deepWatch'  : deepWatch,
-                    'deRegister' : deRegister
-                });
+                    'deRegister' : deRegister,
+                    'index'      : intervalWatchers.length
+                };
+
+                if (TIMER_REGEX.test(watchInfo.expr)) {
+                    intervalWatchers.push(watcher);
+                } else {
+                    watchers.push(watcher);
+                }
 
                 // delay the registration of watcher to improve the load time performance.
                 _registerWatchers();
