@@ -53,6 +53,8 @@ WM.module("wm.widgets.basic")
             var sizeCls = sizeClasses[scope.navigation];
             if (sizeCls && scope.navigationsize) {
                 scope.navigationClass = sizeCls[scope.navigationsize];
+            } else {
+                scope.navigationClass = '';
             }
         }
 
