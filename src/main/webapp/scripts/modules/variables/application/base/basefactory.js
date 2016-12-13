@@ -171,7 +171,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "type": {"hide": true},
                     "operation": {"hide": true},
                     "operationId": {"hide": true},
-                    "startUpdate": {"type": "boolean", "widgettype": "boolean", "displayName": "Connect on page load"},
+                    "startUpdate": {"type": "boolean", "widgettype": "boolean", "displayName": "Connect on page load", "value": true},
                     "dataUpdateStrategy": {"type": "string", "widgettype": "list", "options": {"refresh": "Refresh dataSet", "append": "Add as last record in dataSet", "prepend": "Add as first record in dataSet"}, "value": "refresh", "displayName": "On New Data"},
                     "dataLimit": {"type": "number", "value": 20},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
