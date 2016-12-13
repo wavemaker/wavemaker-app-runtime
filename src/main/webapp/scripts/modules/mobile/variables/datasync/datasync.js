@@ -1,21 +1,57 @@
 /*global WM, _*/
-WM.module('wm.variables').run(['$cordovaNetwork', 'ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'VARIABLE_CONSTANTS',
-    function ($cordovaNetwork, ChangeLogService, DeviceVariableService, LocalDBManager, VARIABLE_CONSTANTS) {
+WM.module('wm.variables').run(['ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'VARIABLE_CONSTANTS',
+    function (ChangeLogService, DeviceVariableService, LocalDBManager, VARIABLE_CONSTANTS) {
         "use strict";
-        var operations;
+        var operations,
+            dataChangeTemplate = {
+                'service': 'DatabaseService',
+                'operation': 'operation',
+                'params': {
+                    'data' : {},
+                    'dataModelName' : 'dataModelName',
+                    'entityName' : 'entityName'
+                },
+                'hasError' : 0,
+                'errorMessage' : ''
+            },
+            changeLogSet = {
+                'total' : 0,
+                'database' : {
+                    'create' : [dataChangeTemplate],
+                    'update' : [dataChangeTemplate],
+                    'delete' : [dataChangeTemplate]
+                },
+                'uploads' : [{
+                    'service': 'OfflineFileUploadService',
+                    'operation': 'uploadToServer',
+                    'params': {
+                        'file': 'localFilePath',
+                        'serverUrl': 'serverUrl',
+                        'ftOptions': {}
+                    },
+                    'hasError' : 0,
+                    'errorMessage' : ''
+                }]
+            };
+
+        function generateChangeSet(changes) {
+            return {
+                'total' : changes ? changes.length : 0,
+                'database' : {
+                    'create' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'insertTableData'}),
+                    'update' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'updateTableData'}),
+                    'delete' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'deleteTableData'})
+                },
+                'uploads' : _.filter(changes, {'service' : 'OfflineFileUploadService', 'operation' : 'uploadToServer'})
+            };
+        }
 
         function getOfflineChanges() {
             return ChangeLogService.getChanges().then(function (changes) {
-                var errors = _.filter(changes, {'hasError' : 1});
                 return {
-                    'total' : changes.length - errors.length,
-                    'database' : {
-                        'create' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'insertTableData'}),
-                        'update' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'updateTableData'}),
-                        'delete' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'deleteTableData'})
-                    },
-                    'uploads' : _.filter(changes, {'service' : 'OfflineFileUploadService', 'operation' : 'uploadToServer'}),
-                    'error' : errors
+                    'total' : changes ? changes.length : 0,
+                    'pendingToSync' : generateChangeSet(_.filter(changes, {'hasError' : 0})),
+                    'failedToSync' : generateChangeSet(_.filter(changes, {'hasError' : 1}))
                 };
             });
         }
@@ -43,31 +79,28 @@ WM.module('wm.variables').run(['$cordovaNetwork', 'ChangeLogService', 'DeviceVar
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options) {
-                    getOfflineChanges().then(function (changes) {
-                        if (changes.total > 0 && $cordovaNetwork.isOnline()) {
-                            DeviceVariableService.initiateCallback('onBeforePush', variable, options, changes);
-                            ChangeLogService.flush(function (stats) {
-                                var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
-                                variable.dataSet = stats;
-                                DeviceVariableService.initiateCallback(eventName, variable, options, stats);
-                            }, function (stats) {
-                                variable.dataSet = stats;
-                                DeviceVariableService.initiateCallback('onProgress', variable, options, stats);
-                            });
-                        }
-                    });
+                    LocalDBManager.canConnectToServer()
+                        .then(getOfflineChanges)
+                        .then(function (changes) {
+                            if (changes.pendingToSync.total > 0) {
+                                DeviceVariableService.initiateCallback('onBeforePush', variable, options, changes);
+                                ChangeLogService.flush(function (stats) {
+                                    var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
+                                    variable.dataSet = stats;
+                                    DeviceVariableService.initiateCallback(eventName, variable, options, stats);
+                                }, function (stats) {
+                                    variable.dataSet = stats;
+                                    DeviceVariableService.initiateCallback('onProgress', variable, options, stats);
+                                });
+                            }
+                        });
                 }
             },
             getOfflineChanges : {
                 model: {
                     'total' : 0,
-                    'database' : {
-                        'create' : [],
-                        'update' : [],
-                        'delete' : []
-                    },
-                    'uploads' : [],
-                    'error' : []
+                    'pendingToSync' : changeLogSet,
+                    'failedToSync' : changeLogSet
                 },
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
