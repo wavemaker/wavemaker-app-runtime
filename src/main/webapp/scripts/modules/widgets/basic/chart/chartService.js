@@ -103,7 +103,13 @@ WM.module('wm.widgets.basic')
                 chartId = '#preview-chart',
                 dataTypeJSON = ['Column', 'Line', 'Pie', 'Bar', 'Donut', 'Bubble'],    //Charts that supports the data to be JSON;
                 lineTypeCharts = ['Line', 'Area', 'Cumulative Line'],   //Charts that does not supports the string type of data in the xaxis in the nvd3;
-                dataTypeArray = ['Cumulative Line', 'Area'];     //Charts that supports the data to be Array
+                dataTypeArray = ['Cumulative Line', 'Area'],     //Charts that supports the data to be Array
+                SAMPLE_DATA = {
+                    'group1' : 'Europe',
+                    'group2' : 'Asia',
+                    'group3' : 'America',
+                    'group4' : 'Australia'
+                };
 
             // returns true if chart type is pie
             function isPieChart(type) {
@@ -246,18 +252,18 @@ WM.module('wm.widgets.basic')
                     ];
                     data[0] = {
                         values: first_series,
-                        key: 'Apples'
+                        key: SAMPLE_DATA.group1
                     };
                     if (yaxisLength >= 2) {
                         data[1] = {
                             values: second_series,
-                            key: 'Oranges'
+                            key: SAMPLE_DATA.group2
                         };
                     }
                     if (yaxisLength >= 3) {
                         data[2] = {
                             values: third_series,
-                            key: 'Grapes'
+                            key: SAMPLE_DATA.group3
                         };
                     }
                     break;
@@ -279,18 +285,18 @@ WM.module('wm.widgets.basic')
                     ];
                     data[0] = {
                         values: first_series,
-                        key: 'Apples'
+                        key: SAMPLE_DATA.group1
                     };
                     if (yaxisLength >= 2) {
                         data[1] = {
                             values: second_series,
-                            key: 'Oranges'
+                            key: SAMPLE_DATA.group2
                         };
                     }
                     if (yaxisLength >= 3) {
                         data[2] = {
                             values: third_series,
-                            key: 'Grapes'
+                            key: SAMPLE_DATA.group3
                         };
                     }
                     break;
@@ -312,18 +318,18 @@ WM.module('wm.widgets.basic')
                     ];
                     data[0] = {
                         values: first_series_array,
-                        key: 'Apples'
+                        key: SAMPLE_DATA.group1
                     };
                     if (yaxisLength >= 2) {
                         data[1] = {
                             values: second_series_array,
-                            key: 'Oranges'
+                            key: SAMPLE_DATA.group2
                         };
                     }
                     if (yaxisLength >= 3) {
                         data[2] = {
                             values: third_series_array,
-                            key: 'Grapes'
+                            key: SAMPLE_DATA.group3
                         };
                     }
                     break;
@@ -346,27 +352,27 @@ WM.module('wm.widgets.basic')
                     ];
                     data[0] = {
                         values: first_series_bubble,
-                        key: 'Europe'
+                        key: SAMPLE_DATA.group1
                     };
                     if (yaxisLength >= 2) {
                         data[1] = {
                             values: second_series_bubble,
-                            key: 'Asia'
+                            key: SAMPLE_DATA.group2
                         };
                     }
                     if (yaxisLength >= 3) {
                         data[2] = {
                             values: third_series_bubble,
-                            key: 'Africa'
+                            key: SAMPLE_DATA.group3
                         };
                     }
                     break;
                 case 'pieChartFormat':
                     data = [
-                        {'x': 'Group 1', 'y': 1000000},
-                        {'x': 'Group 2', 'y': 2000000},
-                        {'x': 'Group 3', 'y': 3000000},
-                        {'x': 'Group 4', 'y': 4000000}
+                        {'x': SAMPLE_DATA.group1, 'y': 1000000},
+                        {'x': SAMPLE_DATA.group2, 'y': 2000000},
+                        {'x': SAMPLE_DATA.group3, 'y': 3000000},
+                        {'x': SAMPLE_DATA.group4, 'y': 4000000}
                     ];
                     break;
                 }
@@ -522,7 +528,9 @@ WM.module('wm.widgets.basic')
                             return chartHeight;
                         };
                     legendWrap.attr('transform', 'translate(0 , ' + (getChartHeight() - legendWrapHeight - legendPadding) + ')');
-                    wrap.attr('transform', 'translate(' + coordinates[1] + ',' + legendPadding + ')');
+                    if (coordinates) {
+                        wrap.attr('transform', 'translate(' + coordinates[1] + ',' + legendPadding + ')');
+                    }
                 }
             }
 
