@@ -102,16 +102,18 @@ WM.module('wm.widgets.form')
                     imageField     = $s.displayimagesrc,
                     displayFieldValue,
                     dataFieldValue,
+                    imageFieldValue,
                     value           = $s.value || $s.datavalue;
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
                     chips = _.map(dataset, function (dataObj) {
                         //Support of display expression
-                        displayFieldValue = WidgetUtilService.getEvaluatedData($s, dataObj, {fieldName: 'displayfield', expressionName: 'displayexpression'});
+                        displayFieldValue =  WidgetUtilService.getEvaluatedData($s, dataObj, {fieldName: 'displayfield', expressionName: 'displayexpression'});
                         dataFieldValue    =  Utils.getEvaluatedExprValue(dataObj, dataField);
+                        imageFieldValue   =  $s.binddisplayimagesrc ? WidgetUtilService.getEvaluatedData($s, dataObj, {expressionName: 'displayimagesrc'}) : dataObj[imageField];
 
                         if (displayField) {
-                            return constructChip(displayFieldValue, dataFieldValue, dataObj[imageField]);
+                            return constructChip(displayFieldValue, dataFieldValue, imageFieldValue);
                         }
                         return constructChip(dataObj);
                     });
