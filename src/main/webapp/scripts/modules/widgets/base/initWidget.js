@@ -1167,7 +1167,7 @@ WM.module('wm.widgets.base')
                         }
 
                         _.forEach(attrs.$$element.context.attributes, function (attr) {
-                            $el.attr(attr.name, attr.value);
+                            $el[0].setAttribute(attr.name, attr.value);
                         });
 
                         _clone = $el.clone(true);
