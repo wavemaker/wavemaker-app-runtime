@@ -79,7 +79,8 @@ WM.module('wm.widgets.basic')
                 'aggregation'       : true,
                 'aggregationcolumn' : true,
                 'orderby'           : true,
-                'showlegend'        : true
+                'showlegend'        : true,
+                'title'             : true
             };
 
         // Configuring the properties panel based on the type of the chart chosen
@@ -310,6 +311,8 @@ WM.module('wm.widgets.basic')
             //Plotting the chart with sample data when the chart dataset is not bound
             if (!scope.binddataset) {
                 scope.xDataKeyArr = ['01-01-2001', '01-01-2002', '01-01-2003'];
+                scope.showContentLoadError = true;
+                scope.errMsg = $rootScope.locale.MESSAGE_INFO_SAMPLE_DATA;
                 return scope.sampleData;
             }
 
