@@ -53,7 +53,7 @@ WM.module('wm.widgets.form')
 
             function setSelectedValue(scope) {
                 var options = scope.options;
-                if (scope._model_ !== undefined && scope._model_ !== null) {
+                if (scope._model_) {
                     options.some(function (opt, index) {
 
                         if (_.isEqual(scope._model_, opt)
