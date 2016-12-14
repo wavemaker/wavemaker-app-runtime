@@ -1354,7 +1354,7 @@ WM.module('wm.widgets.grid')
                     return;
                 }
                 $is.primaryKey     = variableObj.getPrimaryKey();
-                $is.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                $is.contentBaseUrl = ((variableObj._prefabName !== "" && variableObj._prefabName !== undefined) ? "prefabs/" + variableObj._prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
             }
             function selectItemOnSuccess(row, skipSelectItem, callBack) {
                 /*$timeout is used so that by then $is.dataset has the updated value.

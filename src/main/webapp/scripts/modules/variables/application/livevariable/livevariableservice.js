@@ -80,7 +80,7 @@ wm.variables.services.$liveVariable = [
                 if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
                     href += _.endsWith(deployedUrl, '/') ? deployedUrl : deployedUrl + '/';
                 }
-                href        += ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
+                href        += ((variable._prefabName !== '' && variable._prefabName !== undefined) ? 'prefabs/' + variable._prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
                 primaryKeys = variable.propertiesMap.primaryFields || variable.propertiesMap.primaryKeys;
                 _.forEach(responseData, function (data) {
                     if (data) {
@@ -735,14 +735,14 @@ wm.variables.services.$liveVariable = [
                 /*Fetch the table data*/
                 promiseObj = DatabaseService[dbOperation]({
                     "projectID": projectID,
-                    "service": variable.prefabName ? "" : "services",
+                    "service": variable._prefabName ? "" : "services",
                     "dataModelName": variable.liveSource,
                     "entityName": variable.type,
                     "page": options.page || 1,
                     "size": options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
                     "sort": tableOptions.sort,
                     "data": tableOptions.filter,
-                    "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl,
+                    "url": variable._prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable._prefabName) : $rootScope.project.deployedUrl,
                     "query" : tableOptions.query
                 }, function (response) {
 
@@ -761,7 +761,7 @@ wm.variables.services.$liveVariable = [
                             /* TODO: to look for a better option to get App/Page the controller's scope */
                             callBackScope = $rootScope || {};
                         } else {
-                            if (variable.prefabName) {
+                            if (variable._prefabName) {
                                 callBackScope = options.scope || {};
                             } else {
                                 callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
@@ -1150,12 +1150,12 @@ wm.variables.services.$liveVariable = [
 
                 promiseObj = DatabaseService[action]({
                     "projectID": projectID,
-                    "service": variableDetails.prefabName ? "" : "services",
+                    "service": variableDetails._prefabName ? "" : "services",
                     "dataModelName": dbName,
                     "entityName": variableDetails.type,
                     "id": WM.isDefined(options.id) ? encodeURIComponent(options.id) : compositeId,
                     "data": rowObject,
-                    "url": variableDetails.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variableDetails.prefabName) : $rootScope.project.deployedUrl
+                    "url": variableDetails._prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variableDetails._prefabName) : $rootScope.project.deployedUrl
                 }, function (response) {
                     /* if error received on making call, call error callback */
                     if (response && response.error) {
@@ -1334,7 +1334,7 @@ wm.variables.services.$liveVariable = [
                          * (as "getDataModel" call would not work in the "Application" mode).
                          * 2. In case of variables inside imported prefabs, "getDataModel" call would not work
                          * because the data-model would not be present in the project services directly.*/
-                        if (!CONSTANTS.isRunMode && !variable.prefabName) {
+                        if (!CONSTANTS.isRunMode && !variable._prefabName && !variable._partialname) {
                             /* get studio copy of variable*/
                             writableVariable = Variables.getVariableByName(variable.name);
                             getTableMetaData(projectID, variable, writableVariable, options, function () {
@@ -1359,7 +1359,7 @@ wm.variables.services.$liveVariable = [
                      * Studio Mode: Also, invoke the service to get the data of the variable only if the "liveSource" still exists in the project's databases.
                      * If the database has been deleted from the project, then prevent sending of the request.
                      * Run Mode: Invoke the service to get the variable data.*/
-                    if (!Utils.isEmptyObject(variable) && (CONSTANTS.isRunMode || variable.prefabName)) {
+                    if (!Utils.isEmptyObject(variable) && (CONSTANTS.isRunMode || variable._prefabName)) {
                         execute();
                     } else if (CONSTANTS.isStudioMode && !Utils.isEmptyObject(variable)) {
                         ServiceFactory.getServicesWithType(function (services) {
@@ -1379,11 +1379,11 @@ wm.variables.services.$liveVariable = [
                     tableOptions = prepareTableOptions(variable, options);
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
-                        'service'       : variable.prefabName ? '' : 'services',
+                        'service'       : variable._prefabName ? '' : 'services',
                         'dataModelName' : variable.liveSource,
                         'entityName'    : variable.type,
                         'sort'          : tableOptions.sort,
-                        'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
+                        'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'query'         : tableOptions.query || '',
                         'exportFormat'  : options.exportFormat,
                         'size'          : options.size
@@ -1406,7 +1406,7 @@ wm.variables.services.$liveVariable = [
                     /*Fetch the table data*/
                     DatabaseService.readTableRelatedData({
                         "projectID": projectID,
-                        "service": variable.prefabName ? "" : "services",
+                        "service": variable._prefabName ? "" : "services",
                         "dataModelName": variable.liveSource,
                         "entityName": variable.type,
                         "id": options.id,
@@ -1415,7 +1415,7 @@ wm.variables.services.$liveVariable = [
                         "size": CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20),
                         /*"sort": tableOptions.sort,
                         "data": tableOptions.filter,*/
-                        "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
+                        "url": variable._prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable._prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
 
                         if ((response && response.error) || !response || !WM.isArray(response.content)) {
@@ -1560,12 +1560,12 @@ wm.variables.services.$liveVariable = [
                     orderBy       = _.isEmpty(options.orderBy) ? '' : 'sort=' + options.orderBy;
                     DatabaseService[action]({
                         'projectID'     : projectID,
-                        'service'       : variable.prefabName ? '' : 'services',
+                        'service'       : variable._prefabName ? '' : 'services',
                         'dataModelName' : variable.liveSource,
                         'entityName'    : relatedTable.type,
                         'page'          : options.page || 1,
                         'size'          : options.pagesize || undefined,
-                        'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
+                        'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'query'         : query || '',
                         'sort'          : orderBy
                     }, function (response) {

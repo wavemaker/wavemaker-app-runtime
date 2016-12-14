@@ -57,7 +57,7 @@ wm.variables.services.$servicevariable = ['Variables',
             },
             /* function to prepare the sample model for the service variable */
             prepareServiceModel = function (type, parentNode, startNode, variable, typeChain) {
-                var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes,
+                var modelTypes = variable._prefabName ? prefabDataTypes[variable._prefabName] : $rootScope.dataTypes,
                     typeChainArr;
                 /*if startNode variable is provided, skip till the startNode variable is reached*/
                 if (startNode) {
@@ -380,11 +380,11 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (isProxyCall) {
                     //avoiding cloakHeadersForProxy when the method is invoked from apidesigner.
                     headers = variable.serviceType !== SERVICE_TYPE_REST || operationInfo.skipCloakHeaders ? headers : cloakHeadersForProxy(headers);
-                    if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
+                    if (variable._prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
                         /* if it is a prefab variable (used in a normal project), modify the url */
-                        url = "/prefabs/" + variable.prefabName + url;
+                        url = "/prefabs/" + variable._prefabName + url;
                         target = "invokePrefabRestService";
-                    } else if (!variable.prefabName) {
+                    } else if (!variable._prefabName) {
                         url = '/services' + url;
                     }
                     url = $rootScope.project.deployedUrl + url;
@@ -424,7 +424,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     /* TODO: to look for a better option to get App/Page the controller's scope */
                     callBackScope = $rootScope || {};
                 } else {
-                    if (variable.prefabName) {
+                    if (variable._prefabName) {
                         callBackScope = options.scope || {};
                     } else {
                         callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
@@ -502,9 +502,9 @@ wm.variables.services.$servicevariable = ['Variables',
                     };
                 }
 
-                if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(serviceType) === -1) {
+                if (variable._prefabName && REST_SUPPORTED_SERVICES.indexOf(serviceType) === -1) {
                 /* if it is a prefab variable (used in a normal project), modify the url */
-                    params.url += "/prefabs/" + variable.prefabName;
+                    params.url += "/prefabs/" + variable._prefabName;
                     params.target = "invokePrefabRestService";
                 }
 
@@ -513,7 +513,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     /* TODO: to look for a better option to get App/Page the controller's scope */
                     callBackScope = $rootScope || {};
                 } else {
-                    if (variable.prefabName) {
+                    if (variable._prefabName) {
                         callBackScope = options.scope || {};
                     } else {
                         callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
@@ -762,10 +762,10 @@ wm.variables.services.$servicevariable = ['Variables',
                         } else {
                             getDataInRun(variable, options, success, error);
                         }
-                    } else if (variable.prefabName) {
+                    } else if (variable._prefabName) {
                         var serviceModel = {};
-                        ServiceFactory.getPrefabTypes(variable.prefabName, function (types) {
-                            prefabDataTypes[variable.prefabName] = types;
+                        ServiceFactory.getPrefabTypes(variable._prefabName, function (types) {
+                            prefabDataTypes[variable._prefabName] = types;
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(variable.type, serviceModel, null, variable);
                             variable.dataSet = serviceModel;
@@ -880,7 +880,7 @@ wm.variables.services.$servicevariable = ['Variables',
             getServiceModel           : function (params) {
                 var model = {},
                     variable = params.variable,
-                    prefabName = _.get(variable, 'prefabName');
+                    prefabName = variable && variable._prefabName;
                 if (prefabName) {
                     prefabDataTypes[prefabName] = params.types;
                 }

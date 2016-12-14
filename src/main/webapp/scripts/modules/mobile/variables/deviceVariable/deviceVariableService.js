@@ -24,7 +24,7 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
             if (variable.owner === "App") {
                 return $rootScope || {};
             }
-            if (variable.prefabName) {
+            if (variable._prefabName) {
                 return options.scope || {};
             }
             return (options && options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};

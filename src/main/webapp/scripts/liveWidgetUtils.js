@@ -1695,7 +1695,7 @@ WM.module('wm.widgets.live')
                         'page'         : 1,
                         'size'         : 500,
                         'nativeSql'    : false,
-                        'prefabName'   : variable.prefabName
+                        'prefabName'   : variable._prefabName
                     }, function (data) {
                         callBack(filterField, data, aliasColumn);
                     });

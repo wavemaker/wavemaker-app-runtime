@@ -864,12 +864,13 @@ wm.variables.services.Variables = [
                 // extend the variables with all properties not found in the variable
                 WM.forEach(variables, function (variable, name) {
                     variables[name] = WM.extend(BaseVariablePropertyFactory.getProperties(variable.category), variable);
+
                     // removing dataSet for live variable
                     if (!runMode && variable.category === "wm.LiveVariable") {
                         variables[name].dataSet = [];
                     } else if (runMode && (variable.category === "wm.ServiceVariable" ||variable.category === "wm.WebSocketVariable")) {
                         // Attaching service operation info to variables if in run mode
-                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable.prefabName);
+                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable._prefabName);
                     }
                 });
 

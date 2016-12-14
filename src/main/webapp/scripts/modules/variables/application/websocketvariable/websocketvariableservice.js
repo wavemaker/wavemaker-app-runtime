@@ -295,8 +295,8 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          */
         function update() {
             var variable = this;
-            if (variable.prefabName) {
-                ServiceFactory.getPrefabTypes(variable.prefabName, function (types) {
+            if (variable._prefabName) {
+                ServiceFactory.getPrefabTypes(variable._prefabName, function (types) {
                     variable.dataSet = $servicevariable.getServiceModel({
                         variable: variable,
                         typeRef: variable.type,

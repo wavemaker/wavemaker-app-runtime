@@ -692,7 +692,7 @@ WM.module('wm.widgets.live')
                     if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
                         href += $rootScope.project.deployedUrl;
                     }
-                    href += (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
+                    href += (($scope.variableObj._prefabName !== "" && $scope.variableObj._prefabName !== undefined) ? "prefabs/" + $scope.variableObj._prefabName : "services") + '/';
                     href += $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + primaryKey + '/content/' + key + '?' + Math.random();
                     return href;
                 };
