@@ -460,10 +460,12 @@ WM.module('wm.widgets.live')
                     });
                 };
                 /*clear the file uploader widget for reset*/
-                function resetFileUploadWidget(dataValue) {
+                function resetFileUploadWidget(dataValue, skipValueSet) {
                     WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
-                    dataValue.href = '';
-                    dataValue.value = null;
+                    if (!skipValueSet) {
+                        dataValue.href = '';
+                        dataValue.value = null;
+                    }
                 }
                 /*clear the inline message*/
                 $scope.clearMessage = function () {
@@ -471,21 +473,22 @@ WM.module('wm.widgets.live')
                 };
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
-                    var formEle = getFormElement();
+                    var formEle = getFormElement(),
+                        prevDataValues;
                     resetFormState();
                     resetFormFields(formEle);
                     if (WM.isArray($scope.formFields)) {
+                        prevDataValues = _.fromPairs(_.map($scope.prevDataValues, function (item) {
+                            return [item.key, item.value];
+                        })); //Convert of array of values to an object
                         $scope.formFields.forEach(function (formField) {
+                            formField.value = prevDataValues[formField.key];
                             if (formField.type === 'blob') {
-                                resetFileUploadWidget(formField);
-                            } else {
-                                var prevObj = _.find($scope.prevDataValues, function (obj) {
-                                    return obj.key === formField.key;
-                                });
-                                formField.value = prevObj ? prevObj.value : undefined;
-                                if (!formField.value && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
-                                    formEle.find('div[name=' + formField.name + '] input').val('');
-                                }
+                                resetFileUploadWidget(formField, true);
+                                formField.href = $scope.getBlobURL(prevDataValues, formField.key, formField.value);
+                            }
+                            if (!formField.value && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
+                                formEle.find('div[name=' + formField.name + '] input').val('');
                             }
                         });
                     }
@@ -517,7 +520,7 @@ WM.module('wm.widgets.live')
                     }
                     $scope.setReadonlyFields();
                     $scope.isUpdateMode = true;
-                    $scope.operationType = "update";
+                    $scope.operationType = 'update';
                 };
                 /*Method clears the fields, sets any defaults if available,
                  disables the readonly, and sets the operationType to "insert"*/
@@ -533,12 +536,12 @@ WM.module('wm.widgets.live')
                     $scope.setDefaults();
                     $scope.setPrevDataValues();
                     $scope.isUpdateMode = true;
-                    $scope.operationType = "insert";
+                    $scope.operationType = 'insert';
                 };
                 $scope.filetypes = {
-                    "image": "image/*",
-                    "video": "video/*",
-                    "audio": "audio/*"
+                    'image' : 'image/*',
+                    'video' : 'video/*',
+                    'audio' : 'audio/*'
                 };
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
@@ -547,16 +550,18 @@ WM.module('wm.widgets.live')
                     });
                 };
                 $scope.setDefaultValueToValue = function (fieldObj) {
-                    var defaultValue = fieldObj.defaultvalue;
+                    var defaultValue = fieldObj.defaultvalue,
+                        fileType;
                     /*Set the default value only if it exists.*/
-                    if (defaultValue && defaultValue !== "null") {
+                    if (defaultValue && defaultValue !== 'null') {
                         fieldObj.value = LiveWidgetUtils.getDefaultValue(defaultValue, fieldObj.type);
                     } else {
                         fieldObj.value = undefined;
                     }
-                    if (fieldObj.type === "blob") {
-                        /*Handle default*/
-                        fieldObj.permitted = $scope.filetypes[fieldObj.filetype] + (fieldObj.extensions ? ',' + fieldObj.extensions : '');
+                    if (fieldObj.type === 'blob') {
+                        //Create the accepts string from file type and extensions
+                        fileType = fieldObj.filetype ? $scope.filetypes[fieldObj.filetype] : '';
+                        fieldObj.permitted = fileType + (fieldObj.extensions ? (fileType ? ',' : '') + fieldObj.extensions : '');
                     }
                     /*If the field is primary but is assigned set readonly false.
                      Assigned is where the user inputs the value while a new entry.
@@ -675,8 +680,15 @@ WM.module('wm.widgets.live')
                 $scope.translateVariableObject = function (rawObject) {
                     return LiveWidgetUtils.translateVariableObject(rawObject, $scope);
                 };
-                $scope.getBlobURL = function (primaryKey, key) {
-                    var href = '';
+                $scope.getBlobURL = function (dataObj, key, value) {
+                    var href = '',
+                        primaryKeys,
+                        primaryKey;
+                    if (value === null || value === undefined || !$scope.variableObj) {
+                        return href;
+                    }
+                    primaryKeys = $scope.variableObj.getPrimaryKey() || [];
+                    primaryKey  = dataObj[primaryKeys[0]];
                     if (CONSTANTS.hasCordova && CONSTANTS.isRunMode) {
                         href += $rootScope.project.deployedUrl;
                     }
@@ -685,21 +697,16 @@ WM.module('wm.widgets.live')
                     return href;
                 };
                 $scope.changeDataObject = function (dataObj) {
-                    var primaryKey;
                     if (!$scope.formFields || $scope.widgetid || !dataObj) {
                         return;
                     }
                     $scope.formFields.forEach(function (formField) {
-                        var value = _.get(dataObj, formField.key),
-                            primaryKeys;
+                        var value = _.get(dataObj, formField.key);
                         if (isTimeType(formField)) {
                             formField.value = getValidTime(value);
-                        } else if (formField.type === "blob") {
-                            if ($scope.dataset.propertiesMap) {
-                                primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
-                                primaryKey = primaryKeys.join();
-                                formField.href = value === null ? '' : $scope.getBlobURL(dataObj[primaryKey], formField.key);
-                            }
+                        } else if (formField.type === 'blob') {
+                            resetFileUploadWidget(formField, true);
+                            formField.href  = $scope.getBlobURL(dataObj, formField.key, value);
                             formField.value = value;
                         } else {
                             formField.value = value;
@@ -710,18 +717,18 @@ WM.module('wm.widgets.live')
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
-                    var dataObj = $scope.rowdata || $scope.formdata, primaryKey, primaryKeys;
+                    var dataObj = $scope.rowdata || $scope.formdata,
+                        value   = _.get(dataObj, fieldDef.key);
                     if (!dataObj) {
                         return;
                     }
                     if (isTimeType(fieldDef)) {
-                        fieldDef.value = getValidTime(dataObj[fieldDef.key]);
-                    } else if (fieldDef.type === "blob") {
-                        primaryKeys   = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
-                        primaryKey    = primaryKeys.join();
-                        fieldDef.href = $scope.getBlobURL(dataObj[primaryKey], fieldDef.key);
+                        fieldDef.value = getValidTime(value);
+                    } else if (fieldDef.type === 'blob') {
+                        fieldDef.href  = $scope.getBlobURL(dataObj, fieldDef.key, value);
+                        fieldDef.value = value;
                     } else {
-                        fieldDef.value = dataObj[fieldDef.key];
+                        fieldDef.value = value;
                     }
                 };
 
@@ -894,6 +901,7 @@ WM.module('wm.widgets.live')
                                     }
                                 } else if (newVal) {
                                     scope.variableName = Utils.getVariableName(scope);
+                                    scope.variableObj  = elScope.Variables && elScope.Variables[scope.variableName];
                                 } else {
                                     /*If variable binding has been removed empty the form and the variableName*/
                                     if (CONSTANTS.isStudioMode) {
@@ -901,6 +909,7 @@ WM.module('wm.widgets.live')
                                         element.find('.hidden-form-elements').empty();
                                     }
                                     scope.variableName = '';
+                                    scope.variableObj  = undefined;
                                     /*When initially a variable is bound to the live-form the form is constructed and the
                                      markup is updated with the form field action and button directives*/
                                     gridObj = getEmptyDataSetGridObj();
