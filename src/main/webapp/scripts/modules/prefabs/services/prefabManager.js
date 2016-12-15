@@ -216,12 +216,10 @@ WM.module('wm.prefabs')
              * Configs are loaded in asynchronous way.
              * returns a promise
              */
-            function getAppPrefabsConfig() {
+            function getAppPrefabsConfig(isReloadRequest) {
                 var deferred    = $q.defer(),
                     prefabNames = Object.keys(appPrefabNamePropertiesMap),
                     count       = prefabNames.length;
-
-                appPrefabNameConfigMap = {};
 
                 function onConfigLoad() {
                     count -= 1;
@@ -234,14 +232,22 @@ WM.module('wm.prefabs')
                         deferred.resolve(content);
                     }
                 }
-
-                prefabNames.forEach(function (prefabName) {
-                    loadProjectPrefabsConfig(prefabName)
-                        .finally(onConfigLoad);
-                });
-
-                if (_.isEmpty(appPrefabNamePropertiesMap)) {
+                /*
+                * if the studio page has prefab then the directive will load the app prefab config, so do not load the config again
+                * if it is a reload request then skip the check
+                * if the appPrefabNamePropertiesMap is empty i.e project doesn't have prefabs in use then just resolve the request
+                * */
+                //if the studio page has prefabs then the prefab directive will load the config for the template, so do not load them again. (ignore if it is a prefab reload request)
+                if (_.isEmpty(appPrefabNamePropertiesMap) || (!isReloadRequest && _.isEqual(_.keys(appPrefabNameConfigMap), _.keys(appPrefabNamePropertiesMap)))) {
                     deferred.resolve();
+                } else {
+                    if (isReloadRequest) { //empty the config only if it is a reload request
+                        appPrefabNameConfigMap = {};
+                    }
+                    prefabNames.forEach(function (prefabName) {
+                        loadProjectPrefabsConfig(prefabName)
+                            .finally(onConfigLoad);
+                    });
                 }
                 return deferred.promise;
             }
