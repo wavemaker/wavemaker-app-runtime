@@ -245,17 +245,15 @@ WM.module('wm.layouts.containers')
                     fieldTarget;
                 fieldTarget = _.split(field.key || field.target, '.');
                 fieldName   = fieldTarget[0] || field.key || field.name;
-                if (fieldTarget.length === 1 && !formData[fieldName]) {
+                //In case of update the field will be already present in form data
+                if (fieldTarget.length === 1) {
                     formData[fieldName] = field.value;
                 } else {
-                    if (formVariable && formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
+                    if (formVariable && formVariable.category === 'wm.Variable') {
                         formData[fieldTarget[1]] = field.value;
                     } else {
-                        formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                        //Check for if property already not exits
-                        if (!formData[fieldTarget[0]][fieldTarget[1]]) {
-                            formData[fieldTarget[0]][fieldTarget[1]] = field.value;
-                        }
+                        formData[fieldTarget[0]]                 = formData[fieldTarget[0]] || {};
+                        formData[fieldTarget[0]][fieldTarget[1]] = field.value;
                     }
                 }
             });
