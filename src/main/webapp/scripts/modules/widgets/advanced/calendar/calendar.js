@@ -103,7 +103,11 @@ WM.module('wm.widgets.advanced')
                     };
                 _.forEach(eventSource, function (obj) {
                     _.mapKeys(properties, function (value, key) {
-                        obj[key] = _.get(obj, value);
+                        var objVal = _.get(obj, value);
+                        if (key === 'start' || key === 'end') {
+                            objVal = moment(objVal);
+                        }
+                        obj[key] = objVal;
                     });
                 });
                 return eventSource;
