@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml2.metadata.impl.EntityDescriptorImpl;
-import org.opensaml.saml2.metadata.provider.FileBackedHTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.parse.BasicParserPool;
@@ -33,6 +33,7 @@ import org.opensaml.xml.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.PropertiesFileUtils;
@@ -103,17 +104,24 @@ public class LoadKeyStore {
         logger.info("load metadata for {}", url);
         String x509CertificateValue = null;
         XMLObject metadata = null;
-        FileBackedHTTPMetadataProvider httpMetadataProvider = null;
+        FilesystemMetadataProvider fileSystemMetadataProvider = null;
+        File idpMetadataFile = new File(filePath);
         try {
-            httpMetadataProvider = new FileBackedHTTPMetadataProvider(url, 15000, filePath);
-            httpMetadataProvider.setParserPool(new BasicParserPool());
-            httpMetadataProvider.initialize();
-            metadata = httpMetadataProvider.getMetadata();
+            FileDownload fileDownload = new FileDownload();
+            idpMetadataFile = fileDownload.download(url, new File(filePath));
+        }catch (WMRuntimeException e){
+            logger.info("Failed to download metadata file for url {}", url);
+        }
+        try{
+            fileSystemMetadataProvider = new FilesystemMetadataProvider(idpMetadataFile);
+            fileSystemMetadataProvider.setParserPool(new BasicParserPool());
+            fileSystemMetadataProvider.initialize();
+            metadata = fileSystemMetadataProvider.getMetadata();
         } catch (MetadataProviderException e) {
             throw new WMRuntimeException("Failed to read idp metadata from url " + url, e);
         }finally {
-            if (httpMetadataProvider != null)
-                httpMetadataProvider.destroy();
+            if (fileSystemMetadataProvider != null)
+                fileSystemMetadataProvider.destroy();
         }
         final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
                 .getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
