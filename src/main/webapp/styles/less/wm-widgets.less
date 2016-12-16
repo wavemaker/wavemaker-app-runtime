@@ -356,12 +356,17 @@ html, body {
     border: none;
     margin-top: 0.25em;
     margin-right: 0.3em;
+    width: 6px;
+    position: relative;
   }
   .dropdown-toggle {
-    white-space: nowrap;
     /**hiding the caret if there is only icon and no caption***/
     .caption:empty + span + span.caret {
       display: none;
+    }
+    &.btn {
+      white-space: normal;
+      text-align: inherit;
     }
   }
   &.open {
@@ -429,6 +434,8 @@ html, body {
       border: none;
       margin-top: 0.25em;
       margin-right: 0.3em;
+      width: 6px;
+      position: relative;
     }
   }
   .dropdown-submenu:hover {
