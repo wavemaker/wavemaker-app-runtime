@@ -1328,14 +1328,14 @@ wm.variables.services.Variables = [
                     call('getData', name, {scope: scope, skipFetchData: !fetchData});
                 }
             },
-            initiateCallback = function (event, variable, callBackScope, response) {
+            initiateCallback = function (event, variable, response, info) {
                 /*checking if event is available and variable has event property and variable event property bound to function*/
                 var eventValues = variable[event],
                     retVal,
-                    errorVariable;
-                callBackScope = variable.activeScope;
+                    errorVariable,
+                    callBackScope = variable.activeScope;
                 if (eventValues) {
-                    retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable);
+                    retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable, info);
                 } else if (event === VARIABLE_CONSTANTS.EVENT.ERROR) {
                     /* in case of error, if no event assigned, handle through default notification variable */
                     errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
