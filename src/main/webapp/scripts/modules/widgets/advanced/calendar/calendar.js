@@ -281,7 +281,7 @@ WM.module('wm.widgets.advanced')
                             $is.onEventclick({$event: jsEvent, $data: event, $view: view});
                         }
                         function viewRenderProxy(view) {
-                            $is.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
+                            $is.currentview = {start: view.start.format(), end: view.end.format()};
                             $is.onViewrender({$view: view});
                         }
                         function eventRenderProxy(event, jsEvent, view) {
