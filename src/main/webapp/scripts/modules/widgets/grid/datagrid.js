@@ -912,18 +912,28 @@ $.widget('wm.datagrid', {
                 var id           = Number($(this).attr('data-col-id')),
                     colDef       = self.preparedHeaderData[id],
                     $headerCell  = self.gridHeaderElement.find('th[data-col-id="' + id + '"]'),
-                    $tdCell      = self.gridElement.find('td.app-datagrid-cell[data-col-id="' + id + '"]');
+                    $tdCell      = self.gridElement.find('td.app-datagrid-cell[data-col-id="' + id + '"]'),
+                    definedWidth = colDef.width,
+                    $headerCol   = $(headerCols[id]),
+                    $bodyCol     = $(bodyCols[id]),
+                    width;
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     //Hide the header and column if show is false
                     $headerCell.hide();
                     $tdCell.hide();
-                    $(headerCols[id]).hide();
-                    $(bodyCols[id]).hide();
+                    $headerCol.hide();
+                    $bodyCol.hide();
                 } else {
                     $headerCell.show();
                     $tdCell.show();
-                    $(headerCols[id]).show();
-                    $(bodyCols[id]).show();
+                    $headerCol.show();
+                    $bodyCol.show();
+                }
+                //If default width is set, reset the width so that correct width is set on reload
+                if ($headerCol[0].style.width === '90px') {
+                    width = _.isUndefined(definedWidth) ? '' : definedWidth;
+                    $headerCol.css('width', width);
+                    $bodyCol.css('width', width);
                 }
             });
             //setting the header col width based on the content width

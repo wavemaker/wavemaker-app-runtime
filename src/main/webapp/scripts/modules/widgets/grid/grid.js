@@ -1173,8 +1173,10 @@ WM.module('wm.widgets.grid')
                     });
                     if (data && data.length) {
                         $scope.datagridElement.datagrid('setStatus', 'ready');
-                        //Select the first row after the search
-                        $scope.datagridElement.datagrid('selectFirstRow', $scope.gridfirstrowselect && !$scope.multiselect, true);
+                        //Select the first row after the search for single select
+                        if ($scope.gridfirstrowselect && !$scope.multiselect) {
+                            $scope.datagridElement.datagrid('selectFirstRow', true, true);
+                        }
                     } else {
                         $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                         $scope.selecteditem = undefined;
@@ -1559,10 +1561,10 @@ WM.module('wm.widgets.grid')
                 onRowDeselect: function (rowData, e) {
                     if ($scope.multiselect) {
                         $scope.items = _.pullAllWith($scope.items, [rowData], _.isEqual);
+                        $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
+                        $scope.onDeselect({$data: rowData, $event: e, $rowData: rowData});
+                        $rootScope.$safeApply($scope);
                     }
-                    $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                    $scope.onDeselect({$data: rowData, $event: e, $rowData: rowData});
-                    $rootScope.$safeApply($scope);
                 },
                 onColumnSelect: function (col, e) {
                     $scope.selectedColumns = $scope.datagridElement.datagrid('getSelectedColumns');
