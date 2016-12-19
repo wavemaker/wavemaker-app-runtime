@@ -1700,6 +1700,9 @@ wm.variables.services.$liveVariable = [
                         Utils.triggerFn(error, errMsg);
                     });
                 },
+                isRelatedFieldMany: function (fieldName) {
+                    return isRelatedFieldMany(this, fieldName);
+                },
                 getPrimaryKey: function () {
                     return methods.getPrimaryKey(this);
                 },
