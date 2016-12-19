@@ -746,7 +746,7 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Type here...", "bindable": "in-bound"},
                         "maxsize": {"type": "number"},
                         "allowonlyselect": {"type": "boolean", "value": false},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
+                        "class": {"type": "string", "pattern": classRegex},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "onBeforeadd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
