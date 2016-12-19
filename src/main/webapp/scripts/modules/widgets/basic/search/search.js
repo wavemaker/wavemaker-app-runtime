@@ -668,7 +668,7 @@ WM.module('wm.widgets.basic')
                             get: function () {
                                 // check if datavalue is null.
                                 if (!$is._proxyModel) {
-                                    return undefined;
+                                    return '';
                                 }
 
                                 return $is._proxyModel;
