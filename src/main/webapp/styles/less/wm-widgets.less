@@ -2323,12 +2323,13 @@ If the height and width are not specified the video takes the height of the post
 *********************************************************************************/
 @app-media-full-screen-info-panel-bg-color: rgba(74, 75, 76, 0.38);
 @app-media-full-screen-nav-control-bg-color: rgba(74, 75, 76, 0.38);
-@app-media-full-screen-nav-control-bg-color-on-hover: rgba(74, 75, 76, 1);
+@app-media-full-screen-nav-control-bg-color-on-hover: rgba(0, 0, 0, 0.5);
 @app-media-full-screen-modal-bg-color: #000;
 .app-medialist {
   overflow: auto;
   .thumbnail {
     .width-height();
+    text-align: center;
     position: relative;
 
     .thumbnail-image {
@@ -2347,10 +2348,12 @@ If the height and width are not specified the video takes the height of the post
       position: absolute;
       .width-height();
       top: 0;
+      text-align: left;
     }
   }
 
   .app-media-item {
+    text-align: left;
     position: relative;
   }
 
@@ -2370,14 +2373,15 @@ If the height and width are not specified the video takes the height of the post
     .app-mobile-navbar .left-nav-btn{
       display: none;
     }
-    .image-container {
+    .media-content{
       display: table;
       width: 100%;
       height: 100%;
-      .image-container-cell{
-        display: table-cell;
-        vertical-align: middle;
-      }
+    }
+    .image-container {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
     }
     .app-media-fullscreen-info-panel {
       position: absolute;
@@ -2395,14 +2399,16 @@ If the height and width are not specified the video takes the height of the post
     }
     .app-media-fullscreen-nav-control {
       position: absolute;
-      top: 10%;
+      top: 50%;
       background-color: @app-media-full-screen-nav-control-bg-color;
-      padding: 0.5em 0.6em;
-      border-radius: 2em;
-      margin: 0 10px;
+      border-radius: 20pt;
+      margin: -15pt 10pt 0 10pt;
       color: #fff;
-      font-size: 2em;
-      font-weight: bold;
+      font-size: 18pt;
+      width: 30pt;
+      height: 30pt;
+      text-align: center;
+
 
       &:hover{
         background-color: @app-media-full-screen-nav-control-bg-color-on-hover;

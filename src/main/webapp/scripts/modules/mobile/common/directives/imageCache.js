@@ -6,8 +6,9 @@
 wm.modules.wmCommon.directive('wmImageCache', [
     'CONSTANTS',
     'DeviceFileCacheService',
+    '$q',
     '$rootScope',
-    function (CONSTANTS, DeviceFileCacheService, $rs) {
+    function (CONSTANTS, DeviceFileCacheService, $q, $rs) {
         'use strict';
         var STORAGE_TYPE = {
             TEMPORARY : 'temporary',
@@ -41,8 +42,12 @@ wm.modules.wmCommon.directive('wmImageCache', [
                 $rs.$evalAsync(function () {
                     $el.attr('src', 'resources/images/imagelists/default-image.png');
                 });
-                DeviceFileCacheService.getLocalPath(val, true, isPersistent).then(function (localPath) {
-                    $el.attr('src', localPath);
+                $q.when(DeviceFileCacheService.getLocalPath(val, true, isPersistent), function (localPath) {
+                    if (localPath) {
+                        $el.attr('src', localPath);
+                    } else {
+                        $el.attr('src', val);
+                    }
                 }, function () {
                     $el.attr('src', val);
                 });

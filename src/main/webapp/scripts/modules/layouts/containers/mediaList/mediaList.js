@@ -10,13 +10,13 @@ WM.module('wm.layouts.containers')
         $tc.put('template/widget/medialist.html',
             '<div class="app-medialist" ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget apply-styles="shell">' +
                 '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude apply-styles="inner-shell"></ul>' +
-                '<div class="app-media-fullscreen" ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
+                '<div class="app-media-fullscreen" ng-show="selectedMediaIndex >= 0">' +
                     '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
                     '<wm-content>' +
                         '<wm-page-content>' +
-                            '<div class="app-content-column">' +
-                                '<div class="image-container">' +
-                                    '<img class="center-block" ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
+                            '<div class="media-content">' +
+                                '<div class="image-container"  hm-swipe-left="showPrev()" hm-swipe-right="showNext()">' +
+                                    '<img class="center-block" ng-src="{{$eval(mediaurl, fieldDefs[selectedMediaIndex])}}" wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
                                     '<a class="app-media-fullscreen-nav-control left" ng-show="selectedMediaIndex > 0" ng-click="showNext()">' +
                                         '<i class="wi wi-chevron-left"></i>' +
                                     '</a>' +
@@ -55,7 +55,7 @@ WM.module('wm.layouts.containers')
                 elementsMarkup =
                     '<li ng-repeat="item in fieldDefs" class="app-media-item" ng-click="showFullScreen($index)">' +
                         '<div ng-style="{\'width\': thumbnailWidth, \'height\': thumbnailHeight}" class="thumbnail">' +
-                            '<img class="thumbnail-image" ng-src="{{item[thumbnailURL]}}">' +
+                            '<img class="thumbnail-image" ng-src="{{$eval(thumbnailURL, item)}}"  wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
                             '<div class="thumbnail-details"></div>' +
                         '</div>' +
                     '</li>';
@@ -176,6 +176,7 @@ WM.module('wm.layouts.containers')
                     thumbnailDim = listCtrl.$get('thumbnailDimensions');
 
                 WM.extend($liScope, {
+                    'offline'           : $is.offline,
                     'thumbnailURL'      : $is.thumbnailurl,
                     'thumbnailWidth'    : thumbnailDim.width,
                     'thumbnailHeight'   : thumbnailDim.height
@@ -252,9 +253,7 @@ WM.module('wm.layouts.containers')
                     'replace'   : true
                 };
 
-            if (CONSTANTS.isStudioMode) {
-                widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mediatemplate');
-            }
+            widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mediatemplate');
 
             // pre link function of studio directive
             function preLinkFn($is) {
@@ -269,7 +268,8 @@ WM.module('wm.layouts.containers')
 
             function runMode_preLinkFn($is, $el, attrs, listCtrl) {
                 listCtrl.$set('mediaListTemplate', $el.children());
-                listCtrl.$set('thumbnailDimensions', {'width': attrs.width, 'height': attrs.height});
+                listCtrl.$set('thumbnailDimensions', {'width': attrs.width || widgetProps.width.value,
+                                                        'height': attrs.height ||  widgetProps.height.value});
                 $el.remove();
             }
 
@@ -325,6 +325,8 @@ WM.module('wm.layouts.containers')
  *                  Sets the data for the list.<br>
  *                  This is a bindable property.<br>
  *                  When bound to a variable, the data associated with the variable is displayed in the media list.
+ * @param {boolean=} offline
+ *                  In mobile apps, images are stored on devices based on this option.
  * @param {string=} thumbnailurl
  *                  Sets the url to be used for each of the thumbnails shown in the media list. This is a bindable property.
  * @param {string=} mediaurl

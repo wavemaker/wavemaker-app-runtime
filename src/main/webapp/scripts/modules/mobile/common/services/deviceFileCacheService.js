@@ -82,27 +82,28 @@ wm.modules.wmCommon.services.DeviceFileCacheService = [
          * @param {boolean} downloadIfNotExists if true and the resource is not found, then the resource will be
          * downloaded.
          * @param {boolean} isPersistent if true, then file is saved to persistent location.
-         * @returns {object} a promise that will be resolved with local file path or will be rejected if file is
+         * @returns {object} the local file path or a promise that will be resolved with local file path or will be rejected if file is
          * not found.
          */
         this.getLocalPath = function (url, downloadIfNotExists, isPersistent) {
-            var defer = $q.defer(),
+            var defer,
                 filePath = cacheIndex[url];
             if (cordova.file) {
-                DeviceFileService.isValidPath(filePath).then(function () {
-                    defer.resolve(filePath);
-                }, function () {
+                defer = $q.defer();
+                DeviceFileService.isValidPath(filePath).catch(function () {
+                    delete cacheIndex[url];
                     if (downloadIfNotExists) {
-                        delete cacheIndex[url];
                         download(url, isPersistent, defer);
-                    } else {
-                        defer.reject();
                     }
                 });
-            } else {
-                defer.reject('cordova-plugin-file is required.');
+                if (filePath) {
+                    return filePath;
+                }
+                if (!downloadIfNotExists) {
+                    return url;
+                }
+                return defer.promise;
             }
-            return defer.promise;
         };
 
         if (window.cordova && window.cordova.file) {
