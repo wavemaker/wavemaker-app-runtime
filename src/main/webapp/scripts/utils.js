@@ -880,7 +880,9 @@ WM.module('wm.utils', [])
                 'isRelatedPk'         : prop.isRelatedPk,
                 'systemUpdated'       : prop.systemUpdated,
                 'systemInserted'      : prop.systemInserted,
-                'relatedEntityName'   : prop.relatedEntityName
+                'relatedEntityName'   : prop.relatedEntityName,
+                'notNull'             : prop.notNull,
+                'defaultValue'        : prop.defaultValue
             };
         }
 

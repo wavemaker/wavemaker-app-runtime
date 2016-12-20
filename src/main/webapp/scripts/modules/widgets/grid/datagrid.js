@@ -584,7 +584,7 @@ $.widget('wm.datagrid', {
         });
         return template;
     },
-    _getEditableTemplate: function ($el, colDef, cellText, rowId) {
+    _getEditableTemplate: function ($el, colDef, cellText, rowId, operation) {
         var template,
             formName,
             checkedTmpl,
@@ -592,9 +592,10 @@ $.widget('wm.datagrid', {
             dataValue     = cellText ? 'datavalue="' + cellText + '"' : '',
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
-            disabled      = colDef.disabled ? ' disabled="' + colDef.disabled + '" ' : '',
+            disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned') ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
+            disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
-            properties    = disabled + dataFieldName + eventTemplate + dataValue + required,
+            properties    = disabledTl + dataFieldName + eventTemplate + dataValue + required,
             index         = colDef.index;
         switch (colDef.editWidgetType) {
         case 'select':
@@ -1519,7 +1520,7 @@ $.widget('wm.datagrid', {
                     } else {
                         value = cellText;
                     }
-                    editableTemplate = self._getEditableTemplate($el, colDef, value, rowId);
+                    editableTemplate = self._getEditableTemplate($el, colDef, value, rowId, options.operation);
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);

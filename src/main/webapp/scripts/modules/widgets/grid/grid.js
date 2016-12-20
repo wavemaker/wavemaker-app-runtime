@@ -2037,7 +2037,7 @@ WM.module('wm.widgets.grid')
                         columnDef.type       = newColumn.type;
                         columnDef.primaryKey = newColumn.isPrimaryKey;
                         columnDef.generator  = newColumn.generator;
-                        columnDef.readonly   = WM.isDefined(newColumn.readonly) ? newColumn.readonly === 'true' : newColumn.relatedEntityName ? !newColumn.isPrimaryKey : _.includes(['identity', 'uniqueid'], newColumn.generator);
+                        columnDef.readonly   = WM.isDefined(newColumn.readonly) ? newColumn.readonly === 'true' : newColumn.relatedEntityName ? !newColumn.isPrimaryKey : _.includes(['identity', 'uniqueid', 'sequence'], newColumn.generator);
                         if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date') {
                             if (!columnDef.formatpattern) {
                                 columnDef.formatpattern = 'toDate';
@@ -2560,7 +2560,7 @@ WM.module('wm.widgets.grid')
                         if (tElement.context.innerHTML) {
                             columnDef.customExpression = tElement.context.innerHTML;
                         }
-                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === 'true' : columnDef.relatedEntityName ? !columnDef.primaryKey : _.includes(['identity', 'uniqueid'], columnDef.generator);
+                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === 'true' : columnDef.relatedEntityName ? !columnDef.primaryKey : _.includes(['identity', 'uniqueid', 'sequence'], columnDef.generator);
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
