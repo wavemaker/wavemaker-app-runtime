@@ -8,7 +8,7 @@
     <parent>
 		<groupId>com.wavemaker.studio</groupId>
 		<artifactId>wavemaker-app-runtime</artifactId>
-		<version>8.4.0</version>
+		<version>8.4.0.1</version>
 	</parent>
 
     <artifactId>wavemaker-app-runtime-json</artifactId>
