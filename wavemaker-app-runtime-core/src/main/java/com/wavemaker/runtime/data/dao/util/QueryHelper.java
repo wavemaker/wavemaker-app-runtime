@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.data.dao.util;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.runtime.data.transform.AliasToEntityLinkedHashMapTransformer;
+import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.system.SystemPropertiesUnit;
 import com.wavemaker.studio.common.CommonConstants;
 
@@ -170,18 +169,9 @@ public class QueryHelper {
         return str;
     }
 
-    public static void setResultTransformer(Query query) {
-        if (query instanceof SQLQuery) {
-            query.setResultTransformer(AliasToEntityLinkedHashMapTransformer.INSTANCE);
-        } else {
-            String[] returnAliases = query.getReturnAliases();
-            if (returnAliases != null) {
-                LOGGER.debug("return aliases : {}", Arrays.asList(returnAliases));
-
-                query.setResultTransformer(AliasToEntityLinkedHashMapTransformer.INSTANCE);
-            } else {
-                LOGGER.debug("return aliases is null");
-            }
+    public static void setResultTransformer(Query query, Class<?> type) {
+        if (query instanceof SQLQuery || (query.getReturnAliases() != null && query.getReturnAliases().length != 0)) {
+            query.setResultTransformer(Transformers.aliasToMappedClass(type));
         }
     }
 
@@ -194,7 +184,7 @@ public class QueryHelper {
             String queryStr, final Map<String, Object> params, final boolean isNative,
             final HibernateTemplate template) {
         try {
-            final String strQuery = getCountQuery(queryStr, params, isNative);
+            final String strQuery = getCountQuery(queryStr, isNative);
             if (strQuery == null) {
                 return maxCount();
             }
@@ -215,8 +205,7 @@ public class QueryHelper {
         }
     }
 
-    private static String getCountQuery(String query, Map<String, Object> params, boolean isNative) {
-        LOGGER.debug("Getting count query for query {} with params {}", query, params);
+    public static String getCountQuery(String query, boolean isNative) {
         query = query.trim();
 
         String countQuery = null;

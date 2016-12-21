@@ -16,7 +16,8 @@
     <import resource="config.xml"/>
     <import resource="servicetypes.xml"/>
 
-    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager" conversion-service="applicationConversionService">
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"
+                           conversion-service="applicationConversionService">
         <mvc:message-converters>
             <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -26,15 +27,16 @@
             </bean>
         </mvc:message-converters>
         <mvc:argument-resolvers>
-            <bean id="appDefaultPageableHandlerMethodArgumentResolver" class="com.wavemaker.runtime.resolver.ServiceBasedPageableHandlerMethodArgumentResolver" >
+            <bean id="appDefaultPageableHandlerMethodArgumentResolver"
+                  class="com.wavemaker.runtime.resolver.ServiceBasedPageableHandlerMethodArgumentResolver">
                 <property name="pageParameterName" value="page"/>
                 <property name="sizeParameterName" value="size"/>
                 <property name="oneIndexedParameters" value="true"/>
                 <property name="maxPageSize" value="1000"/>
                 <property name="fallbackPageable">
-                    <bean  class="org.springframework.data.domain.PageRequest">
-                        <constructor-arg  value="0"/>
-                        <constructor-arg  value="20"/>
+                    <bean class="org.springframework.data.domain.PageRequest">
+                        <constructor-arg value="0"/>
+                        <constructor-arg value="20"/>
                     </bean>
                 </property>
             </bean>
@@ -43,12 +45,12 @@
     </mvc:annotation-driven>
 
     <mvc:interceptors>
-        <bean id="annotationInterceptor" class="com.wavemaker.runtime.web.interceptor.WMAppRequestInterceptor" />
+        <bean id="annotationInterceptor" class="com.wavemaker.runtime.web.interceptor.WMAppRequestInterceptor"/>
     </mvc:interceptors>
 
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <property name="favorPathExtension" value="false" />
+        <property name="favorPathExtension" value="false"/>
     </bean>
 
     <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean"
@@ -68,7 +70,8 @@
         <property name="systemProperties">
             <map>
                 <entry key="user.language" value="en"/>
-                <entry key="com.mchange.v2.c3p0.management.ManagementCoordinator" value="com.mchange.v2.c3p0.management.NullManagementCoordinator"/>
+                <entry key="com.mchange.v2.c3p0.management.ManagementCoordinator"
+                       value="com.mchange.v2.c3p0.management.NullManagementCoordinator"/>
             </map>
         </property>
     </bean>
@@ -79,7 +82,8 @@
 
     <bean id="languagePreferenceFilter" class="com.wavemaker.runtime.web.filter.LanguagePreferenceFilter"/>
 
-    <bean id="handlerExceptionResolver" class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
+    <bean id="handlerExceptionResolver"
+          class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -89,9 +93,14 @@
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
-    <bean id="serviceDefinitionController" class="com.wavemaker.runtime.servicedef.controller.ServiceDefinitionController" />
+    <bean id="queryDesignService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
 
-    <bean id="serviceDefinitionService" class="com.wavemaker.runtime.servicedef.service.ServiceDefinitionService" />
+    <bean id="procedureDesignService" class="com.wavemaker.runtime.service.ProcedureDesignServiceImpl"/>
+
+    <bean id="serviceDefinitionController"
+          class="com.wavemaker.runtime.servicedef.controller.ServiceDefinitionController"/>
+
+    <bean id="serviceDefinitionService" class="com.wavemaker.runtime.servicedef.service.ServiceDefinitionService"/>
 
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.ResourceBundleViewResolver">

@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.model.procedures;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,6 +11,15 @@ public class RuntimeProcedure {
 
     private String procedureString;
     private List<ProcedureParameter> parameters;
+
+    public RuntimeProcedure() {
+        this.parameters = new ArrayList<>();
+    }
+
+    public RuntimeProcedure(final RuntimeProcedure other) {
+        this.procedureString = other.procedureString;
+        this.parameters = other.parameters;
+    }
 
     public String getProcedureString() {
         return procedureString;

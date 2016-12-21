@@ -246,12 +246,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         dbOperationName = operation.relativePath && operation.relativePath.split("/").pop();
                         tag = _.get(operation, 'tags[0]');
 
-                        /* special case for user created query/procedure operations, actual type info is not given by swagger */
-                        if ((tag === "QueryExecutionController" || tag === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
-                            returnType = serviceObj.name + dbOperationName + "rtnType";
-                            schemaObject = operation.responses['200'].schema;
-                            isList = (schemaObject.$ref === "#/definitions/Page") || schemaObject.type === 'array' || schemaObject[IS_LIST_KEY];
-                        } else if (operation.responses && operation.responses['200'].schema) {
+                        // fetch return type and operation object from swagger
+                        if (operation.responses && operation.responses['200'].schema) {
                             schemaObject = operation.responses['200'].schema;
                             typeArgumentsObject = schemaObject["x-WM-TYPE_ARGUMENTS"];
                             isList = schemaObject.$ref === "#/definitions/Page";

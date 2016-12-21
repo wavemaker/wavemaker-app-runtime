@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,13 +19,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.wavemaker.runtime.data.model.CustomProcedure;
+import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 
 public interface WMProcedureExecutor {
 
-	public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params);
+    <T> List<T> executeNamedProcedure(String procedureName, Map<String, Object> params, Class<T> type);
 
-	public List<Object> executeCustomProcedure(CustomProcedure customProcedure);
+    List<Object> executeRuntimeProcedure(RuntimeProcedure procedure);
 
+    @Deprecated
+    List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params);
 
+    @Deprecated
+    List<Object> executeCustomProcedure(CustomProcedure customProcedure);
 
 }

@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 
 /**
  * @Author: sowmyad
@@ -28,7 +29,7 @@ import com.wavemaker.runtime.data.model.ProcedureParamType;
 public class ProceduresUtils {
 
     public static String PARAM = "{param}";
-    public static final String PROCEDURE_PARAM_PATTERN = "(\\:"+ PARAM +")([\\s*,]|[\\s*|,]|[\\s*\\)?]|[\\s*|\\)?]|$)";
+    public static final String PROCEDURE_PARAM_PATTERN = "(\\:" + PARAM + ")([\\s*,]|[\\s*|,]|[\\s*\\)?]|[\\s*|\\)?]|$)";
     public static final String PROCEDURE_PARAM_REPLACE_STRING = "?";
 
     public static boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
@@ -41,7 +42,19 @@ public class ProceduresUtils {
     }
 
     public static boolean hasOutParamType(CustomProcedureParam procedureParam) {
-        return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT);
+        return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam
+                .getProcedureParamType().equals(ProcedureParamType.OUT);
+    }
+
+    public static String jdbcComplianceProcedure(String procedureStr, List<ProcedureParameter> params) {
+        String[] names = new String[params.size()];
+
+        for (int i = 0; i < params.size(); i++) {
+            final ProcedureParameter param = params.get(i);
+            names[i] = param.getName();
+        }
+
+        return jdbcComplianceProcedure(procedureStr, names);
     }
 
     /**

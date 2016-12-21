@@ -20,10 +20,9 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.expression.Type;
+import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.runtime.data.model.returns.ReturnType;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
-import com.wavemaker.studio.common.WMRuntimeException;
 
 public class HQLQueryUtils {
 
@@ -84,7 +83,7 @@ public class HQLQueryUtils {
 
         return template.execute(new HibernateCallback<Page<Object>>() {
             public Page<Object> doInHibernate(Session session) throws HibernateException {
-                QueryHelper.setResultTransformer(hqlQuery);
+                QueryHelper.setResultTransformer(hqlQuery, Object.class);
                 QueryHelper.configureParameters(hqlQuery, params);
                 if (pageable != null) {
                     Long count = QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), params, false, template);
@@ -99,39 +98,34 @@ public class HQLQueryUtils {
         final org.hibernate.type.Type[] returnTypes = query.getReturnTypes();
         final String[] returnAliases = query.getReturnAliases();
         List<ReturnProperty> properties = new ArrayList<>(returnTypes.length);
-        try {
-            for (int i = 0; i < returnTypes.length; i++) {
-                final org.hibernate.type.Type type = returnTypes[i];
+        for (int i = 0; i < returnTypes.length; i++) {
+            final org.hibernate.type.Type type = returnTypes[i];
 
-                ReturnProperty property = new ReturnProperty();
-                if (returnAliases != null && returnAliases.length >= i) {
-                    property.setName(returnAliases[i]);
-                }
-
-                ReturnType returnType = new ReturnType();
-                String typeRef = type.getName();
-                if (type.isCollectionType()) {
-                    returnType.setType(ReturnType.Type.COLLECTION);
-                } else if (type.isAssociationType()) {
-                    returnType.setType(ReturnType.Type.REFERENCE);
-                    returnType.setTypeClass(Class.forName(typeRef));
-                } else {
-                    returnType.setType(ReturnType.Type.SIMPLE);
-                }
-                if (type instanceof AbstractStandardBasicType) {
-                    typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
-                }
-
-                returnType.setRef(typeRef);
-                property.setReturnType(returnType);
-
-                properties.add(property);
+            ReturnProperty property = new ReturnProperty();
+            if (returnAliases != null && returnAliases.length >= i) {
+                property.setName(returnAliases[i]);
             }
-            return properties;
-        } catch (Exception e) {
-            throw new WMRuntimeException("Error occurred while preparing returnProperty details for hql query: " +
-                    query.getQueryString(), e);
+
+            FieldType fieldType = new FieldType();
+            String typeRef = type.getName();
+            if (type.isCollectionType()) {
+                fieldType.setList(true);
+            }
+            if (type.isAssociationType()) {
+                fieldType.setType(FieldType.Type.REFERENCE);
+            } else {
+                fieldType.setType(FieldType.Type.SIMPLE);
+            }
+            if (type instanceof AbstractStandardBasicType) {
+                typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
+            }
+
+            fieldType.setRef(typeRef);
+            property.setFieldType(fieldType);
+
+            properties.add(property);
         }
+        return properties;
     }
 
     private static String buildOrderByClause(Sort sort) {
@@ -153,5 +147,4 @@ public class HQLQueryUtils {
     private static boolean isSortAppliedOnPageable(Pageable pageable) {
         return (pageable != null) && (pageable.getSort() != null);
     }
-
 }

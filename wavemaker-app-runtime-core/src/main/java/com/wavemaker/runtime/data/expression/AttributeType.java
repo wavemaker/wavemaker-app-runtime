@@ -187,4 +187,8 @@ public enum AttributeType implements TypeConverter {
             return YesNoType.INSTANCE.fromString(value.toString());
         }
     };
+
+    public String getHibernateType() {
+        return this.name().toLowerCase();
+    }
 }

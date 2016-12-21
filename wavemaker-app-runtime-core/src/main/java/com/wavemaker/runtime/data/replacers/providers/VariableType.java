@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.joda.time.LocalDateTime;
@@ -16,10 +18,20 @@ import com.wavemaker.studio.common.WMRuntimeException;
  * @since 23/6/16
  */
 public enum VariableType {
-    NONE {
+    PROMPT {
         @Override
         public Object getValue(final Class<?> fieldType) {
             return null;
+        }
+
+        @Override
+        public String toQueryParam() {
+            return "";
+        }
+
+        @Override
+        public boolean isSystemVariable() {
+            return false;
         }
     },
     USER_ID {
@@ -64,5 +76,27 @@ public enum VariableType {
         }
     };
 
+    private static final String SYSTEM_VARIABLE_PREFIX = "_SYSTEM_CURRENT_";
+
+    private static final Map<String, VariableType> queryParamVsVariableType = new HashMap<>();
+
+    static {
+        for (final VariableType variableType : VariableType.values()) {
+            queryParamVsVariableType.put(variableType.toQueryParam(), variableType);
+        }
+    }
+
+    public String toQueryParam() {
+        return SYSTEM_VARIABLE_PREFIX + name();
+    }
+
+    public boolean isSystemVariable() {
+        return true;
+    }
+
     public abstract Object getValue(final Class<?> fieldType);
+
+    public static VariableType fromQueryParameter(String name) {
+        return queryParamVsVariableType.get(name);
+    }
 }

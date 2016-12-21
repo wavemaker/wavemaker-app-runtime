@@ -1,7 +1,11 @@
 package com.wavemaker.runtime.data.model.queries;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -9,12 +13,30 @@ import java.util.Objects;
  */
 public class RuntimeQuery {
 
+    @NotEmpty
     private String queryString;
-    private QueryType type;
     private String countQueryString;
 
     private boolean nativeSql;
+    private boolean fetchCount;
+
+    @NotNull
+    private QueryType type;
+
     private List<QueryParameter> parameters;
+
+    public RuntimeQuery() {
+        parameters = new ArrayList<>();
+    }
+
+    public RuntimeQuery(final RuntimeQuery other) {
+        this.queryString = other.queryString;
+        this.type = other.type;
+        this.countQueryString = other.countQueryString;
+        this.fetchCount = other.fetchCount;
+        this.nativeSql = other.nativeSql;
+        this.parameters = other.parameters;
+    }
 
     public String getQueryString() {
         return queryString;
@@ -38,6 +60,14 @@ public class RuntimeQuery {
 
     public void setCountQueryString(final String countQueryString) {
         this.countQueryString = countQueryString;
+    }
+
+    public boolean isFetchCount() {
+        return fetchCount;
+    }
+
+    public void setFetchCount(final boolean fetchCount) {
+        this.fetchCount = fetchCount;
     }
 
     public boolean isNativeSql() {
@@ -75,7 +105,7 @@ public class RuntimeQuery {
     public String toString() {
         return "RuntimeQuery{" +
                 "query='" + queryString + '\'' +
-                ", hql=" + nativeSql +
+                ", nativeSql=" + nativeSql +
                 ", parameters=" + parameters +
                 '}';
     }

@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.data.model.queries;
 
-import com.wavemaker.runtime.data.expression.AttributeType;
+import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
 /**
@@ -10,10 +10,21 @@ import com.wavemaker.runtime.data.replacers.providers.VariableType;
 public class QueryParameter {
 
     private String name;
-    private AttributeType type;
+    private JavaType type;
     private VariableType variableType;
-    private String testValue;
+    private Object testValue;
     private boolean list;
+
+    public QueryParameter() {
+    }
+
+    public QueryParameter(final QueryParameter other) {
+        this.name = other.name;
+        this.type = other.type;
+        this.variableType = other.variableType;
+        this.testValue = other.testValue;
+        this.list = other.list;
+    }
 
     public String getName() {
         return name;
@@ -23,11 +34,11 @@ public class QueryParameter {
         this.name = name;
     }
 
-    public AttributeType getType() {
+    public JavaType getType() {
         return type;
     }
 
-    public void setType(final AttributeType type) {
+    public void setType(final JavaType type) {
         this.type = type;
     }
 
@@ -39,11 +50,11 @@ public class QueryParameter {
         this.variableType = variableType;
     }
 
-    public String getTestValue() {
+    public Object getTestValue() {
         return testValue;
     }
 
-    public void setTestValue(final String testValue) {
+    public void setTestValue(final Object testValue) {
         this.testValue = testValue;
     }
 

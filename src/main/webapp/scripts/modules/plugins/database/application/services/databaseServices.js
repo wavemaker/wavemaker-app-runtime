@@ -1360,16 +1360,7 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             executeQuery: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "executeQuery",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
+                return initiateAction("executeQuery", params, successCallback, failureCallback);
             },
             /**
              * @ngdoc function
@@ -1567,17 +1558,7 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             executeProcedure: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "executeProcedure",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
+                return initiateAction("executeProcedure", params, successCallback, failureCallback);            },
             /**
              * Internal function
              * @name wm.database.$DatabaseService#getSampleDbConnectionProperties

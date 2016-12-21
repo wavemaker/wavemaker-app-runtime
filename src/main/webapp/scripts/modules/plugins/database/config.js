@@ -187,13 +187,6 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/query/validate",
             method: "POST"
         },
-        executeQuery: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/query/execute",
-            method: "POST"
-        },
-
-        /*Procedure Related services*/
-
         getAllProcedures: {
             url: "services/projects/:projectID/datamodels/:dataModelName/procedures",
             method: "GET"
@@ -214,12 +207,6 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
             method: "DELETE"
         },
-        executeProcedure: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/execute",
-            method: "POST"
-        },
-
-
         readTableData: {
             url: "/:service/:dataModelName/:entityName?page=:page&size=:size&:sort",
             method: "GET"
@@ -300,6 +287,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/queryExecutor/queries/wm_custom_update",
             method: "POST"
         },
+        executeQuery: {
+            url: "/:service/:dataModelName/queries/execute",
+            method: "POST"
+        },
+
 
         /*Procedure related properties*/
         executeNamedProcedure: {
@@ -312,6 +304,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
         getCustomProcedureMetaData: {
             url: "/:service/:dataModelName/procedures/wm_proceduremetadata",
+            method: "POST"
+        },
+        executeProcedure: {
+            url: "/:service/:dataModelName/procedures/execute",
             method: "POST"
         },
 

@@ -9,20 +9,20 @@ public class ReturnProperty {
     private String name;
     private String fieldName;
 
-    private ReturnType returnType;
+    private FieldType fieldType;
 
     public ReturnProperty() {
     }
 
-    public ReturnProperty(final String name, final ReturnType returnType) {
+    public ReturnProperty(final String name, final FieldType fieldType) {
         this.name = name;
-        this.returnType = returnType;
+        this.fieldType = fieldType;
     }
 
-    public ReturnProperty(final String name, final String fieldName, final ReturnType returnType) {
+    public ReturnProperty(final String name, final String fieldName, final FieldType fieldType) {
         this.name = name;
         this.fieldName = fieldName;
-        this.returnType = returnType;
+        this.fieldType = fieldType;
     }
 
     public String getName() {
@@ -41,11 +41,11 @@ public class ReturnProperty {
         this.fieldName = fieldName;
     }
 
-    public ReturnType getReturnType() {
-        return returnType;
+    public FieldType getFieldType() {
+        return fieldType;
     }
 
-    public void setReturnType(final ReturnType returnType) {
-        this.returnType = returnType;
+    public void setFieldType(final FieldType fieldType) {
+        this.fieldType = fieldType;
     }
 }

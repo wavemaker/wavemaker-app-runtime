@@ -10,6 +10,14 @@ public class ProcedureParameter extends QueryParameter {
 
     private ProcedureParameterType parameterType;
 
+    public ProcedureParameter() {
+    }
+
+    public ProcedureParameter(final ProcedureParameter other) {
+        super(other);
+        this.parameterType = other.parameterType;
+    }
+
     public ProcedureParameterType getParameterType() {
         return parameterType;
     }
