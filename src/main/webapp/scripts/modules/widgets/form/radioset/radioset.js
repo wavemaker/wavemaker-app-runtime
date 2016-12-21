@@ -82,7 +82,7 @@ WM.module('wm.widgets.form')
                 isBoundToServiceVariable;
             /*Checking if widget is bound to service variable*/
             if (CONSTANTS.isStudioMode && scope.binddataset) {
-                isBoundToServiceVariable = FormWidgetUtils.getBoundVariableCategory(scope) === "wm.ServiceVariable";
+                isBoundToServiceVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory(scope) === "wm.ServiceVariable";
             }
             /*Monitoring changes for properties and accordingly handling respective changes.*/
             switch (key) {
