@@ -1814,6 +1814,7 @@ WM.module('wm.widgets.base', [])
                         "showvalues": {"type": "boolean", "value": false},
                         "showlabels": {"type": "list", "options":  ['hide', 'inside', 'outside'], "value": "outside"},
                         "viewtype": {"type": "list", "options":  ['Grouped', 'Stacked'], "value": "Grouped"},
+                        "interpolation": {"type": "list", "options":  ['linear', 'cardinal', 'step'], "value": "linear"},
                         "areaviewtype": {"type": "list", "options":  ['stack', 'stream', 'expand'], "value": "stack"},
                         "staggerlabels": {"type": "boolean", "value": false},
                         "reducexticks": {"type": "boolean", "value": true},
@@ -2016,7 +2017,8 @@ WM.module('wm.widgets.base', [])
                 {"name": "message", "properties": ["nodatamessage", "loadingdatamsg"], "parent": "chart"},
                 {"name": "layout", "properties": ["offset"], "parent": "chart"},
                 {"name": "legend", "properties": ["showlegend"], "parent": "chart"},
-                {"name": "behavior", "properties": ["tooltips", "viewtype", "areaviewtype", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},
+                {"name": "behavior", "properties": ["tooltips", "donutratio", "highlightpoints", "linethickness"], "parent": "chart"},
+                {"name": "datarendering", "properties": [ "viewtype", "interpolation", "areaviewtype"], "parent": "chart"},
                 //x axis groups
                 {"name": "", "properties": ["showxaxis", "xaxislabel", "xunits", "xaxislabeldistance", "xdomain", "showvalues", "staggerlabels", "reducexticks", 'barspacing', 'showxdistance'], "parent": "xaxis"},
                 {"name": "xaxisformat", "properties": ["formattype", "xnumberformat", "xdateformat"], "parent": "xaxis"},

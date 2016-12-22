@@ -73,7 +73,7 @@ WM.module('wm.widgets.basic')
                         }
                     }
                 },
-                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'centerlabel', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints'],
+                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'centerlabel', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints', 'interpolation'],
                 barSpacingMap = {
                     'small' : 0.3,
                     'medium' : 0.5,
@@ -577,11 +577,13 @@ WM.module('wm.widgets.basic')
                             return d[1];
                         })
                         .showControls(false)
-                        .useInteractiveGuideline(propertyValueMap.tooltips);
+                        .useInteractiveGuideline(propertyValueMap.tooltips)
+                        .interpolate(propertyValueMap.interpolation);
                     break;
                 case 'Line':
                     chart = nv.models.lineChart()
-                        .useInteractiveGuideline(propertyValueMap.tooltips);
+                        .useInteractiveGuideline(propertyValueMap.tooltips)
+                        .interpolate(propertyValueMap.interpolation);
                     break;
                 case 'Area':
                     chart = nv.models.stackedAreaChart()
@@ -594,7 +596,8 @@ WM.module('wm.widgets.basic')
                         .clipEdge(true)
                         .showControls(false)
                         .style(propertyValueMap.areaviewtype)
-                        .useInteractiveGuideline(propertyValueMap.tooltips);
+                        .useInteractiveGuideline(propertyValueMap.tooltips)
+                        .interpolate(propertyValueMap.interpolation);
                     break;
                 case 'Bar':
                     barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue) || barSpacingMap.medium;
