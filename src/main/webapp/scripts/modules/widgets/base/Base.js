@@ -1153,8 +1153,7 @@ WM.module('wm.widgets.base', [])
                         "onExitfullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
-                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.card': {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
