@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 
 import com.wavemaker.runtime.commons.model.Proxy;
@@ -41,7 +42,6 @@ import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
-import com.wavemaker.tools.apidocs.tools.core.model.Info;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -52,6 +52,23 @@ import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
  * @author Uday Shankar
  */
 public class RestRuntimeService {
+
+
+    @Value("${app.proxy.enabled}")
+    private boolean proxyEnabled;
+
+    @Value("${app.proxy.host}")
+    private String proxyHost;
+
+    @Value("${app.proxy.port}")
+    private int proxyPort;
+
+    @Value("${app.proxy.username}")
+    private String proxyUsername;
+
+    @Value("${app.proxy.password}")
+    private String proxyPassword;
+
 
     private Map<String, Swagger> swaggerDocumentCache = new HashMap<String, Swagger>();
 
@@ -181,16 +198,8 @@ public class RestRuntimeService {
             }
         }
 
-        Info info = swagger.getInfo();
-        boolean proxyEnabled = Boolean.valueOf(info.getProxyEnabled());
-
         if (proxyEnabled) {
-
-            String hostName = info.getProxyHostName();
-            Integer port = Integer.valueOf(info.getProxyPort());
-            String username = info.getProxyUsername();
-            String password = info.getProxyPassword();
-            restRequestInfo.setProxy(new Proxy(hostName, port, username, password));
+            restRequestInfo.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
 
         StrSubstitutor strSubstitutor = new StrSubstitutor(pathParams, "{", "}");
