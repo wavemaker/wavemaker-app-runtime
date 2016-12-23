@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
             '</p>'
             );
     }])
-    .directive('wmMessage', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce) {
+    .directive('wmMessage', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.message', ['wm.base']),
             notifyFor = {
@@ -85,8 +85,8 @@ WM.module('wm.widgets.basic')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     scope.hideclose = attrs.hideclose || attrs.hideClose || false;

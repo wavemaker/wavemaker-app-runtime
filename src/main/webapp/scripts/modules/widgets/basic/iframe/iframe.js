@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
                 '</div>'
             );
     }])
-    .directive('wmIframe', ['PropertiesFactory', '$rootScope', 'WidgetUtilService', '$sce', 'Utils', '$location', function (PropertiesFactory, $rootScope, WidgetUtilService, $sce, Utils, $location) {
+    .directive('wmIframe', ['PropertiesFactory', '$rootScope', 'WidgetUtilService', '$sce', 'Utils', function (PropertiesFactory, $rootScope, WidgetUtilService, $sce, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.iframe', ['wm.base']),
@@ -68,8 +68,8 @@ WM.module('wm.widgets.basic')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     /* register the property change handler */

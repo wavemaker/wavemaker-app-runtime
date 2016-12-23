@@ -9,7 +9,7 @@ WM.module('wm.layouts.page')
                 '</main>'
             );
     }])
-    .directive('wmContent', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmContent', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.content', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -21,9 +21,8 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/content.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
 
                     'post': function (scope, element, attrs) {

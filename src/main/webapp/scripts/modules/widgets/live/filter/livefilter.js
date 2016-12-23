@@ -443,13 +443,11 @@ WM.module('wm.widgets.live')
                     tAttr.gridColumnMarkup = filterMarkup;
 
                     return {
-                        pre: function (iScope, element) {
+                        pre: function (iScope, element, attrs) {
                             var elScope = element.scope();
-                            if (CONSTANTS.isStudioMode) {
-                                iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                            } else {
-                                iScope.widgetProps = widgetProps;
-                            }
+
+                            iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                             iScope.filterElement = element;
                             /*This is to make the "Variables" & "Widgets" available in the Filter scope.
                              * and "Variables", "Widgets" will not be available in that scope.

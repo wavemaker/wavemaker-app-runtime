@@ -21,7 +21,9 @@ WM.module('wm.widgets.dialog')
         '$templateCache',
         '$compile',
         'CONSTANTS',
-        function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS) {
+        'Utils',
+
+        function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, Utils) {
             'use strict';
             var transcludedContent = '',
                 id,
@@ -53,8 +55,8 @@ WM.module('wm.widgets.dialog')
                 },
                 'replace': true,
                 'link'   : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
 
@@ -104,8 +106,8 @@ WM.module('wm.widgets.dialog')
                 'template' : $templateCache.get('template/widget/dialog/logindialogcontainer.html'),
                 'replace'  : true,
                 'link'     : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
 

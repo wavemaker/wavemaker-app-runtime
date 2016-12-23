@@ -655,12 +655,9 @@ WM.module('wm.widgets.basic')
                     return template[0].outerHTML;
                 },
                 'link': {
-                    'pre': function ($is, $el) {
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                         $is.widgetDataset = {};
                         $is.updateModel   = updateModel.bind(undefined, $is, $el.find('input'));
 

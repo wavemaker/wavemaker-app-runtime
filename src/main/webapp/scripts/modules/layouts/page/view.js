@@ -18,9 +18,8 @@ WM.module('wm.layouts.page')
             'transclude': true,
             'template'  : WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/view.html'),
             'link'      : {
-                'pre': function (scope) {
-                    /*Applying widget properties to directive scope*/
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     ViewService.registerView(scope);

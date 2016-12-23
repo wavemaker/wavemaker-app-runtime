@@ -337,11 +337,7 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     if (!attrs.widgetid) {
                         Object.defineProperty(iScope, '_model_', {

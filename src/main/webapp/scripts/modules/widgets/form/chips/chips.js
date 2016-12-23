@@ -381,11 +381,9 @@ WM.module('wm.widgets.form')
                 'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/chips.html'),
                 'link'    : {
                     'pre' : function ($is, $el, attrs) {
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                         if (!attrs.widgetid) {
                             var data;
                             Object.defineProperty($is, '_model_', {

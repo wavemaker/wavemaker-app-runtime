@@ -8,8 +8,9 @@ WM.module('wm.layouts.containers')
         '$rootScope',
         'CONSTANTS',
         '$timeout',
+        'Utils',
 
-        function (PropertiesFactory, WidgetUtilService, $rootScope, CONSTANTS, $timeout) {
+        function (PropertiesFactory, WidgetUtilService, $rootScope, CONSTANTS, $timeout, Utils) {
             'use strict';
 
             var widgetProps, notifyFor,
@@ -58,8 +59,8 @@ WM.module('wm.layouts.containers')
             }
 
             // pre link function of studio directive
-            function preLinkFn($is) {
-                $is.widgetProps = widgetProps;
+            function preLinkFn($is, $el, attrs) {
+                $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
             }
 
             // post link function of studio directive

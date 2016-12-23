@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<div init-widget class="row app-row clearfix" apply-styles wmtransclude></div>'
             );
     }])
-    .directive('wmRow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmRow', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.row', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -18,8 +18,8 @@ WM.module('wm.layouts.page')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/row.html'),
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);

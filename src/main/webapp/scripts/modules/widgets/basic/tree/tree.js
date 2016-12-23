@@ -281,8 +281,8 @@ WM.module('wm.widgets.basic')
                 'template': '<div class="app-tree" init-widget apply-styles="container" listen-property="dataset"></div>',
                 'replace' : true,
                 'link'    : {
-                    'pre': function ($is) {
-                        if (CONSTANTS.isStudioMode) {
+                    'pre': function ($is, $el, attrs) {
+                        if (attrs.widgetid) {
                             $is.widgetProps = Utils.getClonedObject(widgetProps);
                             defineDatavalueGetterSetter($is);
                         } else {

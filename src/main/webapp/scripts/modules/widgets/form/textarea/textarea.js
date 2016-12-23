@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                 '</textarea>'
             );
     }])
-    .directive('wmTextarea', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmTextarea', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         /*Obtaining properties specific to textarea widget by extending from all editor related widget properties*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.textarea', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']);
@@ -44,8 +44,8 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
 

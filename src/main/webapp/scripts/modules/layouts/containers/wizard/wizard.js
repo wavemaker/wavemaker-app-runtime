@@ -47,8 +47,9 @@ WM.module('wm.layouts.containers')
         'WidgetUtilService',
         '$compile',
         'CONSTANTS',
+        'Utils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, CONSTANTS) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, CONSTANTS, Utils) {
             'use strict';
 
             //Get the properties related to the wizard
@@ -166,8 +167,8 @@ WM.module('wm.layouts.containers')
                     }
                 }],
                 link: {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, element, attrs) {
                         $is.currentStep = $is.steps[0];
@@ -212,13 +213,8 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'require'   : '^wmWizard',
                 'link'      : {
-                    'pre': function ($is) {
-
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs, ctrl) {
                         var $parentElement = $el.parent().closest('.app-wizard'),

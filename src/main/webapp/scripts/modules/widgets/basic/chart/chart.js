@@ -1257,12 +1257,8 @@ WM.module('wm.widgets.basic')
             template: $templateCache.get('template/widget/form/chart.html'),
             compile: function () {
                 return {
-                    pre: function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
+                    pre: function (iScope, $el, attrs) {
+                        iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     post: function (scope, element, attrs) {
                         var handlers = [],

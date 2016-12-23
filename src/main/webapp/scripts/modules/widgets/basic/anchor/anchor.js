@@ -67,7 +67,7 @@ WM.module('wm.widgets.basic')
                             WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
                             attrs.iconclass = 'wi wi-' + attrs.iconname;
                         }
-                        scope.widgetProps = widgetProps;
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         /* register the property change handler */

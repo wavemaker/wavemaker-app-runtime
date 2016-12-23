@@ -282,9 +282,8 @@ WM.module('wm.widgets.advanced')
             },
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/advanced/rating.html'),
             'link': {
-                'pre': function (scope) {
-                    /*Applying widget properties to directive scope*/
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     /*  flag to set if the rating widget is focused or not */
                     scope.isFocused = false;

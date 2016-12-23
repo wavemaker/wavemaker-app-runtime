@@ -17,9 +17,8 @@ WM.module('wm.widgets.form')
         '$templateCache',
         'WidgetUtilService',
         'Utils',
-        'CONSTANTS',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
             /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.composite', ['wm.base', 'wm.containers']),
@@ -55,12 +54,8 @@ WM.module('wm.widgets.form')
                 'scope'     : {},
                 'template'  : $templateCache.get('template/widget/form/composite.html'),
                 'link'      : {
-                    'pre': function (scope) {
-                        if (CONSTANTS.isStudioMode) {
-                            scope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            scope.widgetProps = widgetProps;
-                        }
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
 

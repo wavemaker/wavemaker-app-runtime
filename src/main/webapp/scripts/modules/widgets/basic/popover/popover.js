@@ -281,9 +281,10 @@ WM.module('wm.widgets.basic')
             },
             'compile': function (tElement) {
                 return {
-                    'pre': function (scope) {
+                    'pre': function (scope, $el, attrs) {
                         scope.showicon = !scope.iconurl;
-                        scope.widgetProps = Utils.getClonedObject(widgetProps);
+
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs, nullCtrl, transcludeFn) {
                         var popover,

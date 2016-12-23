@@ -18,7 +18,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
             '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container" wm-navigable-element="true"></li>');
     }])
-    .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'WidgetUtilService', function ($templateCache, PropertiesFactory, CONSTANTS, WidgetUtilService) {
+    .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'WidgetUtilService', 'Utils', function ($templateCache, PropertiesFactory, CONSTANTS, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base']);
         return {
@@ -73,8 +73,9 @@ WM.module('wm.layouts.containers')
                 };
             },
             'link' : {
-                'pre' : function ($scope) {
-                    $scope.widgetProps = widgetProps;
+                'pre' : function ($scope, $el, attrs) {
+                    $scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                     $scope.contents = [];
                     $scope.animate = true;
                     $scope.currentSelectedIndex = 0;
@@ -136,8 +137,9 @@ WM.module('wm.layouts.containers')
             'template'  : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentcontent.html'),
             'require'   : '^wmSegmentedControl',
             'link'      : {
-                'pre' : function ($scope) {
-                    $scope.widgetProps = widgetProps;
+                'pre' : function ($scope, $el, attrs) {
+                    $scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                     $scope.onShow = function () {
                         $scope.__load();
                     };

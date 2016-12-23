@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
             '<i init-widget class="app-icon"  title="{{hint}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
             );
     }])
-    .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']);
         return {
@@ -17,8 +17,8 @@ WM.module('wm.widgets.basic')
             'replace' : true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/icon.html'),
             'link'    : {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     /* register the property change handler */

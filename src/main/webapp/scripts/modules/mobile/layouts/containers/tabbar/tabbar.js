@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
                 '</nav>' +
             '</div>');
     }])
-    .directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($window, $templateCache, PropertiesFactory, WidgetUtilService) {
+    .directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'Utils', function ($window, $templateCache, PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base', 'wm.tabbar.dataProps']),
             notifyFor   = { 'dataset': true, 'position': true},
@@ -112,8 +112,9 @@ WM.module('wm.layouts.containers')
             'replace'  : true,
             'template' : $templateCache.get('template/layouts/containers/mobile/tabbar/tabbar.html'),
             'link'     : {
-                'pre' : function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre' : function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                     scope.position = 'bottom'; /**top | bottom**/
                     scope.menutype = 'thumbnail'; /**thumbnail | list**/
                 },

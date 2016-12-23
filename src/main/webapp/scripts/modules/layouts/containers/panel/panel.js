@@ -37,9 +37,8 @@ WM.module('wm.layouts.containers')
         'PropertiesFactory',
         'WidgetUtilService',
         'Utils',
-        'CONSTANTS',
 
-        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
+        function (PropertiesFactory, WidgetUtilService, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
@@ -93,11 +92,9 @@ WM.module('wm.layouts.containers')
                 'compile': function ($tEl) {
                     return {
                         'pre': function ($is, $el, attrs) {
-                            if (CONSTANTS.isStudioMode) {
-                                $is.widgetProps = Utils.getClonedObject(widgetProps);
-                            } else {
-                                $is.widgetProps = widgetProps;
-                            }
+
+                            $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                             //handle the backward compatibility for description attributes
                             if (attrs.description && !attrs.subheading) {
                                 $is.subheading = attrs.subheading = attrs.description;

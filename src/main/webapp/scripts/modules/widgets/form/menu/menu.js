@@ -176,11 +176,7 @@ WM.module('wm.widgets.form')
                                 attrs.menuposition = POSITION.DOWN_LEFT;
                             }
                         }
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
+                        iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);

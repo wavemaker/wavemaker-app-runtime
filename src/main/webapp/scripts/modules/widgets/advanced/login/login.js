@@ -12,7 +12,7 @@ WM.module('wm.widgets.advanced')
             '</div>');
 
     }])
-    .directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller) {
+    .directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', 'Utils', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.login', ['wm.base', 'wm.layouts.login', 'wm.base.events.successerror']);
 
@@ -32,8 +32,8 @@ WM.module('wm.widgets.advanced')
                 }
 
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         if (CONSTANTS.isRunMode) {

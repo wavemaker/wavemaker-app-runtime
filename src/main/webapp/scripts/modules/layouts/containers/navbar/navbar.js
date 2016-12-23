@@ -60,9 +60,8 @@ WM.module('wm.layouts.containers')
                     '</div>' +
                 '</nav> ',
             'link': {
-                'pre': function (scope) {
-                    /*Applying widget properties to directive scope*/
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
 
                 'post': function (scope, element, attrs) {

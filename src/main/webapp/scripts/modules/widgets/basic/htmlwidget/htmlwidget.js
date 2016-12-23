@@ -9,7 +9,7 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
-    .directive('wmHtml', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmHtml', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.html', ['wm.base', 'wm.base.editors', 'wm.containers', 'wm.containers.borderstyle', 'wm.base.events']),
             notifyFor = {
@@ -32,9 +32,8 @@ WM.module('wm.widgets.basic')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/htmlTemplate.html'),
             'compile': function (tElement) {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
                         var content = tElement.context.innerHTML;

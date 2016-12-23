@@ -22,7 +22,7 @@ WM.module('wm.widgets.form')
             '</div>'
             );
     }])
-    .directive('wmCheckbox', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$templateCache', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $templateCache, FormWidgetUtils) {
+    .directive('wmCheckbox', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$templateCache', 'FormWidgetUtils', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $templateCache, FormWidgetUtils, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors.abstracteditors']),
             notifyFor = {
@@ -99,7 +99,7 @@ WM.module('wm.widgets.form')
             'link': {
                 'pre': function (scope, element, attrs) {
                     /*Applying widget properties to directive scope*/
-                    scope.widgetProps = widgetProps;
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     if (!attrs.datavalue && !attrs.scopedatavalue) {
                         if (attrs.hasOwnProperty('uncheckedvalue')) {

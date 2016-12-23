@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.containers', 'wm.tabbar.dataProps']),
             notifyFor = {
@@ -73,8 +73,8 @@ WM.module('wm.layouts.containers')
                     '</li>' +
                 '</ol> ',
             'link': {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     var onPropertyChange = propertyChangeHandler.bind(undefined, scope);

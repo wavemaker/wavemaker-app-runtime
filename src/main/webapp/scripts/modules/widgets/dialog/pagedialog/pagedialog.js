@@ -67,12 +67,8 @@ WM.module('wm.widgets.dialog')
                 return $templateCache.get("template/widget/dialog/pagedialog.html");
             },
             "link": {
-                "pre": function (iScope) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                "pre": function (iScope, $el, attrs) {
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 "post": function (scope, element, attrs) {
                     // register the property change handler
@@ -123,12 +119,8 @@ WM.module('wm.widgets.dialog')
         "replace"   : true,
         "template"  : $templateCache.get("template/widget/dialog/pagedialog.html"),
         "link"      : {
-            "pre": function (iScope) {
-                if (CONSTANTS.isStudioMode) {
-                    iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                } else {
-                    iScope.widgetProps = widgetProps;
-                }
+            "pre": function (iScope, $el, attrs) {
+                iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
             },
             "post": function (scope, element, attrs, dialogCtrl) {
                 // handles ok button click

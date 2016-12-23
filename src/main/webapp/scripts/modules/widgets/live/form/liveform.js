@@ -759,8 +759,8 @@ WM.module('wm.widgets.live')
                 return {
                     pre: function (scope, element, attrs) {
                         var elScope = element.scope();
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         /*check for formtype or layout values for backward compatability*/
                         if (attrs.formtype || attrs.layout) {

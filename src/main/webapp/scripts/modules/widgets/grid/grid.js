@@ -277,11 +277,8 @@ WM.module('wm.widgets.grid')
                             }
                         });
 
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
+                        iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                         /*Set the "allowPageable" flag in the scope to indicate that the grid accepts Pageable objects.*/
                         iScope.allowPageable = true;
 

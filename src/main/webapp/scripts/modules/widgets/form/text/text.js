@@ -111,12 +111,8 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (iScope) {
-                    if (CONSTANTS.isStudioMode) {
-                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        iScope.widgetProps = widgetProps;
-                    }
+                'pre': function (iScope, $el, attrs) {
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
 

@@ -324,12 +324,9 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
             'link': {
-                'pre': function (scope, element) {
-                    if (CONSTANTS.isStudioMode) {
-                        scope.widgetProps = Utils.getClonedObject(widgetProps);
-                    } else {
-                        scope.widgetProps = widgetProps;
-                    }
+                'pre': function (scope, element, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;

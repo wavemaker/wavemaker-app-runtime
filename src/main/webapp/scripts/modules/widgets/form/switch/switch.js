@@ -24,8 +24,9 @@ WM.module('wm.widgets.form')
         'PropertiesFactory',
         'WidgetUtilService',
         'FormWidgetUtils',
+        'Utils',
 
-        function (PropertiesFactory, WidgetUtilService, FormWidgetUtils) {
+        function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors.abstracteditors']),
@@ -144,8 +145,8 @@ WM.module('wm.widgets.form')
                     return template[0].outerHTML;
                 },
                 'link': {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
 

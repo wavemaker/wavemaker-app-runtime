@@ -416,9 +416,9 @@ WM.module('wm.widgets.form')
             template: $templateCache.get('template/widget/form/fileupload.html'),
             compile: function () {
                 return {
-                    pre: function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+                    pre: function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+
                         scope._isMobileType = $rootScope.isMobileApplicationType;
                         scope._isCordova = CONSTANTS.hasCordova;
                     },

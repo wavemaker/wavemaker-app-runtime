@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
     }])
-    .directive('wmSlider', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
+    .directive('wmSlider', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.slider', ['wm.base', 'wm.base.events.change']);
         return {
@@ -30,9 +30,8 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': {
-                'pre': function (scope) {
-                    /*Applying widget properties to directive scope*/
-                    scope.widgetProps = widgetProps;
+                'pre': function (scope, $el, attrs) {
+                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
 

@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<div init-widget class="app-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
             );
     }])
-    .directive('wmColumn', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmColumn', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.column', ['wm.layouts', 'wm.base.events.touch']),
@@ -34,9 +34,8 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/column.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+                    'pre': function (scope, $el, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
 
                     'post': function (scope, element, attrs) {

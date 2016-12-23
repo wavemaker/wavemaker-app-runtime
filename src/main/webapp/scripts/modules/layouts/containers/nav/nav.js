@@ -198,12 +198,8 @@ WM.module('wm.layouts.containers')
                     return '<ul apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' + cls + '></ul>';
                 },
                 'link'      : {
-                    'pre': function ($is) {
-                        if (CONSTANTS.isStudioMode) {
-                            $is.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            $is.widgetProps = widgetProps;
-                        }
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
 
                     'post': function ($is, $el, attrs) {
@@ -245,8 +241,9 @@ WM.module('wm.layouts.containers')
     .directive('wmNavItem', [
         'PropertiesFactory',
         'WidgetUtilService',
+        'Utils',
 
-        function (PropertiesFactory, WidgetUtilService) {
+        function (PropertiesFactory, WidgetUtilService, Utils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem', ['wm.base']);
 
@@ -257,8 +254,8 @@ WM.module('wm.layouts.containers')
                 'transclude': true,
                 'template'  : '<li init-widget listen-property="dataset" class="app-nav-item" apply-styles="container" wmtransclude></li>',
                 'link'      : {
-                    'pre': function ($is) {
-                        $is.widgetProps = widgetProps;
+                    'pre': function ($is, $el, attrs) {
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
