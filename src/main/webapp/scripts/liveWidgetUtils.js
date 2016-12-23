@@ -1558,10 +1558,10 @@ WM.module('wm.widgets.live')
                     watchSelectedItem,
                     referenceVariable;
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
-                reference = fetchReferenceDetails($scope);
-
-                /*Check if a watch is not registered on selectedItem.*/
-                if ($scope.selectedItemWatched) {
+                reference         = fetchReferenceDetails($scope);
+                referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
+                /*Check if a watch is not registered on selectedItem or if the relatedField is a one-to-many relation because this field value will directly be available in the data*/
+                if ($scope.selectedItemWatched || !referenceVariable.isRelatedFieldMany(reference.relatedFieldName)) {
                     return;
                 }
                 watchSelectedItem = reference.referenceWidget.$watch('selecteditem', function (newVal, oldVal) {
@@ -1571,8 +1571,6 @@ WM.module('wm.widgets.live')
                     /*Check for sanity of newVal.*/
                     /*Check for sanity of newVal.*/
                     if (newVal && !WM.equals(newVal, oldVal)) {
-
-                        referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
                         /*Check if "referenceVariableKey" has already been computed.*/
                         if (!referenceVariableKey && referenceVariable && referenceVariable.category === 'wm.LiveVariable') {
                             /*Invoke the function to get the primary key.*/
