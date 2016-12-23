@@ -445,6 +445,7 @@ WM.module('wm.widgets.base')
                             }
 
                             _watchers[key] = undefined;
+                            nv = undefined;
                         }
 
                         value = nv;
