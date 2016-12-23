@@ -147,10 +147,19 @@ Application
 
                     function getRedirectPage(config) {
                         var homePage = _WM_APP_PROPERTIES.homePage,
-                            loginPage = _.get(config, 'login.pageName');
+                            loginPage = _.get(config, 'login.pageName'),
+                            prevRedirectPage;
                         page = page || $location.path().replace('/', '');
                         if (page === homePage || page === loginPage) {
-                            return undefined;
+                            /*
+                             * find previous redirect page from URL, if exists, user should redirect to that page.
+                             * USE CASE:
+                             *  user is on http://localhost:8080/app/#/Login?redirectTo=page
+                             *  a variable call fails resulting 401
+                             *  in this case, redirectTo page should be 'page' and not undefined
+                             */
+                            prevRedirectPage = _.get($location.search, 'redirectTo');
+                            return !_.isEmpty(prevRedirectPage) ? prevRedirectPage : undefined;
                         }
 
                         return page;
