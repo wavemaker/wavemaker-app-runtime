@@ -2119,6 +2119,9 @@ $.widget('wm.datagrid', {
         case 'autocomplete':
             template += ' type="autocomplete" dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" on-submit="onRowFilterChange()" orderby="' + fieldName + ':asc"';
             break;
+        case 'time':
+            template += ' timepattern="hh:mm:ss a" ';
+            break;
         }
         template += '></wm-' + widget + '>';
         return template;

@@ -432,7 +432,7 @@ WM.module('wm.widgets.live')
                 /*Function to set the previous data array to be used while updating records in a live-form.*/
                 $scope.setPrevformFields = function (formFields) {
                     prevformFields = Utils.getClonedObject(formFields);
-                    prevDataObject = Utils.getClonedObject($scope.rowdata);
+                    prevDataObject = Utils.getClonedObject($scope.rowdata || {});
                 };
                 /*Method to clear the fields and set the form to readonly*/
                 $scope.formCancel = function () {
@@ -513,7 +513,7 @@ WM.module('wm.widgets.live')
                         }
                         /*Set the rowdata to prevDataObject irrespective whether the row is selected
                          or not*/
-                        prevDataObject = Utils.getClonedObject($scope.rowdata);
+                        prevDataObject = Utils.getClonedObject($scope.rowdata || {});
                     }
                     $scope.setReadonlyFields();
                     $scope.isUpdateMode = true;
@@ -580,7 +580,7 @@ WM.module('wm.widgets.live')
                 $scope.delete = function (callBackFn) {
                     resetFormState();
                     $scope.operationType = "delete";
-                    prevDataObject = Utils.getClonedObject($scope.rowdata);
+                    prevDataObject = Utils.getClonedObject($scope.rowdata || {});
                     $scope.formSave(undefined, undefined, undefined, callBackFn);
                 };
                 /*Check if the data is in required format, i.e, if the field has a key and type*/
@@ -767,8 +767,8 @@ WM.module('wm.widgets.live')
                             attrs.formlayout = attrs.formtype || attrs.layout;
                         }
 
-                        /*enable the fromlayout for device*/
-                        if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
+                        /*enable the form layout for device. For dialog, mode do not show it*/
+                        if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode && attrs.formlayout !== 'dialog') {
                             scope.widgetProps.formlayout.show = true;
                             scope.widgetProps.formlayout.showindesigner = true;
                         }
