@@ -643,11 +643,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "value": "CURRENT_TIME"
         },
         "CURRENT_USER_ID": {
-            "property": "Current Userid",
+            "property": "LoggedIn UserId",
             "value": "CURRENT_USER_ID"
         },
         "CURRENT_USER_NAME": {
-            "property": "Current Username",
+            "property": "LoggedIn Username",
             "value": "CURRENT_USER_NAME"
         }
     },
