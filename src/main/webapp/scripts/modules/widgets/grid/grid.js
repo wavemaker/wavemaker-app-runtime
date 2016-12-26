@@ -261,7 +261,7 @@ WM.module('wm.widgets.grid')
                         set: function (val) {
                             /*Select the rows in the table based on the new selected items passed*/
                             scope.items.length = 0;
-                            scope.datagridElement.datagrid('selectRows', val);
+                            scope.callDataGridMethod('selectRows', val);
                         }
                     });
                 }
@@ -332,7 +332,7 @@ WM.module('wm.widgets.grid')
                             if (element[0].contains($target) || event.target.doctype || isInputBodyWrapper($($target))) {
                                 return;
                             }
-                            $is.datagridElement.datagrid('saveRow');
+                            $is.callDataGridMethod('saveRow');
                         }
                         //Populate the filter options with localized messages
                         function getMatchModeMsgs() {
@@ -364,8 +364,8 @@ WM.module('wm.widgets.grid')
                                 $is.datagridElement.datagrid($is.gridOptions);
                             } else {
                                 $timeout(function () {
-                                    $is.datagridElement.datagrid('setColGroupWidths');
-                                    $is.datagridElement.datagrid('addOrRemoveScroll');
+                                    $is.callDataGridMethod('setColGroupWidths');
+                                    $is.callDataGridMethod('addOrRemoveScroll');
                                 });
                             }
                         }
@@ -375,10 +375,10 @@ WM.module('wm.widgets.grid')
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
-                                $is.datagridElement.datagrid('setGridDimensions', 'width', newVal);
+                                $is.callDataGridMethod('setGridDimensions', 'width', newVal);
                                 break;
                             case 'height':
-                                $is.datagridElement.datagrid('setGridDimensions', 'height', newVal);
+                                $is.callDataGridMethod('setGridDimensions', 'height', newVal);
                                 break;
                             case 'gridfirstrowselect':
                                 $is.setDataGridOption('selectFirstRow', newVal);
@@ -491,21 +491,21 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'gridclass':
-                                $is.datagridElement.datagrid('option', 'cssClassNames.grid', newVal);
+                                $is.callDataGridMethod('option', 'cssClassNames.grid', newVal);
                                 break;
                             case 'nodatamessage':
-                                $is.datagridElement.datagrid('option', 'dataStates.nodata', newVal);
+                                $is.callDataGridMethod('option', 'dataStates.nodata', newVal);
                                 break;
                             case 'loadingdatamsg':
-                                $is.datagridElement.datagrid('option', 'dataStates.loading', newVal);
+                                $is.callDataGridMethod('option', 'dataStates.loading', newVal);
                                 break;
                             case 'filternullrecords':
                                 if ($is.widgetid) {
-                                    $is.datagridElement.datagrid('option', 'filterNullRecords', newVal);
+                                    $is.callDataGridMethod('option', 'filterNullRecords', newVal);
                                 }
                                 break;
                             case 'spacing':
-                                $is.datagridElement.datagrid('option', 'spacing', newVal);
+                                $is.callDataGridMethod('option', 'spacing', newVal);
                                 if (newVal === 'condensed') {
                                     $is.navigationSize = 'small';
                                 } else {
@@ -668,11 +668,11 @@ WM.module('wm.widgets.grid')
                                                 $is.dataNavigator.dataset = data;
                                             }
                                         } else {
-                                            $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                                            $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                                         }
                                     });
                                 } else {
-                                    $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
+                                    $is.callDataGridMethod('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
                                 }
                             }
                             if ($is.widgetid) {
@@ -696,13 +696,13 @@ WM.module('wm.widgets.grid')
                                 if (boundVariableName === $is.variableName) {
                                     $is.variableInflight = active;
                                     if (active) {
-                                        $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
+                                        $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
                                     } else {
                                         //If grid is in edit mode or grid has data, dont show the no data message
                                         if (!$is.isGridEditMode && $is.gridData && $is.gridData.length === 0) {
-                                            $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                                            $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                                         } else {
-                                            $is.datagridElement.datagrid('setStatus', 'ready');
+                                            $is.callDataGridMethod('setStatus', 'ready');
                                         }
                                     }
                                 }
@@ -777,7 +777,7 @@ WM.module('wm.widgets.grid')
                         $is.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         $is.gridOptions.name           = $is.name || $is.$id;
                         $is.datagridElement.datagrid($is.gridOptions);
-                        $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
+                        $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
 
                         $is.$on('$destroy', onDestroy);
                         element.on('$destroy', onDestroy);
@@ -862,9 +862,9 @@ WM.module('wm.widgets.grid')
                 }
                 if (!$is.variableInflight) {
                     if ($is.gridData && $is.gridData.length === 0) {
-                        $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                        $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                     } else {
-                        $is.datagridElement.datagrid('setStatus', 'ready');
+                        $is.callDataGridMethod('setStatus', 'ready');
                     }
                 }
                 $is.$root.$safeApply($is);
@@ -1020,7 +1020,7 @@ WM.module('wm.widgets.grid')
             }
             //Set filter fields based on the search obj
             function setFilterFields(filterFields, searchObj) {
-                var field = searchObj.field;
+                var field = searchObj && searchObj.field;
                 /*Set the filter options only when a field/column has been selected.*/
                 if (field) {
                     filterFields[field] = {
@@ -1143,13 +1143,13 @@ WM.module('wm.widgets.grid')
                     }
                 });
                 if (data && data.length) {
-                    $is.datagridElement.datagrid('setStatus', 'ready');
+                    $is.callDataGridMethod('setStatus', 'ready');
                     //Select the first row after the search for single select
                     if ($is.gridfirstrowselect && !$is.multiselect) {
-                        $is.datagridElement.datagrid('selectFirstRow', true, true);
+                        $is.callDataGridMethod('selectFirstRow', true, true);
                     }
                 } else {
-                    $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                    $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                     $is.selecteditem = undefined;
                 }
             }
@@ -1273,7 +1273,7 @@ WM.module('wm.widgets.grid')
                         } else {
                             if (options.event) {
                                 var row = WM.element(options.event.target).closest('tr');
-                                $is.datagridElement.datagrid('hideRowEditMode', row);
+                                $is.callDataGridMethod('hideRowEditMode', row);
                             }
                             $is.toggleMessage(true, 'success', $is.insertmessage);
                             $is.initiateSelectItem('last', response, undefined, $is.isBoundToStaticVariable, options.callBack);
@@ -1322,7 +1322,7 @@ WM.module('wm.widgets.grid')
                         } else {
                             if (options.event) {
                                 var row = WM.element(options.event.target).closest('tr');
-                                $is.datagridElement.datagrid('hideRowEditMode', row);
+                                $is.callDataGridMethod('hideRowEditMode', row);
                             }
                             $is.operationType = "";
                             $is.toggleMessage(true, 'success', $is.updatemessage);
@@ -1374,7 +1374,7 @@ WM.module('wm.widgets.grid')
                     gridSortString = $is.sortInfo.field + ' ' + $is.sortInfo.direction;
                     variableSort = _.get($is.variable, ['_options', 'orderBy']) || variableSort;
                     if (gridSortString !== variableSort) {
-                        $is.datagridElement.datagrid('resetSortIcons');
+                        $is.callDataGridMethod('resetSortIcons');
                         $is.sortInfo = {};
                         $is.setDataGridOption('sortInfo', {});
                     }
@@ -1471,7 +1471,7 @@ WM.module('wm.widgets.grid')
                 $is.setDataGridOption('headerConfig', $is.headerConfig);
             }
             function addNewRow() {
-                $is.datagridElement.datagrid('addNewRow');
+                $is.callDataGridMethod('addNewRow');
                 $is.$emit('add-new-row');
                 $rs.$emit("wm-event", $is.widgetid, "create");
             }
@@ -1575,7 +1575,7 @@ WM.module('wm.widgets.grid')
                 }
                 if (error) {
                     setGridData([]);
-                    $is.datagridElement.datagrid('setStatus', 'error', error);
+                    $is.callDataGridMethod('setStatus', 'error', error);
                     return false;
                 }
                 return true;
@@ -1612,7 +1612,7 @@ WM.module('wm.widgets.grid')
                 } else if ($is.binddataset.indexOf('bind:Widgets') === -1) {
                     /*if the grid is not bound to widgets*/
                     /*If the variable is deleted hiding the spinner and showing the no data found message*/
-                    $is.datagridElement.datagrid('setStatus', 'error', $is.nodatamessage);
+                    $is.callDataGridMethod('setStatus', 'error', $is.nodatamessage);
                 }
             }
             function watchVariableDataSet(newVal, element) {
@@ -1631,7 +1631,7 @@ WM.module('wm.widgets.grid')
                 }
                 //If variable is in loading state, show loading icon
                 if ($is.variableInflight) {
-                    $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
+                    $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
                 }
                 result = Utils.getValidJSON(newVal);
 
@@ -1668,7 +1668,7 @@ WM.module('wm.widgets.grid')
                     $is.resetPageNavigation();
                     /*for run mode, disabling the loader and showing no data found message if dataset is not valid*/
                     if (CONSTANTS.isRunMode) {
-                        $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                        $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                         $is.setDataGridOption('selectFirstRow', $is.gridfirstrowselect);
                     }
                 }
@@ -1743,7 +1743,7 @@ WM.module('wm.widgets.grid')
                         /*Checking if grid is bound to service variable, for which data cannot be loaded in studio mode,
                          in studio mode and if the fieldDefs are generated. */
                         $is.gridData = [];
-                        $is.datagridElement.datagrid('setStatus', 'error', $rs.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
+                        $is.callDataGridMethod('setStatus', 'error', $rs.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
                     }
                 } else if ($is.widgetid) {
                     /* Put In case of error while fetching data from provided variable, prepare default fieldDefs
@@ -1751,7 +1751,7 @@ WM.module('wm.widgets.grid')
                      * 1. empty variable provided
                      * 2. data not found for provided variable
                      */
-                    $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                    $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                     $is.setDataGridOption('selectFirstRow', $is.gridfirstrowselect);
                     /* if new columns to be rendered, create new column defs*/
                     if ($is.newcolumns) {
@@ -1911,11 +1911,11 @@ WM.module('wm.widgets.grid')
                 if (data) {
                     $is.serverData = data;
                 }
-                $is.datagridElement.datagrid('selectRow', item, true);
+                $is.callDataGridMethod('selectRow', item, true);
             }
             /* deselect the given item*/
             function deselectItem(item) {
-                $is.datagridElement.datagrid('deselectRow', item);
+                $is.callDataGridMethod('deselectRow', item);
             }
             /* determines if the 'user-defined'(not default) columnDefs exists already for the grid */
             function columnDefsExists() {
@@ -1933,7 +1933,7 @@ WM.module('wm.widgets.grid')
             function deleteRow(evt) {
                 var row;
                 if (evt && evt.target) {
-                    $is.datagridElement.datagrid('deleteRowAndUpdateSelectAll', evt);
+                    $is.callDataGridMethod('deleteRowAndUpdateSelectAll', evt);
                 } else {
                     row = evt || $is.selectedItems[0];
                     deleteRecord(row);
@@ -1942,7 +1942,7 @@ WM.module('wm.widgets.grid')
             function editRow(evt) {
                 var row;
                 if (evt && evt.target) {
-                    $is.datagridElement.datagrid('toggleEditRow', evt);
+                    $is.callDataGridMethod('toggleEditRow', evt);
                 } else {
                     row = evt || $is.selectedItems[0];
                     $is.gridOptions.beforeRowUpdate(row);
@@ -2074,7 +2074,7 @@ WM.module('wm.widgets.grid')
             //Clear the all the filters applied
             function clearFilter(skipFilter) {
                 var $gridElement;
-                $is.filterInfo = undefined;
+                $is.filterInfo = {};
                 if ($is.filtermode === 'multicolumn') {
                     $is.rowFilter = {};
                     if (!skipFilter) {
@@ -2127,8 +2127,16 @@ WM.module('wm.widgets.grid')
                 }
                 return newVal;
             }
+            //Function to call the jqeury datagrid method
+            function callDataGridMethod() {
+                if (!$is.datagridElement.datagrid('instance')) {
+                    return; //If datagrid is not initiliazed or destroyed, return here
+                }
+                return $is.datagridElement.datagrid.apply($is.datagridElement, arguments);
+            }
             $is.setGridData                  = setGridData.bind(undefined);
             $is.rowFilter                    = {};
+            $is.filterInfo                   = {};
             $is.fieldDefs                    = [];
             $is.fullFieldDefs                = [];
             $is.selectedItems                = [];
@@ -2168,6 +2176,7 @@ WM.module('wm.widgets.grid')
             $is.clearFilter                  = clearFilter;
             $is.refreshData                  = refreshData;
             $is.onDataNavigatorDataSetChange = onDataNavigatorDataSetChange;
+            $is.callDataGridMethod           = callDataGridMethod;
 
             $is.$watch('gridData', function (newValue) {
                 var startRowIndex,
@@ -2182,7 +2191,7 @@ WM.module('wm.widgets.grid')
                     }
                     /* If colDefs are available, but not already set on the datagrid, then set them.
                      * This will happen while switching from markup to design tab. */
-                    gridOptions = $is.datagridElement.datagrid('getOptions');
+                    gridOptions = $is.callDataGridMethod('getOptions');
                     if (!gridOptions.colDefs.length && $is.fieldDefs.length) {
                         $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
                     }
@@ -2198,8 +2207,8 @@ WM.module('wm.widgets.grid')
                     if (!$is.multiselect) {
                         $is.items.length = 0;
                     }
-                    $is.datagridElement.datagrid('selectRows', $is.items);
-                    $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                    $is.callDataGridMethod('selectRows', $is.items);
+                    $is.selectedItems = $is.callDataGridMethod('getSelectedRows');
                     if ($is.gridData.length) {
                         $is.onDatarender({$isolateScope: $is, $data: $is.gridData});
                     }
@@ -2209,7 +2218,7 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 onRowSelect: function (rowData, e) {
-                    $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                    $is.selectedItems = $is.callDataGridMethod('getSelectedRows');
                     /*
                      * in case of single select, update the items with out changing the reference.
                      * for multi select, keep old selected items in tact
@@ -2240,18 +2249,18 @@ WM.module('wm.widgets.grid')
                 onRowDeselect: function (rowData, e) {
                     if ($is.multiselect) {
                         $is.items = _.pullAllWith($is.items, [rowData], _.isEqual);
-                        $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                        $is.selectedItems = $is.callDataGridMethod('getSelectedRows');
                         $is.onDeselect({$data: rowData, $event: e, $rowData: rowData});
                         $rs.$safeApply($is);
                     }
                 },
                 onColumnSelect: function (col, e) {
-                    $is.selectedColumns = $is.datagridElement.datagrid('getSelectedColumns');
+                    $is.selectedColumns = $is.callDataGridMethod('getSelectedColumns');
                     $is.onColumnselect({$data: col, $event: e});
                     $rs.$safeApply($is);
                 },
                 onColumnDeselect: function (col, e) {
-                    $is.selectedColumns = $is.datagridElement.datagrid('getSelectedColumns');
+                    $is.selectedColumns = $is.callDataGridMethod('getSelectedColumns');
                     $is.onColumndeselect({$data: col, $event: e});
                     $rs.$safeApply($is);
                 },
@@ -2320,7 +2329,7 @@ WM.module('wm.widgets.grid')
                             Utils.triggerCustomEvents(e, events, callBackScope, data);
                         }
                     } else {
-                        $is.datagridElement.datagrid('toggleEditRow', e, options);
+                        $is.callDataGridMethod('toggleEditRow', e, options);
                     }
                 }
             };
@@ -2370,7 +2379,7 @@ WM.module('wm.widgets.grid')
                         exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                             newVal = WM.isDefined(newVal) ? newVal : '';
                             if (property === 'displayName') {
-                                scope.datagridElement.datagrid('setColumnProp', config.field, property, newVal, true);
+                                scope.callDataGridMethod('setColumnProp', config.field, property, newVal, true);
                             }
                         }, {'deepWatch': true, 'allowPageable': true, 'acceptsArray': false});
                     }
@@ -2471,7 +2480,7 @@ WM.module('wm.widgets.grid')
                         scope.ColumnDef.prototype.setProperty = function (property, newval) {
                             this.$is.setProperty.call(this, property, newval);
                             if (property === 'displayName') {
-                                scope.datagridElement.datagrid('setColumnProp', this.field, property, newval);
+                                scope.callDataGridMethod('setColumnProp', this.field, property, newval);
                             } else {
                                 this.$is.redraw && this.$is.redraw(true);
                             }
