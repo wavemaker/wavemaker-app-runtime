@@ -100,11 +100,12 @@
  </example>
  */
 WM.module('wm.widgets.grid')
-    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
+    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rs, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
-            gridColumnMarkup = '',
-            notifyFor = {
+        var gridColumnCount,
+            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
+            gridColumnMarkup      = '',
+            notifyFor             = {
                 'width'              : true,
                 'height'             : true,
                 'gridfirstrowselect' : true,
@@ -142,8 +143,7 @@ WM.module('wm.widgets.grid')
                 }
                 return index;
             },
-            gridColumnCount,
-            EDIT_MODE = {
+            EDIT_MODE             = {
                 'QUICK_EDIT': 'quickedit',
                 'INLINE'    : 'inline',
                 'FORM'      : 'form',
@@ -151,8 +151,8 @@ WM.module('wm.widgets.grid')
             };
 
         return {
-            'restrict': 'E',
-            'scope'   : {
+            'restrict'   : 'E',
+            'scope'      : {
                 'scopedataset'      : '=?',
                 'onSelect'          : '&',
                 'onDeselect'        : '&',
@@ -176,10 +176,10 @@ WM.module('wm.widgets.grid')
                 'onDatarender'      : '&',
                 'onTap'             : '&'
             },
-            'replace'   : true,
-            'transclude': false,
-            'controller': 'gridController',
-            'template': function (element) {
+            'replace'    : true,
+            'transclude' : false,
+            'controller' : 'gridController',
+            'template'   : function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
                 return '<div data-identifier="grid" init-widget class="app-grid app-panel panel" apply-styles="shell">' +
@@ -209,9 +209,9 @@ WM.module('wm.widgets.grid')
                     '</div></div>';
             },
             'compile': function (tElement, tAttr) {
-                var contextEl = tElement.context,
-                    showHeader,
+                var showHeader,
                     showNavigation,
+                    contextEl         = tElement.context,
                     exportIconMapping = {
                         'EXCEL' : 'fa fa-file-excel-o',
                         'CSV'   : 'fa fa-file-text-o'
@@ -227,7 +227,6 @@ WM.module('wm.widgets.grid')
                         contextEl.setAttribute('showheader', showHeader);
                     }
                 }
-
 
                 // backward compatibility for shownavigation
                 if (tAttr.shownavigation) {
@@ -268,42 +267,40 @@ WM.module('wm.widgets.grid')
                 }
 
                 return {
-                    'pre': function (iScope, element, attrs) {
+                    'pre': function ($is, element, attrs) {
 
-                        iScope.$on('security:before-child-remove', function (evt, childScope, childEl, childAttrs) {
+                        $is.$on('security:before-child-remove', function (evt, childScope, childEl, childAttrs) {
                             evt.stopPropagation();
                             if (childAttrs.key === 'addNewRow') {
-                                iScope._doNotAddNew = true;
+                                $is._doNotAddNew = true;
                             }
                         });
 
-                        iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
-
+                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         /*Set the "allowPageable" flag in the scope to indicate that the grid accepts Pageable objects.*/
-                        iScope.allowPageable = true;
-
+                        $is.allowPageable = true;
                         /*This is to make the "Variables" & "Widgets" available in the Grid scope.
                          * and "Variables", "Widgets" will not be available in that scope.
                          * element.scope() might refer to the controller scope/parent scope.*/
-                        var elScope = element.scope();
-                        iScope.Variables  = elScope.Variables;
-                        iScope.Widgets    = elScope.Widgets;
-                        iScope.pageParams = elScope.pageParams;
-                        iScope.appLocale  = $rootScope.appLocale;
-                        iScope.columns    = {};
-                        iScope.formfields = {};
+                        var elScope    = element.scope();
+                        $is.Variables  = elScope.Variables;
+                        $is.Widgets    = elScope.Widgets;
+                        $is.pageParams = elScope.pageParams;
+                        $is.appLocale  = $rs.appLocale;
+                        $is.columns    = {};
+                        $is.formfields = {};
 
-                        Object.defineProperty(iScope, 'selecteditem', {
+                        Object.defineProperty($is, 'selecteditem', {
                             configurable: true
                         });
                         element.removeAttr('title');
                         //Backward compatibility for old projects. If column select/ deselect event is present, set enablecolumnselection to true
                         if (!WM.isDefined(attrs.enablecolumnselection) && (attrs.onColumnselect || attrs.onColumndeselect)) {
-                            iScope.enablecolumnselection = attrs.enablecolumnselection = true;
+                            $is.enablecolumnselection = attrs.enablecolumnselection = true;
                             WM.element(tElement.context).attr('enablecolumnselection', true);
                         }
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function ($is, element, attrs) {
                         var runModeInitialProperties = {
                                 'showrowindex'          : 'showRowIndex',
                                 'multiselect'           : 'multiselect',
@@ -313,9 +310,10 @@ WM.module('wm.widgets.grid')
                                 'showheader'            : 'showHeader',
                                 'enablecolumnselection' : 'enableColumnSelection'
                             },
-                            handlers = [],
-                            liveGrid = element.closest('.app-livegrid'),
-                            gridController;
+                            handlers                 = [],
+                            liveGrid                 = element.closest('.app-livegrid'),
+                            gridController,
+                            wp;
                         function isInputBodyWrapper(target) {
                             var classes = ['.dropdown-menu', '.uib-typeahead-match', '.modal-dialog', '.toast'],
                                 isInput = false;
@@ -334,292 +332,192 @@ WM.module('wm.widgets.grid')
                             if (element[0].contains($target) || event.target.doctype || isInputBodyWrapper($($target))) {
                                 return;
                             }
-                            scope.datagridElement.datagrid('saveRow');
+                            $is.datagridElement.datagrid('saveRow');
                         }
                         //Populate the filter options with localized messages
                         function getMatchModeMsgs() {
                             return {
-                                'start'            : scope.appLocale.LABEL_STARTS_WITH,
-                                'end'              : scope.appLocale.LABEL_ENDS_WITH,
-                                'anywhere'         : scope.appLocale.LABEL_CONTAINS,
-                                'exact'            : scope.appLocale.LABEL_IS_EQUAL_TO,
-                                'notequals'        : scope.appLocale.LABEL_IS_NOT_EQUAL_TO,
-                                'lessthan'         : scope.appLocale.LABEL_LESS_THAN,
-                                'lessthanequal'    : scope.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
-                                'greaterthan'      : scope.appLocale.LABEL_GREATER_THAN,
-                                'greaterthanequal' : scope.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
-                                'null'             : scope.appLocale.LABEL_IS_NULL,
-                                'isnotnull'        : scope.appLocale.LABEL_IS_NOT_NULL,
-                                'empty'            : scope.appLocale.LABEL_IS_EMPTY,
-                                'isnotempty'       : scope.appLocale.LABEL_IS_NOT_EMPTY,
-                                'nullorempty'      : scope.appLocale.LABEL_IS_NULL_OR_EMPTY
+                                'start'            : $is.appLocale.LABEL_STARTS_WITH,
+                                'end'              : $is.appLocale.LABEL_ENDS_WITH,
+                                'anywhere'         : $is.appLocale.LABEL_CONTAINS,
+                                'exact'            : $is.appLocale.LABEL_IS_EQUAL_TO,
+                                'notequals'        : $is.appLocale.LABEL_IS_NOT_EQUAL_TO,
+                                'lessthan'         : $is.appLocale.LABEL_LESS_THAN,
+                                'lessthanequal'    : $is.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
+                                'greaterthan'      : $is.appLocale.LABEL_GREATER_THAN,
+                                'greaterthanequal' : $is.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
+                                'null'             : $is.appLocale.LABEL_IS_NULL,
+                                'isnotnull'        : $is.appLocale.LABEL_IS_NOT_NULL,
+                                'empty'            : $is.appLocale.LABEL_IS_EMPTY,
+                                'isnotempty'       : $is.appLocale.LABEL_IS_NOT_EMPTY,
+                                'nullorempty'      : $is.appLocale.LABEL_IS_NULL_OR_EMPTY
                             };
                         }
-                        /****condition for old property name for grid title*****/
-                        if (attrs.gridcaption && !attrs.title) {
-                            scope.title = scope.gridcaption;
-                        }
-                        scope.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
-                        scope.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
-                        scope.matchModeMsgs     = getMatchModeMsgs();
-                        scope.gridElement       = element;
-                        scope.gridColumnCount   = gridColumnCount;
-                        scope.displayAllFields  = attrs.displayall === '';
-                        scope.datagridElement   = element.find('.app-datagrid');
-
-                        scope.isPartOfLiveGrid = liveGrid.length > 0;
-                        //Backward compatibility for readonly grid
-                        if (attrs.readonlygrid && !WM.isDefined(attrs.editmode)) {
-                            if (attrs.readonlygrid === 'true') {
-                                scope.editmode = '';
-                            } else {
-                                if (scope.isPartOfLiveGrid) {
-                                    scope.editmode = liveGrid.isolateScope().formlayout === 'inline' ? EDIT_MODE.FORM : EDIT_MODE.DIALOG;
-                                } else {
-                                    scope.editmode = EDIT_MODE.INLINE;
-                                }
-                            }
-                        }
-
                         function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
                             $document.off('click', documentClickBind);
-                            Object.defineProperty(scope, 'selecteditem', {'get': _.noop, 'set': _.noop});
+                            Object.defineProperty($is, 'selecteditem', {'get': _.noop, 'set': _.noop});
                         }
-
-                        scope.$on('$destroy', onDestroy);
-                        element.on('$destroy', onDestroy);
-
-                        WM.element(element).css({'position': 'relative'});
-                        /*being done to trigger watch on the dataset property for first time if property is not defined(only for a simple grid not inside a live-grid)*/
-                        if (scope.dataset === undefined && attrs.identifier !== 'grid') {
-                            scope.watchVariableDataSet('', element);
-                        }
-
-                        /*
-                         * Extend the properties from the grid controller exposed to end user in page script
-                         * Kept in try/catch as the controller may not be available sometimes
-                         */
-                        if (CONSTANTS.isRunMode) {
-                            try {
-                                gridController = scope.name + 'Controller';
-                                $controller(gridController, {$scope: scope});
-                            } catch (ignore) {
+                        //Will be called after setting grid column property.
+                        function _redraw(forceRender) {
+                            if (forceRender) {
+                                $is.datagridElement.datagrid($is.gridOptions);
+                            } else {
+                                $timeout(function () {
+                                    $is.datagridElement.datagrid('setColGroupWidths');
+                                    $is.datagridElement.datagrid('addOrRemoveScroll');
+                                });
                             }
                         }
-
-                        scope.actions      = [];
-                        scope.rowActions   = [];
-                        scope._actions     = {};
-                        scope.headerConfig = [];
-                        scope.items        = [];
-
-                        /* event emitted on building new markup from canvasDom */
-                        handlers.push($rootScope.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
-                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
-                            if (scope.$id === scopeId) {
-                                scope.fullFieldDefs = [];
-                                scope.fieldDefs     = [];
-                                scope.headerConfig  = [];
-
-                                $compile(markup)(scope);
-                                /*TODO: Check if grid options can be passed.*/
-                                /*Invoke the function to render the operation columns.*/
-                                if (markup === '') {
-                                    scope.setGridData([], true);
-                                }
-                                scope.renderOperationColumns();
-                                //Set the coldefs. Set forceset to true to rerender the grid
-                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs), true);
-                            }
-                        }));
-                        /* event emitted whenever grid actions are modified */
-                        handlers.push($rootScope.$on('wms:compile-grid-actions', function (event, scopeId, markup) {
-                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
-                            if (scope.$id === scopeId) {
-                                scope.actions = [];
-                                $compile(markup)(scope);
-                            }
-                        }));
-                        /* event emitted whenever grid actions are modified */
-                        handlers.push($rootScope.$on('wms:compile-grid-row-actions', function (event, scopeId, markup, fromDesigner) {
-                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
-                            var prevLength, forceSet;
-                            if (scope.$id === scopeId) {
-                                scope.rowActions = [];
-                                $compile(markup)(scope);
-                            }
-                            prevLength = scope.fieldDefs.length;
-                            /*Invoke the function to render the operation columns.*/
-                            scope.renderOperationColumns(fromDesigner);
-                            forceSet = prevLength !== scope.fieldDefs.length;//since `fieldDefs` has reference to `colDefs` forcibly setting grid option
-                            scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs), forceSet);
-                            scope.setDataGridOption('rowActions', Utils.getClonedObject(scope.rowActions));
-                            scope.setDataGridOption('showHeader', scope.showheader);
-                        }));
-
-                        /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
-                        $compile(attrs.gridColumnMarkup)(scope);
-                        scope.gridOptions.rowActions   = scope.rowActions;
-                        scope.gridOptions.headerConfig = scope.headerConfig;
-                        if (scope.rowActions.length && CONSTANTS.isStudioMode) {
-                            scope.renderOperationColumns();
-                        }
-                        /*This is expose columns property to user so that he can programatically
-                         * use columns to do some custom logic */
-                        scope.gridOptions.colDefs.map(function (column) {
-                            scope.columns[column.field] = column;
-                        });
-
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
                             var addNewRowButtonIndex;
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
-                                scope.datagridElement.datagrid('setGridDimensions', 'width', newVal);
+                                $is.datagridElement.datagrid('setGridDimensions', 'width', newVal);
                                 break;
                             case 'height':
-                                scope.datagridElement.datagrid('setGridDimensions', 'height', newVal);
+                                $is.datagridElement.datagrid('setGridDimensions', 'height', newVal);
                                 break;
                             case 'gridfirstrowselect':
-                                scope.setDataGridOption('selectFirstRow', newVal);
+                                $is.setDataGridOption('selectFirstRow', newVal);
                                 break;
                             case 'deleterow':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.renderOperationColumns();
-                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                                if ($is.widgetid) {
+                                    $is.renderOperationColumns();
+                                    $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
                                 }
                                 break;
                             case 'updaterow':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.renderOperationColumns();
-                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                                if ($is.widgetid) {
+                                    $is.renderOperationColumns();
+                                    $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
                                 }
                                 break;
                             case 'dataset':
-                                scope.watchVariableDataSet(newVal, element);
+                                $is.watchVariableDataSet(newVal, element);
                                 break;
                             case 'showheader':
-                                if (CONSTANTS.isStudioMode && !scope.widgetid) {
-                                    scope.setDataGridOption('showHeader', newVal);
+                                if (CONSTANTS.isStudioMode) {
+                                    $is.setDataGridOption('showHeader', newVal);
                                 }
                                 break;
                             case 'gridsearch':
                                 if (newVal) {
-                                    scope.filtermode = 'search';
+                                    $is.filtermode = 'search';
                                 }
                                 break;
                             case 'filtermode':
-                                scope.setDataGridOption('filtermode', newVal);
+                                $is.setDataGridOption('filtermode', newVal);
                                 break;
                             case 'searchlabel':
-                                scope.setDataGridOption('searchLabel', newVal);
+                                $is.setDataGridOption('searchLabel', newVal);
                                 break;
                             case 'rowngclass':
-                                scope.setDataGridOption('rowNgClass', newVal);
+                                $is.setDataGridOption('rowNgClass', newVal);
                                 break;
                             case 'rowclass':
-                                scope.setDataGridOption('rowClass', newVal);
+                                $is.setDataGridOption('rowClass', newVal);
                                 break;
                             case 'multiselect':
-                                if (CONSTANTS.isStudioMode) {
+                                if ($is.widgetid) {
                                     if (newVal) {
-                                        scope.radioselect = false;
-                                        scope.widgetProps.radioselect.show = false;
-                                        scope.widgetProps.radioselect.showindesigner = false;
-                                        scope.$root.$emit('set-markup-attr', scope.widgetid, {'radioselect': false});
+                                        $is.radioselect = false;
+                                        $is.widgetProps.radioselect.show = false;
+                                        $is.widgetProps.radioselect.showindesigner = false;
+                                        $is.$root.$emit('set-markup-attr', $is.widgetid, {'radioselect': false});
                                     }
-                                    scope.setDataGridOption('multiselect', newVal);
+                                    $is.setDataGridOption('multiselect', newVal);
                                 }
                                 break;
                             case 'radioselect':
-                                if (CONSTANTS.isStudioMode) {
+                                if ($is.widgetid) {
                                     if (newVal) {
-                                        scope.multiselect = false;
-                                        scope.widgetProps.multiselect.show = false;
-                                        scope.widgetProps.multiselect.showindesigner = false;
-                                        scope.$root.$emit('set-markup-attr', scope.widgetid, {'multiselect': false});
+                                        $is.multiselect = false;
+                                        $is.widgetProps.multiselect.show = false;
+                                        $is.widgetProps.multiselect.showindesigner = false;
+                                        $is.$root.$emit('set-markup-attr', $is.widgetid, {'multiselect': false});
                                     }
-                                    scope.setDataGridOption('showRadioColumn', newVal);
+                                    $is.setDataGridOption('showRadioColumn', newVal);
                                 }
                                 break;
                             case 'showrowindex':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.setDataGridOption('showRowIndex', newVal);
+                                if ($is.widgetid) {
+                                    $is.setDataGridOption('showRowIndex', newVal);
                                 }
                                 break;
                             case 'navigation':
                                 if (newVal === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
-                                    scope.navigation = 'Classic';
+                                    $is.navigation = 'Classic';
                                     return;
                                 }
                                 if (newVal !== 'None') {
-                                    scope.shownavigation = true;
-                                    scope.enablePageNavigation();
+                                    $is.shownavigation = true;
+                                    $is.enablePageNavigation();
                                 }
-                                scope.navControls = newVal;
+                                $is.navControls = newVal;
                                 /*Check for sanity*/
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.widgetProps.showrecordcount.show = scope.widgetProps.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
+                                if ($is.widgetid) {
+                                    $is.widgetProps.showrecordcount.show = $is.widgetProps.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
                                 }
                                 break;
                             case 'insertrow':
-                                if (scope._doNotAddNew) {
+                                if ($is._doNotAddNew) {
                                     return;
                                 }
-                                scope.insertrow = (newVal === true || newVal === 'true');
-                                addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
-                                if (scope.insertrow) {
+                                $is.insertrow = (newVal === true || newVal === 'true');
+                                addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', $is.actions);
+                                if ($is.insertrow) {
                                     // Add button definition to actions if it does not already exist.
                                     if (addNewRowButtonIndex === -1) {
-                                        scope.actions.unshift(_.find(LiveWidgetUtils.getLiveWidgetButtons('GRID'), function (button) {
+                                        $is.actions.unshift(_.find(LiveWidgetUtils.getLiveWidgetButtons('GRID'), function (button) {
                                             return button.key === 'addNewRow';
                                         }));
                                     }
                                 } else {
-                                    if (scope.actions.length && addNewRowButtonIndex !== -1) {
-                                        scope.actions.splice(addNewRowButtonIndex, 1);
+                                    if ($is.actions.length && addNewRowButtonIndex !== -1) {
+                                        $is.actions.splice(addNewRowButtonIndex, 1);
                                     }
                                 }
-                                scope.populateActions();
+                                $is.populateActions();
                                 break;
                             case 'show':
                                 /* handle show/hide events based on show property change */
                                 if (newVal) {
-                                    scope.onShow();
+                                    $is.onShow();
                                 } else {
-                                    scope.onHide();
+                                    $is.onHide();
                                 }
                                 break;
                             case 'gridclass':
-                                scope.datagridElement.datagrid('option', 'cssClassNames.grid', newVal);
+                                $is.datagridElement.datagrid('option', 'cssClassNames.grid', newVal);
                                 break;
                             case 'nodatamessage':
-                                scope.datagridElement.datagrid('option', 'dataStates.nodata', newVal);
+                                $is.datagridElement.datagrid('option', 'dataStates.nodata', newVal);
                                 break;
                             case 'loadingdatamsg':
-                                scope.datagridElement.datagrid('option', 'dataStates.loading', newVal);
+                                $is.datagridElement.datagrid('option', 'dataStates.loading', newVal);
                                 break;
                             case 'filternullrecords':
-                                if (CONSTANTS.isStudioMode) {
-                                    scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
+                                if ($is.widgetid) {
+                                    $is.datagridElement.datagrid('option', 'filterNullRecords', newVal);
                                 }
                                 break;
                             case 'spacing':
-                                scope.datagridElement.datagrid('option', 'spacing', newVal);
+                                $is.datagridElement.datagrid('option', 'spacing', newVal);
                                 if (newVal === 'condensed') {
-                                    scope.navigationSize = 'small';
+                                    $is.navigationSize = 'small';
                                 } else {
-                                    scope.navigationSize = '';
+                                    $is.navigationSize = '';
                                 }
                                 break;
                             case 'exportformat':
-                                scope.exportOptions = [];
+                                $is.exportOptions = [];
                                 if (newVal) {
                                     //Populate options for export drop down menu
                                     _.forEach(_.split(newVal, ','), function (type) {
-                                        scope.exportOptions.push({
+                                        $is.exportOptions.push({
                                             'label'      : type,
                                             'icon'       : exportIconMapping[type]
                                         });
@@ -628,124 +526,229 @@ WM.module('wm.widgets.grid')
                                 break;
                             }
                         }
+                        /*
+                         * Extend the properties from the grid controller exposed to end user in page script
+                         * Kept in try/catch as the controller may not be available sometimes
+                         */
+                        if (CONSTANTS.isRunMode) {
+                            try {
+                                gridController = $is.name + 'Controller';
+                                $controller(gridController, {$scope: $is});
+                            } catch (ignore) {
+                            }
+                        }
+                        /****condition for old property name for grid title*****/
+                        if (attrs.gridcaption && !attrs.title) {
+                            $is.title = $is.gridcaption;
+                        }
+                        $is.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
+                        $is.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
+                        $is.matchModeMsgs     = getMatchModeMsgs();
+                        $is.gridElement       = element;
+                        $is.gridColumnCount   = gridColumnCount;
+                        $is.displayAllFields  = attrs.displayall === '';
+                        $is.datagridElement   = element.find('.app-datagrid');
+                        $is.isPartOfLiveGrid  = liveGrid.length > 0;
+                        $is.actions           = [];
+                        $is.rowActions        = [];
+                        $is._actions          = {};
+                        $is.headerConfig      = [];
+                        $is.items             = [];
+                        $is.shownavigation    = $is.navigation !== 'None';
+                        $is.redraw            = _.debounce(_redraw, 150);
+                        //Backward compatibility for readonly grid
+                        if (attrs.readonlygrid && !WM.isDefined(attrs.editmode)) {
+                            if (attrs.readonlygrid === 'true') {
+                                $is.editmode = '';
+                            } else {
+                                if ($is.isPartOfLiveGrid) {
+                                    $is.editmode = liveGrid.isolateScope().formlayout === 'inline' ? EDIT_MODE.FORM : EDIT_MODE.DIALOG;
+                                } else {
+                                    $is.editmode = EDIT_MODE.INLINE;
+                                }
+                            }
+                        }
+                        WM.element(element).css({'position': 'relative'});
+                        /*being done to trigger watch on the dataset property for first time if property is not defined(only for a simple grid not inside a live-grid)*/
+                        if ($is.dataset === undefined && attrs.identifier !== 'grid') {
+                            $is.watchVariableDataSet('', element);
+                        }
+                        /* event emitted on building new markup from canvasDom */
+                        handlers.push($rs.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
+                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            if ($is.$id === scopeId) {
+                                $is.fullFieldDefs = [];
+                                $is.fieldDefs     = [];
+                                $is.headerConfig  = [];
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
-
+                                $compile(markup)($is);
+                                /*TODO: Check if grid options can be passed.*/
+                                /*Invoke the function to render the operation columns.*/
+                                if (markup === '') {
+                                    $is.setGridData([], true);
+                                }
+                                $is.renderOperationColumns();
+                                //Set the coldefs. Set forceset to true to rerender the grid
+                                $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs), true);
+                            }
+                        }));
+                        /* event emitted whenever grid actions are modified */
+                        handlers.push($rs.$on('wms:compile-grid-actions', function (event, scopeId, markup) {
+                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            if ($is.$id === scopeId) {
+                                $is.actions = [];
+                                $compile(markup)($is);
+                            }
+                        }));
+                        /* event emitted whenever grid actions are modified */
+                        handlers.push($rs.$on('wms:compile-grid-row-actions', function (event, scopeId, markup, fromDesigner) {
+                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            var prevLength, forceSet;
+                            if ($is.$id === scopeId) {
+                                $is.rowActions = [];
+                                $compile(markup)($is);
+                            }
+                            prevLength = $is.fieldDefs.length;
+                            /*Invoke the function to render the operation columns.*/
+                            $is.renderOperationColumns(fromDesigner);
+                            forceSet = prevLength !== $is.fieldDefs.length;//since `fieldDefs` has reference to `colDefs` forcibly setting grid option
+                            $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs), forceSet);
+                            $is.setDataGridOption('rowActions', Utils.getClonedObject($is.rowActions));
+                            $is.setDataGridOption('showHeader', $is.showheader);
+                        }));
+                        handlers.push($rs.$on('locale-change', function () {
+                            $is.appLocale     = $rs.appLocale;
+                            $is.matchModeMsgs = getMatchModeMsgs();
+                        }));
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
                          * the "dataNavigatorWatched" value is reset.*/
-                        handlers.push(scope.$watch('binddataset', function (newVal, oldVal) {
+                        handlers.push($is.$watch('binddataset', function (newVal, oldVal) {
                             var widgetName,
                                 variableType;
                             if (newVal !== oldVal) {
-                                scope.dataNavigatorWatched = false;
-                                if (scope.dataNavigator) {
-                                    scope.dataNavigator.result = undefined;
+                                $is.dataNavigatorWatched = false;
+                                if ($is.dataNavigator) {
+                                    $is.dataNavigator.result = undefined;
                                 }
                             }
-                            //Set the variable and widget flags on scope
-                            scope.isBoundToVariable = _.startsWith(newVal, 'bind:Variables.');
-                            scope.isBoundToWidget   = _.startsWith(newVal, 'bind:Widgets.');
-                            scope.variableName      = Utils.getVariableName(scope);
-                            scope.variable          = _.get(element.scope().Variables, scope.variableName);
-                            if (scope.isBoundToVariable && scope.variable) {
-                                scope.variableType            = variableType = scope.variable.category;
-                                scope.isBoundToStaticVariable = variableType === 'wm.Variable';
-                                scope.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
-                                if (scope.isBoundToLiveVariable) {
-                                    scope.isBoundToLiveVariableRoot = newVal.indexOf('dataSet.') === -1 && newVal.indexOf('selecteditem') === -1;
+                            //Set the variable and widget flags on $is
+                            $is.isBoundToVariable = _.startsWith(newVal, 'bind:Variables.');
+                            $is.isBoundToWidget   = _.startsWith(newVal, 'bind:Widgets.');
+                            $is.variableName      = Utils.getVariableName($is);
+                            $is.variable          = _.get(element.isolateScope().Variables, $is.variableName);
+                            if ($is.isBoundToVariable && $is.variable) {
+                                $is.variableType            = variableType = $is.variable.category;
+                                $is.isBoundToStaticVariable = variableType === 'wm.Variable';
+                                $is.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
+                                if ($is.isBoundToLiveVariable) {
+                                    $is.isBoundToLiveVariableRoot = newVal.indexOf('dataSet.') === -1 && newVal.indexOf('selecteditem') === -1;
                                 } else {
-                                    scope.isBoundToServiceVariable = variableType === 'wm.ServiceVariable';
-                                    if (scope.isBoundToServiceVariable && scope.variable.serviceType === 'DataService') {
-                                        scope.isBoundToProcedureServiceVariable = scope.variable.controller === 'ProcedureExecution';
-                                        scope.isBoundToQueryServiceVariable     = scope.variable.controller === 'QueryExecution';
+                                    $is.isBoundToServiceVariable = variableType === 'wm.ServiceVariable';
+                                    if ($is.isBoundToServiceVariable && $is.variable.serviceType === 'DataService') {
+                                        $is.isBoundToProcedureServiceVariable = $is.variable.controller === 'ProcedureExecution';
+                                        $is.isBoundToQueryServiceVariable     = $is.variable.controller === 'QueryExecution';
                                     }
                                 }
-                            } else if (scope.isBoundToWidget) {
+                            } else if ($is.isBoundToWidget) {
                                 widgetName                        = _.split(newVal, '.')[1];
-                                scope.widgetName                  = widgetName;
-                                scope.isBoundToSelectedItem       = newVal.indexOf('selecteditem') !== -1;
-                                scope.isBoundToSelectedItemSubset = newVal.indexOf('selecteditem.') !== -1;
-                                scope.isBoundToFilter             = scope.Widgets[widgetName] && (scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || scope.Widgets[widgetName].widgettype === 'wm-livefilter');
+                                $is.widgetName                  = widgetName;
+                                $is.isBoundToSelectedItem       = newVal.indexOf('selecteditem') !== -1;
+                                $is.isBoundToSelectedItemSubset = newVal.indexOf('selecteditem.') !== -1;
+                                $is.isBoundToFilter             = $is.Widgets[widgetName] && ($is.Widgets[widgetName]._widgettype === 'wm-livefilter' || $is.Widgets[widgetName].widgettype === 'wm-livefilter');
                             }
                             //In run mode, If grid is bound to selecteditem subset, dataset is undefined and dataset watch will not be triggered. So, set the dataset to empty value
                             if (_.includes(newVal, 'selecteditem.')) {
                                 if (CONSTANTS.isRunMode) {
-                                    LiveWidgetUtils.fetchDynamicData(scope, function (data) {
+                                    LiveWidgetUtils.fetchDynamicData($is, function (data) {
                                         /*Check for sanity of data.*/
                                         if (WM.isDefined(data)) {
-                                            scope.dataNavigatorWatched = true;
-                                            scope.dataset = data;
-                                            if (scope.dataNavigator) {
-                                                scope.dataNavigator.dataset = data;
+                                            $is.dataNavigatorWatched = true;
+                                            $is.dataset = data;
+                                            if ($is.dataNavigator) {
+                                                $is.dataNavigator.dataset = data;
                                             }
                                         } else {
-                                            scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
+                                            $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
                                         }
                                     });
                                 } else {
-                                    scope.datagridElement.datagrid('setStatus', 'error', $rootScope.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
+                                    $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
+                                }
+                            }
+                            if ($is.widgetid) {
+                                /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
+                                wp = $is.widgetProps;
+                                /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
+                                wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable || $is.isBoundToFilter);
+                                wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter;
+                                wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
+                                /* If bound to live filter result, disable grid search. */
+                                if ($is.isBoundToFilter) {
+                                    wp.filtermode.disabled = true;
+                                } else {
+                                    wp.filtermode.disabled = false;
                                 }
                             }
                         }));
-                        handlers.push($rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
+                        handlers.push($rs.$on('toggle-variable-state', function (event, boundVariableName, active) {
                             //based on the active state and response toggling the 'loading data...' and 'no data found' messages.
-                            if (scope.isBoundToLiveVariable || scope.isBoundToServiceVariable || scope.isBoundToFilter) {
-                                if (boundVariableName === scope.variableName) {
-                                    scope.variableInflight = active;
+                            if ($is.isBoundToLiveVariable || $is.isBoundToServiceVariable || $is.isBoundToFilter) {
+                                if (boundVariableName === $is.variableName) {
+                                    $is.variableInflight = active;
                                     if (active) {
-                                        scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
+                                        $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
                                     } else {
                                         //If grid is in edit mode or grid has data, dont show the no data message
-                                        if (!scope.isGridEditMode && scope.gridData && scope.gridData.length === 0) {
-                                            scope.datagridElement.datagrid('setStatus', 'nodata', scope.nodatamessage);
+                                        if (!$is.isGridEditMode && $is.gridData && $is.gridData.length === 0) {
+                                            $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
                                         } else {
-                                            scope.datagridElement.datagrid('setStatus', 'ready');
+                                            $is.datagridElement.datagrid('setStatus', 'ready');
                                         }
                                     }
                                 }
                             }
                         }));
-                        defineSelectedItemProp(scope);
-                        scope.shownavigation = scope.navigation !== 'None';
+                        /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
+                        $compile(attrs.gridColumnMarkup)($is);
+                        $is.gridOptions.rowActions   = $is.rowActions;
+                        $is.gridOptions.headerConfig = $is.headerConfig;
+                        if ($is.rowActions.length && $is.widgetid) {
+                            $is.renderOperationColumns();
+                        }
+                        /*This is expose columns property to user so that he can programatically
+                         * use columns to do some custom logic */
+                        $is.gridOptions.colDefs.map(function (column) {
+                            $is.columns[column.field] = column;
+                        });
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, $is, notifyFor);
+                        defineSelectedItemProp($is);
                         $timeout(function () {
-                            scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
-                            WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                            $is.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
+                            WidgetUtilService.postWidgetCreate($is, element, attrs);
 
-                            if (CONSTANTS.isRunMode && attrs.scopedataset) {
-                                handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                    if (newVal && !scope.dataset) {
+                            if (!$is.widgetid && attrs.scopedataset) {
+                                handlers.push($is.$watch('scopedataset', function (newVal) {
+                                    if (newVal && !$is.dataset) {
                                         /* decide new column defs required based on existing column defs for the grid */
-                                        scope.newcolumns = !scope.columnDefsExists();
-                                        scope.createGridColumns(newVal);
+                                        $is.newcolumns = true;
+                                        $is.createGridColumns(newVal);
                                     }
                                 }));
                             }
                         }, 0, false);
-                        //Will be called after setting grid column property.
-                        scope._redraw = function (forceRender) {
-                            if (forceRender) {
-                                scope.datagridElement.datagrid(scope.gridOptions);
-                            } else {
-                                $timeout(function () {
-                                    scope.datagridElement.datagrid('setColGroupWidths');
-                                    scope.datagridElement.datagrid('addOrRemoveScroll');
-                                });
-                            }
-                        };
-                        scope.redraw = _.debounce(scope._redraw, 150);
-                        if (!scope.widgetid && scope.editmode === EDIT_MODE.QUICK_EDIT) {
+                        if (!$is.widgetid && $is.editmode === EDIT_MODE.QUICK_EDIT) {
                             //In case of advanced inline, on tab keypress of grid, edit the first row
                             element.on('keyup', function (e) {
                                 if (e.which !== 9 || !WM.element(e.target).hasClass('app-grid')) {
                                     return;
                                 }
                                 var $row;
-                                $row = scope.datagridElement.find('.app-grid-content tr:first');
+                                $row = $is.datagridElement.find('.app-grid-content tr:first');
                                 if ($row.length) {
                                     $row.trigger('click', [undefined, {action: 'edit'}]);
                                 } else {
-                                    scope.addNewRow();
+                                    $is.addNewRow();
                                 }
                             });
                             $document.on('click', documentClickBind);
@@ -758,44 +761,43 @@ WM.module('wm.widgets.grid')
                             _.forEach(runModeInitialProperties, function (value, key) {
                                 var attrValue = attrs[key];
                                 if (WM.isDefined(attrValue)) {
-                                    scope.gridOptions[value] = (attrValue === 'true' || attrValue === true);
+                                    $is.gridOptions[value] = (attrValue === 'true' || attrValue === true);
                                 }
                             });
-                            scope.gridOptions.rowNgClass = scope.rowngclass;
-                            scope.gridOptions.rowClass = scope.rowclass;
-                            scope.gridOptions.editmode = scope.editmode;
+                            $is.gridOptions.rowNgClass = $is.rowngclass;
+                            $is.gridOptions.rowClass   = $is.rowclass;
+                            $is.gridOptions.editmode   = $is.editmode;
                             /*Set isMobile value on the datagrid*/
-                            scope.gridOptions.isMobile = Utils.isMobile();
-                            scope.renderOperationColumns();
+                            $is.gridOptions.isMobile   = Utils.isMobile();
+                            $is.renderOperationColumns();
                         }
 
-                        scope.gridOptions.dateFormat     = AppDefaults.get('dateFormat');
-                        scope.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
-                        scope.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
-                        scope.gridOptions.name           = scope.name || scope.$id;
-                        scope.datagridElement.datagrid(scope.gridOptions);
-                        scope.datagridElement.datagrid('setStatus', 'loading', scope.loadingdatamsg);
-                        handlers.push($rootScope.$on('locale-change', function () {
-                            scope.appLocale     = $rootScope.appLocale;
-                            scope.matchModeMsgs = getMatchModeMsgs();
-                        }));
+                        $is.gridOptions.dateFormat     = AppDefaults.get('dateFormat');
+                        $is.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
+                        $is.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
+                        $is.gridOptions.name           = $is.name || $is.$id;
+                        $is.datagridElement.datagrid($is.gridOptions);
+                        $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
+
+                        $is.$on('$destroy', onDestroy);
+                        element.on('$destroy', onDestroy);
                     }
                 };
             }
         };
     }])
-    .controller("gridController", [
-        "$rootScope",
-        "$scope",
-        "$timeout",
-        "$compile",
-        "CONSTANTS",
-        "Utils",
-        "wmToaster",
-        "$servicevariable",
-        "LiveWidgetUtils",
-        "DialogService",
-        function ($rootScope, $scope, $timeout, $compile, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
+    .controller('gridController', [
+        '$rootScope',
+        '$scope',
+        '$timeout',
+        '$compile',
+        'CONSTANTS',
+        'Utils',
+        'wmToaster',
+        '$servicevariable',
+        'LiveWidgetUtils',
+        'DialogService',
+        function ($rs, $is, $timeout, $compile, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
             'use strict';
             var rowOperations = {
                     'update': {
@@ -813,621 +815,613 @@ WM.module('wm.widgets.grid')
                         'property': 'deleterow'
                     }
                 },
-                currentSearch,
-                currentSort,
                 navigatorResultWatch,
-                navigatorMaxResultWatch,
+                navigatorMaxResultWatch;
             /* Check whether it is non-empty row. */
-                isEmptyRecord = function (record) {
-                    var properties = Object.keys(record),
-                        data,
-                        isDisplayed;
+            function isEmptyRecord(record) {
+                var properties = Object.keys(record),
+                    data,
+                    isDisplayed;
 
-                    return properties.every(function (prop, index) {
-                        data = record[prop];
-                        /* If fieldDefs are missing, show all columns in data. */
-                        isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ? $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) || true;
-                        /*Validating only the displayed fields*/
-                        if (isDisplayed) {
-                            return (data === null || data === undefined || data === '');
-                        }
-                        return true;
-                    });
-                },
-            /* Function to remove the empty data. */
-                removeEmptyRecords = function (serviceData) {
-                    var allRecords = serviceData.data || serviceData,
-                        filteredData = [];
-                    if (allRecords && allRecords.length) {
-                        /*Comparing and pushing the non-empty data columns*/
-                        filteredData = allRecords.filter(function (record) {
-                            return record && !isEmptyRecord(record);
-                        });
+                return properties.every(function (prop, index) {
+                    data = record[prop];
+                    /* If fieldDefs are missing, show all columns in data. */
+                    isDisplayed = ($is.fieldDefs.length && WM.isDefined($is.fieldDefs[index]) && (CONSTANTS.isMobile ? $is.fieldDefs[index].mobileDisplay : $is.fieldDefs[index].pcDisplay)) || true;
+                    /*Validating only the displayed fields*/
+                    if (isDisplayed) {
+                        return (data === null || data === undefined || data === '');
                     }
-                    return filteredData;
-                },
-                setGridData = function (serverData, forceSet) {
-                    var data = serverData;
-                    /*If serverData has data but is undefined, then return*/
-                    if (!forceSet && ($scope.isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap))) {
-                        if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
+                    return true;
+                });
+            }
+            /* Function to remove the empty data. */
+            function removeEmptyRecords(serviceData) {
+                var allRecords = serviceData.data || serviceData,
+                    filteredData = [];
+                if (allRecords && allRecords.length) {
+                    /*Comparing and pushing the non-empty data columns*/
+                    filteredData = allRecords.filter(function (record) {
+                        return record && !isEmptyRecord(record);
+                    });
+                }
+                return filteredData;
+            }
+            function setGridData(serverData, forceSet) {
+                var data = serverData;
+                /*If serverData has data but is undefined, then return*/
+                if (!forceSet && ($is.isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap))) {
+                    if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
+                        return;
+                    }
+                    data = serverData.data;
+                }
+                if ($is.filternullrecords) {
+                    $is.gridData = removeEmptyRecords(data);
+                } else {
+                    $is.gridData = data;
+                }
+                if (!$is.variableInflight) {
+                    if ($is.gridData && $is.gridData.length === 0) {
+                        $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                    } else {
+                        $is.datagridElement.datagrid('setStatus', 'ready');
+                    }
+                }
+                $is.$root.$safeApply($is);
+            }
+            /*function to transform the service data to grid acceptable data*/
+            function transformData(dataObject) {
+                var newObj,
+                    tempArr,
+                    keys,
+                    oldKeys,
+                    numKeys,
+                    newObject,
+                    tempObj,
+                    variableName;
+
+                /*data sanity testing*/
+                dataObject = dataObject || [];
+                variableName = $is.variableName;
+                /*if the dataObject is not an array make it an array*/
+                if (!WM.isArray(dataObject)) {
+                    /*if the data returned is of type string, make it an object inside an array*/
+                    if (WM.isString(dataObject)) {
+                        keys = variableName.substring(variableName.indexOf(".") + 1, variableName.length).split(".");
+                        oldKeys = [];
+                        numKeys = keys.length;
+                        newObject = {};
+                        tempObj = newObject;
+
+                        /* loop over the keys to form appropriate data object required for grid */
+                        WM.forEach(keys, function (key, index) {
+                            /* loop over old keys to create new object at the iterative level*/
+                            WM.forEach(oldKeys, function (oldKey) {
+                                tempObj = newObject[oldKey];
+                            });
+                            tempObj[key] = index === numKeys - 1 ? dataObject : {};
+                            oldKeys.push(key);
+                        });
+
+                        /* change the string data to the new dataObject formed*/
+                        dataObject = newObject;
+                    }
+                    dataObject = [dataObject];
+                } else {
+                    /*if the dataObject is an array and each value is a string, then lite-transform the string to an object
+                     * lite-transform: just checking if the first value is string and then transforming the object, instead of traversing through the whole array
+                     * */
+                    if (WM.isString(dataObject[0])) {
+                        tempArr = [];
+                        WM.forEach(dataObject, function (str) {
+                            newObj = {};
+                            newObj[variableName.split('.').join('-')] = str;
+                            tempArr.push(newObj);
+                        });
+                        dataObject = tempArr;
+                    }
+                }
+                return dataObject;
+            }
+            //Filter the data based on the search value and conditions
+            function getFilteredData(data, searchObj) {
+                var searchVal = _.toString(searchObj.value).toLowerCase(),
+                    currentVal;
+                data = _.filter(data, function (obj) {
+                    var isExists;
+                    if (searchObj.field) {
+                        currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                    } else {
+                        currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
+                    }
+                    switch (searchObj.matchMode) {
+                    case 'start':
+                        isExists = _.startsWith(currentVal, searchVal);
+                        break;
+                    case 'end':
+                        isExists = _.endsWith(currentVal, searchVal);
+                        break;
+                    case 'exact':
+                        isExists = _.isEqual(currentVal, searchVal);
+                        break;
+                    case 'notequals':
+                        isExists = !_.isEqual(currentVal, searchVal);
+                        break;
+                    case 'null':
+                        isExists = _.isNull(currentVal, searchVal);
+                        break;
+                    case 'empty':
+                        isExists = _.isEmpty(currentVal, searchVal);
+                        break;
+                    case 'nullorempty':
+                        isExists = _.isNull(currentVal, searchVal) || _.isEmpty(currentVal, searchVal);
+                        break;
+                    default:
+                        isExists = _.includes(currentVal, searchVal);
+                        break;
+                    }
+                    return isExists;
+                });
+                return data;
+            }
+            //Returns data filtered using searchObj
+            function getSearchResult(data, searchObj) {
+                if (!searchObj) {
+                    return data;
+                }
+                if (_.isArray(searchObj)) {
+                    _.forEach(searchObj, function (obj) {
+                        data = getFilteredData(data, obj);
+                    });
+                } else {
+                    data = getFilteredData(data, searchObj);
+                }
+                return data;
+            }
+            /*Returns data sorted using sortObj*/
+            function getSortResult(data, sortObj) {
+                if (sortObj && sortObj.direction) {
+                    data = _.orderBy(data, sortObj.field, sortObj.direction);
+                }
+                return data;
+            }
+            /* Function to populate the grid with data. */
+            function populateGridData(serviceData) {
+                var data;
+
+                if ($is.binddataset) {
+                    $is.gridVariable = serviceData;
+                    if (!$is.isBoundToLiveVariable && !$is.isBoundToFilter) {
+                        //Transform the data if it is a object
+                        serviceData = transformData(serviceData);
+                    }
+                    //Apply filter and sort, if data is refreshed through Refresh data method
+                    if (!$is.shownavigation && $is.isClientSearch) {
+                        data = Utils.getClonedObject(serviceData);
+                        data = getSearchResult(data, $is.filterInfo);
+                        data = getSortResult(data, $is.sortInfo);
+                        $is.serverData = data;
+                    } else {
+                        $is.serverData = serviceData;
+                    }
+                    /*check if new column defs required*/
+                    if ($is.columnDefsExists() && !$is.newDefsRequired) {
+                        setGridData($is.serverData);
+                    } else if (CONSTANTS.isRunMode) {
+                        $is.newcolumns = true;
+                        $is.newDefsRequired = true;
+                        $is.createGridColumns($is.serverData);
+                    }
+                } else {
+                    /*Allowing when the data is directly given to the dataset*/
+                    $is.serverData = serviceData;
+                    setGridData($is.serverData);
+                }
+            }
+            //Set filter fields based on the search obj
+            function setFilterFields(filterFields, searchObj) {
+                var field = searchObj.field;
+                /*Set the filter options only when a field/column has been selected.*/
+                if (field) {
+                    filterFields[field] = {
+                        'value'     : searchObj.value,
+                        'logicalOp' : 'AND'
+                    };
+                    if (searchObj.matchMode) {
+                        filterFields[field].matchMode = searchObj.matchMode;
+                    }
+                }
+            }
+            function getFilterFields(searchObj) {
+                var filterFields = {};
+                if (_.isArray(searchObj)) {
+                    _.forEach(searchObj, function (obj) {
+                        setFilterFields(filterFields, obj);
+                    });
+                } else {
+                    setFilterFields(filterFields, searchObj);
+                }
+                return filterFields;
+            }
+            function refreshLiveVariable(page, success, error) {
+                var sortInfo     = $is.sortInfo,
+                    sortOptions  = sortInfo && sortInfo.direction ? (sortInfo.field + ' ' + sortInfo.direction) : '',
+                    filterFields = getFilterFields($is.filterInfo);
+                $is.variable.listRecords({
+                    'filterFields' : filterFields,
+                    'orderBy'      : sortOptions,
+                    'page'         : page || 1
+                }, success, error);
+            }
+            function refreshQueryServiceVariable(page, success, error) {
+                var sortInfo     = $is.sortInfo,
+                    sortOptions  = sortInfo && sortInfo.direction ? (sortInfo.field + ' ' + sortInfo.direction) : '';
+                $is.variable.invoke({
+                    'orderBy'      : sortOptions,
+                    'page'         : page || 1
+                }, success, error);
+            }
+            function refreshServiceVariable(success, error) {
+                $is.variable.invoke({}, success, error);
+            }
+            function refreshLiveFilter() {
+                var sortInfo     = $is.sortInfo,
+                    sortOptions  = sortInfo && sortInfo.direction ? (sortInfo.field + ' ' + sortInfo.direction) : '';
+                $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions});
+            }
+            function searchGrid(searchObj) {
+                $is.filterInfo = searchObj;
+                refreshLiveVariable(1, WM.noop, function () {
+                    $is.toggleMessage(true, 'error', $is.nodatamessage);
+                });
+            }
+            function sortHandler(sortObj, e) {
+                /* Update the sort info for passing to datagrid */
+                $is.gridOptions.sortInfo.field     = sortObj.field;
+                $is.gridOptions.sortInfo.direction = sortObj.direction;
+                $is.sortInfo = Utils.getClonedObject(sortObj);
+
+                if ($is.isBoundToFilter && $is.widgetName) {
+                    refreshLiveFilter();
+                } else if ($is.isBoundToLiveVariable) {
+                    refreshLiveVariable(1, function () {
+                        $is.onSort({$event: e, $data: $is.serverData});
+                    }, function (error) {
+                        $is.toggleMessage(true, 'error', error);
+                    });
+                } else if ($is.isBoundToQueryServiceVariable) {
+                    refreshQueryServiceVariable(1, function () {
+                        $is.onSort({$event: e, $data: $is.serverData});
+                    }, function (error) {
+                        $is.toggleMessage(true, 'error', error);
+                    });
+                }
+            }
+            /*Function to handle both sort and search operations if bound to service/static variable*/
+            function handleOperation(searchSortObj, e, type) {
+                var data;
+                data = $is.shownavigation ? Utils.getClonedObject($is.__fullData) : Utils.getClonedObject($is.dataset);
+                $is.isClientSearch = true;
+                if (type === 'search') {
+                    $is.filterInfo = searchSortObj;
+                } else {
+                    $is.sortInfo = searchSortObj;
+                }
+                if (WM.isObject(data) && !WM.isArray(data)) {
+                    data = [data];
+                }
+                /*Both the functions return same 'data' if arguments are undefined*/
+                data = getSearchResult(data, $is.filterInfo);
+                data = getSortResult(data, $is.sortInfo);
+                $is.serverData = data;
+                if ($is.shownavigation) {
+                    //Reset the page number to 1
+                    $is.dataNavigator.dn.currentPage = 1;
+                    $is.dataNavigator.setPagingValues(data);
+                } else {
+                    setGridData($is.serverData);
+                }
+
+                if (type === 'sort') {
+                    //Calling 'onSort' event
+                    $is.onSort({$event: e, $data: $is.serverData});
+                }
+            }
+            //Search handler for default case, when no separate search handler is provided
+            function defaultSearchHandler(searchObj) {
+                var data  = Utils.getClonedObject($is.gridData),
+                    $rows = $is.datagridElement.find('tbody tr.app-datagrid-row');
+                $is.filterInfo = searchObj;
+                data = getSearchResult(data, searchObj);
+                //Compared the filtered data and original data, to show or hide the rows
+                _.forEach($is.gridData, function (value, index) {
+                    var $row = WM.element($rows[index]);
+                    if (_.find(data, function (obj) {return _.isEqual(obj, value); })) {
+                        $row.show();
+                    } else {
+                        $row.hide();
+                    }
+                });
+                if (data && data.length) {
+                    $is.datagridElement.datagrid('setStatus', 'ready');
+                    //Select the first row after the search for single select
+                    if ($is.gridfirstrowselect && !$is.multiselect) {
+                        $is.datagridElement.datagrid('selectFirstRow', true, true);
+                    }
+                } else {
+                    $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                    $is.selecteditem = undefined;
+                }
+            }
+            function getCompiledTemplate(htm, row, colDef, refreshImg) {
+                var rowScope = $is.$new(),
+                    el = WM.element(htm),
+                    ngSrc,
+                    imageEl;
+                rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
+                rowScope.row = row;
+                rowScope.row.getProperty = function (field) {
+                    return row[field];
+                };
+                //return the compiled template if the template is row i.e when colDef doesn't exist.
+                if (!colDef) {
+                    return $compile(el)(rowScope);
+                }
+                rowScope.colDef = colDef;
+                rowScope.columnValue = row[colDef.field];
+                if (refreshImg && colDef.widgetType === 'image') {
+                    ngSrc = el.attr('data-ng-src');  //As url will be same but image changes in the backend after edit operation, add timestamp to src to force refresh the image
+                    if (ngSrc) {
+                        imageEl = el;
+                    } else {
+                        imageEl = el.find('img');  //If src is not present, check for the image tag inside
+                        ngSrc = imageEl.attr('data-ng-src');
+                    }
+                    if (ngSrc) {
+                        imageEl.attr('data-ng-src', ngSrc.concat((_.includes(ngSrc, '?') ? '&_ts=' : '?_ts=') + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
+                    }
+                }
+                return $compile(el)(rowScope);
+            }
+            /*Compile the templates in the grid scope*/
+            function compileTemplateInGridScope(htm) {
+                var el = WM.element(htm);
+                return $compile(el)($is);
+            }
+            function deleteRecord(row, cancelRowDeleteCallback, evt, callBack) {
+                var variable,
+                    successHandler = function (success) {
+                        /* check the response whether the data successfully deleted or not , if any error occurred show the
+                         * corresponding error , other wise remove the row from grid */
+                        if (success && success.error) {
+                            $is.toggleMessage(true, 'error', $is.errormessage || success.error);
                             return;
                         }
-                        data = serverData.data;
-                    }
-                    if ($scope.filternullrecords) {
-                        $scope.gridData = removeEmptyRecords(data);
-                    } else {
-                        $scope.gridData = data;
-                    }
-                    if (!$scope.variableInflight) {
-                        if ($scope.gridData && $scope.gridData.length === 0) {
-                            $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                        } else {
-                            $scope.datagridElement.datagrid('setStatus', 'ready');
-                        }
-                    }
-                    $scope.$root.$safeApply($scope);
-                },
-            /*function to transform the service data to grid acceptable data*/
-                transformData = function (dataObject) {
-                    var newObj,
-                        tempArr,
-                        keys,
-                        oldKeys,
-                        numKeys,
-                        newObject,
-                        tempObj,
-                        variableName;
+                        /*Emit on row delete to handle any events listening to the delete action*/
+                        $is.$emit('on-row-delete', row);
 
-                    /*data sanity testing*/
-                    dataObject = dataObject || [];
-                    variableName = $scope.variableName;
-                    /*if the dataObject is not an array make it an array*/
-                    if (!WM.isArray(dataObject)) {
-                        /*if the data returned is of type string, make it an object inside an array*/
-                        if (WM.isString(dataObject)) {
-                            keys = variableName.substring(variableName.indexOf(".") + 1, variableName.length).split(".");
-                            oldKeys = [];
-                            numKeys = keys.length;
-                            newObject = {};
-                            tempObj = newObject;
-
-                            /* loop over the keys to form appropriate data object required for grid */
-                            WM.forEach(keys, function (key, index) {
-                                /* loop over old keys to create new object at the iterative level*/
-                                WM.forEach(oldKeys, function (oldKey) {
-                                    tempObj = newObject[oldKey];
-                                });
-                                tempObj[key] = index === numKeys - 1 ? dataObject : {};
-                                oldKeys.push(key);
-                            });
-
-                            /* change the string data to the new dataObject formed*/
-                            dataObject = newObject;
+                        $is.onRecordDelete(callBack);
+                        if (!$is.isBoundToStaticVariable) {
+                            $is.updateVariable(row, callBack);
                         }
-                        dataObject = [dataObject];
-                    } else {
-                        /*if the dataObject is an array and each value is a string, then lite-transform the string to an object
-                         * lite-transform: just checking if the first value is string and then transforming the object, instead of traversing through the whole array
-                         * */
-                        if (WM.isString(dataObject[0])) {
-                            tempArr = [];
-                            WM.forEach(dataObject, function (str) {
-                                newObj = {};
-                                newObj[variableName.split('.').join('-')] = str;
-                                tempArr.push(newObj);
-                            });
-                            dataObject = tempArr;
+                        if ($is.deletemessage) {
+                            $is.toggleMessage(true, 'success', $is.deletemessage);
                         }
-                    }
-                    return dataObject;
-                },
-            /* Function to populate the grid with data. */
-                populateGridData = function (serviceData) {
-                    var dataValid,
-                        gridElement,
-                        parent;
-
-                    if ($scope.binddataset) {
-                        /* Retrieve the variable details specific to the project in the root-scope */
-                        /* As this event is registered on rootscope, it is triggered on destroy hence the object.keys length check is put skip
-                         cases when the project object doesn't have variables */
-                        $scope.gridVariable = serviceData;
-                        if ($scope.gridVariable && $scope.gridVariable.propertiesMap) {
-                            $scope.serverData = $scope.gridVariable.data;
+                        /*custom EventHandler for row deleted event*/
+                        $is.onRowdeleted({$event: evt, $data: row, $rowData: row});
+                    },
+                    deleteFn = function () {
+                        if ($is.isBoundToStaticVariable) {
+                            variable.removeItem(row);
+                            successHandler(row);
+                            return;
                         }
-                        if ($scope.gridVariable.propertiesMap) {
-                            dataValid = $scope.serverData && !$scope.serverData.error;
-                            /* if data exists and data is not error type, and data type is object then change it to array of data*/
-                            if (dataValid && !WM.isArray($scope.serverData)) {
-                                $scope.serverData = [$scope.serverData];
-                            }
-                        } else {
-                            /*Transform the data if it is a object*/
-                            serviceData = transformData(serviceData);
-                            $scope.serverData = serviceData;
-                        }
-
-                        /*Function to remove the empty data*/
-                        $scope.serverData = serviceData;
-
-                        /*check if new column defs required*/
-                        if ($scope.columnDefsExists() && !$scope.newDefsRequired) {
-                            setGridData($scope.serverData);
-                        } else if (CONSTANTS.isRunMode) {
-                            $scope.newcolumns = true;
-                            $scope.newDefsRequired = true;
-                            $scope.createGridColumns($scope.serverData);
-                        }
-                    } else {
-                        /*Allowing when the data is directly given to the dataset*/
-                        $scope.serverData = serviceData;
-                        setGridData($scope.serverData);
-                    }
-
-                    /* If grid is inside a hidden tab/accordian panel, set that panel's initialized flag to false to rerender grid on panel's focus */
-                    gridElement = WM.element('[data-identifier="grid"][name="' + $scope.name + '"]');
-                    if (gridElement.length && !gridElement[0].getBoundingClientRect().height) {
-                        parent = gridElement.closest('.app-accordion-panel, .tab-pane').isolateScope();
-                        if (parent) {
-                            parent.initialized = false;
-                        }
-                    }
-                },
-                //Set filter fields based on the search obj
-                setFilterFields = function (filterFields, searchObj) {
-                    var field = searchObj.field;
-                    /*Set the filter options only when a field/column has been selected.*/
-                    if (field) {
-                        filterFields[field] = {
-                            'value'     : searchObj.value,
-                            'logicalOp' : 'AND'
-                        };
-                        if (searchObj.matchMode) {
-                            filterFields[field].matchMode = searchObj.matchMode;
-                        }
-                    }
-                },
-                getFilterFields = function (searchObj) {
-                    var filterFields = {};
-                    if (_.isArray(searchObj)) {
-                        _.forEach(searchObj, function (obj) {
-                            setFilterFields(filterFields, obj);
+                        variable.deleteRecord({
+                            'row'              : row,
+                            'transform'        : true,
+                            'scope'            : $is.gridElement.scope(),
+                            'skipNotification' : true
+                        }, successHandler, function (error) {
+                            Utils.triggerFn(callBack, undefined, true);
+                            Utils.triggerFn(cancelRowDeleteCallback);
+                            $is.toggleMessage(true, 'error', $is.errormessage || error);
                         });
-                    } else {
-                        setFilterFields(filterFields, searchObj);
-                    }
-                    return filterFields;
-                },
-                searchGrid = function (searchObj) {
-                    var variable  = $scope.variable;
-                    currentSearch = searchObj;
-                    $scope.filterFields = getFilterFields(searchObj);
-                    variable.update({
-                        'type'         : 'wm.LiveVariable',
-                        'page'         : 1,
-                        'filterFields' : $scope.filterFields,
-                        'matchMode'    : 'anywhere',
-                        'scope'        : $scope.gridElement.scope()
-                    }, WM.noop, function () {
-                        $scope.toggleMessage(true, 'error', $scope.nodatamessage);
-                    });
-                },
-                sortHandler = function (sortObj, e) {
-                    var filterFields,
-                        variable     = $scope.variable,
-                        fieldName    = sortObj.field,
-                        sortOptions  = sortObj.direction ? (fieldName + ' ' + sortObj.direction) : '';
-                    /* Update the sort info for passing to datagrid */
-                    $scope.gridOptions.sortInfo.field     = sortObj.field;
-                    $scope.gridOptions.sortInfo.direction = sortObj.direction;
-                    $scope.sortInfo = Utils.getClonedObject(sortObj);
-
-                    if ($scope.isBoundToFilter && $scope.widgetName) {
-                        /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
-                        $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
-                    } else if ($scope.isBoundToLiveVariable) {
-                        if ($scope.filtermode && currentSearch) {
-                            filterFields = getFilterFields(currentSearch);
-                        }
-                        /* else get sorted data through variable */
-                        variable.update({
-                            'type'         : 'wm.LiveVariable',
-                            'page'         : 1,
-                            'filterFields' : filterFields,
-                            'orderBy'      : sortOptions,
-                            'matchMode'    : 'anywhere',
-                            'scope'        : $scope.gridElement.scope()
-                        }, function () {
-                            $scope.onSort({$event: e, $data: $scope.serverData});
-                        }, function (error) {
-                            $scope.toggleMessage(true, 'error', error);
-                        });
-                    } else if ($scope.isBoundToServiceVariable) {
-                        /* Will be called only in case of Query service variables */
-                        variable.update({
-                            'orderBy' : sortOptions,
-                            'page'    : 1
-                        }, function () {
-                            $scope.onSort({$event: e, $data: $scope.serverData});
-                        }, function (error) {
-                            $scope.toggleMessage(true, 'error', error);
-                        });
-                    }
-                },
-                //Filter the data based on the search value and conditions
-                getFilteredData = function (data, searchObj) {
-                    var searchVal = _.toString(searchObj.value).toLowerCase(),
-                        currentVal;
-                    data = _.filter(data, function (obj) {
-                        var isExists;
-                        if (searchObj.field) {
-                            currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
-                        } else {
-                            currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
-                        }
-                        switch (searchObj.matchMode) {
-                        case 'start':
-                            isExists = _.startsWith(currentVal, searchVal);
-                            break;
-                        case 'end':
-                            isExists = _.endsWith(currentVal, searchVal);
-                            break;
-                        case 'exact':
-                            isExists = _.isEqual(currentVal, searchVal);
-                            break;
-                        case 'notequals':
-                            isExists = !_.isEqual(currentVal, searchVal);
-                            break;
-                        case 'null':
-                            isExists = _.isNull(currentVal, searchVal);
-                            break;
-                        case 'empty':
-                            isExists = _.isEmpty(currentVal, searchVal);
-                            break;
-                        case 'nullorempty':
-                            isExists = _.isNull(currentVal, searchVal) || _.isEmpty(currentVal, searchVal);
-                            break;
-                        default:
-                            isExists = _.includes(currentVal, searchVal);
-                            break;
-                        }
-                        return isExists;
-                    });
-                    return data;
-                },
-                //Returns data filtered using searchObj
-                getSearchResult = function (data, searchObj) {
-                    if (!searchObj) {
-                        return data;
-                    }
-                    if (_.isArray(searchObj)) {
-                        _.forEach(searchObj, function (obj) {
-                            data = getFilteredData(data, obj);
-                        });
-                    } else {
-                        data = getFilteredData(data, searchObj);
-                    }
-                    return data;
-                },
-                /*Returns data sorted using sortObj*/
-                getSortResult = function (data, sortObj) {
-                    if (sortObj && sortObj.direction) {
-                        data = _.orderBy(data, sortObj.field, sortObj.direction);
-                    }
-                    return data;
-                },
-                /*Function to handle both sort and search operations if bound to service/static variable*/
-                handleOperation = function (searchSortObj, e, type) {
-                    var data;
-                    if ($scope.shownavigation) {
-                        data = Utils.getClonedObject($scope.__fullData);
-                    } else {
-                        data = Utils.getClonedObject($scope.dataset);
-                    }
-
-                    //Storing in global variables for further use
-                    //While sorting previously stored search obj(current search) is used.And viceversa
-                    if (type === 'search') {
-                        currentSearch = searchSortObj;
-                    } else {
-                        currentSort = searchSortObj;
-                    }
-                    if (WM.isObject(data) && !WM.isArray(data)) {
-                        data = [data];
-                    }
-                    /*Both the functions return same 'data' if arguments are undefined*/
-                    data = getSearchResult(data, currentSearch);
-                    data = getSortResult(data, currentSort);
-                    $scope.serverData = data;
-                    if ($scope.shownavigation) {
-                        //Reset the page number to 1
-                        $scope.dataNavigator.dn.currentPage = 1;
-                        $scope.dataNavigator.setPagingValues(data);
-                    } else {
-                        setGridData($scope.serverData);
-                    }
-
-                    if (type === 'sort') {
-                        //Calling 'onSort' event
-                        $scope.onSort({$event: e, $data: $scope.serverData});
-                    }
-                },
-                //Search handler for default case, when no separate search handler is provided
-                defaultSearchHandler = function (searchObj) {
-                    var data  = Utils.getClonedObject($scope.gridData),
-                        $rows = $scope.datagridElement.find('tbody tr.app-datagrid-row');
-                    data = getSearchResult(data, searchObj);
-                    //Compared the filtered data and original data, to show or hide the rows
-                    _.forEach($scope.gridData, function (value, index) {
-                        var $row = WM.element($rows[index]);
-                        if (_.find(data, function (obj) {return _.isEqual(obj, value); })) {
-                            $row.show();
-                        } else {
-                            $row.hide();
-                        }
-                    });
-                    if (data && data.length) {
-                        $scope.datagridElement.datagrid('setStatus', 'ready');
-                        //Select the first row after the search for single select
-                        if ($scope.gridfirstrowselect && !$scope.multiselect) {
-                            $scope.datagridElement.datagrid('selectFirstRow', true, true);
-                        }
-                    } else {
-                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                        $scope.selecteditem = undefined;
-                    }
-                },
-                getCompiledTemplate = function (htm, row, colDef, refreshImg) {
-                    var rowScope = $scope.$new(),
-                        el = WM.element(htm),
-                        ngSrc,
-                        imageEl;
-                    rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
-                    rowScope.row = row;
-                    rowScope.row.getProperty = function (field) {
-                        return row[field];
                     };
-                    //return the compiled template if the template is row i.e when colDef doesn't exist.
-                    if (!colDef) {
-                        return $compile(el)(rowScope);
-                    }
-                    rowScope.colDef = colDef;
-                    rowScope.columnValue = row[colDef.field];
-                    if (refreshImg && colDef.widgetType === 'image') {
-                        ngSrc = el.attr('data-ng-src');  //As url will be same but image changes in the backend after edit operation, add timestamp to src to force refresh the image
-                        if (ngSrc) {
-                            imageEl = el;
-                        } else {
-                            imageEl = el.find('img');  //If src is not present, check for the image tag inside
-                            ngSrc = imageEl.attr('data-ng-src');
-                        }
-                        if (ngSrc) {
-                            imageEl.attr('data-ng-src', ngSrc.concat((_.includes(ngSrc, '?') ? '&_ts=' : '?_ts=') + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
-                        }
-                    }
-                    return $compile(el)(rowScope);
-                },
-                /*Compile the templates in the grid scope*/
-                compileTemplateInGridScope = function (htm) {
-                    var el = WM.element(htm);
-                    return $compile(el)($scope);
-                },
-                deleteRecord = function (row, cancelRowDeleteCallback, evt, callBack) {
-                    var variable,
-                        successHandler = function (success) {
-                            /* check the response whether the data successfully deleted or not , if any error occurred show the
-                             * corresponding error , other wise remove the row from grid */
-                            if (success && success.error) {
-                                $scope.toggleMessage(true, 'error', $scope.errormessage || success.error);
-                                return;
-                            }
-                            /*Emit on row delete to handle any events listening to the delete action*/
-                            $scope.$emit('on-row-delete', row);
-
-                            $scope.onRecordDelete(callBack);
-                            if (!$scope.isBoundToStaticVariable) {
-                                $scope.updateVariable(row, callBack);
-                            }
-                            if ($scope.deletemessage) {
-                                $scope.toggleMessage(true, 'success', $scope.deletemessage);
-                            }
-                            /*custom EventHandler for row deleted event*/
-                            $scope.onRowdeleted({$event: evt, $data: row, $rowData: row});
-                        },
-                        deleteFn = function () {
-                            if ($scope.isBoundToStaticVariable) {
-                                variable.removeItem(row);
-                                successHandler(row);
-                                return;
-                            }
-                            variable.deleteRecord({
-                                'row'              : row,
-                                'transform'        : true,
-                                'scope'            : $scope.gridElement.scope(),
-                                'skipNotification' : true
-                            }, successHandler, function (error) {
-                                Utils.triggerFn(callBack, undefined, true);
-                                Utils.triggerFn(cancelRowDeleteCallback);
-                                $scope.toggleMessage(true, 'error', $scope.errormessage || error);
-                            });
-                        };
-                    if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
-                        $scope.toggleMessage(true, 'info', 'Table of type view, not editable', 'Not Editable');
-                        $scope.$root.$safeApply($scope);
-                        return;
-                    }
-                    variable = $scope.variable;
-                    if (!variable) {
-                        return;
-                    }
-                    if (!$scope.confirmdelete) {
-                        deleteFn();
-                        Utils.triggerFn(cancelRowDeleteCallback);
-                        return;
-                    }
-                    DialogService._showAppConfirmDialog({
-                        'caption'   : 'Delete Record',
-                        'iconClass' : 'wi wi-delete fa-lg',
-                        'content'   : $scope.confirmdelete,
-                        'resolve'   : {
-                            'confirmActionOk': function () {
-                                return deleteFn;
-                            },
-                            'confirmActionCancel': function () {
-                                return function () {
-                                    Utils.triggerFn(cancelRowDeleteCallback);
-                                };
-                            }
-                        }
-                    });
-                },
-                insertRecord = function (options) {
-                    var variable = $scope.variable,
-                        dataObject = {
-                            'row'              : options.row,
-                            'transform'        : true,
-                            'scope'            : $scope.gridElement.scope(),
-                            'skipNotification' : true
-                        },
-                        successHandler = function (response) {
-                            /*Display appropriate error message in case of error.*/
-                            if (response.error) {
-                                $scope.toggleMessage(true, 'error', $scope.errormessage || response.error);
-                                Utils.triggerFn(options.error, response);
-                            } else {
-                                if (options.event) {
-                                    var row = WM.element(options.event.target).closest('tr');
-                                    $scope.datagridElement.datagrid('hideRowEditMode', row);
-                                }
-                                $scope.toggleMessage(true, 'success', $scope.insertmessage);
-                                $scope.initiateSelectItem('last', response, undefined, $scope.isBoundToStaticVariable, options.callBack);
-                                if (!$scope.isBoundToStaticVariable) {
-                                    $scope.updateVariable(response, options.callBack);
-                                }
-                                Utils.triggerFn(options.success, response);
-                                $scope.onRowinsert({$event: options.event, $data: response, $rowData: response});
-                            }
-                        };
-
-                    if (!variable) {
-                        return;
-                    }
-                    if ($scope.isBoundToStaticVariable) {
-                        variable.addItem(options.row);
-                        successHandler(options.row);
-                        return;
-                    }
-                    variable.insertRecord(dataObject, successHandler, function (error) {
-                        $scope.toggleMessage(true, 'error', $scope.errormessage || error);
-                        Utils.triggerFn(options.error, error);
-                        Utils.triggerFn(options.callBack, undefined, true);
-                    });
-                },
-                updateRecord = function (options) {
-                    /*TODO To be uncommented after onRowupdated gets the right value i.e., onRowupdated should have the value defined from the widget events.*/
-                    /*if (WM.isDefined($scope.onRowupdated)) {
-                        $scope.onRowupdated(rowData);
-                        return;
-                    }*/
-                    var variable = $scope.variable,
-                        dataObject = {
-                            'row'              : options.row,
-                            'prevData'         : options.prevData,
-                            'transform'        : true,
-                            'scope'            : $scope.gridElement.scope(),
-                            'skipNotification' : true
-                        },
-                        successHandler = function (response) {
-                            /*Display appropriate error message in case of error.*/
-                            if (response.error) {
-                                /*disable readonly and show the appropriate error*/
-                                $scope.toggleMessage(true, 'error', $scope.errormessage || response.error);
-                                Utils.triggerFn(options.error, response);
-                            } else {
-                                if (options.event) {
-                                    var row = WM.element(options.event.target).closest('tr');
-                                    $scope.datagridElement.datagrid('hideRowEditMode', row);
-                                }
-                                $scope.operationType = "";
-                                $scope.toggleMessage(true, 'success', $scope.updatemessage);
-                                $scope.initiateSelectItem('current', response, undefined, $scope.isBoundToStaticVariable, options.callBack);
-                                if (!$scope.isBoundToStaticVariable) {
-                                    $scope.updateVariable(response, options.callBack);
-                                }
-                                Utils.triggerFn(options.success, response);
-                                $scope.onRowupdate({$event: options.event, $data: response, $rowData: response});
-                            }
-                        };
-
-                    if (!variable) {
-                        return;
-                    }
-                    if ($scope.isBoundToStaticVariable) {
-                        variable.setItem(options.prevData, options.row);
-                        successHandler(options.row);
-                        return;
-                    }
-                    variable.updateRecord(dataObject, successHandler, function (error) {
-                        $scope.toggleMessage(true, 'error', $scope.errormessage || error);
-                        Utils.triggerFn(options.error, error);
-                        Utils.triggerFn(options.callBack, undefined, true);
-                    });
-                },
-                setImageProperties = function (variableObj) {
-                    if (!variableObj) {
-                        return;
-                    }
-                    $scope.primaryKey     = variableObj.getPrimaryKey();
-                    $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
-                },
-                selectItemOnSuccess = function (row, skipSelectItem, callBack) {
-                    /*$timeout is used so that by then $scope.dataset has the updated value.
-                     * Selection of the item is done in the callback of page navigation so that the item that needs to be selected actually exists in the grid.*/
-                    /*Do not select the item if skip selection item is specified*/
-                    $timeout(function () {
-                        if (!skipSelectItem) {
-                            $scope.selectItem(row, $scope.dataset && $scope.dataset.data);
-                        }
-                        Utils.triggerFn(callBack);
-                    }, undefined, false);
-                };
-            $scope.setGridData = setGridData.bind(undefined);
-            $scope.rowFilter = {};
-            $scope.updateMarkupForGrid = function (config) {
-                if ($scope.widgetid) {
-                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
-                }
-            };
-            $scope.updateVariable = function (row, callBack) {
-                var variable = $scope.variable,
-                    sortOptions;
-                if ($scope.isBoundToFilter) {
-                    //If grid is bound to filter, call the apply fiter and update filter options
-                    if (!$scope.shownavigation) {
-                        sortOptions = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
-                        $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
-                    }
-                    $scope.Widgets[$scope.widgetName].updateAllowedValues();
+                if ($is.gridVariable.propertiesMap && $is.gridVariable.propertiesMap.tableType === "VIEW") {
+                    $is.toggleMessage(true, 'info', 'Table of type view, not editable', 'Not Editable');
+                    $is.$root.$safeApply($is);
                     return;
                 }
-                if (variable && !$scope.shownavigation) {
-                    variable.update({
-                        'type': 'wm.LiveVariable'
-                    }, function () {
+                variable = $is.variable;
+                if (!variable) {
+                    return;
+                }
+                if (!$is.confirmdelete) {
+                    deleteFn();
+                    Utils.triggerFn(cancelRowDeleteCallback);
+                    return;
+                }
+                DialogService._showAppConfirmDialog({
+                    'caption'   : 'Delete Record',
+                    'iconClass' : 'wi wi-delete fa-lg',
+                    'content'   : $is.confirmdelete,
+                    'resolve'   : {
+                        'confirmActionOk': function () {
+                            return deleteFn;
+                        },
+                        'confirmActionCancel': function () {
+                            return function () {
+                                Utils.triggerFn(cancelRowDeleteCallback);
+                            };
+                        }
+                    }
+                });
+            }
+            function insertRecord(options) {
+                var variable = $is.variable,
+                    dataObject = {
+                        'row'              : options.row,
+                        'transform'        : true,
+                        'scope'            : $is.gridElement.scope(),
+                        'skipNotification' : true
+                    },
+                    successHandler = function (response) {
+                        /*Display appropriate error message in case of error.*/
+                        if (response.error) {
+                            $is.toggleMessage(true, 'error', $is.errormessage || response.error);
+                            Utils.triggerFn(options.error, response);
+                        } else {
+                            if (options.event) {
+                                var row = WM.element(options.event.target).closest('tr');
+                                $is.datagridElement.datagrid('hideRowEditMode', row);
+                            }
+                            $is.toggleMessage(true, 'success', $is.insertmessage);
+                            $is.initiateSelectItem('last', response, undefined, $is.isBoundToStaticVariable, options.callBack);
+                            if (!$is.isBoundToStaticVariable) {
+                                $is.updateVariable(response, options.callBack);
+                            }
+                            Utils.triggerFn(options.success, response);
+                            $is.onRowinsert({$event: options.event, $data: response, $rowData: response});
+                        }
+                    };
+
+                if (!variable) {
+                    return;
+                }
+                if ($is.isBoundToStaticVariable) {
+                    variable.addItem(options.row);
+                    successHandler(options.row);
+                    return;
+                }
+                variable.insertRecord(dataObject, successHandler, function (error) {
+                    $is.toggleMessage(true, 'error', $is.errormessage || error);
+                    Utils.triggerFn(options.error, error);
+                    Utils.triggerFn(options.callBack, undefined, true);
+                });
+            }
+            function updateRecord(options) {
+                /*TODO To be uncommented after onRowupdated gets the right value i.e., onRowupdated should have the value defined from the widget events.*/
+                /*if (WM.isDefined($is.onRowupdated)) {
+                 $is.onRowupdated(rowData);
+                 return;
+                 }*/
+                var variable = $is.variable,
+                    dataObject = {
+                        'row'              : options.row,
+                        'prevData'         : options.prevData,
+                        'transform'        : true,
+                        'scope'            : $is.gridElement.scope(),
+                        'skipNotification' : true
+                    },
+                    successHandler = function (response) {
+                        /*Display appropriate error message in case of error.*/
+                        if (response.error) {
+                            /*disable readonly and show the appropriate error*/
+                            $is.toggleMessage(true, 'error', $is.errormessage || response.error);
+                            Utils.triggerFn(options.error, response);
+                        } else {
+                            if (options.event) {
+                                var row = WM.element(options.event.target).closest('tr');
+                                $is.datagridElement.datagrid('hideRowEditMode', row);
+                            }
+                            $is.operationType = "";
+                            $is.toggleMessage(true, 'success', $is.updatemessage);
+                            $is.initiateSelectItem('current', response, undefined, $is.isBoundToStaticVariable, options.callBack);
+                            if (!$is.isBoundToStaticVariable) {
+                                $is.updateVariable(response, options.callBack);
+                            }
+                            Utils.triggerFn(options.success, response);
+                            $is.onRowupdate({$event: options.event, $data: response, $rowData: response});
+                        }
+                    };
+
+                if (!variable) {
+                    return;
+                }
+                if ($is.isBoundToStaticVariable) {
+                    variable.setItem(options.prevData, options.row);
+                    successHandler(options.row);
+                    return;
+                }
+                variable.updateRecord(dataObject, successHandler, function (error) {
+                    $is.toggleMessage(true, 'error', $is.errormessage || error);
+                    Utils.triggerFn(options.error, error);
+                    Utils.triggerFn(options.callBack, undefined, true);
+                });
+            }
+            function setImageProperties(variableObj) {
+                if (!variableObj) {
+                    return;
+                }
+                $is.primaryKey     = variableObj.getPrimaryKey();
+                $is.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+            }
+            function selectItemOnSuccess(row, skipSelectItem, callBack) {
+                /*$timeout is used so that by then $is.dataset has the updated value.
+                 * Selection of the item is done in the callback of page navigation so that the item that needs to be selected actually exists in the grid.*/
+                /*Do not select the item if skip selection item is specified*/
+                $timeout(function () {
+                    if (!skipSelectItem) {
+                        $is.selectItem(row, $is.dataset && $is.dataset.data);
+                    }
+                    Utils.triggerFn(callBack);
+                }, undefined, false);
+            }
+            //Reset the sort based on sort returned by the call
+            function resetSortStatus(variableSort) {
+                var gridSortString;
+                if (!_.isEmpty($is.sortInfo)) {
+                    gridSortString = $is.sortInfo.field + ' ' + $is.sortInfo.direction;
+                    variableSort = _.get($is.variable, ['_options', 'orderBy']) || variableSort;
+                    if (gridSortString !== variableSort) {
+                        $is.datagridElement.datagrid('resetSortIcons');
+                        $is.sortInfo = {};
+                        $is.setDataGridOption('sortInfo', {});
+                    }
+                }
+            }
+            //Check the filters applied and remove if dat does not contain any filters
+            function checkFiltersApplied(variableSort) {
+                var variable = $is.variable;
+                if ($is.isBoundToLiveVariable) {
+                    if (_.isEmpty(_.get(variable, ['_options', 'filterFields']))) {
+                        $is.clearFilter(true);
+                    }
+                    resetSortStatus(variableSort);
+                    return;
+                }
+                if ($is.isBoundToQueryServiceVariable) {
+                    resetSortStatus(variableSort);
+                }
+            }
+            function updateMarkupForGrid(config) {
+                if ($is.widgetid) {
+                    Utils.getService('LiveWidgetsMarkupManager').updateMarkupForGrid(config);
+                }
+            }
+            function updateVariable(row, callBack) {
+                var variable = $is.variable;
+                if ($is.isBoundToFilter) {
+                    //If grid is bound to filter, call the apply fiter and update filter options
+                    if (!$is.shownavigation) {
+                        refreshLiveFilter();
+                    }
+                    $is.Widgets[$is.widgetName].updateAllowedValues();
+                    return;
+                }
+                if (variable && !$is.shownavigation) {
+                    refreshLiveVariable(1, function () {
                         selectItemOnSuccess(row, true, callBack);
                     });
                 }
-            };
+            }
             /* Function to reset the column definitions dynamically. */
-            $scope.resetColumnDefinitions = function () {
-                $scope.fieldDefs = [];
-                $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
-            };
-
+            function resetColumnDefinitions() {
+                $is.fieldDefs = [];
+                $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
+            }
             /*Function to render the column containing row operations.*/
-            $scope.renderOperationColumns = function (fromDesigner) {
+            function renderOperationColumns(fromDesigner) {
                 var rowActionCol,
                     opConfig = {},
                     operations = [],
@@ -1439,281 +1433,115 @@ WM.module('wm.widgets.grid')
                         'isPredefined' : true
                     };
                 /*Return if no fieldDefs are present.*/
-                if (!$scope.fieldDefs.length) {
+                if (!$is.fieldDefs.length) {
                     return;
                 }
-                rowActionCol = _.find($scope.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
-                _.remove($scope.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
-                _.remove($scope.headerConfig, {field : rowOperationsColumn.field});
+                rowActionCol = _.find($is.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
+                _.remove($is.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
+                _.remove($is.headerConfig, {field : rowOperationsColumn.field});
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
-                    if (_.some($scope.rowActions, {'key' : field.property}) || (!fromDesigner && $scope[field.property])) {
+                    if (_.some($is.rowActions, {'key' : field.property}) || (!fromDesigner && $is[field.property])) {
                         opConfig[fieldName] = rowOperations[fieldName].config;
                         operations.push(fieldName);
                     }
                 });
 
                 /*Add the column for row operations only if at-least one operation has been enabled.*/
-                if ($scope.rowActions.length) {
+                if ($is.rowActions.length) {
                     if (rowActionCol) { //If column is present in markup, push the column or push the default column
-                        insertPosition = rowActionCol.rowactionsposition ? _.toNumber(rowActionCol.rowactionsposition) : $scope.fieldDefs.length;
-                        $scope.fieldDefs.splice(insertPosition, 0, rowActionCol);
+                        insertPosition = rowActionCol.rowactionsposition ? _.toNumber(rowActionCol.rowactionsposition) : $is.fieldDefs.length;
+                        $is.fieldDefs.splice(insertPosition, 0, rowActionCol);
                         if (insertPosition === 0) {
-                            $scope.headerConfig.unshift(config);
+                            $is.headerConfig.unshift(config);
                         } else {
-                            $scope.headerConfig.push(config);
+                            $is.headerConfig.push(config);
                         }
                     } else {
-                        $scope.fieldDefs.push(rowOperationsColumn);
-                        $scope.headerConfig.push(config);
+                        $is.fieldDefs.push(rowOperationsColumn);
+                        $is.headerConfig.push(config);
                     }
                 } else if (!fromDesigner && operations.length) {
                     rowOperationsColumn.operations = operations;
                     rowOperationsColumn.opConfig = opConfig;
-                    $scope.fieldDefs.push(rowOperationsColumn);
-                    $scope.headerConfig.push(config);
+                    $is.fieldDefs.push(rowOperationsColumn);
+                    $is.headerConfig.push(config);
                 }
-                $scope.setDataGridOption('headerConfig', $scope.headerConfig);
-            };
-
-            $scope.fieldDefs = [];
-            $scope.fullFieldDefs = [];
-            /* This is the array which contains all the selected items */
-            $scope.selectedItems = [];
-
-            $scope.$watch('gridData', function (newValue) {
-                var startRowIndex,
-                    gridOptions;
-
-                if (WM.isDefined(newValue)) {
-                    /*Setting the serial no's only when show navigation is enabled and data navigator is compiled
-                     and its current page is set properly*/
-                    if ($scope.shownavigation && $scope.dataNavigator && $scope.dataNavigator.dn.currentPage) {
-                        startRowIndex = (($scope.dataNavigator.dn.currentPage - 1) * ($scope.dataNavigator.maxResults || 1)) + 1;
-                        $scope.setDataGridOption('startRowIndex', startRowIndex);
-                    }
-                    /* If colDefs are available, but not already set on the datagrid, then set them.
-                     * This will happen while switching from markup to design tab. */
-                    gridOptions = $scope.datagridElement.datagrid('getOptions');
-                    if (!gridOptions.colDefs.length && $scope.fieldDefs.length) {
-                        $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
-                    }
-                    $scope.setDataGridOption('data', Utils.getClonedObject(newValue));
-                }
-            });
-
-            $scope.addNewRow = function () {
-                $scope.datagridElement.datagrid('addNewRow');
-                $scope.$emit('add-new-row');
-                $rootScope.$emit("wm-event", $scope.widgetid, "create");
-            };
-
-            $scope.isGridEditMode = false;
-            $scope.gridData = [];
-            $scope.gridOptions = {
-                data: Utils.getClonedObject($scope.gridData),
-                colDefs: $scope.fieldDefs,
-                startRowIndex: 1,
-                onDataRender: function () {
-                    // select rows selected in previous pages. (Not finding intersection of data and selecteditems as it will be heavy)
-                    if (!$scope.multiselect) {
-                        $scope.items.length = 0;
-                    }
-                    $scope.datagridElement.datagrid('selectRows', $scope.items);
-                    $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                    if ($scope.gridData.length) {
-                        $scope.onDatarender({$isolateScope: $scope, $data: $scope.gridData});
-                    }
-                },
-                onRowSelect: function (rowData, e) {
-                    $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                    /*
-                     * in case of single select, update the items with out changing the reference.
-                     * for multi select, keep old selected items in tact
-                     */
-                    if ($scope.multiselect) {
-                        if (_.findIndex($scope.items, rowData) === -1) {
-                            $scope.items.push(rowData);
-                        }
-                    } else {
-                        $scope.items.length = 0;
-                        $scope.items.push(rowData);
-                    }
-                    $scope.onSelect({$data: rowData, $event: e, $rowData: rowData});
-                    $scope.onRowclick({$data: rowData, $event: e, $rowData: rowData});
-                    // For backward compatibility.
-                    if (WM.isDefined($scope.onClick)) {
-                        $scope.onClick({$data: rowData, $event: e, $rowData: rowData});
-                    }
-                    if (WM.isDefined($scope.onTap)) {
-                        $scope.onTap({$data: rowData, $event: e, $rowData: rowData});
-                    }
-                    $rootScope.$safeApply($scope);
-                },
-                onRowDblClick: function (rowData, e) {
-                    $scope.onRowdblclick({$data: rowData, $event: e, $rowData: rowData});
-                    $rootScope.$safeApply($scope);
-                },
-                onRowDeselect: function (rowData, e) {
-                    if ($scope.multiselect) {
-                        $scope.items = _.pullAllWith($scope.items, [rowData], _.isEqual);
-                        $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
-                        $scope.onDeselect({$data: rowData, $event: e, $rowData: rowData});
-                        $rootScope.$safeApply($scope);
-                    }
-                },
-                onColumnSelect: function (col, e) {
-                    $scope.selectedColumns = $scope.datagridElement.datagrid('getSelectedColumns');
-                    $scope.onColumnselect({$data: col, $event: e});
-                    $rootScope.$safeApply($scope);
-                },
-                onColumnDeselect: function (col, e) {
-                    $scope.selectedColumns = $scope.datagridElement.datagrid('getSelectedColumns');
-                    $scope.onColumndeselect({$data: col, $event: e});
-                    $rootScope.$safeApply($scope);
-                },
-                onHeaderClick: function (col, e) {
-//                    /* if onSort function is registered invoke it when the column header is clicked */
-//                    $scope.onSort({$event: e, $data: e.data.col});
-                    $scope.onHeaderclick({$event: e, $data: col});
-                },
-                onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack) {
-                    deleteRecord(rowData, cancelRowDeleteCallback, e, callBack);
-                },
-                onRowInsert: function (rowData, e, callBack) {
-                    insertRecord({'row': rowData, event: e, 'callBack': callBack});
-                },
-                beforeRowUpdate: function (rowData, e, eventName) {
-                    /*TODO: Check why widgetid is undefined here.*/
-                    $scope.$emit('update-row', $scope.widgetid, rowData, eventName);
-                    $scope.prevData = Utils.getClonedObject(rowData);
-                    $rootScope.$safeApply($scope);
-                    $rootScope.$emit('wm-event', $scope.widgetid, 'update');
-                    /*TODO: Bind this event.*/
-//                    $scope.beforeRowupdate({$data: rowData, $event: e});
-                },
-                afterRowUpdate: function (rowData, e, callBack) {
-                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'callBack': callBack});
-                },
-                onBeforeRowUpdate: function (rowData, e) {
-                    return $scope.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});
-                },
-                onBeforeRowInsert: function (rowData, e) {
-                    return $scope.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData});
-                },
-                sortInfo: {
-                    'field': '',
-                    'direction': ''
-                },
-                getCompiledTemplate: function (htm, row, colDef, refreshImg) {
-                    return getCompiledTemplate(htm, row, colDef, refreshImg);
-                },
-                compileTemplateInGridScope: function (htm) {
-                    return compileTemplateInGridScope(htm);
-                },
-                getBindDataSet: function () {
-                    return $scope.binddataset;
-                },
-                setGridEditMode: function (val) {
-                    $scope.isGridEditMode = val;
-                    $rootScope.$safeApply($scope);
-                },
-                noChangesDetected: function () {
-                    $scope.toggleMessage(true, 'info', $scope.appLocale.MESSAGE_NO_CHANGES, '');
-                    $rootScope.$safeApply($scope);
-                },
-                afterSort: function (e) {
-                    $rootScope.$safeApply($scope);
-                    $scope.onSort({$event: e, $data: $scope.serverData});
-                },
-                //Function to loop through events and trigger
-                handleCustomEvents: function (e, options) {
-                    if (!options) {
-                        var $ele          = WM.element(e.target),
-                            $button       = $ele.closest('button'),
-                            key           = $button.attr('data-action-key'),
-                            events        = _.find($scope.rowActions, {'key' : key}).action || '',
-                            callBackScope = $button.scope(),
-                            $row          = $ele.closest('tr'),
-                            rowId         = $row.attr('data-row-id'),
-                            data          = $scope.gridOptions.data[rowId];
-                        if (events) {
-                            Utils.triggerCustomEvents(e, events, callBackScope, data);
-                        }
-                    } else {
-                        $scope.datagridElement.datagrid('toggleEditRow', e, options);
-                    }
-                }
-            };
-
-            $scope.resetPageNavigation = function () {
+                $is.setDataGridOption('headerConfig', $is.headerConfig);
+            }
+            function addNewRow() {
+                $is.datagridElement.datagrid('addNewRow');
+                $is.$emit('add-new-row');
+                $rs.$emit("wm-event", $is.widgetid, "create");
+            }
+            function resetPageNavigation() {
                 /*Check for sanity*/
-                if ($scope.dataNavigator) {
-                    $scope.dataNavigator.resetPageNavigation();
+                if ($is.dataNavigator) {
+                    $is.dataNavigator.resetPageNavigation();
                 }
-            };
-
+            }
             /*Function to enable page navigation for the grid.*/
-            $scope.enablePageNavigation = function () {
-                if ($scope.dataset && _.get($scope.dataset, 'dataValue') !== '' && !_.isEmpty($scope.dataset)) {
+            function enablePageNavigation() {
+                if ($is.dataset && _.get($is.dataset, 'dataValue') !== '' && !_.isEmpty($is.dataset)) {
                     /*Check for sanity*/
-                    if ($scope.dataNavigator) {
+                    if ($is.dataNavigator) {
 
-                        $scope.dataNavigator.pagingOptions = {
-                            maxResults: $scope.pagesize || 5
+                        $is.dataNavigator.pagingOptions = {
+                            maxResults: $is.pagesize || 5
                         };
                         /*De-register the watch if it is exists */
                         Utils.triggerFn(navigatorResultWatch);
-                        $scope.dataNavigator.dataset = $scope.binddataset;
+                        $is.dataNavigator.dataset = $is.binddataset;
 
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
-                        navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
+                        navigatorResultWatch = $is.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
                             if (WM.isDefined(newVal)) {
                                 //Watch will not be triggered if dataset and new value are equal. So trigger the property change handler manually
                                 //This happens in case, if dataset is directly updated.
-                                if (_.isEqual($scope.dataset, newVal)) {
-                                    $scope.watchVariableDataSet(newVal, $scope.gridElement);
+                                if (_.isEqual($is.dataset, newVal)) {
+                                    $is.watchVariableDataSet(newVal, $is.gridElement);
                                 } else {
                                     if (WM.isArray(newVal)) {
-                                        $scope.dataset = [].concat(newVal);
+                                        $is.dataset = [].concat(newVal);
                                     } else if (WM.isObject(newVal)) {
-                                        $scope.dataset = WM.extend({}, newVal);
+                                        $is.dataset = WM.extend({}, newVal);
                                     } else {
-                                        $scope.dataset = newVal;
+                                        $is.dataset = newVal;
                                     }
                                 }
+                            } else {
+                                $is.dataset = undefined;
                             }
                         }, true);
                         /*De-register the watch if it is exists */
                         Utils.triggerFn(navigatorMaxResultWatch);
                         /*Register a watch on the "maxResults" property of the "dataNavigator" so that the "pageSize" is displayed in the live-list.*/
-                        navigatorMaxResultWatch = $scope.dataNavigator.$watch('maxResults', function (newVal) {
-                            $scope.pagesize = newVal;
+                        navigatorMaxResultWatch = $is.dataNavigator.$watch('maxResults', function (newVal) {
+                            $is.pagesize = newVal;
                         });
 
-                        $scope.dataNavigatorWatched = true;
+                        $is.dataNavigatorWatched = true;
                         //If dataset is a pageable object, data is present inside the content property
-                        if (WM.isObject($scope.dataset) && Utils.isPageable($scope.dataset)) {
-                            $scope.__fullData = $scope.dataset.content;
+                        if (WM.isObject($is.dataset) && Utils.isPageable($is.dataset)) {
+                            $is.__fullData = $is.dataset.content;
                         } else {
-                            $scope.__fullData = $scope.dataset;
+                            $is.__fullData = $is.dataset;
                         }
-                        $scope.dataset    = undefined;
+                        $is.dataset    = undefined;
                     }
                 }
-            };
-
+            }
             /*Function to dynamically fetch column definitions.*/
-            $scope.fetchDynamicColumnDefs = function () {
+            function fetchDynamicColumnDefs() {
                 var fields,
                     result,
                     f,
                     dataKeys;
 
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
-                result = LiveWidgetUtils.fetchReferenceDetails($scope);
+                result = LiveWidgetUtils.fetchReferenceDetails($is);
                 if (result.fields) {
                     f = result.fields;
                     dataKeys = Object.keys(f);
@@ -1729,13 +1557,12 @@ WM.module('wm.widgets.grid')
                     });
                 }
                 if (fields) {
-                    $scope.watchVariableDataSet(fields, $scope.gridElement);
+                    $is.watchVariableDataSet(fields, $is.gridElement);
                 }
-            };
-
-            $scope.isDataValid = function () {
+            }
+            function isDataValid() {
                 var error,
-                    dataset = $scope.dataset || {};
+                    dataset = $is.dataset || {};
 
                 /*In case "data" contains "error" & "errorMessage", then display the error message in the grid.*/
                 if (dataset.error) {
@@ -1748,39 +1575,71 @@ WM.module('wm.widgets.grid')
                 }
                 if (error) {
                     setGridData([]);
-                    $scope.datagridElement.datagrid('setStatus', 'error', error);
+                    $is.datagridElement.datagrid('setStatus', 'error', error);
                     return false;
                 }
                 return true;
-            };
-
-            $scope.watchVariableDataSet = function (newVal, element) {
+            }
+            function setSortSearchHandlers(isPageable) {
+                $is.setDataGridOption('searchHandler', defaultSearchHandler);
+                if ($is.isBoundToVariable && $is.variable) {
+                    if ($is.isBoundToLiveVariable) {
+                        $is.setDataGridOption('searchHandler', searchGrid);
+                        $is.setDataGridOption('sortHandler', sortHandler);
+                        setImageProperties($is.variable);
+                    } else if ($is.isBoundToQueryServiceVariable) {
+                        /*Calling the specific search and sort handlers*/
+                        $is.setDataGridOption('sortHandler', sortHandler);
+                    } else if ($is.isBoundToProcedureServiceVariable) {
+                        $is.setDataGridOption('searchHandler', handleOperation);
+                        $is.setDataGridOption('sortHandler', handleOperation);
+                    } else {
+                        /*Calling the specific search and sort handlers*/
+                        $is.setDataGridOption('searchHandler', handleOperation);
+                        if (isPageable) {
+                            $is.setDataGridOption('sortHandler', sortHandler);
+                        } else {
+                            $is.setDataGridOption('sortHandler', handleOperation);
+                        }
+                    }
+                } else if ($is.isBoundToFilter) {
+                    /*If the variable is deleted hiding the spinner and showing the no data found message*/
+                    $is.setDataGridOption('sortHandler', sortHandler);
+                    setImageProperties($is.variable);
+                } else if ($is.isBoundToSelectedItem) {
+                    $is.setDataGridOption('searchHandler', handleOperation);
+                    $is.setDataGridOption('sortHandler', handleOperation);
+                } else if ($is.binddataset.indexOf('bind:Widgets') === -1) {
+                    /*if the grid is not bound to widgets*/
+                    /*If the variable is deleted hiding the spinner and showing the no data found message*/
+                    $is.datagridElement.datagrid('setStatus', 'error', $is.nodatamessage);
+                }
+            }
+            function watchVariableDataSet(newVal, element) {
                 /* TODO: In studio mode, service variable data should initially
-                    be empty array, and metadata should be passed separately. */
+                 be empty array, and metadata should be passed separately. */
                 var variableName,
                     result,
-                    gridSortString,
                     variableSortString,
                     columns,
                     isPageable = false,
                     widgetBindingDetails,
-                    relatedTables,
-                    wp;
+                    relatedTables;
                 //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
-                if ($scope.dataNavigatorWatched && _.isUndefined(newVal) && $scope.__fullData) {
+                if ($is.dataNavigatorWatched && _.isUndefined(newVal) && $is.__fullData) {
                     return;
                 }
                 //If variable is in loading state, show loading icon
-                if ($scope.variableInflight) {
-                    $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
+                if ($is.variableInflight) {
+                    $is.datagridElement.datagrid('setStatus', 'loading', $is.loadingdatamsg);
                 }
                 result = Utils.getValidJSON(newVal);
 
                 /*Reset the values to undefined so that they are calculated each time.*/
-                $scope.gridVariable                  = '';
+                $is.gridVariable                  = '';
                 /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
-                if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
-                    $scope.newcolumns = $scope.$parent.redrawColumns;
+                if ($is.widgetid && WM.isDefined($is.$parent) && $is.$parent.redrawColumns) {
+                    $is.newcolumns = $is.$parent.redrawColumns;
                 }
 
                 //Converting newval to object if it is an Object that comes as a string "{"data" : 1}"
@@ -1789,7 +1648,7 @@ WM.module('wm.widgets.grid')
                 }
 
                 /*Return if data is invalid.*/
-                if (!$scope.isDataValid()) {
+                if (!$is.isDataValid()) {
                     return;
                 }
 
@@ -1801,23 +1660,26 @@ WM.module('wm.widgets.grid')
                 }
                 //If value is empty or in studio mode, dont enable the navigation
                 if (CONSTANTS.isRunMode && newVal && _.get(newVal, 'dataValue') !== '' && !_.isEmpty(newVal)) {
-                    if ($scope.shownavigation && !$scope.dataNavigatorWatched) {
-                        $scope.enablePageNavigation();
+                    if ($is.shownavigation && !$is.dataNavigatorWatched) {
+                        $is.enablePageNavigation();
                         return;
                     }
                 } else {
-                    $scope.resetPageNavigation();
+                    $is.resetPageNavigation();
                     /*for run mode, disabling the loader and showing no data found message if dataset is not valid*/
                     if (CONSTANTS.isRunMode) {
-                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                        $scope.setDataGridOption('selectFirstRow', $scope.gridfirstrowselect);
+                        $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                        $is.setDataGridOption('selectFirstRow', $is.gridfirstrowselect);
                     }
                 }
-                if ($scope.binddataset) {
-                    if ($scope.isBoundToWidget) {
-                        if ($scope.isBoundToSelectedItemSubset || $scope.isBoundToSelectedItem) {
-                            if ($scope.variableName === null) {
-                                widgetBindingDetails = LiveWidgetUtils.fetchReferenceDetails($scope);
+                if (CONSTANTS.isRunMode && !$is.shownavigation) {
+                    checkFiltersApplied(variableSortString);
+                }
+                if ($is.binddataset) {
+                    if ($is.isBoundToWidget) {
+                        if ($is.isBoundToSelectedItemSubset || $is.isBoundToSelectedItem) {
+                            if ($is.variableName === null) {
+                                widgetBindingDetails = LiveWidgetUtils.fetchReferenceDetails($is);
                                 if (!widgetBindingDetails.fields) {
                                     relatedTables = (widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables) || [];
                                     variableName = widgetBindingDetails.referenceVariableName;
@@ -1826,91 +1688,32 @@ WM.module('wm.widgets.grid')
                                             variableName = val.watchOn;
                                         }
                                     });
-                                    $scope.variableName = variableName;
-                                    $scope.variable     = _.get(element.scope().Variables, $scope.variableName);
+                                    $is.variableName = variableName;
+                                    $is.variable     = _.get(element.scope().Variables, $is.variableName);
                                 }
                             }
                             /*Check for studio mode.*/
-                            if (CONSTANTS.isStudioMode && newVal !== '') {
+                            if ($is.widgetid && newVal !== '') {
                                 /*If "newVal" is not available(in studio mode, newVal will be same as bindDataSet with 'bind:' removed; for the first time)
                                  , fetch column definitions dynamically.*/
-                                if (($scope.binddataset === ('bind:' + newVal)) || (WM.isArray(newVal) && !newVal.length)) {
-                                    $scope.fetchDynamicColumnDefs();
+                                if (($is.binddataset === ('bind:' + newVal)) || (WM.isArray(newVal) && !newVal.length)) {
+                                    $is.fetchDynamicColumnDefs();
                                     return;
                                 }
                             }
                         }
                     }
-
-                    $scope.setDataGridOption('searchHandler', defaultSearchHandler);
-                    if ($scope.isBoundToVariable && $scope.variable) {
-
-                        if ($scope.isBoundToLiveVariable || $scope.isBoundToQueryServiceVariable) {
-                            if (!_.isEmpty($scope.sortInfo)) {
-                                gridSortString = $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
-                                variableSortString = _.get($scope.variable, ['_options', 'orderBy']) || variableSortString;
-                                if (gridSortString !== variableSortString) {
-                                    $scope.datagridElement.datagrid('resetSortIcons');
-                                    $scope.sortInfo = {};
-                                    $scope.setDataGridOption('sortInfo', {});
-                                }
-                            }
-                        }
-                        if ($scope.isBoundToLiveVariable) {
-                            $scope.setDataGridOption('searchHandler', searchGrid);
-                            $scope.setDataGridOption('sortHandler', sortHandler);
-                            setImageProperties($scope.variable);
-                        } else if ($scope.isBoundToQueryServiceVariable) {
-                            /*Calling the specific search and sort handlers*/
-                            $scope.setDataGridOption('sortHandler', sortHandler);
-                        } else if ($scope.isBoundToProcedureServiceVariable) {
-                            $scope.setDataGridOption('searchHandler', handleOperation);
-                            $scope.setDataGridOption('sortHandler', handleOperation);
-                        } else {
-                            /*Calling the specific search and sort handlers*/
-                            $scope.setDataGridOption('searchHandler', handleOperation);
-                            if (isPageable) {
-                                $scope.setDataGridOption('sortHandler', sortHandler);
-                            } else {
-                                $scope.setDataGridOption('sortHandler', handleOperation);
-                            }
-                        }
-                    } else if ($scope.isBoundToFilter) {
-                        /*If the variable is deleted hiding the spinner and showing the no data found message*/
-                        $scope.setDataGridOption('sortHandler', sortHandler);
-                        setImageProperties($scope.variable);
-                    } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
-                        /*if the grid is not bound to widgets*/
-                        /*If the variable is deleted hiding the spinner and showing the no data found message*/
-                        $scope.datagridElement.datagrid('setStatus', 'error', $scope.nodatamessage);
-                    }
-                }
-                /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
-                if (CONSTANTS.isStudioMode) {
-                    wp = $scope.widgetProps;
-                    /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    wp.pagesize.show    = !($scope.isBoundToLiveVariable || $scope.isBoundToQueryServiceVariable || $scope.isBoundToFilter);
-                    wp.exportformat.show  = wp.exportformat.showindesigner  = $scope.isBoundToLiveVariable || $scope.isBoundToFilter;
-                    wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
-                    /* If bound to live filter result, disable grid search. */
-                    if ($scope.isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
-                        if ($scope.filtermode) {
-                            $rootScope.$emit('update-widget-property', 'filtermode', '');
-                        }
-                        wp.filtermode.disabled = true;
-                    } else {
-                        wp.filtermode.disabled = false;
-                    }
+                    setSortSearchHandlers(isPageable);
                 }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
                     if (newVal === '' || (newVal && newVal.dataValue === '')) {
                         /* clear the grid columnDefs and data in studio */
-                        if (CONSTANTS.isStudioMode && $scope.newcolumns) {
+                        if ($is.widgetid && $is.newcolumns) {
                             /* if new columns to be rendered, create new column defs*/
-                            $scope.prepareFieldDefs();
-                            $scope.newcolumns = false;
+                            $is.prepareFieldDefs();
+                            $is.newcolumns = false;
                         }
-                        if (!$scope.variableInflight) {
+                        if (!$is.variableInflight) {
                             /* If variable has finished loading and resultSet is empty,
                              * render empty data in both studio and run modes */
                             setGridData([]);
@@ -1920,14 +1723,14 @@ WM.module('wm.widgets.grid')
                 }
 
                 if (newVal) {
-                    if (CONSTANTS.isStudioMode) {
-                        $scope.createGridColumns($scope.isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
-                        $scope.newcolumns = false;
+                    if ($is.widgetid) {
+                        $is.createGridColumns($is.isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
+                        $is.newcolumns = false;
                     }
                     /*Set the type of the column to the default variable type*/
-                    if ($scope.fieldDefs && $scope.columnDefsExists() && newVal.propertiesMap) {
+                    if ($is.fieldDefs && $is.columnDefsExists() && newVal.propertiesMap) {
                         columns = Utils.fetchPropertiesMapColumns(newVal.propertiesMap);
-                        $scope.fieldDefs.forEach(function (fieldDef) {
+                        $is.fieldDefs.forEach(function (fieldDef) {
                             Object.keys(columns).forEach(function (key) {
                                 if (key === fieldDef.field) {
                                     fieldDef.type = columns[key].type;
@@ -1936,28 +1739,28 @@ WM.module('wm.widgets.grid')
                         });
                     }
                     populateGridData(newVal);
-                    if ($scope.isBoundToServiceVariable && CONSTANTS.isStudioMode) {
+                    if ($is.isBoundToServiceVariable && $is.widgetid) {
                         /*Checking if grid is bound to service variable, for which data cannot be loaded in studio mode,
-                        in studio mode and if the fieldDefs are generated. */
-                        $scope.gridData = [];
-                        $scope.datagridElement.datagrid('setStatus', 'error', $rootScope.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
+                         in studio mode and if the fieldDefs are generated. */
+                        $is.gridData = [];
+                        $is.datagridElement.datagrid('setStatus', 'error', $rs.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
                     }
-                } else if (CONSTANTS.isStudioMode) {
+                } else if ($is.widgetid) {
                     /* Put In case of error while fetching data from provided variable, prepare default fieldDefs
                      * Error cases:
                      * 1. empty variable provided
                      * 2. data not found for provided variable
                      */
-                    $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                    $scope.setDataGridOption('selectFirstRow', $scope.gridfirstrowselect);
+                    $is.datagridElement.datagrid('setStatus', 'nodata', $is.nodatamessage);
+                    $is.setDataGridOption('selectFirstRow', $is.gridfirstrowselect);
                     /* if new columns to be rendered, create new column defs*/
-                    if ($scope.newcolumns) {
-                        $scope.prepareFieldDefs();
-                        $scope.newcolumns = false;
+                    if ($is.newcolumns) {
+                        $is.prepareFieldDefs();
+                        $is.newcolumns = false;
                     }
                 }
-            };
-            $scope.createGridColumns = function (data, propertiesMap) {
+            }
+            function createGridColumns(data, propertiesMap) {
                 /* this call back function receives the data from the variable */
                 /* check whether data is valid or not */
                 var dataValid = data && !data.error;
@@ -1966,31 +1769,31 @@ WM.module('wm.widgets.grid')
                     data = [data];
                 }
                 /* if new columns to be rendered, prepare default fieldDefs for the data provided*/
-                if ($scope.newcolumns) {
+                if ($is.newcolumns) {
                     if (propertiesMap) {
                         /*get current entity name from properties map*/
-                        $scope.prepareFieldDefs(data, propertiesMap);
+                        $is.prepareFieldDefs(data, propertiesMap);
                     } else {
-                        $scope.prepareFieldDefs(data);
+                        $is.prepareFieldDefs(data);
                     }
                 }
                 /* Arranging Data for Pagination */
                 /* if data exists and data is not error type the render the data on grid using setGridData function */
                 if (dataValid) {
                     /*check for nested data if existed*/
-                    $scope.serverData = data;
-                    setGridData($scope.serverData);
+                    $is.serverData = data;
+                    setGridData($is.serverData);
                 }
-            };
+            }
             /* function to prepare fieldDefs for the grid according to data provided */
-            $scope.prepareFieldDefs = function (data, propertiesMap) {
+            function prepareFieldDefs(data, propertiesMap) {
                 var defaultFieldDefs,
                     properties,
                     columns,
                     gridObj,
                     options = {};
 
-                $scope.fieldDefs = [];
+                $is.fieldDefs = [];
                 /* if properties map is existed then fetch the column configuration for all nested levels using util function */
                 if (propertiesMap) {
                     columns = Utils.fetchPropertiesMapColumns(propertiesMap);
@@ -1998,7 +1801,7 @@ WM.module('wm.widgets.grid')
                 } else {
                     properties = data;
                 }
-                options.columnUpperBound = $scope.displayAllFields ? -1 : 10;
+                options.columnUpperBound = $is.displayAllFields ? -1 : 10;
                 /*call utility function to prepare fieldDefs for grid against given data (A MAX OF 10 COLUMNS ONLY)*/
                 defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
                 /*append additional properties*/
@@ -2006,7 +1809,7 @@ WM.module('wm.widgets.grid')
                     var newColumn;
                     columnDef.pcDisplay = true;
                     columnDef.mobileDisplay = true;
-                    WM.forEach($scope.fullFieldDefs, function (column) {
+                    WM.forEach($is.fullFieldDefs, function (column) {
                         if (column.field && column.field === columnDef.field) {
                             columnDef.pcDisplay = column.pcDisplay;
                             columnDef.mobileDisplay = column.mobileDisplay;
@@ -2052,7 +1855,7 @@ WM.module('wm.widgets.grid')
                         }
                     }
                     //For readonly grid each field should be checked on readonly
-                    if (!$scope.editmode) {
+                    if (!$is.editmode) {
                         columnDef.readonly = true;
                     }
                 });
@@ -2061,175 +1864,161 @@ WM.module('wm.widgets.grid')
                  (defaultFieldDefs will be passed to markup and fieldDefs are used for grid)
                  (a copy is kept to prevent changes made by ng-grid in the fieldDefs)
                  */
-                $scope.fieldDefs = Utils.getClonedObject(defaultFieldDefs);
+                $is.fieldDefs = Utils.getClonedObject(defaultFieldDefs);
 
                 /*push the fieldDefs in respective grid markup*/
                 gridObj = {
-                    widgetName : $scope.name,
+                    widgetName : $is.name,
                     fieldDefs: defaultFieldDefs,
-                    scopeId: $scope.$id
+                    scopeId: $is.$id
                 };
-                $scope.updateMarkupForGrid(gridObj);
-                $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
-            };
-
-            $scope.setDataGridOption = function (optionName, newVal, forceSet) {
-                if (!$scope.datagridElement.datagrid('instance')) {
+                $is.updateMarkupForGrid(gridObj);
+                $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
+            }
+            function setDataGridOption(optionName, newVal, forceSet) {
+                if (!$is.datagridElement.datagrid('instance')) {
                     return;
                 }
                 var option = {};
-                if (WM.isDefined(newVal) && (!WM.equals(newVal, $scope.gridOptions[optionName]) || forceSet)) {
+                if (WM.isDefined(newVal) && (!WM.equals(newVal, $is.gridOptions[optionName]) || forceSet)) {
                     option[optionName] = newVal;
-                    $scope.datagridElement.datagrid('option', option);
-                    $scope.gridOptions[optionName] = newVal;
+                    $is.datagridElement.datagrid('option', option);
+                    $is.gridOptions[optionName] = newVal;
                 }
-            };
-
-            $scope.initiateSelectItem = function (index, row, skipSelectItem, isStaticVariable, callBack) {
+            }
+            function initiateSelectItem(index, row, skipSelectItem, isStaticVariable, callBack) {
                 /*index === "last" indicates that an insert operation has been successfully performed and navigation to the last page is required.
-                * Hence increment the "dataSize" by 1.*/
+                 * Hence increment the "dataSize" by 1.*/
                 if (index === 'last') {
                     if (!isStaticVariable) {
-                        $scope.dataNavigator.dataSize += 1;
+                        $is.dataNavigator.dataSize += 1;
                     }
                     /*Update the data in the current page in the grid after insert/update operations.*/
-                    if (!$scope.shownavigation) {
+                    if (!$is.shownavigation) {
                         index = 'current';
                     }
                 }
                 /*Re-calculate the paging values like pageCount etc that could change due to change in the dataSize.*/
-                $scope.dataNavigator.calculatePagingValues();
-                $scope.dataNavigator.navigatePage(index, null, true, function () {
-                    if ($scope.shownavigation || isStaticVariable) {
+                $is.dataNavigator.calculatePagingValues();
+                $is.dataNavigator.navigatePage(index, null, true, function () {
+                    if ($is.shownavigation || isStaticVariable) {
                         selectItemOnSuccess(row, skipSelectItem, callBack);
                     }
                 });
-            };
-
-            $scope.selectItem = function (item, data) {
+            }
+            function selectItem(item, data) {
                 /* server is not updating immediately, so set the server data to success callback data */
                 if (data) {
-                    $scope.serverData = data;
+                    $is.serverData = data;
                 }
-                $scope.datagridElement.datagrid('selectRow', item, true);
-            };
-
-            /** TODO deprecate this highlight the given row and use selectItem **/
-            $scope.highlightRow = $scope.selectItem;
-
+                $is.datagridElement.datagrid('selectRow', item, true);
+            }
             /* deselect the given item*/
-            $scope.deselectItem = function (item) {
-                $scope.datagridElement.datagrid('deselectRow', item);
-            };
-
+            function deselectItem(item) {
+                $is.datagridElement.datagrid('deselectRow', item);
+            }
             /* determines if the 'user-defined'(not default) columnDefs exists already for the grid */
-            $scope.columnDefsExists = function () {
+            function columnDefsExists() {
                 var i, n;
                 /* override the fieldDefs if user has untouched the columnDefs*/
-                for (i = 0, n = $scope.fieldDefs.length; i < n; i = i + 1) {
+                for (i = 0, n = $is.fieldDefs.length; i < n; i = i + 1) {
                     /* if a binding field is found in the fieldDef, user has edited the columnDefs, don't override the columnDefs */
-                    if ($scope.fieldDefs[i].field) {
+                    if ($is.fieldDefs[i].field) {
                         return true;
                     }
                 }
                 /* modified column defs do not exist, return false*/
                 return false;
-            };
-
-            $scope.deleteRow = function (evt) {
+            }
+            function deleteRow(evt) {
                 var row;
                 if (evt && evt.target) {
-                    $scope.datagridElement.datagrid('deleteRowAndUpdateSelectAll', evt);
+                    $is.datagridElement.datagrid('deleteRowAndUpdateSelectAll', evt);
                 } else {
-                    row = evt || $scope.selectedItems[0];
+                    row = evt || $is.selectedItems[0];
                     deleteRecord(row);
                 }
-            };
-
-            $scope.editRow = function (evt) {
+            }
+            function editRow(evt) {
                 var row;
                 if (evt && evt.target) {
-                    $scope.datagridElement.datagrid('toggleEditRow', evt);
+                    $is.datagridElement.datagrid('toggleEditRow', evt);
                 } else {
-                    row = evt || $scope.selectedItems[0];
-                    $scope.gridOptions.beforeRowUpdate(row);
+                    row = evt || $is.selectedItems[0];
+                    $is.gridOptions.beforeRowUpdate(row);
                 }
-            };
-
-            $scope.addRow = function () {
-                $scope.addNewRow();
-            };
-
-
-            $scope.onRecordDelete = function (callBack) {
+            }
+            function addRow() {
+                $is.addNewRow();
+            }
+            function onRecordDelete(callBack) {
                 var index;
                 /*Check for sanity*/
-                if ($scope.dataNavigator) {
-                    $scope.dataNavigator.dataSize -= 1;
-                    $scope.dataNavigator.calculatePagingValues();
+                if ($is.dataNavigator) {
+                    $is.dataNavigator.dataSize -= 1;
+                    $is.dataNavigator.calculatePagingValues();
                     /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                    index = $scope.dataNavigator.pageCount < $scope.dataNavigator.dn.currentPage ? 'prev' : undefined;
-                    $scope.dataNavigator.navigatePage(index, null, true, function () {
+                    index = $is.dataNavigator.pageCount < $is.dataNavigator.dn.currentPage ? 'prev' : undefined;
+                    $is.dataNavigator.navigatePage(index, null, true, function () {
                         $timeout(function () {
                             Utils.triggerFn(callBack);
                         }, undefined, false);
                     });
                 }
-            };
-
-            $scope.call = function (operation, data, success, error) {
+            }
+            function call(operation, data, success, error) {
                 data.success = success;
-                data.error = error;
+                data.error   = error;
                 switch (operation) {
-                case "create":
+                case 'create':
                     insertRecord(data);
                     break;
-                case "update":
+                case 'update':
                     updateRecord(data);
                     break;
-                case "delete":
+                case 'delete':
                     deleteRecord(data);
                     break;
                 }
-            };
+            }
             //On click of item in export menu, download the file in respective format
-            $scope.export = function ($item) {
+            function exportData($item) {
                 var filterFields,
-                    variable     = $scope.variable,
-                    sortOptions  = _.isEmpty($scope.sortInfo) ? '' : $scope.sortInfo.field + ' ' + $scope.sortInfo.direction;
-                if ($scope.isBoundToFilter) {
-                    $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $scope.exportdatasize});
+                    variable     = $is.variable,
+                    sortOptions  = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
+                if ($is.isBoundToFilter) {
+                    $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize});
                 } else {
-                    filterFields = $scope.filterFields || {};
+                    filterFields = getFilterFields($is.filterInfo);
                     variable.download({
                         'matchMode'    : 'anywhere',
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
                         'exportFormat' : $item.label,
                         'logicalOp'    : 'AND',
-                        'size'         : $scope.exportdatasize
+                        'size'         : $is.exportdatasize
                     });
                 }
-            };
+            }
             //Populate the _actions based on the position property
-            $scope.populateActions = function () {
-                $scope._actions.header = [];
-                $scope._actions.footer = [];
-                _.forEach($scope.actions, function (action) {
+            function populateActions() {
+                $is._actions.header = [];
+                $is._actions.footer = [];
+                _.forEach($is.actions, function (action) {
                     if (_.includes(action.position, 'header')) {
-                        $scope._actions.header.push(action);
+                        $is._actions.header.push(action);
                     }
                     if (_.includes(action.position, 'footer')) {
-                        $scope._actions.footer.push(action);
+                        $is._actions.footer.push(action);
                     }
                 });
-            };
+            }
             //Function to be executed on any row filter change
-            $scope.onRowFilterChange = function () {
+            function onRowFilterChange() {
                 var searchObj = [];
                 //Convert row filters to a search object and call search handler
-                _.forEach($scope.rowFilter, function (value, key) {
-                    if (WM.isDefined(value.value) || _.includes($scope.emptyMatchModes, value.matchMode)) {
+                _.forEach($is.rowFilter, function (value, key) {
+                    if (WM.isDefined(value.value) || _.includes($is.emptyMatchModes, value.matchMode)) {
                         searchObj.push({
                             'field'     : key,
                             'value'     : value.value,
@@ -2237,50 +2026,303 @@ WM.module('wm.widgets.grid')
                         });
                     }
                 });
-                $scope.gridOptions.searchHandler(searchObj, undefined, 'search');
-            };
+                $is.gridOptions.searchHandler(searchObj, undefined, 'search');
+            }
             //Function to be executed on filter condition change
-            $scope.onFilterConditionSelect = function (field, condition) {
-                $scope.rowFilter[field] = $scope.rowFilter[field] || {};
-                $scope.rowFilter[field].matchMode = condition;
+            function onFilterConditionSelect(field, condition) {
+                $is.rowFilter[field] = $is.rowFilter[field] || {};
+                $is.rowFilter[field].matchMode = condition;
                 //For empty match modes, clear off the value and call filter
-                if (_.includes($scope.emptyMatchModes, condition)) {
-                    $scope.rowFilter[field].value = undefined;
-                    $scope.onRowFilterChange();
+                if (_.includes($is.emptyMatchModes, condition)) {
+                    $is.rowFilter[field].value = undefined;
+                    $is.onRowFilterChange();
                 } else {
                     //If value is present, call the filter. Else, focus on the field
-                    if ($scope.rowFilter[field].value) {
-                        $scope.onRowFilterChange();
+                    if ($is.rowFilter[field].value) {
+                        $is.onRowFilterChange();
                     } else {
                         $timeout(function () {
-                            $scope.Widgets[($scope.name || $scope.$id) + '_filter_' + field].focus();
+                            $is.Widgets[($is.name || $is.$id) + '_filter_' + field].focus();
                         });
                     }
                 }
-            };
+            }
             //Function to be executed on clearing a row filter
-            $scope.clearRowFilter = function (field) {
-                if ($scope.rowFilter && $scope.rowFilter[field]) {
-                    $scope.rowFilter[field].value = undefined;
-                    $scope.onRowFilterChange();
+            function clearRowFilter(field) {
+                if ($is.rowFilter && $is.rowFilter[field]) {
+                    $is.rowFilter[field].value = undefined;
+                    $is.onRowFilterChange();
                 }
-            };
+            }
             //Show clear icon if value exists
-            $scope.showClearIcon = function (field) {
-                var value = $scope.rowFilter[field] && $scope.rowFilter[field].value;
+            function showClearIcon(field) {
+                var value = $is.rowFilter[field] && $is.rowFilter[field].value;
                 return WM.isDefined(value) && value !== '' && value !== null;
-            };
+            }
             //Function to display the toaster type can be error or success
-            $scope.toggleMessage = function (show, type, msg, header) {
+            function toggleMessage(show, type, msg, header) {
                 if (show && msg) {
                     wmToaster.show(type, WM.isDefined(header) ? header : type.toUpperCase(), msg);
                 } else {
                     wmToaster.hide();
                 }
-            };
+            }
             //On pagination change, scroll the page to top
-            $scope.onPaginationchange = function () {
-                $scope.datagridElement.find('.app-grid-content').scrollTop(0);
+            function onPaginationchange() {
+                $is.datagridElement.find('.app-grid-content').scrollTop(0);
+            }
+            //Clear the all the filters applied
+            function clearFilter(skipFilter) {
+                var $gridElement;
+                $is.filterInfo = undefined;
+                if ($is.filtermode === 'multicolumn') {
+                    $is.rowFilter = {};
+                    if (!skipFilter) {
+                        $is.onRowFilterChange();
+                    }
+                } else if ($is.filtermode === 'search') {
+                    $gridElement = $is.datagridElement;
+                    $gridElement.find('[data-element="dgSearchText"]').val('');
+                    $gridElement.find('[data-element="dgFilterValue"]').val('');
+                    if (!skipFilter) {
+                        $gridElement.find('.app-search-button').trigger('click');
+                    }
+                }
+            }
+            //Refresh the grid data with the filter and sort applied
+            function refreshData(isSamePage) {
+                var page = isSamePage ? $is.dataNavigator.dn.currentPage : 1;
+                if ($is.isBoundToLiveVariable) {
+                    refreshLiveVariable(page);
+                    return;
+                }
+                if ($is.isBoundToQueryServiceVariable) {
+                    refreshQueryServiceVariable(page);
+                    return;
+                }
+                if ($is.isBoundToServiceVariable) {
+                    refreshServiceVariable();
+                    return;
+                }
+                if ($is.isBoundToFilter) {
+                    refreshLiveFilter();
+                }
+            }
+            //This method is called form the datanavigator
+            function onDataNavigatorDataSetChange(newVal) {
+                var data,
+                    variableSort;
+                if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                    variableSort = Utils.getOrderByExpr(newVal.sort);
+                    $is.__fullData = newVal.content;
+                } else {
+                    $is.__fullData = newVal;
+                }
+                checkFiltersApplied(variableSort);
+                if ($is.isClientSearch) {
+                    data = Utils.getClonedObject(newVal);
+                    data = getSearchResult(data, $is.filterInfo);
+                    data = getSortResult(data, $is.sortInfo);
+                    return data;
+                }
+                return newVal;
+            }
+            $is.setGridData                  = setGridData.bind(undefined);
+            $is.rowFilter                    = {};
+            $is.fieldDefs                    = [];
+            $is.fullFieldDefs                = [];
+            $is.selectedItems                = [];
+            $is.isGridEditMode               = false;
+            $is.gridData                     = [];
+            $is.updateMarkupForGrid          = updateMarkupForGrid;
+            $is.updateVariable               = updateVariable;
+            $is.resetColumnDefinitions       = resetColumnDefinitions;
+            $is.renderOperationColumns       = renderOperationColumns;
+            $is.addNewRow                    = addNewRow;
+            $is.resetPageNavigation          = resetPageNavigation;
+            $is.enablePageNavigation         = enablePageNavigation;
+            $is.fetchDynamicColumnDefs       = fetchDynamicColumnDefs;
+            $is.isDataValid                  = isDataValid;
+            $is.watchVariableDataSet         = watchVariableDataSet;
+            $is.createGridColumns            = createGridColumns;
+            $is.prepareFieldDefs             = prepareFieldDefs;
+            $is.setDataGridOption            = setDataGridOption;
+            $is.initiateSelectItem           = initiateSelectItem;
+            $is.selectItem                   = selectItem;
+            $is.highlightRow                 = $is.selectItem;
+            $is.deselectItem                 = deselectItem;
+            $is.columnDefsExists             = columnDefsExists;
+            $is.deleteRow                    = deleteRow;
+            $is.editRow                      = editRow;
+            $is.addRow                       = addRow;
+            $is.onRecordDelete               = onRecordDelete;
+            $is.call                         = call;
+            $is.export                       = exportData;
+            $is.populateActions              = populateActions;
+            $is.onRowFilterChange            = onRowFilterChange;
+            $is.onFilterConditionSelect      = onFilterConditionSelect;
+            $is.clearRowFilter               = clearRowFilter;
+            $is.showClearIcon                = showClearIcon;
+            $is.toggleMessage                = toggleMessage;
+            $is.onPaginationchange           = onPaginationchange;
+            $is.clearFilter                  = clearFilter;
+            $is.refreshData                  = refreshData;
+            $is.onDataNavigatorDataSetChange = onDataNavigatorDataSetChange;
+
+            $is.$watch('gridData', function (newValue) {
+                var startRowIndex,
+                    gridOptions;
+
+                if (WM.isDefined(newValue)) {
+                    /*Setting the serial no's only when show navigation is enabled and data navigator is compiled
+                     and its current page is set properly*/
+                    if ($is.shownavigation && $is.dataNavigator && $is.dataNavigator.dn.currentPage) {
+                        startRowIndex = (($is.dataNavigator.dn.currentPage - 1) * ($is.dataNavigator.maxResults || 1)) + 1;
+                        $is.setDataGridOption('startRowIndex', startRowIndex);
+                    }
+                    /* If colDefs are available, but not already set on the datagrid, then set them.
+                     * This will happen while switching from markup to design tab. */
+                    gridOptions = $is.datagridElement.datagrid('getOptions');
+                    if (!gridOptions.colDefs.length && $is.fieldDefs.length) {
+                        $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
+                    }
+                    $is.setDataGridOption('data', Utils.getClonedObject(newValue));
+                }
+            });
+            $is.gridOptions = {
+                data: Utils.getClonedObject($is.gridData),
+                colDefs: $is.fieldDefs,
+                startRowIndex: 1,
+                onDataRender: function () {
+                    // select rows selected in previous pages. (Not finding intersection of data and selecteditems as it will be heavy)
+                    if (!$is.multiselect) {
+                        $is.items.length = 0;
+                    }
+                    $is.datagridElement.datagrid('selectRows', $is.items);
+                    $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                    if ($is.gridData.length) {
+                        $is.onDatarender({$isolateScope: $is, $data: $is.gridData});
+                    }
+                    //On render, apply the filters set for query service variable
+                    if ($is.isBoundToQueryServiceVariable && $is.filterInfo) {
+                        defaultSearchHandler($is.filterInfo);
+                    }
+                },
+                onRowSelect: function (rowData, e) {
+                    $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                    /*
+                     * in case of single select, update the items with out changing the reference.
+                     * for multi select, keep old selected items in tact
+                     */
+                    if ($is.multiselect) {
+                        if (_.findIndex($is.items, rowData) === -1) {
+                            $is.items.push(rowData);
+                        }
+                    } else {
+                        $is.items.length = 0;
+                        $is.items.push(rowData);
+                    }
+                    $is.onSelect({$data: rowData, $event: e, $rowData: rowData});
+                    $is.onRowclick({$data: rowData, $event: e, $rowData: rowData});
+                    // For backward compatibility.
+                    if (WM.isDefined($is.onClick)) {
+                        $is.onClick({$data: rowData, $event: e, $rowData: rowData});
+                    }
+                    if (WM.isDefined($is.onTap)) {
+                        $is.onTap({$data: rowData, $event: e, $rowData: rowData});
+                    }
+                    $rs.$safeApply($is);
+                },
+                onRowDblClick: function (rowData, e) {
+                    $is.onRowdblclick({$data: rowData, $event: e, $rowData: rowData});
+                    $rs.$safeApply($is);
+                },
+                onRowDeselect: function (rowData, e) {
+                    if ($is.multiselect) {
+                        $is.items = _.pullAllWith($is.items, [rowData], _.isEqual);
+                        $is.selectedItems = $is.datagridElement.datagrid('getSelectedRows');
+                        $is.onDeselect({$data: rowData, $event: e, $rowData: rowData});
+                        $rs.$safeApply($is);
+                    }
+                },
+                onColumnSelect: function (col, e) {
+                    $is.selectedColumns = $is.datagridElement.datagrid('getSelectedColumns');
+                    $is.onColumnselect({$data: col, $event: e});
+                    $rs.$safeApply($is);
+                },
+                onColumnDeselect: function (col, e) {
+                    $is.selectedColumns = $is.datagridElement.datagrid('getSelectedColumns');
+                    $is.onColumndeselect({$data: col, $event: e});
+                    $rs.$safeApply($is);
+                },
+                onHeaderClick: function (col, e) {
+                    /* if onSort function is registered invoke it when the column header is clicked */
+                    $is.onHeaderclick({$event: e, $data: col});
+                },
+                onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack) {
+                    deleteRecord(rowData, cancelRowDeleteCallback, e, callBack);
+                },
+                onRowInsert: function (rowData, e, callBack) {
+                    insertRecord({'row': rowData, event: e, 'callBack': callBack});
+                },
+                beforeRowUpdate: function (rowData, e, eventName) {
+                    $is.$emit('update-row', $is.widgetid, rowData, eventName);
+                    $is.prevData = Utils.getClonedObject(rowData);
+                    $rs.$safeApply($is);
+                    $rs.$emit('wm-event', $is.widgetid, 'update');
+                },
+                afterRowUpdate: function (rowData, e, callBack) {
+                    updateRecord({'row': rowData, 'prevData': $is.prevData, 'event': e, 'callBack': callBack});
+                },
+                onBeforeRowUpdate: function (rowData, e) {
+                    return $is.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});
+                },
+                onBeforeRowInsert: function (rowData, e) {
+                    return $is.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData});
+                },
+                sortInfo: {
+                    'field': '',
+                    'direction': ''
+                },
+                getCompiledTemplate: function (htm, row, colDef, refreshImg) {
+                    return getCompiledTemplate(htm, row, colDef, refreshImg);
+                },
+                compileTemplateInGridScope: function (htm) {
+                    return compileTemplateInGridScope(htm);
+                },
+                getBindDataSet: function () {
+                    return $is.binddataset;
+                },
+                setGridEditMode: function (val) {
+                    $is.isGridEditMode = val;
+                    $rs.$safeApply($is);
+                },
+                noChangesDetected: function () {
+                    $is.toggleMessage(true, 'info', $is.appLocale.MESSAGE_NO_CHANGES, '');
+                    $rs.$safeApply($is);
+                },
+                afterSort: function (e) {
+                    $rs.$safeApply($is);
+                    $is.onSort({$event: e, $data: $is.serverData});
+                },
+                //Function to loop through events and trigger
+                handleCustomEvents: function (e, options) {
+                    if (!options) {
+                        var $ele          = WM.element(e.target),
+                            $button       = $ele.closest('button'),
+                            key           = $button.attr('data-action-key'),
+                            events        = _.find($is.rowActions, {'key' : key}).action || '',
+                            callBackScope = $button.scope(),
+                            $row          = $ele.closest('tr'),
+                            rowId         = $row.attr('data-row-id'),
+                            data          = $is.gridOptions.data[rowId];
+                        if (events) {
+                            Utils.triggerCustomEvents(e, events, callBackScope, data);
+                        }
+                    } else {
+                        $is.datagridElement.datagrid('toggleEditRow', e, options);
+                    }
+                }
             };
         }])
 /**
@@ -2570,7 +2612,7 @@ WM.module('wm.widgets.grid')
                         /* Backward compatibility for widgetType */
                         if (columnDef.widgetType && !columnDef.customExpression) {
                             updateCustomExpression(columnDef);
-                            if (CONSTANTS.isStudioMode && parentScope.fullFieldDefs.length === parentScope.gridColumnCount) {
+                            if (parentScope.widgetid && parentScope.fullFieldDefs.length === parentScope.gridColumnCount) {
                                 /* Update markup for grid. */
                                 config = {
                                     widgetName : scope.name,
