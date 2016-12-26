@@ -428,7 +428,31 @@ WM.module('wm.utils', [])
                 }
             });
         }
-
+        /*function to get the metadata structure (columns) from the data*/
+        function getMetaDataFromData(data) {
+            var dataObject;
+            if (WM.isArray(data)) {
+                if (WM.isObject(data[0])) {
+                    dataObject = getClonedObject(data[0]);
+                    /*Loop over the object to find out any null values. If any null values are present in the first row, check and assign the values from other row.
+                     * As column generation is dependent on data, for related fields if first row value is null, columns are not generated.
+                     * To prevent this, check the data in other rows and generate the columns. New keys from others rows are also added*/
+                    _.forEach(data, function (row, index) {
+                        if ((index + 1) >= CONSTANTS.DATA_SEARCH_LIMIT) { //Limit the data search to first 10 records
+                            return false;
+                        }
+                        _.assignWith(dataObject, row, function (objValue, srcValue) {
+                            return (objValue === null || objValue === undefined) ? srcValue : objValue;
+                        });
+                    });
+                } else {
+                    dataObject = data[0];
+                }
+            } else {
+                dataObject = data;
+            }
+            return dataObject;
+        }
         /*function to prepare column definition objects from the data provided*/
         function prepareFieldDefs(data, options) {
             var dataObject,
@@ -445,7 +469,7 @@ WM.module('wm.utils', [])
             }
             options.setBindingField = true;
             options.columnCount = 0;
-            dataObject = WM.isArray(data) ? data[0] : data;
+            dataObject = getMetaDataFromData(data);
             /*first of the many data objects from grid data*/
             pushFieldDef(dataObject, columnDef, '', options);
             if (!options || (options && !options.filter)) {
@@ -2468,4 +2492,5 @@ WM.module('wm.utils', [])
         this.addDefaultHeaders          = addDefaultHeaders;
         this.formatDate                 = formatDate;
         this.getBlob                    = getBlob;
+        this.getMetaDataFromData        = getMetaDataFromData;
     }]);

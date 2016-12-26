@@ -50,7 +50,8 @@ Application
         'INT_MAX_VALUE' : 2147483647,
         'DELAY'         : {
             'SEARCH_WAIT' : 500
-        }
+        },
+        'DATA_SEARCH_LIMIT' : 10
     })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(
