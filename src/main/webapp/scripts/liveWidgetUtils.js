@@ -512,13 +512,23 @@ WM.module('wm.widgets.live')
 
             /*Returns upload template */
             function getFileUploadTemplate(fieldDef, index) {
-                var template = '';
+                var template = '',
+                    events   = ['change', 'click', 'focus', 'blur', 'mouseenter', 'mouseleave'],
+                    eventTl  = '';
+                //Generate the events templates
+                _.forEach(events, function (event) {
+                    var eventName = 'on' + _.capitalize(event);
+                    if (fieldDef[eventName]) {
+                        eventTl += ' ng-' + event + '="' + fieldDef[eventName] + '"';
+                    }
+                });
                 if (fieldDef.filetype === 'image') {
-                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img style="height:2em" class="wi wi-file" ng-src="{{formFields[' + index + '].href}}"/></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" ng-show="formFields[' + index + '].href"><img style="height:2em" class="wi wi-file" ng-src="{{formFields[' + index + '].href}}"/></a>';
                 } else {
-                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="wi wi-file"></i></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" ng-show="formFields[' + index + '].href"><i class="wi wi-file"></i></a>';
                 }
-                template = template + '<input wm-valid-file class="app-blob-upload" data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"/>';
+                template = template + '<input wm-valid-file class="app-blob-upload" data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ' +
+                    'ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"' + eventTl + '/>';
                 return template;
             }
 
@@ -715,7 +725,7 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
+                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">{{formFields[' + index + '].hint}}</p>' : '');
                 template = template + '<p ng-if="ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></wm-composite>';
                 return template;
@@ -980,6 +990,7 @@ WM.module('wm.widgets.live')
                 case 'readonly':
                 case 'required':
                 case 'validationmessage':
+                case 'hint':
                     parentScope.formFields[index][key] = newVal;
                     break;
                 case 'active':
@@ -1109,18 +1120,19 @@ WM.module('wm.widgets.live')
                     /*In form and filter, type conflicts with data type. Change the type to input type.*/
                     widgetProps.inputtype = WM.copy(widgetProps.type);
                     delete widgetProps.type;
-                }
-                if (isDataSetWidgets[widgetType]) {
+                } else if (isDataSetWidgets[widgetType]) {
                     widgetProps.dataset.value   = '';
                     widgetProps.datafield.value = '';
                     _.set(widgetProps.displayvalue, 'ignoreGetterSetters', true);
-                }
-                if (widgetType === 'upload') {
+                    if (widgetType === 'autocomplete') {
+                        widgetProps.type.show = false;
+                    }
+                } else if (widgetType === 'upload') {
                     widgetProps = WM.extend(widgetProps, {
-                        'readonly'   : {'type': 'boolean', 'show': true},
-                        'required'   : {'type': 'boolean', 'show': true},
+                        'readonly'   : {'type': 'boolean', 'bindable': 'in-bound', 'show': true},
                         'filetype'   : {'type': 'data-list', 'options': ['image', 'audio', 'video'], 'show': true},
-                        'extensions' : {'type': 'string', 'show': true}
+                        'extensions' : {'type': 'string', 'show': true},
+                        'onTap'      : {'show': false}
                     });
                 }
                 setDefaultValueProps();
