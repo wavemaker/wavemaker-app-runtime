@@ -275,6 +275,7 @@ WM.module('wm.layouts.containers')
                 return;
             }
             if (scope.onSubmit || formVariable) {
+                //If on submit is there execute it and if it returns true do service variable invoke else return
                 //If its a service variable call setInput and assign form data and invoke the service
                 if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                     formVariable.setInput(formData);
@@ -283,22 +284,21 @@ WM.module('wm.layouts.containers')
                     }, function (data) {
                         toggleMessage(scope, scope.postmessage, 'success');
                         onResult(scope, data, 'success', event);
+                        scope.onSubmit(params);
                         LiveWidgetUtils.closeDialog(element);
                     }, function (errMsg) {
                         template = scope.errormessage || errMsg;
                         toggleMessage(scope, template, 'error');
                         onResult(scope, errMsg, 'error', event);
+                        scope.onSubmit(params);
                     });
                 } else if (formVariable) {
                     /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
                     $timeout(function () {
                         $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
                     });
+                    scope.onSubmit(params);
                     LiveWidgetUtils.closeDialog(element);
-                }
-                //If on submit is there execute it and if it returns true do service variable invoke else return
-                if (scope.onSubmit && scope.onSubmit(params) === false) {
-                    return;
                 }
             }
         }
