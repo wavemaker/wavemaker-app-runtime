@@ -24,7 +24,7 @@ public class ProcedureDesignServiceImpl extends AbstractDesignService implements
 
 
     @Override
-    public DesignServiceResponse executeProcedure(final String serviceId, final RuntimeProcedure procedure) {
+    public DesignServiceResponse testRunProcedure(final String serviceId, final RuntimeProcedure procedure) {
         final Map<String, String> map = getStringTemplateMap(serviceId);
         final String procedureExecutorBeanName = PROCEDURE_EXECUTOR_BEAN_ST.substitute(map);
         return executeInTransaction(serviceId, new TransactionCallback<DesignServiceResponse>() {

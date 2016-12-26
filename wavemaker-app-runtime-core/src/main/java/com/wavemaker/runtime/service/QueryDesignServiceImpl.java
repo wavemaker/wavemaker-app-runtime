@@ -8,6 +8,7 @@ import org.hibernate.Query;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -20,6 +21,7 @@ import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.StringTemplate;
 
 /**
@@ -44,34 +46,54 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
                 }
             });
         } else {
-            meta = executeQuery(serviceId, query).getReturnProperties();
+            meta = testRunQuery(serviceId, query).getReturnProperties();
         }
 
         return meta;
     }
 
     @Override
-    public DesignServiceResponse executeQuery(final String serviceId, final RuntimeQuery query) {
+    public DesignServiceResponse testRunQuery(final String serviceId, final RuntimeQuery query) {
+        final Object results = _runQuery(serviceId, query, new PageRequest(0, 5, null));
+        List<ReturnProperty> meta;
+
+        if (isDMLOrUpdateQuery(query)) {
+            meta = getMetaForDML();
+        } else {
+            if (query.isNativeSql()) {
+                meta = extractMetaFromResults(((Page<Object>) results).getContent());
+            } else {
+                meta = executeInTransaction(serviceId, new TransactionCallback<List<ReturnProperty>>() {
+                    @Override
+                    public List<ReturnProperty> doInTransaction(final TransactionStatus status) {
+                        return extractMetaForHql(serviceId, query);
+                    }
+                });
+            }
+        }
+        return new DesignServiceResponse(results, meta);
+    }
+
+    @Override
+    public Object executeQuery(final String serviceId, final RuntimeQuery query, final Pageable pageable) {
+        if (isDMLOrUpdateQuery(query)) {
+            throw new WMRuntimeException("Update queries not allowed");
+        }
+        return _runQuery(serviceId, query, pageable);
+    }
+
+    protected Object _runQuery(final String serviceId, final RuntimeQuery query, final Pageable pageable) {
         final Map<String, String> map = getStringTemplateMap(serviceId);
         final String queryExecutorBeanName = QUERY_EXECUTOR_BEAN_ST.substitute(map);
-        return executeInTransaction(serviceId, new TransactionCallback<DesignServiceResponse>() {
+        return executeInTransaction(serviceId, new TransactionCallback<Object>() {
             @Override
-            public DesignServiceResponse doInTransaction(TransactionStatus status) {
-
+            public Object doInTransaction(TransactionStatus status) {
                 WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
-                DesignServiceResponse response;
+                Object response;
                 if (isDMLOrUpdateQuery(query)) {
-                    final int results = queryExecutor.executeRuntimeQueryForUpdate(query);
-                    response = new DesignServiceResponse(results, getMetaForDML());
+                    response = queryExecutor.executeRuntimeQueryForUpdate(query);
                 } else {
-                    final PageRequest pageable = new PageRequest(0, 5, null);
-                    Page<Object> pageResponse = queryExecutor.executeRuntimeQuery(query, pageable);
-                    if (query.isNativeSql()) {
-                        response = new DesignServiceResponse(pageResponse,
-                                extractMetaFromResults(pageResponse.getContent()));
-                    } else {
-                        response = new DesignServiceResponse(pageResponse, extractMetaForHql(serviceId, query));
-                    }
+                    response = queryExecutor.executeRuntimeQuery(query, pageable);
                 }
                 return response;
             }

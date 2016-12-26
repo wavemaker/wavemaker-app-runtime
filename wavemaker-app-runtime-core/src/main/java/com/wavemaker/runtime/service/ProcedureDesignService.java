@@ -9,5 +9,5 @@ import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
  */
 public interface ProcedureDesignService {
 
-    DesignServiceResponse executeProcedure(String serviceId, RuntimeProcedure procedure);
+    DesignServiceResponse testRunProcedure(String serviceId, RuntimeProcedure procedure);
 }

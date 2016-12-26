@@ -18,6 +18,7 @@ package com.wavemaker.runtime.controller;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,11 +40,6 @@ import com.wavemaker.studio.common.wrapper.StringWrapper;
 @RestController
 @RequestMapping("/")
 public class AppRuntimeController {
-
-    private static final String QUERY_EXECUTOR_BEAN_NAME = "{serviceId}WMQueryExecutor";
-    private static final String TRANSACTION_MANAGER_BEAN_NAME = "{serviceId}TransactionManager";
-    private static final String PROCEDURE_EXECUTOR_BEAN_NAME = "{serviceId}WMProcedureExecutor";
-    private static final String PROCEDURE_PARENT_DATA_OBJECT_NAME = "{serviceId}DataObject";
 
     private String applicationType = null;
 
@@ -68,16 +64,24 @@ public class AppRuntimeController {
     }
 
     // XXX restrict this method in app runtime.
-    @RequestMapping(value = "/{serviceId}/queries/execute")
-    public DesignServiceResponse executeQuery(
+    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/test_run")
+    public DesignServiceResponse testRunQuery(
             @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query) {
-        return queryDesignService.executeQuery(serviceId, query);
+        return queryDesignService.testRunQuery(serviceId, query);
     }
 
-    @RequestMapping(value = "{serviceId}/procedures/execute")
-    public DesignServiceResponse executeProcedure(
+    @RequestMapping(method = RequestMethod.POST, value = "{serviceId}/procedures/test_run")
+    public DesignServiceResponse testRunProcedure(
             @PathVariable("serviceId") String serviceId, @RequestBody RuntimeProcedure procedure) {
-        return procedureDesignService.executeProcedure(serviceId, procedure);
+        return procedureDesignService.testRunProcedure(serviceId, procedure);
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/execute")
+    public Object executeQuery(
+            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
+        return queryDesignService.executeQuery(serviceId, query, pageable);
+    }
+
+
 }
 
