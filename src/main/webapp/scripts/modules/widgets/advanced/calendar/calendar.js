@@ -119,7 +119,8 @@ WM.module('wm.widgets.advanced')
                     eleScope  = $el.scope(),
                     eleIscope = $el.find('.uib-datepicker').isolateScope(),
                     variable  = Utils.getVariableName($is, eleScope),
-                    eventSet = [];
+                    eventSet = [],
+                    dataSet;
                 switch (key) {
                 case 'dataset':
                     if (isMobile) {
@@ -128,16 +129,12 @@ WM.module('wm.widgets.advanced')
                     }
                     $is.eventSources.length = 0;
                     if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
-                        if (newVal.data) {
-                            newVal = newVal.data;
-                        }
-                        newVal = WM.isArray(newVal) ? newVal : WM.isObject(newVal) ? [newVal] : [];
-                        newVal = constructCalendarDataset($is, newVal);
-                        if (_.includes(_.keys(newVal[0]), 'start')) {
-                            _.forEach(newVal, function (event) {
-                                if (!event.start && event.end) {
-                                    event.start = event.end;
-                                }
+                        dataSet = Utils.getClonedObject(newVal.data || newVal);
+                        dataSet = WM.isArray(dataSet) ? dataSet : WM.isObject(dataSet) ? [dataSet] : [];
+                        dataSet = constructCalendarDataset($is, dataSet);
+                        if (_.includes(_.keys(dataSet[0]), 'start')) {
+                            _.forEach(dataSet, function (event) {
+                                event.start = event.start || event.end;
                                 if (event.start) {
                                     eventSet.push(event);
                                 }
