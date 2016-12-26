@@ -11,9 +11,12 @@ public class QueryParameter {
 
     private String name;
     private JavaType type;
+    private boolean list;
+
     private VariableType variableType;
     private Object testValue;
-    private boolean list;
+
+    private boolean required = true;
 
     public QueryParameter() {
     }
@@ -24,6 +27,7 @@ public class QueryParameter {
         this.variableType = other.variableType;
         this.testValue = other.testValue;
         this.list = other.list;
+        this.required = other.required;
     }
 
     public String getName() {
@@ -64,5 +68,13 @@ public class QueryParameter {
 
     public void setList(final boolean list) {
         this.list = list;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(final boolean required) {
+        this.required = required;
     }
 }
