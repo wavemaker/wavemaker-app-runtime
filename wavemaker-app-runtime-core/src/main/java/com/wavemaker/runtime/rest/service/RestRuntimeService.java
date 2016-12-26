@@ -60,7 +60,7 @@ public class RestRuntimeService {
     @Value("${app.proxy.host}")
     private String proxyHost;
 
-    @Value("${app.proxy.port}")
+    @Value("${app.proxy.port:0}")
     private int proxyPort;
 
     @Value("${app.proxy.username}")
