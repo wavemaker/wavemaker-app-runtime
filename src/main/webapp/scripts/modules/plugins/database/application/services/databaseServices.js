@@ -108,12 +108,17 @@ wm.plugins.database.services.DatabaseService = [
                 }
 
                 connectionParams = {
-                    "endpointAddress": $window.location.protocol + params.url + config.url,
-                    "method": config.method,
-                    "contentType": "application/json",
-                    "requestBody": JSON.stringify(requestData),
-                    "headers": {
-                        "skipSecurity": "true"
+                    "data": {
+                        "endpointAddress"   : $window.location.protocol + params.url + config.url,
+                        "method"            : config.method,
+                        "contentType"       : "application/json",
+                        "requestBody"       : JSON.stringify(requestData),
+                        "headers"           : {
+                            "skipSecurity": "true"
+                        }
+                    },
+                    "urlParams"         : {
+                        projectID: $rootScope.project.id
                     }
                 };
                 WebService.testRestService(connectionParams, function (response) {

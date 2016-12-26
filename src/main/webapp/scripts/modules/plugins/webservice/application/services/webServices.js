@@ -32,7 +32,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'invokeRestCall',
-                data: connectionParams
+                data: connectionParams.data,
+                urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
 
