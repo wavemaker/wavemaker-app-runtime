@@ -767,6 +767,11 @@ WM.module('wm.widgets.basic')
                     colors = propertyValueMap.customcolors;
                 }
 
+                //Converting strings to numbers
+                propertyValueMap.offsettop    = Number(propertyValueMap.offsettop);
+                propertyValueMap.offsetright  = Number(propertyValueMap.offsetright);
+                propertyValueMap.offsetbottom = Number(propertyValueMap.offsetbottom);
+                propertyValueMap.offsetleft   = Number(propertyValueMap.offsetleft);
                 showLegend = isShowLegend(propertyValueMap.showlegend);
                 chart.showLegend(showLegend)
                     .margin({top: propertyValueMap.offsettop, right: propertyValueMap.offsetright, bottom: propertyValueMap.offsetbottom, left: propertyValueMap.offsetleft})
