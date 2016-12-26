@@ -1522,9 +1522,7 @@ WM.module('wm.widgets.live')
             }
 
             function fetchReferenceDetails($scope) {
-                var bindDataSetSplit,
-                    referenceWidgetName,
-                    referenceWidget,
+                var referenceWidget,
                     referenceBindDataSet,
                     referenceVariableName,
                     relatedFieldName,
@@ -1532,13 +1530,18 @@ WM.module('wm.widgets.live')
                     fields,
                     details,
                     referenceVariable,
-                    isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
-
-                bindDataSetSplit = $scope.binddataset.split('.');
-                referenceWidgetName = bindDataSetSplit[1];
-                referenceWidget = $scope.Widgets[referenceWidgetName];
+                    widgetName,
+                    bindDataSet                 = $scope.binddataset,
+                    widgetRegEx                 =  /Widgets./g,
+                    WidgetScopes                = $scope.Widgets,
+                    isBoundToSelectedItemSubset = bindDataSet.indexOf('selecteditem.') !== -1;
+                //Get the reference widget name. As widget can be inner widget (like Widgets.tab.Widgets.grid), find the last inner widget
+                while (widgetRegEx.exec(bindDataSet) !== null) {
+                    widgetName      = _.split(bindDataSet.substr(widgetRegEx.lastIndex, bindDataSet.length), '.')[0];
+                    referenceWidget = _.get(WidgetScopes, widgetName);
+                    WidgetScopes    = referenceWidget.Widgets;
+                }
                 referenceBindDataSet = referenceWidget.binddataset;
-
                 /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
                 referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
                 referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
