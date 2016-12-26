@@ -133,9 +133,10 @@ wm.plugins.database.services.QueryBuilder = [
                         "page": options.page,
                         "size": options.size,
                         "data": {
-                            "queryStr": options.query,
-                            "queryParams": options.queryParams || [],
-                            "nativeSql": options.nativeSql
+                            "queryString": options.query,
+                            "parameters" : options.queryParams || [],
+                            "nativeSql"  : options.nativeSql,
+                            'type'       : 'SELECT'
                         },
                         "service": options.prefabName ? "" : "services",
                         "url": options.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + options.prefabName) : $rootScope.project.deployedUrl

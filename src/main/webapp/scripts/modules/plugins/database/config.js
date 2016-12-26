@@ -276,19 +276,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "GET"
         },
         executeCustomQuery: {
-            url: "/:service/:dataModelName/queryExecutor/queries/wm_custom?page=:page&size=:size",
+            url: "/:service/:dataModelName/queries/execute?page=:page&size=:size",
             method: "POST"
         },
-        getCustomQueryMetaData: {
-            url: "/:service/:dataModelName/queries/wm_querymetadata",
-            method: "POST"
-        },
-        executeCustomUpdateQuery: {
-            url: "/:service/:dataModelName/queryExecutor/queries/wm_custom_update",
-            method: "POST"
-        },
-        executeQuery: {
-            url: "/:service/:dataModelName/queries/execute",
+        testRunQuery: {
+            url: "/:service/:dataModelName/queries/test_run",
             method: "POST"
         },
 
@@ -298,16 +290,8 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/procedureExecutor/procedure/execute/:procedureName?page=:page&size=:size&:procedureParams",
             method: "GET"
         },
-        executeCustomProcedure: {
-            url: "/:service/:dataModelName/procedureExecutor/procedure/execute/wm_custom",
-            method: "POST"
-        },
-        getCustomProcedureMetaData: {
-            url: "/:service/:dataModelName/procedures/wm_proceduremetadata",
-            method: "POST"
-        },
-        executeProcedure: {
-            url: "/:service/:dataModelName/procedures/execute",
+        testRunProcedure: {
+            url: "/:service/:dataModelName/procedures/test_run",
             method: "POST"
         },
 

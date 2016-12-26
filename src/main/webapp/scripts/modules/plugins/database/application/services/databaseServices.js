@@ -41,7 +41,7 @@
  * - {@link wm.database.$DatabaseService#methods_updateQuery updateQuery}
  * - {@link wm.database.$DatabaseService#methods_deleteQuery deleteQuery}
  * - {@link wm.database.$DatabaseService#methods_validateQuery validateQuery}
- * - {@link wm.database.$DatabaseService#methods_executeQuery executeQuery}
+ * - {@link wm.database.$DatabaseService#methods_testRunQuery testRunQuery}
  * - {@link wm.database.$DatabaseService#methods_readTableData readTableData}
  * - {@link wm.database.$DatabaseService#methods_insertTableData insertTableData}
  * - {@link wm.database.$DatabaseService#methods_updateTableData updateTableData}
@@ -1349,7 +1349,7 @@ wm.plugins.database.services.DatabaseService = [
             },
             /**
              * @ngdoc function
-             * @name wm.database.$DatabaseService#executeQuery
+             * @name wm.database.$DatabaseService#testRunQuery
              * @methodOf wm.database.$DatabaseService
              * @function
              *
@@ -1364,8 +1364,8 @@ wm.plugins.database.services.DatabaseService = [
              *                    Callback function to be triggered on failure.
              */
 
-            executeQuery: function (params, successCallback, failureCallback) {
-                return initiateAction("executeQuery", params, successCallback, failureCallback);
+            testRunQuery: function (params, successCallback, failureCallback) {
+                return initiateAction("testRunQuery", params, successCallback, failureCallback);
             },
             /**
              * @ngdoc function
@@ -1547,7 +1547,7 @@ wm.plugins.database.services.DatabaseService = [
             },
             /**
              * @ngdoc function
-             * @name wm.database.$DatabaseService#executeProcedure
+             * @name wm.database.$DatabaseService#testRunProcedure
              * @methodOf wm.database.$DatabaseService
              * @function
              *
@@ -1562,8 +1562,8 @@ wm.plugins.database.services.DatabaseService = [
              *                    Callback function to be triggered on failure.
              */
 
-            executeProcedure: function (params, successCallback, failureCallback) {
-                return initiateAction("executeProcedure", params, successCallback, failureCallback);            },
+            testRunProcedure: function (params, successCallback, failureCallback) {
+                return initiateAction("testRunProcedure", params, successCallback, failureCallback);            },
             /**
              * Internal function
              * @name wm.database.$DatabaseService#getSampleDbConnectionProperties
@@ -2021,68 +2021,6 @@ wm.plugins.database.services.DatabaseService = [
 
             executeCustomProcedure: function (params, successCallback, failureCallback) {
                 return initiateAction("executeCustomProcedure", params, successCallback, failureCallback);
-            },
-
-            /*
-             * @ngdoc function
-             * @name wm.database.$DatabaseService#getCustomQueryMetaData
-             * @methodOf wm.database.$DatabaseService
-             * @function
-             *
-             * @description
-             * Method to execute a custom query and get the meta-data.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database and query to be executed.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getCustomQueryMetaData: function (params, successCallback, failureCallback) {
-                return initiateAction("getCustomQueryMetaData", params, successCallback, failureCallback);
-            },
-            /*
-             * @ngdoc function
-             * @name wm.database.$DatabaseService#getCustomProcedureMetaData
-             * @methodOf wm.database.$DatabaseService
-             * @function
-             *
-             * @description
-             * Method to execute a custom procedure and get the meta-data.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database and procedure to be executed.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            getCustomProcedureMetaData: function (params, successCallback, failureCallback) {
-                return initiateAction("getCustomProcedureMetaData", params, successCallback, failureCallback);
-            },
-
-            /*
-             * @ngdoc function
-             * @name wm.database.$DatabaseService#executeCustomUpdateQuery
-             * @methodOf wm.database.$DatabaseService
-             * @function
-             *
-             * @description
-             * Method to execute a custom query that updates the database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database and query to be executed.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            executeCustomUpdateQuery: function (params, successCallback, failureCallback) {
-                return initiateAction("executeCustomUpdateQuery", params, successCallback, failureCallback);
             },
 
             /**
