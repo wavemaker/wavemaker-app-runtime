@@ -1471,9 +1471,11 @@ WM.module('wm.widgets.grid')
                 $is.setDataGridOption('headerConfig', $is.headerConfig);
             }
             function addNewRow() {
-                $is.callDataGridMethod('addNewRow');
-                $is.$emit('add-new-row');
-                $rs.$emit("wm-event", $is.widgetid, "create");
+                if (!$is.isGridEditMode) { //If grid is already in edit mode, do not add new row
+                    $is.callDataGridMethod('addNewRow');
+                    $is.$emit('add-new-row');
+                    $rs.$emit("wm-event", $is.widgetid, "create");
+                }
             }
             function resetPageNavigation() {
                 /*Check for sanity*/
