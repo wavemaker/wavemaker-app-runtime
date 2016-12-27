@@ -899,8 +899,8 @@ WM.module('wm.widgets.base')
                 $I             = '[$i]',
                 $0             = '[0]',
                 watchers       = [],
-                VARIABLE_REGEX = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i];
-                DATASET_REGEX  = new RegExp(/Variables\.(\w*)\.dataSet$/), //Reg exp to match expr which is only dataSet
+                VARIABLE_REGEX = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
+                DATASET_REGEX  = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
                 _registerWatchers;
 
             function isArrayTypeExpr(expr) {

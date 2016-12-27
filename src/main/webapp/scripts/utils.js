@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', 'CONSTANTS', '$http', '$filter', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout, CONSTANTS, $http, $filter) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -688,7 +688,7 @@ WM.module('wm.utils', [])
         }
 
         function isMobile() {
-            if (APPCONSTANTS.isRunMode) {
+            if (CONSTANTS.isRunMode) {
                 return isAndroidPhone() || isIphone() || isIpod() || isIpad() || isAndroidTablet() || isWindowsPhone() || WM.element('#wm-mobile-display:visible').length > 0;
             }
 
@@ -766,7 +766,7 @@ WM.module('wm.utils', [])
 
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString, shouldEncode) {
-            if (APPCONSTANTS.isRunMode) {
+            if (CONSTANTS.isRunMode) {
                 return shouldEncode ? encodeUrl(urlString) : urlString;
             }
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
@@ -794,7 +794,7 @@ WM.module('wm.utils', [])
             if (isValidWebURL(urlString)) {
                 return $sce.trustAsResourceUrl(urlString);
             }
-            if (APPCONSTANTS.isRunMode) {
+            if (CONSTANTS.isRunMode) {
                 return urlString;
             }
 
@@ -1016,7 +1016,7 @@ WM.module('wm.utils', [])
             /* store the reference url in local storage*/
             browserStorage.storeItem('wm.referenceUrlToStudio', currentPageName + '#' + locationHash);
 
-            $window.location = APPCONSTANTS.LOGIN_PAGE;
+            $window.location = CONSTANTS.LOGIN_PAGE;
         }
 
         /*function to handle the load event of the iframe which is called when the iframe is loaded after form submit to
@@ -1561,7 +1561,7 @@ WM.module('wm.utils', [])
              * RunMode: remove the ngController directive from the element and add a wrapper with the controller name
              * StudioMode: remove the ngController directive
              */
-            if (APPCONSTANTS.isRunMode) {
+            if (CONSTANTS.isRunMode) {
                 root.html(content).find('wm-livelist, wm-login, wm-template')
                     .each(function () {
                         var widget = WM.element(this),
@@ -1617,7 +1617,7 @@ WM.module('wm.utils', [])
             htmlEle.remove();
             /* remove the previously loaded styles in studio-mode*/
 
-            if (APPCONSTANTS.isStudioMode) {
+            if (CONSTANTS.isStudioMode) {
                 WM.element('script[id="' + pageName + '.css' + '"]').remove();
             }
             try {
