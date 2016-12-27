@@ -2315,7 +2315,7 @@ WM.module('wm.utils', [])
             }
             if (WM.isArray(value)) {
                 return _.map(value, function (val) {
-                    return _formatDate(val);
+                    return _formatDate(val, type);
                 });
             }
             return _formatDate(value, type);
