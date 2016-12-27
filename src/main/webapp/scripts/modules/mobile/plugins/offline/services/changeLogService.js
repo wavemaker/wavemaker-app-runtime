@@ -17,12 +17,14 @@
  *   3) onError callback(function)
  */
 wm.plugins.offline.services.ChangeLogService = [
-    "LocalDBManager",
-    "$q",
-    "Utils",
-    "$log",
-    "$injector",
-    function (LocalDBManager, $q, Utils, $log, $injector) {
+    'LocalDBManager',
+    '$q',
+    'Utils',
+    '$log',
+    '$injector',
+    'SecurityService',
+
+    function (LocalDBManager, $q, Utils, $log, $injector, SecurityService) {
         'use strict';
         var contextKey = 'changeLogService.flushContext',
             flushContext,
@@ -397,13 +399,16 @@ wm.plugins.offline.services.ChangeLogService = [
             if (!flushInProgress) {
                 onComplete = onFlushComplete(onComplete);
                 flushInProgress = true;
-                prepareForFlush()
+                SecurityService.onUserLogin()
+                    .then(prepareForFlush)
                     .then(function (context) {
                         flushContext = context;
                         return executeDeferChain(_.map(callbacks, "preFlush"), [flushContext]);
-                    }).then(function () {
+                    })
+                    .then(function () {
                         flush(onComplete, onProgress);
-                    }).catch(onComplete);
+                    })
+                    .catch(onComplete);
             } else {
                 Utils.triggerFn(onComplete, stats);
             }

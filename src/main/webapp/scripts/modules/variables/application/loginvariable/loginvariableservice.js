@@ -24,8 +24,9 @@ wm.variables.services.LoginVariableService = ['Variables',
     '$location',
     'BaseService',
     'DialogService',
+
     function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location, BaseService, DialogService) {
-        "use strict";
+        'use strict';
 
         var methods, loginVariableObj, initiateCallback,
             login = function (options, success, error) {

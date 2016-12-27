@@ -31,6 +31,7 @@ wm.plugins.security.services.SecurityService = [
                 'config': []
             },
             _serviceMap = {},
+            onLoginCallbacks = [],
             /**
              * merge the security config from mobile and web
              * the loggedIn user's role is fetched from Web config
@@ -1028,7 +1029,13 @@ wm.plugins.security.services.SecurityService = [
                         '&j_password=' + encodeURIComponent(params.password) +
                         '&remember-me=' + rememberme +
                         customParams
-                }, successCallback, failureCallback);
+                }, function (response) {
+                    // After the successful login in device, this function triggers the pending onLoginCallbacks.
+                    _.forEach(onLoginCallbacks, Utils.triggerFn);
+
+                    onLoginCallbacks.length = 0;
+                    Utils.triggerFn(successCallback, response);
+                }, failureCallback);
             },
 
             /**
@@ -1362,6 +1369,31 @@ wm.plugins.security.services.SecurityService = [
 
             setServices: function (serviceMap) {
                 _serviceMap = serviceMap;
+            },
+
+            /**
+             * This function returns a promise. Promise is resolved when security is
+             * 1. disabled
+             * 2. enabled and user is authenticated
+             * 3. enabled and user is not authenticated, then promise is resolved on user login
+             * @returns {*} promise
+             */
+            onUserLogin: function () {
+                var deferred = $q.defer();
+
+                getConfig(function (config) {
+                    if (config.securityEnabled) {
+                        if (config.authenticated) {
+                            deferred.resolve();
+                        } else {
+                            onLoginCallbacks.push(deferred.resolve);
+                        }
+                    } else {
+                        deferred.resolve();
+                    }
+                });
+
+                return deferred.promise;
             }
         };
     }];
