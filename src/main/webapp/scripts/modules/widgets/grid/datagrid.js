@@ -913,6 +913,8 @@ $.widget('wm.datagrid', {
         if (!headerCols.length && !headerCells.length) {
             return;
         }
+        //Set the col spans for the header groups
+        this._setColSpan(this.options.headerConfig);
         //First Hide or show the column based on the show property so that width is calculated correctly
         headerCells.each(function () {
             var id           = Number($(this).attr('data-col-id')),
@@ -978,8 +980,6 @@ $.widget('wm.datagrid', {
             $(bodyCols[id]).css('width', width);
         });
         this.gridElement.parent().prop('scrollLeft', scrollLeft);
-        //Set the col spans for the header groups
-        this._setColSpan(this.options.headerConfig);
     },
 
     /* Returns the selected columns in the table. */
