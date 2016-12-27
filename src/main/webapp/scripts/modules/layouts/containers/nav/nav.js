@@ -92,7 +92,7 @@ WM.module('wm.layouts.containers')
 
                         // menu widget expects data as an array.
                         // push the current object as an array into the internal array
-                        $is._nodes.push([node]);
+                        $is._nodes.push(node[childrenField]);
 
                         if ($routeParams.name === (itemLink && itemLink.substring(1))) {
                             $a.addClass('active');
