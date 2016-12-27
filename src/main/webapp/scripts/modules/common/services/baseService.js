@@ -179,7 +179,10 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg, errorDetails = error, appManager, isLoginFailure;
+                var errTitle, errMsg, errorDetails = error, appManager, isLoginFailure,
+                    HTTP_STATUS_MSG = {
+                        404: "Requested resource not found"
+                    };
                 isLoginFailure = WM.isFunction(error.headers) && error.headers('X-WM-Login-ErrorMessage');
                 /*if user is unauthorized, then show login dialog*/
                 if (error.status === 401 && !isLoginFailure && !config.isDirectCall) {
@@ -216,22 +219,22 @@ wm.modules.wmCommon.services.BaseService = [
                     errMsg = localeObject["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
                 } else {
                     /*assigning default error messages */
-
                     errTitle = "Error!";
                     errMsg = "Service call failed";
                 }
 
+                // check if error message present for responded http status
+                errMsg = HTTP_STATUS_MSG[error.status] || errMsg;
+
                 /* check for error code in the response */
-                if (error.data) {
-                    if (error.data.errors) {
-                        errMsg = "";
-                        errorDetails = error.data.errors;
-                        /* If errors is not an array and contains error */
-                        if (errorDetails.error) {
-                            errorDetails.error.forEach(function (errorDetails, i) {
-                                errMsg += parseError(errorDetails) + (i > 0 ? "\n" : "");
-                            });
-                        }
+                if (_.get(error, 'data.errors')) {
+                    errMsg = "";
+                    errorDetails = error.data.errors;
+                    /* If errors is not an array and contains error */
+                    if (errorDetails.error) {
+                        errorDetails.error.forEach(function (errorDetails, i) {
+                            errMsg += parseError(errorDetails) + (i > 0 ? "\n" : "");
+                        });
                     }
                 }
 
@@ -242,7 +245,7 @@ wm.modules.wmCommon.services.BaseService = [
 
                 /*check if failureCallback is defined*/
                 if (WM.isFunction(failureCallback)) {
-                    Utils.triggerFn(failureCallback, errMsg, errorDetails);
+                    Utils.triggerFn(failureCallback, errMsg, errorDetails, error);
                 } else {
                     displayMessage('failure', errTitle, errMsg);
                 }
