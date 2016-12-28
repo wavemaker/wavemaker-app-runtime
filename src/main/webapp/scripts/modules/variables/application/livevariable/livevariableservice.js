@@ -428,55 +428,49 @@ wm.variables.services.$liveVariable = [
                 return value;
             },
             //Encode the value and wrap it inside single quotes
-            encodeWithQuotes = function (value, type) {
-                var encodedValue = encodeURIComponent(value);
-                //For number types and boolean type, don't wrap the value in quotes
-                if (Utils.isNumberType(type) || _.toLower(type) === 'boolean') {
-                    return encodedValue;
-                }
-                return '\'' + encodedValue + '\'';
+            encodeWithQuotes = function (value) {
+                return '\'' + encodeURIComponent(value) + '\'';
             },
             //Get the param value based on the filter condition
             getParamValue = function (value, options, ignoreCase) {
                 var param,
                     filterCondition = options.filterCondition,
-                    dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES,
-                    type            = options.attributeType;
+                    dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES;
                 if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                     //For empty matchmodes, no value is required
                     return '';
                 }
                 switch (filterCondition) {
                 case dbModes.start:
-                    param = encodeWithQuotes(value + '%', type);
+                    param = encodeWithQuotes(value + '%');
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.end:
-                    param = encodeWithQuotes('%' + value, type);
+                    param = encodeWithQuotes('%' + value);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.anywhere:
-                    param = encodeWithQuotes('%' + value + '%', type);
+                    param = encodeWithQuotes('%' + value + '%');
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.exact:
                 case dbModes.notequals:
-                    param = encodeWithQuotes(value, type);
+                    param = encodeWithQuotes(value);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.between:
                     param = _.join(_.map(value, function (val) {
-                        return encodeWithQuotes(val, type);
+                        return encodeWithQuotes(val);
                     }), ' and ');
                     break;
                 case dbModes.in:
                     param = _.join(_.map(value, function (val) {
-                        return encodeWithQuotes(val, type);
+                        return encodeWithQuotes(val);
                     }), ', ');
                     param = '(' + param + ')';
                     break;
                 default:
-                    param = encodeWithQuotes(value, type);
+                    param = encodeWithQuotes(value);
                     break;
                 }
                 return param || '';
