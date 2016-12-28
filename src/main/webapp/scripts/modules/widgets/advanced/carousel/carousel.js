@@ -147,7 +147,7 @@ WM.module('wm.widgets.advanced')
                     widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
                     break;
                 case 'animation':
-                    if ($is.widgetid) {
+                    if (CONSTANTS.isStudioMode) {
                         widgetProperties.animationinterval.show = (newVal === 'auto');
                     } else {
                         $is.interval = newVal === 'auto' ? $is.animationinterval * 1000 : 0;
