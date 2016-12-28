@@ -1,9 +1,14 @@
 package com.wavemaker.runtime.security.xss.handler;
 
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
@@ -21,6 +26,9 @@ import com.wavemaker.studio.common.model.security.XSSFilterStrategy;
 public class XSSSecurityHandler {
 
     private static final String WM_APP_SECURITY_CONFIG = "WMAppSecurityConfig";
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(XSSSecurityHandler.class);
 
     private static final XSSSecurityHandler instance = new XSSSecurityHandler();
 
@@ -53,7 +61,7 @@ public class XSSSecurityHandler {
     }
 
     private boolean isXSSEnabledForMethod(HttpServletRequest request) {
-         return  isXSSEnabled() && matches(request, XSSConfig.ALLOWED_METHODS);
+        return isXSSEnabled() && matches(request, XSSConfig.ALLOWED_METHODS);
     }
 
     private boolean isXSSEnabled() {
@@ -61,14 +69,19 @@ public class XSSSecurityHandler {
     }
 
     private boolean matches(HttpServletRequest httpServletRequest, Pattern allowedMethods) {
-        if(allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
+        if (allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
             return false;
         }
         return true;
     }
 
     private void initConfiguration() {
-        WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WM_APP_SECURITY_CONFIG);
+        WMAppSecurityConfig wmAppSecurityConfig = null;
+        try {
+            wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WM_APP_SECURITY_CONFIG);
+        } catch (NoSuchBeanDefinitionException e) {
+            LOGGER.warn("WMAppSecurityConfig bean not found in the application");
+        }
         if (wmAppSecurityConfig != null) {
             xssConfig = wmAppSecurityConfig.getXssConfig();
             if (isXSSEnabled()) {
