@@ -75,14 +75,14 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                             dialogParams: function () {
                                 return {
                                     notificationDetails: {
-                                        'title': variable.dataBinding.title,
-                                        'text': variable.dataBinding.text,
-                                        'okButtonText': variable.dataBinding.okButtonText,
-                                        'cancelButtonText': variable.dataBinding.cancelButtonText,
-                                        'alerttype': variable.dataBinding.alerttype,
-                                        'onOk': variableName + "onOk",
-                                        'onCancel': variableName + "onCancel",
-                                        'onClose': variableName + "onClose"
+                                        'title'           : options.title || variable.dataBinding.title,
+                                        'text'            : options.message || variable.dataBinding.text,
+                                        'okButtonText'    : options.okButtonText || variable.dataBinding.okButtonText,
+                                        'cancelButtonText': options.cancelButtonText || variable.dataBinding.cancelButtonText,
+                                        'alerttype'       : options.alerttype || variable.dataBinding.alerttype,
+                                        'onOk'            : variableName + "onOk",
+                                        'onCancel'        : variableName + "onCancel",
+                                        'onClose'         : variableName + "onClose"
                                     },
                                     onOk: function () {
                                         initiateCallback('onOk', variable, scope, options.data);
