@@ -5,8 +5,8 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/card.html',
-            '<div init-widget class="app-card card" apply-styles="shell" wm-navigatable-element="true">' +
-                '<div class="app-card-header" ng-show="title || subheading || iconclass || iconurl">' +
+            '<div init-widget class="app-card card app-panel" listen-property="actions" apply-styles="shell" wm-navigatable-element="true">' +
+                '<div class="app-card-header panel-heading" ng-show="title || subheading || iconclass || iconurl || actions">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
                         '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="iconurl"></wm-picture>' +
@@ -14,6 +14,9 @@ WM.module('wm.layouts.containers')
                     '<div class="app-card-header-text">' +
                         '<h4 class="card-heading">{{title}}</h4>' +
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
+                    '</div>' +
+                    '<div class="panel-actions">' +
+                        '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                     '</div>' +
                 '</div>' +
                 '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'height\':imageheight}">' +
@@ -30,7 +33,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events', 'wm.menu.dataProps']);
 
         return {
             'restrict': 'E',

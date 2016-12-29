@@ -1167,6 +1167,7 @@ WM.module('wm.widgets.base', [])
                         "imageheight": {"type": "string", "value": "200px"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
+                        "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -2939,7 +2940,7 @@ WM.module('wm.widgets.base', [])
                     fieldObjects,
                     ALLFIELDS               = 'All Fields',
                     checkboxsetTypeWidgets  = ['multi-select', 'select-all', 'list-typeahead', 'order-by'],
-                    dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset',
+                    dataSetProp             = _.includes(['wm-panel', 'wm-card'], scope.widgettype) ? 'actions' : 'dataset',
                     requiredProps           = {},
                     resetProps              = {};
 
