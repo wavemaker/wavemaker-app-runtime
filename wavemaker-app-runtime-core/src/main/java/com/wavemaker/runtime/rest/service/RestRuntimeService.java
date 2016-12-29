@@ -29,9 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 
+import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
@@ -52,22 +52,6 @@ import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
  * @author Uday Shankar
  */
 public class RestRuntimeService {
-
-
-    @Value("${app.proxy.enabled}")
-    private boolean proxyEnabled;
-
-    @Value("${app.proxy.host}")
-    private String proxyHost;
-
-    @Value("${app.proxy.port:0}")
-    private int proxyPort;
-
-    @Value("${app.proxy.username}")
-    private String proxyUsername;
-
-    @Value("${app.proxy.password}")
-    private String proxyPassword;
 
 
     private Map<String, Swagger> swaggerDocumentCache = new HashMap<String, Swagger>();
@@ -197,8 +181,12 @@ public class RestRuntimeService {
                 first = false;
             }
         }
-
+        boolean proxyEnabled = AppRuntimeProperties.isAppProxyEnabled();
         if (proxyEnabled) {
+            String proxyHost = AppRuntimeProperties.getAppProxyHost();
+            int proxyPort = AppRuntimeProperties.getAppProxyPort();
+            String proxyUsername = AppRuntimeProperties.getAppProxyUsername();
+            String proxyPassword = AppRuntimeProperties.getAppProxyPassword();
             restRequestInfo.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
 
