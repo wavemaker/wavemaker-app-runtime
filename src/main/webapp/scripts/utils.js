@@ -2275,6 +2275,9 @@ WM.module('wm.utils', [])
          */
         function convertToArray(val) {
             if (WM.isDefined(val)) {
+                if (val === '') {
+                    return val;
+                }
                 if (WM.isArray(val)) {
                     return val;
                 }
