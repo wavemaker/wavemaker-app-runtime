@@ -39,6 +39,7 @@ WM.module('wm.utils', [])
                 MIN_PAGE_RESOURCE_PATH: /.*(page.min.html)$/,
                 VALID_EMAIL: /^[a-zA-Z][\w.]+@[a-zA-Z_]+?\.[a-zA-Z.]{1,4}[a-zA-Z]$/,
                 VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
+                VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
                 REPLACE_PATTERN: /\$\{([^\}]+)\}/g,
                 ZIP_FILE: /\.zip$/i,
                 EXE_FILE: /\.exe$/i,
@@ -299,6 +300,10 @@ WM.module('wm.utils', [])
         }
         function isValidWebURL(url) {
             return (REGEX.VALID_WEB_URL).test(url);
+        }
+
+        function isValidWebSocketURL(url) {
+            return (REGEX.VALID_WEBSOCKET_URL).test(url);
         }
 
         function isValidAppServerUrl(url) {
@@ -2398,6 +2403,7 @@ WM.module('wm.utils', [])
         this.stringEndsWith             = stringEndsWith;
         this.isStyleSheetLoaded         = isStyleSheetLoaded;
         this.isValidWebURL              = isValidWebURL;
+        this.isValidWebSocketURL        = isValidWebSocketURL;
         this.loadScripts                = loadScripts;
         this.loadStyleSheets            = loadStyleSheets;
         this.loadStyleSheet             = loadStyleSheet;
