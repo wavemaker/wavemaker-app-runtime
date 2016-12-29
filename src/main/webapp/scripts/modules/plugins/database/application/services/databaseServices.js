@@ -90,9 +90,7 @@ wm.plugins.database.services.DatabaseService = [
                 query            : params.query,
                 exportFormat     : params.exportFormat
             };
-            /*In the SAAS studio mode, if we directly try to access the runtime urls, it results in cross-domain request issues.,
-             * Hence use the WebService's testRestService call to initiate the request.*/
-            if (params.url && CONSTANTS.isStudioMode && $rootScope.preferences.workspace.loadXDomainAppDataUsingProxy) {
+            if (params.url && CONSTANTS.isStudioMode) {
 
                 /* Check for url parameters to replace the URL.
                  * So the variable parameters in the URL will be replaced by the actual parameter values.*/
@@ -107,9 +105,10 @@ wm.plugins.database.services.DatabaseService = [
                     }
                 }
 
+                /*(!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy is added in endpointAddress to differentiate desktop from saas*/
                 connectionParams = {
                     "data": {
-                        "endpointAddress"   : $window.location.protocol + params.url + config.url,
+                        "endpointAddress"   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
                         "method"            : config.method,
                         "contentType"       : "application/json",
                         "requestBody"       : JSON.stringify(requestData),
