@@ -420,9 +420,23 @@ wm.variables.services.$liveVariable = [
                 return _.includes(['text', 'string'], _.toLower(type));
             },
             //Wrap the field name and value in lower() in ignore case scenario
-            wrapInLowerCase = function (value, options, ignoreCase) {
+            //TODO: Change the function name to represent the added functionality of identifiers for datetime, timestamp and float types. Previously only lower was warapped.
+            wrapInLowerCase = function (value, options, ignoreCase, isField) {
+                var type = _.toLower(options.attributeType);
+                if (!isField) {
+                    //Wrap the identifiers for datetime, timestamp and float types. Wrappring is not required for fields.
+                    if (type === 'datetime') {
+                        return 'wm_dt(' + value + ')';
+                    }
+                    if (type === 'timestamp') {
+                        return 'wm_ts(' + value + ')';
+                    }
+                    if (type === 'float') {
+                        return 'wm_float(' + value + ')';
+                    }
+                }
                 //If ignore case is true and type is string/ text and match mode is string type, wrap in lower()
-                if (ignoreCase && isStringType(options.attributeType) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
+                if (ignoreCase && isStringType(type) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
                     return 'lower(' + value + ')';
                 }
                 return value;
@@ -430,8 +444,9 @@ wm.variables.services.$liveVariable = [
             //Encode the value and wrap it inside single quotes
             encodeWithQuotes = function (value, type) {
                 var encodedValue = encodeURIComponent(value);
+                type = _.toLower(type);
                 //For number types and boolean type, don't wrap the value in quotes
-                if (Utils.isNumberType(type) || _.toLower(type) === 'boolean') {
+                if ((Utils.isNumberType(type) && type !== 'float') || type === 'boolean') {
                     return encodedValue;
                 }
                 return '\'' + encodedValue + '\'';
@@ -466,17 +481,18 @@ wm.variables.services.$liveVariable = [
                     break;
                 case dbModes.between:
                     param = _.join(_.map(value, function (val) {
-                        return encodeWithQuotes(val, type);
+                        return wrapInLowerCase(encodeWithQuotes(val, type), options, ignoreCase);
                     }), ' and ');
                     break;
                 case dbModes.in:
                     param = _.join(_.map(value, function (val) {
-                        return encodeWithQuotes(val, type);
+                        return wrapInLowerCase(encodeWithQuotes(val, type), options, ignoreCase);
                     }), ', ');
                     param = '(' + param + ')';
                     break;
                 default:
                     param = encodeWithQuotes(value, type);
+                    param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 }
                 return param || '';
@@ -505,7 +521,7 @@ wm.variables.services.$liveVariable = [
                     }
                     matchModeExpr  = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
                     paramValue     = getParamValue(value, fieldValue, ignoreCase);
-                    fieldName      = wrapInLowerCase(fieldName, fieldValue, ignoreCase);
+                    fieldName      = wrapInLowerCase(fieldName, fieldValue, ignoreCase, true);
                     params.push(Utils.replace(matchModeExpr, [fieldName, paramValue]));
                 });
                 query = _.join(params, operator); //empty space added intentionally around OR
