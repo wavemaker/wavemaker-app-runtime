@@ -156,6 +156,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/database/services/:dataModelName/configuration",
             method: "GET"
         },
+        getSequences: {
+            url: "services/projects/:projectID/database/services/:dataModelName/sequences",
+            method: "GET"
+        },
 
         /*Queries Related services*/
 
@@ -293,6 +297,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         testRunProcedure: {
             url: "/:service/:dataModelName/procedures/test_run",
             method: "POST"
+        },
+        proceduresInDatabase: {
+            url: "services/projects/:projectID/database/services/:dataModelName/procedures",
+            method: "GET"
         },
 
         /*Database connection properties*/

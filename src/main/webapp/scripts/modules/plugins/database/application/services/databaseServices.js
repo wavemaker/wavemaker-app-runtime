@@ -1373,7 +1373,7 @@ wm.plugins.database.services.DatabaseService = [
              * @function
              *
              * @description
-             * Method to list/retrieve all the procedures in the specified database.
+             * Method to list/retrieve all the procedures saved in the specified database of the project.
              *
              * @param {object} params
              *                 Object containing name of the project, name of the database, table and relations to be updated.
@@ -1394,6 +1394,37 @@ wm.plugins.database.services.DatabaseService = [
                     }
                 }, successCallback, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#proceduresInDatabase
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to list/retrieve all database procedures.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database, table and relations to be updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            proceduresInDatabase: function (params) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: "Database",
+                    action: "proceduresInDatabase",
+                    urlParams: {
+                        projectID: params.projectID,
+                        dataModelName: params.dataModelName
+                    }
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
+            },
+
 
             /**
              * @ngdoc function
@@ -1675,6 +1706,36 @@ wm.plugins.database.services.DatabaseService = [
                     }
                 }, successCallback, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#getSequences
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to get list of all sequence in the database.
+             *
+             * @param {object} params
+             *                 Object containing project id and dataModelName.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+            getSequences: function (params) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: "Database",
+                    action: "getSequences",
+                    urlParams: {
+                        projectID    : params.projectID,
+                        dataModelName: params.dataModelName
+                    }
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
+            },
+
             /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#readTableData
