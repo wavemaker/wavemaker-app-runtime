@@ -259,15 +259,6 @@ WM.module('wm.widgets.basic')
             // update search-key, display-label in the property panel
             function updatePropertyPanelOptions(dataset, $is) {
 
-                // re-initialize the property values
-                if ($is.newcolumns) {
-                    $is.newcolumns = false;
-                    $is.searchkey = '';
-                    $is.displaylabel = '';
-                    $is.datafield = '';
-                    $rs.$emit('set-markup-attr', $is.widgetid, {'searchkey': $is.searchkey, 'datafield': $is.datafield, 'displaylabel': $is.displaylabel});
-                }
-
                 // assign all the keys to the options of the search widget
                 if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);

@@ -2967,6 +2967,7 @@ WM.module('wm.widgets.base', [])
                         scope[name] = prop;
                     });
                     scope.$root.$emit('set-markup-attr', scope.widgetid, resetProps);
+                    Utils.triggerFn(scope.onPropertyChange, scope);
                 }
 
                 // loop through collected properties to set option against them based on datasetfilter

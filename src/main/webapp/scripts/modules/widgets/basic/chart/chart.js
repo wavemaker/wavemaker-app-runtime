@@ -80,7 +80,8 @@ WM.module('wm.widgets.basic')
                 'aggregationcolumn' : true,
                 'orderby'           : true,
                 'showlegend'        : true,
-                'title'             : true
+                'title'             : true,
+                'subheading'        : true
             };
 
         // Configuring the properties panel based on the type of the chart chosen
@@ -711,6 +712,8 @@ WM.module('wm.widgets.basic')
                 maxLength = Math.round(tickWidth / fontsize);
             }
 
+            //maxLength should always be a positive number
+            maxLength = Math.abs(maxLength);
             //Validating if every label exceeds the max length and if so limiting the length and adding ellipsis
             xTicks.each(function () {
                 if (this.textContent.length > maxLength) {
@@ -1101,8 +1104,6 @@ WM.module('wm.widgets.basic')
                 if (scope.binddataset && scope.binddataset.indexOf('bind:Variables.') !== -1) {
                     variableName = scope.binddataset.replace('bind:Variables.', '');
                     variableName = variableName.substr(0, variableName.indexOf('.'));
-                } else {
-                    variableName = scope.dataset.variableName;
                 }
                 //Resetting the flag to false when the binding was removed
                 if (!newVal && !scope.binddataset) {
@@ -1135,12 +1136,6 @@ WM.module('wm.widgets.basic')
                      Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
                      */
                     WidgetUtilService.updatePropertyPanelOptions(scope);
-                    //Marking 'newcolumns' false after updating property options
-                    // if dataset changed from workspace controller, set default columns
-                    if (scope.newcolumns) {
-                        setDefaultAxisOptions(scope);
-                        scope.newcolumns = false;
-                    }
                     //hiding the aggregation,group by and order by upon binding to the service variable
                     ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
                     modifyAxesOptions(scope);
@@ -1265,6 +1260,7 @@ WM.module('wm.widgets.basic')
                             boundVariableName,
                             showLabelsValue = scope.showlabels;
                         scope.getCutomizedOptions = getCutomizedOptions;
+                        scope.onPropertyChange = setDefaultAxisOptions;
                         //migration for old projects
                         if (!_.includes(['outside', 'inside', 'hide'], showLabelsValue)) {
                             scope.showlabels        = getBooleanValue(scope.showlabels);
