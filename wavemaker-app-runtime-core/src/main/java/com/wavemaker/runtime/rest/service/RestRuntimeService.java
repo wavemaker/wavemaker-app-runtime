@@ -39,6 +39,7 @@ import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
+import com.wavemaker.studio.common.proxy.AppProxyConstants;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
@@ -181,12 +182,17 @@ public class RestRuntimeService {
                 first = false;
             }
         }
-        boolean proxyEnabled = AppRuntimeProperties.isAppProxyEnabled();
+
+        boolean proxyEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
         if (proxyEnabled) {
-            String proxyHost = AppRuntimeProperties.getAppProxyHost();
-            int proxyPort = AppRuntimeProperties.getAppProxyPort();
-            String proxyUsername = AppRuntimeProperties.getAppProxyUsername();
-            String proxyPassword = AppRuntimeProperties.getAppProxyPassword();
+            String proxyHost = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
+            String port  = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
+            int proxyPort=0;
+            if(port!=null &&!( "".equals(port))){
+                proxyPort=Integer.valueOf(port);
+            }
+            String proxyUsername = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
+            String proxyPassword = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
             restRequestInfo.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
 
