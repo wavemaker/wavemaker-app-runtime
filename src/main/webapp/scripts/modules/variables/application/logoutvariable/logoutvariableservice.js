@@ -22,7 +22,8 @@ wm.variables.services.LogoutVariableService = ['Variables',
     'CONSTANTS',
     'VARIABLE_CONSTANTS',
     '$rootScope',
-    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $location, CONSTANTS, VARIABLE_CONSTANTS, $rootScope) {
+    '$timeout',
+    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $location, CONSTANTS, VARIABLE_CONSTANTS, $rootScope, $timeout) {
         "use strict";
 
         var methods, logoutVariableObj, initiateCallback,
@@ -83,7 +84,10 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                         redirectPage = "";
                                     }
                                     $location.url(redirectPage);
-                                    $window.location.reload();
+                                    $timeout(function () {
+                                        // reloading in timeout as, firefox and safari are not updating the url before reload(WMS-7887)
+                                        $window.location.reload();
+                                    });
                                 } else if (CONSTANTS.isRunMode) {
                                     appManager = Utils.getService("AppManager");
                                     appManager.resetSecurityConfig().
