@@ -1,11 +1,10 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
@@ -19,67 +18,42 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
-import com.wavemaker.runtime.data.expression.Type;
+import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
+import com.wavemaker.runtime.data.filter.QueryInterceptor;
+import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
+import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.studio.common.util.Tuple;
 
 public class HQLQueryUtils {
 
-    private static final byte FIELD_NAME = 1;
-    private static final byte EXPRESSION = 2;
-    private static final byte VALUE = 3;
     private static final String FROM = " from ";
     private static final String WHERE = " where ";
     private static final String ORDER_BY = " order by ";
-    private static final String WILDCARD_ENTRY = "%";
-    private static final String QUERY_EXPRESSION = "([\\w]+)[\\s]+(startswith|endswith|containing)[\\s][\"']([^']+)+([\"'])";
-    private static Pattern pattern = Pattern.compile(QUERY_EXPRESSION);
 
-    public static String buildHQL(String entityClass, String query, Pageable pageable) {
-        String queryFilter = StringUtils.EMPTY;
-        String orderBy     = StringUtils.EMPTY;
-        if(StringUtils.isNotBlank(query)) {
-            queryFilter = WHERE + replaceExpressionWithHQL(query);
-        }
-        if(isSortAppliedOnPageable(pageable)) {
-            orderBy = buildOrderByClause(pageable.getSort());
-        }
-        return FROM + entityClass + queryFilter + orderBy;
-    }
+    private static final List<QueryInterceptor> interceptors = Arrays.asList(
+            new LegacyQueryFilterInterceptor(),
+            new WMQueryFunctionInterceptor());
 
-    public static String replaceExpressionWithHQL(String query) {
-        Matcher matcher = pattern.matcher(query);
-        StringBuffer hqlQuery = new StringBuffer();
-        while (matcher.find()) {
-            String value = "";
-            switch (Type.valueFor(matcher.group(EXPRESSION))) {
-                case STARTING_WITH:
-                    value = matcher.group(VALUE) + WILDCARD_ENTRY;
-                    break;
-                case ENDING_WITH:
-                    value = WILDCARD_ENTRY + matcher.group(VALUE);
-                    break;
-                case CONTAINING:
-                    value = WILDCARD_ENTRY + matcher.group(VALUE) + WILDCARD_ENTRY;
-                    break;
-            }
-            matcher.appendReplacement(hqlQuery, matcher.group(FIELD_NAME) + " like " + "'" + value + "'");
-        }
-        matcher.appendTail(hqlQuery);
-        return hqlQuery.toString();
-    }
+    public static Tuple.Two<Query, Map<String, Object>> createHQLQuery(
+            String entityClass, String query, Pageable pageable, Session
+            session) {
+        final WMQueryInfo queryInfo = buildHQL(entityClass, query, pageable);
 
-    public static Query createHQLQuery(String entityClass, String query, Pageable pageable, Session session) {
-        Query hqlQuery = session.createQuery(buildHQL(entityClass, query, pageable));
-        if(pageable != null) {
+        Query hqlQuery = session.createQuery(queryInfo.getQuery());
+
+        if (pageable != null) {
             hqlQuery.setFirstResult(pageable.getOffset());
             hqlQuery.setMaxResults(pageable.getPageSize());
         }
-        return hqlQuery;
+        return new Tuple.Two<>(hqlQuery, queryInfo.getParameters());
     }
 
-    public static Page executeHQLQuery(final Query hqlQuery, final Map<String, Object> params, final Pageable pageable, final HibernateTemplate template) {
+    public static Page executeHQLQuery(
+            final Query hqlQuery, final Map<String, Object> params, final Pageable pageable,
+            final HibernateTemplate template) {
 
         return template.execute(new HibernateCallback<Page<Object>>() {
             public Page<Object> doInHibernate(Session session) throws HibernateException {
@@ -128,16 +102,37 @@ public class HQLQueryUtils {
         return properties;
     }
 
+    private static WMQueryInfo buildHQL(String entityClass, String query, Pageable pageable) {
+        WMQueryInfo queryInfo = new WMQueryInfo(query);
+
+        String queryFilter = StringUtils.EMPTY;
+        String orderBy = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(queryInfo.getQuery())) {
+            for (final QueryInterceptor interceptor : interceptors) {
+                interceptor.intercept(queryInfo);
+            }
+            queryFilter = WHERE + queryInfo.getQuery();
+        }
+        if (isSortAppliedOnPageable(pageable)) {
+            orderBy = buildOrderByClause(pageable.getSort());
+        }
+
+        queryInfo.setQuery(FROM + entityClass + queryFilter + orderBy);
+
+        return queryInfo;
+    }
+
+
     private static String buildOrderByClause(Sort sort) {
         StringBuilder orderBy = new StringBuilder(ORDER_BY);
         Iterator<Sort.Order> orderItr = sort.iterator();
-        while(orderItr.hasNext()) {
+        while (orderItr.hasNext()) {
             Sort.Order order = orderItr.next();
             orderBy.append(" ")
                     .append(order.getProperty())
                     .append(" ")
                     .append(order.getDirection());
-            if(orderItr.hasNext()) {
+            if (orderItr.hasNext()) {
                 orderBy.append(",");
             }
         }
