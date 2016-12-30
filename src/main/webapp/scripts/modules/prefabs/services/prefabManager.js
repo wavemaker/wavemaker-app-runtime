@@ -617,7 +617,7 @@ WM.module('wm.prefabs')
                     WM.element('head').append(pageDom.find('style, script'));
                     /* append the isPrefab flag to each variable */
                     WM.forEach(window["_MainPage_Variables_"], function (variable) {
-                        variable.prefabName = prefabName;
+                        variable._prefabName = prefabName;
                     });
                     /* set variables in prefab namespace, registration will occur in page directive */
                     Variables.setPageVariables(prefabName, window["_MainPage_Variables_"]);

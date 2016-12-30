@@ -294,6 +294,12 @@ WM.module('wm.layouts.page')
                         }
 
                         Variables.getPageVariables(pageName, function (variables) {
+                            //Set partial name on variable for included partial variables
+                            if($s.partialname) {
+                                _.forEach(variables, function (value) {
+                                    value._partialname = $s.partialname;
+                                });
+                            }
                             Variables.register(pageName, variables, true, variableScope);
 
                             // expose partial's Variables to its container's scope (to be visible to parent)

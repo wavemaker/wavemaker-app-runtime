@@ -53,7 +53,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                     /* TODO: to look for a better option to get App/Page the controller's scope */
                     callBackScope = $rootScope || {};
                 } else {
-                    if (variable.prefabName) {
+                    if (variable._prefabName) {
                         callBackScope = options.scope || {};
                     } else {
                         callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
