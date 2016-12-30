@@ -900,11 +900,11 @@ WM.module('wm.widgets.base')
                 $I               = '[$i]',
                 $0               = '[0]',
                 watchers         = [],
-                intervalWatchers = [],
+                TFNWatchers      = [], // contains timeFromNow watchers
                 VARIABLE_REGEX   = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
                 DATASET_REGEX    = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
-                TIMER_REGEX      = /\s*\|\s*timeFromNow/, //Reg exp to match expr which has | timeFromNow filter applied
-                TIMER_INTERVAL   = 60000, //One minute
+                TFN_FILTER_REGEX = /\s*\|\s*timeFromNow/, //Reg exp to match expr which has | timeFromNow filter applied
+                TFN_INTERVAL     = 60000, //One minute
                 interval,
                 _registerWatchers;
 
@@ -926,26 +926,21 @@ WM.module('wm.widgets.base')
              * watcher.index is the identifier index for the watcher
              * @param watcher, the watcher that is destroyed
              */
-            function destroyWatcherInInterval(watcher) {
-                var watcherIdx = watcher.index,
-                    i,
-                    wtchr;
-
-                // remove the watcher from array.
-                intervalWatchers.splice(watcherIdx, 1);
-
-                // decrement indexes for watchers in the arrays after the removed watcher
-                for (i = 0; i < intervalWatchers.length; i++) {
-                    wtchr = intervalWatchers[i];
-                    if (wtchr.index > watcherIdx) {
-                        wtchr.index -= 1;
-                    }
-                }
+            function destroyTFNWatcher(watcher) {
+                // remove the watcher from array
+                _.pullAt(TFNWatchers, _.indexOf(TFNWatchers, watcher));
 
                 // if no watchers left, destroy the interval
-                if (intervalWatchers.length === 0) {
+                if (TFNWatchers.length === 0) {
                     $interval.cancel(interval);
                     interval = undefined;
+                }
+            }
+
+            // evaluates timeFromNow filter expression and notifies the listener
+            function evalTFNFilterExprAndNotifyListener(watcher) {
+                if (watcher.$s && !watcher.$s.$$destroyed) {
+                    watcher.listener(watcher.$s.$eval(watcher.expr));
                 }
             }
 
@@ -953,13 +948,15 @@ WM.module('wm.widgets.base')
              * execute all watchers to be fired in an interval
              * watchers fired for the first time will be assigned a destroy method, to be called on scope destruction
              */
-            function executeIntervalWatchers() {
+            function evalTFNFilterExprs() {
                 var i, watcher;
-                for (i = 0; i < intervalWatchers.length; i++) {
-                    watcher = intervalWatchers[i];
-                    watcher.listener(moment(watcher.$s.$eval(watcher.expr.substr(0, watcher.expr.indexOf('|')).trim())).fromNow());
-                    if (!WM.isFunction(watcher.deRegister.destroy)) {
-                        watcher.deRegister.destroy = destroyWatcherInInterval.bind(undefined, watcher);
+                for (i = 0; i < TFNWatchers.length; i++) {
+                    watcher = TFNWatchers[i];
+
+                    evalTFNFilterExprAndNotifyListener(watcher);
+
+                    if (!watcher.deRegister.destroy) {
+                        watcher.deRegister.destroy = destroyTFNWatcher.bind(undefined, watcher);
                     }
                 }
             }
@@ -983,18 +980,20 @@ WM.module('wm.widgets.base')
                         }
                     }
 
-                    // loop interval watchers
-                    if (intervalWatchers.length) {
-                        // execute watchers first time, before the interval
-                        executeIntervalWatchers();
+                    watchers.length = 0;
 
+                    if (TFNWatchers.length) {
+                        // If the interval is not setup, create one.
                         // keep only one interval all the time, the interval will execute all watchers together
                         if (!interval) {
-                            interval = $interval(executeIntervalWatchers, TIMER_INTERVAL);
+                            // execute watchers first time, before the interval
+                            evalTFNFilterExprs();
+                            interval = $interval(evalTFNFilterExprs, TFN_INTERVAL);
+                        } else {
+                            // when the interval is present, execute only the last expr. [The one which is pushed to the queue after the interval setup]
+                            evalTFNFilterExprAndNotifyListener(TFNWatchers[TFNWatchers.length - 1]);
                         }
                     }
-
-                    watchers.length = 0;
                 });
             }
 
@@ -1063,14 +1062,14 @@ WM.module('wm.widgets.base')
             function register($s, watchExpr, listenerFn, config, key) {
                 var watchInfo,
                     watcher,
-                    _config        = config || {},
-                    deepWatch      = _config.deepWatch,
-                    allowPageable  = _config.allowPageable,
-                    acceptsArray   = _config.acceptsArray,
-                    isOnlyDataSet  = isDataSetTypeExpr(watchExpr, key),
-                    deRegister     = {},
-                    isParentVariableExpr    = watchExpr.indexOf('$parent.Variables') !== -1,
-                    variables               = isParentVariableExpr ? _.get($s, '$parent.Variables') : $s.Variables,
+                    _config              = config || {},
+                    deepWatch            = _config.deepWatch,
+                    allowPageable        = _config.allowPageable,
+                    acceptsArray         = _config.acceptsArray,
+                    isOnlyDataSet        = isDataSetTypeExpr(watchExpr, key),
+                    deRegister           = {},
+                    isParentVariableExpr = watchExpr.indexOf('$parent.Variables') !== -1,
+                    variables            = isParentVariableExpr ? _.get($s, '$parent.Variables') : $s.Variables,
                     variableObject,
                     regExp,
                     index;
@@ -1078,7 +1077,10 @@ WM.module('wm.widgets.base')
                 function isPageable(variable) {
                     //Check if pagination is available for data service variables. isList property will be true for array types.
                     //But, for procedure variable isList is true and pagination is not available
-                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution' && variable.isList));
+                    return (variable.category === 'wm.ServiceVariable'
+                            && variable.serviceType === 'DataService'
+                            && variable.controller !== 'ProcedureExecution'
+                            && variable.isList);
                 }
 
                 if (isArrayTypeExpr(watchExpr) || isOnlyDataSet) {
@@ -1122,12 +1124,12 @@ WM.module('wm.widgets.base')
                     'expr'       : watchInfo.expr,
                     'listener'   : watchInfo.listener,
                     'deepWatch'  : deepWatch,
-                    'deRegister' : deRegister,
-                    'index'      : intervalWatchers.length
+                    'deRegister' : deRegister
                 };
 
-                if (TIMER_REGEX.test(watchInfo.expr)) {
-                    intervalWatchers.push(watcher);
+                // expressions having timeFromNow filter needs to be evaluated in a periodic intervals
+                if (TFN_FILTER_REGEX.test(watchInfo.expr)) {
+                    TFNWatchers.push(watcher);
                 } else {
                     watchers.push(watcher);
                 }
