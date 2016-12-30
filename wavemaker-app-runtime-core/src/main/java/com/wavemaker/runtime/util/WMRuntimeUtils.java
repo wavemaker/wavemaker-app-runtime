@@ -116,6 +116,10 @@ public class WMRuntimeUtils {
     }
     
     public static String getContextRelativePath(File file, HttpServletRequest request, String relativePath) {
+        return getContextRelativePath(file, request, relativePath, false);
+    }
+
+    public static String getContextRelativePath(File file, HttpServletRequest request, String relativePath, boolean inline) {
         final StringBuffer requestURL = request.getRequestURL();
         final int index = requestURL.lastIndexOf("/");
         if (index != -1) {
@@ -128,7 +132,9 @@ public class WMRuntimeUtils {
         } else {
             filePath = file.getName();
         }
-        requestURL.append("/downloadFile?file=" + filePath + "&" + "returnName=" + file.getName());
+
+        String downloadFilePath = inline ? "/downloadFileAsInline" : "/downloadFile";
+        requestURL.append(downloadFilePath + "?file=" + filePath + "&" + "returnName=" + file.getName());
         return requestURL.toString();
     }
 
