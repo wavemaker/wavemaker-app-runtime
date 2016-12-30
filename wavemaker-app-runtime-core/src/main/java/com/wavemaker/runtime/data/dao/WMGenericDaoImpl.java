@@ -22,12 +22,10 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,6 +51,7 @@ import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
+import com.wavemaker.studio.common.util.Tuple;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
         WMGenericDao<Entity, Identifier> {
@@ -153,8 +152,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
             @Override
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
-                Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, pageable, session);
-                return HQLQueryUtils.executeHQLQuery(hqlQuery, Collections.EMPTY_MAP, pageable, getTemplate());
+                final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
+                        .createHQLQuery(entityClass.getName(), query, pageable, session);
+                return HQLQueryUtils
+                        .executeHQLQuery(queryInfo.v1, queryInfo.v2, pageable, getTemplate());
             }
         });
     }
@@ -165,9 +166,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 .execute(new HibernateCallback<ByteArrayOutputStream>() {
                     @Override
                     public ByteArrayOutputStream doInHibernate(Session session) throws HibernateException {
-                        Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, pageable, session);
-                        DataExporter exporter = new HQLQueryDataExporter(hqlQuery.scroll(),
-                                HQLQueryUtils.extractMetaForHql(hqlQuery));
+                        final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
+                                .createHQLQuery(entityClass.getName(), query, pageable, session);
+
+                        QueryHelper.configureParameters(queryInfo.v1, queryInfo.v2);
+                        DataExporter exporter = new HQLQueryDataExporter(queryInfo.v1.scroll(),
+                                HQLQueryUtils.extractMetaForHql(queryInfo.v1));
                         return exporter.export(exportType);
                     }
                 });
@@ -233,9 +237,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().execute(new HibernateCallback<Long>() {
             @Override
             public Long doInHibernate(Session session) throws HibernateException {
-                Query hqlQuery = HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
+                Tuple.Two<Query, Map<String, Object>> queryInfo =
+                        HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
                 return QueryHelper
-                        .getQueryResultCount(hqlQuery.getQueryString(), Collections.EMPTY_MAP, false, getTemplate());
+                        .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
             }
         });
     }
