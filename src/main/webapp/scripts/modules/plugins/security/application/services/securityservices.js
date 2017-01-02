@@ -1056,7 +1056,11 @@ wm.plugins.security.services.SecurityService = [
                     target: 'Security',
                     action: 'appLogout',
                     byPassResult: true
-                }, successCallback, failureCallback);
+                }, function (response) {
+                    _.set(_config, 'authenticated', false);
+                    _.set(_config, 'userInfo', null);
+                    Utils.triggerFn(successCallback, response);
+                }, failureCallback);
             },
 
             /**

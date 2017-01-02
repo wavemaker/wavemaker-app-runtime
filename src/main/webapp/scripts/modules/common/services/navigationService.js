@@ -19,8 +19,9 @@ wm.modules.wmCommon.services.NavigationService = [
     'DialogService',
     '$timeout',
     '$location',
+    'SecurityService',
 
-    function ($rs, ViewService, DialogService, $timeout, $location) {
+    function ($rs, ViewService, DialogService, $timeout, $location, SecurityService) {
         'use strict';
 
         var nextTransitionToApply,
@@ -172,9 +173,16 @@ wm.modules.wmCommon.services.NavigationService = [
             }
         }
 
-        $rs.$on('$routeChangeStart', function (evt, $next) {
+        $rs.$on('$routeChangeStart', function (evt, $next, $p) {
             var pageName = $next.params.name;
             if (pageName) {
+                // if login page is being loaded and user is logged in, cancel that.
+                SecurityService.getConfig(function (config) {
+                    if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
+                        $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
+                        return;
+                    }
+                });
                 if (pageStackObject.isLastVisitedPage(pageName)) {
                     nextTransitionToApply = pageStackObject.getCurrentPage().transition + '-exit';
                     pageStackObject.goBack();
