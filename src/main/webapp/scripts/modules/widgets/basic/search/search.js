@@ -32,7 +32,7 @@ WM.module('wm.widgets.basic')
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="fa fa-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
-                    '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
+                    '<form>' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
                             'ng-click="onTypeAheadSelect($event, $item, $model, $label)"></button>' +
                     '</form>' +

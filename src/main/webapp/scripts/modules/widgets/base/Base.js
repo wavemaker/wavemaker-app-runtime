@@ -653,7 +653,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
-                        "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "value": "", "bindable": "in-bound", "getTypeFrom": "dataset"},
+                        "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "bindable": "in-bound", "getTypeFrom": "dataset"},
                         "displayValue": {"type": "string", "show": false, "bindable": "out-bound"}
                     },
                     "wm.colorpicker": {

@@ -1290,6 +1290,13 @@ WM.module('wm.widgets.live')
                             $field.removeClass('active');
                             fieldScope.validationmessage = fieldScope._validationmessage;
                             setValidity(fieldScope.name, true);
+                        };
+                        //On change of a field, update the dataoutput on form/liveform
+                        parentScope._onChangeField = parentScope._onChangeField || function () {
+                            parentScope.dataoutput = parentScope.constructDataObject();
+                        };
+                        //On submit of a autocomplete field, update the dataoutput on form/liveform
+                        parentScope._onSubmitField = parentScope._onSubmitField || function () {
                             parentScope.dataoutput = parentScope.constructDataObject();
                         };
                         parentScope.$on('$destroy', function () {
