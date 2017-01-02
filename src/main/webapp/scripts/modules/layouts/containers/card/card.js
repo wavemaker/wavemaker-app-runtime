@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/card.html',
-            '<div init-widget class="app-card card app-panel" listen-property="actions" apply-styles="shell" wm-navigatable-element="true">' +
+            '<div init-widget class="app-card card app-panel" listen-property="actions" apply-styles="shell">' +
                 '<div class="app-card-header panel-heading" ng-show="title || subheading || iconclass || iconurl || actions">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
@@ -22,12 +22,12 @@ WM.module('wm.layouts.containers')
                 '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'height\':imageheight}">' +
                     '<wm-picture class="card-image" picturesource="{{picturesource}}"></wm-picture>' +
                 '</div>' +
-                '<div ng-transclude="content"></div>' +
+                '<div ng-transclude="content" apply-styles="inner-shell"></div>' +
                 '<div ng-transclude="actions"></div>' +
                 '<div ng-transclude="footer"></div>' +
             '</div>'
             );
-        $templateCache.put('template/layout/container/card-content.html', '<div apply-styles="container" init-widget page-container class="app-card-content card-body card-block"><div page-container-target wmtransclude></div></div>');
+        $templateCache.put('template/layout/container/card-content.html', '<div init-widget page-container class="app-card-content card-body card-block"><div page-container-target apply-styles="container" wmtransclude></div></div>');
         $templateCache.put('template/layout/container/card-footer.html',  '<div apply-styles="container" init-widget wmtransclude  class="app-card-footer text-muted card-footer"></div>');
         $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="container" class="app-card-actions" init-widget wmtransclude ></div>');
     }])
@@ -77,7 +77,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base', 'wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base', 'wm.layouts']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},

@@ -7,7 +7,7 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/form/searchlist.html',
             '<a>' +
-                '<img ng-src="{{match.model.wmImgSrc}}" ng-if="match.model.wmImgSrc" width="16">' +
+                '<img ng-src="{{match.model.wmImgSrc}}" ng-if="match.model.wmImgSrc" width="{{match.model.wmImgWidth}}">' +
                 '<span ng-bind-html="match.label | uibTypeaheadHighlight:query" title="{{match.label}}"></span>' +
             '</a>'
             );
@@ -226,7 +226,8 @@ WM.module('wm.widgets.basic')
                                     // convert display-label-value to string, as ui.typeahead expects only strings
                                     itemValue.wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displaylabel'});
                                     // to save all the image urls
-                                    itemValue.wmImgSrc = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displayimagesrc'});
+                                    itemValue.wmImgSrc   = WidgetUtilService.getEvaluatedData($is, eachItem, {expressionName: 'displayimagesrc'});
+                                    itemValue.wmImgWidth = $is.imagewidth;
                                 }
                             });
                         } else {

@@ -6,10 +6,13 @@ WM.module('wm.layouts.containers')
         'use strict';
         $tc.put('template/layout/container/panel.html',
             '<div page-container init-widget listen-property="actions" class="app-panel panel" ng-class="[helpClass, {\'fullscreen\':fullscreen}]" apply-styles="shell" wm-navigable-element="true">' +
-                '<div class="panel-heading" ng-class="helpClass">' +
+                '<div class="panel-heading" ng-class="helpClass" ng-if="toggleHeader()">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="panel-toggle" ng-click="expandCollapsePanel()">' +
-                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left">' +
+                                '<i class="app-icon panel-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
+                                '<img data-identifier="img" class="panel-image-icon" ng-src="{{iconsrc}}"  ng-if="iconurl" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                            '</div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +
@@ -42,7 +45,10 @@ WM.module('wm.layouts.containers')
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
-                notifyFor   = {'actions': true};
+                notifyFor   = {
+                    'actions': true,
+                    'iconurl': true
+                };
 
             //Eval content height on toggle of full screen
             function toggleFullScreen(element, val, panelHeight) {
@@ -61,10 +67,18 @@ WM.module('wm.layouts.containers')
                 $contentEl.css('height', inlineHeight);
             }
 
-            function propertyChangeHandler(scope, key) {
+            //Toggles header show if any one of the below properties are set else hides panel heading
+            function toggleHeader($is) {
+                return $is.iconurl || $is.iconclass || $is.collapsible || $is.actions || $is.title || $is.subheading || $is.enablefullscreen;
+            }
+
+            function propertyChangeHandler(scope, key, newVal) {
                 switch (key) {
                 case 'actions':
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
+                    break;
+                case 'iconurl':
+                    scope.iconsrc = Utils.getImageUrl(newVal);
                     break;
                 }
             }
@@ -166,6 +180,8 @@ WM.module('wm.layouts.containers')
                             $is.closePanel = function () {
                                 $is.show = false;
                             };
+
+                            $is.toggleHeader = toggleHeader.bind(undefined, $is);
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                             WidgetUtilService.postWidgetCreate($is, $el, attrs);
