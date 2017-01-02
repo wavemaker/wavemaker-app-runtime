@@ -19,7 +19,9 @@ WM.module('wm.widgets.live')
         'CONSTANTS',
         'wmToaster',
         '$rootScope',
-        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS, wmToaster, $rs) {
+        'LiveWidgetUtils',
+
+        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS, wmToaster, $rs, LiveWidgetUtils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livegrid', ['wm.base']),
                 gridMarkup = '',
@@ -29,6 +31,13 @@ WM.module('wm.widgets.live')
                 showErrorMessage = function () {
                     wmToaster.show('error', 'ERROR', $rs.appLocale.LABEL_ACCESS_DENIED);
                 };
+
+            //Sets form widgets
+            function setFormWidgets($is) {
+                $timeout(function () {
+                    $is.formWidgets = LiveWidgetUtils.getFormFilterWidgets(WM.element('body').find('.app-liveform-dialog[dialogid=' + $is._dialogid + ']'));
+                });
+            }
 
             return {
                 restrict: 'E',
@@ -145,6 +154,7 @@ WM.module('wm.widgets.live')
                                     scope.gridform.new();
                                     if (scope.isLayoutDialog) {
                                         DialogService.showDialog(scope.gridform._dialogid, { 'resolve': {}, 'scope' : scope.gridform });
+                                        setFormWidgets(scope.gridform);
                                     }
                                 }));
                                 /*On update row call the form update function*/
@@ -165,6 +175,7 @@ WM.module('wm.widgets.live')
                                             'resolve': {},
                                             'scope': scope.gridform
                                         });
+                                        setFormWidgets(scope.gridform);
                                     }
                                 }));
                                 /* watch the primaryKey field in grid form , as soon as it updated change the live grid primary key */
