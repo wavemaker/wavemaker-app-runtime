@@ -36,7 +36,9 @@ WM.module('wm.widgets.advanced')
             );
 
         $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
-            '<div class="app-carousel" ng-class="navigationClass" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
+            '<div class="app-carousel" ng-class="navigationClass" init-widget wmtransclude apply-styles data-identifier="carousel">' +
+                '<div class="text-center" ng-if="noDataFound">{{nodatamessage}}</div>' +
+            '</div>'
             );
 
         $tc.put('template/widget/advanced/carousel/carousel-content.html',
@@ -76,12 +78,13 @@ WM.module('wm.widgets.advanced')
             };
 
             slideTemplateWrapper =
-                '<div uib-carousel interval="interval" active="active" no-wrap="noWrapSlides" hm-swipe-left="onSwipe(\'left\')" hm-swipe-right="onSwipe(\'right\')"> ' +
+                '<div uib-carousel interval="interval" active="active" ng-show="!noDataFound" no-wrap="noWrapSlides" hm-swipe-left="onSwipe(\'left\')" hm-swipe-right="onSwipe(\'right\')"> ' +
                     '<div uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></div>' +
                 '</div>';
 
             function updateFieldDefs($is, data) {
                 $is.fieldDefs = data;
+                $is.noDataFound = !$is.fieldDefs.length;
             }
 
             function getVariable($is, variableName) {
@@ -96,6 +99,7 @@ WM.module('wm.widgets.advanced')
 
             function onDataChange($is, nv) {
                 if (nv) {
+                    $is.noDataFound = false;
                     if (nv.data) {
                         nv = nv.data;
                     } else {
@@ -144,7 +148,7 @@ WM.module('wm.widgets.advanced')
                     break;
                 case 'type':
                     widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
-                    widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
+                    widgetProperties.nodatamessage.show = widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
                     break;
                 case 'animation':
                     if (CONSTANTS.isStudioMode) {
@@ -261,6 +265,8 @@ WM.module('wm.widgets.advanced')
                             }, 600, false);
                         }
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                        $is.widgetProps.nodatamessage.show = attrs.type === CAROUSEL_TYPE.DYNAMIC;
+                        $is.noDataFound = false;
                         if (!attrs.type) {
                             $is.contents    = [];
                             $is.activeIndex = 0;
@@ -367,6 +373,7 @@ WM.module('wm.widgets.advanced')
                             if (!attrs.type) {
                                 $is.play();
                             } else {
+                                $is.noDataFound = attrs.type === CAROUSEL_TYPE.DYNAMIC && (undefined === ($is.binddataset || $is.scopedataset));
                                 $slideTemplate = prepareSlideTemplate(listCtrl.$get('carouselTemplate'), attrs);
                                 $el.prepend($slideTemplate);
                                 $compile($slideTemplate)($el.closest('[data-identifier="carousel"]').isolateScope());
