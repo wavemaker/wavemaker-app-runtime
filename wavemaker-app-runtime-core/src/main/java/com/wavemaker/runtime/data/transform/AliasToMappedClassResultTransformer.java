@@ -4,10 +4,15 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.springframework.beans.BeanUtils;
 
@@ -60,12 +65,30 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             Object object = resultClass.newInstance();
             for (final Map.Entry<String, Object> entry : resultMap.entrySet()) {
                 final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(entry.getKey());
-                descriptor.getWriteMethod().invoke(object, entry.getValue());
+
+                descriptor.getWriteMethod().invoke(object, transformField(descriptor, entry.getValue()));
             }
             return object;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object transformField(final PropertyDescriptor descriptor, final Object value) {
+        Object transformedValue = value;
+        if (value != null && value instanceof List) {
+            transformedValue = new ArrayList<>();
+            final Type innerType = ((ParameterizedType) descriptor.getReadMethod().getGenericReturnType())
+                    .getActualTypeArguments()[0];
+
+            final WMResultTransformer childTransformer = Transformers
+                    .aliasToMappedClass(TypeUtils.getRawType(innerType, null));
+            for (final Map<String, Object> val : ((List<Map<String, Object>>) value)) {
+                ((List) transformedValue).add(childTransformer.transformFromMap(val));
+            }
+        }
+        return transformedValue;
     }
 
     private void initialize() {

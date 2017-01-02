@@ -110,7 +110,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     }
 
     private boolean isDMLOrUpdateQuery(RuntimeQuery query) {
-        return query.getType() != QueryType.SELECT || DataServiceUtils.isDML(query.getQueryString());
+        return query.getType() != QueryType.SELECT && DataServiceUtils.isDML(query.getQueryString());
     }
 
     private List<ReturnProperty> getMetaForDML() {
