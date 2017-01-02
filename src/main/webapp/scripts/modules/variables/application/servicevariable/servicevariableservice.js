@@ -441,7 +441,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (_.isObject(output)) {
                     inputFields = output;
                 }
-                $rootScope.$emit('toggle-variable-state', variable.name, true);
+                $rootScope.$emit('toggle-variable-state', variable.name, !options.skipToggleState);
                 variableActive[variable.activeScope.$id][variable.name] = true;
                 variable.canUpdate = false;
             }
