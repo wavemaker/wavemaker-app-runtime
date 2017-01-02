@@ -13,6 +13,7 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
 
+import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
@@ -26,7 +27,7 @@ import com.wavemaker.studio.common.util.IOUtils;
  */
 public class NativeProcedureExecutor {
 
-    public static <T> List<T> execute(
+    public static <T> T execute(
             Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
         Connection connection = null;
         try {
@@ -34,14 +35,9 @@ public class NativeProcedureExecutor {
             final CallableStatement statement = connection.prepareCall(jdbcQuery);
 
             configureParameters(statement, params);
+            statement.execute();
 
-            final boolean resultSetType = statement.execute();
-            List<Map<String, Object>> result;
-            if (resultSetType) {
-                result = readResultSet(statement.getResultSet());
-            } else {
-                result = Collections.singletonList(readResponse(statement, params));
-            }
+            Map<String, Object> result = readResponse(statement, params);
             return convert(result, type);
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
@@ -50,16 +46,21 @@ public class NativeProcedureExecutor {
         }
     }
 
-    @SuppressWarnings(value = "unchecked")
-    protected static <T> List<T> convert(final List<Map<String, Object>> list, final Class<T> type) {
-        List<T> convertedList = new ArrayList<>(list.size());
-
-        final WMResultTransformer transformer = Transformers.aliasToMappedClass(type);
-        for (final Map<String, Object> objectMap : list) {
-            convertedList.add((T) transformer.transformFromMap(objectMap));
+    public static List<Object> convertToOldResponse(Map result) {
+        List response = Collections.singletonList(result);
+        if (result.keySet().size() == 1) {
+            final Object firstValue = result.values().iterator().next();
+            if (firstValue instanceof List) {
+                response = (List) firstValue;
+            }
         }
+        return response;
+    }
 
-        return convertedList;
+    @SuppressWarnings(value = "unchecked")
+    protected static <T> T convert(final Map<String, Object> object, final Class<T> type) {
+        final WMResultTransformer transformer = Transformers.aliasToMappedClass(type);
+        return (T) transformer.transformFromMap(object);
     }
 
     protected static void configureParameters(

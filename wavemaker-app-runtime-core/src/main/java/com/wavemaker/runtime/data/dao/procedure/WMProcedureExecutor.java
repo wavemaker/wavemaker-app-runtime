@@ -23,12 +23,12 @@ import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 
 public interface WMProcedureExecutor {
 
-    <T> List<T> executeNamedProcedure(String procedureName, Map<String, Object> params, Class<T> type);
+    <T> T executeNamedProcedure(String procedureName, Map<String, Object> params, Class<T> type);
 
-    List<Object> executeRuntimeProcedure(RuntimeProcedure procedure);
+    Object executeRuntimeProcedure(RuntimeProcedure procedure);
 
     @Deprecated
-    List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params);
+    Object executeNamedProcedure(String procedureName, Map<String, Object> params);
 
     @Deprecated
     List<Object> executeCustomProcedure(CustomProcedure customProcedure);

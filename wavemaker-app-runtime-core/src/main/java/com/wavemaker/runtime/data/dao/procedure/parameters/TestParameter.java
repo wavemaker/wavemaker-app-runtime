@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.data.dao.callbacks;
+package com.wavemaker.runtime.data.dao.procedure.parameters;
 
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 
