@@ -617,8 +617,9 @@ wm.variables.services.$liveVariable = [
                         filterOptions.push(filterOption);
                     } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                         attributeName = getAttributeName(variable, fieldName);
+                        //For non string types empty match modes are not supported, so convert them to null match modes.
                         if (fieldType && !isStringType(fieldType)) {
-                            filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
+                            filterCondition = DB_CONSTANTS.DATABASE_NULL_EMPTY_MATCH[filterCondition];
                         }
                         filterOption = {
                             'attributeName'   : attributeName,
