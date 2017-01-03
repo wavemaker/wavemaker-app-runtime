@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +31,13 @@ public class ProcedureDesignServiceImpl extends AbstractDesignService implements
         return executeInTransaction(serviceId, new TransactionCallback<DesignServiceResponse>() {
             @Override
             public DesignServiceResponse doInTransaction(final TransactionStatus status) {
-                final WMProcedureExecutor procedureExector = WMAppContext.getInstance()
+                final WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance()
                         .getSpringBean(procedureExecutorBeanName);
-                final List<Object> results = procedureExector.executeRuntimeProcedure(procedure);
-                final List<ReturnProperty> properties = extractMetaFromResults(results);
-                return new DesignServiceResponse(results, properties);
+
+                final Object result = wmProcedureExecutor.executeRuntimeProcedure(procedure);
+                final List<ReturnProperty> properties = extractMetaFromResults(Collections.singleton(result));
+
+                return new DesignServiceResponse(result, properties);
             }
         });
     }
