@@ -2001,20 +2001,20 @@ WM.module('wm.utils', [])
         }
 
         //Triggers custom events passed
-        function triggerCustomEvents(event, customEvents, callBackScope, data, variable) {
+        function triggerCustomEvents(event, customEvents, callBackScope, data, variable, info) {
             var retVal,
                 firstArg = variable || event;
             _.forEach(_.split(customEvents, ';'), function (eventValue) {
                 /* if event value is javascript, call the function defined in the callback scope of the variable */
                 if (eventValue === 'Javascript') {
-                    retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data);
+                    retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data, info);
                 }
                 if (_.startsWith(eventValue, 'Widgets.') || _.startsWith(eventValue, 'Variables.')) {
                     evalExp(callBackScope, eventValue);
                     return;
                 }
                 if (_.includes(eventValue, '(')) {
-                    retVal = triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], firstArg, data);
+                    retVal = triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], firstArg, data, info);
                 } else {
                     // [fallback - 8.3.0] for case where variable re-name migration fails: happens when Variable is not found in the current context
                     // for example, an App variable tries to call a Page variable, the Page variable will not be found in the App context
