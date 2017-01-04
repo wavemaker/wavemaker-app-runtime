@@ -1291,11 +1291,11 @@ WM.module('wm.widgets.live')
                     break;
                 case 'anchor':
                     column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
-                        'class = "' + column.widgetConfig.class + '" ng-class="' + widgetNgClassesExpression + '"></wm-anchor>';
+                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-anchor>';
                     break;
                 case 'label':
                     column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
-                        'class = "' + column.widgetConfig.class + '" ng-class="' + widgetNgClassesExpression + '"></wm-label>';
+                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-label>';
                     break;
                 default:
                     if (column.type === 'blob') {
