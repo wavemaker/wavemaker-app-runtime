@@ -40,7 +40,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
-import org.springframework.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -61,11 +68,13 @@ import com.wavemaker.studio.common.util.WMUtils;
 
 public class RestConnector {
 
+    private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
     private final X509HostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
 
     public RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
 
+        logger.debug("Sending {} request to URL {}", restRequestInfo.getMethod(), restRequestInfo.getEndpointAddress());
         ResponseEntity<byte[]> responseEntity = getResponseEntity(restRequestInfo,
                 httpClientContext, byte[].class);
 
@@ -98,6 +107,7 @@ public class RestConnector {
 
     public <T> ResponseEntity<T> invokeRestCall(RestRequestInfo restRequestInfo, Class<T> t) {
 
+        logger.debug("Sending {} request to URL {}", restRequestInfo.getMethod(), restRequestInfo.getEndpointAddress());
         final HttpClientContext httpClientContext = HttpClientContext.create();
         return getResponseEntity(restRequestInfo, httpClientContext, t);
     }
@@ -128,6 +138,7 @@ public class RestConnector {
         }
 
         if (restRequestInfo.getProxy() != null) {
+            logger.debug("setting proxyProperties for request URL {}", restRequestInfo.getEndpointAddress());
             com.wavemaker.runtime.commons.model.Proxy proxy = restRequestInfo.getProxy();
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(proxy.getHostname(), proxy.getPort()), new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
