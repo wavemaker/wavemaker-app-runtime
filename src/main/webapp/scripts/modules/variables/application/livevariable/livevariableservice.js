@@ -542,7 +542,7 @@ wm.variables.services.$liveVariable = [
                 if (_.includes(['timestamp', 'datetime', 'date'], options.type)) {
                     return options.type;
                 }
-                return options.type || getSqlType(variable, options.fieldName);
+                return getSqlType(variable, options.fieldName) || options.type;
             },
             //Get the default filter condition
             getFilterCondition = function (filterCondition) {
@@ -1725,6 +1725,9 @@ wm.variables.services.$liveVariable = [
                 },
                 isRelatedFieldMany: function (fieldName) {
                     return isRelatedFieldMany(this, fieldName);
+                },
+                getSqlType: function (fieldName) {
+                    return getSqlType(this, fieldName);
                 },
                 getPrimaryKey: function () {
                     return methods.getPrimaryKey(this);

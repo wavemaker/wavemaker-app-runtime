@@ -1,4 +1,4 @@
-/*global WM, wm, moment*/
+/*global WM, wm, moment, _*/
 /**
  * @ngdoc service
  * @name wm.database.$QueryBuilder
@@ -15,66 +15,79 @@ wm.plugins.database.services.QueryBuilder = [
     "DatabaseService",
     "Utils",
     "ProjectService",
-    "$liveVariable",
-    function ($rootScope, DatabaseService, Utils, ProjectService, $liveVariable) {
+    "DB_CONSTANTS",
+    function ($rootScope, DatabaseService, Utils, ProjectService, DB_CONSTANTS) {
         'use strict';
-
+        var matchModes = DB_CONSTANTS.DATABASE_MATCH_MODES;
+        function getFieldValue(value, type) {
+            return (Utils.isNumberType(type) || type === 'boolean') ? value : "'" + value + "'";
+        }
         return {
             'getQuery': function (options) {
                 var selectClause,
-                    columnClause = "",
+                    columnClause = '',
                     fromClause,
-                    whereClause = "",
+                    whereClause = '',
                     groupByClause,
                     orderByClause,
-                    logicalOp = options.logicalOp && options.logicalOp.toLowerCase() === "or" ? " OR " : " AND ",
-                    logicalOpSliceLength = logicalOp === " OR " ? -4 : -5,
+                    logicalOp = options.logicalOp && options.logicalOp.toLowerCase() === 'or' ? ' OR ' : ' AND ',
+                    logicalOpSliceLength = logicalOp === ' OR ' ? -4 : -5,
                     query,
+                    whereParams = [],
                     fields = [],
                     dateTypes = ['timestamp', 'datetime', 'time', 'date'];
 
-                selectClause = "SELECT ";
+                selectClause = 'SELECT ';
 
                 if (options.columns) {
-                    columnClause = "";
+                    columnClause = '';
                     WM.forEach(options.columns, function (column) {
-                        columnClause += column + ",";
+                        columnClause += column + ',';
                     });
                     columnClause = columnClause.slice(0, -1);
                 } else {
                     selectClause = '';
                 }
 
-                fromClause = " FROM " + options.tableName;
-                if (WM.isArray(options.filterFields) && options.filterFields.length) {
-                    whereClause = " WHERE ";
-                    WM.forEach(options.filterFields, function (field) {
+                fromClause = ' FROM ' + options.tableName;
+                if (_.isArray(options.filterFields) && options.filterFields.length) {
+                    _.forEach(options.filterFields, function (field) {
+                        var param,
+                            matchModeExpr,
+                            filterCondition = matchModes[field.matchMode],
+                            fieldValue;
                         if (field.clause) {
-                            whereClause += field.clause + logicalOp;
+                            param = field.clause;
                         } else {
-                            /*If value is an array, loop through the array and build the query with OR clause*/
-                            if (WM.isArray(field.value)) {
-                                whereClause += "(" + field.column + "='";
-                                field.value.forEach(function (element, index) {
-                                    if (index + 1 === field.value.length) {
-                                        whereClause += element;
-                                    } else {
-                                        whereClause += element + "' OR " + field.column + "='";
-                                    }
-                                });
-                                whereClause += "')" + logicalOp;
-                            } else {
-                                /*If the field is a boolean value, quotes should not be added to the values*/
-                                if (field.noQuotes) {
-                                    whereClause += field.column + "=" + field.value + logicalOp;
-                                } else {
-                                    whereClause += field.column + "='" + field.value + "'" + logicalOp;
-                                }
-
+                            if (!filterCondition) {
+                                filterCondition = _.isArray(field.value) ? matchModes.in : matchModes.exact;
                             }
+                            //For non string types empty match modes are not supported, so convert them to null match modes.
+                            if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition) && !_.includes(['text', 'string'], _.toLower(field.type))) {
+                                filterCondition = DB_CONSTANTS.DATABASE_NULL_EMPTY_MATCH[filterCondition];
+                            }
+                            switch (filterCondition) {
+                            case matchModes.in:
+                                fieldValue = field.value.length ? '(' + _.join(_.map(field.value, function (val) {
+                                    return getFieldValue(val, field.type);
+                                }), ', ') + ')' : undefined;
+                                break;
+                            case matchModes.between:
+                                fieldValue =  field.value.length ? _.join(_.map(field.value, function (val) {
+                                    return getFieldValue(val, field.type);
+                                }), ' and ') : undefined;
+                                break;
+                            default:
+                                fieldValue = getFieldValue(field.value, field.type);
+                            }
+                            matchModeExpr  = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
+                            param          = WM.isDefined(fieldValue) ? Utils.replace(matchModeExpr, [field.column, fieldValue]) : '';
+                        }
+                        if (param) {
+                            whereParams.push(param);
                         }
                     });
-                    whereClause = whereClause.slice(0, logicalOpSliceLength);
+                    whereClause = whereParams.length ? ' WHERE ' + _.join(whereParams, logicalOp) : '';
                 } else if (!WM.element.isEmptyObject(options.filterFields)) {
                     whereClause = " WHERE ";
                     WM.forEach(options.filterFields, function (field, fieldName) {
