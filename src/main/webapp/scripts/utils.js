@@ -2502,4 +2502,5 @@ WM.module('wm.utils', [])
         this.formatDate                 = formatDate;
         this.getBlob                    = getBlob;
         this.getMetaDataFromData        = getMetaDataFromData;
+        this.isAppleProduct             = isAppleProduct;
     }]);

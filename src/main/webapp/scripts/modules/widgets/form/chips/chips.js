@@ -4,7 +4,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chips.html',
-            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" ng-keydown="handleDeleteKeyPressEvent($event)" listen-property="dataset"' +
+            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" ng-keydown="handleDeleteKeyPressEvent($event)" tabindex="0" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
                     '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-dblclick="makeEditable(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
@@ -80,11 +80,14 @@ WM.module('wm.widgets.form')
                     ignoreUpdate = false;
                     return;
                 }
-                var values;
+                var values,
+                    chip;
                 if (!WM.isArray(chips)) {
                     values  = _.split(chips, ',');
                     chips   = _.map(values, function (ele) {
-                        return constructChip(ele);
+                        //find chip object from dataset to get value and img source
+                        chip =  _.find($s.chips, {'key' : ele});
+                        return constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc'));
                     });
                 }
                 $s.selectedChips = chips;
@@ -254,7 +257,8 @@ WM.module('wm.widgets.form')
                 if (key === KEYS.ENTER) {
                     $s.addItem($event);
                     stopEvent($event);
-                } else if (key === KEYS.BACKSPACE) {
+                } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
+                    //Only in case of apple product remove the chip on click of delete button
                     if (!length || $s.dropdown.open) {
                         return;
                     }
@@ -270,6 +274,7 @@ WM.module('wm.widgets.form')
                         //set last tag as active
                         $s.setActiveStates(lastTag);
                     }
+                    stopEvent($event);
                 }
             }
 
@@ -287,7 +292,7 @@ WM.module('wm.widgets.form')
 
             //Handle chip active behavior based on the multiple property
             function setActiveStates($s, currChip) {
-                var index = _.findIndex($s.selectedChips, currChip),
+                var index = _.findLastIndex($s.selectedChips, currChip),
                     value;
                 //In case of multiple property set to true, multiple chips can be selected  at a time
                 if ($s.multiple && index > -1) {
