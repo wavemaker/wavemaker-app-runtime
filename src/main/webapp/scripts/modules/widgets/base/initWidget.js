@@ -1,4 +1,4 @@
-/*global WM, _, wm, $, document, moment*/
+/*global WM, _, wm, $, document*/
 /**
  * @ngdoc directive
  * @name wm.widgets.directive:initWidget
@@ -82,6 +82,7 @@ WM.module('wm.widgets.base')
                     $currentEl,
                     $listEl,
                     $formEl;
+
                 if ($dialogEl.length) {
                     $s = WM.element('[name="CommonPage"]').scope();
                 }
@@ -98,8 +99,8 @@ WM.module('wm.widgets.base')
                             _.includes(customEvtName, '.new') ||
                             _.includes(customEvtName, '.reset') ||
                             _.includes(customEvtName, '.save'))) {
-                            $s            = $formEl.isolateScope();
-                            customEvtName = customEvtName.split('.')[2];
+                                $s = $formEl.isolateScope();
+                                customEvtName = customEvtName.split('.')[2];
                         }
                     }
                 }
@@ -115,14 +116,15 @@ WM.module('wm.widgets.base')
                 $rs._handleAppCustomEvent = handleAppCustomEvent;
             }
 
+            function isActiveNavItem(fnName) {
+                var prefix = 'Variables.goToPage',
+                    suffix = $routeParams.name + '.invoke()';
+                return (fnName === prefix + '_' + suffix) || (fnName === prefix + '-' + suffix);
+            }
+
             function overrideEventHandlers($is, $s, $el, attrs) {
 
                 var wp = $is.widgetProps;
-
-                function isActiveNavItem(fnName) {
-                    return fnName === 'Variables.goToPage_' + $routeParams.name + '.invoke()' ||
-                        fnName === 'Variables.goToPage-' + $routeParams.name + '.invoke()';
-                }
 
                 _.keys(attrs)
                     .filter(function (attrName) {
@@ -365,7 +367,7 @@ WM.module('wm.widgets.base')
                 var widgetProps = $is.widgetProps;
 
                 _.forEach($tEl.context.attributes, function (attr) {
-                    var attrName = attr.name,
+                    var attrName  = attr.name,
                         attrValue = attr.value.trim(),
                         attrNameInCamelCase,
                         fn;
@@ -431,8 +433,8 @@ WM.module('wm.widgets.base')
                                 $is.show = true;
                                 _.set($is.widgetProps, 'deferload.show', true);
                             } else {
-                                watchExpr = nv.replace('bind:', '');
-                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, propDetails, watchExpr, $el);
+                                watchExpr      = nv.replace('bind:', '');
+                                listenerFn     = onWatchExprValueChange.bind(undefined, $is, $s, key, propDetails, watchExpr, $el);
                                 _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray}, key);
                             }
                         } else {
