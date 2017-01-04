@@ -216,7 +216,7 @@ WM.module('wm.widgets.advanced')
                     if (isMobile) {
                         $tc.put('template/widget/calendar.html',
                             '<div init-widget has-model apply-styles="shell" class="app-date" listen-property="dataset" >' +
-                                '<div uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions"></div>' +
+                                '<div uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions" apply-styles="inner-shell"></div>' +
                             '</div>');
                     } else {
                         $tc.put('template/widget/calendar.html',

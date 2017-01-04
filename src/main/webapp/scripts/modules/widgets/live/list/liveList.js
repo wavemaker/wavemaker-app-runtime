@@ -20,7 +20,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
-                    '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude >' +
+                    '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude apply-styles="scrollable-container">' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin" ng-show="loadingicon"></i><span ng-show="!loadingicon">{{loadingdatamsg}}</span></span></div>' +
@@ -75,7 +75,6 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_end,
                 notifyFor = {
                     'dataset'     : true,
-                    'height'      : true,
                     'groupby'     : true,
                     'navigation'  : CONSTANTS.isStudioMode,
                     'itemsperrow' : true,
@@ -847,11 +846,6 @@ WM.module('wm.widgets.live')
 
                 //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
-                case 'height':
-                    if (nv) {
-                        $el.find('> .app-livelist-container').css({'height': nv, 'overflow': 'auto'});
-                    }
-                    break;
                 case 'dataset':
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);

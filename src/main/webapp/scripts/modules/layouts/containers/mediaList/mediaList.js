@@ -5,11 +5,11 @@
 WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($tc) {
         'use strict';
-        $tc.put('template/widget/medialist-design.html', '<div class="app-medialist" listen-property="dataset" init-widget apply-styles="shell"><div wmtransclude></div></div>');
+        $tc.put('template/widget/medialist-design.html', '<div class="app-medialist" listen-property="dataset" init-widget apply-styles="shell"><div wmtransclude apply-styles="inner-shell"></div></div>');
 
         $tc.put('template/widget/medialist.html',
-            '<div class="app-medialist" ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
-                '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude></ul>' +
+            '<div class="app-medialist" ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget apply-styles="shell">' +
+                '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude apply-styles="inner-shell"></ul>' +
                 '<div class="app-media-fullscreen" ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
                     '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
                     '<wm-content>' +
