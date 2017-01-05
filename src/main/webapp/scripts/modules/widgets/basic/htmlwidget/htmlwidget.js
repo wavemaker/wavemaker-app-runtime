@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/htmlTemplate.html',
-            '<div class="app-html-container" init-widget title="{{hint}}" apply-styles="scrollable-container">' +
+            '<div class="app-html-container" init-widget title="{{hint}}" apply-styles>' +
             '</div>'
             );
     }])
@@ -13,7 +13,8 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.html', ['wm.base', 'wm.base.editors', 'wm.containers', 'wm.containers.borderstyle', 'wm.base.events']),
             notifyFor = {
-                'content': true
+                'content': true,
+                'height' : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -21,6 +22,9 @@ WM.module('wm.widgets.basic')
             switch (key) {
             case 'content':
                 element.html(newVal);
+                break;
+            case 'height':
+                element.css('overflow', newVal ? 'auto': '');
                 break;
             }
         }

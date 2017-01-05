@@ -31,7 +31,8 @@ WM.module('wm.widgets.form')
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
-                    'dataset': true
+                    'dataset': true,
+                    'height': true
                 },
                 COMMA_SEP_STRING = 1,
                 ARRAY_STRINGS = 2,
@@ -132,6 +133,9 @@ WM.module('wm.widgets.form')
                 switch (key) {
                 case 'dataset':
                     updateSwitchOptions(scope, element, newVal);
+                    break;
+                case 'height':
+                    element.css('overflow', newVal ? 'auto': '');
                     break;
                 }
             }

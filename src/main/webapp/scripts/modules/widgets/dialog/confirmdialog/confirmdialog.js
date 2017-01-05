@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/confirmdialog.html",
-                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget>' +
+                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget apply-styles="container">' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
