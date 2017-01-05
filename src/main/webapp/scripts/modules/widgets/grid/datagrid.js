@@ -2112,7 +2112,7 @@ $.widget('wm.datagrid', {
             template;
         widget = widget === 'number' ? 'text' : widget;
         widget = widget === 'autocomplete' ? 'search' : widget;
-        template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange()" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
+        template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange(\'' + fieldName + '\',\'' + field.type + '\')" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
         switch (field.filterwidget) {
         case 'number':
             template += ' type="number" ';

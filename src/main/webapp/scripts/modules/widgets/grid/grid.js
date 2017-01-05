@@ -1,4 +1,4 @@
-/*global WM, wmGrid, confirm, window, wm, _, $*/
+/*global WM, wmGrid, confirm, window, wm, _, $, moment*/
 /*jslint sub: true */
 /*jslint todo: true */
 
@@ -923,14 +923,24 @@ WM.module('wm.widgets.grid')
                 }
                 return dataObject;
             }
+            //Get search value based on the time
+            function getSearchValue(value, type) {
+                if (Utils.isNumberType(type)) {
+                    return _.toNumber(value);
+                }
+                if (type === 'datetime') {
+                    return moment(value).valueOf();
+                }
+                return _.toString(value).toLowerCase();
+            }
             //Filter the data based on the search value and conditions
             function getFilteredData(data, searchObj) {
-                var searchVal = _.toString(searchObj.value).toLowerCase(),
+                var searchVal    = getSearchValue(searchObj.value, searchObj.type),
                     currentVal;
                 data = _.filter(data, function (obj) {
                     var isExists;
                     if (searchObj.field) {
-                        currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                        currentVal = getSearchValue(_.get(obj, searchObj.field), searchObj.type);
                     } else {
                         currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
                     }
@@ -950,14 +960,32 @@ WM.module('wm.widgets.grid')
                     case 'null':
                         isExists = _.isNull(currentVal, searchVal);
                         break;
+                    case 'isnotnull':
+                        isExists = !_.isNull(currentVal, searchVal);
+                        break;
                     case 'empty':
                         isExists = _.isEmpty(currentVal, searchVal);
+                        break;
+                    case 'isnotempty':
+                        isExists = !_.isEmpty(currentVal, searchVal);
                         break;
                     case 'nullorempty':
                         isExists = _.isNull(currentVal, searchVal) || _.isEmpty(currentVal, searchVal);
                         break;
+                    case 'lessthan':
+                        isExists = currentVal < searchVal;
+                        break;
+                    case 'lessthanequal':
+                        isExists = currentVal <= searchVal;
+                        break;
+                    case 'greaterthan':
+                        isExists = currentVal > searchVal;
+                        break;
+                    case 'greaterthanequal':
+                        isExists = currentVal >= searchVal;
+                        break;
                     default:
-                        isExists = _.includes(currentVal, searchVal);
+                        isExists = Utils.isNumberType(searchObj.type) ? _.isEqual(currentVal, searchVal) : _.includes(currentVal, searchVal);
                         break;
                     }
                     return isExists;
@@ -2016,15 +2044,20 @@ WM.module('wm.widgets.grid')
                 });
             }
             //Function to be executed on any row filter change
-            function onRowFilterChange() {
+            function onRowFilterChange(fieldName, type) {
                 var searchObj = [];
                 //Convert row filters to a search object and call search handler
                 _.forEach($is.rowFilter, function (value, key) {
-                    if (WM.isDefined(value.value) || _.includes($is.emptyMatchModes, value.matchMode)) {
+                    if ((WM.isDefined(value.value) && value.value !== '') || _.includes($is.emptyMatchModes, value.matchMode)) {
+                        if (key === fieldName) {
+                            value.type      = value.type || type;
+                            value.matchMode = value.matchMode || _.get($is.matchModeTypesMap[type], 0);
+                        }
                         searchObj.push({
                             'field'     : key,
                             'value'     : value.value,
-                            'matchMode' : value.matchMode
+                            'matchMode' : value.matchMode,
+                            'type'      : value.type
                         });
                     }
                 });
