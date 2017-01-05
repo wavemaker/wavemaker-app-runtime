@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import com.wavemaker.runtime.data.export.DataType;
 import com.wavemaker.runtime.data.export.ExportBuilder;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
+import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 
@@ -47,13 +48,14 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         Row colHeaderRow = sheet.createRow(STARTING_ROW_NUMBER);
         for (final ReturnProperty returnProperty : returnPropertyList) {
             FieldType fieldType = returnProperty.getFieldType();
-            FieldType.Type type = fieldType.getType();
-            if (type == FieldType.Type.SIMPLE) {
+            ReferenceType type = fieldType.getType();
+            if (type == ReferenceType.PRIMITIVE) {
                 CellUtil.createCell(colHeaderRow, colNum, returnProperty.getName(),
                         columnHeaderStyle(sheet.getWorkbook()));
                 colNum++;
-            } else if (type == FieldType.Type.REFERENCE) {
-                colNum = addEntityTypeColumnHeaders(colHeaderRow, colNum, Class.forName(fieldType.getRef()), "", true);
+            } else if (type == ReferenceType.ENTITY) {
+                colNum = addEntityTypeColumnHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()), "",
+                        true);
             }
         }
     }
@@ -67,13 +69,14 @@ public class HQLQueryExportBuilder extends ExportBuilder {
             for (final ReturnProperty returnProperty : returnPropertyList) {
                 Object data = results.get(colNum);
                 FieldType fieldType = returnProperty.getFieldType();
-                FieldType.Type type = fieldType.getType();
+                ReferenceType type = fieldType.getType();
                 Cell cell = dataRow.createCell(colNum);
-                if (type == FieldType.Type.SIMPLE) {
+                if (type == ReferenceType.PRIMITIVE) {
                     DataSourceExporterUtil.setCellValue(data, cell);
                     colNum++;
-                } else if (type == FieldType.Type.REFERENCE) {
-                    colNum = addEntityTypeColumnData(data, dataRow, colNum, Class.forName(fieldType.getRef()), true);
+                } else if (type == ReferenceType.ENTITY) {
+                    colNum = addEntityTypeColumnData(data, dataRow, colNum, Class.forName(fieldType.getTypeRef()),
+                            true);
                 }
             }
             rowNum++;

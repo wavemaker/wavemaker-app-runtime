@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wavemaker.runtime.data.model.ReferenceType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -11,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class FieldType {
 
-    private Type type;
-    private String ref;
+    private ReferenceType type;
+    private String typeRef;
 
     private boolean list;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -22,26 +23,26 @@ public class FieldType {
         this.properties = new ArrayList<>();
     }
 
-    public FieldType(final Type type, final String ref) {
+    public FieldType(final ReferenceType type, final String typeRef) {
         this();
         this.type = type;
-        this.ref = ref;
+        this.typeRef = typeRef;
     }
 
-    public Type getType() {
+    public ReferenceType getType() {
         return type;
     }
 
-    public void setType(final Type type) {
+    public void setType(final ReferenceType type) {
         this.type = type;
     }
 
-    public String getRef() {
-        return ref;
+    public String getTypeRef() {
+        return typeRef;
     }
 
-    public void setRef(final String ref) {
-        this.ref = ref;
+    public void setTypeRef(final String typeRef) {
+        this.typeRef = typeRef;
     }
 
     public List<ReturnProperty> getProperties() {
@@ -58,11 +59,5 @@ public class FieldType {
 
     public void setList(final boolean list) {
         this.list = list;
-    }
-
-    public enum Type {
-        SIMPLE,
-        REFERENCE,
-        COMPOSED
     }
 }

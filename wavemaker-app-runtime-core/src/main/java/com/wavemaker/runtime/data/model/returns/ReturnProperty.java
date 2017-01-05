@@ -9,6 +9,7 @@ public class ReturnProperty {
     private String name;
     private String fieldName;
 
+    private boolean optional;
     private FieldType fieldType;
 
     public ReturnProperty() {
@@ -47,5 +48,13 @@ public class ReturnProperty {
 
     public void setFieldType(final FieldType fieldType) {
         this.fieldType = fieldType;
+    }
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(final boolean optional) {
+        this.optional = optional;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
+import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.queries.QueryType;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.model.returns.FieldType;
@@ -114,7 +115,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     }
 
     private List<ReturnProperty> getMetaForDML() {
-        return Collections.singletonList(new ReturnProperty(null, new FieldType(FieldType.Type.SIMPLE, Integer
+        return Collections.singletonList(new ReturnProperty(null, new FieldType(ReferenceType.PRIMITIVE, Integer
                 .class.getName())));
     }
 }

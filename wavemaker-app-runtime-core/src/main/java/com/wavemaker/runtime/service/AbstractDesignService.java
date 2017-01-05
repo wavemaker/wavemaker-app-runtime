@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.studio.common.util.StringTemplate;
@@ -52,12 +53,12 @@ public abstract class AbstractDesignService {
                     if (value instanceof Collection) {
                         fieldType = new FieldType();
                         fieldType.setList(true);
-                        fieldType.setType(FieldType.Type.COMPOSED);
+                        fieldType.setType(ReferenceType.CUSTOM);
                         fieldType.setProperties(extractMetaFromResults(((Collection) value)));
                     } else {
                         String type = value == null ? String.class.getName() : value.getClass()
                                 .getName();
-                        fieldType = new FieldType(FieldType.Type.SIMPLE, type);
+                        fieldType = new FieldType(ReferenceType.PRIMITIVE, type);
                     }
                     properties.add(new ReturnProperty(entry.getKey(), fieldType));
                 }

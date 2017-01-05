@@ -22,6 +22,7 @@ import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
@@ -86,15 +87,15 @@ public class HQLQueryUtils {
                 fieldType.setList(true);
             }
             if (type.isAssociationType()) {
-                fieldType.setType(FieldType.Type.REFERENCE);
+                fieldType.setType(ReferenceType.ENTITY);
             } else {
-                fieldType.setType(FieldType.Type.SIMPLE);
+                fieldType.setType(ReferenceType.PRIMITIVE);
             }
             if (type instanceof AbstractStandardBasicType) {
                 typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
             }
 
-            fieldType.setRef(typeRef);
+            fieldType.setTypeRef(typeRef);
             property.setFieldType(fieldType);
 
             properties.add(property);
