@@ -75,7 +75,10 @@ WM.module('wm.widgets.basic')
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
+                    //if the service variable is bound, then in run mode ignore the show property set on the spinner
+                    if (attrs.servicevariabletotrack && !scope.widgetid) {
+                        scope.show = false;
+                    }
                     scope.iconclass = scope.iconclass || 'fa fa-spinner';
                     element.removeClass('animated ' + scope.animation);
 
