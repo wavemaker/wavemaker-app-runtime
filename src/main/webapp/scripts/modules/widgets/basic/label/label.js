@@ -5,14 +5,15 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/label.html',
-            '<label class="app-label" title="{{hint}}" init-widget apply-styles ng-class="{required:required}"></label>'
+            '<label class="app-label" title="{{hint}}" init-widget apply-styles></label>'
             );
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.label', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events']),
             notifyFor = {
-                'caption': true
+                'caption' : true,
+                'required': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -20,6 +21,13 @@ WM.module('wm.widgets.basic')
             switch (key) {
             case 'caption':
                 Utils.setNodeContent(element, newVal);
+                break;
+            case 'required':
+                if (newVal && newVal !== 'false') {
+                    element.addClass('required');
+                } else {
+                    element.removeClass('required');
+                }
                 break;
             }
         }
