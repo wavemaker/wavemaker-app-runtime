@@ -903,11 +903,6 @@ WM.module('wm.widgets.live')
                                     scope.variableName = Utils.getVariableName(scope);
                                     scope.variableObj  = elScope.Variables && elScope.Variables[scope.variableName];
                                 } else {
-                                    /*If variable binding has been removed empty the form and the variableName*/
-                                    if (CONSTANTS.isStudioMode) {
-                                        element.find('.form-elements').empty();
-                                        element.find('.hidden-form-elements').empty();
-                                    }
                                     scope.variableName = '';
                                     scope.variableObj  = undefined;
                                     /*When initially a variable is bound to the live-form the form is constructed and the
