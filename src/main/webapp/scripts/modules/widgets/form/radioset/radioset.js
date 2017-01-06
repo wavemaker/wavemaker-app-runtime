@@ -36,7 +36,7 @@ WM.module('wm.widgets.form')
             if (radioValue || radioValue === false) {
                 selectedValue = radioValue;
             } else {
-                selectedValue = scope.selectedvalue || (WM.isDefined(scope._model_) ? scope._model_ : undefined);
+                selectedValue = WM.isDefined(scope.selectedvalue) ? scope.selectedvalue : ((WM.isDefined(scope._model_) ? scope._model_ : undefined));
             }
 
             scope._model_ = FormWidgetUtils.getModelValue(scope, dataSet, selectedValue, radioValue);

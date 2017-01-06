@@ -34,7 +34,7 @@ WM.module('wm.widgets.form')
                 selectedValues.push(checkboxValue);
             } else if (scope.selectedvalues === '') {
                 scope._model_ = [];
-            } else if (scope.selectedvalues) {
+            } else if (WM.isDefined(scope.selectedvalues)) {
                 selectedValues = Utils.convertToArray(scope.selectedvalues);
                 scope._model_ = [];
             } else {
@@ -54,7 +54,8 @@ WM.module('wm.widgets.form')
 
         function constructCheckboxSet(scope, element, dataSet) {
             var template,
-                compiledTemplate;
+                compiledTemplate,
+                $headerEle;
             scope.dataObject = {};
             scope.dataKeys = [];
             scope.checkedValues = {};
@@ -69,7 +70,7 @@ WM.module('wm.widgets.form')
             element.empty().append(compiledTemplate);
 
             if (CONSTANTS.isStudioMode && scope.groupFields) {
-                var $headerEle = element.closest('.property-value').find('.fixed-header');
+                $headerEle = element.closest('.property-value').find('.fixed-header');
                 FormWidgetUtils.setFixedHeader(element, $headerEle);
             }
             /*register a click event handler for the radio*/
@@ -176,7 +177,7 @@ WM.module('wm.widgets.form')
                             return true;
                         }
                         /*If the dataobject is present in model, return true*/
-                        return (dataObject && WM.isArray(model) && model.some(function (el) {
+                        return (WM.isDefined(dataObject) && WM.isArray(model) && model.some(function (el) {
                             if (_.isObject(el)) {
                                 return WM.equals(dataObject, el);
                             }

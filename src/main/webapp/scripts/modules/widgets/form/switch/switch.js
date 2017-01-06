@@ -55,7 +55,7 @@ WM.module('wm.widgets.form')
 
             function setSelectedValue(scope) {
                 var options = scope.options;
-                if (scope._model_) {
+                if (WM.isDefined(scope._model_)) {
                     options.some(function (opt, index) {
 
                         if (_.isEqual(scope._model_, opt)
@@ -135,7 +135,7 @@ WM.module('wm.widgets.form')
                     updateSwitchOptions(scope, element, newVal);
                     break;
                 case 'height':
-                    element.css('overflow', newVal ? 'auto': '');
+                    element.css('overflow', newVal ? 'auto' : '');
                     break;
                 }
             }

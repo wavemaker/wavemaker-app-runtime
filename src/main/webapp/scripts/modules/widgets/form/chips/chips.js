@@ -42,9 +42,8 @@ WM.module('wm.widgets.form')
         'PropertiesFactory',
         'WidgetUtilService',
         'Utils',
-        'CONSTANTS',
         'FormWidgetUtils',
-        function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, FormWidgetUtils) {
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -354,7 +353,7 @@ WM.module('wm.widgets.form')
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, $el, key, newVal, oldVal) {
+            function propertyChangeHandler($s, $el, key) {
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
@@ -390,20 +389,19 @@ WM.module('wm.widgets.form')
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         if (!attrs.widgetid) {
-                            var data;
                             Object.defineProperty($is, '_model_', {
                                 get: function () {
                                     return this._proxyModel;
                                 },
                                 set: function (newVal) {
                                     this._proxyModel = newVal;
-                                    if (!newVal) {
+                                    if (WM.isDefined(newVal)) {
+                                        /*Handling the script usecase
+                                         Update the selected options when the _model_ is updated while adding or deleting or editing a chip*/
+                                        updateSelectedChips(newVal, $is);
+                                    } else {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
-                                    } else {
-                                        /*Handling the script usecase
-                                        Update the selected options when the _model_ is updated while adding or deleting or editing a chip*/
-                                        updateSelectedChips(newVal, $is);
                                     }
                                 }
                             });

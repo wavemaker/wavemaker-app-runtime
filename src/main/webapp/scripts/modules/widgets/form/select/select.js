@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
             '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'FormWidgetUtils', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, FormWidgetUtils, Utils) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'Utils', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
@@ -93,7 +93,7 @@ WM.module('wm.widgets.form')
             /* to check if the function is not triggered from onChangeProxy */
             if (!_modelChangedManually[scope.$id]) {
                 if (scope.datafield !== ALLFIELDS) {
-                    _modelProxy = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
+                    _modelProxy = WM.isObject(_model_) ? _model_ : WM.isDefined(_model_) && _model_.toString();
                     scope.modelProxy = _modelProxy;
                     if (WM.isDefined(_modelProxy)) {
                         setDisplayValFromModelProxy(scope, _modelProxy);
