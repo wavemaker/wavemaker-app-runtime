@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +37,11 @@ public class NativeProcedureExecutor {
             configureParameters(statement, params);
             final boolean resultSetType = statement.execute();
 
-            Map<String, Object> result;
+            Map<String, Object> result = new LinkedHashMap<>();
             if (resultSetType) {
-                result = new HashMap<>(1);
                 result.put("content", readResultSet(statement.getResultSet()));
-            } else {
-                result = readResponse(statement, params);
             }
+            result.putAll(readResponse(statement, params));
             return convert(result, type);
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
