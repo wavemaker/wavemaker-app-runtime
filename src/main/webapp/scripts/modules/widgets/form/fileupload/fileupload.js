@@ -392,11 +392,28 @@ WM.module('wm.widgets.form')
          * @returns {*}
          */
         function getPropertyType($is, prop) {
-            var variable, type;
+            var variable, type,
+                types = $rootScope.dataTypes;
             switch (prop) {
             case 'uploadedFiles':
                 variable = Variables.filterByVariableKeys({'service' : $is.service, 'operation' : $is.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
                 type = variable && variable.type;
+                break;
+            case 'selectedFiles':
+                type = $is.widgettype + '_' + prop;
+                types[type] = {
+                    'fields': {
+                        'name': {
+                            'type': 'string'
+                        },
+                        'size': {
+                            'type': 'number'
+                        },
+                        'type': {
+                            'type': 'string'
+                        }
+                    }
+                };
                 break;
             }
             return type;
