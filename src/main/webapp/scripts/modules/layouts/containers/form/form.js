@@ -284,20 +284,20 @@ WM.module('wm.layouts.containers')
                     }, function (data) {
                         toggleMessage(scope, scope.postmessage, 'success');
                         onResult(scope, data, 'success', event);
-                        scope.onSubmit(params);
+                        Utils.triggerFn(scope.onSubmit, params);
                         LiveWidgetUtils.closeDialog(element);
                     }, function (errMsg) {
                         template = scope.errormessage || errMsg;
                         toggleMessage(scope, template, 'error');
                         onResult(scope, errMsg, 'error', event);
-                        scope.onSubmit(params);
+                        Utils.triggerFn(scope.onSubmit, params);
                     });
                 } else if (formVariable) {
                     /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
                     $timeout(function () {
                         $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
                     });
-                    scope.onSubmit(params);
+                    Utils.triggerFn(scope.onSubmit, params);
                     LiveWidgetUtils.closeDialog(element);
                 }
             }
