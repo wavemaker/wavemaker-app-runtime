@@ -1460,7 +1460,7 @@ $.widget('wm.datagrid', {
             $cancelButton = $row.find('.cancel-edit-row-button'),
             $saveButton = $row.find('.save-edit-row-button'),
             $deleteButton = $row.find('.delete-row-button'),
-            rowData = this.options.data[$row.attr('data-row-id')] || {},
+            rowData = _.cloneDeep(this.options.data[$row.attr('data-row-id')]) || {},
             self = this,
             rowId = parseInt($row.attr('data-row-id'), 10),
             isNewRow,
