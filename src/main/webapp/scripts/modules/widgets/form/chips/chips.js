@@ -25,8 +25,7 @@ WM.module('wm.widgets.form')
                             ' typeahead-editable="!allowonlyselect"' +
                             ' typeahead-min-length="1"' +
                             ' ng-model-options="{debounce: 200}" typeahead-is-open="dropdown.open"' +
-                            ' typeahead-template-url="template/widget/form/chipsSearch.html"' +
-                            ' autofocus="false">' +
+                            ' typeahead-template-url="template/widget/form/chipsSearch.html">' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
             '</ul>'
@@ -131,10 +130,23 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            //get the boolean value
+            function getBooleanValue(val) {
+                if (val === true || val === 'true') {
+                    return true;
+                }
+                if (val === false || val === 'false') {
+                    return false;
+                }
+                return val;
+            }
+
             //Handle editable state of chip
             function makeEditable($s, chip) {
+                //editable is internal property used in security owasp tab
+                $s.editable = getBooleanValue($s.editable);
                 //In case of readonly user cannot edit chips
-                if ($s.readonly) {
+                if ($s.readonly || $s.editable === false) {
                     return;
                 }
                 //Making all non-editable false

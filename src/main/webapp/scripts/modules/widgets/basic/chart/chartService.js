@@ -191,17 +191,6 @@ WM.module('wm.widgets.basic')
                 }
             }
 
-            //get the boolean value
-            function getBooleanValue(val) {
-                if (val === true || val === 'true') {
-                    return true;
-                }
-                if (val === false || val === 'false') {
-                    return false;
-                }
-                return val;
-            }
-
             //Returns labels config
             function getLabelValues(showlabels, showlabelsoutside, prop) {
                 var labelsConfig = {};
