@@ -192,7 +192,11 @@ wm.plugins.database.services.LocalDBManager = [
             return getMetaInfo(/.+_query\.json$/)
                 .then(function (queriesByDBs) {
                     queriesByDBs = _.isArray(queriesByDBs) ? queriesByDBs : [queriesByDBs];
-                    queriesByDBs = _.map(queriesByDBs, compactQueries);
+
+                    queriesByDBs = _.chain(queriesByDBs)
+                                        .map(compactQueries)
+                                        .filter('name').value();
+
                     _.forEach(queriesByDBs, function (queriesByDB) {
                         var queries = {};
                         _.forEach(queriesByDB.queries, function (query) {
