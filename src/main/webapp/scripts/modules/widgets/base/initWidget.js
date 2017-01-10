@@ -898,15 +898,16 @@ WM.module('wm.widgets.base')
         function ($rs, Utils, CONSTANTS, $interval) {
             'use strict';
 
-            var regex            = /\[\$i\]/g,
-                $I               = '[$i]',
-                $0               = '[0]',
-                watchers         = [],
-                TFNWatchers      = [], // contains timeFromNow watchers
-                VARIABLE_REGEX   = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
-                DATASET_REGEX    = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
-                TFN_FILTER_REGEX = /\s*\|\s*timeFromNow/, //Reg exp to match expr which has | timeFromNow filter applied
-                TFN_INTERVAL     = 60000, //One minute
+            var regex             = /\[\$i\]/g,
+                $I                = '[$i]',
+                $0                = '[0]',
+                watchers          = [],
+                TFNWatchers       = [], // contains timeFromNow watchers
+                VARIABLE_REGEX    = /Variables\.(\w*)\.dataSet\[\$i\]/g, //Reg exp to match all Variables which has dataSet[$i];
+                DATASET_REGEX     = /Variables\.(\w*)\.dataSet$/, //Reg exp to match expr which is only dataSet
+                TFN_FILTER_REGEX  = /\s*\|\s*timeFromNow/, //Reg exp to match expr which has | timeFromNow filter applied
+                TFN_INTERVAL      = 60000, //One minute
+                FILE_UPLOAD_REGEX = /Widgets\.\w+\.selectedFiles/,  //Reg exp to match expr which has selected files property of fileupload widget
                 interval,
                 _registerWatchers;
 
@@ -973,7 +974,7 @@ WM.module('wm.widgets.base')
                         if (!watcher.deRegister.skip) {
                             if (watcher.$s && !watcher.$s.$$destroyed) {
                                 // when bound to FileUpload widget, use $watchCollection instead of $watch
-                                if (_.endsWith(watcher.expr, 'selectedFiles') && _.includes(watcher.expr, 'Widgets.')) {
+                                if (FILE_UPLOAD_REGEX.test(watcher.expr)) {
                                     watcher.deRegister.destroy = watcher.$s.$watchCollection(watcher.expr, watcher.listener, watcher.deepWatch);
                                 } else {
                                     watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
