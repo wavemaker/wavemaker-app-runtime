@@ -2505,7 +2505,11 @@ WM.module('wm.widgets.grid')
             'compile': function (tElement) {
                 return {
                     'pre': function (scope, element, attrs) {
-
+                        //Get the form widget scope in edit mode
+                        function getFormWidgetScope(fieldName) {
+                            var $el = scope.datagridElement.find('[data-field-name="' + fieldName + '"]');
+                            return $el.isolateScope();
+                        }
                         /*
                          * Class : ColumnDef
                          * Description : ColumnDef is intermediate class which extends FieldDef base class
@@ -2528,17 +2532,19 @@ WM.module('wm.widgets.grid')
                         scope.fieldDef.prototype = new wm.baseClasses.FieldDef();
                         scope.fieldDef.prototype.setProperty = function (property, newval) {
                             //Get the scope of the current editable widget and set the value
-                            var $el     = scope.datagridElement.find('[data-field-name="' + this.field + '"]'),
-                                elScope = $el.isolateScope();
+                            var elScope = getFormWidgetScope(this.field);
                             property = property === 'value' ? 'datavalue' : property;
                             elScope[property] = newval;
                         };
                         scope.fieldDef.prototype.getProperty = function (property) {
                             //Get the scope of the current editable widget and get the value
-                            var $el     = scope.datagridElement.find('[data-field-name="' + this.field + '"]'),
-                                elScope = $el.isolateScope();
+                            var elScope = getFormWidgetScope(this.field);
                             property = property === 'value' ? 'datavalue' : property;
                             return elScope[property];
+                        };
+                        scope.fieldDef.prototype.focus = function () {
+                            var elScope = getFormWidgetScope(this.field);
+                            elScope.focus();
                         };
 
                         var index,
