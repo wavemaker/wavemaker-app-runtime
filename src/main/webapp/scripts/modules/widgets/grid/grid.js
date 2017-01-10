@@ -624,7 +624,8 @@ WM.module('wm.widgets.grid')
                          * the "dataNavigatorWatched" value is reset.*/
                         handlers.push($is.$watch('binddataset', function (newVal, oldVal) {
                             var widgetName,
-                                variableType;
+                                variableType,
+                                boundToInnerDataSet;
                             if (newVal !== oldVal) {
                                 $is.dataNavigatorWatched = false;
                                 if ($is.dataNavigator) {
@@ -640,14 +641,19 @@ WM.module('wm.widgets.grid')
                                 $is.variableType            = variableType = $is.variable.category;
                                 $is.isBoundToStaticVariable = variableType === 'wm.Variable';
                                 $is.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
+                                boundToInnerDataSet         = _.includes(newVal, 'dataSet.');
                                 if ($is.isBoundToLiveVariable) {
-                                    $is.isBoundToLiveVariableRoot = newVal.indexOf('dataSet.') === -1 && newVal.indexOf('selecteditem') === -1;
+                                    $is.isBoundToLiveVariableRoot = !boundToInnerDataSet;
                                 } else {
                                     $is.isBoundToServiceVariable = variableType === 'wm.ServiceVariable';
                                     if ($is.isBoundToServiceVariable && $is.variable.serviceType === 'DataService') {
                                         $is.isBoundToProcedureServiceVariable = $is.variable.controller === 'ProcedureExecution';
                                         $is.isBoundToQueryServiceVariable     = $is.variable.controller === 'QueryExecution';
                                     }
+                                }
+                                if (boundToInnerDataSet) {
+                                    //If bound to inner dataset, defualt value is not present. So, dataset watch may not be triggered. To prevent loading icon showing continuously, show no data found.
+                                    $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                                 }
                             } else if ($is.isBoundToWidget) {
                                 widgetName                        = _.split(newVal, '.')[1];

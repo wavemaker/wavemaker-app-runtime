@@ -656,6 +656,10 @@ $.widget('wm.datagrid', {
         this.options.headerConfig.unshift({'field': fieldName, 'isPredefined': true});
     },
     setDefaultColsData: function (header) {
+        //If columns are not present, do not add the default columns
+        if (_.isEmpty(this.preparedHeaderData)) {
+            return;
+        }
         if (this.options.showRowIndex) {
             if (header) {
                 this.preparedHeaderData.unshift(this.customColumnDefs.rowIndex);
