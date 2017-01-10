@@ -87,10 +87,16 @@ WM.module('wm.widgets.advanced')
             }
 
             function triggerCalendarChange($is) {
-                var modelVal = $is._model_;
                 $is.prepareCalendarEvents();
                 //change the model so that the view is rendered again with the events , after the dataset is changed.
-                $is._model_ = modelVal ? new Date(modelVal) : new Date();
+                $rs.$safeApply($is, function() {
+                    $is._model_ = $is._model_ || moment().valueOf();
+                    $is.selecteddates = {
+                        'start': moment($is._model_).valueOf(),
+                        'end'  : moment($is._model_).endOf('day').valueOf()
+                    };
+                    $is.$$childHead.datepicker.refreshView();
+                });
                 $is.onEventrender({$isolateScope: $is, $scope: $is, $data: $is.eventData});
             }
 
@@ -307,9 +313,9 @@ WM.module('wm.widgets.advanced')
                             return filteredDates;
                         }
                         function onSelectProxy(start, end, jsEvent, view) {
-                            $is.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
+                            $is.selecteddates = {start: start.valueOf(), end: end.valueOf()};
                             $is.selecteddata  = setSelectedData(start, end);
-                            $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: $is.selecteddata});
+                            $is.onSelect({$start: start.valueOf(), $end: end.valueOf(), $view: view, $data: $is.selecteddata});
                         }
                         function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
                             $is.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
@@ -322,11 +328,17 @@ WM.module('wm.widgets.advanced')
                         }
 
                         function renderMobileView(viewObj) {
-                            if (!viewObj) {
+                            var startDate,
+                                endDate;
+                            if (!viewObj || !viewObj.date) {
                                 return;
                             }
-                            $is.currentview = {start: moment(viewObj.date)._d.getTime(), end: moment(viewObj.date).add(1, 'month')._d.getTime()};
-                            $is.onViewrender({$isolateScope: $is, $scope: $is, $view: $is.mobileCalendarOptions});
+                            startDate = moment(viewObj.date).startOf('month').valueOf();
+                            endDate = moment(viewObj.date).endOf('month').valueOf();
+                            $timeout(function () {
+                                $is.currentview = {start: startDate, end: endDate};
+                                $is.onViewrender({$isolateScope: $is, $scope: $is, $view: $is.mobileCalendarOptions});
+                            });
                         }
 
                         if (isMobile) {
@@ -360,7 +372,11 @@ WM.module('wm.widgets.advanced')
                                     start               = moment($is._model_),
                                     end                 = moment($is._model_).endOf('day');
                                 $is.selecteddata = selectedEventData;
-                                $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: $is, $isolateScope: $is, $data: selectedEventData});
+                                $is.selecteddates = {
+                                    'start': moment(selectedDate).valueOf(),
+                                    'end'  : moment(selectedDate).endOf('day').valueOf()
+                                };
+                                $is.onSelect({$start: start.valueOf(), $end: end.valueOf(), $view: eleScope, $scope: $is, $isolateScope: $is, $data: selectedEventData});
                                 if (selectedEventData) {
                                     $is.onEventclick({$event: this, $view: eleScope, $isolateScope: $is, $scope: $is, $data: selectedEventData});
                                 }
