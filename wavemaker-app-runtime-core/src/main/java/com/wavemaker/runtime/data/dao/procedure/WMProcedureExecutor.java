@@ -28,7 +28,7 @@ public interface WMProcedureExecutor {
     Object executeRuntimeProcedure(RuntimeProcedure procedure);
 
     @Deprecated
-    Object executeNamedProcedure(String procedureName, Map<String, Object> params);
+    List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params);
 
     @Deprecated
     List<Object> executeCustomProcedure(CustomProcedure customProcedure);

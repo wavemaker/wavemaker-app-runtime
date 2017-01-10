@@ -119,8 +119,8 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     @Override
-    public Object executeNamedProcedure(String procedureName, Map<String, Object> params) {
-        return executeNamedProcedure(procedureName, params, Object.class);
+    public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params) {
+        return NativeProcedureExecutor.convertToOldResponse(executeNamedProcedure(procedureName, params, Map.class));
     }
 
     @Override
