@@ -416,7 +416,9 @@ WM.module('wm.widgets.form')
                     labelClass,
                     type,
                     required = '',
-                    groupedKeys = {};
+                    groupedKeys = {},
+                    //Generate a unique name for inputs in widget, so that when widget is used multiple times (like livelist), each widget behaves independently
+                    uniqueName  = 'name=' + (scope.name || widgetType) + Utils.generateGUId();
                 switch (widgetType) {
                 case 'checkboxset':
                     liClass = 'checkbox app-checkbox';
@@ -427,7 +429,7 @@ WM.module('wm.widgets.form')
                     liClass = 'radio app-radio';
                     labelClass = 'app-radioset-label';
                     type = 'radio';
-                    required = ' data-ng-required="' + scope.required + '" name=' + scope.name;
+                    required = ' data-ng-required="' + scope.required + '"';
                     break;
                 }
 
@@ -446,7 +448,7 @@ WM.module('wm.widgets.form')
                         template = template +
                             '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + parsedKey + "'" + ']}">' +
                                 '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
-                                    '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + parsedKey + "'" + ']"/>' +
+                                    '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + parsedKey + "'" + ']"/>' +
                                     '<span class="caption">' + dataKey.title + '</span>' +
                                 '</label>' +
                             '</li>';
