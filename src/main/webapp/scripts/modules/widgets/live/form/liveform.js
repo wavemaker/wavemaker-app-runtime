@@ -8,16 +8,18 @@ WM.module('wm.widgets.live')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.liveform', ['wm.base', 'wm.base.events.successerror']),
             notifyFor = {
-                'dataset': true,
-                'captionsize': true,
-                'novalidate': true,
-                'autocomplete': true,
-                'rowdata': true,
-                'formdata': true,
-                'updatemode': true,
-                'formlayout': true,
-                'formtype': true,
-                'defaultmode': true
+                'dataset'         : true,
+                'captionsize'     : true,
+                'novalidate'      : true,
+                'autocomplete'    : true,
+                'rowdata'         : true,
+                'formdata'        : true,
+                'updatemode'      : true,
+                'formlayout'      : true,
+                'formtype'        : true,
+                'defaultmode'     : true,
+                'captionalign'    : true,
+                'captionposition' : true
             },
             /*check if the field is of column type time or widget type time*/
             isTimeType = function (field) {
@@ -49,7 +51,7 @@ WM.module('wm.widgets.live')
 
                 var expr = (attrs.onBackbtnclick ? ('on-backbtnclick="' + attrs.onBackbtnclick + '"') : '');
 
-                pageTemplate = '<form data-identifier="liveform" init-widget role="form" ng-show="show" class="app-device-liveform panel liveform-inline align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
+                pageTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-device-liveform panel liveform-inline" ng-class="[captionAlignClass, captionPositionClass]" ng-submit="formSave($event);" apply-styles="shell">' +
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
                                     '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
@@ -60,7 +62,7 @@ WM.module('wm.widgets.live')
                                 '<div class="hidden-form-elements"></div>' +
                         '</form>';
 
-                defaultTemplate = '<form data-identifier="liveform" init-widget ng-show="show" role="form" class="app-liveform panel app-panel liveform-inline align-{{captionalign}} position-{{captionposition}}" ng-submit="formSave($event);" apply-styles="shell">' +
+                defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass, captionPositionClass]" ng-submit="formSave($event);" apply-styles="shell">' +
                                     '<div ng-show="isLayoutDialog" class="text-left"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                     '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
                                         '<h3 class="panel-title">' +
@@ -84,7 +86,7 @@ WM.module('wm.widgets.live')
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
                     return '<div data-identifier="liveform" init-widget class="app-liveform liveform-dialog" >' +
                                 '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" contentclass="noscroll" iconclass="{{iconclass}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
-                                    '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" autocomplete="' + ((attrs.autocomplete === 'true' || attrs.autocomplete === true) ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell">' +
+                                    '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform" autocomplete="' + ((attrs.autocomplete === 'true' || attrs.autocomplete === true) ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell" ng-class="[captionAlignClass, captionPositionClass]">' +
                                         '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
                                             '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                         '</div>' +
@@ -844,7 +846,7 @@ WM.module('wm.widgets.live')
                                 elScope = element.scope();
 
                             switch (key) {
-                            case "dataset":
+                            case 'dataset':
                                 /*Process the dataset if only the data is an array*/
                                 if (newVal && newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                     if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns)) {
@@ -939,16 +941,16 @@ WM.module('wm.widgets.live')
                             case 'autocomplete':
                                 /*Set the auto complete on/off based on the input*/
                                 if (scope.formlayout !== 'dialog') {
-                                    value = (newVal === true || newVal === "true") ? 'on' : 'off';
+                                    value = (newVal === true || newVal === 'true') ? 'on' : 'off';
                                     element.attr(key, value);
                                 }
                                 break;
-                            case "rowdata":
+                            case 'rowdata':
                                 if (newVal && WM.isObject(newVal)) {
                                     scope.changeDataObject(newVal);
                                 }
                                 break;
-                            case "formdata":
+                            case 'formdata':
                                 if (newVal && WM.isObject(newVal)) {
                                     if (_.isArray(newVal)) {
                                         scope.changeDataObject(_.last(newVal));
@@ -957,10 +959,10 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                                 break;
-                            case "updatemode":
-                                scope.isUpdateMode = (newVal === true || newVal === "true");
+                            case 'updatemode':
+                                scope.isUpdateMode = (newVal === true || newVal === 'true');
                                 break;
-                            case "defaultmode":
+                            case 'defaultmode':
                                 if (newVal && newVal === 'Edit') {
                                     scope.updateMode = true;
                                 } else {
@@ -968,13 +970,19 @@ WM.module('wm.widgets.live')
                                 }
                                 scope.isUpdateMode = scope.updateMode;
                                 break;
-                            case "formlayout":
+                            case 'formlayout':
                                 scope.isLayoutDialog = newVal === 'dialog';
                                 element.toggleClass('liveform-dialog', scope.isLayoutDialog);
                                 // show backbtn event for page formlayout
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.onBackbtnclick.show = (newVal === 'page');
                                 }
+                                break;
+                            case 'captionalign':
+                                scope.captionAlignClass = 'align-' + newVal;
+                                break;
+                            case 'captionposition':
+                                scope.captionPositionClass = 'position-' + newVal;
                                 break;
                             }
                         }
