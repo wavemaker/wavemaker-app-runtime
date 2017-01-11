@@ -1487,7 +1487,7 @@ WM.module('wm.widgets.base', [])
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "number", "value": "0"},
                         "uploadedFiles": {"type": "array", "isList": true, "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('uploadedFiles')"},
-                        "selectedFiles": {"type": "array, file", "isList": true, "bindable": "in-out-bound", "show" : "false"},
+                        "selectedFiles": {"type": "array, file", "isList": true, "bindable": "in-out-bound", "show" : "false", "getTypeFrom": "expr:getPropertyType('selectedFiles')"},
                         "mode": {"type": "list", "options": ["Upload", "Select"], "value": "Upload"},
                         "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": "", "info": "/resources/uploads/"},
                         "maxfilesize": {"type": "string", "widget": "fileupload-relativepath", "value": "",  "info": "size in MB"},
