@@ -285,7 +285,6 @@ WM.module('wm.widgets.live')
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
                     constructed out of the previous object*/
                     data = $scope.constructDataObject();
-                    $scope.dataoutput = data;
                     prevData = prevformFields ? $scope.constructDataObject(true) : data;
                     try {
                         isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data});
@@ -493,6 +492,7 @@ WM.module('wm.widgets.live')
                                 formEle.find('div[name=' + formField.name + '] input').val('');
                             }
                         });
+                        $scope.constructDataObject();
                     }
                 };
                 /*clear the formFields*/
@@ -537,6 +537,7 @@ WM.module('wm.widgets.live')
                     }
                     $scope.setDefaults();
                     $scope.setPrevDataValues();
+                    $scope.constructDataObject();
                     $scope.isUpdateMode = true;
                     $scope.operationType = 'insert';
                 };
@@ -610,12 +611,8 @@ WM.module('wm.widgets.live')
                         formName            = $scope.name,
                         formFields,
                         element;
-                    if (isPreviousData) {
-                        formFields = prevformFields;
-                    } else {
-                        formFields = $scope.formFields;
-                    }
-                    formFields.forEach(function (field) {
+                    formFields = isPreviousData ? prevformFields : $scope.formFields;
+                    _.forEach(formFields, function (field) {
                         var dateTime;
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
@@ -632,9 +629,9 @@ WM.module('wm.widgets.live')
                             } else {
                                 dataObject[field.key] = undefined;
                             }
-                        } else if (field.type === "blob") {
+                        } else if (field.type === 'blob') {
                             dataObject[field.key] = _.get(document.forms, [formName, field.key, 'files', 0]);//passing file
-                        } else if (field.type === "list") {
+                        } else if (field.type === 'list') {
                             dataObject[field.key] = field.value || undefined;
                         } else {
                             dataObject[field.key] = field.value;
@@ -644,6 +641,7 @@ WM.module('wm.widgets.live')
                         element = getFormElement();
                         //Set the values of the widgets inside the live form (other than form fields) in form data
                         LiveWidgetUtils.setFormWidgetsValues(element, dataObject);
+                        $scope.dataoutput = dataObject;
                     }
                     return dataObject;
                 };
@@ -715,7 +713,7 @@ WM.module('wm.widgets.live')
                         }
                     });
                     $scope.setPrevDataValues();
-                    $scope.dataoutput = $scope.constructDataObject();
+                    $scope.constructDataObject();
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
@@ -732,6 +730,8 @@ WM.module('wm.widgets.live')
                     } else {
                         fieldDef.value = value;
                     }
+                    $scope.dataoutput = $scope.dataoutput || {};
+                    $scope.dataoutput[fieldDef.key] = fieldDef.value;
                 };
 
                 /*For related fields, get the display value from the object*/
@@ -1167,6 +1167,7 @@ WM.module('wm.widgets.live')
                             } else {
                                 columnDef.value =  LiveWidgetUtils.getDefaultValue(columnDef.defaultvalue, undefined, columnDef.widget);
                             }
+                            parentScope.constructDataObject();
                         }
                         function setValidity(name, val) {
                             var formWidget = parentScope.ngform[name + '_formWidget'];
@@ -1296,11 +1297,11 @@ WM.module('wm.widgets.live')
                         };
                         //On change of a field, update the dataoutput on form/liveform
                         parentScope._onChangeField = parentScope._onChangeField || function () {
-                            parentScope.dataoutput = parentScope.constructDataObject();
+                            parentScope.constructDataObject();
                         };
                         //On submit of a autocomplete field, update the dataoutput on form/liveform
                         parentScope._onSubmitField = parentScope._onSubmitField || function () {
-                            parentScope.dataoutput = parentScope.constructDataObject();
+                            parentScope.constructDataObject();
                         };
                         parentScope.$on('$destroy', function () {
                             if (exprWatchHandler) {

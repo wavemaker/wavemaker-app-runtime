@@ -1748,6 +1748,9 @@ WM.module('wm.widgets.live')
              *
              */
             function setFormWidgetsValues($el, dataObject) {
+                if (!$el) {
+                    return;
+                }
                 $el.find('.form-elements [role="input"]').each(function () {
                     var $inputEl = WM.element(this),
                         fieldKey,
