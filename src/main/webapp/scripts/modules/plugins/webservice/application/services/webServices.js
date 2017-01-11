@@ -33,7 +33,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 target: 'WebService',
                 action: 'invokeRestCall',
                 data: connectionParams.data,
-                urlParams: connectionParams.urlParams
+                urlParams: connectionParams.urlParams,
+                headers: connectionParams.headers
             }, successCallback, failureCallback);
         },
 

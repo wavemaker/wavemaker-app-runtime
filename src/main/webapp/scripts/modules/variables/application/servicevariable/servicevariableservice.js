@@ -178,7 +178,6 @@ wm.variables.services.$servicevariable = ['Variables',
                 uname,
                 pswd,
                 method,
-                isFormDataSupported = Utils.isFileUploadSupported(),
                 formData,
                 formDataContentType,
                 isProxyCall;
@@ -245,26 +244,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         requestBody = paramValue;
                         break;
                     case 'FORMDATA':
-                        if (isFormDataSupported) {
-                            if (param.type === "file") {
-                                if (WM.isArray(paramValue)) {
-                                    WM.forEach(paramValue, function (fileObject) {
-                                        getFormDataObj().append(param.name, Utils.getBlob(fileObject), fileObject.name);
-                                    });
-                                } else {
-                                    getFormDataObj().append(param.name, Utils.getBlob(paramValue), paramValue.name);
-                                }
-                            } else {
-                                if (WM.isObject(paramValue)) {
-                                    paramValue = JSON.stringify(paramValue);
-                                    formDataContentType = "application/json";
-                                } else {
-                                    formDataContentType = "text/plain";
-                                }
-                                getFormDataObj().append(param.name, new Blob([paramValue], {type: formDataContentType}));
-                            }
-                            requestBody = getFormDataObj();
-                        }
+                        requestBody = Utils.getFormData(getFormDataObj(), param, paramValue);
                         break;
                     }
                 } else if (param.required) {
