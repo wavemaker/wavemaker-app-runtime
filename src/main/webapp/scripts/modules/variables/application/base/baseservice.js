@@ -47,6 +47,7 @@ wm.variables.services.Variables = [
          false: STUDIO mode
          */
         var runMode = CONSTANTS.isRunMode,
+            DOT_EXPR_REX = /^\[("|')[\w\W]*(\1)\]$/g,
             MAIN_PAGE = 'Main',
             startUpdateQueue = [],
             lazySartUpdateQueue = {},
@@ -392,20 +393,14 @@ wm.variables.services.Variables = [
             },
 
             /**
-             * New Implementation (DataBinding Flat Structure with x-path targets)
-             * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
-             * @param obj dataBinding object
-             * @param scope scope of the variable
-             * @param root root node string (dataBinding for all variables, dataSet for static variable)
-             * @param variable variable object
+             * Returns the object node for a bind object, where the value has to be updated
+             * obj.target = "a"
+             * @param obj
+             * @param root
+             * @param variable
+             * @returns {*}
              */
-            processBindObject = function (obj, scope, root, variable) {
-                var target = obj.target,
-                    targetObj,
-                    targetNodeKey,
-                    rootNode = variable[root],
-                    regex = /^\[("|')[\w\W]*(\1)\]$/g;
-
+            getTargetObj = function (obj, root, variable) {
                 /*
                  * if the target key is in the form as "['my.param']"
                  * keep the target key as "my.param" and do not split further
@@ -418,12 +413,12 @@ wm.variables.services.Variables = [
                  *          }
                  *      }
                  */
-                if (regex.test(target)) {
-                    targetNodeKey = target;
+                var target = obj.target,
+                    targetObj,
+                    rootNode = variable[root];
+                if (DOT_EXPR_REX.test(target)) {
                     targetObj = rootNode;
-                    targetNodeKey = targetNodeKey.replace(/^(\[["'])|(["']\])$/g, '');
                 } else {
-                    targetNodeKey = target.split(".").pop();
                     target = target.substr(0, target.lastIndexOf('.'));
                     if (obj.target === root) {
                         targetObj = variable;
@@ -433,11 +428,58 @@ wm.variables.services.Variables = [
                         targetObj = rootNode;
                     }
                 }
+                return targetObj;
+            },
+
+            /**
+             * Gets the key for the target object
+             * the computed value will be updated against this key in the targetObject(computed by getTargetObj())
+             * @param target
+             * @param regex
+             * @returns {*}
+             */
+            getTargetNodeKey = function (target) {
+                /*
+                 * if the target key is in the form as "['my.param']"
+                 * keep the target key as "my.param" and do not split further
+                 * this is done, so that, the computed value against this binding is assigned as
+                 *      {"my.param": "value"}
+                 * and not as
+                 *      {
+                 *          "my": {
+                 *              "param": "value"
+                 *          }
+                 *      }
+                 */
+                var targetNodeKey;
+                if (DOT_EXPR_REX.test(target)) {
+                    targetNodeKey = target.replace(/^(\[["'])|(["']\])$/g, '');
+                } else {
+                    targetNodeKey = target.split(".").pop();
+                }
+                return targetNodeKey;
+            },
+
+            /**
+             * New Implementation (DataBinding Flat Structure with x-path targets)
+             * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
+             * @param obj dataBinding object
+             * @param scope scope of the variable
+             * @param root root node string (dataBinding for all variables, dataSet for static variable)
+             * @param variable variable object
+             */
+            processBindObject = function (obj, scope, root, variable) {
+                var target = obj.target,
+                    targetObj,
+                    targetNodeKey;
+
                 if (Utils.stringStartsWith(obj.value, "bind:")) {
                     BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
                         if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
                             return;
                         }
+                        targetNodeKey = getTargetNodeKey(target);
+                        targetObj = getTargetObj(obj, root, variable);
                         /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                         if (targetObj) {
                             targetObj[targetNodeKey] = newVal;
@@ -445,6 +487,8 @@ wm.variables.services.Variables = [
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
+                    targetNodeKey = getTargetNodeKey(target);
+                    targetObj = getTargetObj(obj, root, variable);
                     /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                     if (targetObj) {
                         targetObj[targetNodeKey] = obj.value;
