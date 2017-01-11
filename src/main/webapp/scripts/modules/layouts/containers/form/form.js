@@ -53,6 +53,7 @@ WM.module('wm.layouts.containers')
             _.forEach(scope.elScope.formFields, function (field) {
                 field.value = _.get(scope.formdata, field.key || field.name);
             });
+            scope.constructDataObject();
         }
         //Generate the form field with given field definition. Add a grid column wrapper around the form field.
         function setMarkupForFormField(field, columnWidth) {
@@ -209,7 +210,8 @@ WM.module('wm.layouts.containers')
                     WM.element(this).isolateScope().datavalue = undefined;
                 });
             }
-            $s.formdata      = undefined;
+            $s.formdata   = undefined;
+            $s.dataoutput = {};
             $rootScope.$safeApply($s);
         }
 
@@ -330,6 +332,7 @@ WM.module('wm.layouts.containers')
                     scope.elScope = element.scope().$new();
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
+                    scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
                     element.removeAttr('title');
                 },
                 'post': function (scope, element, attrs) {
@@ -341,8 +344,6 @@ WM.module('wm.layouts.containers')
                     }
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
-
-                    scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
 
                     if (!scope.widgetid) {
                         bindEvents(scope, element);
