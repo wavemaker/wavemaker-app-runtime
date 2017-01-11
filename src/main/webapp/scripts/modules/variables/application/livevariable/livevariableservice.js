@@ -708,7 +708,7 @@ wm.variables.services.$liveVariable = [
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, response);
                         }
 
                         /* update the dataSet against the variable */
@@ -722,10 +722,10 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response);
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, response);
 
                                 /* process next requests in the queue */
                                 variableActive[variable.activeScope.$id][variable.name] = false;
@@ -737,7 +737,7 @@ wm.variables.services.$liveVariable = [
                 if (CONSTANTS.isRunMode) {
                     clonedFields = Utils.getClonedObject(variable.filterFields);
                     // EVENT: ON_BEFORE_UPDATE
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, clonedFields);
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields);
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
@@ -793,9 +793,9 @@ wm.variables.services.$liveVariable = [
 
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, dataObj.data);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, dataObj.data);
                             // EVENT: ON_PREPARESETDATA
-                            newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, dataObj.data);
+                            newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, dataObj.data);
                             if (newDataSet) {
                                 //setting newDataSet as the response to service variable onPrepareSetData
                                 dataObj.data = newDataSet;
@@ -810,10 +810,10 @@ wm.variables.services.$liveVariable = [
                             variable._options.filterFields = options && options.filterFields;
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, dataObj.data);
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, dataObj.data);
                             });
                         }
                     }
@@ -1016,7 +1016,7 @@ wm.variables.services.$liveVariable = [
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
                     clonedFields = Utils.getClonedObject(inputFields);
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, clonedFields);
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields);
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
@@ -1185,13 +1185,13 @@ wm.variables.services.$liveVariable = [
                         /* If in RUN mode trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error);
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response.error);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error);
                             }, null, false);
                         }
                         /* trigger error callback */
@@ -1199,10 +1199,10 @@ wm.variables.services.$liveVariable = [
                     } else {
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
                             if (variableDetails.operation !== "read") {
                                 // EVENT: ON_PREPARESETDATA
-                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, callBackScope, response);
+                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, response);
                                 if (newDataSet) {
                                     //setting newDataSet as the response to service variable onPrepareSetData
                                     response = newDataSet;
@@ -1211,10 +1211,10 @@ wm.variables.services.$liveVariable = [
                             }
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, response);
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response);
                             }, null, false);
                         }
                         Utils.triggerFn(success, response);
@@ -1223,16 +1223,16 @@ wm.variables.services.$liveVariable = [
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
 
                         $timeout(function () {
                             // EVENT: ON_ERROR
                             if (!options.skipNotification) {
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response);
                             }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response);
                         }, null, false);
                     }
                     Utils.triggerFn(error, response);
