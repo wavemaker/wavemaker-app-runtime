@@ -51,6 +51,7 @@ wm.variables.services.Variables = [
             MAIN_PAGE = 'Main',
             startUpdateQueue = [],
             lazySartUpdateQueue = {},
+            internalBoundNodeMap = {},
             variableConfig = [
                 {
                     "collectionType"    : "call",
@@ -460,6 +461,34 @@ wm.variables.services.Variables = [
                 return targetNodeKey;
             },
 
+            setValueToNode = function (target, obj, root, variable, value) {
+                var targetNodeKey = getTargetNodeKey(target),
+                    targetObj = getTargetObj(obj, root, variable);
+                value = value || obj.value;
+                /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
+                if (targetObj) {
+                    targetObj[targetNodeKey] = value;
+                }
+                processVariablePostBindUpdate(targetNodeKey, value, obj.type, variable, true);
+            },
+
+            updateInternalNodes = function (target, root, variable) {
+                var boundInternalNodes = _.keys(_.get(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root])),
+                    targetNodeKey = getTargetNodeKey(target),
+                    internalNodes;
+                function findInternalNodeBound() {
+                    return _.filter(boundInternalNodes, function (node) {
+                        return (node !== targetNodeKey && _.includes(node, targetNodeKey)) || (targetNodeKey === root && node !== targetNodeKey);
+                    });
+                }
+                internalNodes = findInternalNodeBound();
+                if ((internalNodes.length)) {
+                    _.forEach(internalNodes, function (node) {
+                        setValueToNode(node, {target: node}, root, variable, _.get(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, node]));
+                    });
+                }
+            },
+
             /**
              * New Implementation (DataBinding Flat Structure with x-path targets)
              * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
@@ -470,30 +499,28 @@ wm.variables.services.Variables = [
              */
             processBindObject = function (obj, scope, root, variable) {
                 var target = obj.target,
-                    targetObj,
-                    targetNodeKey;
+                    targetObj = getTargetObj(obj, root, variable),
+                    targetNodeKey = getTargetNodeKey(target);
 
                 if (Utils.stringStartsWith(obj.value, "bind:")) {
                     BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
                         if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
                             return;
                         }
-                        targetNodeKey = getTargetNodeKey(target);
-                        targetObj = getTargetObj(obj, root, variable);
-                        /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
-                        if (targetObj) {
-                            targetObj[targetNodeKey] = newVal;
-                            processVariablePostBindUpdate(targetNodeKey, newVal, obj.type, variable);
+                        setValueToNode(target, obj, root, variable, Utils.getClonedObject(newVal)); // clonning newVal to keep the source clean
+
+                        if (runMode) {
+                            if (WM.isObject(newVal)) {
+                                updateInternalNodes(target, root, variable);
+                            }
+                            _.set(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, target], newVal);
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
-                    targetNodeKey = getTargetNodeKey(target);
-                    targetObj = getTargetObj(obj, root, variable);
-                    /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
-                    if (targetObj) {
-                        targetObj[targetNodeKey] = obj.value;
+                    setValueToNode(target, obj, root, variable);
+                    if (runMode && root !== targetNodeKey) {
+                        _.set(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, target], obj.value);
                     }
-                    processVariablePostBindUpdate(targetNodeKey, obj.value, obj.type, variable, true);
                 }
             },
 
@@ -1405,11 +1432,14 @@ wm.variables.services.Variables = [
                 /*
                  * loop through each variable in the namespace and remove the watchers if any
                  */
-                if (watchers[scope.$id]) {
+                if (watchers[scopeId]) {
                     WM.forEach(self.variableCollection[namespace], function (variable, name) {
                         if (watchers[scopeId][name]) {
                             watchers[scopeId][name].forEach(Utils.triggerFn);
                         }
+
+                        // remove bound map nodes
+                        _.set(internalBoundNodeMap, scopeId, undefined);
                     });
                 }
 
