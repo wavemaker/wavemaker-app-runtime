@@ -18,6 +18,8 @@ package com.wavemaker.runtime.data.dialect;
 import java.sql.Types;
 
 import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.type.descriptor.sql.CharTypeDescriptor;
+import org.hibernate.type.descriptor.sql.SqlTypeDescriptor;
 
 import com.wavemaker.studio.common.CommonConstants;
 
@@ -33,5 +35,13 @@ public class OracleDialect extends org.hibernate.dialect.OracleDialect {
 
         registerHibernateType( CommonConstants.TIMESTAMP_WITH_TIMEZONE_SQL_CODE, StandardBasicTypes.TIMESTAMP.getName() );
         registerHibernateType( CommonConstants.TIMESTAMP_WITH_LOCAL_TIMEZONE_SQL_CODE, StandardBasicTypes.TIMESTAMP.getName() );
+    }
+
+    protected SqlTypeDescriptor getSqlTypeDescriptorOverride(int sqlCode) {
+        SqlTypeDescriptor sqlTypeDescriptor = super.getSqlTypeDescriptorOverride(sqlCode);
+        if(sqlCode == Types.BOOLEAN) {
+            sqlTypeDescriptor =  new CharTypeDescriptor();
+        }
+        return sqlTypeDescriptor;
     }
 }
