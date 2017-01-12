@@ -221,6 +221,7 @@ $.widget('wm.datagrid', {
             var id            = index,
                 field         = value.field,
                 headerLabel   = WM.isDefined(value.displayName) ? value.displayName : (field || ''),
+                titleLabel    = headerLabel,
                 sortEnabled   = self.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType,
                 headerClasses = self.options.cssClassNames.headerCell,
                 sortClass,
@@ -261,7 +262,7 @@ $.widget('wm.datagrid', {
             $th.attr({
                 'data-col-id'    : id,
                 'data-col-field' : field,
-                'title'          : headerLabel,
+                'title'          : titleLabel,
                 'style'          : 'text-align: ' + value.textAlignment
             });
             $th.addClass(headerClasses);
