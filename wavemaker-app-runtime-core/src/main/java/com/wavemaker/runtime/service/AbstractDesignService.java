@@ -56,8 +56,7 @@ public abstract class AbstractDesignService {
                         fieldType.setType(ReferenceType.CUSTOM);
                         fieldType.setProperties(extractMetaFromResults(((Collection) value)));
                     } else {
-                        String type = value == null ? String.class.getName() : value.getClass()
-                                .getName();
+                        String type = value == null ? Object.class.getName() : value.getClass().getName();
                         fieldType = new FieldType(ReferenceType.PRIMITIVE, type);
                     }
                     properties.add(new ReturnProperty(entry.getKey(), fieldType));
