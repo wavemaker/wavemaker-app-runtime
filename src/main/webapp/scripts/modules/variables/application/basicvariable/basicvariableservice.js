@@ -48,7 +48,7 @@ wm.variables.services.BasicVariableService = [
                 },
                 setValue: function (variable, key, value) {
                     /* check param sanity */
-                    if (!key || !value || variable.isList) {
+                    if (!key || variable.isList) {
                         return variable.dataSet;
                     }
 
