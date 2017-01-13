@@ -288,7 +288,8 @@ wm.plugins.database.services.DatabaseService = [
                         "dbType": params.dbType,
                         "host": params.host,
                         "port": params.port,
-                        "dbName": params.dbName
+                        "dbName": params.dbName,
+                        "readOnly": params.readOnly
                     },
                     urlParams: {
                         "projectID": params.projectID
