@@ -66,8 +66,8 @@ public class AppRuntimeController {
     // XXX restrict this method in app runtime.
     @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/test_run")
     public DesignServiceResponse testRunQuery(
-            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query) {
-        return queryDesignService.testRunQuery(serviceId, query);
+            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
+        return queryDesignService.testRunQuery(serviceId, query, pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{serviceId}/procedures/test_run")

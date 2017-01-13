@@ -16,7 +16,7 @@ public interface QueryDesignService {
 
     List<ReturnProperty> extractMeta(String serviceId, RuntimeQuery query);
 
-    DesignServiceResponse testRunQuery(String serviceId, RuntimeQuery query);
+    DesignServiceResponse testRunQuery(String serviceId, RuntimeQuery query, final Pageable pageable);
 
     Object executeQuery(String serviceId, RuntimeQuery query, final Pageable pageable);
 }

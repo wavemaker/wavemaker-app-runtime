@@ -47,15 +47,16 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
                 }
             });
         } else {
-            meta = testRunQuery(serviceId, query).getReturnProperties();
+            meta = testRunQuery(serviceId, query, new PageRequest(0, 5, null)).getReturnProperties();
         }
 
         return meta;
     }
 
     @Override
-    public DesignServiceResponse testRunQuery(final String serviceId, final RuntimeQuery query) {
-        final Object results = _runQuery(serviceId, query, new PageRequest(0, 5, null));
+    public DesignServiceResponse testRunQuery(
+            final String serviceId, final RuntimeQuery query, final Pageable pageable) {
+        final Object results = _runQuery(serviceId, query, pageable);
         List<ReturnProperty> meta;
 
         if (isDMLOrUpdateQuery(query)) {
