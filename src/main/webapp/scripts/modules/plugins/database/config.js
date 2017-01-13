@@ -636,19 +636,23 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "SERVER_SIDE_PROPERTIES": {
         "CURRENT_DATE": {
             "property": "Current Date",
-            "value": "CURRENT_DATE"
+            "label": "CURRENT_DATE",
+            "value": "DATE"
         },
         "CURRENT_TIME": {
             "property": "Current Time",
-            "value": "CURRENT_TIME"
+            "label": "CURRENT_TIME",
+            "value": "TIME"
         },
         "CURRENT_USER_ID": {
             "property": "LoggedIn UserId",
-            "value": "CURRENT_USER_ID"
+            "label": "CURRENT_USER_ID",
+            "value": "USER_ID"
         },
         "CURRENT_USER_NAME": {
             "property": "LoggedIn Username",
-            "value": "CURRENT_USER_NAME"
+            "label": "CURRENT_USER_NAME",
+            "value": "USER_NAME"
         }
     },
     "COLUMN_VALUE_TYPES": {
