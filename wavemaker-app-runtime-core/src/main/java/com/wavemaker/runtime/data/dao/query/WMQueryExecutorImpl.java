@@ -36,8 +36,8 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryCallback;
-import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
+import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
@@ -180,10 +180,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                 if (parameter.isList()) {
                     convertedValue = new ArrayList<>();
                     for (final Object object : (List<Object>) parameter.getTestValue()) {
-                        ((List<Object>) convertedValue).add(parameter.getType().convert(object));
+                        ((List<Object>) convertedValue).add(parameter.getType().fromString(String.valueOf(object)));
                     }
                 } else {
-                    convertedValue = parameter.getType().convert(parameter.getTestValue());
+                    convertedValue = parameter.getType().fromString(String.valueOf(parameter.getTestValue()));
                 }
                 params.put(parameter.getName(), convertedValue);
             }
