@@ -13,8 +13,9 @@ WM.module('wm.widgets.base')
         'WidgetUtilService',
         'ProjectService',
         '$timeout',
+        '$templateCache',
 
-        function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, ProjectService, $timeout) {
+        function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, ProjectService, $timeout, $tc) {
             'use strict';
 
             var props     = PropertiesFactory.getPropertiesOf('wm.pagecontainer'),
@@ -55,6 +56,13 @@ WM.module('wm.widgets.base')
                 /* set the partial-page variables (will be registered by the partial) */
                 Variables.setPageVariables(partialName, loadedPartials[partialName].variables);
 
+                //In popover case for partial content for which page will be initialized first and variables are initialized next call set variables
+                if (CONSTANTS.isRunMode && iScope._widgettype === 'wm-popover' && iScope.contentsource === 'partial') {
+                    //Class will be used to set popover height width to avoid flickering issue
+                    iScope._popoveroptions.customclass = 'popover_' + iScope.$id + '_' + partialName + '_' + _.toLower($rootScope.activePageName);
+                    $rootScope.$emit('reset-partial-variables', partialName);
+                }
+
                 /* append the pageContentMarkup to original markup, to compile it manually*/
                 partialMarkup = partialMarkup + '<div class="app-included-page">' + (loadedPartials[partialName].html || '') + '</div>';
 
@@ -86,8 +94,14 @@ WM.module('wm.widgets.base')
                     scope.partialname = partialName;
                     scope.partialcontainername = iScope.name;
                     scope.pageParams = iScope.pageParams;
-                    /* compile */
-                    target.html($compile(partialMarkup)(scope));
+                    if (iScope.widgettype === 'wm-popover' || iScope._widgettype === 'wm-popover') {
+                        var popoverTemplate = 'template/popoverPartials/' + iScope.$id + '.html';
+                        $tc.put(popoverTemplate, '<div>' + partialMarkup[0].outerHTML + '</div>');
+                        iScope._popoveroptions.contenturl = popoverTemplate;
+                    } else {
+                        /* compile */
+                        target.html($compile(partialMarkup)(scope));
+                    }
                     $timeout(function () {
                         Utils.triggerFn(iScope.onLoad, {$isolateScope: iScope});
                     }, undefined, false);
@@ -136,7 +150,7 @@ WM.module('wm.widgets.base')
             }
 
             /* This function handles the change in content property of the page-container */
-            function onPageIncludeChange(iScope, element, attrs, newVal) {
+            function onPageIncludeChange(iScope, element, attrs, newVal, forceLoad) {
                 var target = iScope.target,
                     el     = '',
                     page   = 'pages/' + newVal + '/',
@@ -208,7 +222,7 @@ WM.module('wm.widgets.base')
                 //checking if the newVale is there
                 if (_.isString(newVal) && newVal.trim().length) {
                     /*load the partial on-demand*/
-                    if (!loadedPartials[newVal]) {
+                    if (!loadedPartials[newVal] || forceLoad) {
                         //checking if it is a studio mode then remove the button element from the toolbar
                         if (CONSTANTS.isStudioMode) {
                             iScope.Widgets = {};
@@ -289,9 +303,12 @@ WM.module('wm.widgets.base')
                         // override the $lazyLoad method defined on the iScope.
                         // page will be loaded only when this method is triggered.
                         iScope.$lazyLoad = function () {
-                            onPageIncludeChange(iScope, element, attrs, newVal);
-                            // page is loaded successfully. reset the $lazyLoad to WM.noop. executing this method multiple times will do nothing.
-                            iScope.$lazyLoad = WM.noop;
+                            var forceLoad = iScope.widgettype === 'wm-popover' || iScope._widgettype === 'wm-popover';
+                            onPageIncludeChange(iScope, element, attrs, newVal, forceLoad);
+                            if (!forceLoad) {
+                                // page is loaded successfully. reset the $lazyLoad to WM.noop. executing this method multiple times will do nothing.
+                                iScope.$lazyLoad = WM.noop;
+                            }
                         };
                     } else {
                         onPageIncludeChange(iScope, element, attrs, newVal);
