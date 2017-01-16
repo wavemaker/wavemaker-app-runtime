@@ -461,7 +461,7 @@ wm.variables.services.Variables = [
                 return targetNodeKey;
             },
 
-            setValueToNode = function (target, obj, root, variable, value) {
+            setValueToNode = function (target, obj, root, variable, value, noUpdate) {
                 var targetNodeKey = getTargetNodeKey(target),
                     targetObj = getTargetObj(obj, root, variable);
                 value = value || obj.value;
@@ -469,7 +469,7 @@ wm.variables.services.Variables = [
                 if (targetObj) {
                     targetObj[targetNodeKey] = value;
                 }
-                processVariablePostBindUpdate(targetNodeKey, value, obj.type, variable, true);
+                processVariablePostBindUpdate(targetNodeKey, value, obj.type, variable, noUpdate);
             },
 
             updateInternalNodes = function (target, root, variable) {
@@ -517,7 +517,7 @@ wm.variables.services.Variables = [
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
-                    setValueToNode(target, obj, root, variable);
+                    setValueToNode(target, obj, root, variable, obj.value, true);
                     if (runMode && root !== targetNodeKey) {
                         _.set(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, target], obj.value);
                     }
