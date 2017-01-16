@@ -11,4 +11,8 @@ import org.hibernate.transform.ResultTransformer;
 public interface WMResultTransformer extends ResultTransformer {
 
     Object transformFromMap(Map<String, Object> resultMap);
+
+    String aliasToFieldName(String columnName);
+
+    String aliasFromFieldName(String fieldName);
 }

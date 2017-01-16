@@ -30,6 +30,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     private final Class resultClass;
 
     private Map<String, PropertyDescriptor> aliasVsDescriptorMap;
+    private Map<String, String> fieldVsAliasMap;
 
     public AliasToMappedClassResultTransformer(final Class resultClass) {
         Objects.requireNonNull(resultClass, "Result Class cannot be null");
@@ -74,6 +75,26 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         }
     }
 
+    @Override
+    public String aliasToFieldName(final String columnName) {
+        String fieldName = columnName;
+        if (aliasVsDescriptorMap.containsKey(columnName)) {
+            fieldName = aliasVsDescriptorMap.get(columnName).getName();
+        }
+        return fieldName;
+    }
+
+    @Override
+    public String aliasFromFieldName(final String fieldName) {
+        String alias = fieldName;
+
+        if (fieldVsAliasMap.containsKey(alias)) {
+            alias = fieldVsAliasMap.get(alias);
+        }
+
+        return alias;
+    }
+
     @SuppressWarnings("unchecked")
     private Object transformField(final PropertyDescriptor descriptor, final Object value) {
         Object transformedValue = value;
@@ -94,6 +115,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     private void initialize() {
         final Field[] fields = resultClass.getDeclaredFields();
         aliasVsDescriptorMap = new HashMap<>();
+        fieldVsAliasMap = new HashMap<>();
         for (final Field field : fields) {
             final PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(resultClass, field.getName());
             Optional<String> columnName = findResultSetColumnName(field);
@@ -110,6 +132,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             }
 
             aliasVsDescriptorMap.put(columnName.get(), descriptor);
+            fieldVsAliasMap.put(descriptor.getName(), columnName.get());
         }
     }
 

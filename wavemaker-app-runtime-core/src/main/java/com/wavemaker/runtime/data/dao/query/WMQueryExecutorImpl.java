@@ -79,12 +79,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     public <T> Page<T> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Class<T> returnType,
             final Pageable pageable) {
-        final Pageable _pageable;
-        if (pageable == null) {
-            _pageable = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-        } else {
-            _pageable = pageable;
-        }
+        final Pageable _pageable = getValidPageable(pageable);
 
         PaginatedNamedQueryCallback<T> callback = new PaginatedNamedQueryCallback<>(
                 new PageableQueryInfo<>(queryName, params, returnType, _pageable));

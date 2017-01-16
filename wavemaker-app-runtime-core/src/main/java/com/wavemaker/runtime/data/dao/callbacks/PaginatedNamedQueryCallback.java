@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -11,11 +12,14 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.PageableQueryInfo;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -53,12 +57,26 @@ public class PaginatedNamedQueryCallback<T> implements HibernateCallback<Page<T>
         SQLQuery newQuery = query;
         if (queryInfo.getPageable().getSort() != null) {
             final String arrangeForSortQuery = QueryHelper
-                    .arrangeForSort(query.getQueryString(), queryInfo.getPageable()
-                            .getSort(), true, ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+                    .arrangeForSort(query.getQueryString(), convertToNativeSort(), true,
+                            ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
             newQuery = session.createSQLQuery(arrangeForSortQuery);
         }
 
         return newQuery;
+    }
+
+    private Sort convertToNativeSort() {
+        final WMResultTransformer transformer = Transformers.aliasToMappedClass(queryInfo.getReturnClass());
+        final Sort actualSort = queryInfo.getPageable().getSort();
+
+        List<Sort.Order> nativeOrders = new ArrayList<>();
+        for (final Sort.Order order : actualSort) {
+            String property = order.getProperty();
+            final String columnName = transformer.aliasFromFieldName(property);
+            nativeOrders.add(new Sort.Order(order.getDirection(), columnName, order.getNullHandling()));
+        }
+
+        return new Sort(nativeOrders);
     }
 
     private long findCount(Session session) {
