@@ -464,7 +464,7 @@ wm.variables.services.Variables = [
             setValueToNode = function (target, obj, root, variable, value, noUpdate) {
                 var targetNodeKey = getTargetNodeKey(target),
                     targetObj = getTargetObj(obj, root, variable);
-                value = value || obj.value;
+                value = WM.isDefined(value) ? value : obj.value;
                 /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                 if (targetObj) {
                     targetObj[targetNodeKey] = value;
