@@ -1335,9 +1335,11 @@ WM.module('wm.widgets.base')
 
                 if (_.startsWith(showExpr, 'bind:') && attrs.deferload === 'true') {
                     showExpr = _.replace(showExpr, 'bind:', '');
+                    $el.addClass('ng-hide');
                     unregisterFn = BindingManager.register($s, showExpr, function (nv) {
                         if (nv === 'true' || nv === true) {
                             unregisterFn();
+                            $el.removeClass('ng-hide');
                             compileFn($s, $el);
                         }
                     });
