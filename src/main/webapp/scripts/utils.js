@@ -2370,6 +2370,29 @@ WM.module('wm.utils', [])
             return val;
         }
 
+        /**
+         * Formats style with given format
+         * 'px' is default
+         * @param val - style value
+         * @param format - to which output format you want to style
+         * @param forceFormat - even if format is present in val force format with given format
+         * @returns val - formatted value
+         */
+        function formatStyle(val, format, forceFormat) {
+            var styleRegExp = /px|em|rem|pt|%/g;
+            if (!val) {
+                val = '';
+            }
+
+            if (forceFormat) {
+                val = styleRegExp.replace(val, '');
+            } else if(!styleRegExp.test(val)) {
+                val = val + (format || 'px');
+            }
+
+            return val;
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2503,4 +2526,5 @@ WM.module('wm.utils', [])
         this.getBlob                    = getBlob;
         this.getMetaDataFromData        = getMetaDataFromData;
         this.isAppleProduct             = isAppleProduct;
+        this.formatStyle                = formatStyle;
     }]);

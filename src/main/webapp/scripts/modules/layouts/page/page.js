@@ -226,6 +226,24 @@ WM.module('wm.layouts.page')
                 });
             }
 
+            //Sets variables for a parital page
+            function setVariables($s, containerScope, variableScope, pageName) {
+                Variables.getPageVariables(pageName, function (variables) {
+                    //Set partial name on variable for included partial variables
+                    if($s.partialname) {
+                        _.forEach(variables, function (value) {
+                            value._partialname = $s.partialname;
+                        });
+                    }
+                    Variables.register(pageName, variables, true, variableScope);
+
+                    // expose partial's Variables to its container's scope (to be visible to parent)
+                    if (CONSTANTS.isRunMode && containerScope) {
+                        containerScope.Variables = $s.Variables;
+                    }
+                });
+            }
+
             return {
                 'restrict'   : 'E',
                 'replace'    : true,
@@ -293,20 +311,16 @@ WM.module('wm.layouts.page')
                             }
                         }
 
-                        Variables.getPageVariables(pageName, function (variables) {
-                            //Set partial name on variable for included partial variables
-                            if($s.partialname) {
-                                _.forEach(variables, function (value) {
-                                    value._partialname = $s.partialname;
-                                });
-                            }
-                            Variables.register(pageName, variables, true, variableScope);
-
-                            // expose partial's Variables to its container's scope (to be visible to parent)
-                            if (CONSTANTS.isRunMode && containerScope) {
-                                containerScope.Variables = $s.Variables;
+                        /*For popover variables will not be set as init of popover will happen first and then setting variables
+                          so popover calls reset partial variables in case of partial content bind
+                        */
+                        $rs.$on('reset-partial-variables', function (evt, partialName) {
+                            if (partialName === pageName) {
+                                setVariables($s, containerScope, variableScope, pageName);
                             }
                         });
+
+                        setVariables($s, containerScope, variableScope, pageName);
                     },
                     'post': function ($s, $el, attrs) {
 

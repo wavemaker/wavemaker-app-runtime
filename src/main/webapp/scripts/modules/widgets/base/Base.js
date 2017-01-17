@@ -146,6 +146,56 @@ WM.module('wm.widgets.base', [])
             spinnerAnimationOptions = [" ", "bounce", "fadeIn", "fadeOut", "flash", "flipInX", "flipInY", "pulse", "shake", "spin", "swing", "tada", "wobble", "zoomIn", "zoomOut"],
             visibilityOptions = ["collapse", "hidden", "initial", "inherit", "visible"],
             displayOptions = ["block", "flex", "inherit", "initial", "inline", "inline-block", "inline-flex", "inline-table", "list-item", "run-in", "table", "table-caption", "table-cell", "table-column", "table-column-group", "table-header-group", "table-footer-group", "table-row", "table-row-group", "none"],
+            popoverOptions = [
+                {
+                    'value': 'top',
+                    'label': 'Top'
+                },
+                {
+                    'value': 'top-left',
+                    'label': 'Top Left'
+                },
+                {
+                    'value': 'top-right',
+                    'label': 'Top Right'
+                },
+                {
+                    'value': 'bottom',
+                    'label': 'Bottom'
+                },
+                {
+                    'value': 'bottom-left',
+                    'label': 'Bottom Left'
+                },
+                {
+                    'value': 'bottom-right',
+                    'label': 'Bottom Right'
+                },
+                {
+                    'value': 'left',
+                    'label': 'Left'
+                },
+                {
+                    'value': 'left-top',
+                    'label': 'Left Top'
+                },
+                {
+                    'value': 'left-bottom',
+                    'label': 'Left Bottom'
+                },
+                {
+                    'value': 'right',
+                    'label': 'Right'
+                },
+                {
+                    'value': 'right-top',
+                    'label': 'Right Top'
+                },
+                {
+                    'value': 'right-bottom',
+                    'label': 'Right Bottom'
+                }
+            ],
             EVERYONE = "Everyone",
             result = {
                 "properties": {
@@ -1544,7 +1594,7 @@ WM.module('wm.widgets.base', [])
                         "popoverheight" :  {"type": "string"},
                         "popoverarrow" :  {"type": "boolean", "value" : true},
                         "popoverautoclose": {"type": "boolean", "value" : true},
-                        "popoverplacement": {"type": "list", "options": ["bottom", "left", "right", "top"], "value": "bottom"},
+                        "popoverplacement": {"type": "select-by-object", "options": popoverOptions, "value": "bottom"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
