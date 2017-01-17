@@ -179,6 +179,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
             method: "PUT"
         },
+        queryNameUsage: {
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName/usages",
+            method: "GET"
+        },
         deleteQuery: {
             url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
             method: "DELETE"

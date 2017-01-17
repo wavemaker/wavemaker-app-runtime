@@ -39,6 +39,7 @@
  * - {@link wm.database.$DatabaseService#methods_getQuery getQuery}
  * - {@link wm.database.$DatabaseService#methods_createQuery createQuery}
  * - {@link wm.database.$DatabaseService#methods_updateQuery updateQuery}
+ * - {@link wm.database.$DatabaseService#methods_queryNameUsage queryNameUsage}
  * - {@link wm.database.$DatabaseService#methods_deleteQuery deleteQuery}
  * - {@link wm.database.$DatabaseService#methods_validateQuery validateQuery}
  * - {@link wm.database.$DatabaseService#methods_testRunQuery testRunQuery}
@@ -1287,6 +1288,36 @@ wm.plugins.database.services.DatabaseService = [
                     },
                     data: params.data
                 }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#queryNameUsage
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             *  Returns list of objects where the object contains pageName and list of variables using given query name in the page.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database and query to be fetched.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            queryNameUsage: function (params) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: "Database",
+                    action: "queryNameUsage",
+                    urlParams: {
+                        projectID: params.projectID,
+                        dataModelName: params.dataModelName,
+                        queryName: params.queryName
+                    }
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
             },
             /**
              * @ngdoc function
