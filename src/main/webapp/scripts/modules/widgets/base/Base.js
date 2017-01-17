@@ -1108,8 +1108,8 @@ WM.module('wm.widgets.base', [])
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32}
                     },
                     'wm.layouts.mediatemplate': {
-                        "width": {"type": "string", "pattern": dimensionRegex, "value": 100},
-                        "height": {"type": "string", "pattern": dimensionRegex, "value": 100}
+                        "width": {"type": "string", "pattern": dimensionRegex, "value": "100pt"},
+                        "height": {"type": "string", "pattern": dimensionRegex, "value": "100pt"}
                     },
                     'wm.layouts.listitem': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1723,6 +1723,9 @@ WM.module('wm.widgets.base', [])
                         "layout": {"type": "list", "options": ["Single-row", "Multi-row"], "value": "Single-row"},
                         "tabindex": {"type": "number", "value": "0"},
                         "currentItem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"}
+                    },
+                    "wm.medialist.mobile" : {
+                        "offline": {"type": "boolean", "value" : true}
                     },
                     "wm.livefilter": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
