@@ -1085,6 +1085,31 @@ WM.module('wm.widgets.live')
                 var pressStartTimeStamp = 0,
                     $hammerEl   = new Hammer($el[0], {}),
                     selectCount = 0;// Setting to true on first long press
+
+                // handle on-tap/on-click events in bubble phase
+                $el[0].addEventListener('click', function (evt) {
+                    // returning if click event is triggered within 50ms after pressup event occurred
+                    if (pressStartTimeStamp + 50 > Date.now()) {
+                        return;
+                    }
+
+                    var $li      = WM.element(evt.target).closest('li.app-list-item'),
+                        $liScope = $li && $li.scope();
+
+                    if ($liScope && !$liScope._disableItem($liScope)) {
+                        // trigger $apply, as 'click' or 'tap' is out of angular-scope
+                        if (attrs.onClick) {
+                            Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                        }
+                        if (attrs.onTap) {
+                            Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
+                        }
+
+                        $rs.$safeApply($is);
+                    }
+                });
+
+
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el[0].addEventListener('click', function (evt) {
                     // returning if click event is triggered within 50ms after pressup event occurred
@@ -1151,14 +1176,6 @@ WM.module('wm.widgets.live')
                         }
 
                         updateSelectedItemsWidgets($is, $el);
-
-                        // trigger $apply, as 'click' or 'tap' is out of angular-scope
-                        if (attrs.onClick) {
-                            Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
-                        }
-                        if (attrs.onTap) {
-                            Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
-                        }
 
                         $rs.$safeApply($is);
                     }
