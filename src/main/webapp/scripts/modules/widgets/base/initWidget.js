@@ -964,6 +964,12 @@ WM.module('wm.widgets.base')
                 }
             }
 
+            if (CONSTANTS.isRunMode) {
+                $rs.$on('locale-change', function () {
+                    evalTFNFilterExprs();
+                });
+            }
+
             // register the watchers.
             function registerWatchers() {
                 $rs.$evalAsync(function () {
@@ -1164,7 +1170,9 @@ WM.module('wm.widgets.base')
         var baseUri,
             typeConfigMap,
             module,
-            directiveFn;
+            directiveFn,
+            prefix,
+            componentLibsRoot;
 
         // get the _cdnUrl_ from the loaded script
         baseUri = WM.element('script[src$="wm-libs.min.js"]').attr('src');
@@ -1175,16 +1183,19 @@ WM.module('wm.widgets.base')
 
         baseUri = baseUri.substring(0, baseUri.indexOf('/scripts/'));
 
+        prefix  = '/scripts/component-libs/';
+        componentLibsRoot = baseUri + prefix;
+
         // typeConfigMap defines the widgetType and dependency map
         typeConfigMap = {
             'wm-chart': {
-                'files': [baseUri + '/scripts/component-libs/chart.min.js']
+                'files': [componentLibsRoot + 'chart.min.js']
             },
             'wm-calendar': {
-                'files': [baseUri + '/scripts/component-libs/calendar.min.js']
+                'files': [componentLibsRoot + 'calendar.min.js']
             },
             'wm-richtexteditor': {
-                'files': [baseUri + '/scripts/component-libs/richTextEditor.min.js'],
+                'files': [componentLibsRoot + 'richTextEditor.min.js'],
                 'name': 'textAngular'
             }
         };
