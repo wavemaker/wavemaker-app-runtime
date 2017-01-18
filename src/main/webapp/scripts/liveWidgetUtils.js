@@ -1531,35 +1531,39 @@ WM.module('wm.widgets.live')
                     details,
                     referenceVariable,
                     widgetName,
+                    bindDataSetSplit,
                     bindDataSet                 = $scope.binddataset,
                     widgetRegEx                 =  /Widgets./g,
                     WidgetScopes                = $scope.Widgets,
                     isBoundToSelectedItemSubset = bindDataSet.indexOf('selecteditem.') !== -1;
                 //Get the reference widget name. As widget can be inner widget (like Widgets.tab.Widgets.grid), find the last inner widget
                 while (widgetRegEx.exec(bindDataSet) !== null) {
-                    widgetName      = _.split(bindDataSet.substr(widgetRegEx.lastIndex, bindDataSet.length), '.')[0];
-                    referenceWidget = _.get(WidgetScopes, widgetName);
-                    WidgetScopes    = referenceWidget.Widgets;
+                    bindDataSetSplit =  _.split(bindDataSet.substr(widgetRegEx.lastIndex, bindDataSet.length), '.');
+                    widgetName       = _.head(bindDataSetSplit);
+                    relatedFieldName = isBoundToSelectedItemSubset && _.last(bindDataSetSplit);
+                    referenceWidget  = _.get(WidgetScopes, widgetName);
+                    WidgetScopes     = referenceWidget && referenceWidget.Widgets;
                 }
-                referenceBindDataSet = referenceWidget.binddataset;
-                /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
-                referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
-                referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
+                if (referenceWidget) {
+                    referenceBindDataSet = referenceWidget.binddataset;
+                    /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
+                    referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
+                    referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
 
-                referenceVariable = Variables.getVariableByName(referenceVariableName);
-                relatedFieldName = isBoundToSelectedItemSubset && bindDataSetSplit[3];
-                fields = (referenceVariable !== null) && $rs.dataTypes &&
-                    $rs.dataTypes[referenceVariable.package || referenceVariable.type].fields;
+                    referenceVariable = Variables.getVariableByName(referenceVariableName);
+                    fields = (referenceVariable !== null) && $rs.dataTypes &&
+                        $rs.dataTypes[referenceVariable.package || referenceVariable.type].fields;
+                }
                 details = {
-                    'referenceVariableName': referenceVariableName,
-                    'referenceWidget': referenceWidget,
-                    'referenceVariable': referenceVariable,
-                    'relatedFieldName': relatedFieldName
+                    'referenceVariableName' : referenceVariableName,
+                    'referenceWidget'       : referenceWidget,
+                    'referenceVariable'     : referenceVariable,
+                    'relatedFieldName'      : relatedFieldName
                 };
                 /* If binddataset is of the format: bind:Widgets.widgetName.selecteditem.something,
                  * i.e. widget is bound to a subset of selected item, get type of that subset.*/
                 if (relatedFieldName && fields) {
-                    relatedFieldType = fields[relatedFieldName].type;
+                    relatedFieldType         = fields[relatedFieldName].type;
                     details.relatedFieldType = relatedFieldType;
                 } else {
                     /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
@@ -1576,7 +1580,7 @@ WM.module('wm.widgets.live')
                 reference         = fetchReferenceDetails($scope);
                 referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
                 /*Check if a watch is not registered on selectedItem or if the relatedField is a one-to-many relation because this field value will directly be available in the data*/
-                if ($scope.selectedItemWatched || !referenceVariable.isRelatedFieldMany(reference.relatedFieldName)) {
+                if ($scope.selectedItemWatched || !referenceVariable || !referenceVariable.isRelatedFieldMany(reference.relatedFieldName)) {
                     return;
                 }
                 watchSelectedItem = reference.referenceWidget.$watch('selecteditem', function (newVal, oldVal) {
