@@ -27,10 +27,10 @@ public class NativeSQLDataExporter extends DataExporter {
 
 
     @Override
-    public ByteArrayOutputStream export(ExportType exportType) {
+    public ByteArrayOutputStream export(ExportType exportType, Class<?> responseType) {
         logger.info(
                 "Exporting all Records matching the given input query to the given exportType format " + exportType);
-        Workbook workbook = NativeSQLExportBuilder.build(results);
+        Workbook workbook = NativeSQLExportBuilder.build(responseType, results);
         return exportWorkbook(workbook, exportType);
     }
 }

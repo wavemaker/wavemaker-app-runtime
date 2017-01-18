@@ -12,6 +12,8 @@ import org.apache.poi.ss.util.CellUtil;
 
 import com.wavemaker.runtime.data.export.ExportBuilder;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
+import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -22,26 +24,28 @@ public class NativeSQLExportBuilder extends ExportBuilder {
 
     private ResultSet resultSet;
 
-    private NativeSQLExportBuilder(final ResultSet resultSet) {
+    private NativeSQLExportBuilder(final Class<?> responseType, final ResultSet resultSet) {
+        this.responseType = responseType;
         this.resultSet = resultSet;
     }
 
-    public static Workbook build(ResultSet results) {
-        NativeSQLExportBuilder builder = new NativeSQLExportBuilder(results);
+    public static Workbook build(Class<?> responseType, ResultSet results) {
+        NativeSQLExportBuilder builder = new NativeSQLExportBuilder(responseType, results);
         return builder.build();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addColumnHeaders(Sheet sheet) throws SQLException {
+    public void addColumnHeaders(Sheet sheet, final Class<?> responseType) throws SQLException {
         int rowNum = STARTING_ROW_NUMBER;
         Row colHeaderRow = sheet.createRow(rowNum);
         Integer colNum = STARTING_COLUMN_NUMBER;
         ResultSetMetaData metaData = resultSet.getMetaData();
-
+        final WMResultTransformer wmResultTransformer = Transformers.aliasToMappedClass(responseType);
         for (int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
             String columnName = metaData.getColumnName(columnIndex);
-            CellUtil.createCell(colHeaderRow, colNum, columnName, columnHeaderStyle(sheet.getWorkbook()));
+            String fieldName = wmResultTransformer.aliasToFieldName(columnName);
+            CellUtil.createCell(colHeaderRow, colNum, fieldName, columnHeaderStyle(sheet.getWorkbook()));
             colNum++;
         }
         sheet.autoSizeColumn(rowNum);

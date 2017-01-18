@@ -188,10 +188,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public Downloadable exportNamedQueryData(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,
+            final String queryName, final Map<String, Object> params, final ExportType exportType,Class<?> responseType,
             final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
-        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType, _pageable);
+        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType, responseType, _pageable);
         ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
         InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
         return new DownloadResponse(is, exportType.getContentType(), queryName + exportType.getExtension());

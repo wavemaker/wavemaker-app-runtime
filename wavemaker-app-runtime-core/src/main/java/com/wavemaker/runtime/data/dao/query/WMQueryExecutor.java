@@ -22,8 +22,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
-import com.wavemaker.runtime.file.model.Downloadable;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
+import com.wavemaker.runtime.file.model.Downloadable;
 
 public interface WMQueryExecutor {
 
@@ -46,7 +46,6 @@ public interface WMQueryExecutor {
     @Deprecated
     int executeCustomQueryForUpdate(CustomQuery customQuery);
 
-    Downloadable exportNamedQueryData(
-            String queryName, Map<String, Object> params, ExportType exportType,
-            Pageable pageable);
+    Downloadable exportNamedQueryData(String queryName, Map<String, Object> params, ExportType exportType,
+                                      Class<?> responseType, Pageable pageable);
 }

@@ -32,10 +32,10 @@ public class HQLQueryDataExporter extends DataExporter {
     }
 
     @Override
-    public ByteArrayOutputStream export(final ExportType exportType) {
+    public ByteArrayOutputStream export(final ExportType exportType, Class<?> responseType) {
         logger.info(
                 "Exporting all Records matching the given input query to the given exportType format " + exportType);
-        Workbook workbook = HQLQueryExportBuilder.build(results, returnPropertyList);
+        Workbook workbook = HQLQueryExportBuilder.build(responseType, results, returnPropertyList);
         return exportWorkbook(workbook, exportType);
     }
 }

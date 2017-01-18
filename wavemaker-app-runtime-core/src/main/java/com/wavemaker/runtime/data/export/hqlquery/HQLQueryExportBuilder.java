@@ -32,32 +32,22 @@ public class HQLQueryExportBuilder extends ExportBuilder {
     private List<ReturnProperty> returnPropertyList;
 
 
-    private HQLQueryExportBuilder(ScrollableResults results, List<ReturnProperty> returnPropertyList) {
+    private HQLQueryExportBuilder(Class<?> responseType, ScrollableResults results, List<ReturnProperty> returnPropertyList) {
+        this.responseType = responseType;
         this.results = results;
         this.returnPropertyList = returnPropertyList;
     }
 
-    public static Workbook build(ScrollableResults results, List<ReturnProperty> returnPropertyList) {
-        HQLQueryExportBuilder builder = new HQLQueryExportBuilder(results, returnPropertyList);
+    public static Workbook build(Class<?> responseType, ScrollableResults results, List<ReturnProperty> returnPropertyList) {
+        HQLQueryExportBuilder builder = new HQLQueryExportBuilder(responseType, results, returnPropertyList);
         return builder.build();
     }
 
     @Override
-    public void addColumnHeaders(Sheet sheet) throws ClassNotFoundException {
+    public void addColumnHeaders(Sheet sheet, final Class<?> responseType) throws ClassNotFoundException {
         int colNum = STARTING_COLUMN_NUMBER;
         Row colHeaderRow = sheet.createRow(STARTING_ROW_NUMBER);
-        for (final ReturnProperty returnProperty : returnPropertyList) {
-            FieldType fieldType = returnProperty.getFieldType();
-            ReferenceType type = fieldType.getType();
-            if (type == ReferenceType.PRIMITIVE) {
-                CellUtil.createCell(colHeaderRow, colNum, returnProperty.getName(),
-                        columnHeaderStyle(sheet.getWorkbook()));
-                colNum++;
-            } else if (type == ReferenceType.ENTITY) {
-                colNum = addEntityTypeColumnHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()), "",
-                        true);
-            }
-        }
+        addHeaders(colHeaderRow, colNum, responseType, "", true);
     }
 
     @Override
@@ -83,20 +73,20 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         }
     }
 
-    private int addEntityTypeColumnHeaders(Row row, int colNum, Class<?> typeClass, String prefix, boolean addChildEntityHeaders)
+    private int addHeaders(Row colHeaderRow, int colNum, Class<?> responseType, String fieldPrefix, boolean addChildEntityHeaders)
             throws ClassNotFoundException {
-        for (final Field field : typeClass.getDeclaredFields()) {
-            String typeName = field.getType().getName();
-            DataType dataType = DataType.valueFor(typeName);
-            String cellValue = field.getName();
+        for (final Field field : responseType.getDeclaredFields()) {
+            final Class<?> fieldType = field.getType();
+            DataType dataType = DataType.valueFor(fieldType.getName());
+            String fieldName = field.getName();
             if (dataType != null && isDataTypeWritable(dataType)) {
-                if (StringUtils.isNotBlank(prefix)) {
-                    cellValue = prefix + '.' + cellValue;
+                if (StringUtils.isNotBlank(fieldPrefix)) {
+                    fieldName = fieldPrefix + "." + fieldName;
                 }
-                CellUtil.createCell(row, colNum, cellValue, columnHeaderStyle(row.getSheet().getWorkbook()));
+                CellUtil.createCell(colHeaderRow, colNum, fieldName, columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
                 colNum++;
             } else if (dataType == null && addChildEntityHeaders) {
-                colNum = addEntityTypeColumnHeaders(row, colNum, Class.forName(typeName), cellValue, false);
+                colNum = addHeaders(colHeaderRow, colNum, fieldType, fieldName, false);
             }
         }
         return colNum;

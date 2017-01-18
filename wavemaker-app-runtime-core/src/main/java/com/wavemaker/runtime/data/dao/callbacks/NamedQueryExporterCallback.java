@@ -28,14 +28,16 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
     private Map<String, Object> params;
     private Pageable pageable;
     private ExportType exportType;
+    private Class<?> responseType;
 
 
     public NamedQueryExporterCallback(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,
+            final String queryName, final Map<String, Object> params, final ExportType exportType,Class<?> responseType,
             final Pageable pageable) {
         this.queryName = queryName;
         this.params = params;
         this.exportType = exportType;
+        this.responseType = responseType;
         this.pageable = pageable;
     }
 
@@ -52,7 +54,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
         } else {
             exporter = new HQLQueryDataExporter(namedQuery.scroll(), HQLQueryUtils.extractMetaForHql(namedQuery));
         }
-        return exporter.export(exportType);
+        return exporter.export(exportType, responseType);
     }
 }
 

@@ -20,7 +20,9 @@ public abstract class ExportBuilder {
 
     private static final int COLUMN_HEADER_FONT_SIZE = 10;
 
-    public abstract void addColumnHeaders(Sheet sheet) throws Exception;
+    protected Class<?> responseType;
+
+    public abstract void addColumnHeaders(Sheet sheet, final Class<?> responseType) throws Exception;
 
     public abstract void addColumnData(Sheet sheet) throws Exception;
 
@@ -38,7 +40,7 @@ public abstract class ExportBuilder {
         try {
             XSSFWorkbook workbook = new XSSFWorkbook();
             Sheet spreadSheet = workbook.createSheet("Data");
-            addColumnHeaders(spreadSheet);
+            addColumnHeaders(spreadSheet, responseType);
             addColumnData(spreadSheet);
             autoSizeAllColumns(workbook);
             return workbook;

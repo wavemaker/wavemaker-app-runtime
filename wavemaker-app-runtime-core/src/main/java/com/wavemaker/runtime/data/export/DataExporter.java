@@ -14,7 +14,7 @@ import com.wavemaker.studio.common.WMRuntimeException;
  */
 public abstract class DataExporter {
 
-    public abstract ByteArrayOutputStream export(ExportType exportType);
+    public abstract ByteArrayOutputStream export(ExportType exportType, Class<?> responseType);
 
     protected ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
         try {

@@ -172,7 +172,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         QueryHelper.configureParameters(queryInfo.v1, queryInfo.v2);
                         DataExporter exporter = new HQLQueryDataExporter(queryInfo.v1.scroll(),
                                 HQLQueryUtils.extractMetaForHql(queryInfo.v1));
-                        return exporter.export(exportType);
+                        return exporter.export(exportType, entityClass);
                     }
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
