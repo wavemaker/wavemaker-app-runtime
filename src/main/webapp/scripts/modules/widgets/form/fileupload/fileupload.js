@@ -509,7 +509,7 @@ WM.module('wm.widgets.form')
                                 // open the imagepicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.IMAGE) {
                                     DeviceMediaService.imagePicker(scope.multiple).then(function (files) {
-                                        uploadFiles(files, scope, uploadOptions);
+                                        scope.onFileSelect({}, files);
                                     });
                                     return;
                                 }
@@ -517,7 +517,7 @@ WM.module('wm.widgets.form')
                                 // open the audiopicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.AUDIO) {
                                     DeviceMediaService.audioPicker(scope.multiple).then(function (files) {
-                                        uploadFiles(files, scope, uploadOptions);
+                                        scope.onFileSelect({}, files);
                                     });
                                     return;
                                 }
@@ -525,21 +525,14 @@ WM.module('wm.widgets.form')
                                 //// open the videopicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.VIDEO && Utils.isIphone()) {
                                     DeviceMediaService.videoPicker().then(function (files) {
-                                        uploadFiles(files, scope, uploadOptions);
+                                        scope.onFileSelect({}, files);
                                     });
                                     return;
                                 }
 
                                 // open the file selector if contenttype is files.
                                 FileSelectorService.open({multiple: scope.multiple}, function (files) {
-                                    /* check if the files are having not more than maxfilesize */
-                                    files = getValidFiles(files, scope);
-
-                                    if (scope.mode === MODE.SELECT) {
-                                        scope.selectedFiles = files;
-                                        return;
-                                    }
-                                    uploadFiles(files, scope, uploadOptions);
+                                    scope.onFileSelect({}, files);
                                 });
                             };
                         }
