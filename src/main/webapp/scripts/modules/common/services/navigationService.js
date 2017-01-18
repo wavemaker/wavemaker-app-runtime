@@ -177,12 +177,14 @@ wm.modules.wmCommon.services.NavigationService = [
             var pageName = $next.params.name;
             if (pageName) {
                 // if login page is being loaded and user is logged in, cancel that.
-                SecurityService.getConfig(function (config) {
-                    if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
-                        $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
-                        return;
-                    }
-                });
+                if ($rs.isApplicationType) {
+                    SecurityService.getConfig(function (config) {
+                        if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
+                            $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
+                            return;
+                        }
+                    });
+                }
                 if (pageStackObject.isLastVisitedPage(pageName)) {
                     nextTransitionToApply = pageStackObject.getCurrentPage().transition + '-exit';
                     pageStackObject.goBack();
