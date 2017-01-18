@@ -469,9 +469,10 @@ WM.module('wm.widgets.base', [])
                         "nodelabel": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
                         "nodeicon": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
                         "nodechildren": {"type": "string", "widget": "list", "datasetfilter" : "objects", "bindable": "in-bound", "bindonly": "expression"},
+                        "nodeid": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
                         "tabindex": {"type": "number", "value": "0"},
                         "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
-                        "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"},
+                        "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "tree-datavalue"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"}
                     },
 
@@ -2031,7 +2032,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
                 {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["modal", "vertical", "avatar"], "parent": "properties"},
-                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "thumbnailurl", "mediaurl"], "parent": "properties"},
+                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "thumbnailurl", "mediaurl"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
