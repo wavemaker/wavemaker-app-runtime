@@ -22,4 +22,5 @@ import com.wavemaker.runtime.commons.WebConstants;
  */
 public class RestConstants extends WebConstants {
     public static final String WM_REST_SERVICE_AUTH_NAME = "WM_Rest_Service_Authorization";
+    public static final String X_WM_HEADER_PREFIX = "X-WM-";
 }

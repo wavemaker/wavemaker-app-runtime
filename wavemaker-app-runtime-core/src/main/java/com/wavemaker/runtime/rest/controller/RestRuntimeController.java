@@ -16,12 +16,7 @@
 package com.wavemaker.runtime.rest.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.servlet.HandlerMapping;
 
-import com.wavemaker.runtime.rest.RestConstants;
-import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
@@ -48,10 +40,8 @@ public class RestRuntimeController {
     @Autowired
     private RestRuntimeService restRuntimeService;
 
-    private static final String WM_HEADER_PREFIX = "X-WM-";
-
-    public void handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        String pathInfo = request.getPathInfo();
+    public void handleRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws Exception {
+        String pathInfo = httpServletRequest.getPathInfo();
         String[] split = pathInfo.split("/");
         if (split.length < 3) {
             throw new WMRuntimeException("Invalid Rest Service Url");
@@ -65,98 +55,29 @@ public class RestRuntimeController {
             throw new WMRuntimeException("operationId is empty");
         }
 
-        Map<String, String> decodedUriVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-
-        executeRestCall(serviceId, operationId, decodedUriVariables, request, response);
+        executeRestCall(serviceId, operationId, httpServletRequest, httpServletResponse);
     }
 
-    private void executeRestCall(String serviceId, String methodName,
-                                 Map<String, String> decodedUriVariables, HttpServletRequest httpServletRequest,
+    private void executeRestCall(String serviceId, String operationId,
+                                 HttpServletRequest httpServletRequest,
                                  HttpServletResponse httpServletResponse) throws IOException {
-        Map<String, Object> params = new HashMap<>();
-        addHeaders(httpServletRequest, params);
-        addRequestBody(httpServletRequest, params);
-        addRequestParams(httpServletRequest, params);
-        addPathParams(decodedUriVariables, params);
-        RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
-        Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
-        String s[] = {"Content-Disposition"};
-        List<String> defaultResponseHeadersList = Arrays.asList(s);
+        HttpResponseDetails httpResponseDetails;
+        try {
+            httpResponseDetails = restRuntimeService.executeRestCall(serviceId, operationId, httpServletRequest);
+        } catch (Throwable e) {
+            throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);
+        }
+        Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
+
         for (String responseHeaderKey : responseHeaders.keySet()) {
-            String updatedResponseHeaderKey;
-            if(defaultResponseHeadersList.contains(responseHeaderKey)) {
-                updatedResponseHeaderKey = responseHeaderKey;
-            } else {
-                updatedResponseHeaderKey = WM_HEADER_PREFIX+ responseHeaderKey;
-            }
             List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
             for (String responseHeaderValue : responseHeaderValueList) {
-                httpServletResponse.setHeader(updatedResponseHeaderKey, responseHeaderValue);
+                httpServletResponse.setHeader(responseHeaderKey, responseHeaderValue);
             }
         }
-        byte[] responseBody = restResponse.getResponseBody();
+        byte[] responseBody = httpResponseDetails.getResponseBody();
         responseBody = (responseBody == null) ? "".getBytes() : responseBody;
-        int statusCode = restResponse.getStatusCode();
-        if (statusCode >= 200 && statusCode<= 299) {
-            if (StringUtils.isNotBlank(restResponse.getContentType())) {
-                httpServletResponse.setContentType(restResponse.getContentType());
-            }
-            httpServletResponse.setHeader("X-WM-STATUS_CODE", String.valueOf(statusCode));
-            IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
-        } else {
-            throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, new String(responseBody).intern());
-        }
-    }
-
-    private void addPathParams(Map<String, String> decodedUriVariables, Map<String, Object> params) {
-        params.putAll(decodedUriVariables);
-    }
-
-    private void addHeaders(HttpServletRequest httpServletRequest, Map<String, Object> params) {
-        Enumeration headerNames = httpServletRequest.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = (String) headerNames.nextElement();
-            String key = headerName;
-            if (headerName.toUpperCase().startsWith(WM_HEADER_PREFIX)) {
-                key = headerName.substring(5);
-            } else if (httpServletRequest.getHeader(WM_HEADER_PREFIX + headerName) != null || httpServletRequest.getHeader(WM_HEADER_PREFIX.toLowerCase() + headerName) != null) {
-                //Ignoring the header as its corresponding wmHeader is present in the request
-                continue;
-            }
-            String value = httpServletRequest.getHeader(headerName);
-            updateParams(params, key, value);
-        }
-    }
-
-    private void addRequestParams(HttpServletRequest httpServletRequest, Map<String, Object> params) {
-        Enumeration parameterNames = httpServletRequest.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String parameterName = (String) parameterNames.nextElement();
-            updateParams(params, parameterName, httpServletRequest.getParameter(parameterName));
-        }
-    }
-
-    private void addRequestBody(HttpServletRequest httpServletRequest, Map<String, Object> params) throws IOException {
-        String method = httpServletRequest.getMethod();
-        if (!StringUtils.equals(method, HttpMethod.GET.name()) && !StringUtils.equals(method, HttpMethod.HEAD.name())) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            IOUtils.copy(httpServletRequest.getInputStream(), byteArrayOutputStream, true, true);
-            updateParams(params, RestConstants.REQUEST_BODY_KEY, byteArrayOutputStream.toString());
-        }
-    }
-
-    private void updateParams(Map<String, Object> params, String key, String value) {
-        Object o = params.get(key);
-        if (o == null) {
-            params.put(key, value);
-        } else {
-            if (o instanceof String) {
-                String prevValue = (String) o;
-                ArrayList<Object> objects = new ArrayList<>();
-                objects.add(prevValue);
-                o = objects;
-            }
-            ((List) o).add(value);
-        }
+        httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
+        IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
     }
 }

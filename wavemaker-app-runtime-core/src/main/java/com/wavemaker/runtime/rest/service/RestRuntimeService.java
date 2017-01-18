@@ -16,32 +16,33 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 
 import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.commons.model.Proxy;
+import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
-import com.wavemaker.runtime.util.HttpRequestUtils;
+import com.wavemaker.runtime.rest.model.HttpRequestDetails;
+import com.wavemaker.runtime.rest.model.HttpRequestData;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
+import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
+import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessorContext;
+import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
+import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
+import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
+import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
 import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.proxy.AppProxyConstants;
 import com.wavemaker.studio.common.swaggerdoc.util.SwaggerDocUtil;
-import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
@@ -54,135 +55,138 @@ import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
  */
 public class RestRuntimeService {
 
-
-    private Map<String, Swagger> swaggerDocumentCache = new HashMap<String, Swagger>();
+    private RestRuntimeServiceCacheHelper restRuntimeServiceCacheHelper = new RestRuntimeServiceCacheHelper();
 
     private static final String AUTHORIZATION = "authorization";
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
 
-    public RestResponse executeRestCall(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
-        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, methodName, params, originRequest);
-        logger.debug("Rest service request details {}", restRequestInfo.toString());
-        RestResponse restResponse = invokeRestCall(restRequestInfo);
-        logger.debug("Rest service response details for the endpoint {} is {}", restRequestInfo.getEndpointAddress(), restResponse.toString());
-        return restResponse;
+    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest) throws IOException {
+        HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
+        HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
+        List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
+        for (HttpRequestDataProcessor httpRequestDataProcessor : httpRequestDataProcessors) {
+            httpRequestDataProcessor.process(httpRequestDataProcessorContext);
+        }
+
+
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+        HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
+        List<HttpRequestProcessor> httpRequestProcessors = restRuntimeServiceCacheHelper.getHttpRequestProcessors(serviceId);
+        for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
+            httpRequestProcessor.process(httpRequestProcessorContext);
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rest service request details {}", httpRequestDetails.toString());
+        }
+
+        HttpResponseDetails httpResponseDetails = invokeRestCall(httpRequestDetails);
+
+        HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
+        List<HttpResponseProcessor> httpResponseProcessors = restRuntimeServiceCacheHelper.getHttpResponseProcessors(serviceId);
+        for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
+            httpResponseProcessor.process(httpResponseProcessorContext);
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Rest service response details for the endpoint {} is {}", httpRequestDetails.getEndpointAddress(), httpResponseDetails.toString());
+        }
+        return httpResponseDetails;
     }
 
-    private RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
-        return new RestConnector().invokeRestCall(restRequestInfo);
+    private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {
+        HttpRequestData httpRequestData = null;
+        try {
+            httpRequestData = new RequestDataBuilder().getRequestData(httpServletRequest);
+        } catch (Exception e) {
+            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e);
+        }
+        return httpRequestData;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
-        Swagger swagger = getSwaggerDoc(serviceId);
+    private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) throws IOException {
+        Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String pathValue = pathEntry.getKey();
         Path path = pathEntry.getValue();
-        Operation operation = null;
-        for (Operation eachOperation : path.getOperations()) {
-            if (eachOperation.getMethodName().equals(methodName)) {
-                operation = eachOperation;
-                break;
+        Operation operation = getOperation(path, operationId);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        Map<String, Object> queryParameters = new HashMap();
+        Map<String, String> pathParameters = new HashMap();
+        byte[] requestBody = null;
+        requestBody = filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters, requestBody);
+
+        HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
+        httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathValue, queryParameters, pathParameters));
+        httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(path, operation.getOperationId()).toUpperCase());
+
+        httpRequestDetails.setHeaders(httpHeaders);
+        httpRequestDetails.setRequestBody(requestBody);
+
+        updateProxyDetails(httpRequestDetails);
+        updateAuthorizationInfo(operation, httpRequestData, httpRequestDetails);
+        return httpRequestDetails;
+    }
+
+    private byte[] filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters, byte[] requestBody) {
+        for (Parameter parameter : operation.getParameters()) {
+            String paramName = parameter.getName();
+            String type = parameter.getIn().toUpperCase();
+            if (ParameterType.HEADER.name().equals(type)) {
+                List<String> headerValues = httpRequestData.getHttpHeaders().get(paramName);
+                if (headerValues != null) {
+                    headers.put(paramName, headerValues);
+                }
+            } else if (ParameterType.QUERY.name().equals(type)) {
+                List<String> paramValues = httpRequestData.getQueryParametersMap().get(paramName);
+                if (paramValues != null) {
+                    queryParameters.put(paramName, paramValues);
+                }
+            } else if (ParameterType.PATH.name().equals(type)) {
+                String pathVariableValue = httpRequestData.getPathVariablesMap().get(paramName);
+                if (pathVariableValue != null) {
+                    pathParameters.put(paramName, pathVariableValue);
+                }
+            } else if (ParameterType.BODY.name().equals(type)) {
+                requestBody = httpRequestData.getRequestBody();
             }
         }
-        if (operation == null) {
-            throw new WMRuntimeException("Operation does not exist with id " + methodName);
-        }
-        RestRequestInfo restRequestInfo = new RestRequestInfo();
-        final String scheme = swagger.getSchemes().get(0).toValue();
-        StringBuilder endpointAddressStringBuilder = new StringBuilder(scheme).append("://").append(swagger.getHost())
+        return requestBody;
+    }
+
+    private String getEndPointAddress(Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
+        String scheme = swagger.getSchemes().get(0).toValue();
+        StringBuilder sb = new StringBuilder(scheme).append("://").append(swagger.getHost())
                 .append(getNormalizedString(swagger.getBasePath())).append(getNormalizedString(pathValue));
-        String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationId());
-        restRequestInfo.setMethod(methodType.toUpperCase());
-        List<String> consumes = operation.getConsumes();
-        if (consumes != null && !consumes.isEmpty()) {
-            restRequestInfo.setContentType(consumes.iterator().next());
-        }
 
-        //check basic auth is there for operation
-        List<Map<String, List<String>>> securityMap = operation.getSecurity();
-        if (securityMap != null) {
-            for (Map<String, List<String>> securityList : securityMap) {
-                for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
-                    if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                        if (params.get(AUTHORIZATION) == null) {
-                            throw new WMRuntimeException("Authorization details are not specified in the request headers");
-                        }
-                        restRequestInfo.setBasicAuthorization(params.get(AUTHORIZATION).toString());
-                    }
-                }
-            }
-        }
+        updateUrlWithQueryParameters(sb, queryParameters);
 
-        List<Parameter> parameters = operation.getParameters();
-        Map<String, Object> headers = (restRequestInfo.getHeaders() == null) ? new HashMap<String, Object>() : restRequestInfo.getHeaders();
-        Map<String, Object> queryParams = new HashMap<>();
-        Map<String, String> pathParams = new HashMap<>();
-        String requestBody = null;
-        if (params != null) {
-            Set<String> unboundedQueryParams = new HashSet();
-            for (Parameter parameter : parameters) {
-                String paramName = parameter.getName();
-                Object value = params.get(paramName);
-                String type = parameter.getIn().toUpperCase();
-                if (value == null && ParameterType.HEADER.name().equals(type)) {//This is to handle header rename to lower case letters in some webapp servers
-                    value = params.get(paramName.toLowerCase());
-                }
-                if (value == null && ParameterType.BODY.name().equals(type)) {//This is to handle body parameter which might not have been named in some api-docs
-                    value = params.get(RestConstants.REQUEST_BODY_KEY);
-                }
-                if (value != null) {
-                    if (ParameterType.HEADER.name().equals(type)) {
-                        headers.put(paramName, value);
-                    } else if (ParameterType.QUERY.name().equals(type)) {
-                        queryParams.put(paramName, value);
-                    } else if (ParameterType.PATH.name().equals(type)) {
-                        pathParams.put(paramName, (String) value);
-                    } else if (ParameterType.BODY.name().equals(type)) {
-                        requestBody = (String) value;
-                    }
-                } else if(ParameterType.QUERY.name().equals(type)) {
-                    unboundedQueryParams.add(paramName);
-                }
-            }
+        StrSubstitutor strSubstitutor = new StrSubstitutor(pathParameters, "{", "}");
+        String endpointAddress = strSubstitutor.replace(sb.toString());
+        return endpointAddress;
+    }
 
-            if (StringUtils.isNotBlank(requestBody) && isFormUrlencodedContentType(restRequestInfo.getContentType())) {
-                for (String unboundedQueryParam : unboundedQueryParams) {
-                    Map<String, Object> map = HttpRequestUtils.getFormUrlencodedDataAsMap(requestBody);
-                    Object value = map.get(unboundedQueryParam);
-                    if (value != null) {
-                        queryParams.put(unboundedQueryParam, value);
-                    }
-                }
-            }
-        }
-
-        String[] defaultHeaders = {"User-Agent"};
-        for (String headerKey : defaultHeaders) {
-            if (!headers.containsKey(headerKey)) {
-                String headerValue = originRequest.getHeader(headerKey);
-                if (org.apache.commons.lang3.StringUtils.isNotBlank(headerValue)) {
-                    headers.put(headerKey, headerValue);
-                }
-            }
-        }
-
+    private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {
         boolean first = true;
-        for (String queryParam : queryParams.keySet()) {
-            Object val = queryParams.get(queryParam);
+        for (String queryParam : queryParameters.keySet()) {
+            Object val = queryParameters.get(queryParam);
             String[] strings = WMUtils.getStringList(val);
             for (String str : strings) {
                 if (first) {
-                    endpointAddressStringBuilder.append("?");
+                    endpointAddressSb.append("?");
                 } else {
-                    endpointAddressStringBuilder.append("&");
+                    endpointAddressSb.append("&");
                 }
-                endpointAddressStringBuilder.append(queryParam).append("=").append(str);
+                endpointAddressSb.append(queryParam).append("=").append(str);
                 first = false;
             }
         }
+    }
 
+    private void updateProxyDetails(HttpRequestDetails httpRequestDetails) {
         boolean proxyEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
         if (proxyEnabled) {
             String proxyHost = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
@@ -193,38 +197,43 @@ public class RestRuntimeService {
             }
             String proxyUsername = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
             String proxyPassword = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
-            restRequestInfo.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
+            httpRequestDetails.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
-
-        StrSubstitutor strSubstitutor = new StrSubstitutor(pathParams, "{", "}");
-        String endpointAddress = strSubstitutor.replace(endpointAddressStringBuilder.toString());
-        restRequestInfo.setRequestBody(requestBody);
-        restRequestInfo.setHeaders(headers);
-        restRequestInfo.setEndpointAddress(endpointAddress);
-        return restRequestInfo;
     }
 
-    private Swagger getSwaggerDoc(String serviceId) throws IOException {
-        if (!swaggerDocumentCache.containsKey(serviceId)) {
-            InputStream stream = null;
-            try {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
-                Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
-                swaggerDocumentCache.put(serviceId, swaggerDoc);
-            } finally {
-                IOUtils.closeSilently(stream);
+    private void updateAuthorizationInfo(Operation operation, HttpRequestData httpRequestData, HttpRequestDetails httpRequestDetails) {
+        //check basic auth is there for operation
+        List<Map<String, List<String>>> securityMap = operation.getSecurity();
+        if (securityMap != null) {
+            for (Map<String, List<String>> securityList : securityMap) {
+                for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
+                    if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
+                        String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
+                        if (authorizationHeaderValue == null) {
+                            throw new WMRuntimeException("Authorization details are not specified in the request headers");
+                        }
+                        httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
+                    }
+                }
             }
         }
-        return swaggerDocumentCache.get(serviceId);
+    }
+
+    private Operation getOperation(Path path, String operationId) {
+        for (Operation operation : path.getOperations()) {
+            if (operation.getMethodName().equals(operationId)) {
+                return operation;
+            }
+        }
+        throw new WMRuntimeException("Operation does not exist with id " + operationId);
     }
 
     private String getNormalizedString(String str) {
         return (str != null) ? str.trim() : "";
     }
 
-    private boolean isFormUrlencodedContentType(String contentType) {
-        return StringUtils.equals(MediaType.APPLICATION_FORM_URLENCODED_VALUE, contentType);
+    private HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
+        return new RestConnector().invokeRestCall(httpRequestDetails);
     }
-
 }
 

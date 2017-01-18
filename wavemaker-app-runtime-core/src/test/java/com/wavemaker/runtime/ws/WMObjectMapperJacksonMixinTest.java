@@ -18,16 +18,14 @@ package com.wavemaker.runtime.ws;
 import java.io.IOException;
 
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.testng.annotations.Test;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.runtime.rest.model.RestResponseModule;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+
+import static org.testng.Assert.assertEquals;
 
 /**
  * Created to test Jackson mixin for BasicClientCookie.
