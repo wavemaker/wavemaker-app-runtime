@@ -268,12 +268,13 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         searchTableDataWithQuery: {
-            url: "/:service/:dataModelName/:entityName?q=:query&page=:page&size=:size&:sort",
-            method: "GET"
+            url: "/:service/:dataModelName/:entityName/filter?page=:page&size=:size&:sort",
+            method: "POST",
+            contentType: "application/x-www-form-urlencoded"
         },
         exportTableData: {
-            url: "/:service/:dataModelName/:entityName/export/:exportFormat?q=:query&size=:size&:sort",
-            method: "GET"
+            url: "/:service/:dataModelName/:entityName/export/:exportFormat?size=:size&:sort",
+            method: "POST"
         },
         readTableRelatedData: {
             url: "/:service/:dataModelName/:entityName/:id/:relatedFieldName?page=:page&size=:size&:sort",

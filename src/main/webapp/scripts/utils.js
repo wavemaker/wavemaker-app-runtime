@@ -2026,7 +2026,14 @@ WM.module('wm.utils', [])
             });
             return retVal;
         }
-
+        //Construct the form data params from the URL
+        function setParamsFromURL(queryParams, params) {
+            queryParams = _.split(queryParams, '&');
+            _.forEach(queryParams, function (param) {
+                param = _.split(param, '=');
+                params[param[0]] = decodeURIComponent(_.join(_.slice(param, 1), '='));
+            });
+        }
         /**
          * Simulates file download in an app through creating and submitting a hidden form in DOM.
          * The action will be initiated through a Service Variable
@@ -2068,11 +2075,8 @@ WM.module('wm.utils', [])
             /* process query params, append a hidden input element in the form against each param */
             queryParams += url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) : '';
             queryParams += encType === getService('WS_CONSTANTS').CONTENT_TYPES.FORM_URL_ENCODED ? ((queryParams ? '&' : '') + requestParams.dataParams) : '';
-            queryParams = _.split(queryParams, '&');
-            _.forEach(queryParams, function (param) {
-                param = _.split(param, '=');
-                params[param[0]] = decodeURIComponent(_.join(_.slice(param, 1), '='));
-            });
+            setParamsFromURL(queryParams, params); //Set params for URL query params
+            setParamsFromURL(requestParams.data, params); //Set params for request data
             _.forEach(params, function (val, key) {
                 paramElement = WM.element('<input type="hidden">');
                 paramElement.attr({

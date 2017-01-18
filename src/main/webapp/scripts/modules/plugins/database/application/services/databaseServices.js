@@ -68,15 +68,17 @@ wm.plugins.database.services.DatabaseService = [
                 config,
                 connectionParams,
                 urlParams,
-                requestData;
+                requestData,
+                contentType;
 
-            config = BaseServiceManager.getConfig();
-            config = Utils.getClonedObject(config.Database[action]);
+            config      = BaseServiceManager.getConfig();
+            config      = Utils.getClonedObject(config.Database[action]);
+            contentType = config && config.contentType;
             requestData = params.data;
 
             urlParams = {
                 projectID        : params.projectID,
-                service          : WM.isDefined(params.service) ? params.service : "services",
+                service          : WM.isDefined(params.service) ? params.service : 'services',
                 dataModelName    : params.dataModelName,
                 entityName       : params.entityName,
                 queryName        : params.queryName,
@@ -88,7 +90,6 @@ wm.plugins.database.services.DatabaseService = [
                 page             : params.page,
                 size             : params.size,
                 sort             : params.sort,
-                query            : params.query,
                 exportFormat     : params.exportFormat
             };
             if (params.url && CONSTANTS.isStudioMode) {
@@ -108,16 +109,16 @@ wm.plugins.database.services.DatabaseService = [
 
                 /*(!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy is added in endpointAddress to differentiate desktop from saas*/
                 connectionParams = {
-                    "data": {
-                        "endpointAddress"   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
-                        "method"            : config.method,
-                        "contentType"       : "application/json",
-                        "requestBody"       : JSON.stringify(requestData),
-                        "headers"           : {
-                            "skipSecurity": "true"
+                    'data': {
+                        'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
+                        'method'            : config.method,
+                        'contentType'       : contentType || 'application/json',
+                        'requestBody'       : JSON.stringify(requestData),
+                        'headers'           : {
+                            'skipSecurity': 'true'
                         }
                     },
-                    "urlParams"         : {
+                    'urlParams'         : {
                         projectID: $rootScope.project.id
                     }
                 };
@@ -139,20 +140,23 @@ wm.plugins.database.services.DatabaseService = [
                 }, failureCallback);
             } else {
                 connectionParams = {
-                    target: "Database",
-                    action: action,
-                    urlParams: urlParams,
-                    data: requestData,
-                    config: {
-                        "url": params.url
-                    }
+                    target    : 'Database',
+                    action    : action,
+                    urlParams : urlParams,
+                    data      : requestData || '',
+                    config    : {
+                        'url' : params.url
+                    },
+                    headers   : {}
                 };
 
                 /* append the skipSecurity header to skip security-check in STUDIO MODE*/
                 if (CONSTANTS.isStudioMode) {
-                    connectionParams.headers = {"skipSecurity": "true"};
+                    connectionParams.headers.skipSecurity = 'true';
                 }
-
+                if (contentType) {
+                    connectionParams.headers['Content-Type'] = contentType;
+                }
                 if (action === 'exportTableData') {
                     Utils.simulateFileDownload(BaseService.parseReplace(connectionParams));
                 } else {
@@ -1625,7 +1629,8 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             testRunProcedure: function (params, successCallback, failureCallback) {
-                return initiateAction("testRunProcedure", params, successCallback, failureCallback);            },
+                return initiateAction("testRunProcedure", params, successCallback, failureCallback);
+            },
             /**
              * Internal function
              * @name wm.database.$DatabaseService#getSampleDbConnectionProperties

@@ -1,4 +1,4 @@
-/*global wm, WM, _, moment, FormData, Blob*/
+/*global wm, WM, _, moment, FormData, Blob, window*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -679,6 +679,7 @@ wm.variables.services.$liveVariable = [
                         //If both variable and option query are present, merge them with AND
                         query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
                     }
+                    query = 'q=' + query;
                 }
                 orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
@@ -704,6 +705,7 @@ wm.variables.services.$liveVariable = [
                     newDataSet,
                     clonedFields,
                     dataObj = {},
+                    requestData,
                     handleError = function (response) {
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
@@ -749,24 +751,25 @@ wm.variables.services.$liveVariable = [
 
                 tableOptions = prepareTableOptions(variable, options, _.isObject(output) ? output : clonedFields);
                 // if tableOptions object has query then set the dbOperation to 'searchTableDataWithQuery'
-                if (WM.isDefined(tableOptions.query)) {
+                if (options.searchWithQuery) {
                     dbOperation = 'searchTableDataWithQuery';
+                    requestData = tableOptions.query;
                 } else {
-                    dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
+                    dbOperation = (tableOptions.filter && tableOptions.filter.length) ? 'searchTableData' : 'readTableData';
+                    requestData =  tableOptions.filter;
                 }
                 /* if it is a prefab variable (used in a normal project), modify the url */
                 /*Fetch the table data*/
                 promiseObj = DatabaseService[dbOperation]({
-                    "projectID": projectID,
-                    "service": variable._prefabName ? "" : "services",
-                    "dataModelName": variable.liveSource,
-                    "entityName": variable.type,
-                    "page": options.page || 1,
-                    "size": options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
-                    "sort": tableOptions.sort,
-                    "data": tableOptions.filter,
-                    "url": variable._prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable._prefabName) : $rootScope.project.deployedUrl,
-                    "query" : tableOptions.query
+                    'projectID'     : projectID,
+                    'service'       : variable._prefabName ? '' : 'services',
+                    'dataModelName' : variable.liveSource,
+                    'entityName'    : variable.type,
+                    'page'          : options.page || 1,
+                    'size'          : options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
+                    'sort'          : tableOptions.sort,
+                    'data'          : requestData,
+                    'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
                 }, function (response) {
 
                     if ((response && response.error) || !response || !WM.isArray(response.content)) {
@@ -1407,7 +1410,7 @@ wm.variables.services.$liveVariable = [
                         'entityName'    : variable.type,
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
-                        'query'         : tableOptions.query || '',
+                        'data'          : tableOptions.query || '',
                         'exportFormat'  : options.exportFormat,
                         'size'          : options.size
                     });
@@ -1579,7 +1582,8 @@ wm.variables.services.$liveVariable = [
                     });
                     filterOptions = getFilterOptions(variable, filterFields, options);
                     query         = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
-                    action        = query ? 'searchTableDataWithQuery' : 'readTableData';
+                    query         = query ? ('q=' + query) : '';
+                    action        = 'searchTableDataWithQuery';
                     orderBy       = _.isEmpty(options.orderBy) ? '' : 'sort=' + options.orderBy;
                     DatabaseService[action]({
                         'projectID'     : projectID,
@@ -1589,7 +1593,7 @@ wm.variables.services.$liveVariable = [
                         'page'          : options.page || 1,
                         'size'          : options.pagesize || undefined,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
-                        'query'         : query || '',
+                        'data'          : query || '',
                         'sort'          : orderBy
                     }, function (response) {
                         /*Remove the self related columns from the data. As backend is restricting the self related column to one level, In liveform select, dataset and datavalue object
