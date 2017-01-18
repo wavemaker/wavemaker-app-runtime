@@ -13,6 +13,13 @@ public class Proxy {
     public Proxy() {
     }
 
+    public Proxy(Proxy proxy) {
+        this.hostname = proxy.hostname;
+        this.port = proxy.port;
+        this.username = proxy.username;
+        this.password = proxy.password;
+    }
+
     public Proxy(String hostname, int port, String username, String password) {
         this.hostname = hostname;
         this.port = port;

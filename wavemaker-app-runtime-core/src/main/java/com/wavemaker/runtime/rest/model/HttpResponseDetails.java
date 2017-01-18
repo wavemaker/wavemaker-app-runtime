@@ -15,20 +15,20 @@
  */
 package com.wavemaker.runtime.rest.model;
 
+import java.util.Arrays;
+
+import org.springframework.http.HttpHeaders;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.wavemaker.studio.common.json.serializer.ByteArrayToStringSerializer;
 import com.wavemaker.studio.common.json.deserializer.StringifiedByteArrayDeSerializer;
-import org.apache.http.impl.cookie.BasicClientCookie;
-
-import java.util.List;
-import java.util.Map;
+import com.wavemaker.studio.common.json.serializer.ByteArrayToStringSerializer;
 
 
 /**
  * @author Uday Shankar
  */
-public class RestResponse {
+public class HttpResponseDetails {
 
     @JsonSerialize(using = ByteArrayToStringSerializer.class)
     @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
@@ -40,18 +40,20 @@ public class RestResponse {
 
     private int statusCode;
 
-    private Map<String, List<String>> responseHeaders;
+    private HttpHeaders headers = new HttpHeaders();
 
-    private String contentType;
-
-    private List<BasicClientCookie> cookies;
-
-    public List<BasicClientCookie> getCookies() {
-        return cookies;
+    public HttpResponseDetails() {
     }
 
-    public void setCookies(final List<BasicClientCookie> cookies) {
-        this.cookies = cookies;
+    public HttpResponseDetails(HttpResponseDetails httpResponseDetails) {
+        if (httpResponseDetails.responseBody != null) {
+            this.responseBody = Arrays.copyOf(httpResponseDetails.responseBody, httpResponseDetails.responseBody.length);
+        }
+        if (httpResponseDetails.convertedResponse != null) {
+            this.convertedResponse = Arrays.copyOf(httpResponseDetails.convertedResponse, httpResponseDetails.convertedResponse.length);
+        }
+        this.statusCode = httpResponseDetails.statusCode;
+        this.headers.putAll(httpResponseDetails.headers);
     }
 
     public byte[] getResponseBody() {
@@ -78,29 +80,19 @@ public class RestResponse {
         this.statusCode = statusCode;
     }
 
-    public Map<String, List<String>> getResponseHeaders() {
-        return responseHeaders;
+    public HttpHeaders getHeaders() {
+        return headers;
     }
 
-    public void setResponseHeaders(Map<String, List<String>> responseHeaders) {
-        this.responseHeaders = responseHeaders;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setHeaders(HttpHeaders headers) {
+        this.headers = headers;
     }
 
     @Override
     public String toString() {
-        return "RestResponse{" +
+        return "HttpResponseDetails{" +
                 ", statusCode=" + statusCode +
-                ", contentType='" + contentType + '\'' +
-                ", responseHeaders=" + responseHeaders +
-                ", cookies=" + cookies +
+                ", headers=" + headers +
                 '}';
     }
 }

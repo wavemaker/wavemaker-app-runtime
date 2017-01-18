@@ -15,37 +15,46 @@
  */
 package com.wavemaker.runtime.rest.model;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.http.HttpHeaders;
+
 import com.wavemaker.runtime.commons.model.Proxy;
-import com.wavemaker.runtime.rest.RestConstants;
-import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
  */
-public class RestRequestInfo {
-
-    public enum AuthType {
-        NONE, BASIC, OAUTH;
-
-    }
+public class HttpRequestDetails {
 
     @NotNull
     private String endpointAddress;
     private String method;
-    private String contentType;
     private Object requestBody;
-    private AuthType authType;
-    private Map<String, Object> headers;
+    private HttpHeaders headers = new HttpHeaders();
     private Map<String, Object> queryParams;
-    private RestResponse sampleRestResponse;
+    private HttpResponseDetails sampleHttpResponseDetails;
     private boolean redirectEnabled = true;
     private Proxy proxy;
+
+    public HttpRequestDetails() {
+    }
+
+    public HttpRequestDetails(HttpRequestDetails httpRequestDetails) {
+        this.endpointAddress = httpRequestDetails.endpointAddress;
+        this.method = httpRequestDetails.method;
+        this.requestBody = httpRequestDetails.requestBody;
+        this.headers.putAll(httpRequestDetails.headers);
+        this.queryParams = httpRequestDetails.queryParams;
+        if (httpRequestDetails.sampleHttpResponseDetails != null) {
+            this.sampleHttpResponseDetails = new HttpResponseDetails(httpRequestDetails.sampleHttpResponseDetails);
+        }
+        this.redirectEnabled = httpRequestDetails.redirectEnabled;
+        if (proxy != null) {
+            this.proxy = new Proxy(httpRequestDetails.proxy);
+        }
+    }
 
     public Proxy getProxy() {
         return proxy;
@@ -63,14 +72,6 @@ public class RestRequestInfo {
         this.redirectEnabled = redirectEnabled;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     public String getEndpointAddress() {
         return endpointAddress;
     }
@@ -79,11 +80,11 @@ public class RestRequestInfo {
         this.endpointAddress = endpointAddress;
     }
 
-    public Map<String, Object> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, Object> headers) {
+    public void setHeaders(HttpHeaders headers) {
         this.headers = headers;
     }
 
@@ -111,57 +112,23 @@ public class RestRequestInfo {
         this.requestBody = requestBody;
     }
 
-    public RestResponse getSampleRestResponse() {
-        return sampleRestResponse;
+    public HttpResponseDetails getSampleHttpResponseDetails() {
+        return sampleHttpResponseDetails;
     }
 
-    public void setSampleRestResponse(RestResponse sampleRestResponse) {
-        this.sampleRestResponse = sampleRestResponse;
+    public void setSampleHttpResponseDetails(HttpResponseDetails sampleHttpResponseDetails) {
+        this.sampleHttpResponseDetails = sampleHttpResponseDetails;
     }
-
-    public AuthType getAuthType() {
-        if (authType == null) {
-            authType = AuthType.NONE;
-        }
-        return authType;
-    }
-
-    public void setAuthType(AuthType authType) {
-        this.authType = authType;
-    }
-
-    @JsonIgnore
-    public String getBasicAuthorization() {
-        headers = (headers == null) ? new HashMap<String, Object>() : headers;
-        for (String key : headers.keySet()) {
-            if (RestConstants.AUTHORIZATION.equals(key)) {
-                if (headers.get(key) != null) {
-                    return headers.get(key).toString();
-                }
-            }
-        }
-        throw new WMRuntimeException("Authorization is not there in rest request info");
-    }
-
-    @JsonIgnore
-    public void setBasicAuthorization(String authorization) {
-        headers = (headers == null) ? new HashMap<String, Object>() : headers;
-        this.setAuthType(AuthType.BASIC);
-        headers.put(RestConstants.AUTHORIZATION, authorization);
-    }
-
 
     @Override
     public String toString() {
-        return "RestRequestInfo{" +
+        return "HttpRequestDetails{" +
                 "endpointAddress='" + endpointAddress + '\'' +
                 ", method='" + method + '\'' +
-                ", contentType='" + contentType + '\'' +
                 ", requestBody=" + requestBody +
-                ", authType=" + authType +
                 ", headers=" + headers +
                 ", queryParams=" + queryParams +
-                ", sampleRestResponse=" + sampleRestResponse +
+                ", sampleHttpResponseDetails=" + sampleHttpResponseDetails +
                 ", redirectEnabled=" + redirectEnabled +
                 ", proxy=" + proxy +
                 '}';

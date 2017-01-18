@@ -18,27 +18,19 @@ package com.wavemaker.runtime.rest.service;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,21 +38,16 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.wavemaker.runtime.rest.RestConstants;
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.rest.model.HttpRequestDetails;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.studio.common.CommonConstants;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.SSLUtils;
-import com.wavemaker.studio.common.util.WMUtils;
 
 /**
  * @author Uday Shankar
@@ -69,58 +56,39 @@ import com.wavemaker.studio.common.util.WMUtils;
 public class RestConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
-    private final X509HostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
 
-    public RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
+    public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
 
-        logger.debug("Sending {} request to URL {}", restRequestInfo.getMethod(), restRequestInfo.getEndpointAddress());
-        ResponseEntity<byte[]> responseEntity = getResponseEntity(restRequestInfo,
+        logger.debug("Sending {} request to URL {}", httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
+        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails,
                 httpClientContext, byte[].class);
 
-        RestResponse restResponse = new RestResponse();
-        restResponse.setResponseBody(responseEntity.getBody());
-        restResponse.setStatusCode(responseEntity.getStatusCode().value());
-        // Converting form Cookie to BasicClientCookie.
-        final List<Cookie> cookies = httpClientContext.getCookieStore().getCookies();
-        List<BasicClientCookie> clientCookies = new ArrayList<>();
-        for (Cookie cookie : cookies) {
-            clientCookies.add((BasicClientCookie) cookie);
-        }
-        restResponse.setCookies(clientCookies);
-        Map<String, List<String>> responseHeaders = new HashMap<>();
-        HttpHeaders httpHeaders = responseEntity.getHeaders();
-        for (String responseHeaderKey : httpHeaders.keySet()) {
-            responseHeaders.put(responseHeaderKey, httpHeaders.get(responseHeaderKey));
-        }
-        MediaType mediaType = responseEntity.getHeaders().getContentType();
-        if (mediaType != null) {
-            String outputContentType = mediaType.toString();
-            if (outputContentType.contains(";")) {
-                outputContentType = outputContentType.substring(0, outputContentType.indexOf(";"));
-            }
-            restResponse.setContentType(outputContentType);
-        }
-        restResponse.setResponseHeaders(responseHeaders);
-        return restResponse;
+        HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+        httpResponseDetails.setResponseBody(responseEntity.getBody());
+        httpResponseDetails.setStatusCode(responseEntity.getStatusCode().value());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.putAll(responseEntity.getHeaders());
+        httpResponseDetails.setHeaders(httpHeaders);
+        return httpResponseDetails;
     }
 
-    public <T> ResponseEntity<T> invokeRestCall(RestRequestInfo restRequestInfo, Class<T> t) {
+    public <T> ResponseEntity<T> invokeRestCall(HttpRequestDetails httpRequestDetails, Class<T> t) {
 
-        logger.debug("Sending {} request to URL {}", restRequestInfo.getMethod(), restRequestInfo.getEndpointAddress());
+        logger.debug("Sending {} request to URL {}", httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
         final HttpClientContext httpClientContext = HttpClientContext.create();
-        return getResponseEntity(restRequestInfo, httpClientContext, t);
+        return getResponseEntity(httpRequestDetails, httpClientContext, t);
     }
 
     private <T> ResponseEntity<T> getResponseEntity(
-            final RestRequestInfo restRequestInfo, final HttpClientContext
+            final HttpRequestDetails httpRequestDetails, final HttpClientContext
             httpClientContext, Class<T> t) {
 
         // equivalent to "http.protocol.handle-redirects", false
-        RequestConfig requestConfig = RequestConfig.custom().setRedirectsEnabled(restRequestInfo.isRedirectEnabled())
+        RequestConfig requestConfig = RequestConfig.custom().setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
                 .build();
 
-        HttpMethod httpMethod = HttpMethod.valueOf(restRequestInfo.getMethod());
+        HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
 
         // Creating HttpClientBuilder and setting Request Config.
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
@@ -128,18 +96,18 @@ public class RestConnector {
 
         String endpointAddress = null;
         try {
-            endpointAddress = URLDecoder.decode(restRequestInfo.getEndpointAddress(), CommonConstants.UTF8);
+            endpointAddress = URLDecoder.decode(httpRequestDetails.getEndpointAddress(), CommonConstants.UTF8);
         } catch (UnsupportedEncodingException e) {
-            throw new WMRuntimeException("Failed to decode url " + restRequestInfo.getEndpointAddress(), e);
+            throw new WMRuntimeException("Failed to decode url " + httpRequestDetails.getEndpointAddress(), e);
         }
         if (endpointAddress.startsWith("https")) {
             httpClientBuilder.setSSLSocketFactory(
-                    new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), hostnameVerifier));
+                    new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2","TLSv1.1","TLSv1"}, null, NoopHostnameVerifier.INSTANCE));
         }
 
-        if (restRequestInfo.getProxy() != null) {
-            logger.debug("setting proxyProperties for request URL {}", restRequestInfo.getEndpointAddress());
-            com.wavemaker.runtime.commons.model.Proxy proxy = restRequestInfo.getProxy();
+        if (httpRequestDetails.getProxy() != null) {
+            logger.debug("setting proxyProperties for request URL {}", httpRequestDetails.getEndpointAddress());
+            com.wavemaker.runtime.commons.model.Proxy proxy = httpRequestDetails.getProxy();
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(proxy.getHostname(), proxy.getPort()), new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
             httpClientBuilder.useSystemProperties();
@@ -153,32 +121,18 @@ public class RestConnector {
                 return httpClientContext;
             }
         };
-        MultiValueMap headersMap = new LinkedMultiValueMap();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.putAll(httpRequestDetails.getHeaders());
 
-        //set headers
-        Map<String, Object> headers = restRequestInfo.getHeaders();
-        if (headers != null && !headers.isEmpty()) {
-            for (Map.Entry<String, Object> entry : headers.entrySet()) {
-                String[] stringList = WMUtils.getStringList(entry.getValue());
-                for (String str : stringList) {
-                    headersMap.add(entry.getKey(), str);
-                }
-            }
-        }
-
-        String contentType = restRequestInfo.getContentType();
-        if (!StringUtils.isBlank(contentType)) {
-            headersMap.add(RestConstants.CONTENT_TYPE, contentType);
-        }
         WMRestTemplate wmRestTemplate = new WMRestTemplate();
         wmRestTemplate.setRequestFactory(factory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;
-        com.wavemaker.studio.common.web.http.HttpMethod wmHttpMethod = com.wavemaker.studio.common.web.http.HttpMethod.valueOf(restRequestInfo.getMethod());
+        com.wavemaker.studio.common.web.http.HttpMethod wmHttpMethod = com.wavemaker.studio.common.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
         if (wmHttpMethod.isRequestBodySupported()) {
-            requestEntity = new HttpEntity(restRequestInfo.getRequestBody(), headersMap);
+            requestEntity = new HttpEntity(httpRequestDetails.getRequestBody(), httpHeaders);
         } else {
-            requestEntity = new HttpEntity(headersMap);
+            requestEntity = new HttpEntity(httpHeaders);
         }
         return wmRestTemplate
                 .exchange(endpointAddress, httpMethod, requestEntity, t);

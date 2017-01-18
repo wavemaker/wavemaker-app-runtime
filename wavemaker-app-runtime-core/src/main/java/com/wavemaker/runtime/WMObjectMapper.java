@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
+import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -34,12 +35,21 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import com.wavemaker.runtime.rest.model.RestResponseModule;
+import com.wavemaker.studio.common.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
 import com.wavemaker.studio.common.json.deserializer.WMSqlDateDeSerializer;
@@ -243,9 +253,8 @@ public class WMObjectMapper extends ObjectMapper {
             module.addDeserializer(Date.class, new WMDateDeSerializer());
             module.addDeserializer(java.sql.Date.class, new WMSqlDateDeSerializer());
             module.addDeserializer(LocalDateTime.class, new WMLocalDateTimeDeSerializer());
-
+            module.addDeserializer(HttpHeaders.class, new HttpHeadersDeSerializer());
             registerModule(module);
-            registerModule(new RestResponseModule());
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
