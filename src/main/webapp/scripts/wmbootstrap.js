@@ -99,6 +99,7 @@ Application
                 var prevRoute,
                     cache              = $cacheFactory('APP_PAGES'),
                     NG_LOCALE_PATH     = 'resources/ngLocale/',
+                    MOMENT_LOCALE_PATH = 'resources/momentLocale/',
                     APP_LOCALE_PATH    = 'resources/i18n/',
                     appVariablesLoaded = false,
                     SSO_URL            = '/services/security/ssologin',
@@ -336,7 +337,7 @@ Application
 
                     // if the supportedLocale is not available set it to defaultLocale
                     _sl = _sl || [_dl];
-                    i18nService.init(_sl, _dl, APP_LOCALE_PATH, NG_LOCALE_PATH);
+                    i18nService.init(_sl, _dl, APP_LOCALE_PATH, NG_LOCALE_PATH, MOMENT_LOCALE_PATH);
                     i18nService.setSelectedLocale(_dl);
                 }
 

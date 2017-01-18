@@ -30,6 +30,7 @@ WM.module('i18n')
                 _defaultLocale,
                 _appLocaleRootPath,
                 _ngLocaleRootPath,
+                _momentLocalePath,
                 _selectedLocale;
 
             localeCodesMap = {
@@ -373,12 +374,13 @@ WM.module('i18n')
             function loadMomentLocaleBundle() {
                 var path,
                     deferred = $q.defer();
+
                 if (!_appLocaleRootPath || _selectedLocale === 'en') {
                     moment.locale('en');
                     deferred.resolve();
                     return deferred.promise;
                 }
-                path = _appLocaleRootPath + 'moment/' +  _selectedLocale + '.js';
+                path = _momentLocalePath +  _selectedLocale + '.js';
                 // load the script tag
                 WM.element.ajax({
                     'dataType' : 'script',
@@ -441,7 +443,7 @@ WM.module('i18n')
                 return _selectedLocale;
             }
 
-            function init(supportedLocale, defaultLocale, appLocaleRootPath, ngLocaleRootPath) {
+            function init(supportedLocale, defaultLocale, appLocaleRootPath, ngLocaleRootPath, momentLocaleRootPath) {
                 // supportedLocale must be a non empty array
                 if (!supportedLocale || !WM.isArray(supportedLocale) || !supportedLocale.length) {
                     return;
@@ -457,6 +459,7 @@ WM.module('i18n')
                 _appLocaleRootPath = appLocaleRootPath;
                 _defaultLocale     = defaultLocale || supportedLocale[0];
                 _ngLocaleRootPath  = ngLocaleRootPath;
+                _momentLocalePath  = momentLocaleRootPath;
                 _initSuccess       = true;
 
                 // load the default locale bundle
