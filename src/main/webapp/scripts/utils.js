@@ -2304,6 +2304,11 @@ WM.module('wm.utils', [])
             var parser  = document.createElement('a');
             parser.href = url;
 
+            // for relative urls IE returns the protocol as empty string
+            if (parser.protocol === '') {
+                return false;
+            }
+
             if (stringStartsWith($location.$$absUrl, 'https://')) {
                 return parser.protocol !== 'https:' && parser.protocol !== 'wss:';
             }
