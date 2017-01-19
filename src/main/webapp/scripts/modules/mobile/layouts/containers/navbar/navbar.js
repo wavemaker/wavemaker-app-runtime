@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                         '</ul>' +
                     '</div>' +
                     '<div class="mobile-navbar-center search-container">' +
-                        '<wm-search query="{{query}}" scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" displayimagesrc="{{displayimagesrc}}" datavalue="{{datavalue}}" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true"></wm-search>' +
+                        '<wm-search query="{{query}}" scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" displayimagesrc="{{displayimagesrc}}" datavalue="{{datavalue}}" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
                     '</div>' +
                     '<div class="mobile-navbar-right">' +
                         '<ul class="nav navbar-nav navbar-right">' +
@@ -176,6 +176,7 @@ WM.module('wm.layouts.containers')
                         // Applying widget properties to directive scope
                         $is.widgetProps   = widgetProps;
                         $is.showSearchbar = false;
+                        $is.readonlySearchBar = CONSTANTS.isStudioMode ? true : false;
                     },
                     'post': function ($is, $el, attrs) {
                         $is.leftNavPanel = ($el.closest('.app-page').find('.app-left-panel:first')).isolateScope();
