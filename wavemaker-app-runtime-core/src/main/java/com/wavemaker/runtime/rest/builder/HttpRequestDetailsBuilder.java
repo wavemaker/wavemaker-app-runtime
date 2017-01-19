@@ -15,21 +15,28 @@
  */
 package com.wavemaker.runtime.rest.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
+import com.wavemaker.runtime.rest.model.Message;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 3/9/15.
  */
 public class HttpRequestDetailsBuilder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestDetailsBuilder.class);
 
     private HttpRequestDetails httpRequestDetails;
+
+    private Object requestBody;
 
     private HttpRequestDetailsBuilder(HttpRequestDetails httpRequestDetails) {
         this.httpRequestDetails = httpRequestDetails;
@@ -45,7 +52,7 @@ public class HttpRequestDetailsBuilder {
     }
 
     public HttpRequestDetailsBuilder setHeaders(HttpHeaders headers) {
-        httpRequestDetails.setHeaders(headers);
+        httpRequestDetails.getHeaders().putAll(headers);
         return this;
     }
 
@@ -60,7 +67,7 @@ public class HttpRequestDetailsBuilder {
     }
 
     public HttpRequestDetailsBuilder setRequestBody(final Object requestBody) {
-        httpRequestDetails.setRequestBody(requestBody);
+        this.requestBody = requestBody;
         return this;
     }
 
@@ -80,7 +87,34 @@ public class HttpRequestDetailsBuilder {
     }
 
     public HttpRequestDetails build() {
-        LOGGER.info("HttpRequestDetails {}", httpRequestDetails);
+        if(requestBody!=null) {
+            if (requestBody instanceof byte[]) {
+                httpRequestDetails.setRequestBody((byte[]) requestBody);
+            } else if (requestBody instanceof String) {
+                httpRequestDetails.setRequestBody(((String) requestBody).getBytes());
+            } else if (requestBody instanceof Map) {
+                String contentType = httpRequestDetails.getHeaders().getContentType().toString();
+                if (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(contentType)) {
+                    setRequestBody(HttpRequestUtils.getFormMessage((Map) requestBody));
+                }
+                if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(contentType)) {
+                    setRequestBody(HttpRequestUtils.getMultipartMessage((Map) requestBody));
+                }
+            } else {
+                setRequestBody(HttpRequestUtils.getJsonMessage(requestBody));
+            }
+        }
         return httpRequestDetails;
+    }
+
+    private void setRequestBody(Message message){
+        InputStream inputStream = message.getInputStream();
+        try {
+            httpRequestDetails.setRequestBody(IOUtils.toByteArray(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
     }
 }
