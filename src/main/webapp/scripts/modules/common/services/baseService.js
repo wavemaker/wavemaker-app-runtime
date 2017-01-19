@@ -111,7 +111,7 @@ wm.modules.wmCommon.services.BaseService = [
                         config.params = serviceParams.params;
                     }
                     /* check for data */
-                    if (serviceParams.data) {
+                    if (WM.isDefined(serviceParams.data)) {
                         config.data = serviceParams.data;
                     }
                     /* check for data parameters, written to support old service calls (.json calls) */
