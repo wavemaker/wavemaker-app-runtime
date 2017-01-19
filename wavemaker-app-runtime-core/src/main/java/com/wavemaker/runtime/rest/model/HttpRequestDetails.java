@@ -31,7 +31,7 @@ public class HttpRequestDetails {
     @NotNull
     private String endpointAddress;
     private String method;
-    private Object requestBody;
+    private byte[] requestBody;
     private HttpHeaders headers = new HttpHeaders();
     private Map<String, Object> queryParams;
     private HttpResponseDetails sampleHttpResponseDetails;
@@ -104,11 +104,11 @@ public class HttpRequestDetails {
         this.method = method;
     }
 
-    public Object getRequestBody() {
+    public byte[] getRequestBody() {
         return requestBody;
     }
 
-    public void setRequestBody(Object requestBody) {
+    public void setRequestBody(byte[] requestBody) {
         this.requestBody = requestBody;
     }
 
