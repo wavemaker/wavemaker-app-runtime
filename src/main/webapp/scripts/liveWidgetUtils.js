@@ -1793,15 +1793,17 @@ WM.module('wm.widgets.live')
              *
              * @param {object} element from which widgets needs to be retrieved
              */
-            function getFormFilterWidgets(element) {
+            function getFormFilterWidgets(element, nameAttr) {
                 var wid = {};
                 element.find('[init-widget]').not('[name*="_formWidget"]').each(function () {
                     var $target = WM.element(this),
                         _is;
                     if ($target.isolateScope) {
                         _is = $target.isolateScope();
-
-                        if (_is.name) {
+                        //If name attribute is passed, get the value from attribute
+                        if (nameAttr) {
+                            wid[$target.attr(nameAttr)] = _is;
+                        } else if (_is.name) {
                             wid[_is.name] = _is;
                         }
                     }

@@ -16,12 +16,11 @@ WM.module('wm.widgets.live')
         '$compile',
         '$timeout',
         'Utils',
-        'CONSTANTS',
         'wmToaster',
         '$rootScope',
         'LiveWidgetUtils',
 
-        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS, wmToaster, $rs, LiveWidgetUtils) {
+        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, wmToaster, $rs, LiveWidgetUtils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livegrid', ['wm.base']),
                 gridMarkup = '',
@@ -81,8 +80,7 @@ WM.module('wm.widgets.live')
                                 liveGridOptions = {
                                     'multiselect'        : false,
                                     'setGridEditMode'    : ''
-                                },
-                                gridWp;
+                                };
                             /* For row delete , set the row fields to the gridform */
                             liveGridOptions.onRowDelete = function (row, callBackFn) {
                                 scope.gridform.rowdata = row;
@@ -264,16 +262,6 @@ WM.module('wm.widgets.live')
                             $timeout(function () {
                                 WidgetUtilService.postWidgetCreate(scope, element, attrs);
                             }, 0, false);
-
-                            if (scope.widgetid && scope.grid) {
-                                //Hide the grid CRUD call back events
-                                gridWp = scope.grid.widgetProps;
-                                gridWp.onRowdeleted.show      = false;
-                                gridWp.onBeforerowinsert.show = false;
-                                gridWp.onRowinsert.show       = false;
-                                gridWp.onBeforerowupdate.show = false;
-                                gridWp.onRowupdate.show       = false;
-                            }
                         }
                     };
                 }

@@ -860,7 +860,7 @@ $.widget('wm.datagrid', {
         }
         rowData.index = this.options.startRowIndex + rowId;
         rowData.pk = rowId;
-        if (this.options.editmode === this.CONSTANTS.INLINE || this.options.editmode === this.CONSTANTS.QUICK_EDIT) {
+        if (this.options.editmode !== this.CONSTANTS.FORM && this.options.editmode !== this.CONSTANTS.DIALOG) {
             $row = $(this._getRowTemplate(rowData));
             if (!this.preparedData.length) {
                 this.setStatus('ready', this.dataStatus.ready);
@@ -1468,6 +1468,7 @@ $.widget('wm.datagrid', {
             rowData = _.cloneDeep(this.options.data[$row.attr('data-row-id')]) || {},
             self = this,
             rowId = parseInt($row.attr('data-row-id'), 10),
+            action,
             isNewRow,
             $editableElements,
             isDataChanged = false,
@@ -1480,7 +1481,8 @@ $.widget('wm.datagrid', {
         }
         options = options || {};
         e.data  = e.data  || {};
-        if (e.data.action === 'edit' || options.action === 'edit') {
+        action  = e.data.action || options.action;
+        if (action === 'edit') {
             if (advancedEdit && self.gridBody.find('tr.row-editing').length) {
                 //In case of advanced edit, save the previous row
                 self.saveRow(function (skipFocus, error) {
@@ -1496,62 +1498,45 @@ $.widget('wm.datagrid', {
             if (self.options.editmode === self.CONSTANTS.FORM || self.options.editmode === self.CONSTANTS.DIALOG) {
                 return;
             }
+            //For new operation, set the rowdata from the default values
+            if (options.operation === 'new') {
+                _.forEach(self.preparedHeaderData, function (colDef) {
+                    rowData[colDef.field] = colDef.defaultvalue;
+                });
+            }
+            //Event for on before form render. User can update row data here.
+            if ($.isFunction(this.options.onBeforeFormRender)) {
+                isValid = this.options.onBeforeFormRender(rowData, e, options.operation || action);
+                if (isValid === false) {
+                    return;
+                }
+            }
             this._setGridEditMode(true);
             this.disableActions(true);
             $deleteButton.removeClass('disabled-action');
-
             $originalElements.each(function () {
-                var $el = $(this),
+                var $el      = $(this),
                     cellText = $el.text(),
-                    id = $el.attr('data-col-id'),
-                    colDef = self.preparedHeaderData[id],
-                    editableTemplate,
+                    id       = $el.attr('data-col-id'),
+                    colDef   = self.preparedHeaderData[id],
                     value,
-                //Set the values to the generated input elements
-                    setInputValue = function (value) {
-                        var childIs;
-                        if (options.operation !== 'new') {
-                            //For widgets, set the datavalue. Upload uses html file upload. So, no need to set value
-                            if (colDef.editWidgetType) {
-                                if (colDef.editWidgetType === 'upload') {
-                                    return;
-                                }
-                                childIs = $el.children().isolateScope();
-                                //For checkbox, set value from row data as cellText may contain string values of true or false
-                                if (colDef.editWidgetType === 'checkbox') {
-                                    childIs.datavalue = _.get(rowData, colDef.field);
-                                } else {
-                                    childIs.datavalue = value;
-                                }
-                            }
-                            $el.find('input').val(value);
-                        }
-                    };
+                    editableTemplate;
                 if (!colDef.readonly) {
-                    if (options.operation === 'new') {
-                        value = colDef.defaultvalue;
-                    } else {
-                        value = cellText;
-                    }
+                    value = _.get(rowData, colDef.field);
                     editableTemplate = self._getEditableTemplate($el, colDef, value, rowId, options.operation);
-                    // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
-                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
-                        setInputValue(cellText);
+                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                     } else {
                         if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
                             $el.addClass('cell-editing editable-expression').data('originalValue', {'template': colDef.customExpression, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
                         }
                         $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
-                        // Put the original value while editing, not the formatted value.
-                        setInputValue(_.get(rowData, colDef.field));
                     }
                 }
                 if (colDef.required) {
                     $el.addClass('required-field form-group');
                 }
             });
-
             // Show editable row.
             $editButton.addClass('hidden');
             $cancelButton.removeClass('hidden');
@@ -1563,10 +1548,14 @@ $.widget('wm.datagrid', {
             if (!options.skipFocus && $editableElements) {
                 self.setFocusOnElement(e, $editableElements);
             }
+            //Event for on before form render. User can access form widgets here.
+            if ($.isFunction(this.options.onFormRender)) {
+                this.options.onFormRender($row, e, options.operation || action);
+            }
         } else {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = rowId >= this.preparedData.length;
-            if (e.data.action === 'save' || options.action === 'save') {
+            if (action === 'save') {
                 $requiredEls = $editableElements.find('.ng-invalid-required');
                 //If required fields are present and value is not filled, return here
                 if ($requiredEls.length > 0) {
@@ -1992,7 +1981,7 @@ $.widget('wm.datagrid', {
             $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
             $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));
         } else {
-            if ((this.options.editmode === this.CONSTANTS.INLINE || this.options.editmode === this.CONSTANTS.QUICK_EDIT) || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'update'))) {
+            if ((this.options.editmode !== this.CONSTANTS.FORM && this.options.editmode !== this.CONSTANTS.DIALOG) || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'update'))) {
                 $htm.find('.edit-row-button').on('click', {action: 'edit'}, this.toggleEditRow.bind(this));
                 $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
                 $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));

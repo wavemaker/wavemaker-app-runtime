@@ -131,7 +131,8 @@ WM.module('wm.widgets.grid')
                 'loadingdatamsg'     : true,
                 'filternullrecords'  : true,
                 'spacing'            : true,
-                'exportformat'       : true
+                'exportformat'       : true,
+                'editmode'           : CONSTANTS.isStudioMode
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1, i;
@@ -161,18 +162,20 @@ WM.module('wm.widgets.grid')
                 'onHeaderclick'     : '&',
                 'onShow'            : '&',
                 'onHide'            : '&',
-                'onRowdeleted'      : '&',
-                'onRowupdated'      : '&',
                 'onBeforerowinsert' : '&',
                 'onRowinsert'       : '&',
+                'onBeforerowupdate' : '&',
+                'onRowupdate'       : '&',
+                'onRowdeleted'      : '&',
+                'onRowdelete'      : '&',
+                'onBeforeformrender': '&',
+                'onFormrender'      : '&',
                 'onRowclick'        : '&',
                 'onRowdblclick'     : '&',
                 'onColumnselect'    : '&',
                 'onColumndeselect'  : '&',
                 'onEnterkeypress'   : '&',
                 'onSetrecord'       : '&',
-                'onBeforerowupdate' : '&',
-                'onRowupdate'       : '&',
                 'onDatarender'      : '&',
                 'onTap'             : '&'
             },
@@ -312,8 +315,8 @@ WM.module('wm.widgets.grid')
                             },
                             handlers                 = [],
                             liveGrid                 = element.closest('.app-livegrid'),
-                            gridController,
-                            wp;
+                            wp                       = $is.widgetProps,
+                            gridController;
                         function isInputBodyWrapper(target) {
                             var classes = ['.dropdown-menu', '.uib-typeahead-match', '.modal-dialog', '.toast'],
                                 isInput = false;
@@ -371,7 +374,8 @@ WM.module('wm.widgets.grid')
                         }
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
-                            var addNewRowButtonIndex;
+                            var addNewRowButtonIndex,
+                                isFormMode;
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
@@ -424,8 +428,8 @@ WM.module('wm.widgets.grid')
                                 if ($is.widgetid) {
                                     if (newVal) {
                                         $is.radioselect = false;
-                                        $is.widgetProps.radioselect.show = false;
-                                        $is.widgetProps.radioselect.showindesigner = false;
+                                        wp.radioselect.show = false;
+                                        wp.radioselect.showindesigner = false;
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'radioselect': false});
                                     }
                                     $is.setDataGridOption('multiselect', newVal);
@@ -435,8 +439,8 @@ WM.module('wm.widgets.grid')
                                 if ($is.widgetid) {
                                     if (newVal) {
                                         $is.multiselect = false;
-                                        $is.widgetProps.multiselect.show = false;
-                                        $is.widgetProps.multiselect.showindesigner = false;
+                                        wp.multiselect.show = false;
+                                        wp.multiselect.showindesigner = false;
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'multiselect': false});
                                     }
                                     $is.setDataGridOption('showRadioColumn', newVal);
@@ -459,7 +463,7 @@ WM.module('wm.widgets.grid')
                                 $is.navControls = newVal;
                                 /*Check for sanity*/
                                 if ($is.widgetid) {
-                                    $is.widgetProps.showrecordcount.show = $is.widgetProps.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
+                                    wp.showrecordcount.show = wp.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
                                 }
                                 break;
                             case 'insertrow':
@@ -524,6 +528,18 @@ WM.module('wm.widgets.grid')
                                     });
                                 }
                                 break;
+                            case 'editmode':
+                                if ($is.widgetid) {
+                                    isFormMode = ($is.editmode === EDIT_MODE.DIALOG || $is.editmode === EDIT_MODE.FORM);
+                                    wp.onRowdelete.show        = !isFormMode;
+                                    wp.onBeforerowinsert.show   = !isFormMode;
+                                    wp.onRowinsert.show         = !isFormMode;
+                                    wp.onBeforerowupdate.show   = !isFormMode;
+                                    wp.onRowupdate.show         = !isFormMode;
+                                    wp.onFormrender.show        = !isFormMode;
+                                    wp.onBeforeformrender.show  = !isFormMode;
+                                }
+                                break;
                             }
                         }
                         /*
@@ -557,14 +573,14 @@ WM.module('wm.widgets.grid')
                         $is.shownavigation    = $is.navigation !== 'None';
                         $is.redraw            = _.debounce(_redraw, 150);
                         //Backward compatibility for readonly grid
-                        if (attrs.readonlygrid && !WM.isDefined(attrs.editmode)) {
+                        if (attrs.readonlygrid || !WM.isDefined(attrs.editmode)) {
                             if (attrs.readonlygrid === 'true') {
                                 $is.editmode = '';
                             } else {
                                 if ($is.isPartOfLiveGrid) {
                                     $is.editmode = liveGrid.isolateScope().formlayout === 'inline' ? EDIT_MODE.FORM : EDIT_MODE.DIALOG;
                                 } else {
-                                    $is.editmode = EDIT_MODE.INLINE;
+                                    $is.editmode = attrs.readonlygrid ? EDIT_MODE.INLINE : '';
                                 }
                             }
                         }
@@ -683,7 +699,6 @@ WM.module('wm.widgets.grid')
                             }
                             if ($is.widgetid) {
                                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
-                                wp = $is.widgetProps;
                                 /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
                                 wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable || $is.isBoundToFilter);
                                 wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter;
@@ -1224,6 +1239,7 @@ WM.module('wm.widgets.grid')
             }
             function deleteRecord(row, cancelRowDeleteCallback, evt, callBack) {
                 var variable,
+                    variableType,
                     successHandler = function (success) {
                         /* check the response whether the data successfully deleted or not , if any error occurred show the
                          * corresponding error , other wise remove the row from grid */
@@ -1231,45 +1247,43 @@ WM.module('wm.widgets.grid')
                             $is.toggleMessage(true, 'error', $is.errormessage || success.error);
                             return;
                         }
-                        /*Emit on row delete to handle any events listening to the delete action*/
-                        $is.$emit('on-row-delete', row);
-
                         $is.onRecordDelete(callBack);
-                        if (!$is.isBoundToStaticVariable) {
+                        if (variableType === 'wm.LiveVariable') {
                             $is.updateVariable(row, callBack);
                         }
-                        if ($is.deletemessage) {
-                            $is.toggleMessage(true, 'success', $is.deletemessage);
-                        }
+                        $is.toggleMessage(true, 'success', $is.deletemessage);
                         /*custom EventHandler for row deleted event*/
-                        $is.onRowdeleted({$event: evt, $data: row, $rowData: row});
+                        $is.onRowdelete({$event: evt, $data: row, $rowData: row, $isolateScope: $is});
+                        $is.onRowdeleted({$event: evt, $data: row, $rowData: row, $isolateScope: $is});
                     },
                     deleteFn = function () {
-                        if ($is.isBoundToStaticVariable) {
-                            variable.removeItem(row);
-                            successHandler(row);
-                            return;
+                        if (variableType === 'wm.LiveVariable' || variableType === 'wm.Variable') {
+                            if (variableType === 'wm.Variable') {
+                                variable.removeItem(row);
+                                successHandler(row);
+                                return;
+                            }
+                            variable.deleteRecord({
+                                'row'               : row,
+                                'transform'         : true,
+                                'scope'             : $is.gridElement.scope(),
+                                'skipNotification'  : true
+                            }, successHandler, function (error) {
+                                Utils.triggerFn(callBack, undefined, true);
+                                $is.toggleMessage(true, 'error', $is.errormessage || error);
+                            });
+                        } else {
+                            $is.onRowdelete({$event: evt, $rowData: row, $isolateScope: $is});
                         }
-                        variable.deleteRecord({
-                            'row'              : row,
-                            'transform'        : true,
-                            'scope'            : $is.gridElement.scope(),
-                            'skipNotification' : true
-                        }, successHandler, function (error) {
-                            Utils.triggerFn(callBack, undefined, true);
-                            Utils.triggerFn(cancelRowDeleteCallback);
-                            $is.toggleMessage(true, 'error', $is.errormessage || error);
-                        });
+                        Utils.triggerFn(cancelRowDeleteCallback);
                     };
                 if ($is.gridVariable.propertiesMap && $is.gridVariable.propertiesMap.tableType === "VIEW") {
                     $is.toggleMessage(true, 'info', 'Table of type view, not editable', 'Not Editable');
                     $is.$root.$safeApply($is);
                     return;
                 }
-                variable = $is.variable;
-                if (!variable) {
-                    return;
-                }
+                variable     = $is.variable;
+                variableType = $is.variable && $is.variable.category;
                 if (!$is.confirmdelete) {
                     deleteFn();
                     Utils.triggerFn(cancelRowDeleteCallback);
@@ -1292,7 +1306,8 @@ WM.module('wm.widgets.grid')
                 });
             }
             function insertRecord(options) {
-                var variable = $is.variable,
+                var variable     = $is.variable,
+                    variableType = $is.variable && $is.variable.category,
                     dataObject = {
                         'row'              : options.row,
                         'transform'        : true,
@@ -1310,36 +1325,33 @@ WM.module('wm.widgets.grid')
                                 $is.callDataGridMethod('hideRowEditMode', row);
                             }
                             $is.toggleMessage(true, 'success', $is.insertmessage);
-                            $is.initiateSelectItem('last', response, undefined, $is.isBoundToStaticVariable, options.callBack);
-                            if (!$is.isBoundToStaticVariable) {
+                            if (variableType === 'wm.LiveVariable') {
+                                $is.initiateSelectItem('last', response, undefined, $is.isBoundToStaticVariable, options.callBack);
                                 $is.updateVariable(response, options.callBack);
                             }
                             Utils.triggerFn(options.success, response);
-                            $is.onRowinsert({$event: options.event, $data: response, $rowData: response});
+                            $is.onRowinsert({$event: options.event, $data: response, $rowData: response, $isolateScope: $is});
                         }
                     };
 
-                if (!variable) {
-                    return;
+                if (variableType === 'wm.LiveVariable' || variableType === 'wm.Variable') {
+                    if (variableType === 'wm.Variable') {
+                        variable.addItem(options.row);
+                        successHandler(options.row);
+                        return;
+                    }
+                    variable.insertRecord(dataObject, successHandler, function (error) {
+                        $is.toggleMessage(true, 'error', $is.errormessage || error);
+                        Utils.triggerFn(options.error, error);
+                        Utils.triggerFn(options.callBack, undefined, true);
+                    });
+                } else {
+                    $is.onRowinsert({$event: options.event, $rowData: options.row, $isolateScope: $is});
                 }
-                if ($is.isBoundToStaticVariable) {
-                    variable.addItem(options.row);
-                    successHandler(options.row);
-                    return;
-                }
-                variable.insertRecord(dataObject, successHandler, function (error) {
-                    $is.toggleMessage(true, 'error', $is.errormessage || error);
-                    Utils.triggerFn(options.error, error);
-                    Utils.triggerFn(options.callBack, undefined, true);
-                });
             }
             function updateRecord(options) {
-                /*TODO To be uncommented after onRowupdated gets the right value i.e., onRowupdated should have the value defined from the widget events.*/
-                /*if (WM.isDefined($is.onRowupdated)) {
-                 $is.onRowupdated(rowData);
-                 return;
-                 }*/
                 var variable = $is.variable,
+                    variableType = $is.variable && $is.variable.category,
                     dataObject = {
                         'row'              : options.row,
                         'prevData'         : options.prevData,
@@ -1358,30 +1370,30 @@ WM.module('wm.widgets.grid')
                                 var row = WM.element(options.event.target).closest('tr');
                                 $is.callDataGridMethod('hideRowEditMode', row);
                             }
-                            $is.operationType = "";
                             $is.toggleMessage(true, 'success', $is.updatemessage);
-                            $is.initiateSelectItem('current', response, undefined, $is.isBoundToStaticVariable, options.callBack);
-                            if (!$is.isBoundToStaticVariable) {
+                            if (variableType === 'wm.LiveVariable') {
+                                $is.initiateSelectItem('current', response, undefined, $is.isBoundToStaticVariable, options.callBack);
                                 $is.updateVariable(response, options.callBack);
                             }
                             Utils.triggerFn(options.success, response);
-                            $is.onRowupdate({$event: options.event, $data: response, $rowData: response});
+                            $is.onRowupdate({$event: options.event, $data: response, $rowData: response, $isolateScope: $is});
                         }
                     };
 
-                if (!variable) {
-                    return;
+                if (variableType === 'wm.LiveVariable' || variableType === 'wm.Variable') {
+                    if (variableType === 'wm.Variable') {
+                        variable.setItem(options.prevData, options.row);
+                        successHandler(options.row);
+                        return;
+                    }
+                    variable.updateRecord(dataObject, successHandler, function (error) {
+                        $is.toggleMessage(true, 'error', $is.errormessage || error);
+                        Utils.triggerFn(options.error, error);
+                        Utils.triggerFn(options.callBack, undefined, true);
+                    });
+                } else {
+                    $is.onRowupdate({$event: options.event, $rowData: options.row, $isolateScope: $is});
                 }
-                if ($is.isBoundToStaticVariable) {
-                    variable.setItem(options.prevData, options.row);
-                    successHandler(options.row);
-                    return;
-                }
-                variable.updateRecord(dataObject, successHandler, function (error) {
-                    $is.toggleMessage(true, 'error', $is.errormessage || error);
-                    Utils.triggerFn(options.error, error);
-                    Utils.triggerFn(options.callBack, undefined, true);
-                });
             }
             function setImageProperties(variableObj) {
                 if (!variableObj) {
@@ -2182,6 +2194,7 @@ WM.module('wm.widgets.grid')
             $is.fullFieldDefs                = [];
             $is.selectedItems                = [];
             $is.isGridEditMode               = false;
+            $is.formWidgets                  = {};
             $is.gridData                     = [];
             $is.updateMarkupForGrid          = updateMarkupForGrid;
             $is.updateVariable               = updateVariable;
@@ -2272,26 +2285,26 @@ WM.module('wm.widgets.grid')
                         $is.items.length = 0;
                         $is.items.push(rowData);
                     }
-                    $is.onSelect({$data: rowData, $event: e, $rowData: rowData});
-                    $is.onRowclick({$data: rowData, $event: e, $rowData: rowData});
+                    $is.onSelect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
+                    $is.onRowclick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     // For backward compatibility.
                     if (WM.isDefined($is.onClick)) {
-                        $is.onClick({$data: rowData, $event: e, $rowData: rowData});
+                        $is.onClick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     }
                     if (WM.isDefined($is.onTap)) {
-                        $is.onTap({$data: rowData, $event: e, $rowData: rowData});
+                        $is.onTap({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     }
                     $rs.$safeApply($is);
                 },
                 onRowDblClick: function (rowData, e) {
-                    $is.onRowdblclick({$data: rowData, $event: e, $rowData: rowData});
+                    $is.onRowdblclick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     $rs.$safeApply($is);
                 },
                 onRowDeselect: function (rowData, e) {
                     if ($is.multiselect) {
                         $is.items = _.pullAllWith($is.items, [rowData], _.isEqual);
                         $is.selectedItems = $is.callDataGridMethod('getSelectedRows');
-                        $is.onDeselect({$data: rowData, $event: e, $rowData: rowData});
+                        $is.onDeselect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                         $rs.$safeApply($is);
                     }
                 },
@@ -2325,10 +2338,17 @@ WM.module('wm.widgets.grid')
                     updateRecord({'row': rowData, 'prevData': $is.prevData, 'event': e, 'callBack': callBack});
                 },
                 onBeforeRowUpdate: function (rowData, e) {
-                    return $is.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData});
+                    return $is.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is});
                 },
                 onBeforeRowInsert: function (rowData, e) {
-                    return $is.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData});
+                    return $is.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is});
+                },
+                onFormRender: function ($row, e, operation) {
+                    $is.formWidgets = LiveWidgetUtils.getFormFilterWidgets($row, 'data-field-name');
+                    $is.onFormrender({$event: e, formWidgets: $is.formWidgets, $operation: operation});
+                },
+                onBeforeFormRender: function (rowData, e, operation) {
+                    return $is.onBeforeformrender({$event: e, $rowData: rowData, $operation: operation});
                 },
                 sortInfo: {
                     'field': '',
@@ -2345,6 +2365,9 @@ WM.module('wm.widgets.grid')
                 },
                 setGridEditMode: function (val) {
                     $is.isGridEditMode = val;
+                    if (!val) {
+                        $is.formWidgets = {};
+                    }
                     $rs.$safeApply($is);
                 },
                 noChangesDetected: function () {
