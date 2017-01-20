@@ -2050,6 +2050,9 @@ WM.module('wm.utils', [])
             var UNICODE_COMMA_REGEX = /&#44;/g;
 
             val = val || '';
+            if (val === '') {
+                return [];
+            }
             // replace the unicode equivalent of comma with comma
             return _.split(val, ',').map(function (v) {
                 return _.trim(v).replace(UNICODE_COMMA_REGEX, ',');
