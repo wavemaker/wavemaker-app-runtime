@@ -270,7 +270,9 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         searchTableDataWithQuery: {
             url: "/:service/:dataModelName/:entityName/filter?page=:page&size=:size&:sort",
             method: "POST",
-            contentType: "application/x-www-form-urlencoded"
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
         },
         exportTableData: {
             url: "/:service/:dataModelName/:entityName/export/:exportFormat?size=:size&:sort",
