@@ -3,7 +3,7 @@
 /*Directive for popover */
 
 WM.module('wm.widgets.basic')
-    .directive('wmPopover', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, $rs) {
+    .directive('wmPopover', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$timeout', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, $rs, $timeout) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base', 'wm.base.advancedformwidgets', 'wm.anchor']),
@@ -74,6 +74,15 @@ WM.module('wm.widgets.basic')
             }
         }
 
+        //Hides the popover
+        function setHideTrigger($is) {
+            $timeout(function () {
+                if (!$is._popoveroptions.isPopoverActive) {
+                    $is._popoveroptions.isOpen = false;
+                }
+            }, 500, true);
+        }
+
         return {
             'restrict': 'E',
             'replace': true,
@@ -84,14 +93,17 @@ WM.module('wm.widgets.basic')
                 if (CONSTANTS.isRunMode) {
                     //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                     template.attr({
-                        'page-container'       : 'page-container',
-                        'page-container-target': 'page-container-target',
-                        'uib-popover'          : '{{_popoveroptions.content}}',
-                        'uib-popover-template' : '_popoveroptions.contenturl',
-                        'popover-class'        : '{{_popoveroptions.customclass}}',
-                        'popover-placement'    : '{{_popoveroptions.placement}}',
-                        'popover-trigger'      : '_popoveroptions.trigger',
-                        'popover-title'        : '{{title}}'
+                        'page-container'        : 'page-container',
+                        'page-container-target' : 'page-container-target',
+                        'uib-popover'           : '{{_popoveroptions.content}}',
+                        'uib-popover-template'  : '_popoveroptions.contenturl',
+                        'popover-class'         : '{{_popoveroptions.customclass}}',
+                        'popover-placement'     : '{{_popoveroptions.placement}}',
+                        'ng-mouseleave'         : '_popoveroptions.setHideTrigger()',
+                        'popover-trigger'       : '_popoveroptions.trigger',
+                        'popover-title'         : '{{title}}',
+                        'popover-is-open'       : '_popoveroptions.isOpen',
+                        'popover-append-to-body': 'true'
                     });
                 }
                 return template[0].outerHTML;
@@ -99,8 +111,8 @@ WM.module('wm.widgets.basic')
             'compile': function (tElement) {
                 return {
                     'pre': function ($is, $el, attrs) {
-                        var trigger = (attrs.popoverautoclose && attrs.popoverautoclose === 'false') ? {'click': 'click'} : {'outsideClick': 'outsideClick'};
-                        $is._popoveroptions = {'trigger': trigger};
+                        var trigger = {'mouseenter': 'none', 'outsideClick': 'outsideClick'};
+                        $is._popoveroptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
                         $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.$lazyLoad       = WM.noop;
                     },
@@ -115,13 +127,26 @@ WM.module('wm.widgets.basic')
                                     $is._popoveroptions.content = WM.element(clone)[0].innerHTML;
                                 });
                             } else {
-                                var popoverScope = $is.$$childHead;
+                                var popoverScope = $is.$$childHead,
+                                    $popoverEl;
                                 if (popoverScope) {
                                     /*Watch on popover isOpen to compile the partial markup
                                       For first time when partial is not opened trigger the load to set partial content
                                     */
                                     popoverScope.$watch('isOpen', function (nv) {
                                         if (nv || $is._isFirstTime) {
+                                            //Add custom mouseenter, leave events on popover
+                                            $popoverEl = WM.element('.' + $is._popoveroptions.customclass);
+                                            if ($popoverEl.length) {
+                                                $popoverEl.on('mouseenter', function () {
+                                                    $is._popoveroptions.isPopoverActive = true;
+                                                    $rs.$safeApply($is);
+                                                });
+                                                $popoverEl.on('mouseleave', function () {
+                                                    $is._popoveroptions.isPopoverActive = false;
+                                                    $is._popoveroptions.setHideTrigger(true);
+                                                });
+                                            }
                                             if ($is._popoveroptions.customclass) {
                                                 setStyleBlock($is);
                                             }

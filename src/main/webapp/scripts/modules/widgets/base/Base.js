@@ -1595,7 +1595,7 @@ WM.module('wm.widgets.base', [])
                         "popoverwidth" :  {"type": "string"},
                         "popoverheight" :  {"type": "string"},
                         "popoverarrow" :  {"type": "boolean", "value" : true},
-                        "popoverautoclose": {"type": "boolean", "value" : true},
+                        "popoverautoclose": {"type": "boolean", "value" : true, "show": false},
                         "popoverplacement": {"type": "select-by-object", "options": popoverOptions, "value": "bottom"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
