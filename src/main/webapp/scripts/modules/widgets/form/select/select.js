@@ -93,7 +93,7 @@ WM.module('wm.widgets.form')
             /* to check if the function is not triggered from onChangeProxy */
             if (!_modelChangedManually[scope.$id]) {
                 if (scope.datafield !== ALLFIELDS) {
-                    _modelProxy = WM.isObject(_model_) ? _model_ : WM.isDefined(_model_) && _model_.toString();
+                    _modelProxy = WM.isObject(_model_) ? _model_ : WM.isDefined(_model_) && _.toString(_model_);
                     scope.modelProxy = _modelProxy;
                     if (WM.isDefined(_modelProxy)) {
                         setDisplayValFromModelProxy(scope, _modelProxy);
