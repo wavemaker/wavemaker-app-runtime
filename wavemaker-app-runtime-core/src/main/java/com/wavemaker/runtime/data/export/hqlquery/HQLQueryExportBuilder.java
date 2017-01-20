@@ -20,6 +20,8 @@ import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
+import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -47,7 +49,19 @@ public class HQLQueryExportBuilder extends ExportBuilder {
     public void addColumnHeaders(Sheet sheet, final Class<?> responseType) throws ClassNotFoundException {
         int colNum = STARTING_COLUMN_NUMBER;
         Row colHeaderRow = sheet.createRow(STARTING_ROW_NUMBER);
-        addHeaders(colHeaderRow, colNum, responseType, "", true);
+        final WMResultTransformer wmResultTransformer = Transformers.aliasToMappedClass(responseType);
+        for (final ReturnProperty property : returnPropertyList) {
+            String fieldName = wmResultTransformer.aliasToFieldName(property.getName());
+            final FieldType fieldType = property.getFieldType();
+            final ReferenceType type = fieldType.getType();
+            if (type == ReferenceType.PRIMITIVE) {
+                CellUtil.createCell(colHeaderRow, colNum, fieldName,
+                        columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
+                colNum++;
+            } else if (type == ReferenceType.ENTITY) {
+                colNum = addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()), fieldName, false);
+            }
+        }
     }
 
     @Override
@@ -73,12 +87,12 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         }
     }
 
-    private int addHeaders(Row colHeaderRow, int colNum, Class<?> responseType, String fieldPrefix, boolean addChildEntityHeaders)
+    private int addEntityTypeHeaders(Row colHeaderRow, int colNum, Class<?> typeClass, String fieldPrefix, boolean addChildEntityHeaders)
             throws ClassNotFoundException {
-        for (final Field field : responseType.getDeclaredFields()) {
-            final Class<?> fieldType = field.getType();
-            DataType dataType = DataType.valueFor(fieldType.getName());
+        for (final Field field : typeClass.getDeclaredFields()) {
             String fieldName = field.getName();
+            Class<?> fieldType = field.getType();
+            DataType dataType = DataType.valueFor(fieldType.getName());
             if (dataType != null && isDataTypeWritable(dataType)) {
                 if (StringUtils.isNotBlank(fieldPrefix)) {
                     fieldName = fieldPrefix + "." + fieldName;
@@ -86,7 +100,7 @@ public class HQLQueryExportBuilder extends ExportBuilder {
                 CellUtil.createCell(colHeaderRow, colNum, fieldName, columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
                 colNum++;
             } else if (dataType == null && addChildEntityHeaders) {
-                colNum = addHeaders(colHeaderRow, colNum, fieldType, fieldName, false);
+                colNum = addEntityTypeHeaders(colHeaderRow, colNum, fieldType, fieldName, false);
             }
         }
         return colNum;
