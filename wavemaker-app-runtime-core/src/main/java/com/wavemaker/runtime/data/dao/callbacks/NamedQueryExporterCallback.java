@@ -1,6 +1,8 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
@@ -16,6 +18,7 @@ import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
 import com.wavemaker.runtime.data.export.nativesql.NativeSQLDataExporter;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
+import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
 
 /**
@@ -30,6 +33,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
     private ExportType exportType;
     private Class<?> responseType;
 
+    private static Map<String, List<ReturnProperty>> queryNameVsMetaData = new HashMap<>();
 
     public NamedQueryExporterCallback(
             final String queryName, final Map<String, Object> params, final ExportType exportType,Class<?> responseType,
@@ -52,9 +56,16 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
         if (isNative) {
             exporter = new NativeSQLDataExporter(DataSourceExporterUtil.constructResultSet(namedQuery.scroll()));
         } else {
-            exporter = new HQLQueryDataExporter(namedQuery.scroll(), HQLQueryUtils.extractMetaForHql(namedQuery));
+            if(!queryNameVsMetaData.containsKey(queryName)){
+                queryNameVsMetaData.put(queryName, buildMetaData(namedQuery));
+            }
+            exporter = new HQLQueryDataExporter(namedQuery.scroll(), queryNameVsMetaData.get(queryName));
         }
         return exporter.export(exportType, responseType);
+    }
+
+    private List<ReturnProperty> buildMetaData(Query query){
+        return HQLQueryUtils.extractMetaForHql(query);
     }
 }
 
