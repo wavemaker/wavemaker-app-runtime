@@ -21,7 +21,11 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpHeaders;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wavemaker.runtime.commons.model.Proxy;
+import com.wavemaker.studio.common.json.deserializer.StringifiedByteArrayDeSerializer;
+import com.wavemaker.studio.common.json.serializer.ByteArrayToStringSerializer;
 
 /**
  * @author Uday Shankar
@@ -30,12 +34,21 @@ public class HttpRequestDetails {
 
     @NotNull
     private String endpointAddress;
+
     private String method;
+
+    @JsonSerialize(using = ByteArrayToStringSerializer.class)
+    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
     private byte[] requestBody;
+
     private HttpHeaders headers = new HttpHeaders();
+
     private Map<String, Object> queryParams;
+
     private HttpResponseDetails sampleHttpResponseDetails;
+
     private boolean redirectEnabled = true;
+
     private Proxy proxy;
 
     public HttpRequestDetails() {
