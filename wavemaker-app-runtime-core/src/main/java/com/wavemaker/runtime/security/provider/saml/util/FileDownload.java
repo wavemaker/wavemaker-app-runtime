@@ -42,7 +42,7 @@ public class FileDownload {
             }
             downloadedFile = closeableHttpClient.execute(httpGet, new FileResponseHandler(file));
         } catch (IOException e) {
-            throw new WMRuntimeException("Failed to download file from url " + url);
+            throw new WMRuntimeException("Failed to download file from url " + url, e);
         } finally {
             IOUtils.closeSilently(closeableHttpClient);
         }

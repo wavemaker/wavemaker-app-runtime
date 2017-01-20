@@ -14,9 +14,9 @@ public class SAMLConfig {
         this.validateType = validateType;
     }
 
-    public enum ValidateType{
+    public enum ValidateType {
         STRICT,  // String.equals()
-        RELAXED, // ignore tenantID
+        RELAXED, // DEV MODE 
         NONE // none
     }
 }
