@@ -504,7 +504,7 @@ WM.module('wm.widgets.grid')
                                 $is.callDataGridMethod('option', 'dataStates.loading', newVal);
                                 break;
                             case 'filternullrecords':
-                                if ($is.widgetid) {
+                                if (CONSTANTS.isStudioMode) {
                                     $is.callDataGridMethod('option', 'filterNullRecords', newVal);
                                 }
                                 break;
@@ -1787,7 +1787,7 @@ WM.module('wm.widgets.grid')
                         });
                     }
                     populateGridData(newVal);
-                    if ($is.isBoundToServiceVariable && $is.widgetid) {
+                    if ($is.isBoundToServiceVariable && CONSTANTS.isStudioMode) {
                         /*Checking if grid is bound to service variable, for which data cannot be loaded in studio mode,
                          in studio mode and if the fieldDefs are generated. */
                         $is.gridData = [];
@@ -2267,7 +2267,7 @@ WM.module('wm.widgets.grid')
                         $is.onDatarender({$isolateScope: $is, $data: $is.gridData});
                     }
                     //On render, apply the filters set for query service variable
-                    if ($is.isBoundToQueryServiceVariable && $is.filterInfo) {
+                    if (CONSTANTS.isRunMode && $is.isBoundToQueryServiceVariable && $is.filterInfo) {
                         defaultSearchHandler($is.filterInfo);
                     }
                 },

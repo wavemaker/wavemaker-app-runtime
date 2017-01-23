@@ -944,6 +944,10 @@ WM.module('wm.utils', [])
                     /* otherwise build object with required configuration */
                     var columnName = namePrefix ? namePrefix + '.' + val.fieldName : val.fieldName;
                     terminals[columnName] = getPropertyNode(val);
+                    if (propertiesMap.isRelated) {
+                        //For related columns, set not null as true for primary keys and not null
+                        terminals[columnName].notNull = propertiesMap.notNull && val.notNull && val.isPrimaryKey;
+                    }
                 }
             });
             _.forEach(relatedColumnsArr, function (val) {
