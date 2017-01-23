@@ -69,11 +69,11 @@ wm.plugins.database.services.DatabaseService = [
                 connectionParams,
                 urlParams,
                 requestData,
-                contentType;
+                headers;
 
             config      = BaseServiceManager.getConfig();
             config      = Utils.getClonedObject(config.Database[action]);
-            contentType = config && config.contentType;
+            headers     = config && config.headers;
             requestData = params.data;
 
             urlParams = {
@@ -106,17 +106,16 @@ wm.plugins.database.services.DatabaseService = [
                         }
                     }
                 }
-
+                headers = headers || {};
+                headers.skipSecurity = 'true';
+                headers['Content-Type'] = headers['Content-Type'] || 'application/json';
                 /*(!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy is added in endpointAddress to differentiate desktop from saas*/
                 connectionParams = {
                     'data': {
                         'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
                         'method'            : config.method,
-                        'contentType'       : contentType || 'application/json',
                         'requestBody'       : JSON.stringify(requestData),
-                        'headers'           : {
-                            'skipSecurity': 'true'
-                        }
+                        'headers'           : headers
                     },
                     'urlParams'         : {
                         projectID: $rootScope.project.id
@@ -146,16 +145,15 @@ wm.plugins.database.services.DatabaseService = [
                     data      : requestData || '',
                     config    : {
                         'url' : params.url
-                    },
-                    headers   : {}
+                    }
                 };
-
                 /* append the skipSecurity header to skip security-check in STUDIO MODE*/
                 if (CONSTANTS.isStudioMode) {
-                    connectionParams.headers.skipSecurity = 'true';
+                    headers = headers || {};
+                    headers.skipSecurity = 'true';
                 }
-                if (contentType) {
-                    connectionParams.headers['Content-Type'] = contentType;
+                if (headers) {
+                    connectionParams.headers = headers;
                 }
                 if (action === 'exportTableData') {
                     Utils.simulateFileDownload(BaseService.parseReplace(connectionParams));
