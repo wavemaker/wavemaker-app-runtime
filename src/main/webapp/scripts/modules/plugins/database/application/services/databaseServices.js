@@ -155,7 +155,7 @@ wm.plugins.database.services.DatabaseService = [
                 if (headers) {
                     connectionParams.headers = headers;
                 }
-                if (action === 'exportTableData') {
+                if (action === 'exportTableData' || action === 'exportQueryData') {
                     Utils.simulateFileDownload(BaseService.parseReplace(connectionParams));
                 } else {
                     return BaseService.execute(connectionParams, successCallback, failureCallback);
@@ -1848,6 +1848,22 @@ wm.plugins.database.services.DatabaseService = [
 
             exportTableData: function (params) {
                 return initiateAction('exportTableData', params);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#exportQueryData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to download the data for given query in given format
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the query.
+             */
+            exportQueryData: function (params) {
+                return initiateAction('exportQueryData', params);
             },
 
             /**

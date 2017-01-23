@@ -24,8 +24,9 @@ wm.variables.services.$servicevariable = ['Variables',
     'WS_CONSTANTS',
     '$timeout',
     '$base64',
+    'DatabaseService',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, DatabaseService) {
         "use strict";
 
         var requestQueue = {},
@@ -858,6 +859,21 @@ wm.variables.services.$servicevariable = ['Variables',
             },
             setInput: function (key, val, options) {
                 return methods.setInput(this, key, val, options);
+            },
+            download: function (options) {
+                var dbOperation    = 'exportQueryData',
+                    queryName      = _.lowerFirst(_.replace(this.operation, /execute/, '')),
+                    orderByFields  = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? this.orderBy : options.orderBy,
+                    orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
+                DatabaseService[dbOperation]({
+                    'service'       : this._prefabName ? '' : 'services',
+                    'dataModelName' : this.service,
+                    'url'           : this._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + this._prefabName) : $rootScope.project.deployedUrl,
+                    'exportFormat'  : options.exportFormat,
+                    'sort'          : orderByOptions,
+                    'size'          : options.size,
+                    'queryName'     : queryName
+                });
             },
             init: function () {
                 if (this.isList) {

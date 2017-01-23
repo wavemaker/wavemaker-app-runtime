@@ -702,7 +702,7 @@ WM.module('wm.widgets.grid')
                                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                                 /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
                                 wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable || $is.isBoundToFilter);
-                                wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter;
+                                wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable;
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
                                 if ($is.isBoundToFilter) {
@@ -2033,11 +2033,11 @@ WM.module('wm.widgets.grid')
             //On click of item in export menu, download the file in respective format
             function exportData($item) {
                 var filterFields,
-                    variable     = $is.variable,
-                    sortOptions  = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
+                    variable    = $is.variable,
+                    sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
                 if ($is.isBoundToFilter) {
                     $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize});
-                } else {
+                } else if ($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable) {
                     filterFields = getFilterFields($is.filterInfo);
                     variable.download({
                         'matchMode'    : 'anywhere',
