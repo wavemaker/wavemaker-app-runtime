@@ -1766,7 +1766,8 @@ WM.module('wm.widgets.base', [])
                         "showcount": {"type": "boolean", "show": false},
                         "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "ondemandmessage": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true, "value": "Load More"},
-                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex}
+                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex},
+                        "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -2052,7 +2053,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
-                {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass", "contentclass"], "parent": "styles"},
+                {"properties": [ "class", "menuclass", "listclass", "itemclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
                 {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},

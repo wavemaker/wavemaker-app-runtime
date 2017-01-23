@@ -30,7 +30,7 @@ WM.module('wm.widgets.live')
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
-                        '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified">{{ondemandmessage}}</a>' +
+                        '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified {{paginationclass}}">{{ondemandmessage}}</a>' +
                     '</div>' +
                 '</div>'
             );
@@ -74,12 +74,13 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
                 notifyFor = {
-                    'dataset'     : true,
-                    'groupby'     : true,
-                    'navigation'  : CONSTANTS.isStudioMode,
-                    'itemsperrow' : true,
-                    'match'       : CONSTANTS.isStudioMode,
-                    'padding'     : true
+                    'dataset'        : true,
+                    'groupby'        : true,
+                    'navigation'     : CONSTANTS.isStudioMode,
+                    'itemsperrow'    : true,
+                    'match'          : CONSTANTS.isStudioMode,
+                    'padding'        : true,
+                    'paginationclass': true
                 },
                 directiveDefn,
                 NAVIGATION = {
@@ -332,6 +333,18 @@ WM.module('wm.widgets.live')
                 $tmpl = applyWrapper($tmpl, attrs, flag);
 
                 return $tmpl;
+            }
+
+            //Sets dataNavigator class on change of paginationclass
+            function setNavigationClass($is, $el, nv) {
+                $timeout(function () {
+                    var $dataNavigatorEl = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
+                        dataNavigatorScope;
+                    if ($is.navigation && $dataNavigatorEl.length) {
+                        dataNavigatorScope                 = $dataNavigatorEl.isolateScope();
+                        dataNavigatorScope.navigationClass = nv;
+                    }
+                });
             }
 
             //Format the date with given date format
@@ -861,6 +874,7 @@ WM.module('wm.widgets.live')
                     wp.navigationalign.show = !_.includes(['None', 'Scroll', 'Inline', 'On-Demand'], nv);
                     wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None', 'On-Demand'], nv);
                     wp.ondemandmessage.show = nv === 'On-Demand';
+                    wp.paginationclass.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
                     onNavigationTypeChange($is, nv);
                     break;
                 case 'groupby':
@@ -889,6 +903,9 @@ WM.module('wm.widgets.live')
                     break;
                 case 'itemsperrow':
                     setListClass($is);
+                    break;
+                case 'paginationclass':
+                    setNavigationClass($is, $el, nv);
                     break;
                 }
             }
