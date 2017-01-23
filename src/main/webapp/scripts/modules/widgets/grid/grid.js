@@ -2395,6 +2395,13 @@ WM.module('wm.widgets.grid')
                     } else {
                         $is.callDataGridMethod('toggleEditRow', e, options);
                     }
+                },
+                //Function to redraw the widgets on resize of columns
+                redrawWidgets: function () {
+                    //Widgets inside the filter row and edit row
+                    $is.datagridElement.find('tr.filter-row .ng-isolate-scope, tr.row-editing .ng-isolate-scope').each(function () {
+                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                    });
                 }
             };
         }])

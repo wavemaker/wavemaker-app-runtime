@@ -1145,7 +1145,7 @@ $.widget('wm.datagrid', {
             return false;
         }
         $input = $(customTag);
-        if ($input.attr('type') === 'checkbox') {
+        if ($input.length) { //If expression is html, return true
             return true;
         }
         return false;
@@ -1214,7 +1214,7 @@ $.widget('wm.datagrid', {
             this.preparedData[rowId].checked = selected;
         }
         if (this.options.multiselect) {
-            $checkbox = $row.find('td input:checkbox:not(:disabled)');
+            $checkbox = $row.find('td input[name="gridMultiSelect"]:checkbox:not(:disabled)');
             $checkbox.prop('checked', selected);
             this.preparedData[rowId].checked = selected;
             this.updateSelectAllCheckboxState();
@@ -2252,6 +2252,7 @@ $.widget('wm.datagrid', {
                         self.gridElement.width(newTableWidth);
                     }
                     self.addOrRemoveScroll();
+                    self.options.redrawWidgets();
                 }
             });
         }
