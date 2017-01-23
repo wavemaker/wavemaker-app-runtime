@@ -876,6 +876,7 @@ WM.module('wm.widgets.live')
                     wp.ondemandmessage.show = nv === 'On-Demand';
                     wp.paginationclass.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
                     onNavigationTypeChange($is, nv);
+                    setNavigationClass($is, $el, $is.paginationclass);
                     break;
                 case 'groupby':
                     selectedVariable = eleScope.Variables[variable];
