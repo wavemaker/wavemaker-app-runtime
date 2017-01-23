@@ -648,6 +648,10 @@ WM.module('wm.widgets.live')
                         }
                     }
                     if (WM.isArray(nv)) {
+                        if (nv.length) {
+                            //If data is present, call on before data render event
+                            $is.onBeforedatarender({$isolateScope: $is, $data: nv});
+                        }
                         updateFieldDefs($is, $el, nv, attrs, listCtrl);
                     }
                 } else {
@@ -996,6 +1000,7 @@ WM.module('wm.widgets.live')
                     'onMouseleave'       : $is.onMouseleave,
                     'onEnterkeypress'    : $is.onEnterkeypress,
                     'onSetrecord'        : $is.onSetrecord,
+                    'onBeforedatarender' : $is.onBeforedatarender,
                     'onPaginationchange' : $is.onPaginationchange,
                     '_itemClass'         : evalItemClassFn,
                     'itemsPerRowClass'   : '',
@@ -1593,6 +1598,7 @@ WM.module('wm.widgets.live')
                     'onMouseleave'          : '&',
                     'onEnterkeypress'       : '&',
                     'onSetrecord'           : '&',
+                    'onBeforedatarender'    : '&',
                     'onPaginationchange'    : '&',
                     'onTap'                 : '&',
                     'onDoubletap'           : '&',

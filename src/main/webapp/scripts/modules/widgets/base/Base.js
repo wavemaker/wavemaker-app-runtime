@@ -1525,6 +1525,7 @@ WM.module('wm.widgets.base', [])
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
@@ -1744,6 +1745,7 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiselect"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPaginationchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"], "bindable": "in-bound"},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
@@ -2065,8 +2067,8 @@ WM.module('wm.widgets.base', [])
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
-                    "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onSetrecord", "onPaginationchange", "onActionsclick",
-                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onDatarender"], "parent": "events"},
+                    "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
+                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
                 {"name": "gridstyles", "properties": ['rowclass', 'rowngclass'], "parent": "properties"},
