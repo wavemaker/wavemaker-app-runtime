@@ -23,7 +23,8 @@ wm.variables.services.Variables = [
     "Utils",
     "BindingManager",
     "MetaDataFactory",
-    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory) {
+    "WIDGET_CONSTANTS",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory, WIDGET_CONSTANTS) {
         "use strict";
 
         /**
@@ -52,60 +53,69 @@ wm.variables.services.Variables = [
             startUpdateQueue = [],
             lazySartUpdateQueue = {},
             internalBoundNodeMap = {},
-            variableConfig = [
-                {
-                    "collectionType"    : "call",
-                    "category"          : "wm.NavigationVariable",
-                    "defaultName"       : "navigationVariable"
+            variableConfig = {
+                "wm.LiveVariable": {
+                    "collectionType" : "data",
+                    "category"       : "wm.LiveVariable",
+                    "defaultName"    : "liveVariable",
+                    "spinnerInFlight": true,
+                    "newVariableKey": "New LiveVariable"
                 },
-                {
-                    "collectionType"    : "call",
-                    "category"          : "wm.NotificationVariable",
-                    "defaultName"       : "notificationVariable"
+                "wm.ServiceVariable" : {
+                    "collectionType" : "data",
+                    "category"       : "wm.ServiceVariable",
+                    "defaultName"    : "serviceVariable",
+                    "spinnerInFlight": true,
+                    "newVariableKey": "New ServiceVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.Variable",
-                    "defaultName"       : "staticVariable"
+                "wm.WebSocketVariable": {
+                    "collectionType": "data",
+                    "category"      : "wm.WebSocketVariable",
+                    "defaultName"   : "webSocketVariable",
+                    "methods"       : ['open', 'send', 'close'],
+                    "newVariableKey": "New WebSocketVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.ServiceVariable",
-                    "defaultName"       : "serviceVariable",
-                    "spinnerInFlight"   : true
+                "wm.NavigationVariable": {
+                    "collectionType": "call",
+                    "category"      : "wm.NavigationVariable",
+                    "defaultName"   : "navigationVariable",
+                    "newVariableKey": "New NavigationVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.LiveVariable",
-                    "defaultName"       : "liveVariable",
-                    "spinnerInFlight"   : true
+                "wm.NotificationVariable": {
+                    "collectionType": "call",
+                    "category"      : "wm.NotificationVariable",
+                    "defaultName"   : "notificationVariable",
+                    "newVariableKey": "New NotificationVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.TimerVariable",
-                    "defaultName"       : "timerVariable"
+                "wm.Variable": {
+                    "collectionType": "data",
+                    "category"      : "wm.Variable",
+                    "defaultName"   : "staticVariable",
+                    "hideInEvents"  : true
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.LoginVariable",
-                    "defaultName"       : "loginVariable",
-                    "appOnly"           : true,
-                    "spinnerInFlight"   : true
+                "wm.LoginVariable": {
+                    "collectionType" : "data",
+                    "category"       : "wm.LoginVariable",
+                    "defaultName"    : "loginVariable",
+                    "appOnly"        : true,
+                    "spinnerInFlight": true,
+                    "newVariableKey": "New LoginVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.LogoutVariable",
-                    "defaultName"       : "logoutVariable",
-                    "appOnly"           : true,
-                    "spinnerInFlight"   : true
+                "wm.LogoutVariable": {
+                    "collectionType" : "data",
+                    "category"       : "wm.LogoutVariable",
+                    "defaultName"    : "logoutVariable",
+                    "appOnly"        : true,
+                    "spinnerInFlight": true,
+                    "newVariableKey": "New LogoutVariable"
                 },
-                {
-                    "collectionType"    : "data",
-                    "category"          : "wm.WebSocketVariable",
-                    "defaultName"       : "webSocketVariable",
-                    "methods"           : ['open', 'send', 'close']
+                "wm.TimerVariable": {
+                    "collectionType": "data",
+                    "category"      : "wm.TimerVariable",
+                    "defaultName"   : "timerVariable",
+                    "newVariableKey": "New TimerVariable"
                 }
-            ],
+            },
 
             variableCategoryToNameMap = {},
             self = this,
@@ -134,7 +144,7 @@ wm.variables.services.Variables = [
         /*Function to initialize category-to-name map*/
             initVariableNameMap = function () {
                 variableCategoryToNameMap = {};
-                variableConfig.forEach(function (variable) {
+                _.forEach(variableConfig, function (variable) {
                     variableCategoryToNameMap[variable.category] = variable.defaultName;
                 });
             },
@@ -1151,7 +1161,7 @@ wm.variables.services.Variables = [
                     filteredVariables = [];
 
                 if (!isPrefabProject) {
-                    variableConfig.forEach(function (variable) {
+                    _.forEach(variableConfig, function (variable) {
                         if (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType) {
                             filteredVariables.push(variable);
                         }
@@ -1289,7 +1299,7 @@ wm.variables.services.Variables = [
                         if (isEventCallbackVariable(curVariable.category)) {
                             /*checking if current variable name is not equal to the variable name provided.*/
                             if (!variableName || curVariableName !== variableName) {
-                                methods = _.find(variableConfig, {'category' : curVariable.category}).methods;
+                                methods = variableConfig[curVariable.category].methods;
                                 variableArray.push({name: curVariableName, category: curVariable.category, methods : methods});
                             }
                         }
@@ -1694,6 +1704,12 @@ wm.variables.services.Variables = [
                     $rootScope.saveVariables = true;
                 }
             });
+            //Extend the event_options with variable types
+            _.forEach(variableConfig, function (variable) {
+                if (!variable.hideInEvents) {
+                    WIDGET_CONSTANTS.EVENTS_OPTIONS.push(variable.newVariableKey);
+                }
+            })
         }
 
         returnObject = {
@@ -2355,15 +2371,16 @@ wm.variables.services.Variables = [
              *      }
              */
             addVariableConfig : function (config) {
-                variableConfig.push(config);
+                variableConfig[config.category] = config;
                 variableCategoryToNameMap[config.category] = config.defaultName;
                 self.variableNameIterator[config.category] = 1;
             },
 
             isSpinnerType : function(category) {
-                return _.find(variableConfig, function(config) {
-                    return config.category === category;
-                }).spinnerInFlight;
+                return variableConfig[category].spinnerInFlight;
+            },
+            getVariableConfig: function () {
+                return variableConfig;
             }
         };
 

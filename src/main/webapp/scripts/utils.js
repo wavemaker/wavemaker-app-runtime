@@ -1866,62 +1866,6 @@ WM.module('wm.utils', [])
             return new Date(moment(val).valueOf());
         }
 
-        /**
-         * Returns an object of variable details from given event value
-         * @param evtVal new event value
-         * @returns an object of variable details
-         */
-        /*This function will find category for variable chosen and open corresponding variable*/
-        function getVariableDetails(evtVal) {
-            var variableType,
-                variableCategory,
-                matchStr,
-                VARIABLE_TYPES = {
-                    DATA: 'data',
-                    CALL: 'call'
-                },
-                VARIABLE_CATEGORIES = {
-                    SERVICE: 'wm.ServiceVariable',
-                    LIVE: 'wm.LiveVariable',
-                    NAVIGATION: 'wm.NavigationVariable',
-                    DEVICE: 'wm.DeviceVariable',
-                    NOTIFICATION: 'wm.NotificationVariable'
-                },
-                NEW_VARIABLE = {
-                    SERVICE: 'New ServiceVariable',
-                    LIVE: 'New LiveVariable',
-                    NAVIGATION: 'New NavigationCall',
-                    DEVICE: 'New DeviceVariable',
-                    NOTIFICATION: 'New NotificationCall'
-                };
-            if (_.includes(evtVal, NEW_VARIABLE.SERVICE)) {
-                matchStr = NEW_VARIABLE.SERVICE;
-                variableType = VARIABLE_TYPES.DATA;
-                variableCategory = VARIABLE_CATEGORIES.SERVICE;
-            } else if (_.includes(evtVal, NEW_VARIABLE.LIVE)) {
-                matchStr = NEW_VARIABLE.LIVE;
-                variableType = VARIABLE_TYPES.DATA;
-                variableCategory = VARIABLE_CATEGORIES.LIVE;
-            } else if (_.includes(evtVal, NEW_VARIABLE.NAVIGATION)) {
-                matchStr = NEW_VARIABLE.NAVIGATION;
-                variableType = VARIABLE_TYPES.CALL;
-                variableCategory = VARIABLE_CATEGORIES.NAVIGATION;
-            } else if (_.includes(evtVal, NEW_VARIABLE.NOTIFICATION)) {
-                matchStr = NEW_VARIABLE.NOTIFICATION;
-                variableType = VARIABLE_TYPES.CALL;
-                variableCategory = VARIABLE_CATEGORIES.NOTIFICATION;
-            } else if (_.includes(evtVal, NEW_VARIABLE.DEVICE)) {
-                matchStr = NEW_VARIABLE.DEVICE;
-                variableType = VARIABLE_TYPES.DATA;
-                variableCategory = VARIABLE_CATEGORIES.DEVICE;
-            }
-            evtVal = evtVal.replace(matchStr, '${0}');
-            return {
-                'type'      : variableType,
-                'category'  : variableCategory,
-                'evtVal'    : evtVal
-            };
-        }
         function getMatchModes() {
             return {
                 'start'    : 'start',
@@ -2512,7 +2456,6 @@ WM.module('wm.utils', [])
         this.getVariableNameFromExpr    = getVariableNameFromExpr;
         this.getClonedObject            = getClonedObject;
         this.getValidDateObject         = getValidDateObject;
-        this.getVariableDetails         = getVariableDetails;
         this.getMatchModes              = getMatchModes;
         this.updateTmplAttrs            = updateTmplAttrs;
         this.sort                       = sort;
