@@ -646,6 +646,7 @@ $.widget('wm.datagrid', {
             template = '<wm-text ' + properties + ' placeholder="' + placeholder + '"></wm-text>';
             break;
         }
+        $el.addClass(colDef.editWidgetType + '-widget');
         return this.options.getCompiledTemplate(template, this.preparedData[rowId] || {}, colDef);
     },
     setHeaderConfigForDefaultFields: function (name) {
