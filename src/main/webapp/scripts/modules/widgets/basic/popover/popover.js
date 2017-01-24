@@ -87,14 +87,17 @@ WM.module('wm.widgets.basic')
             'restrict': 'E',
             'replace': true,
             'scope': {},
-            'transclude': CONSTANTS.isRunMode,
+            'transclude': true,
             'template': function (tElement, tAttrs) {
                 var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/anchor.html', tElement, tAttrs));
+                //Required in studio mode also to set partial params which is based on pageContainer and wmtransclude directives
+                template.attr({
+                    'page-container'       : 'page-container',
+                    'wmtransclude'         : 'wmtransclude'
+                });
                 if (CONSTANTS.isRunMode) {
                     //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                     template.attr({
-                        'page-container'        : 'page-container',
-                        'page-container-target' : 'page-container-target',
                         'uib-popover'           : '{{_popoveroptions.content}}',
                         'uib-popover-template'  : '_popoveroptions.contenturl',
                         'popover-class'         : '{{_popoveroptions.customclass}}',
