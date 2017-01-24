@@ -24,9 +24,8 @@ wm.variables.services.$servicevariable = ['Variables',
     'WS_CONSTANTS',
     '$timeout',
     '$base64',
-    'DatabaseService',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, DatabaseService) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64) {
         "use strict";
 
         var requestQueue = {},
@@ -415,6 +414,28 @@ wm.variables.services.$servicevariable = ['Variables',
             });
         }
 
+        //Gets method info for given variable and input fields using options provided
+        function getMethodInfo(variable, inputFields, options) {
+            var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo);
+            if (methodInfo.parameters) {
+                methodInfo.parameters.forEach(function (param) {
+                    param.sampleValue = inputFields[param.name];
+                    /* supporting pagination for query service variable */
+                    if (VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {
+                        if (param.name === "size") {
+                            param.sampleValue = options.size || param.sampleValue || parseInt(variable.maxResults, 10);
+                        } else if (param.name === "page") {
+                            param.sampleValue = options.page || param.sampleValue;
+                        } else if (param.name === "sort") {
+                            param.sampleValue = options.orderBy || param.sampleValue || variable.orderBy;
+                        }
+                    }
+                });
+            }
+
+            return methodInfo;
+        }
+
         /**
          * function to get variable data in RUN Mode
          * @param variable
@@ -453,22 +474,7 @@ wm.variables.services.$servicevariable = ['Variables',
             });
 
             if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
-                methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo);
-                if (methodInfo.parameters) {
-                    methodInfo.parameters.forEach(function (param) {
-                        param.sampleValue = inputFields[param.name];
-                        /* supporting pagination for query service variable */
-                        if (VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {
-                            if (param.name === "size") {
-                                param.sampleValue = options.size || param.sampleValue || parseInt(variable.maxResults, 10);
-                            } else if (param.name === "page") {
-                                param.sampleValue = options.page || param.sampleValue;
-                            } else if (param.name === "sort") {
-                                param.sampleValue = options.orderBy || param.sampleValue || variable.orderBy;
-                            }
-                        }
-                    });
-                }
+                methodInfo = getMethodInfo(variable, inputFields, options);
                 if (_.isEmpty(methodInfo)) {
                     params = {
                         'error': {
@@ -861,19 +867,11 @@ wm.variables.services.$servicevariable = ['Variables',
                 return methods.setInput(this, key, val, options);
             },
             download: function (options) {
-                var dbOperation    = 'exportQueryData',
-                    queryName      = _.lowerFirst(_.replace(this.operation, /execute/, '')),
-                    orderByFields  = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? this.orderBy : options.orderBy,
-                    orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
-                DatabaseService[dbOperation]({
-                    'service'       : this._prefabName ? '' : 'services',
-                    'dataModelName' : this.service,
-                    'url'           : this._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + this._prefabName) : $rootScope.project.deployedUrl,
-                    'exportFormat'  : options.exportFormat,
-                    'sort'          : orderByOptions,
-                    'size'          : options.size,
-                    'queryName'     : queryName
-                });
+                var inputParams = Utils.getClonedObject(this.dataBinding),
+                    methodInfo  = getMethodInfo(this, inputParams, {});
+
+                methodInfo.relativePath += '/export/' + options.exportFormat;
+                Utils.simulateFileDownload(constructRestRequestParams(methodInfo, this));
             },
             init: function () {
                 if (this.isList) {

@@ -294,10 +294,6 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/queries/test_run",
             method: "POST"
         },
-        exportQueryData: {
-            url: "/:service/:dataModelName/queryExecutor/queries/:queryName/export/:exportFormat?size=:size&:sort",
-            method: "GET"
-        },
 
 
         /*Procedure related properties*/
