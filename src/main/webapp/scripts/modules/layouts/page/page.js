@@ -135,6 +135,10 @@ WM.module('wm.layouts.page')
                                                 Utils.triggerFn($s.onPageReady);
                                                 $s.registerPagePart = $s.onPagePartLoad = _.noop;
                                             }
+
+                                            if ($rs.hasOwnProperty('onPageReady')) {
+                                                Utils.triggerFn($rs.onPageReady, pageName, $s, $el);
+                                            }
                                         });
                                     });
                                 }
