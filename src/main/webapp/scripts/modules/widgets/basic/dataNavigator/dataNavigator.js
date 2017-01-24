@@ -111,6 +111,27 @@ WM.module("wm.widgets.basic")
             'replace': true,
             'controller': function ($scope) {
 
+                //Set the result for client side pagination
+                function setNonPageableData(newVal, variable) {
+                    var dataSize,
+                        maxResults,
+                        currentPage,
+                        startIndex;
+                    dataSize   = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : 1);
+                    maxResults = ($scope.pagingOptions && $scope.pagingOptions.maxResults) || dataSize;
+                    //For static variable, keep the current page. For other variables without pagination reset the page to 1
+                    if (variable && variable.category === 'wm.Variable') {
+                        currentPage = $scope.dn.currentPage || 1;
+                    } else {
+                        currentPage = 1;
+                    }
+
+                    $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
+                    $scope.disableNavigation();
+
+                    startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
+                    $scope.result =  WM.isArray(newVal) ? newVal.slice(startIndex, startIndex + $scope.maxResults) : newVal;
+                }
                 $scope.pageCount = 0;
                 $scope.isDisableNext = true;
                 $scope.isDisablePrevious = true;
@@ -194,8 +215,6 @@ WM.module("wm.widgets.basic")
                     var dataSize,
                         maxResults,
                         currentPage,
-                        startIndex,
-                        data,
                         variable,
                         variableOptions = {};
                     //Store the data in __fullData. This is used for client side searching with out modifying the actual dataset.
@@ -256,25 +275,16 @@ WM.module("wm.widgets.basic")
                                     $scope.checkDataSize(dataSize);
                                 }
                             } else if (!WM.isString(newVal)) {
-                                dataSize = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : 1);
-                                maxResults = ($scope.pagingOptions && $scope.pagingOptions.maxResults) || dataSize;
-                                //For static variable, keep the current page. For other variables without pagination reset the page to 1
-                                if (variable && variable.category === 'wm.Variable') {
-                                    currentPage = $scope.dn.currentPage || 1;
-                                } else {
-                                    currentPage = 1;
-                                }
-
-                                $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
-                                $scope.disableNavigation();
-
-                                startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
-                                data =  WM.isArray(newVal) ? newVal.slice(startIndex, startIndex + $scope.maxResults) : newVal;
-                                $scope.result = data;
+                                setNonPageableData(newVal, variable);
                             }
                             $rootScope.$safeApply($scope);
                         } else {
                             $scope.resetPageNavigation();
+                        }
+                    } else {
+                        if (newVal && !WM.isString(newVal)) {
+                            setNonPageableData(newVal);
+                            $rootScope.$safeApply($scope);
                         }
                     }
                 };

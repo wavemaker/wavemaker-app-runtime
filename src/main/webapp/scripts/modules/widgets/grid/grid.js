@@ -751,11 +751,7 @@ WM.module('wm.widgets.grid')
 
                             if (!$is.widgetid && attrs.scopedataset) {
                                 handlers.push($is.$watch('scopedataset', function (newVal) {
-                                    if (newVal && !$is.dataset) {
-                                        /* decide new column defs required based on existing column defs for the grid */
-                                        $is.newcolumns = true;
-                                        $is.createGridColumns(newVal);
-                                    }
+                                    $is.dataset = newVal;
                                 }));
                             }
                         }, 0, false);
@@ -1054,18 +1050,17 @@ WM.module('wm.widgets.grid')
                     } else {
                         $is.serverData = serviceData;
                     }
-                    /*check if new column defs required*/
-                    if ($is.columnDefsExists() && !$is.newDefsRequired) {
-                        setGridData($is.serverData);
-                    } else if (CONSTANTS.isRunMode) {
-                        $is.newcolumns = true;
-                        $is.newDefsRequired = true;
-                        $is.createGridColumns($is.serverData);
-                    }
                 } else {
                     /*Allowing when the data is directly given to the dataset*/
                     $is.serverData = serviceData;
+                }
+                /*check if new column defs required*/
+                if ($is.columnDefsExists() && !$is.newDefsRequired) {
                     setGridData($is.serverData);
+                } else if (!$is.widgetid) {
+                    $is.newcolumns = true;
+                    $is.newDefsRequired = true;
+                    $is.createGridColumns($is.serverData);
                 }
             }
             //Set filter fields based on the search obj
@@ -1541,7 +1536,7 @@ WM.module('wm.widgets.grid')
                         };
                         /*De-register the watch if it is exists */
                         Utils.triggerFn(navigatorResultWatch);
-                        $is.dataNavigator.dataset = $is.binddataset;
+                        $is.dataNavigator.dataset = $is.binddataset || $is.dataset;
 
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
                         navigatorResultWatch = $is.dataNavigator.$watch('result', function (newVal) {
@@ -1630,14 +1625,13 @@ WM.module('wm.widgets.grid')
                 return true;
             }
             function setSortSearchHandlers(isPageable) {
-                $is.setDataGridOption('searchHandler', defaultSearchHandler);
                 if ($is.isBoundToVariable && $is.variable) {
                     if ($is.isBoundToLiveVariable) {
                         $is.setDataGridOption('searchHandler', searchGrid);
                         $is.setDataGridOption('sortHandler', sortHandler);
                         setImageProperties($is.variable);
                     } else if ($is.isBoundToQueryServiceVariable) {
-                        /*Calling the specific search and sort handlers*/
+                        $is.setDataGridOption('searchHandler', defaultSearchHandler);
                         $is.setDataGridOption('sortHandler', sortHandler);
                     } else if ($is.isBoundToProcedureServiceVariable) {
                         $is.setDataGridOption('searchHandler', handleOperation);
@@ -1856,8 +1850,9 @@ WM.module('wm.widgets.grid')
                 /*append additional properties*/
                 WM.forEach(defaultFieldDefs, function (columnDef) {
                     var newColumn;
-                    columnDef.pcDisplay = true;
+                    columnDef.pcDisplay     = true;
                     columnDef.mobileDisplay = true;
+                    columnDef.searchable    = true;
                     WM.forEach($is.fullFieldDefs, function (column) {
                         if (column.field && column.field === columnDef.field) {
                             columnDef.pcDisplay = column.pcDisplay;
@@ -2411,7 +2406,9 @@ WM.module('wm.widgets.grid')
                     $is.datagridElement.find('tr.filter-row .ng-isolate-scope, tr.row-editing .ng-isolate-scope').each(function () {
                         Utils.triggerFn(WM.element(this).isolateScope().redraw);
                     });
-                }
+                },
+                searchHandler: handleOperation,
+                sortHandler: handleOperation
             };
         }])
 /**
