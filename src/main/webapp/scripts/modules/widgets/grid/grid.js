@@ -177,6 +177,7 @@ WM.module('wm.widgets.grid')
                 'onEnterkeypress'   : '&',
                 'onSetrecord'       : '&',
                 'onDatarender'      : '&',
+                'onBeforedatarender': '&',
                 'onTap'             : '&'
             },
             'replace'    : true,
@@ -2248,6 +2249,14 @@ WM.module('wm.widgets.grid')
                     gridOptions = $is.callDataGridMethod('getOptions');
                     if (!gridOptions.colDefs.length && $is.fieldDefs.length) {
                         $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
+                    }
+                    //Map the col defs to columns
+                    _.map(gridOptions.colDefs, function (column) {
+                        $is.columns[column.field] = column;
+                    });
+                    //If data and colDefs are present, call on before data render event
+                    if (!_.isEmpty(newValue) && gridOptions.colDefs.length) {
+                        $is.onBeforedatarender({$isolateScope: $is, $data: newValue, $columns: $is.columns});
                     }
                     $is.setDataGridOption('data', Utils.getClonedObject(newValue));
                 }
