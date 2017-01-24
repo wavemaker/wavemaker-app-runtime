@@ -341,6 +341,10 @@ body {
         pointer-events: all;
         a {
           cursor: pointer;
+          color: #fff;
+          &:hover {
+            color: #fff;
+          }
         }
       }
       &.current {
@@ -1384,26 +1388,35 @@ body {
         box-shadow: 0 0 8px rgba(0,0,0,.18), 0 8px 16px rgba(0,0,0,.36);
       }
     }
+    &.btn-link {
+      box-shadow: none;
+    }
   }
   /********for buttons, anchors with icon on top****/
   .btn[icon-position = "top"], a[icon-position = "top"] {
     height: auto;
     text-align: center;
-    padding-left: 0;
-    padding-right: 0;
     > .btn-caption, > .anchor-caption {
       display: block;
     }
     .badge {
-      top: 2pt;
-      right: 2pt;
-      font-size: 7px;
+      top: -10pt;
+      right: -10pt;
       font-weight: normal;
     }
   }
   /********for buttons, anchors with icon on right****/
   .btn[icon-position = "right"], a[icon-position = "right"] {
     direction: rtl;
+  }
+  /****Badge****/
+  .btn .badge, a .badge {
+    right: -10px;
+    top: -10px;
+    &.btn-link {
+      top: 0;
+      right: 0;
+    }
   }
   /***reset the margin for the panel***/
   .app-livelist.panel {
@@ -1539,6 +1552,17 @@ body {
   }
   .vertical-align-middle {
     vertical-align: middle;
+  }
+  .text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+  }
+  .no-border {
+    box-shadow: none !important;
+    border: 0 !important;
   }
   /****livelist specific classes***/
   .app-livelist {

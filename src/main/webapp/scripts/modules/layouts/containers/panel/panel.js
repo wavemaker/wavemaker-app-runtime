@@ -34,7 +34,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>'
             );
-        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" ng-show="expanded" wmtransclude></div>');
+        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer clearfix" ng-show="expanded" wmtransclude></div>');
     }])
     .directive('wmPanel', [
         'PropertiesFactory',
