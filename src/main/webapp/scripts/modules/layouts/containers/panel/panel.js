@@ -119,7 +119,7 @@ WM.module('wm.layouts.containers')
                             if (!attrs.widgetid && attrs.collapsible === 'true' && attrs.content && attrs.expanded === 'false') {
                                 $is.$lazyLoad = _.noop;
                             }
-
+                            $el.removeAttr('title');
                         },
                         'post': function ($is, $el, attrs, panelCtrl) {
                             if ($is.expanded === undefined) {
