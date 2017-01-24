@@ -27,6 +27,7 @@ wm.modules.wmCommon.services.BaseService = [
         /*to store the failed function calls due to 401 error*/
             errorCallStack = [],
             localeObject,
+            cache = {},
             serviceCallPatterns = [new RegExp('^/?services/'), new RegExp('j_spring_security_check'), new RegExp('j_spring_security_logout')],
         /*Function to log actions performed; using the wmLogger*/
             logAction = function (type, message, description) {
@@ -123,9 +124,10 @@ wm.modules.wmCommon.services.BaseService = [
                         config.headers = serviceParams.headers;
                     }
 
-                    /* set byPassResult flag */
+                    /* set extra config flags */
                     config.byPassResult = serviceParams.byPassResult;
                     config.isDirectCall = serviceParams.isDirectCall;
+                    config.preventMultiple = serviceParams.preventMultiple;
 
                     return config;
                 }
@@ -264,6 +266,7 @@ wm.modules.wmCommon.services.BaseService = [
                     return p.test(url);
                 });
             },
+
         /* wrapper for the $http method*/
             makeCall = function (config, successCallback, failureCallback) {
 
@@ -278,20 +281,32 @@ wm.modules.wmCommon.services.BaseService = [
                 /* get a deferred object used to abort the http request */
                 var deferred = $q.defer(),
                     promiseObj;
-
                 config.timeout = deferred.promise;
 
-                /* get the promise object from http request */
-                promiseObj = getHttpPromise(config)
-                    .then(
-                        successHandler.bind(undefined, config, successCallback),
-                        function (err) {
-                            var deferred = $q.defer();
-                            failureHandler(config, successCallback, failureCallback, err);
-                            deferred.reject(err);
-                            return deferred.promise;
-                        }
-                    );
+                // if flag is passed, use the same http promise assigned to the same URL in previous call
+                if (config.preventMultiple) {
+                    promiseObj = (cache[config.url] || _.set(cache, config.url, getHttpPromise(config))[config.url])
+                        .then(function (response) {
+                            cache[config.url] = undefined;
+                            return response;
+                        }, function (err) {
+                            cache[config.url] = undefined;
+                            return $q.reject(err);
+                        });
+                } else {
+                    promiseObj = getHttpPromise(config, successCallback, failureCallback);
+                }
+
+                // assign passed handlers to the promise.
+                promiseObj.then(
+                    successHandler.bind(undefined, config, successCallback),
+                    function (err) {
+                        var deferred = $q.defer();
+                        failureHandler(config, successCallback, failureCallback, err);
+                        deferred.reject(err);
+                        return deferred.promise;
+                    }
+                );
 
                 /* assign abort method to the http request promise object */
                 promiseObj.abort = function () {

@@ -18,7 +18,8 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
             urlParams: {
                 "projectId": details.projectId
             },
-            config: details.config
+            config: details.config,
+            preventMultiple: true
         }, successCallback, failureCallback);
     }
 
