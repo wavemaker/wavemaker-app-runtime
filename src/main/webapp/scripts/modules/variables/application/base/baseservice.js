@@ -1167,7 +1167,7 @@ wm.variables.services.Variables = [
                         }
                     });
                 } else {
-                    variableConfig.forEach(function (variable) {
+                    _.forEach(variableConfig, function (variable) {
                         if (!variable.appOnly && (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType)) {
                             filteredVariables.push(variable);
                         }
