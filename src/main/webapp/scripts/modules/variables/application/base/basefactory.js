@@ -32,7 +32,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             "properties": {
                 "wm.Variable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
-                    "type": {"type": "list", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true, "istypeahead": true},
+                    "type": {"type": "list", "widgettype": "typeahead", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true},
                     "isList": {"type": "boolean", "value": false},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "editJson": {"type": "json"},
@@ -49,8 +49,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
                     "designMaxResults": {"type": "number", "value": 10, "disabled": true, "hide": true},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": true},
-                    "service": {"type": "list", "required": true, "istypeahead": true},
-                    "operation": {"type": "list", "required": true, "istypeahead": true},
+                    "service": {"type": "list", "required": true, "widgettype": "typeahead"},
+                    "operation": {"type": "list", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'},
                     "operationType": {"type": "string", "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false},
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
@@ -59,34 +59,31 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "widgettype": "typeahead"},
                     "spinnerMessage": {"type": "string"},
 
                     /* Events */
-                    "onCanUpdate": {"type": "list", "options": variableEventOptions},
-                    "onBeforeUpdate": {"type": "list", "options": variableEventOptions},
-                    "onResult": {"type": "list", "options": variableEventOptions},
-                    "onBeforeDatasetReady": {"type": "list", "options": variableEventOptions},
-                    "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions}
+                    "onCanUpdate": {"type": 'event', "options": variableEventOptions},
+                    "onBeforeUpdate": {"type": 'event', "options": variableEventOptions},
+                    "onResult": {"type": 'event', "options": variableEventOptions},
+                    "onBeforeDatasetReady": {"type": 'event', "options": variableEventOptions},
+                    "onSuccess": {"type": 'event', "options": variableEventOptions},
+                    "onError": {"type": 'event', "options": variableEventOptions}
                 },
                 "wm.LiveVariable": {
                     "service": {"hide": true, "required": false},
                     "editJson": {"hide": true},
                     "transformationRequired": {"hide": true},
-                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "istypeahead": false},
-                    "liveSource": {"type": "list", "required": true, "istypeahead": true},
-                    "type": {"hide": false, "options": {}, value: "", "required": true, "istypeahead": true},
+                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead"},
+                    "liveSource": {"type": "list", "required": true, "widgettype": "typeahead"},
+                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead"},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"disabled": false, "hide": false},
                     "ignoreCase": {"type": "boolean", "value": true},
                     "matchMode": {"type": "list", "options": matchModes, "value": "start"},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": false, "widgettype": "order-by", "order": "desc"},
                     "autoUpdate": {"value": true},
-                    "startUpdate": {"value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
-                    "spinnerMessage": {"type": "string"},
-                    "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"}
+                    "startUpdate": {"value": true}
                 },
                 "wm.LoginVariable": {
                     "transformationRequired": {"hide": true},
@@ -99,9 +96,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "list", "value": [{"target": "username", "type": "string"}, {"target": "password", "type": "string"}, {"target": "rememberme", "type": "boolean"}], "hide": true},
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
-                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
-                    "spinnerMessage": {"type": "string"}
+                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true}
                 },
                 "wm.LogoutVariable": {
                     "transformationRequired": {"hide": true},
@@ -114,10 +109,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"value": ""},
                     "startUpdate": {"hide": true, "value": ""},
                     "autoUpdate": {"hide": true, "value": ""},
-                    "redirectTo": {"type": "list", "options": [], value: "", "istypeahead": true},
-                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
-                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "istypeahead": true},
-                    "spinnerMessage": {"type": "string"}
+                    "redirectTo": {"type": "list", "options": [], value: "", "widgettype": "typeahead"},
+                    "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true}
                 },
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
@@ -131,11 +124,11 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "required": true, "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
-                    "onCancel": {"type": "list", "options": variableEventOptions, "disabled": true, "hide": true},
-                    "onClose": {"type": "list", "options": variableEventOptions},
-                    "onOk": {"type": "list", "options": variableEventOptions},
-                    'onHide': {'type': 'list', 'options': variableEventOptions},
-                    'onClick': {'type': 'list', 'options': variableEventOptions},
+                    "onCancel": {"type": 'event', "options": variableEventOptions, "disabled": true, "hide": true},
+                    "onClose": {"type": 'event', "options": variableEventOptions},
+                    "onOk": {"type": 'event', "options": variableEventOptions},
+                    'onHide': {'type': 'event', 'options': variableEventOptions},
+                    'onClick': {'type': 'event', 'options': variableEventOptions},
                     "dataBinding": {"type": "string", "value": [], "hide": true}
                 },
                 "wm.TimerVariable": {
@@ -144,7 +137,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "autoStart": {"type": "boolean", "value": false},
                     "repeating": {"type": "boolean", "value": false},
                     "delay": {"type": "number", "value": 500},
-                    "onTimerFire": {"type": "list", "options": variableEventOptions}
+                    "onTimerFire": {"type": "event", "options": variableEventOptions}
                 },
                 "wm.DeviceVariable" : {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
@@ -156,18 +149,18 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     /*events*/
-                    "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions},
-                    "onProgress": {"type": "list", "options": variableEventOptions, "hide": true},
-                    "onOnline": {"type": "list", "options": variableEventOptions, "hide": true},
-                    "onOffline": {"type": "list", "options": variableEventOptions, "hide": true},
-                    "onBeforePush": {"type": "list", "options": variableEventOptions, "hide": true}
+                    "onSuccess": {"type": "event", "options": variableEventOptions},
+                    "onError": {"type": "event", "options": variableEventOptions},
+                    "onProgress": {"type": "event", "options": variableEventOptions, "hide": true},
+                    "onOnline": {"type": "event", "options": variableEventOptions, "hide": true},
+                    "onOffline": {"type": "event", "options": variableEventOptions, "hide": true},
+                    "onBeforePush": {"type": "event", "options": variableEventOptions, "hide": true}
                 },
                 "wm.WebSocketVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": [], "hide": true},
-                    "service": {"type": "list", "required": true, "istypeahead": true},
+                    "service": {"type": "list", "required": true, "widgettype": "typeahead"},
                     "type": {"hide": true},
                     "operation": {"hide": true},
                     "operationId": {"hide": true},
@@ -177,13 +170,13 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "list", "value": [], "hide": true},
 
                     /* Events */
-                    "onBeforeOpen": {"type": "list", "options": variableEventOptions},
-                    "onOpen": {"type": "list", "options": variableEventOptions},
-                    "onBeforeMessageSend": {"type": "list", "options": variableEventOptions},
-                    "onMessageReceive": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions},
-                    "onBeforeClose": {"type": "list", "options": variableEventOptions},
-                    "onClose": {"type": "list", "options": variableEventOptions}
+                    "onBeforeOpen": {"type": 'event', "options": variableEventOptions},
+                    "onOpen": {"type": 'event', "options": variableEventOptions},
+                    "onBeforeMessageSend": {"type": 'event', "options": variableEventOptions},
+                    "onMessageReceive": {"type": 'event', "options": variableEventOptions},
+                    "onError": {"type": 'event', "options": variableEventOptions},
+                    "onBeforeClose": {"type": 'event', "options": variableEventOptions},
+                    "onClose": {"type": 'event', "options": variableEventOptions}
                 }
             },
 
@@ -201,7 +194,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "dataset", "properties": ["dataUpdateStrategy", "dataLimit"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
-                {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},
                 {"name": "spinner", "properties": ["spinnerContext", "spinnerMessage"], "parent": "properties"},
 
