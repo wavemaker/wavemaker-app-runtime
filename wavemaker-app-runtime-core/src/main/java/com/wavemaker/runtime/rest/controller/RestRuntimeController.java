@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author Uday Shankar

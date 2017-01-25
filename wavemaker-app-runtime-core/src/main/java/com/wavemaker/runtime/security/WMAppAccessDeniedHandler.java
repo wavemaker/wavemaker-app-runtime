@@ -15,10 +15,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponse;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponses;
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.core.web.rest.ErrorResponse;
+import com.wavemaker.commons.core.web.rest.ErrorResponses;
 
 /**
  * Created by kishorer on 4/7/16.

@@ -44,7 +44,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import com.wavemaker.studio.common.util.HttpRequestUtils;
+import com.wavemaker.commons.util.HttpRequestUtils;
 
 /**
  * WMAppTokenBasedPreAuthenticatedProcessingFilter for processing filters that handle pre-authenticated authentication requests, where it is assumed

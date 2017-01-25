@@ -19,8 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.studio.json.JSONMarshaller;
 import com.wavemaker.studio.json.type.converters.ReadObjectConverter;
 import com.wavemaker.studio.json.type.converters.WriteObjectConverter;

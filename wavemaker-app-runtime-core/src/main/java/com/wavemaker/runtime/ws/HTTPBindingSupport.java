@@ -55,8 +55,8 @@ import org.springframework.http.MediaType;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.util.JAXBUtils;
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.util.JAXBUtils;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;

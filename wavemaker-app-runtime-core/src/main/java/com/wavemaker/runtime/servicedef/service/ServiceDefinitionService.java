@@ -13,8 +13,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.servicedef.model.ServiceDefinition;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabManager;
 

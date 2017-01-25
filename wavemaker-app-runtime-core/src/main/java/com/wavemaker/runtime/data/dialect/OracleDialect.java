@@ -21,7 +21,7 @@ import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.descriptor.sql.CharTypeDescriptor;
 import org.hibernate.type.descriptor.sql.SqlTypeDescriptor;
 
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 
 /**
  * Created by sunilp on 21/7/15.

@@ -15,7 +15,7 @@ import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.studio.common.util.StringTemplate;
+import com.wavemaker.commons.util.StringTemplate;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

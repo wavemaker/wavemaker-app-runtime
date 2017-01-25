@@ -15,8 +15,8 @@
  */
 package com.wavemaker.runtime.exception.swagger;
 
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by sunilp on 6/6/15.

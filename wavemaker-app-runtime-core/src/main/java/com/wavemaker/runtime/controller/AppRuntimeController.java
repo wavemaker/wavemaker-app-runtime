@@ -30,8 +30,8 @@ import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.service.ProcedureDesignService;
 import com.wavemaker.runtime.service.QueryDesignService;
-import com.wavemaker.studio.common.util.PropertiesFileUtils;
-import com.wavemaker.studio.common.wrapper.StringWrapper;
+import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.commons.wrapper.StringWrapper;
 
 /**
  * @author Sowmya

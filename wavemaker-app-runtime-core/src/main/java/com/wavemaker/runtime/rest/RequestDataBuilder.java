@@ -17,7 +17,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.wavemaker.runtime.rest.model.HttpRequestData;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author Uday Shankar

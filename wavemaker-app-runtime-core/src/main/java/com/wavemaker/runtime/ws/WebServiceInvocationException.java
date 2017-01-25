@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.ws;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author Frankie Fu

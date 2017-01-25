@@ -34,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.IOUtils;
-import com.wavemaker.studio.common.util.PropertiesFileUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.PropertiesFileUtils;
 
 /**
  * Created by ArjunSahasranam on 28/11/16.

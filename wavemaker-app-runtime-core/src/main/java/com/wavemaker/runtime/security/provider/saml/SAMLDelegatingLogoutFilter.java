@@ -15,8 +15,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.wavemaker.runtime.util.HttpRequestUtils;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.wrapper.StringWrapper;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.wrapper.StringWrapper;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.

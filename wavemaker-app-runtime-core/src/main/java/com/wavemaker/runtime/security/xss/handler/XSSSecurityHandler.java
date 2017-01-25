@@ -17,8 +17,8 @@ import com.wavemaker.runtime.security.xss.sanitizer.DefaultXSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSEncodeSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSSanitizer;
 import com.wavemaker.runtime.security.xss.sanitizer.XSSWhiteListSanitizer;
-import com.wavemaker.studio.common.model.security.XSSConfig;
-import com.wavemaker.studio.common.model.security.XSSFilterStrategy;
+import com.wavemaker.commons.model.security.XSSConfig;
+import com.wavemaker.commons.model.security.XSSFilterStrategy;
 
 /**
  * Created by kishorer on 6/7/16.

@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
 
 import com.wavemaker.runtime.ws.HTTPBindingSupport.HTTPRequestMethod;
 import com.wavemaker.runtime.ws.util.Constants;
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 
 /**
  * REST service caller. This class provides interface to call a REST style Web service. This class can be extended and

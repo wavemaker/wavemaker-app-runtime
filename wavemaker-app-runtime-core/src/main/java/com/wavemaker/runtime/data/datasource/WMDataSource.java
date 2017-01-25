@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.data.datasource;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DelegatingDataSource;

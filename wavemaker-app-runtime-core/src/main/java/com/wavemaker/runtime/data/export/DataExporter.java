@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>

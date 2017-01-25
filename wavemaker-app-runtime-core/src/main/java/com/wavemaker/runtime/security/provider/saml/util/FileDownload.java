@@ -1,8 +1,8 @@
 package com.wavemaker.runtime.security.provider.saml.util;
 
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.IOUtils;
-import com.wavemaker.studio.common.util.SSLUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.SSLUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;

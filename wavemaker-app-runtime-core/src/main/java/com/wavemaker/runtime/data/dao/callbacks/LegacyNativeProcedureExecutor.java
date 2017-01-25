@@ -21,10 +21,10 @@ import com.wavemaker.runtime.data.model.CustomProcedure;
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.StringUtils;
-import com.wavemaker.studio.common.util.TypeConversionUtils;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.StringUtils;
+import com.wavemaker.commons.util.TypeConversionUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

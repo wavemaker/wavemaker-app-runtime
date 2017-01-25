@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponse;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponses;
+import com.wavemaker.commons.core.web.rest.ErrorResponse;
+import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 

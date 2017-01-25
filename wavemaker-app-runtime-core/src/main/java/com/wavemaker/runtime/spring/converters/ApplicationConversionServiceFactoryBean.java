@@ -23,10 +23,10 @@ import org.joda.time.LocalDateTime;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
-import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMSqlDateDeSerializer;
-import com.wavemaker.studio.common.util.StringUtils;
+import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
+import com.wavemaker.commons.util.StringUtils;
 
 /**
  * @Author: sowmyad

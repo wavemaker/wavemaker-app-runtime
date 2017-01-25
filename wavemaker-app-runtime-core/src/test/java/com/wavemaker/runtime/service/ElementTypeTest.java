@@ -22,7 +22,7 @@ import com.wavemaker.infra.WMTestUtils;
 import org.springframework.util.ClassUtils;
 
 
-import com.wavemaker.studio.common.util.SpringUtils;
+import com.wavemaker.commons.util.SpringUtils;
 import com.wavemaker.studio.json.type.FieldDefinition;
 import com.wavemaker.studio.json.type.ObjectTypeDefinition;
 import com.wavemaker.studio.json.type.OperationEnumeration;

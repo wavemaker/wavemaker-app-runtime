@@ -41,8 +41,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.studio.common.InvalidInputException;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.WMRuntimeException;
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
@@ -138,7 +138,7 @@ public class WMMultipartUtils {
     private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field, String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
-            String content = com.wavemaker.studio.common.util.IOUtils.toString(inputStream);
+            String content = com.wavemaker.commons.util.IOUtils.toString(inputStream);
             method.invoke(instance, content);
         } else if (BYTE_ARRAY.equals(field.getType().getSimpleName())) {
             method.invoke(instance, byteArray);

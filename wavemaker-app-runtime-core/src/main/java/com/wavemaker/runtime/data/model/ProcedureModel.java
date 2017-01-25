@@ -18,7 +18,7 @@ package com.wavemaker.runtime.data.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wavemaker.studio.common.util.SortedList;
+import com.wavemaker.commons.util.SortedList;
 
 
 /**

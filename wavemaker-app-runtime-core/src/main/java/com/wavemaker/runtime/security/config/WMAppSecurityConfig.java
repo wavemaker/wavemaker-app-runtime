@@ -15,12 +15,12 @@
  */
 package com.wavemaker.runtime.security.config;
 
-import com.wavemaker.studio.common.model.security.RolesConfig;
-import com.wavemaker.studio.common.model.security.CSRFConfig;
-import com.wavemaker.studio.common.model.security.LoginConfig;
-import com.wavemaker.studio.common.model.security.RememberMeConfig;
-import com.wavemaker.studio.common.model.security.SSLConfig;
-import com.wavemaker.studio.common.model.security.XSSConfig;
+import com.wavemaker.commons.model.security.RolesConfig;
+import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.commons.model.security.LoginConfig;
+import com.wavemaker.commons.model.security.RememberMeConfig;
+import com.wavemaker.commons.model.security.SSLConfig;
+import com.wavemaker.commons.model.security.XSSConfig;
 
 /**
  * @author Ed Callahan

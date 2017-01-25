@@ -26,7 +26,7 @@ import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
-import com.wavemaker.studio.common.util.Tuple;
+import com.wavemaker.commons.util.Tuple;
 
 public class HQLQueryUtils {
 

@@ -29,8 +29,8 @@ import org.springframework.security.web.csrf.CsrfToken;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 import com.wavemaker.runtime.util.HttpRequestUtils;
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.model.security.CSRFConfig;
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.model.security.CSRFConfig;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 

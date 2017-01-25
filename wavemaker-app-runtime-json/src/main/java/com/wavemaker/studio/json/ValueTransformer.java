@@ -15,7 +15,7 @@
  */
 package com.wavemaker.studio.json;
 
-import com.wavemaker.studio.common.util.Tuple;
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.studio.json.type.FieldDefinition;
 import com.wavemaker.studio.json.type.TypeState;
 

@@ -39,8 +39,8 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author Uday Shankar

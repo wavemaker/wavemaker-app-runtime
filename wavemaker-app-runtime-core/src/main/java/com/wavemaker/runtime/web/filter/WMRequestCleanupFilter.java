@@ -31,7 +31,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.sun.syndication.feed.impl.ToStringBean;
 import com.sun.xml.bind.v2.ClassFactory;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
-import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
 
 /**
  * Created by akritim on 3/23/2015.

@@ -18,7 +18,7 @@ package com.wavemaker.studio.json;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author Matt Small

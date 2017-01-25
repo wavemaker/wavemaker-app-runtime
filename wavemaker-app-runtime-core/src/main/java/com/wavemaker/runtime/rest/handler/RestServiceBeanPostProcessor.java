@@ -38,7 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.wavemaker.runtime.rest.controller.RestRuntimeController;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by ArjunSahasranam on 6/10/15.

@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.servicedef.model.ServiceDefinition;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
