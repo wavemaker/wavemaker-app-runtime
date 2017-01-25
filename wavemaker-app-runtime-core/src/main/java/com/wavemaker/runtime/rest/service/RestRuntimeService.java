@@ -116,8 +116,8 @@ public class RestRuntimeService {
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap();
         Map<String, String> pathParameters = new HashMap();
-        byte[] requestBody = null;
-        requestBody = filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters, requestBody);
+        byte[] requestBody = httpRequestData.getRequestBody();
+        filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters, requestBody);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
         httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathValue, queryParameters, pathParameters));
@@ -131,7 +131,7 @@ public class RestRuntimeService {
         return httpRequestDetails;
     }
 
-    private byte[] filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters, byte[] requestBody) {
+    private void filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters, byte[] requestBody) {
         for (Parameter parameter : operation.getParameters()) {
             String paramName = parameter.getName();
             String type = parameter.getIn().toUpperCase();
@@ -150,11 +150,8 @@ public class RestRuntimeService {
                 if (pathVariableValue != null) {
                     pathParameters.put(paramName, pathVariableValue);
                 }
-            } else if (ParameterType.BODY.name().equals(type)) {
-                requestBody = httpRequestData.getRequestBody();
             }
         }
-        return requestBody;
     }
 
     private String getEndPointAddress(Swagger swagger, String pathValue, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
