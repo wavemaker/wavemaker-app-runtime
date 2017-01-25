@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
-            '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container" wm-navigable-element="true"></li>');
+            '<li init-widget wmtransclude page-container page-container-target class="app-segment-content clearfix" apply-styles="container" wm-navigable-element="true"></li>');
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'WidgetUtilService', 'Utils', function ($templateCache, PropertiesFactory, CONSTANTS, WidgetUtilService, Utils) {
         'use strict';

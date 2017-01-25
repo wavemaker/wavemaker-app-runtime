@@ -4,6 +4,7 @@
 @app-mobile-tabbar-icon-size: 20pt;
 @app-mobile-nav-height: 36pt;
 @app-mobile-tabbar-height: 48pt;
+@app-mobile-tabbar-active-item-bg-color: rgba(0,0,0,0.1);
 @app-mobile-nav-searchinput-border: #fff;
 @app-mobile-nav-button-padding: (@app-mobile-nav-height - @app-mobile-nav-font-size)/2;
 /********************************************************************************
@@ -90,6 +91,9 @@
           text-align: center;
           padding: 8pt 0;
           height: @app-mobile-tabbar-height;
+          &.active {
+            background-color: @app-mobile-tabbar-active-item-bg-color;
+          }
           > label {
             display: block;
             text-align: center;
