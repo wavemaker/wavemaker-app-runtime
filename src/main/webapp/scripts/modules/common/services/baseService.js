@@ -294,17 +294,15 @@ wm.modules.wmCommon.services.BaseService = [
                             return $q.reject(err);
                         });
                 } else {
-                    promiseObj = getHttpPromise(config, successCallback, failureCallback);
+                    promiseObj = getHttpPromise(config);
                 }
 
                 // assign passed handlers to the promise.
-                promiseObj.then(
+                promiseObj = promiseObj.then(
                     successHandler.bind(undefined, config, successCallback),
                     function (err) {
-                        var deferred = $q.defer();
                         failureHandler(config, successCallback, failureCallback, err);
-                        deferred.reject(err);
-                        return deferred.promise;
+                        return $q.reject(err);
                     }
                 );
 
