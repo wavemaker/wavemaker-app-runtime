@@ -55,7 +55,7 @@ WM.module('wm.widgets.live')
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
                                     '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
-                                '<div ng-show="isLayoutDialog" class="text-left"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                                '<div ng-show="isLayoutDialog" class="text-left"><i class="wi wi-gear app-dialogmode-icon"></i><span class="app-dialogmode-text">Live form in dialog mode</span></div>' +
                                 '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
@@ -63,7 +63,7 @@ WM.module('wm.widgets.live')
                         '</form>';
 
                 defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass, captionPositionClass]" ng-submit="formSave($event);" apply-styles="shell">' +
-                                    '<div ng-show="isLayoutDialog" class="text-left"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
+                                    '<div ng-show="isLayoutDialog" class="text-left"><i class="wi wi-gear app-dialogmode-icon"></i><span class="app-dialogmode-text">Live form in dialog mode</span></div>' +
                                     '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
                                         '<h3 class="panel-title">' +
                                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
