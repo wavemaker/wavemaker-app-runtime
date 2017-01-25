@@ -142,7 +142,7 @@ WM.module('wm.widgets.basic')
                     return;
                 }
 
-                if (!$is.displaylabel) {
+                if (!$is.displaylabel && !$is.binddisplaylabel) {
                     $is.updateModel();
                     return;
                 }
