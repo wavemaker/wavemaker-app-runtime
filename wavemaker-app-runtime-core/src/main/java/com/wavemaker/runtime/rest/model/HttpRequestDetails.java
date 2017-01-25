@@ -24,8 +24,8 @@ import org.springframework.http.HttpHeaders;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wavemaker.runtime.commons.model.Proxy;
-import com.wavemaker.studio.common.json.deserializer.StringifiedByteArrayDeSerializer;
-import com.wavemaker.studio.common.json.serializer.ByteArrayToStringSerializer;
+import com.wavemaker.commons.json.deserializer.StringifiedByteArrayDeSerializer;
+import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
 
 /**
  * @author Uday Shankar

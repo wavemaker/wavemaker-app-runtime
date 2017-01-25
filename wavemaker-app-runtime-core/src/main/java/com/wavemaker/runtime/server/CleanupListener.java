@@ -59,10 +59,10 @@ import com.sun.naming.internal.ResourceManager;
 import com.sun.org.apache.xml.internal.resolver.Catalog;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
-import com.wavemaker.studio.common.util.IOUtils;
-import com.wavemaker.studio.common.util.WMUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMUtils;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app

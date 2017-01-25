@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.ScrollableResults;
 import org.hibernate.internal.AbstractScrollableResults;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>

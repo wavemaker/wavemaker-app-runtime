@@ -20,7 +20,7 @@ import java.sql.Types;
 import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.type.StandardBasicTypes;
 
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 
 /**
  * Created by sunilp on 4/2/15.

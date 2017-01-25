@@ -4,7 +4,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
-import com.wavemaker.studio.common.model.security.CSRFConfig;
+import com.wavemaker.commons.model.security.CSRFConfig;
 
 /**
  * Created by kishorer on 7/7/16.

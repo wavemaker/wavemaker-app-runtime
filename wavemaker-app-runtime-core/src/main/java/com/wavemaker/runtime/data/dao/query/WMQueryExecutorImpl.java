@@ -49,9 +49,9 @@ import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.TypeConversionUtils;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.TypeConversionUtils;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 

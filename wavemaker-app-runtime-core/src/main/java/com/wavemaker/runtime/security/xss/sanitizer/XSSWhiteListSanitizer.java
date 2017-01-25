@@ -11,9 +11,9 @@ import org.owasp.validator.html.PolicyException;
 
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * Created by kishorer on 6/7/16.

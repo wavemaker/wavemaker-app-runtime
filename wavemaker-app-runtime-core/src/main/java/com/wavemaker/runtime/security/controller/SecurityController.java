@@ -28,10 +28,10 @@ import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.security.WMCurrentUser;
 import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.token.Token;
-import com.wavemaker.studio.common.util.WMUtils;
-import com.wavemaker.studio.common.wrapper.BooleanWrapper;
-import com.wavemaker.studio.common.wrapper.IntegerWrapper;
-import com.wavemaker.studio.common.wrapper.StringWrapper;
+import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.commons.wrapper.BooleanWrapper;
+import com.wavemaker.commons.wrapper.IntegerWrapper;
+import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 

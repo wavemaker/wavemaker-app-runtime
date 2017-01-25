@@ -45,9 +45,9 @@ import org.springframework.web.client.ResponseErrorHandler;
 
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.SSLUtils;
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.SSLUtils;
 
 /**
  * @author Uday Shankar
@@ -128,7 +128,7 @@ public class RestConnector {
         wmRestTemplate.setRequestFactory(factory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;
-        com.wavemaker.studio.common.web.http.HttpMethod wmHttpMethod = com.wavemaker.studio.common.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
+        com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
         if (wmHttpMethod.isRequestBodySupported()) {
             requestEntity = new HttpEntity(httpRequestDetails.getRequestBody(), httpHeaders);
         } else {

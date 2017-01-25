@@ -21,7 +21,7 @@ import java.util.Date;
 
 import org.quartz.impl.triggers.CalendarIntervalTriggerImpl;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by saddhamp on 27/6/16.

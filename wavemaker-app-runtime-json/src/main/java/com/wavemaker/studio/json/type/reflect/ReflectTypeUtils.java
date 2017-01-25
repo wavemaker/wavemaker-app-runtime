@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.Tuple;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.studio.json.JSON;
 import com.wavemaker.studio.json.core.JSONUtils;
 import com.wavemaker.studio.json.type.FieldDefinition;

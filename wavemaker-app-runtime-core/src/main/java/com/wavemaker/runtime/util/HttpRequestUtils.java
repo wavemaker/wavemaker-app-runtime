@@ -16,9 +16,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.wavemaker.runtime.rest.model.Message;
-import com.wavemaker.studio.common.io.DeleteTempFileOnCloseInputStream;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * Created by ArjunSahasranam on 9/6/16.

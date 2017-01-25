@@ -21,7 +21,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.studio.json.type.TypeDefinition;
 import com.wavemaker.studio.json.type.TypeState;
 

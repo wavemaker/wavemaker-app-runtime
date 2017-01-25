@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.impl.triggers.CronTriggerImpl;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by saddhamp on 30/5/16.

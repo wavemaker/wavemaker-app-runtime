@@ -21,7 +21,7 @@ import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.function.NoArgSQLFunction;
 import org.hibernate.type.StringType;
 
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 
 /**
  * @author Simon Toens

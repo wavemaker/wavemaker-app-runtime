@@ -14,8 +14,8 @@ import com.wavemaker.runtime.rest.processor.request.PassDefaultHeadersRequestPro
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.PrefixHttpResponseHeadersResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.UpdateCookiePathHttpResponseProcessor;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 
 /**

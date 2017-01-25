@@ -21,8 +21,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.studio.json.JSONMarshaller;
 import com.wavemaker.studio.json.type.converters.ReadObjectConverter;
 import com.wavemaker.studio.json.type.converters.WriteObjectConverter;

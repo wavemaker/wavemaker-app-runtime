@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
-import com.wavemaker.studio.common.util.SystemUtils;
+import com.wavemaker.commons.util.SystemUtils;
 
 /**
  * @author Simon Toens

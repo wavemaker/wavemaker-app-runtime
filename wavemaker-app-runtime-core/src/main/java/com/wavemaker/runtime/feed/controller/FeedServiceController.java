@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.runtime.feed.model.Feed;
 import com.wavemaker.runtime.feed.service.FeedService;
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**

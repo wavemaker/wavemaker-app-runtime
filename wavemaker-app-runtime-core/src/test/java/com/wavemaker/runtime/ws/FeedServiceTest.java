@@ -19,7 +19,7 @@ package com.wavemaker.runtime.ws;
 import com.wavemaker.infra.WMTestUtils;
 import com.wavemaker.runtime.feed.model.Feed;
 import com.wavemaker.runtime.feed.service.FeedService;
-import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.json.JSONMarshaller;
 import org.testng.Assert;
 

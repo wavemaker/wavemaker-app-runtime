@@ -51,7 +51,7 @@ import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
-import com.wavemaker.studio.common.util.Tuple;
+import com.wavemaker.commons.util.Tuple;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
         WMGenericDao<Entity, Identifier> {

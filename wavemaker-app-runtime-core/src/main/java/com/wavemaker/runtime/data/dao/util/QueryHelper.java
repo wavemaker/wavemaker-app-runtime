@@ -36,7 +36,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.system.SystemPropertiesUnit;
-import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.commons.CommonConstants;
 
 public class QueryHelper {
 

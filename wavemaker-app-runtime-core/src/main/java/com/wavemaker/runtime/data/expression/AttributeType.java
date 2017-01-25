@@ -20,8 +20,8 @@ import java.sql.Timestamp;
 
 import org.hibernate.type.*;
 
-import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

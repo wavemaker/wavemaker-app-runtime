@@ -18,8 +18,8 @@ import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 import com.wavemaker.runtime.data.util.JDBCUtils;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

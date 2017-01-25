@@ -36,9 +36,9 @@ import com.wavemaker.runtime.data.model.CustomProcedure;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 

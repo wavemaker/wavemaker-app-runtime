@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.studio.json.type.ListTypeDefinition;
 
 /**

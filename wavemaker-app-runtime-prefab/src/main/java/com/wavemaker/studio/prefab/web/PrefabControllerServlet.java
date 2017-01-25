@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.studio.prefab.core.PrefabRegistry;
 import com.wavemaker.studio.prefab.util.PrefabConstants;
 

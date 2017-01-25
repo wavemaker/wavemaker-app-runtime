@@ -3,8 +3,8 @@ package com.wavemaker.runtime;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.wavemaker.studio.common.util.IOUtils;
-import com.wavemaker.studio.common.util.PropertiesFileUtils;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.PropertiesFileUtils;
 
 /**
  * Created by srujant on 29/12/16.

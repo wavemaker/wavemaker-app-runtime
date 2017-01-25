@@ -49,12 +49,12 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import com.wavemaker.studio.common.json.deserializer.HttpHeadersDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
-import com.wavemaker.studio.common.json.deserializer.WMSqlDateDeSerializer;
-import com.wavemaker.studio.common.json.serializer.NoOpByteArraySerializer;
-import com.wavemaker.studio.common.json.serializer.WMLocalDateTimeSerializer;
+import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
+import com.wavemaker.commons.json.serializer.NoOpByteArraySerializer;
+import com.wavemaker.commons.json.serializer.WMLocalDateTimeSerializer;
 
 public class WMObjectMapper extends ObjectMapper {
 

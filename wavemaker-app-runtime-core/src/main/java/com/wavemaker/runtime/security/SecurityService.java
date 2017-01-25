@@ -41,10 +41,10 @@ import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import com.wavemaker.studio.common.model.security.CSRFConfig;
-import com.wavemaker.studio.common.model.security.LoginConfig;
-import com.wavemaker.studio.common.model.security.RoleConfig;
-import com.wavemaker.studio.common.model.security.RolesConfig;
+import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.commons.model.security.LoginConfig;
+import com.wavemaker.commons.model.security.RoleConfig;
+import com.wavemaker.commons.model.security.RolesConfig;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.

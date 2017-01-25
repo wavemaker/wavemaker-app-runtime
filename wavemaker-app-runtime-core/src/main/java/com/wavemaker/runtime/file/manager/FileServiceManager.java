@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 
 @Service

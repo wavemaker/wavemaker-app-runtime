@@ -12,7 +12,7 @@ import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.studio.common.util.StringTemplate;
+import com.wavemaker.commons.util.StringTemplate;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

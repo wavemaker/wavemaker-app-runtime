@@ -116,7 +116,7 @@
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
-    <bean id="httpsConnection" class="com.wavemaker.studio.common.util.InitializeHttpsURLConnection" lazy-init="false"/>
+    <bean id="httpsConnection" class="com.wavemaker.commons.util.InitializeHttpsURLConnection" lazy-init="false"/>
 
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
 

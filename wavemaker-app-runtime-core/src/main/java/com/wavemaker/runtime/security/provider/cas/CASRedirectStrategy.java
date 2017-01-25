@@ -12,8 +12,8 @@ import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
 import com.wavemaker.runtime.util.HttpRequestUtils;
-import com.wavemaker.studio.common.json.JSONUtils;
-import com.wavemaker.studio.common.wrapper.StringWrapper;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.wrapper.StringWrapper;
 
 /**
  * Created by ArjunSahasranam on 1/6/16.
