@@ -1843,6 +1843,7 @@ WM.module('wm.widgets.grid')
                     options = {};
 
                 $is.fieldDefs = [];
+                $is.headerConfig = [];
                 /* if properties map is existed then fetch the column configuration for all nested levels using util function */
                 if (propertiesMap) {
                     columns = Utils.fetchPropertiesMapColumns(propertiesMap);
@@ -1903,10 +1904,10 @@ WM.module('wm.widgets.grid')
                             }
                         }
                     }
-                    //For readonly grid each field should be checked on readonly
-                    if (!$is.editmode) {
-                        columnDef.readonly = true;
-                    }
+                    $is.headerConfig.push({
+                        'name'  : columnDef.field,
+                        'field' : columnDef.field
+                    });
                 });
 
                 /*prepare a copy of fieldDefs prepared
@@ -1914,6 +1915,8 @@ WM.module('wm.widgets.grid')
                  (a copy is kept to prevent changes made by ng-grid in the fieldDefs)
                  */
                 $is.fieldDefs = Utils.getClonedObject(defaultFieldDefs);
+
+                renderOperationColumns();
 
                 /*push the fieldDefs in respective grid markup*/
                 gridObj = {
@@ -1984,8 +1987,11 @@ WM.module('wm.widgets.grid')
                 if (evt && evt.target) {
                     $is.callDataGridMethod('deleteRowAndUpdateSelectAll', evt);
                 } else {
-                    row = evt || $is.selectedItems[0];
-                    deleteRecord(row);
+                    //Wait for the selected item to get updated
+                    $timeout(function () {
+                        row = evt || $is.selectedItems[0];
+                        deleteRecord(row);
+                    });
                 }
             }
             function editRow(evt) {
@@ -1993,8 +1999,19 @@ WM.module('wm.widgets.grid')
                 if (evt && evt.target) {
                     $is.callDataGridMethod('toggleEditRow', evt);
                 } else {
-                    row = evt || $is.selectedItems[0];
-                    $is.gridOptions.beforeRowUpdate(row);
+                    //For live form, call the update function with selected item
+                    if ($is.editmode === 'form' || $is.editmode === 'dialog') {
+                        row = evt || $is.selectedItems[0];
+                        $is.gridOptions.beforeRowUpdate(row);
+                    } else {
+                        //Wait for the selected item to get updated
+                        $timeout(function () {
+                            row = $is.datagridElement.find('tr.active');
+                            if (row.length) {
+                                $is.callDataGridMethod('toggleEditRow', undefined, {$row: row, action: 'edit'});
+                            }
+                        });
+                    }
                 }
             }
             function addRow() {
@@ -2188,6 +2205,24 @@ WM.module('wm.widgets.grid')
                 }
                 return $is.datagridElement.datagrid.apply($is.datagridElement, arguments);
             }
+            //Function to hide the edited row
+            function hideEditRow() {
+                var $row = $is.datagridElement.find('tr.row-editing');
+                if ($row.length) {
+                    $is.callDataGridMethod('hideRowEditMode', $row);
+                }
+            }
+            //Function to save the row
+            function saveRow() {
+                $is.callDataGridMethod('saveRow');
+            }
+            //Function to cancel the edit
+            function cancelRow() {
+                var $row = $is.datagridElement.find('tr.row-editing');
+                if ($row.length) {
+                    $is.callDataGridMethod('cancelEdit', $row);
+                }
+            }
             $is.setGridData                  = setGridData.bind(undefined);
             $is.rowFilter                    = {};
             $is.filterInfo                   = {};
@@ -2218,6 +2253,9 @@ WM.module('wm.widgets.grid')
             $is.deleteRow                    = deleteRow;
             $is.editRow                      = editRow;
             $is.addRow                       = addRow;
+            $is.hideEditRow                  = hideEditRow;
+            $is.saveRow                      = saveRow;
+            $is.cancelRow                    = cancelRow;
             $is.onRecordDelete               = onRecordDelete;
             $is.call                         = call;
             $is.export                       = exportData;

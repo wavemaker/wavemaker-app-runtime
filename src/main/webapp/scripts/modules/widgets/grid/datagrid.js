@@ -1459,8 +1459,11 @@ $.widget('wm.datagrid', {
     },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e, options) {
-        e.stopPropagation();
-        var $row = $(e.target).closest('tr'),
+        options = options || {};
+        if (e) {
+            e.stopPropagation();
+        }
+        var $row = options.$row || $(e.target).closest('tr'),
             $originalElements = $row.find('td'),
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
@@ -1480,7 +1483,7 @@ $.widget('wm.datagrid', {
             //Even after removing row, focus out is triggered and edit is called. In this case, return here
             return;
         }
-        options = options || {};
+        e       = e || {};
         e.data  = e.data  || {};
         action  = e.data.action || options.action;
         if (action === 'edit') {
@@ -1628,9 +1631,6 @@ $.widget('wm.datagrid', {
                     }
                 } else {
                     this.cancelEdit($row);
-                    $editButton.removeClass('hidden');
-                    $cancelButton.addClass('hidden');
-                    $saveButton.addClass('hidden');
                     if (!options.noMsg) {
                         this.options.noChangesDetected();
                     }
@@ -1645,16 +1645,16 @@ $.widget('wm.datagrid', {
                 }
                 // Cancel edit.
                 this.cancelEdit($row);
-                $editButton.removeClass('hidden');
-                $cancelButton.addClass('hidden');
-                $saveButton.addClass('hidden');
             }
         }
         this.addOrRemoveScroll();
     },
     cancelEdit: function ($row) {
         var self = this,
-            $editableElements = $row.find('td.cell-editing');
+            $editableElements = $row.find('td.cell-editing'),
+            $cancelButton     = $row.find('.cancel-edit-row-button'),
+            $saveButton       = $row.find('.save-edit-row-button'),
+            $editButton       = $row.find('.edit-row-button');
         this.disableActions(false);
         this._setGridEditMode(false);
         $row.removeClass('row-editing');
@@ -1677,6 +1677,9 @@ $.widget('wm.datagrid', {
                 }
             }
         });
+        $editButton.removeClass('hidden');
+        $cancelButton.addClass('hidden');
+        $saveButton.addClass('hidden');
     },
     hideRowEditMode: function ($row) {
         var $editableElements = $row.find('td.cell-editing'),
