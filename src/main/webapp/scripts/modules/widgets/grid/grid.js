@@ -257,10 +257,10 @@ WM.module('wm.widgets.grid')
                 function defineSelectedItemProp(scope) {
                     Object.defineProperty(scope, 'selecteditem', {
                         get: function () {
-                            if (scope.items && scope.items.length === 1) {
-                                return scope.items[0];
+                            if (scope.multiselect) {
+                                return scope.items;
                             }
-                            return scope.items;
+                            return scope.items && scope.items[0];
                         },
                         set: function (val) {
                             /*Select the rows in the table based on the new selected items passed*/

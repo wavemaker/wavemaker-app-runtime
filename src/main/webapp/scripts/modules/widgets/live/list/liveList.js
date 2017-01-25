@@ -1367,10 +1367,10 @@ WM.module('wm.widgets.live')
                 Object.defineProperty($is, 'selecteditem', {
                     'configurable': true,
                     'get': function () {
-                        if ($is._items && $is._items.length === 1) {
-                            return $is._items[0];
+                        if ($is.multiselect) {
+                            return $is._items;
                         }
-                        return $is._items;
+                        return $is._items && $is._items[0];
                     },
                     'set': function (items) {
                         $is._items.length = 0;
