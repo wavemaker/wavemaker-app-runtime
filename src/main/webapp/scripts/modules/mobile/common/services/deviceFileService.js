@@ -127,7 +127,7 @@ wm.modules.wmCommon.services.DeviceFileService = [
                 promises.push(createFolderIfNotExists(self.PERSISTENT_ROOT_PATH,
                     APP_FOLDER_STRUCTURE,
                     fileTypeVsPathMap.persistent));
-                $q.all(promises).then(d.resolve);
+                $q.all(promises).then(d.resolve, d.reject);
             });
             return d.promise;
         }
@@ -357,7 +357,7 @@ wm.modules.wmCommon.services.DeviceFileService = [
 
         if (window.cordova && window.cordova.file) {
             initializationDone = DeviceService.waitForInitialization('DeviceFileService');
-            init().then(initializationDone);
+            init().finally(initializationDone);
         }
 
     }];
