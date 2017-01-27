@@ -23,7 +23,7 @@ WM.module('wm.widgets.live')
                     '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude apply-styles="scrollable-container">' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
-                    '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin" ng-show="loadingicon"></i><span ng-show="!loadingicon">{{loadingdatamsg}}</span></span></div>' +
+                    '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin"></i><span class="loading-text">{{loadingdatamsg}}</span></span></div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\' && !noDataFound">' +
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
