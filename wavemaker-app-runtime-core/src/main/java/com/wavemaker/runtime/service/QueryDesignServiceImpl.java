@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -12,18 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.StringTemplate;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
-import com.wavemaker.runtime.data.model.ReferenceType;
-import com.wavemaker.runtime.data.model.queries.QueryType;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
-import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.runtime.data.util.DataServiceUtils;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.StringTemplate;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -37,8 +32,8 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     @Override
     public List<ReturnProperty> extractMeta(final String serviceId, final RuntimeQuery query) {
         List<ReturnProperty> meta;
-        if (isDMLOrUpdateQuery(query)) {
-            meta = getMetaForDML();
+        if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
+            meta = DesignTimeServiceUtils.getMetaForDML();
         } else if (!query.isNativeSql()) {
             meta = executeInTransaction(serviceId, new TransactionCallback<List<ReturnProperty>>() {
                 @Override
@@ -59,8 +54,8 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
         final Object results = _runQuery(serviceId, query, pageable);
         List<ReturnProperty> meta;
 
-        if (isDMLOrUpdateQuery(query)) {
-            meta = getMetaForDML();
+        if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
+            meta = DesignTimeServiceUtils.getMetaForDML();
         } else {
             if (query.isNativeSql()) {
                 meta = extractMetaFromResults(((Page<Object>) results).getContent());
@@ -78,7 +73,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
 
     @Override
     public Object executeQuery(final String serviceId, final RuntimeQuery query, final Pageable pageable) {
-        if (isDMLOrUpdateQuery(query)) {
+        if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
             throw new WMRuntimeException("Update queries not allowed");
         }
         return _runQuery(serviceId, query, pageable);
@@ -92,7 +87,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
             public Object doInTransaction(TransactionStatus status) {
                 WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
                 Object response;
-                if (isDMLOrUpdateQuery(query)) {
+                if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
                     response = queryExecutor.executeRuntimeQueryForUpdate(query);
                 } else {
                     response = queryExecutor.executeRuntimeQuery(query, pageable);
@@ -109,14 +104,5 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
         final Query hqlQuery = factory.getCurrentSession().createQuery(query.getQueryString());
 
         return HQLQueryUtils.extractMetaForHql(hqlQuery);
-    }
-
-    private boolean isDMLOrUpdateQuery(RuntimeQuery query) {
-        return query.getType() != QueryType.SELECT && DataServiceUtils.isDML(query.getQueryString());
-    }
-
-    private List<ReturnProperty> getMetaForDML() {
-        return Collections.singletonList(new ReturnProperty(null, new FieldType(ReferenceType.PRIMITIVE, Integer
-                .class.getName())));
     }
 }
