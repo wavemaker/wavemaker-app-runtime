@@ -473,7 +473,11 @@ WM.module('wm.widgets.basic')
                 function handleQuerySuccess(response, props, pageOptions) {
                     var data            = response.content || response,
                         expressionArray = _.split($is.binddataset, '.'),
-                        dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
+                        dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.'),
+                        $I              = '[$i]',
+                        index,
+                        restExpr,
+                        formattedData;
                     if (pageOptions) {
                         $is.page       = pageOptions.currentPage;
                         $is.isLastPage = isLastPage($is.page, pageOptions.dataSize, pageOptions.maxResults);
@@ -485,7 +489,16 @@ WM.module('wm.widgets.basic')
                     }
                     //if data expression exists, extract the data from the expression path
                     if (dataExpression) {
-                        data = _.get(data, dataExpression);
+                        index    = dataExpression.lastIndexOf($I);
+                        restExpr = dataExpression.substr(index + 5);
+
+                        if (WM.isArray(data)) {
+                            formattedData = data.map(function (datum) {
+                                return Utils.findValueOf(datum, restExpr);
+                            });
+                        }
+
+                        data = formattedData;
                     }
                     if (!_.isArray(data)) {
                         data = getTransformedData(variable, data);
