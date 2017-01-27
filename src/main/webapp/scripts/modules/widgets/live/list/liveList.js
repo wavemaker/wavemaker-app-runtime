@@ -70,7 +70,7 @@ WM.module('wm.widgets.live')
         function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse) {
             'use strict';
 
-            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation']),
+            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
                 notifyFor = {

@@ -103,7 +103,7 @@ WM.module('wm.widgets.grid')
     .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rs, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
         'use strict';
         var gridColumnCount,
-            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
+            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation','wm.layouts.panel.defaults']),
             gridColumnMarkup      = '',
             notifyFor             = {
                 'width'              : true,

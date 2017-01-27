@@ -39,7 +39,7 @@ WM.module('wm.widgets.live')
         '$timeout',
         function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Utils, wmToaster, $controller, LiveWidgetUtils, $timeout) {
             "use strict";
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.base']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.base', 'wm.layouts.panel.defaults']),
                 filterMarkup = '',
                 FILTER_CONSTANTS = {
                     'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',

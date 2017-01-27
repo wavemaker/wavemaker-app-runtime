@@ -1212,8 +1212,10 @@ WM.module('wm.widgets.base', [])
                         "onFullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onExitfullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "animation": {"type": "list", "options": animationOptions}
+                    },
+                    'wm.layouts.panel.defaults': {
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.card': {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1386,7 +1388,6 @@ WM.module('wm.widgets.base', [])
                         "onBeforerender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onBeforesubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -1437,7 +1438,6 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"},
                         // property specific to mobile with formlayout page
                         "onBackbtnclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -1530,8 +1530,7 @@ WM.module('wm.widgets.base', [])
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
-                        "tabindex": {"type": "number", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "tabindex": {"type": "number", "value": "0"}
 
                     },
                     'wm.livegrid': {
@@ -1625,7 +1624,6 @@ WM.module('wm.widgets.base', [])
 
                     "wm.accordionpane": {
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "value": "Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1755,7 +1753,6 @@ WM.module('wm.widgets.base', [])
                         "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "value": "left"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
                         "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word", "datasetfilter": "none"},
                         "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
@@ -1807,7 +1804,6 @@ WM.module('wm.widgets.base', [])
                         "collapsible": {"type": "boolean", "showindesigner": true},
                         "expanded": {"type": "boolean", "value": true, "showindesigner": true},
                         "enableemptyfilter": {"type": "select-all", "options": ["null", "empty"], "displaytype": "block", "value": " ", "showindesigner": true},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "margin": {"type": "string", "widget": "box-model"},

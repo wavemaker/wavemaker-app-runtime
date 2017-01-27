@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch','wm.layouts.panel.defaults']),
             notifyFor = {
                 'captionsize'     : true,
                 'novalidate'      : true,
