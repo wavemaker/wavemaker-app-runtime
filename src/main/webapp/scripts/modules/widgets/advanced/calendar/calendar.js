@@ -173,6 +173,10 @@ WM.module('wm.widgets.advanced')
                         } else {
                             calendar.defaultView = newVal;
                         }
+                    } else {
+                        if (newVal === 'week') {
+                            calendar.defaultView = 'day';
+                        }
                     }
                     break;
                 case 'selectionmode':
@@ -406,7 +410,8 @@ WM.module('wm.widgets.advanced')
                             };
 
                             $is.isCalendarOpened = false;
-
+                            // mobile calendar doesn't support week mode.
+                            $is.view = $is.view === 'week' ? 'day' : $is.view;
                             $is.mobileCalendarOptions = {
                                 'showWeeks'     : false,
                                 'customClass'   : getDayClass,
