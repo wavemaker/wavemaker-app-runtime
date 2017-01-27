@@ -950,8 +950,13 @@ WM.module('wm.widgets.live')
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {
                         if (CONSTANTS.isRunMode) {
-                            /*On changing of a property in studio mode, generate the template again so that change is reflected*/
+                            //On changing of a property in studio mode, generate the template again so that change is reflected
                             template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
+                            //Destroy the scopes of the widgtes inside the form field
+                            element.find('.ng-isolate-scope')
+                                .each(function () {
+                                    WM.element(this).isolateScope().$destroy();
+                                });
                             //Remove only live-field so that overlay won't get overrided
                             element.find('.live-field').remove();
                             element.append(template);
