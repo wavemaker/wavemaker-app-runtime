@@ -13,14 +13,13 @@ WM.module('wm.widgets.live')
         'FormWidgetUtils',
         'PropertiesFactory',
         '$compile',
-        '$liveVariable',
         'CONSTANTS',
         'WidgetUtilService',
         'Variables',
         'QueryBuilder',
         'DialogService',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables, QueryBuilder, DialogService) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, QueryBuilder, DialogService) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
@@ -1476,17 +1475,17 @@ WM.module('wm.widgets.live')
              * @param {object} variableObj to which filter is binded
              *
              */
-            function fetchPropertiesMapColumns(propertiesMap, variableObj) {
-                var columns = {}, columnName, data = {}, primaryKey;
+            function fetchPropertiesMapColumns(propertiesMap, bindDataSet) {
+                var columns = {}, columnName, data = {}, primaryKey, typeUtils = Utils.getService('TypeUtils');
                 /* iterated trough the propertiesMap columns of all levels and build object with columns having required configuration*/
-                _.each(propertiesMap.columns, function (val) {
+                _.forEach(propertiesMap.columns, function (val) {
                     /* if the object is nested type repeat the above process for that nested object through recursively */
                     if (val.isRelated) {
                         if (val.isList) {
                             return;
                         }
                         data.relatedData = data.relatedData || {};
-                        var relatedTableColumns = $liveVariable.getRelatedColumnsList(variableObj, val.fieldName),
+                        var relatedTableColumns = typeUtils.getFieldsForExpr(bindDataSet + '.' + val.fieldName),
                             columnNameTypeMap = {};
                         _.each(val.columns, function (column) {
                             if (column.isPrimaryKey) {

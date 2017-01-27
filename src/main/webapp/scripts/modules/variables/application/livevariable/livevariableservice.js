@@ -101,43 +101,6 @@ wm.variables.services.$liveVariable = [
                     }
                 });
             },
-            /*function to fetch the column list of a related field*/
-            getRelatedColumnsList = function (variable, fieldName) {
-                var relatedColumn,
-                    colArr = [],
-                    targetTables = [],
-                    getRelatedCols = function (columns, prefix) {
-                        var relatedCols,
-                            colName;
-                        columns = _.sortBy(columns, 'isRelated');
-                        columns.forEach(function (column) {
-                            var variableObject;
-                            /*If the column is related, find out the columns of the target table*/
-                            if (column.isRelated) {
-                                /*Keeping the target tables array to stop the circular reference problems*/
-                                if (!_.includes(targetTables, column.targetTable)) {
-                                    targetTables.push(column.targetTable);
-                                    variableObject = Variables.filterByVariableKeys({'liveSource' : variable.liveSource, 'tableName' : column.targetTable}, true)[0];
-                                    relatedCols = variableObject ? variableObject.propertiesMap.columns : [];
-                                    if (relatedCols && relatedCols.length) {
-                                        getRelatedCols(relatedCols, column.fieldName);
-                                    }
-                                }
-                            } else {
-                                colName = prefix ? (prefix + '.' + column.fieldName) : column.fieldName;
-                                colArr.push(colName);
-                            }
-                        });
-                    };
-                /*Find the related column from the variable properties map*/
-                relatedColumn = _.find(variable.propertiesMap.columns, function (col) {
-                    return col.fieldName === fieldName;
-                });
-                if (relatedColumn && relatedColumn.columns) {
-                    getRelatedCols(relatedColumn.columns);
-                }
-                return colArr;
-            },
             getHibernateOrSqlType = function (variable, fieldName, type) {
                 var columns = variable.propertiesMap.columns,
                     column,
@@ -1796,17 +1759,7 @@ wm.variables.services.$liveVariable = [
         BaseVariablePropertyFactory.register('wm.LiveVariable', liveVariableObj, ['wm.Variable', 'wm.ServiceVariable'], methods);
 
         return {
-            reset: reset,
-            /**
-             * @ngdoc method
-             * @name $Variables#getRelatedColumnsList
-             * @methodOf wm.variables.$Variables
-             * @description
-             * function to fetch the column list of a the related field
-             * @param {object} variable variable
-             * @param {string} fieldName fieldName of the column
-             */
-            getRelatedColumnsList : getRelatedColumnsList,
+            reset                 : reset,
             getTableMetaData      : getTableMetaData,
             updateVariableDataset : updateVariableDataset
         };
