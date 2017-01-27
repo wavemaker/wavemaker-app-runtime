@@ -1770,7 +1770,7 @@ WM.module('wm.widgets.base', [])
                         "showcount": {"type": "boolean", "show": false},
                         "disableitem": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "ondemandmessage": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true, "value": "Load More"},
-                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex},
+                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "fa fa-circle-o-notch", "pattern": classRegex},
                         "paginationclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg", "btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
                     },
                     "wm.medialist": {
