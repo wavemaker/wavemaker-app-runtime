@@ -108,6 +108,18 @@ html, body {
   position: relative;
 }
 
+//Icon widget styles
+.app-icon-wrapper {
+  display: inline-block;
+  position: relative;
+  &[icon-position="right"] {
+    direction: rtl;
+  }
+  .app-icon {
+    vertical-align: baseline;
+  }
+}
+
 /*error message for missing partial*/
 .app-partial-info {
   text-align: center;

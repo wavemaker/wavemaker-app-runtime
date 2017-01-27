@@ -329,6 +329,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.icon": {
                         "hint": {"type": "string", "bindable": "in-bound"},
+                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
+                        "iconposition": {"type": "list", "options": ["left", "right"], "value": "left"},
                         "iconclass": {"type": "string", "value": "wi wi-star-border", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "animation": {"type": "list", "options": animationOptions},
