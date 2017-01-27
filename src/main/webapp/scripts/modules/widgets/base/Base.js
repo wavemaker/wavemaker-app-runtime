@@ -565,7 +565,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
-                        "multiselect": {"type": "boolean"},
+                        "selectionmode": {"type": "list", "widget": "select-by-object", "value": "none", "options": [{"label": "None", "value": "none"}, {"label": "Single", "value": "single"}, {"label": "Multiple", "value": "multiple"}]},
                         "selecteddates": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('selecteddates')"},
                         "currentview": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('currentview')"},
                         "selecteddata": {"type": "array, object", "isList": true, "show": false, "bindable": "out-bound", "getTypeFrom": "expr.getPropertyType('selecteddata')" },

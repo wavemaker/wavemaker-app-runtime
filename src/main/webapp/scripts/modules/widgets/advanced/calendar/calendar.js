@@ -25,7 +25,7 @@ WM.module('wm.widgets.advanced')
                     'controls'      : true,
                     'calendartype'  : true,
                     'view'          : true,
-                    'multiselect'   : true
+                    'selectionmode' : true
                 },
                 defaultHeaderOptions = {
                     'left'  : 'prev next today',
@@ -35,6 +35,11 @@ WM.module('wm.widgets.advanced')
                 VIEW_TYPES = {
                     'BASIC' : 'basic',
                     'AGENDA': 'agenda'
+                },
+                SELECTION_MODES = {
+                    'NONE'     : 'none',
+                    'SINGLE'   : 'single',
+                    'MULTIPLE' : 'multiple'
                 };
 
             /* datavalue property is removed from the calendar widget.*/
@@ -170,8 +175,16 @@ WM.module('wm.widgets.advanced')
                         }
                     }
                     break;
-                case 'multiselect':
-                    calendar.selectable = newVal;
+                case 'selectionmode':
+                    if (newVal !== SELECTION_MODES.NONE) {
+                        calendar.selectable = true;
+                        if (newVal === SELECTION_MODES.SINGLE) {
+                            calendar.selectConstraint = {
+                                'start': '00:00',
+                                'end'  : '24:00'
+                            };
+                        }
+                    }
                     break;
                 }
             }
@@ -427,6 +440,11 @@ WM.module('wm.widgets.advanced')
                                     }
                                 }
                             };
+
+                            //as multiselect is older property and used across projects use the check and change the selection mode to multiple.
+                            if ($is.multiselect && !attrs.selectionmode) {
+                                $is.selectionmode = SELECTION_MODES.MULTIPLE;
+                            }
 
                             handlers.push($rs.$on('locale-change', function () {
                                 $is.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
