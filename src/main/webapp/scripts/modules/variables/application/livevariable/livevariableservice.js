@@ -769,6 +769,7 @@ wm.variables.services.$liveVariable = [
                     'size'          : options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
                     'sort'          : tableOptions.sort,
                     'data'          : requestData,
+                    'filterMeta'    : tableOptions.filter,
                     'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
                 }, function (response) {
 
@@ -1411,6 +1412,7 @@ wm.variables.services.$liveVariable = [
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'data'          : tableOptions.query || '',
+                        'filterMeta'    : tableOptions.filter,
                         'exportFormat'  : options.exportFormat,
                         'size'          : options.size
                     });
@@ -1594,6 +1596,7 @@ wm.variables.services.$liveVariable = [
                         'size'          : options.pagesize || undefined,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'data'          : query || '',
+                        'filterMeta'    : filterOptions,
                         'sort'          : orderBy
                     }, function (response) {
                         /*Remove the self related columns from the data. As backend is restricting the self related column to one level, In liveform select, dataset and datavalue object

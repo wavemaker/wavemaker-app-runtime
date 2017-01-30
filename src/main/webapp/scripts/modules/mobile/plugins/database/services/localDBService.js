@@ -204,7 +204,7 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.readTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
-                store.filter(params.data, params.sort.split('=')[1], {
+                store.filter(params.filterMeta, params.sort.split('=')[1], {
                     offset: (params.page - 1) * params.size,
                     limit: params.size
                 }).then(function (data) {
