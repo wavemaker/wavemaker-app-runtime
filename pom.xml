@@ -198,7 +198,7 @@
                             <include>**/*.java</include>
                         </includes>
                         <properties>
-                            <year>2016</year>
+                            <year>2017</year>
                             <company>WaveMaker, Inc</company>
                         </properties>
                     </configuration>
