@@ -75,6 +75,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 joins = [];
             _.forEach(schema.columns, function (col) {
                 var childTableName;
+                columns.push(escapeName(schema.name) + '.' + escapeName(col.name) + ' as ' + col.fieldName);
                 if (col.targetEntity) {
                     childTableName = col.sourceFieldName;
                     _.forEach(col.dataMapper, function (childCol, childFiledName) {
@@ -83,8 +84,6 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     joins.push(' LEFT JOIN ' + escapeName(col.targetTable) + ' ' + childTableName
                         + ' ON ' + childTableName + '.' + escapeName(col.targetColumn)
                         + ' = ' + escapeName(schema.name) + '.' +  escapeName(col.name));
-                } else {
-                    columns.push(escapeName(schema.name) + '.' + escapeName(col.name) + ' as ' + col.fieldName);
                 }
             });
             return 'SELECT ' + columns.join(',') + ' FROM ' + escapeName(schema.name) + ' ' + joins.join(' ');

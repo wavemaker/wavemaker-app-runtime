@@ -225,6 +225,10 @@ wm.plugins.offline.services.ChangeLogService = [
                             'id' : id,
                             'key' : contextKey,
                             'value' : JSON.stringify(context)
+                        }).then(function (insertId) {
+                            if (insertId) {
+                                id = insertId;
+                            }
                         });
                     }
                 };
