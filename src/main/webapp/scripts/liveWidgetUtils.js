@@ -660,7 +660,7 @@ WM.module('wm.widgets.live')
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" ' + show + ' class="live-field">' +
-                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{isUpdateMode && formFields[' + index + '].required}}"></wm-label>' +
+                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" ng-if="formFields[' + index + '].displayname" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{isUpdateMode && formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '" show="{{!isUpdateMode}}"></wm-label>';
 
