@@ -240,7 +240,7 @@ WM.module('wm.layouts.containers')
 
         function constructDataObject(scope, element) {
             var formData     = {},
-                formVariable = element.scope().Variables[scope.dataset];
+                formVariable = element.scope().Variables[scope.formVariable];
             //Get all form fields and prepare form data as key value pairs
             _.forEach(scope.elScope.formFields, function (field) {
                 var fieldName,
@@ -266,7 +266,7 @@ WM.module('wm.layouts.containers')
             var params,
                 template,
                 formData,
-                formVariable = element.scope().Variables[scope.dataset];
+                formVariable = element.scope().Variables[scope.formVariable];
             resetFormState(scope);
             //Set the values of the widgets inside the form (other than form fields) in form data
             formData = scope.constructDataObject();
@@ -339,8 +339,8 @@ WM.module('wm.layouts.containers')
                     var handlers = [];
                     scope.statusMessage = undefined;
 
-                    if (scope.dataset === undefined) {
-                        scope.dataset = scope.formvariable;
+                    if (scope.binddataset) {
+                        scope.formVariable = Utils.getVariableNameFromExpr(scope.binddataset);
                     }
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
@@ -352,12 +352,8 @@ WM.module('wm.layouts.containers')
                         scope.submit    = submitForm.bind(undefined, scope, element);
                     } else {
                         //binddataset: allowing user click on the binded dataset.
-                        if (scope.dataset) {
-                            scope.widgetProps.dataset.show = true;
-                            scope.binddataset = 'bind:Variables.' + scope.dataset;
-                        } else {
-                            scope.widgetProps.dataset.show = false;
-                        }
+                        scope.widgetProps.dataset.show = !!scope.binddataset;
+
                         //event emitted on building new markup from canvasDom
                         handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
                             //as multiple form directives will be listening to the event, apply field-definitions only for current form
