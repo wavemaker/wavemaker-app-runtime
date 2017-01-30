@@ -591,7 +591,7 @@ $.widget('wm.datagrid', {
             formName,
             checkedTmpl,
             placeholder   = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
-            dataValue     = cellText ? 'datavalue="' + cellText + '"' : '',
+            dataValue     = (WM.isDefined(cellText) && cellText !== null) ? 'datavalue="' + cellText + '"' : '',
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
             disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned') ? true : colDef.disabled,//In edit mode, set disabled for assigned columns

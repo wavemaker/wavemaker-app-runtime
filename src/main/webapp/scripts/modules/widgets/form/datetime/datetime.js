@@ -76,7 +76,8 @@ WM.module('wm.widgets.form')
                     if ($is._dateModel) {
                         date = new Date($is._dateModel);
                     } else {
-                        date = $is._dateModel = new Date();
+                        //Set the default date as min date or max date or current date.
+                        date = $is._dateModel = moment($is.mindate || $is.maxdate).valueOf();
                     }
                     dateString = $filter('date')(date, 'yyyy-MM-dd');
                     timeString = $filter('date')(time, 'HH:mm:ss');
