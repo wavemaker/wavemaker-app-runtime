@@ -519,8 +519,8 @@ WM.module('wm.widgets.live')
             function updateFieldDefs($is, $el, data, attrs, listCtrl) {
                 var unbindWatcher, _s, fieldDefs;
 
-                _s        = $is.$liScope;
-                fieldDefs = _s.fieldDefs;
+                _s         = $is.$liScope;
+                fieldDefs  = _s.fieldDefs;
 
                 if ($is.infScroll || $is.onDemandLoad) {
                     if (WM.isUndefined(fieldDefs)) {
@@ -579,11 +579,8 @@ WM.module('wm.widgets.live')
                 $el.find('li.app-list-item.active').removeClass('active');
 
                 // In run mode, making the first element selected, if flag is set
-                if ($is.selectfirstitem) {
-                    if ($is.multiselect) {
-                        //Set selectFirstRow to false, to prevent first item being selected in next page
-                        $is.selectfirstitem = false;
-                    }
+                // and prevent first item being selected in next page
+                if ($is.selectfirstitem && !(_.get($is.dataNavigator, 'dn.currentPage') !== 1 && $is.multiselect)) {
                     unbindWatcher = $is.$watch(function () {
                         var items = $el.find('.list-group li.app-list-item:first');
                         if (items.length) {
@@ -606,7 +603,7 @@ WM.module('wm.widgets.live')
                         var listItems = $el.find('.list-group li.app-list-item'),
                             itemIndex = getItemIndex(listItems, item),
                             $li       = WM.element(listItems[itemIndex]);
-                        if (itemIndex !== -1) {
+                        if (!_.isEqual(itemIndex, -1)) {
                             $li.addClass('active');
                         }
                     });
