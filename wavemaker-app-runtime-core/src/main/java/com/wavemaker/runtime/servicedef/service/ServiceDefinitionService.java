@@ -30,8 +30,8 @@ import org.springframework.stereotype.Service;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.studio.prefab.core.Prefab;
-import com.wavemaker.studio.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
