@@ -24,16 +24,19 @@ import java.util.Map;
 
 import org.hibernate.dialect.OracleTypesHelper;
 
-import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
-import com.wavemaker.runtime.data.model.JavaType;
+import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.StringUtils;
+import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
+import com.wavemaker.runtime.data.model.JavaType;
 
 public class JDBCUtils {
 
     private static final Map<JavaType, Integer> javaTypeVsSqlTypeCodes = new HashMap<>();
+
+    private static Map<Integer, JavaType> sqlTypeCodeVsJavaType = new HashMap<>();
 
     static {
         javaTypeVsSqlTypeCodes.put(JavaType.BYTE, Types.TINYINT);
@@ -56,8 +59,38 @@ public class JDBCUtils {
         javaTypeVsSqlTypeCodes.put(JavaType.TIME, Types.TIME);
         javaTypeVsSqlTypeCodes.put(JavaType.DATETIME, Types.TIMESTAMP); // XXX
         javaTypeVsSqlTypeCodes.put(JavaType.TIMESTAMP, Types.TIMESTAMP);
-    }
 
+        sqlTypeCodeVsJavaType.put(Types.BOOLEAN, JavaType.BOOLEAN);
+        sqlTypeCodeVsJavaType.put(Types.TINYINT, JavaType.SHORT);
+        sqlTypeCodeVsJavaType.put(Types.SMALLINT, JavaType.SHORT);
+        sqlTypeCodeVsJavaType.put(Types.INTEGER, JavaType.INTEGER);
+        sqlTypeCodeVsJavaType.put(Types.BIGINT, JavaType.BIG_INTEGER);
+        sqlTypeCodeVsJavaType.put(Types.FLOAT, JavaType.FLOAT);
+        sqlTypeCodeVsJavaType.put(Types.REAL, JavaType.BIG_DECIMAL);
+        sqlTypeCodeVsJavaType.put(Types.DOUBLE, JavaType.DOUBLE);
+        sqlTypeCodeVsJavaType.put(Types.NUMERIC, JavaType.BIG_DECIMAL);
+        sqlTypeCodeVsJavaType.put(Types.DECIMAL, JavaType.BIG_DECIMAL);
+        sqlTypeCodeVsJavaType.put(Types.LONGVARCHAR,JavaType.TEXT);
+        sqlTypeCodeVsJavaType.put(Types.LONGNVARCHAR, JavaType.TEXT);
+        sqlTypeCodeVsJavaType.put(Types.VARCHAR, JavaType.STRING);
+        sqlTypeCodeVsJavaType.put(Types.CHAR, JavaType.CHARACTER);
+
+        sqlTypeCodeVsJavaType.put(Types.DATE, JavaType.DATE);
+        sqlTypeCodeVsJavaType.put(Types.TIME, JavaType.TIME);
+        sqlTypeCodeVsJavaType.put(Types.TIMESTAMP, JavaType.TIMESTAMP);
+
+        sqlTypeCodeVsJavaType.put(CommonConstants.DATE_TIME_WM_TYPE_CODE, JavaType.DATETIME);
+
+        sqlTypeCodeVsJavaType.put(Types.BINARY, JavaType.BLOB);
+        sqlTypeCodeVsJavaType.put(Types.VARBINARY, JavaType.BLOB);
+        sqlTypeCodeVsJavaType.put(Types.LONGVARBINARY, JavaType.BLOB);
+        sqlTypeCodeVsJavaType.put(Types.BLOB, JavaType.BLOB);
+        sqlTypeCodeVsJavaType.put(Types.CLOB, JavaType.CLOB);
+        sqlTypeCodeVsJavaType.put(Types.NCHAR, JavaType.STRING);
+        sqlTypeCodeVsJavaType.put(Types.NVARCHAR, JavaType.STRING);
+        sqlTypeCodeVsJavaType.put(Types.NCLOB, JavaType.CLOB);
+
+    }
 
     private JDBCUtils() {
     }
@@ -108,4 +141,7 @@ public class JDBCUtils {
         return typeCode;
     }
 
+    public static JavaType getJavaType(Integer typeCode) {
+        return sqlTypeCodeVsJavaType.get(typeCode);
+    }
 }

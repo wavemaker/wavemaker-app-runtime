@@ -35,6 +35,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.TypeConversionUtils;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryCallback;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
 import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
@@ -44,14 +47,10 @@ import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
 import com.wavemaker.runtime.data.model.PageableQueryInfo;
 import com.wavemaker.runtime.data.model.QueryInfo;
-import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.TypeConversionUtils;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 
@@ -103,7 +102,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public Page<Object> executeRuntimeQuery(final RuntimeQuery query, final Pageable pageable) {
-        final Map<String, Object> prepareParameters = prepareParameters(query);
+        final Map<String, Object> prepareParameters = QueryHelper.prepareParameters(query);
         Page<Object> result;
         if (query.isNativeSql()) {
             result = executeNativeQuery(query.getQueryString(), prepareParameters, pageable);
@@ -119,7 +118,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
-                return createQuery(runtimeQuery, prepareParameters(runtimeQuery)).executeUpdate();
+                return QueryHelper.createQuery(runtimeQuery, QueryHelper.prepareParameters(runtimeQuery), session)
+                        .executeUpdate();
             }
 
         });
@@ -147,7 +147,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         final Pageable _pageable = getValidPageable(pageable);
         return template.execute(new HibernateCallback<Page<Object>>() {
             public Page<Object> doInHibernate(Session session) throws HibernateException {
-                Query hqlQuery = createHQLQuery(queryString, params);
+                Query hqlQuery = QueryHelper.createHQLQuery(queryString, params, session);
                 Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
                 hqlQuery.setFirstResult(_pageable.getOffset());
                 hqlQuery.setMaxResults(_pageable.getPageSize());
@@ -164,26 +164,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     public void setTemplate(HibernateTemplate template) {
         this.template = template;
-    }
-
-    public Map<String, Object> prepareParameters(RuntimeQuery query) {
-        Map<String, Object> params = new HashMap<>(query.getParameters().size());
-        final List<QueryParameter> parameters = query.getParameters();
-        if (!parameters.isEmpty()) {
-            for (final QueryParameter parameter : parameters) {
-                Object convertedValue;
-                if (parameter.isList()) {
-                    convertedValue = new ArrayList<>();
-                    for (final Object object : (List<Object>) parameter.getTestValue()) {
-                        ((List<Object>) convertedValue).add(parameter.getType().fromString(String.valueOf(object)));
-                    }
-                } else {
-                    convertedValue = parameter.getType().fromString(String.valueOf(parameter.getTestValue()));
-                }
-                params.put(parameter.getName(), convertedValue);
-            }
-        }
-        return params;
     }
 
     @Override
@@ -226,9 +206,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
                 Query query = null;
                 if (customQuery.isNativeSql()) {
-                    query = createNativeQuery(customQuery.getQueryStr(), params);
+                    query = QueryHelper.createNativeQuery(customQuery.getQueryStr(), params, session);
                 } else {
-                    query = createHQLQuery(customQuery.getQueryStr(), params);
+                    query = QueryHelper.createHQLQuery(customQuery.getQueryStr(), params, session);
                 }
                 return query.executeUpdate();
             }
@@ -236,40 +216,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     }
 
-    public Query createQuery(RuntimeQuery runtimeQuery, final Map<String, Object> params) {
-        final Query query;
-        if (runtimeQuery.isNativeSql()) {
-            query = createNativeQuery(runtimeQuery.getQueryString(), params);
-        } else {
-            query = createHQLQuery(runtimeQuery.getQueryString(), params);
-        }
-        return query;
-    }
-
-    private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-
-        SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
-        QueryHelper.setResultTransformer(sqlQuery, Object.class);
-        QueryHelper.configureParameters(sqlQuery, params);
-        return sqlQuery;
-    }
-
     /**
      * create native order by query from the given queryString & sort criteria...
      */
-    private SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
+    public SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
         String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true, getDialect());
-        return createNativeQuery(orderedQuery, params);
-    }
-
-    private Query createHQLQuery(String queryString, Map<String, Object> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-
-        Query hqlQuery = currentSession.createQuery(queryString);
-        QueryHelper.setResultTransformer(hqlQuery, Object.class);
-        QueryHelper.configureParameters(hqlQuery, params);
-        return hqlQuery;
+        return QueryHelper.createNativeQuery(orderedQuery, params, template.getSessionFactory().getCurrentSession());
     }
 
     private void prepareParams(Map<String, Object> params, CustomQuery customQuery) {

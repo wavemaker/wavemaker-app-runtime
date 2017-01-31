@@ -15,7 +15,9 @@
  */
 package com.wavemaker.runtime.data.dao.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +36,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.runtime.data.model.queries.QueryParameter;
+import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.system.SystemPropertiesUnit;
-import com.wavemaker.commons.CommonConstants;
 
 public class QueryHelper {
 
@@ -192,17 +196,22 @@ public class QueryHelper {
             return template.execute(new HibernateCallback<Long>() {
                 @Override
                 public Long doInHibernate(Session session) throws HibernateException {
-                    Query query = isNative ? session.createSQLQuery(strQuery) : session.createQuery(strQuery);
-                    configureParameters(query, params);
-                    Object result = query.uniqueResult();
-                    long countVal = result == null ? 0 : ((Number) result).longValue();
-                    return countVal;
+                    return executeCountQuery(session, isNative, strQuery, params);
                 }
             });
         } catch (Exception ex) {
             LOGGER.error("Count query operation failed", ex);
             return maxCount();
         }
+    }
+
+    public static Long executeCountQuery(
+            final Session session, final boolean isNative, final String strQuery, final Map<String, Object> params) {
+        Query query = isNative ? session.createSQLQuery(strQuery) : session.createQuery(strQuery);
+        configureParameters(query, params);
+        Object result = query.uniqueResult();
+        long countVal = result == null ? 0 : ((Number) result).longValue();
+        return countVal;
     }
 
     public static String getCountQuery(String query, boolean isNative) {
@@ -237,4 +246,51 @@ public class QueryHelper {
     private static long maxCount() {
         return (long) Integer.MAX_VALUE;
     }
+
+    public static Map<String, Object> prepareParameters(RuntimeQuery query) {
+        Map<String, Object> params = new HashMap<>(query.getParameters().size());
+        final List<QueryParameter> parameters = query.getParameters();
+        if (!parameters.isEmpty()) {
+            for (final QueryParameter parameter : parameters) {
+                Object convertedValue;
+                if (parameter.isList()) {
+                    convertedValue = new ArrayList<>();
+                    for (final Object object : (List<Object>) parameter.getTestValue()) {
+                        ((List<Object>) convertedValue).add(parameter.getType().fromString(String.valueOf(object)));
+                    }
+                } else {
+                    convertedValue = parameter.getType().fromString(String.valueOf(parameter.getTestValue()));
+                }
+                params.put(parameter.getName(), convertedValue);
+            }
+        }
+        return params;
+    }
+
+    public static Query createQuery(
+            RuntimeQuery runtimeQuery, final Map<String, Object> params, final Session session) {
+        final Query query;
+        if (runtimeQuery.isNativeSql()) {
+            query = createNativeQuery(runtimeQuery.getQueryString(), params, session);
+        } else {
+            query = createHQLQuery(runtimeQuery.getQueryString(), params, session);
+        }
+        return query;
+    }
+
+    public static SQLQuery createNativeQuery(String queryString, Map<String, Object> params, final Session session) {
+        SQLQuery sqlQuery = session.createSQLQuery(queryString);
+        QueryHelper.setResultTransformer(sqlQuery, Object.class);
+        QueryHelper.configureParameters(sqlQuery, params);
+        return sqlQuery;
+    }
+
+    public static Query createHQLQuery(String queryString, Map<String, Object> params, final Session session) {
+        Query hqlQuery = session.createQuery(queryString);
+        QueryHelper.setResultTransformer(hqlQuery, Object.class);
+        QueryHelper.configureParameters(hqlQuery, params);
+        return hqlQuery;
+    }
+
+
 }
