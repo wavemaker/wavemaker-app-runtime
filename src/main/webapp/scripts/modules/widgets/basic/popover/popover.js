@@ -12,11 +12,11 @@ WM.module('wm.widgets.basic')
                 'iconurl'         : true,
                 'caption'         : true,
                 'iconposition'    : true,
-                'contentsource'   : CONSTANTS.isStudioMode,
+                'contentsource'   : true,
                 'popoverplacement': CONSTANTS.isRunMode
             };
 
-        function propertyChangeHandler($is, $el, key, nv) {
+        function propertyChangeHandler($is, $el, transFn, key, nv) {
             switch (key) {
                 case 'iconposition':
                     $el.attr('icon-position', nv);
@@ -30,6 +30,8 @@ WM.module('wm.widgets.basic')
                         $is.widgetProps.content.show = true;
                         $is.widgetProps.inlinecontent.show = false;
                     }
+
+                    transcludeContent($is, $el, transFn, nv);
                     break;
                 case 'iconclass':
                     /*showing icon when iconurl is not set*/
@@ -48,7 +50,7 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'popoverplacement':
                     if (nv) {
-                        $is._popoveroptions.placement = 'auto ' + nv;
+                        $is._popoverOptions.placement = 'auto ' + nv;
                     }
                     break;
             }
@@ -58,10 +60,10 @@ WM.module('wm.widgets.basic')
         function setStyleBlock($is) {
             //Add style block to set width and height of popover to avoid flickering effect
             var styleBlock  = document.head.getElementsByClassName('popover-styles'),
-                css         = '.' + $is._popoveroptions.customclass + '{height: ' + Utils.formatStyle($is.popoverheight, 'px') + '; width: ' + Utils.formatStyle($is.popoverwidth, 'px') + '}';
+                css         = '.' + $is._popoverOptions.customclass + '{height: ' + Utils.formatStyle($is.popoverheight, 'px') + '; width: ' + Utils.formatStyle($is.popoverwidth, 'px') + '}';
 
             if (!$is.popoverarrow) {
-                css += '.' + $is._popoveroptions.customclass + ' .arrow {display: none !important;}';
+                css += '.' + $is._popoverOptions.customclass + ' .arrow {display: none !important;}';
             }
             if (!styleBlock.length) {
                 styleBlock = document.createElement('style');
@@ -77,10 +79,27 @@ WM.module('wm.widgets.basic')
         //Hides the popover
         function setHideTrigger($is) {
             $timeout(function () {
-                if (!$is._popoveroptions.isPopoverActive) {
-                    $is._popoveroptions.isOpen = false;
+                if (!$is._popoverOptions.isPopoverActive) {
+                    $is._popoverOptions.isOpen = false;
                 }
             }, 500, true);
+        }
+
+        //Compile partial params by calling transclude fn
+        function transcludeContent($is, $el, transFn, nv) {
+
+            transFn($el.scope(), function (clone) {
+
+                if (clone.length) {
+                    //If contentsource is inline set inline content
+                    if (nv === 'inline') {
+                        $is.inlinecontent = $is._popoverOptions.content = WM.element(clone)[0].innerHTML;
+                    } else if (clone[0].tagName === 'WM-PARAM') {
+                        //If element is param append to $el
+                        $el.append(clone);
+                    }
+                }
+            });
         }
 
         return {
@@ -90,22 +109,23 @@ WM.module('wm.widgets.basic')
             'transclude': true,
             'template': function (tElement, tAttrs) {
                 var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/anchor.html', tElement, tAttrs));
+
                 //Required in studio mode also to set partial params which is based on pageContainer and wmtransclude directives
                 template.attr({
-                    'page-container'       : 'page-container',
-                    'wmtransclude'         : 'wmtransclude'
+                    'page-container'       : 'page-container'
                 });
+
                 if (CONSTANTS.isRunMode) {
                     //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                     template.attr({
-                        'uib-popover'           : '{{_popoveroptions.content}}',
-                        'uib-popover-template'  : '_popoveroptions.contenturl',
-                        'popover-class'         : '{{_popoveroptions.customclass}}',
-                        'popover-placement'     : '{{_popoveroptions.placement}}',
-                        'ng-mouseleave'         : '_popoveroptions.setHideTrigger()',
-                        'popover-trigger'       : '_popoveroptions.trigger',
+                        'uib-popover'           : '{{_popoverOptions.content}}',
+                        'uib-popover-template'  : '_popoverOptions.contenturl',
+                        'popover-class'         : '{{_popoverOptions.customclass}}',
+                        'popover-placement'     : '{{_popoverOptions.placement}}',
+                        'ng-mouseleave'         : '_popoverOptions.setHideTrigger()',
+                        'popover-trigger'       : '_popoverOptions.trigger',
                         'popover-title'         : '{{title}}',
-                        'popover-is-open'       : '_popoveroptions.isOpen',
+                        'popover-is-open'       : '_popoverOptions.isOpen',
                         'popover-append-to-body': 'true'
                     });
                 }
@@ -115,20 +135,18 @@ WM.module('wm.widgets.basic')
                 return {
                     'pre': function ($is, $el, attrs) {
                         var trigger = {'mouseenter': 'none', 'outsideClick': 'outsideClick'};
-                        $is._popoveroptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
+                        $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
                         $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.$lazyLoad       = WM.noop;
                     },
                     'post': function ($is, $el, attrs, nullCtrl, transcludeFn) {
                         var isInlineContent = attrs.contentsource === 'inline';
+
                         if (CONSTANTS.isRunMode) {
                             $is._isFirstTime = true;
                             if (isInlineContent) {
-                                $is._popoveroptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
+                                $is._popoverOptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
                                 setStyleBlock($is);
-                                transcludeFn($el.scope(), function (clone) {
-                                    $is._popoveroptions.content = WM.element(clone)[0].innerHTML;
-                                });
                             } else {
                                 var popoverScope = $is.$$childHead,
                                     $popoverEl;
@@ -139,18 +157,18 @@ WM.module('wm.widgets.basic')
                                     popoverScope.$watch('isOpen', function (nv) {
                                         if (nv || $is._isFirstTime) {
                                             //Add custom mouseenter, leave events on popover
-                                            $popoverEl = WM.element('.' + $is._popoveroptions.customclass);
+                                            $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
                                             if ($popoverEl.length) {
                                                 $popoverEl.on('mouseenter', function () {
-                                                    $is._popoveroptions.isPopoverActive = true;
+                                                    $is._popoverOptions.isPopoverActive = true;
                                                     $rs.$safeApply($is);
                                                 });
                                                 $popoverEl.on('mouseleave', function () {
-                                                    $is._popoveroptions.isPopoverActive = false;
-                                                    $is._popoveroptions.setHideTrigger(true);
+                                                    $is._popoverOptions.isPopoverActive = false;
+                                                    $is._popoverOptions.setHideTrigger(true);
                                                 });
                                             }
-                                            if ($is._popoveroptions.customclass) {
+                                            if ($is._popoverOptions.customclass) {
                                                 setStyleBlock($is);
                                             }
                                             Utils.triggerFn($is.$lazyLoad);
@@ -159,10 +177,9 @@ WM.module('wm.widgets.basic')
                                     });
                                 }
                             }
-                        } else {
-                            $is._popoveroptions.content = tElement.context.innerHTML;
                         }
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el), $is, notifyFor);
+
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, transcludeFn), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
                 };

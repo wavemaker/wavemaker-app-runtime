@@ -59,7 +59,7 @@ WM.module('wm.widgets.base')
                 //In popover case for partial content for which page will be initialized first and variables are initialized next call set variables
                 if (CONSTANTS.isRunMode && iScope._widgettype === 'wm-popover' && iScope.contentsource === 'partial') {
                     //Class will be used to set popover height width to avoid flickering issue
-                    iScope._popoveroptions.customclass = 'popover_' + iScope.$id + '_' + partialName + '_' + _.toLower($rootScope.activePageName);
+                    iScope._popoverOptions.customclass = 'popover_' + iScope.$id + '_' + partialName + '_' + _.toLower($rootScope.activePageName);
                     $rootScope.$emit('reset-partial-variables', partialName);
                 }
 
@@ -97,7 +97,7 @@ WM.module('wm.widgets.base')
                     if (iScope.widgettype === 'wm-popover' || iScope._widgettype === 'wm-popover') {
                         var popoverTemplate = 'template/popoverPartials/' + iScope.$id + '.html';
                         $tc.put(popoverTemplate, '<div>' + partialMarkup[0].outerHTML + '</div>');
-                        iScope._popoveroptions.contenturl = popoverTemplate;
+                        iScope._popoverOptions.contenturl = popoverTemplate;
                     } else {
                         /* compile */
                         target.html($compile(partialMarkup)(scope));
