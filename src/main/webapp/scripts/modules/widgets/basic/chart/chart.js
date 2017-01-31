@@ -1465,46 +1465,46 @@ WM.module('wm.widgets.basic')
  *                  Callback function for `transform` event.
  *
  * @example
-    <example module='wmCore'>
-        <file name='index.html'>
-            <div ng-controller='Ctrl' class='wm-app'>
+    <example module="wmCore">
+        <file name="index.html">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Column' tooltips='false' staggerlabels='true' barspacing='0.2'></wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Column" tooltips="false" staggerlabels="true" barspacing="0.2"></wm-chart>
                         </wm-gridcolumn>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Line' tooltips='false'></wm-chart>
-                        </wm-gridcolumn>
-                    </wm-gridrow>
-                    <wm-gridrow>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Area' tooltips='false'></wm-chart>
-                        </wm-gridcolumn>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Pie' tooltips='false'></wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Line" tooltips="false"></wm-chart>
                         </wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Bar' tooltips='false'></wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Area" tooltips="false"></wm-chart>
                         </wm-gridcolumn>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Cumulative Line' tooltips='false'> </wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Pie" tooltips="false"></wm-chart>
                         </wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Donut' tooltips='false'></wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Bar" tooltips="false"></wm-chart>
                         </wm-gridcolumn>
-                        <wm-gridcolumn columnwidth='6'>
-                            <wm-chart type='Bubble' tooltips='false'></wm-chart>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Cumulative Line" tooltips="false"> </wm-chart>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                    <wm-gridrow>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Donut" tooltips="false"></wm-chart>
+                        </wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="6">
+                            <wm-chart type="Bubble" tooltips="false"></wm-chart>
                         </wm-gridcolumn>
                     </wm-gridrow>
                 </wm-layoutgrid>
             </div>
         </file>
-        <file name='script.js'>
+        <file name="script.js">
             function Ctrl($scope) {}
         </file>
     </example>
