@@ -62,7 +62,7 @@ wm.plugins.database.services.DatabaseService = [
     function ($rootScope, BaseService, BaseServiceManager, CONSTANTS, Utils, WebService, $window, $q) {
         'use strict';
 
-        var initiateAction = function (action, params, successCallback, failureCallback) {
+        var initiateAction = function (action, params, successCallback, failureCallback, noproxy) {
             var param,
                 val,
                 config,
@@ -92,7 +92,7 @@ wm.plugins.database.services.DatabaseService = [
                 sort             : params.sort,
                 exportFormat     : params.exportFormat
             };
-            if (params.url && CONSTANTS.isStudioMode) {
+            if (params.url && CONSTANTS.isStudioMode && !noproxy) {
 
                 /* Check for url parameters to replace the URL.
                  * So the variable parameters in the URL will be replaced by the actual parameter values.*/
@@ -1400,6 +1400,28 @@ wm.plugins.database.services.DatabaseService = [
             testRunQuery: function (params, successCallback, failureCallback) {
                 return initiateAction("testRunQuery", params, successCallback, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#nativeTestRunQuery
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to execute the specified query in the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database, table and relations to be updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            nativeTestRunQuery: function (params, successCallback, failureCallback) {
+                return initiateAction("nativeTestRunQuery", params, successCallback, failureCallback, true);
+            },
+
             /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#getAllProcedures
