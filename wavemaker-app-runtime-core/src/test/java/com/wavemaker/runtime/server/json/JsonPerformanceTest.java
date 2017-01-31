@@ -24,7 +24,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.infra.WMTestCase;
+import com.wavemaker.commons.WMTestCase;
 import com.wavemaker.studio.json.AlternateJSONTransformer;
 import com.wavemaker.studio.json.JSONMarshaller;
 import com.wavemaker.studio.json.JSONObject;

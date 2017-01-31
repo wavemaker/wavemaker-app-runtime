@@ -18,7 +18,7 @@ package com.wavemaker.runtime.service;
 import java.util.Arrays;
 import java.util.List;
 
-import com.wavemaker.infra.WMTestUtils;
+import com.wavemaker.commons.util.WMTestUtils;
 import org.springframework.util.ClassUtils;
 
 
