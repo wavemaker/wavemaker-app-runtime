@@ -57,18 +57,25 @@ WM.module('wm.widgets.form')
                 },
                 ignoreUpdate;
 
+            //Check if newItem already exists
+            function isDuplicate($s, newItemObject) {
+                return _.findIndex($s.selectedChips, newItemObject) > -1;
+            }
+
             //constructs and returns a chip item object
-            function constructChip(displayValue, dataValue, imgSrcValue) {
+            function constructChip($s, displayValue, dataValue, imgSrcValue) {
                 //When data field is not provided, set display value as data value
                 if (!dataValue) {
                     dataValue   = displayValue;
                 }
-                return {
+                var chipObj = {
                     'key'       : displayValue,
                     'value'     : dataValue,
                     'wmImgSrc'  : imgSrcValue,
                     'fullValue' : displayValue + ' <' + dataValue + '>'
                 };
+                chipObj.isDuplicate = isDuplicate($s, chipObj);
+                return chipObj;
             }
 
             //Update the selected chips
@@ -80,31 +87,32 @@ WM.module('wm.widgets.form')
                 }
                 var values,
                     chip;
-                if (!WM.isArray(chips)) {
+                if (!WM.isArray(chips) && chips !== "") {
                     values  = _.split(chips, ',');
-                    chips   = _.map(values, function (ele) {
+                    $s.selectedChips = [];
+                    _.forEach(values, function (ele) {
                         //find chip object from dataset to get value and img source
                         chip =  _.find($s.chips, {'key' : ele});
-                        return constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc'));
+                        $s.selectedChips.push(constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
                 }
-                $s.selectedChips = chips;
             }
 
             //Create list of options for the search
             function createSelectOptions(dataset, $s) {
-                //Avoiding resetting empty values
-                if (($s.binddataset || $s.scopedataset) && (!$s.displayfield && !$s.datavalue && !$s.displayexpression)) {
-                    return;
-                }
                 var chips          = [],
                     dataField      = $s.datafield,
-                    displayField   = $s.displayfield,
+                    displayField   = $s.displayfield || $s.displayexpression || $s.binddisplayexpression,
                     imageField     = $s.displayimagesrc,
                     displayFieldValue,
                     dataFieldValue,
                     imageFieldValue,
                     value           = $s.value || $s.datavalue;
+                //Avoiding resetting empty values
+                if (($s.binddataset || $s.scopedataset) && (!displayField && !$s.datavalue)) {
+                    return;
+                }
+
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
                     chips = _.map(dataset, function (dataObj) {
@@ -120,7 +128,6 @@ WM.module('wm.widgets.form')
                     });
                 }
                 $s.chips         = chips;
-                $s.selectedChips = [];
                 //Default chips showing Option1, Option2, Option3 on drag and drop where it has only dataset but not binddataset or scopedataset
                 if (!$s.binddataset && !$s.scopedataset) {
                     updateSelectedChips(Utils.getClonedObject(chips), $s);
@@ -220,11 +227,6 @@ WM.module('wm.widgets.form')
                     return true;
                 }
                 return false;
-            }
-
-            //Check if newItem already exists
-            function isDuplicate(newItemObject, $s) {
-                return _.findIndex($s.selectedChips, newItemObject) > -1;
             }
 
             //Remove the item from list
@@ -333,9 +335,7 @@ WM.module('wm.widgets.form')
                 if (!newItemKey && !newItem) {
                     return;
                 }
-                if (isDuplicate(newItemObject, $s)) {
-                    newItemObject.isDuplicate = true;
-                }
+
                 if ($s.onBeforeadd) {
                     allowAdd = $s.onBeforeadd({$event: 'event', $isolateScope: $s, newItem: newItemObject});
                 }
@@ -432,6 +432,7 @@ WM.module('wm.widgets.form')
                             $s.addItem                   = addItem.bind(undefined, $s);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
+                            $s.constructChip             = constructChip.bind(undefined, $s);
                         }
 
                         if (!attrs.widgetid && attrs.scopedataset) {
