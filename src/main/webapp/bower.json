@@ -19,7 +19,6 @@
         "d3": "https://github.com/mbostock/d3.git#v3.5.17",
         "nvd3": "https://github.com/novus/nvd3.git#v1.8.4",
         "placeholders": "4.0.1",
-        "socialbyway": "https://github.com/Imaginea/SocialByWay.git",
         "ocLazyLoad": "https://github.com/ocombe/ocLazyLoad.git#1.0.9",
         "lodash": "https://github.com/lodash/lodash.git#4.16.4",
         "hammerjs": "2.0.8",
@@ -77,14 +76,6 @@
         },
         "placeholders": {
             "js": "lib/*.js"
-        },
-        "socialbyway": {
-            "js": [
-                "dist/js/socialbyway.v1.01-beta.js",
-                "dist/js/socialbyway.ui.v1.01-beta.js"
-            ],
-            "css": "dist/style/default/socialbyway.ui.v1.01-beta.css",
-            "css/images": "dist/style/default/images/*.*"
         },
         "textAngular": {
             "js": [
