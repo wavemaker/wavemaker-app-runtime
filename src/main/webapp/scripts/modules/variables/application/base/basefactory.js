@@ -74,7 +74,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "service": {"hide": true, "required": false},
                     "editJson": {"hide": true},
                     "transformationRequired": {"hide": true},
-                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead"},
+                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
                     "liveSource": {"type": "list", "required": true, "widgettype": "typeahead"},
                     "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead"},
                     "maxResults": {"disabled": false, "hide": false},
