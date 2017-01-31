@@ -55,7 +55,7 @@ public class DataServiceUtils {
 
         String q = query.trim().toLowerCase();
 
-        return q.startsWith("update") || q.startsWith("insert") || q.startsWith("delete") || q.startsWith("alter");
+        return !query.startsWith("select");
     }
 
     public static String replaceMySqlCloudToken(String url, String hostPortString) {
