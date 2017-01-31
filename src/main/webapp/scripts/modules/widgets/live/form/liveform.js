@@ -109,20 +109,23 @@ WM.module('wm.widgets.live')
                     formController,
                     onResult,
                     onVariableUpdate;
-                function resetFormState() {
-                    if (!$scope.ngform) {
-                        return;
-                    }
-                    //Reset the form to original state on cancel/ save
-                    $scope.ngform.$setUntouched();
-                    $scope.ngform.$setPristine();
-                }
                 //Function to get the form element
                 function getFormElement() {
                     if ($scope.isLayoutDialog) {
                         return WM.element('body').find('.app-liveform-dialog[dialogid="' + $scope._dialogid + '"]');
                     }
                     return $scope.element;
+                }
+                //Reset form state
+                function resetFormState() {
+                    var $formEle     = getFormElement(),
+                        formScope    = $scope.isLayoutDialog && $formEle.length ? $formEle.scope() : $scope;
+                    if (!formScope.ngform) {
+                        return;
+                    }
+                    //Reset the form to original state on cancel/ save
+                    formScope.ngform.$setUntouched();
+                    formScope.ngform.$setPristine();
                 }
                 //Reset the values of widgets inside the form
                 function resetFormFields(formEle) {
