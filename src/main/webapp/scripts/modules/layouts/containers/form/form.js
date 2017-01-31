@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch','wm.layouts.panel.defaults']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch', 'wm.layouts.panel.defaults']),
             notifyFor = {
                 'captionsize'     : true,
                 'novalidate'      : true,
@@ -238,9 +238,24 @@ WM.module('wm.layouts.containers')
             }
         }
 
+        //Get the variable bound to form
+        function getFormVariable(scope, element) {
+            //If binddataset is available and starts with bind:Variables, extract the variable name
+            if (scope.binddataset) {
+                if (_.includes(scope.binddataset, 'bind:Variables.')) {
+                    scope.formVariable = Utils.getVariableNameFromExpr(scope.binddataset);
+                } else if (scope.dataset) {
+                    scope.formVariable = scope.dataset;
+                }
+            } else if (scope.dataset) {
+                scope.formVariable = scope.dataset;
+            }
+            return element.scope().Variables[scope.formVariable];
+        }
+
         function constructDataObject(scope, element) {
             var formData     = {},
-                formVariable = element.scope().Variables[scope.formVariable];
+                formVariable = getFormVariable(scope, element);
             //Get all form fields and prepare form data as key value pairs
             _.forEach(scope.elScope.formFields, function (field) {
                 var fieldName,
@@ -266,7 +281,7 @@ WM.module('wm.layouts.containers')
             var params,
                 template,
                 formData,
-                formVariable = element.scope().Variables[scope.formVariable];
+                formVariable = getFormVariable(scope, element);
             resetFormState(scope);
             //Set the values of the widgets inside the form (other than form fields) in form data
             formData = scope.constructDataObject();
@@ -339,9 +354,6 @@ WM.module('wm.layouts.containers')
                     var handlers = [];
                     scope.statusMessage = undefined;
 
-                    if (scope.binddataset) {
-                        scope.formVariable = Utils.getVariableNameFromExpr(scope.binddataset);
-                    }
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
