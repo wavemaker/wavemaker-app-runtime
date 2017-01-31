@@ -25,16 +25,16 @@ import java.util.List;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.studio.json.type.FieldDefinition;
-import com.wavemaker.studio.json.type.GenericFieldDefinition;
-import com.wavemaker.studio.json.type.ListTypeDefinition;
-import com.wavemaker.studio.json.type.OperationEnumeration;
-import com.wavemaker.studio.json.type.reflect.ListReflectTypeDefinition;
-import com.wavemaker.studio.json.type.reflect.ObjectReflectTypeDefinition;
-import com.wavemaker.studio.json.type.reflect.PrimitiveReflectTypeDefinition;
-import com.wavemaker.studio.json.type.reflect.ReflectTypeDefinition;
-import com.wavemaker.studio.json.type.reflect.ReflectTypeState;
-import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.runtime.json.type.FieldDefinition;
+import com.wavemaker.runtime.json.type.GenericFieldDefinition;
+import com.wavemaker.runtime.json.type.ListTypeDefinition;
+import com.wavemaker.runtime.json.type.OperationEnumeration;
+import com.wavemaker.runtime.json.type.reflect.ListReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.ObjectReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.ReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.ReflectTypeState;
+import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
 
 /**
  * Used by <code>ServiceDefinition</code> representing the operation's input and output type.
