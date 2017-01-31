@@ -20,7 +20,7 @@ import com.wavemaker.commons.util.WMTestUtils;
 import com.wavemaker.runtime.feed.model.Feed;
 import com.wavemaker.runtime.feed.service.FeedService;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.studio.json.JSONMarshaller;
+import com.wavemaker.runtime.json.JSONMarshaller;
 import org.testng.Assert;
 
 import static org.testng.Assert.*;

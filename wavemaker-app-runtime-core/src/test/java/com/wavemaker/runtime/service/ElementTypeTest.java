@@ -23,11 +23,11 @@ import org.springframework.util.ClassUtils;
 
 
 import com.wavemaker.commons.util.SpringUtils;
-import com.wavemaker.studio.json.type.FieldDefinition;
-import com.wavemaker.studio.json.type.ObjectTypeDefinition;
-import com.wavemaker.studio.json.type.OperationEnumeration;
-import com.wavemaker.studio.json.type.TypeDefinition;
-import org.testng.Assert;
+import com.wavemaker.runtime.json.type.FieldDefinition;
+import com.wavemaker.runtime.json.type.ObjectTypeDefinition;
+import com.wavemaker.runtime.json.type.OperationEnumeration;
+import com.wavemaker.runtime.json.type.TypeDefinition;
+
 import static org.testng.Assert.*;
 
 /**

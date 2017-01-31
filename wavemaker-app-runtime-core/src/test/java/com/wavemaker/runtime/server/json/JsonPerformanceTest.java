@@ -25,11 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.commons.WMTestCase;
-import com.wavemaker.studio.json.AlternateJSONTransformer;
-import com.wavemaker.studio.json.JSONMarshaller;
-import com.wavemaker.studio.json.JSONObject;
-import com.wavemaker.studio.json.JSONState;
-import com.wavemaker.studio.json.JSONUnmarshaller;
+import com.wavemaker.runtime.json.AlternateJSONTransformer;
+import com.wavemaker.runtime.json.JSONMarshaller;
+import com.wavemaker.runtime.json.JSONObject;
+import com.wavemaker.runtime.json.JSONState;
+import com.wavemaker.runtime.json.JSONUnmarshaller;
 
 /**
  * Test JSON performance, make sure nothing is worse.
