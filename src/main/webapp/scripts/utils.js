@@ -2350,6 +2350,36 @@ WM.module('wm.utils', [])
             return val;
         }
 
+        /**
+         * Append given value to the formdata
+         * @param formData
+         * @param param - Param from which value has to be taken
+         * @param paramValue - Value which is to be appended to formdata
+         */
+        function getFormData(formData, param, paramValue) {
+            var formDataContentType;
+            if (isFileUploadSupported()) {
+                if (_.toLower(param.type) === "file" || _.toLower(param.items && param.items.type) === 'file') {
+                    if (WM.isArray(paramValue)) {
+                        WM.forEach(paramValue, function (fileObject) {
+                            formData.append(param.name, getBlob(fileObject), fileObject.name);
+                        });
+                    } else {
+                        formData.append(param.name, getBlob(paramValue), paramValue && paramValue.name);
+                    }
+                } else {
+                    if (WM.isObject(paramValue)) {
+                        paramValue = JSON.stringify(paramValue);
+                        formDataContentType = "application/json";
+                    } else {
+                        formDataContentType = "text/plain";
+                    }
+                    formData.append(param.name, new Blob([paramValue], {type: formDataContentType}));
+                }
+                return formData;
+            }
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2483,4 +2513,5 @@ WM.module('wm.utils', [])
         this.getMetaDataFromData        = getMetaDataFromData;
         this.isAppleProduct             = isAppleProduct;
         this.formatStyle                = formatStyle;
+        this.getFormData                = getFormData;
     }]);
