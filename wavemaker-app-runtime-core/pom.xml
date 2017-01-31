@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.wavemaker.studio</groupId>
+        <groupId>com.wavemaker.runtime</groupId>
         <artifactId>wavemaker-app-runtime</artifactId>
         <version>8.3.4</version>
     </parent>
@@ -313,7 +313,7 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>com.wavemaker.commons</groupId>
             <artifactId>wavemaker-commons-util</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
