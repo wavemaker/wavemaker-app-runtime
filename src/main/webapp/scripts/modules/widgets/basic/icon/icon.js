@@ -5,12 +5,28 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<i init-widget class="app-icon"  title="{{hint}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
+            '<span class="app-icon-wrapper" init-widget ng-style="{\'font-size\' : iconsize, \'opacity\' : opacity}">' +
+                '<i class="app-icon"  title="{{hint}}"  ng-style="{\'color\' : color}" ng-class="iconclass"></i> ' +
+                '<label class="app-label" ng-if="caption">{{caption}}</label>' +
+            '</span>'
             );
     }])
     .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']),
+            notifyFor   = {
+                'iconposition': true
+            };
+
+        //Define the property change handler. This function will be triggered when there is a change in the widget property
+        function propertyChangeHandler($is, $el, key, newVal) {
+            switch (key) {
+            case 'iconposition':
+                $el.attr('icon-position', newVal);
+                break;
+            }
+        }
+
         return {
             'restrict': 'E',
             'scope'   : {},
@@ -21,6 +37,7 @@ WM.module('wm.widgets.basic')
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                     /* register the property change handler */
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
