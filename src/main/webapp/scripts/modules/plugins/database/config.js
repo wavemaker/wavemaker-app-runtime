@@ -294,6 +294,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/queries/test_run",
             method: "POST"
         },
+        nativeTestRunQuery: {
+            url: "services/projects/:projectID/database/services/:dataModelName/queries/testrun",
+            method: "POST"
+        },
 
 
         /*Procedure related properties*/
