@@ -60,6 +60,7 @@ public class JDBCUtils {
         javaTypeVsSqlTypeCodes.put(JavaType.DATETIME, Types.TIMESTAMP); // XXX
         javaTypeVsSqlTypeCodes.put(JavaType.TIMESTAMP, Types.TIMESTAMP);
 
+        sqlTypeCodeVsJavaType.put(Types.BIT, JavaType.BOOLEAN);
         sqlTypeCodeVsJavaType.put(Types.BOOLEAN, JavaType.BOOLEAN);
         sqlTypeCodeVsJavaType.put(Types.TINYINT, JavaType.SHORT);
         sqlTypeCodeVsJavaType.put(Types.SMALLINT, JavaType.SHORT);
