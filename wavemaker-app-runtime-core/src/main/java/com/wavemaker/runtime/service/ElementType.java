@@ -282,7 +282,7 @@ public class ElementType implements Cloneable {
 
     /**
      * Transforms this ElementType into a FieldDefinition, to make the transition easier. This uses the default
-     * reflection-based TypeDefinition classes ({@link com.wavemaker.studio.json.type.reflect}).
+     * reflection-based TypeDefinition classes ({@link com.wavemaker.runtime.json.type.reflect}).
      * 
      * @return
      */
