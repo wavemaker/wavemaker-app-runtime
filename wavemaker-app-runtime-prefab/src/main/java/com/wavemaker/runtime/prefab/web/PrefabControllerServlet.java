@@ -50,7 +50,7 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
  * <br/>
  *   &lt;servlet-name&gt;prefabs&lt;/servlet-name&gt;
  * <br/>
- *   &lt;servlet-class&gt;com.wavemaker.studio.prefab.web.PrefabControllerServlet&lt;/servlet-class&gt;
+ *   &lt;servlet-class&gt;com.wavemaker.runtime.prefab.web.PrefabControllerServlet&lt;/servlet-class&gt;
  * <br/>
  *   &lt;init-param&gt;
  * <br/>
@@ -64,7 +64,7 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
  * <br/>
  *       &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
  * <br/>
- *       &lt;param-value&gt;com.wavemaker.studio.prefab.PrefabServletConfig&lt;/param-value&gt;
+ *       &lt;param-value&gt;com.wavemaker.runtime.prefab.PrefabServletConfig&lt;/param-value&gt;
  * <br/>
  *   &lt;/init-param&gt;
  * <br/>
