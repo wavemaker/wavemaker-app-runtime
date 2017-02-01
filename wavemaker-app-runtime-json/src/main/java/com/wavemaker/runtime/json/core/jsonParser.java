@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// $ANTLR 3.1.1 src/com/wavemaker/studio/json/core/json.g 2011-08-19 11:24:08
+// $ANTLR 3.1.1 src/com/wavemaker/runtime/json/core/json.g 2011-08-19 11:24:08
 
 package com.wavemaker.runtime.json.core;
 
@@ -122,12 +122,12 @@ public class jsonParser extends Parser {
 
     @Override
     public String getGrammarFileName() {
-        return "src/com/wavemaker/studio/json/core/json.g";
+        return "src/com/wavemaker/runtime/json/core/json.g";
     }
 
     // these only exist to remove unused import warnings
     // $ANTLR start "json"
-    // src/com/wavemaker/studio/json/core/json.g:83:1: json returns [JSON value] : ( object | array );
+    // src/com/wavemaker/runtime/json/core/json.g:83:1: json returns [JSON value] : ( object | array );
     public final JSON json() throws RecognitionException {
         JSON value = null;
 
@@ -136,7 +136,7 @@ public class jsonParser extends Parser {
         JSONArray array2 = null;
 
         try {
-            // src/com/wavemaker/studio/json/core/json.g:83:27: ( object | array )
+            // src/com/wavemaker/runtime/json/core/json.g:83:27: ( object | array )
             int alt1 = 2;
             int LA1_0 = this.input.LA(1);
 
@@ -151,7 +151,7 @@ public class jsonParser extends Parser {
             }
             switch (alt1) {
                 case 1:
-                // src/com/wavemaker/studio/json/core/json.g:84:2: object
+                // src/com/wavemaker/runtime/json/core/json.g:84:2: object
                 {
                     pushFollow(FOLLOW_object_in_json124);
                     object1 = object();
@@ -163,7 +163,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 2:
-                // src/com/wavemaker/studio/json/core/json.g:85:4: array
+                // src/com/wavemaker/runtime/json/core/json.g:85:4: array
                 {
                     pushFollow(FOLLOW_array_in_json131);
                     array2 = array();
@@ -187,7 +187,7 @@ public class jsonParser extends Parser {
     // $ANTLR end "json"
 
     // $ANTLR start "value"
-    // src/com/wavemaker/studio/json/core/json.g:91:1: value returns [Object value] : ( FALSE | NULL | TRUE | object | array |
+    // src/com/wavemaker/runtime/json/core/json.g:91:1: value returns [Object value] : ( FALSE | NULL | TRUE | object | array |
     // NUMBER | STRING );
     public final Object value() throws RecognitionException {
         Object value = null;
@@ -199,7 +199,7 @@ public class jsonParser extends Parser {
         JSONArray array4 = null;
 
         try {
-            // src/com/wavemaker/studio/json/core/json.g:91:30: ( FALSE | NULL | TRUE | object | array | NUMBER | STRING )
+            // src/com/wavemaker/runtime/json/core/json.g:91:30: ( FALSE | NULL | TRUE | object | array | NUMBER | STRING )
             int alt2 = 7;
             switch (this.input.LA(1)) {
                 case FALSE: {
@@ -238,7 +238,7 @@ public class jsonParser extends Parser {
 
             switch (alt2) {
                 case 1:
-                // src/com/wavemaker/studio/json/core/json.g:92:2: FALSE
+                // src/com/wavemaker/runtime/json/core/json.g:92:2: FALSE
                 {
                     match(this.input, FALSE, FOLLOW_FALSE_in_value149);
                     value = Boolean.FALSE;
@@ -246,7 +246,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 2:
-                // src/com/wavemaker/studio/json/core/json.g:93:4: NULL
+                // src/com/wavemaker/runtime/json/core/json.g:93:4: NULL
                 {
                     match(this.input, NULL, FOLLOW_NULL_in_value156);
                     value = null;
@@ -254,7 +254,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 3:
-                // src/com/wavemaker/studio/json/core/json.g:94:4: TRUE
+                // src/com/wavemaker/runtime/json/core/json.g:94:4: TRUE
                 {
                     match(this.input, TRUE, FOLLOW_TRUE_in_value163);
                     value = Boolean.TRUE;
@@ -262,7 +262,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 4:
-                // src/com/wavemaker/studio/json/core/json.g:95:4: object
+                // src/com/wavemaker/runtime/json/core/json.g:95:4: object
                 {
                     pushFollow(FOLLOW_object_in_value170);
                     object3 = object();
@@ -274,7 +274,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 5:
-                // src/com/wavemaker/studio/json/core/json.g:96:4: array
+                // src/com/wavemaker/runtime/json/core/json.g:96:4: array
                 {
                     pushFollow(FOLLOW_array_in_value177);
                     array4 = array();
@@ -286,7 +286,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 6:
-                // src/com/wavemaker/studio/json/core/json.g:97:4: NUMBER
+                // src/com/wavemaker/runtime/json/core/json.g:97:4: NUMBER
                 {
                     NUMBER5 = (Token) match(this.input, NUMBER, FOLLOW_NUMBER_in_value184);
 
@@ -300,7 +300,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 7:
-                // src/com/wavemaker/studio/json/core/json.g:106:4: STRING
+                // src/com/wavemaker/runtime/json/core/json.g:106:4: STRING
                 {
                     STRING6 = (Token) match(this.input, STRING, FOLLOW_STRING_in_value193);
                     value = STRING6 != null ? STRING6.getText() : null;
@@ -320,22 +320,22 @@ public class jsonParser extends Parser {
     // $ANTLR end "value"
 
     // $ANTLR start "object"
-    // src/com/wavemaker/studio/json/core/json.g:112:1: object returns [JSONObject value] : BEGIN_OBJ ( member[value] (
+    // src/com/wavemaker/runtime/json/core/json.g:112:1: object returns [JSONObject value] : BEGIN_OBJ ( member[value] (
     // VALUE_SEP member[value] )* )? ( VALUE_SEP )? END_OBJ ;
     public final JSONObject object() throws RecognitionException {
         JSONObject value = null;
 
         try {
-            // src/com/wavemaker/studio/json/core/json.g:112:35: ( BEGIN_OBJ ( member[value] ( VALUE_SEP member[value] )* )? (
+            // src/com/wavemaker/runtime/json/core/json.g:112:35: ( BEGIN_OBJ ( member[value] ( VALUE_SEP member[value] )* )? (
             // VALUE_SEP )? END_OBJ )
-            // src/com/wavemaker/studio/json/core/json.g:113:2: BEGIN_OBJ ( member[value] ( VALUE_SEP member[value] )* )? (
+            // src/com/wavemaker/runtime/json/core/json.g:113:2: BEGIN_OBJ ( member[value] ( VALUE_SEP member[value] )* )? (
             // VALUE_SEP )? END_OBJ
             {
 
                 value = new JSONObject();
 
                 match(this.input, BEGIN_OBJ, FOLLOW_BEGIN_OBJ_in_object213);
-                // src/com/wavemaker/studio/json/core/json.g:116:12: ( member[value] ( VALUE_SEP member[value] )* )?
+                // src/com/wavemaker/runtime/json/core/json.g:116:12: ( member[value] ( VALUE_SEP member[value] )* )?
                 int alt4 = 2;
                 int LA4_0 = this.input.LA(1);
 
@@ -344,14 +344,14 @@ public class jsonParser extends Parser {
                 }
                 switch (alt4) {
                     case 1:
-                    // src/com/wavemaker/studio/json/core/json.g:116:13: member[value] ( VALUE_SEP member[value] )*
+                    // src/com/wavemaker/runtime/json/core/json.g:116:13: member[value] ( VALUE_SEP member[value] )*
                     {
                         pushFollow(FOLLOW_member_in_object216);
                         member(value);
 
                         this.state._fsp--;
 
-                        // src/com/wavemaker/studio/json/core/json.g:116:27: ( VALUE_SEP member[value] )*
+                        // src/com/wavemaker/runtime/json/core/json.g:116:27: ( VALUE_SEP member[value] )*
                         loop3: do {
                             int alt3 = 2;
                             int LA3_0 = this.input.LA(1);
@@ -367,7 +367,7 @@ public class jsonParser extends Parser {
 
                             switch (alt3) {
                                 case 1:
-                                // src/com/wavemaker/studio/json/core/json.g:116:28: VALUE_SEP member[value]
+                                // src/com/wavemaker/runtime/json/core/json.g:116:28: VALUE_SEP member[value]
                                 {
                                     match(this.input, VALUE_SEP, FOLLOW_VALUE_SEP_in_object220);
                                     pushFollow(FOLLOW_member_in_object222);
@@ -388,7 +388,7 @@ public class jsonParser extends Parser {
 
                 }
 
-                // src/com/wavemaker/studio/json/core/json.g:116:56: ( VALUE_SEP )?
+                // src/com/wavemaker/runtime/json/core/json.g:116:56: ( VALUE_SEP )?
                 int alt5 = 2;
                 int LA5_0 = this.input.LA(1);
 
@@ -397,7 +397,7 @@ public class jsonParser extends Parser {
                 }
                 switch (alt5) {
                     case 1:
-                    // src/com/wavemaker/studio/json/core/json.g:116:56: VALUE_SEP
+                    // src/com/wavemaker/runtime/json/core/json.g:116:56: VALUE_SEP
                     {
                         match(this.input, VALUE_SEP, FOLLOW_VALUE_SEP_in_object229);
 
@@ -421,7 +421,7 @@ public class jsonParser extends Parser {
     // $ANTLR end "object"
 
     // $ANTLR start "member"
-    // src/com/wavemaker/studio/json/core/json.g:118:1: member[JSONObject object] : ( STRING NAME_SEP value | JS_IDENT NAME_SEP
+    // src/com/wavemaker/runtime/json/core/json.g:118:1: member[JSONObject object] : ( STRING NAME_SEP value | JS_IDENT NAME_SEP
     // value );
     public final void member(JSONObject object) throws RecognitionException {
         Token STRING7 = null;
@@ -431,7 +431,7 @@ public class jsonParser extends Parser {
         Object value10 = null;
 
         try {
-            // src/com/wavemaker/studio/json/core/json.g:124:27: ( STRING NAME_SEP value | JS_IDENT NAME_SEP value )
+            // src/com/wavemaker/runtime/json/core/json.g:124:27: ( STRING NAME_SEP value | JS_IDENT NAME_SEP value )
             int alt6 = 2;
             int LA6_0 = this.input.LA(1);
 
@@ -446,7 +446,7 @@ public class jsonParser extends Parser {
             }
             switch (alt6) {
                 case 1:
-                // src/com/wavemaker/studio/json/core/json.g:125:2: STRING NAME_SEP value
+                // src/com/wavemaker/runtime/json/core/json.g:125:2: STRING NAME_SEP value
                 {
                     STRING7 = (Token) match(this.input, STRING, FOLLOW_STRING_in_member244);
                     match(this.input, NAME_SEP, FOLLOW_NAME_SEP_in_member246);
@@ -460,7 +460,7 @@ public class jsonParser extends Parser {
                 }
                     break;
                 case 2:
-                // src/com/wavemaker/studio/json/core/json.g:129:2: JS_IDENT NAME_SEP value
+                // src/com/wavemaker/runtime/json/core/json.g:129:2: JS_IDENT NAME_SEP value
                 {
                     JS_IDENT9 = (Token) match(this.input, JS_IDENT, FOLLOW_JS_IDENT_in_member256);
                     match(this.input, NAME_SEP, FOLLOW_NAME_SEP_in_member258);
@@ -486,7 +486,7 @@ public class jsonParser extends Parser {
     // $ANTLR end "member"
 
     // $ANTLR start "array"
-    // src/com/wavemaker/studio/json/core/json.g:134:1: array returns [JSONArray array] : BEGIN_ARRAY (va= value ( VALUE_SEP
+    // src/com/wavemaker/runtime/json/core/json.g:134:1: array returns [JSONArray array] : BEGIN_ARRAY (va= value ( VALUE_SEP
     // vap= value )* ( VALUE_SEP )? )? END_ARRAY ;
     public final JSONArray array() throws RecognitionException {
         JSONArray array = null;
@@ -496,16 +496,16 @@ public class jsonParser extends Parser {
         Object vap = null;
 
         try {
-            // src/com/wavemaker/studio/json/core/json.g:142:33: ( BEGIN_ARRAY (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP
+            // src/com/wavemaker/runtime/json/core/json.g:142:33: ( BEGIN_ARRAY (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP
             // )? )? END_ARRAY )
-            // src/com/wavemaker/studio/json/core/json.g:143:2: BEGIN_ARRAY (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )?
+            // src/com/wavemaker/runtime/json/core/json.g:143:2: BEGIN_ARRAY (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )?
             // )? END_ARRAY
             {
 
                 array = new JSONArray();
 
                 match(this.input, BEGIN_ARRAY, FOLLOW_BEGIN_ARRAY_in_array281);
-                // src/com/wavemaker/studio/json/core/json.g:147:3: (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )? )?
+                // src/com/wavemaker/runtime/json/core/json.g:147:3: (va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )? )?
                 int alt9 = 2;
                 int LA9_0 = this.input.LA(1);
 
@@ -514,7 +514,7 @@ public class jsonParser extends Parser {
                 }
                 switch (alt9) {
                     case 1:
-                    // src/com/wavemaker/studio/json/core/json.g:148:4: va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )?
+                    // src/com/wavemaker/runtime/json/core/json.g:148:4: va= value ( VALUE_SEP vap= value )* ( VALUE_SEP )?
                     {
                         pushFollow(FOLLOW_value_in_array293);
                         va = value();
@@ -522,7 +522,7 @@ public class jsonParser extends Parser {
                         this.state._fsp--;
 
                         array.add(va);
-                        // src/com/wavemaker/studio/json/core/json.g:149:4: ( VALUE_SEP vap= value )*
+                        // src/com/wavemaker/runtime/json/core/json.g:149:4: ( VALUE_SEP vap= value )*
                         loop7: do {
                             int alt7 = 2;
                             int LA7_0 = this.input.LA(1);
@@ -538,7 +538,7 @@ public class jsonParser extends Parser {
 
                             switch (alt7) {
                                 case 1:
-                                // src/com/wavemaker/studio/json/core/json.g:149:5: VALUE_SEP vap= value
+                                // src/com/wavemaker/runtime/json/core/json.g:149:5: VALUE_SEP vap= value
                                 {
                                     match(this.input, VALUE_SEP, FOLLOW_VALUE_SEP_in_array301);
                                     pushFollow(FOLLOW_value_in_array305);
@@ -556,7 +556,7 @@ public class jsonParser extends Parser {
                             }
                         } while (true);
 
-                        // src/com/wavemaker/studio/json/core/json.g:150:13: ( VALUE_SEP )?
+                        // src/com/wavemaker/runtime/json/core/json.g:150:13: ( VALUE_SEP )?
                         int alt8 = 2;
                         int LA8_0 = this.input.LA(1);
 
@@ -565,7 +565,7 @@ public class jsonParser extends Parser {
                         }
                         switch (alt8) {
                             case 1:
-                            // src/com/wavemaker/studio/json/core/json.g:150:13: VALUE_SEP
+                            // src/com/wavemaker/runtime/json/core/json.g:150:13: VALUE_SEP
                             {
                                 match(this.input, VALUE_SEP, FOLLOW_VALUE_SEP_in_array323);
 
