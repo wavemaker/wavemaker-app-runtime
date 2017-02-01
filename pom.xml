@@ -812,12 +812,6 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>antisamy</artifactId>
                 <version>${antisamy.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.xmlgraphics</groupId>
-                        <artifactId>batik-ext</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
