@@ -122,18 +122,25 @@ wm.plugins.database.services.LocalDBManager = [
 
         //Loads necessary details of queries
         function compactQueries(queriesByDB) {
-            var queries = {};
+            var queries = {},
+                propertiesToTransform;
             _.forEach(queriesByDB.queries, function (queryData) {
                 var query, params;
                 if (queryData.nativeSql && !queryData.update) {
-                    query = queryData.query;
+                    query = queryData.queryString;
                     params = _.map(query.match(/:[a-zA-Z0-9]+\s?/g), function (p) {
                         return _.trim(p.substring(1));
                     });
+                    if (queryData.response) {
+                        propertiesToTransform =  _.filter(queryData.response.properties, function (item) {
+                            return item.fieldName !== item.name;
+                        });
+                    }
                     queries[queryData.name] = {
                         name: queryData.name,
                         query: query.replace(/:[a-zA-Z0-9]+\s?/g, '? '),
-                        params: params
+                        params: params,
+                        propertiesToTransform: propertiesToTransform
                     };
                 }
             });
@@ -518,7 +525,17 @@ wm.plugins.database.services.LocalDBManager = [
                             return params[p];
                         });
                     }
-                    return this.executeSQLQuery(dbName, queryData.query, params);
+                    return this.executeSQLQuery(dbName, queryData.query, params).then(function (result) {
+                        if (result.rows && result.rows.length > 0
+                                && queryData.propertiesToTransform && queryData.propertiesToTransform.length > 0) {
+                            _.forEach(result.rows, function (row) {
+                                _.forEach(queryData.propertiesToTransform, function (p) {
+                                    row[p.fieldName] = row[p.name];
+                                });
+                            });
+                        }
+                        return result;
+                    });
                 }
             }
             defer = $q.defer();
