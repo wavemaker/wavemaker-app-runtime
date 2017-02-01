@@ -57,6 +57,9 @@
         <poi.version>3.15</poi.version>
         <poi.ooxml.version>3.15</poi.ooxml.version>
         <quartz.version>2.2.3</quartz.version>
+        <antisamy.version>1.4</antisamy.version>
+        <jasperreports.version>6.2.2</jasperreports.version>
+        <xerces.version>2.10.0</xerces.version>
     </properties>
 
     <modules>
@@ -424,8 +427,13 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.spec.javax.transaction</groupId>
+                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>com.mchange</groupId>
                 <artifactId>c3p0</artifactId>
@@ -464,9 +472,24 @@
             </dependency>
 
             <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>net.sf.jmimemagic</groupId>
                 <artifactId>jmimemagic</artifactId>
                 <version>${mimemagic.version}</version>
+                <exclusions>
+                    <!-- jmimemagic has dependency on xerces version 2.4.0
+                         and jasperreports also has transitive dependency on xerces version 2.9.1
+                         so excluding from jmimemagic dependency list
+                    -->
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi</groupId>
@@ -479,8 +502,12 @@
                 <version>${poi.ooxml.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>stax</groupId>
-                        <artifactId>stax-api</artifactId>
+                        <groupId>org.apache.xmlbeans</groupId>
+                        <artifactId>xmlbeans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.github.virtuald</groupId>
+                        <artifactId>curvesapi</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -571,12 +598,6 @@
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-rt</artifactId>
                 <version>2.1.7</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>stax</groupId>
-                        <artifactId>stax-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.ws</groupId>
@@ -603,6 +624,24 @@
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>1.4.01</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xmlParserAPIs</artifactId>
+                <version>2.0.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>stax</groupId>
+                <artifactId>stax-api</artifactId>
+                <version>1.0.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -659,11 +698,6 @@
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>woodstox-core-asl</artifactId>
                 <version>4.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>1.3</version>
             </dependency>
             <dependency>
                 <groupId>org.json</groupId>
@@ -774,6 +808,94 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.owasp</groupId>
+                <artifactId>antisamy</artifactId>
+                <version>${antisamy.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.xmlgraphics</groupId>
+                        <artifactId>batik-ext</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>${jasperreports.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-analyzers-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-analyzers-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.lucene</groupId>
+                        <artifactId>lucene-queryparser</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jfree</groupId>
+                        <artifactId>jcommon</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jfree</groupId>
+                        <artifactId>jfreechart</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jdt.core.compiler</groupId>
+                        <artifactId>ecj</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.codehaus.castor</groupId>
+                        <artifactId>castor-xml</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.olap4j</groupId>
+                        <artifactId>olap4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.zxing</groupId>
+                        <artifactId>core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.ibm.icu</groupId>
+                        <artifactId>icu4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Start: Quartz framework -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- End: Quartz framework -->
+
+
+
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -797,19 +919,40 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
+                <scope>test</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>org.hamcrest</groupId>
                         <artifactId>hamcrest-core</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
                 <version>1.8.5</version>
+                <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.9.6</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.wavemaker.commons</groupId>
+                <artifactId>wavemaker-commons-util</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -826,26 +969,32 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wavemaker.commons</groupId>
+            <artifactId>wavemaker-commons-util</artifactId>
+            <type>test-jar</type>
         </dependency>
     </dependencies>
 
