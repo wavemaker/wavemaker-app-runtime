@@ -129,6 +129,7 @@ WM.module('wm.widgets.grid')
                 'rowclass'           : CONSTANTS.isStudioMode,
                 'nodatamessage'      : true,
                 'loadingdatamsg'     : true,
+                'loadingicon'        : true,
                 'filternullrecords'  : true,
                 'spacing'            : true,
                 'exportformat'       : true,
@@ -560,6 +561,9 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'loadingdatamsg':
                                 $is.callDataGridMethod('option', 'dataStates.loading', newVal);
+                                break;
+                            case 'loadingicon':
+                                $is.callDataGridMethod('option', 'loadingicon', newVal);
                                 break;
                             case 'filternullrecords':
                                 if (CONSTANTS.isStudioMode) {
