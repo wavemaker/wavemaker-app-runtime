@@ -478,7 +478,7 @@ WM.module('wm.widgets.live')
             function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
                 var template = '',
                     widgetName = 'wm-' + widgetType,
-                    updateModeCondition = isCustomWidget ? '' : (widgetType === 'richtexteditor' ? 'show = "bind:isUpdateMode"' : 'show="{{isUpdateMode}}"'),
+                    updateModeCondition = isCustomWidget ? '' : (widgetType === 'richtexteditor' ? 'show = "bind:isUpdateMode"' : 'ng-if="isUpdateMode"'),
                     allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '',
                     readonly = (widgetType !== 'richtexteditor' || fieldDef.readonly ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : '');
                 additionalFields = additionalFields || '';
@@ -658,10 +658,10 @@ WM.module('wm.widgets.live')
                 widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType = widgetType.toLowerCase();
                 template = template +
-                    '<wm-composite widget="' + widgetType + '" ' + show + ' class="live-field">' +
-                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" ng-if="formFields[' + index + '].displayname" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{isUpdateMode && formFields[' + index + '].required}}"></wm-label>' +
+                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + ' role="input">' +
+                    '<label class="app-label control-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-if="formFields[0].displayname" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
-                    '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '" show="{{!isUpdateMode}}"></wm-label>';
+                    '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 
                 switch (widgetType) {
                 case 'number':
@@ -726,7 +726,7 @@ WM.module('wm.widgets.live')
                 }
                 template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">{{formFields[' + index + '].hint}}</p>' : '');
                 template = template + '<p ng-if="ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
-                template = template + '</div></wm-composite>';
+                template = template + '</div></div>';
                 return template;
             }
 
