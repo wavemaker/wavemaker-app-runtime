@@ -32,15 +32,6 @@
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
 		</dependency>
-
-        <dependency>
-            <groupId>com.wavemaker.commons</groupId>
-            <artifactId>wavemaker-commons-util</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
 	</dependencies>
 
 </project>
