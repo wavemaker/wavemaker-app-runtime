@@ -454,6 +454,14 @@ WM.module('wm.widgets.basic')
                 return position > menuHeight && $win.height() - position < buttonHeight + menuHeight;
             }
 
+            // This function returns the unique fields based on dataField
+            function getUniqObjsByDataField(data, dataField) {
+                if (dataField !== 'All Fields') {
+                    return _.uniqBy(data, dataField);
+                }
+                return _.uniqWith(data, _.isEqual);
+            }
+
             function setLoadingItemsFlag($is, flag) {
                 $rs.$safeApply($is, function () {
                     $is._loadingItems = flag;
@@ -601,14 +609,15 @@ WM.module('wm.widgets.basic')
                                 triggerSearch($is, typeAheadInput, true);
                             }
                         });
-                        return data;
+
+                        return getUniqObjsByDataField(data, $is.datafield);
                     });
                 }
                 // if variable update is not required then filter the local array and return the results
                 localSearchedData = customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
                 setLoadingItemsFlag($is, false);
 
-                return localSearchedData;
+                return getUniqObjsByDataField(localSearchedData, $is.datafield);
             }
 
 
