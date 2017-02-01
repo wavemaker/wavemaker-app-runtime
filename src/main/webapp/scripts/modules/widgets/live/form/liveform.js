@@ -440,8 +440,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Method to clear the fields and set the form to readonly*/
                 $scope.formCancel = function () {
-                    resetFormState();
-                    $scope.clearData();
+                    $scope.reset();
                     $scope.toggleMessage(false);
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
