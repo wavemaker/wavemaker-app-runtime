@@ -59,7 +59,7 @@ WM.module('wm.widgets.basic')
 
                 var $ul           = WM.element('<ul></ul>'),
                     _iconClses    = ICON_CLASSES[$is.treeicons || defaultTreeIconClass],
-                    _expr         = CONSTANTS.isRunMode ? $is.datavalue : undefined,
+                    _expr         = CONSTANTS.isRunMode ? ($is.binddatavalue ? $is.binddatavalue.replace('bind:', '') : $is.datavalue) : undefined,
                     _iconCls,
                     _cls;
 
@@ -252,7 +252,9 @@ WM.module('wm.widgets.basic')
                     path = '',
                     $liPath,
                     fn;
-
+                if (!$li.length) {
+                    return;
+                }
                 $el.find('.selected').removeClass('selected');
                 $li.addClass('selected');
                 data = $li.data('nodedata');
@@ -280,7 +282,13 @@ WM.module('wm.widgets.basic')
 
                 //if it is a click event update the datavalue and assign a watch as the previous watch will break after assigning
                 if (target) {
-                    $is.datavalue = WidgetUtilService.getEvaluatedData($is, data, {expressionName: 'nodeid'});
+                    if ($is.nodeid) {
+                        $is.datavalue = $is.$eval($is.nodeid, data);
+                    } else if ($is.bindnodeid) {
+                        $is.datavalue = WidgetUtilService.getEvaluatedData($is, data, {expressionName: 'nodeid'});
+                    } else {
+                        $is.datavalue = Utils.getClonedObject(data) || {};
+                    }
                     $is.$watch('datavalue', function (newVal) {
                         propertyChangeHandler($is, undefined, undefined, 'datavalue', newVal);
                     }, true);
@@ -345,6 +353,9 @@ WM.module('wm.widgets.basic')
 
                         if (!attrs.widgetid && attrs.datavalue) {
                             $is.$watch('datavalue', function (newVal) {
+                                if (!newVal) {
+                                    return;
+                                }
                                 onPropertyChange('datavalue', newVal);
                             }, true);
                         }
