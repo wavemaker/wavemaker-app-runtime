@@ -32,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
@@ -41,7 +42,6 @@ import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
-import com.wavemaker.commons.util.Tuple;
 
 public class HQLQueryUtils {
 
@@ -107,7 +107,8 @@ public class HQLQueryUtils {
                 fieldType.setType(ReferenceType.PRIMITIVE);
             }
             if (type instanceof AbstractStandardBasicType) {
-                typeRef = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass().getName();
+                final Class typeClass = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass();
+                typeRef = typeClass.getCanonicalName();
             }
 
             fieldType.setTypeRef(typeRef);
