@@ -1306,11 +1306,6 @@ WM.module('wm.widgets.grid')
                         }
                         Utils.triggerFn(cancelRowDeleteCallback);
                     };
-                if ($is.gridVariable.propertiesMap && $is.gridVariable.propertiesMap.tableType === "VIEW") {
-                    $is.toggleMessage(true, 'info', 'Table of type view, not editable', 'Not Editable');
-                    $is.$root.$safeApply($is);
-                    return;
-                }
                 variable     = $is.variable;
                 variableType = $is.variable && $is.variable.category;
                 if (!$is.confirmdelete) {
