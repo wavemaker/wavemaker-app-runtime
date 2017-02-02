@@ -306,7 +306,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "GET"
         },
         testRunProcedure: {
-            url: "/:service/:dataModelName/procedures/test_run",
+            url: "services/projects/:projectID/database/services/:dataModelName/procedures/testrun",
             method: "POST"
         },
         proceduresInDatabase: {
