@@ -1535,6 +1535,10 @@ body.modal-open {
     .app-icon {
       font-size: 16pt;
     }
+    .loading-text {
+      vertical-align: top;
+      padding-left: 10px;
+    }
   }
 
   &:not(.On-Demand):not(.Scroll) {
@@ -1543,9 +1547,11 @@ body.modal-open {
       top: 0;
       bottom: 5.3em;
       width: 100%;
+      background: rgba(200, 200, 200, 0.55);
       > span {
         position: absolute;
         top: 50%;
+        transform: translate(-50%, 0%);
       }
     }
   }
