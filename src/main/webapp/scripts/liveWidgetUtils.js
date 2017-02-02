@@ -266,9 +266,9 @@ WM.module('wm.widgets.live')
                     'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
                     'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete', 'chips'],
                     'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete', 'chips'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips', 'colorpicker'],
                     'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'autocomplete', 'chips'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete', 'chips', 'colorpicker'],
                     'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
                     'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
                     'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
@@ -277,7 +277,7 @@ WM.module('wm.widgets.live')
                     'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'autocomplete', 'chips'],
                     'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
                     'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete', 'chips']
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -549,6 +549,10 @@ WM.module('wm.widgets.live')
                 return getDefaultTemplate('slider', fieldDef, index, '', '', '', additionalFields);
             }
 
+            function getColorPickerTemplate(fieldDef, index) {
+                return getDefaultTemplate('colorpicker', fieldDef, index, 'Select Color', 'Select Color', 'Select Color');
+            }
+
             /*Returns chips template */
             function getChipsTemplate(fieldDef, index) {
                 var additionalFields = getDataSetFields(fieldDef, index);
@@ -684,6 +688,9 @@ WM.module('wm.widgets.live')
                     break;
                 case 'slider':
                     template += getSliderTemplate(fieldDef, index);
+                    break;
+                case 'colorpicker':
+                    template += getColorPickerTemplate(fieldDef, index);
                     break;
                 case 'chips':
                     template += getChipsTemplate(fieldDef, index);
@@ -1053,6 +1060,10 @@ WM.module('wm.widgets.live')
                 case 'slider':
                     baseProperties      = 'wm.slider';
                     extendedProperties  = ['wm.base', 'wm.base.events.change'];
+                    break;
+                case 'colorpicker':
+                    baseProperties      = 'wm.colorpicker';
+                    extendedProperties  = ['wm.base', 'wm.base.events', 'wm.base.events.focus', 'wm.base.events.change'];
                     break;
                 case 'chips':
                     baseProperties      = 'wm.chips';

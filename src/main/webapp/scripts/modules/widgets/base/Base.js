@@ -713,6 +713,7 @@ WM.module('wm.widgets.base', [])
                     "wm.colorpicker": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "required": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Select Color", "bindable": "in-bound"},
