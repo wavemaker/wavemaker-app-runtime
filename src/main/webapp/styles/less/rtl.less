@@ -87,4 +87,20 @@
       text-align: left;
     }
   }
+  .radio.app-radio .caption, .app-checkbox.checkbox .caption {
+    margin-right: 20px;
+   input {
+     margin: 0;
+   }
+  }
+  .app-toggle {
+    .switch {
+      right: 0;
+      left: auto;
+    }
+    &.checkbox input[type="checkbox"]:checked ~ .switch {
+      left: 0;
+      right: auto;
+    }
+  }
 }
