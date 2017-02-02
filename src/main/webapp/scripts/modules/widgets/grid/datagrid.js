@@ -42,11 +42,12 @@ $.widget('wm.datagrid', {
             'descIcon'        : 'wi wi-long-arrow-down'
         },
         dataStates: {
-            'loading': 'Loading...',
+            'loading': '',
             'ready': '',
             'error': 'An error occurred in loading the data.',
             'nodata': 'No data found.'
         },
+        loadingicon: '',
         startRowIndex: 1,
         editmode: '',
         searchHandler: WM.noop,
@@ -1073,6 +1074,9 @@ $.widget('wm.datagrid', {
             } else if (this.dataStatus.state === 'loading') {
                 this.setStatus('loading');
             }
+            break;
+        case 'loadingicon':
+            this.dataStatusContainer.find('i').removeClass().addClass(this.options.loadingicon);
             break;
         case 'multiselect': // Fallthrough
         case 'showRadioColumn':
@@ -2387,7 +2391,7 @@ $.widget('wm.datagrid', {
         }
         var statusContainer =
                 '<div class="overlay" style="display: none;">' +
-                    '<div class="status"><i class="fa fa-spinner fa-spin"></i><span class="message"></span></div>' +
+                    '<div class="status"><i class="' + this.options.loadingicon + '"></i><span class="message"></span></div>' +
                 '</div>',
             table = '<div class="table-container table-responsive"><div class="app-grid-header ' +
                     '"><div class="app-grid-header-inner"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_header_' + this.tableId + '">' +

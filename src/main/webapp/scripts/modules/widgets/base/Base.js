@@ -1492,6 +1492,7 @@ WM.module('wm.widgets.base', [])
                         "filternullrecords": {"type": "boolean", "value": true},
                         "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-bound", "showindesigner": true},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound", "showindesigner": true},
+                        "loadingicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "fa fa-spinner fa-spin", "pattern": classRegex},
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-bound", "show": true, "showindesigner": true},
                         "errormessage": {"type": "string", "value": "", "bindable": "in-bound", "showindesigner": true},
                         "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-bound", "showindesigner": true},
