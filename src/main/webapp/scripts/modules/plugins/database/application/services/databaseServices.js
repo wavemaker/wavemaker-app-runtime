@@ -43,6 +43,7 @@
  * - {@link wm.database.$DatabaseService#methods_deleteQuery deleteQuery}
  * - {@link wm.database.$DatabaseService#methods_validateQuery validateQuery}
  * - {@link wm.database.$DatabaseService#methods_testRunQuery testRunQuery}
+ * - {@link wm.database.$DatabaseService#methods_nativeTestRunQuery nativeTestRunQuery}
  * - {@link wm.database.$DatabaseService#methods_readTableData readTableData}
  * - {@link wm.database.$DatabaseService#methods_insertTableData insertTableData}
  * - {@link wm.database.$DatabaseService#methods_updateTableData updateTableData}
@@ -1649,7 +1650,7 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             testRunProcedure: function (params, successCallback, failureCallback) {
-                return initiateAction("testRunProcedure", params, successCallback, failureCallback);
+                return initiateAction("testRunProcedure", params, successCallback, failureCallback, true);
             },
             /**
              * Internal function
