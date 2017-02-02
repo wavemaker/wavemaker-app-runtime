@@ -58,9 +58,11 @@ WM.module('wm.widgets.form')
                     'mindate'  : true,
                     'maxdate'  : true,
                     'excludedates': true
-                };
+                },
+                CURRENT_DATE     = 'CURRENT_DATE';
 
             function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+                var currentDate = moment().valueOf();
                 switch (key) {
                 case 'readonly':
                 case 'disabled':
@@ -80,9 +82,15 @@ WM.module('wm.widgets.form')
                     scope._dateOptions.showWeeks = scope.showweeks;
                     break;
                 case 'maxdate':
+                    if (!scope.widgetid && newVal ===  CURRENT_DATE) {
+                        scope.maxdate = currentDate;
+                    }
                     scope._dateOptions.maxDate = scope.maxdate;
                     break;
                 case 'mindate':
+                    if (!scope.widgetid && newVal ===  CURRENT_DATE) {
+                        scope.mindate = currentDate;
+                    }
                     scope._dateOptions.minDate = scope.mindate;
                     break;
                 }
@@ -164,8 +172,7 @@ WM.module('wm.widgets.form')
                             $is._nativeMode = true;
                         }
 
-                        var isCurrentDate    = false,
-                            CURRENT_DATE     = 'CURRENT_DATE';
+                        var isCurrentDate    = false;
 
                         /* _model_ acts as a converter for _proxyModel
                          * read operation of _model_/datavalue will return epoch format of the date
