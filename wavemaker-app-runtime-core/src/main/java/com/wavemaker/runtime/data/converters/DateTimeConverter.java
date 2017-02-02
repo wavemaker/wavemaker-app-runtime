@@ -20,8 +20,8 @@ import java.util.Date;
 
 import org.joda.time.LocalDateTime;
 
-import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.runtime.data.model.JavaType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -52,7 +52,7 @@ public class DateTimeConverter implements JavaTypeConverter {
     @Override
     public Object toDbValue(final Object value, final Class<?> toType) {
         if (value instanceof LocalDateTime) {
-            Timestamp timeStamp = Timestamp.valueOf(((LocalDateTime) value).toString("yyyy-mm-dd hh:mm:ss"));
+            Timestamp timeStamp = Timestamp.valueOf(((LocalDateTime) value).toString("yyyy-MM-dd hh:mm:ss"));
             return JavaType.TIMESTAMP.toDbValue(timeStamp);
         }
         return value;

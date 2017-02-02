@@ -19,6 +19,8 @@ import java.sql.Time;
 
 import org.hibernate.type.TimeType;
 
+import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 12/1/17
@@ -36,7 +38,7 @@ public class TimeTypeConverter extends HibernateBackedJavaTypeConverter {
         if (numberValue instanceof Long) {
             return new Time(((Long) numberValue));
         } else {
-            return super.fromString(value);
+            return WMDateDeSerializer.getDate(value);
         }
     }
 }

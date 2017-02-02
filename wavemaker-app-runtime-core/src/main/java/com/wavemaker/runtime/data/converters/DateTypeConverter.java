@@ -19,6 +19,8 @@ import java.util.Date;
 
 import org.hibernate.type.DateType;
 
+import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 12/1/17
@@ -35,7 +37,7 @@ public class DateTypeConverter extends HibernateBackedJavaTypeConverter {
         if (numberValue instanceof Long) {
             return new Date(((Long) numberValue));
         } else {
-            return super.fromString(value);
+            return WMDateDeSerializer.getDate(value);
         }
     }
 }
