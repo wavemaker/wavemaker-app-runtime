@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,13 +28,13 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
 
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 import com.wavemaker.runtime.data.util.JDBCUtils;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -47,22 +47,33 @@ public class NativeProcedureExecutor {
         Connection connection = null;
         try {
             connection = ((SessionImpl) session).connection();
-            final CallableStatement statement = connection.prepareCall(jdbcQuery);
-
-            configureParameters(statement, params);
+            final CallableStatement statement = prepareStatement(connection, jdbcQuery, params);
             final boolean resultSetType = statement.execute();
-
-            Map<String, Object> result = new LinkedHashMap<>();
-            if (resultSetType) {
-                result.put("content", readResultSet(statement.getResultSet()));
-            }
-            result.putAll(readResponse(statement, params));
+            Map<String, Object> result = getResultMap(statement, params, resultSetType);
             return convert(result, type);
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
         } finally {
             IOUtils.closeSilently(connection);
         }
+    }
+
+    public static CallableStatement prepareStatement(
+            Connection connection, String jdbcQuery, List<ResolvableParam> params) throws SQLException {
+        final CallableStatement statement = connection.prepareCall(jdbcQuery);
+        configureParameters(statement, params);
+        return statement;
+    }
+
+    public static Map<String, Object> getResultMap(
+            final CallableStatement statement, final List<ResolvableParam> params,
+            final boolean resultSetType) throws SQLException {
+        Map<String, Object> result = new LinkedHashMap<>();
+        if (resultSetType) {
+            result.put("content", readResultSet(statement.getResultSet()));
+        }
+        result.putAll(readResponse(statement, params));
+        return result;
     }
 
     public static List<Object> convertToOldResponse(Map result) {
