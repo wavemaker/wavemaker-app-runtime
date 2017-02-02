@@ -53,7 +53,8 @@ WM.module('wm.widgets.basic')
                         'expanded' : 'wi-minus',
                         'collapsed': 'wi-plus'
                     }
-                };
+                },
+                TypeUtils;
 
             function constructNodes($is, nodes, parent, levels, deep, _evalDataValue) {
 
@@ -170,6 +171,10 @@ WM.module('wm.widgets.basic')
                     $i.removeClass('expanded ' + treeIcons.expanded).addClass('collapsed ' + treeIcons.collapsed);
                     $li.removeClass('expanded').addClass('collapsed');
                 }
+            }
+            //returns the datavalue type from the nodeid
+            function getDataValueType($is) {
+                return TypeUtils.getTypeForExpression($is.binddataset, $is, 'nodeid');
             }
 
             function renderTree($el, $is, attrs) {
@@ -333,6 +338,9 @@ WM.module('wm.widgets.basic')
 
                         if (!$is.widgetid) {
                             bindEvents($is, $el);
+                        } else {
+                            TypeUtils = Utils.getService('TypeUtils');
+                            $is.getDataValueType = getDataValueType.bind(undefined, $is);
                         }
 
                         // wait till all the properties are set in the scope.
