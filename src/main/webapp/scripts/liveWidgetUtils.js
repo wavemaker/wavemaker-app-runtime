@@ -2027,11 +2027,6 @@ WM.module('wm.widgets.live')
                             Utils.triggerFn(error, err);
                         });
                     };
-                if (variable.propertiesMap && variable.propertiesMap.tableType === 'VIEW') {
-                    wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
-                    $rs.$safeApply(options.scope);
-                    return;
-                }
                 DialogService._showAppConfirmDialog({
                     'caption'   : 'Delete Record',
                     'content'   : confirmMsg,
