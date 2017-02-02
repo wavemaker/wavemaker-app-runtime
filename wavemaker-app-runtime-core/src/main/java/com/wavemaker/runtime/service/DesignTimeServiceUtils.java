@@ -15,10 +15,15 @@
  */
 package com.wavemaker.runtime.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
+import com.wavemaker.runtime.data.dao.procedure.parameters.TestParameter;
 import com.wavemaker.runtime.data.model.ReferenceType;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
+import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryType;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.model.returns.FieldType;
@@ -38,5 +43,15 @@ public class DesignTimeServiceUtils {
     public static List<ReturnProperty> getMetaForDML() {
         return Collections.singletonList(new ReturnProperty(null, new FieldType(ReferenceType.PRIMITIVE, Integer
                 .class.getName())));
+    }
+
+    public static List<ResolvableParam> prepareParameters(final RuntimeProcedure procedure) {
+        List<ResolvableParam> testParameters = new ArrayList<>(procedure.getParameters().size());
+
+        final List<ProcedureParameter> parameters = procedure.getParameters();
+        for (final ProcedureParameter parameter : parameters) {
+            testParameters.add(new TestParameter(parameter));
+        }
+        return testParameters;
     }
 }

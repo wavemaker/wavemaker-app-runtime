@@ -27,18 +27,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.data.dao.callbacks.LegacyNativeProcedureExecutor;
 import com.wavemaker.runtime.data.dao.callbacks.NativeProcedureExecutor;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.dao.procedure.parameters.RuntimeParameter;
-import com.wavemaker.runtime.data.dao.procedure.parameters.TestParameter;
 import com.wavemaker.runtime.data.model.CustomProcedure;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.service.DesignTimeServiceUtils;
 
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
@@ -125,12 +125,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     @Override
     public Object executeRuntimeProcedure(final RuntimeProcedure procedure) {
-        List<ResolvableParam> testParameters = new ArrayList<>(procedure.getParameters().size());
-
-        final List<ProcedureParameter> parameters = procedure.getParameters();
-        for (final ProcedureParameter parameter : parameters) {
-            testParameters.add(new TestParameter(parameter));
-        }
+        List<ResolvableParam> testParameters = DesignTimeServiceUtils.prepareParameters(procedure);
 
         final String procedureString = ProceduresUtils.jdbcComplianceProcedure(procedure.getProcedureString(),
                 procedure.getParameters());
