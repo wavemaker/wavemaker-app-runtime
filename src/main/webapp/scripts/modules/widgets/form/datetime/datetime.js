@@ -59,7 +59,8 @@ WM.module('wm.widgets.form')
                     'mindate'      : true,
                     'maxdate'      : true,
                     'datepattern'  : true
-                };
+                },
+                CURRENT_DATETIME  = 'CURRENT_DATE';
 
             function _formatDateTime($is) {
                 var date,
@@ -101,7 +102,8 @@ WM.module('wm.widgets.form')
 
             function propertyChangeHandler($is, $el, key, nv) {
                 var inputEl  = $el.find('input'),
-                    buttonEl = $el.find('button');
+                    buttonEl = $el.find('button'),
+                    currentDateTime = moment().valueOf();
                 switch (key) {
                 case 'readonly':
                 case 'disabled':
@@ -125,9 +127,15 @@ WM.module('wm.widgets.form')
                     $is._dateOptions.showWeeks = $is.showweeks;
                     break;
                 case 'maxdate':
+                    if (!$is.widgetid && nv ===  CURRENT_DATETIME) {
+                        $is.maxdate = currentDateTime;
+                    }
                     $is._dateOptions.maxDate = $is.maxdate;
                     break;
                 case 'mindate':
+                    if (!$is.widgetid && nv ===  CURRENT_DATETIME) {
+                        $is.mindate = currentDateTime;
+                    }
                     $is._dateOptions.minDate = $is.mindate;
                     break;
                 }
@@ -231,7 +239,6 @@ WM.module('wm.widgets.form')
                     },
                     post: function ($is, $el, attrs) {
                         var onPropertyChange  = propertyChangeHandler.bind(undefined, $is, $el),
-                            CURRENT_DATETIME  = 'CURRENT_DATE',
                             isCurrentDateTime = false,
                             timeInterval,
                             //Function to set/ cancel the timer based on the model passed
