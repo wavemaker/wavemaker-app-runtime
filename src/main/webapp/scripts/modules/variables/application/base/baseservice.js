@@ -99,7 +99,8 @@ wm.variables.services.Variables = [
                     "defaultName"    : "loginVariable",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
-                    "newVariableKey": "New LoginVariable"
+                    "newVariableKey": "New LoginVariable",
+                    "hideInEvents"  : true
                 },
                 "wm.LogoutVariable": {
                     "collectionType" : "data",
@@ -107,7 +108,8 @@ wm.variables.services.Variables = [
                     "defaultName"    : "logoutVariable",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
-                    "newVariableKey": "New LogoutVariable"
+                    "newVariableKey": "New LogoutVariable",
+                    "hideInEvents"  : true
                 },
                 "wm.TimerVariable": {
                     "collectionType": "data",
