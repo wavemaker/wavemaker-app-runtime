@@ -37,6 +37,7 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.transform.Transformers;
@@ -247,6 +248,7 @@ public class QueryHelper {
         return (long) Integer.MAX_VALUE;
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> prepareParameters(RuntimeQuery query) {
         Map<String, Object> params = new HashMap<>(query.getParameters().size());
         final List<QueryParameter> parameters = query.getParameters();
@@ -256,15 +258,20 @@ public class QueryHelper {
                 if (parameter.isList()) {
                     convertedValue = new ArrayList<>();
                     for (final Object object : (List<Object>) parameter.getTestValue()) {
-                        ((List<Object>) convertedValue).add(parameter.getType().fromString(String.valueOf(object)));
+                        ((List<Object>) convertedValue).add(convertValue(parameter, object));
                     }
                 } else {
-                    convertedValue = parameter.getType().fromString(String.valueOf(parameter.getTestValue()));
+                    convertedValue = convertValue(parameter, parameter.getTestValue());
                 }
                 params.put(parameter.getName(), convertedValue);
             }
         }
         return params;
+    }
+
+    protected static Object convertValue(QueryParameter parameter, Object value) {
+        final JavaType javaType = parameter.getType();
+        return javaType.toDbValue(javaType.fromString(String.valueOf(value)));
     }
 
     public static Query createQuery(
