@@ -6,8 +6,8 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/time.html',
             '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input" title="{{hint}}"' +
-            " app-defaults='{\"timepattern\": \"timeFormat\", \"outputformat\": \"timeFormat\"}'>"+
-                '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target>' +
+            " app-defaults='{\"timepattern\": \"timeFormat\", \"outputformat\": \"timeFormat\"}'>" +
+                '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keyup="_onKeyUp($event)">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
                         '<div uib-timepicker ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
@@ -322,6 +322,13 @@ WM.module('wm.widgets.form')
                                     document.addEventListener('click', docClickListener, true);
                                 }
                             });
+
+                            $is._onKeyUp = function ($event) {
+                                //On tab in, open the date popup
+                                if ($event.keyCode === 9) {
+                                    $is.isOpen = true;
+                                }
+                            };
                         }
                     }
                 }

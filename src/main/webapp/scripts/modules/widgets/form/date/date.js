@@ -1,4 +1,4 @@
-/*global WM, _, moment */
+/*global WM, _, moment, document */
 /*Directive for date */
 
 WM.module('wm.widgets.form')
@@ -9,13 +9,15 @@ WM.module('wm.widgets.form')
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target ' +
                     ' uib-datepicker-popup="{{datepattern}}" show-button-bar="{{showbuttonbar}}" datepicker-options="_dateOptions" ' +
                     ' title="{{hint}}" ' +
+                    ' on-open-focus="true" ' +
                     ' is-open=isOpen' +
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
                     ' accesskey="{{::shortcutkey}}"' +
-                    ' ng-change="_onChange({$event: $event, $scope: this})">' +
+                    ' ng-change="_onChange({$event: $event, $scope: this})"' +
+                    ' ng-keyup="_onKeyUp($event)">' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
@@ -245,13 +247,21 @@ WM.module('wm.widgets.form')
                             }
                         }
 
-                        if(!$is.widgetid) {
+                        if (!$is.widgetid) {
                             // watch is isOpen flag on the scope and when the flag is true register a click event listener on document
                             $is.$watch('isOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListener, true);
                                 }
                             });
+
+                            $is._onKeyUp = function ($event) {
+                                //On tab in, open the date popup
+                                if ($event.keyCode === 9) {
+                                    $is.isOpen = true;
+                                }
+                            };
+
                         }
                     }
                 }
