@@ -452,7 +452,8 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "class": {"type": "string", "pattern": classRegex, "show": false},
-                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
+                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"},
+                        "itemaction": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
                     },
 
                     "wm.menu.dataProps": {
@@ -2037,7 +2038,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
-                {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itembadge", "itemchildren"], "parent": "properties"},
+                {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itemaction", "itembadge", "itemchildren"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
