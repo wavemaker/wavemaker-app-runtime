@@ -504,9 +504,11 @@ WM.module('wm.widgets.basic')
                             formattedData = data.map(function (datum) {
                                 return Utils.findValueOf(datum, restExpr);
                             });
+                        } else if (WM.isObject(data)) {
+                            formattedData = _.get(data, dataExpression);
                         }
 
-                        data = formattedData;
+                        data = formattedData || data;
                     }
                     if (!_.isArray(data)) {
                         data = getTransformedData(variable, data);
