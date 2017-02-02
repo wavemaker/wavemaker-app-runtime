@@ -475,7 +475,7 @@ WM.module('wm.widgets.base', [])
                         "nodeid": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
                         "tabindex": {"type": "number", "value": "0"},
                         "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
-                        "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "tree-datavalue"},
+                        "datavalue": {"type": "string, number, boolean, date, time, object", "bindable": "in-out-bound", "widget": "tree-datavalue", "getTypeFrom": "expr:getDataValueType()"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"}
                     },
 
