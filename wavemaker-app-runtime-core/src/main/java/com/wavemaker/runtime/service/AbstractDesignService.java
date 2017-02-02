@@ -26,11 +26,11 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.wavemaker.commons.util.StringTemplate;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.commons.util.StringTemplate;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -71,7 +71,7 @@ public abstract class AbstractDesignService {
                         fieldType.setType(ReferenceType.CUSTOM);
                         fieldType.setProperties(extractMetaFromResults(((Collection) value)));
                     } else {
-                        String type = value == null ? Object.class.getName() : value.getClass().getName();
+                        String type = value == null ? Object.class.getName() : value.getClass().getCanonicalName();
                         fieldType = new FieldType(ReferenceType.PRIMITIVE, type);
                     }
                     properties.add(new ReturnProperty(entry.getKey(), fieldType));
