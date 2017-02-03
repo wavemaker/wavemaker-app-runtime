@@ -216,7 +216,8 @@ WM.module("wm.widgets.basic")
                         maxResults,
                         currentPage,
                         variable,
-                        variableOptions = {};
+                        variableOptions = {},
+                        elScope;
                     //Store the data in __fullData. This is used for client side searching with out modifying the actual dataset.
                     $scope.__fullData = newVal;
                     /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
@@ -229,8 +230,11 @@ WM.module("wm.widgets.basic")
                         if ($scope.binddataset.indexOf('bind:Variables.') !== -1) {
                             $scope.variableName = $scope.binddataset.replace('bind:Variables.', '');
                             $scope.variableName = $scope.variableName.substr(0, $scope.variableName.indexOf('.'));
-                            variable = $scope.variableName && $scope.navigatorElement.scope().Variables[$scope.variableName];
-                            variableOptions = variable._options || {};
+                            elScope             = $scope.navigatorElement.scope();
+                            if ($scope.variableName && elScope) {
+                                variable        = elScope.Variables[$scope.variableName];
+                                variableOptions = variable._options || {};
+                            }
                         } else if (newVal) {
                             if (newVal.isBoundToFilter && newVal.widgetName) {
                                 $scope.isBoundToFilter = true;

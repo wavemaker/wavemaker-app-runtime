@@ -417,6 +417,9 @@ WM.module('wm.widgets.grid')
                         }
                         function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
+                            Utils.triggerFn($is.navigatorResultWatch);
+                            Utils.triggerFn($is.navigatorMaxResultWatch);
+                            Utils.triggerFn($is.gridDataWatch);
                             $document.off('click', documentClickBind);
                             Object.defineProperty($is, 'selecteditem', {'get': _.noop, 'set': _.noop});
                         }
@@ -865,9 +868,7 @@ WM.module('wm.widgets.grid')
                         },
                         'property': 'deleterow'
                     }
-                },
-                navigatorResultWatch,
-                navigatorMaxResultWatch;
+                };
             /* Check whether it is non-empty row. */
             function isEmptyRecord(record) {
                 var properties = Object.keys(record),
@@ -1563,11 +1564,11 @@ WM.module('wm.widgets.grid')
                             maxResults: $is.pagesize || 5
                         };
                         /*De-register the watch if it is exists */
-                        Utils.triggerFn(navigatorResultWatch);
+                        Utils.triggerFn($is.navigatorResultWatch);
                         $is.dataNavigator.dataset = $is.binddataset || $is.dataset;
 
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
-                        navigatorResultWatch = $is.dataNavigator.$watch('result', function (newVal) {
+                        $is.navigatorResultWatch = $is.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
                             if (WM.isDefined(newVal)) {
                                 //Watch will not be triggered if dataset and new value are equal. So trigger the property change handler manually
@@ -1588,9 +1589,9 @@ WM.module('wm.widgets.grid')
                             }
                         }, true);
                         /*De-register the watch if it is exists */
-                        Utils.triggerFn(navigatorMaxResultWatch);
+                        Utils.triggerFn($is.navigatorMaxResultWatch);
                         /*Register a watch on the "maxResults" property of the "dataNavigator" so that the "pageSize" is displayed in the live-list.*/
-                        navigatorMaxResultWatch = $is.dataNavigator.$watch('maxResults', function (newVal) {
+                        $is.navigatorMaxResultWatch = $is.dataNavigator.$watch('maxResults', function (newVal) {
                             $is.pagesize = newVal;
                         });
 
@@ -2296,7 +2297,7 @@ WM.module('wm.widgets.grid')
             $is.onDataNavigatorDataSetChange = onDataNavigatorDataSetChange;
             $is.callDataGridMethod           = callDataGridMethod;
 
-            $is.$watch('gridData', function (newValue) {
+            $is.gridDataWatch = $is.$watch('gridData', function (newValue) {
                 var startRowIndex,
                     gridOptions;
 
