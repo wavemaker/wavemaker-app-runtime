@@ -103,7 +103,7 @@ WM.module('wm.widgets.grid')
     .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rs, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
         'use strict';
         var gridColumnCount,
-            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation','wm.layouts.panel.defaults']),
+            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
             gridColumnMarkup      = '',
             notifyFor             = {
                 'width'              : true,
@@ -168,6 +168,11 @@ WM.module('wm.widgets.grid')
                     'get': function () {
                         return _scope.Widgets;
                     }
+                },
+                'item': {
+                    'get': function () {
+                        return _scope.item;
+                    }
                 }
             });
         }
@@ -196,10 +201,6 @@ WM.module('wm.widgets.grid')
                         $is.isBoundToProcedureServiceVariable = $is.variable.controller === 'ProcedureExecution';
                         $is.isBoundToQueryServiceVariable     = $is.variable.controller === 'QueryExecution';
                     }
-                }
-                if (boundToInnerDataSet) {
-                    //If bound to inner dataset, defualt value is not present. So, dataset watch may not be triggered. To prevent loading icon showing continuously, show no data found.
-                    $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                 }
             } else if ($is.isBoundToWidget) {
                 widgetName                      = _.split(binddataset, '.')[1];
@@ -462,7 +463,7 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'dataset':
-                                $is.watchVariableDataSet(newVal, element);
+                                $is.watchVariableDataSet(newVal);
                                 break;
                             case 'showheader':
                                 if (CONSTANTS.isStudioMode) {
@@ -653,7 +654,7 @@ WM.module('wm.widgets.grid')
                         WM.element(element).css({'position': 'relative'});
                         /*being done to trigger watch on the dataset property for first time if property is not defined(only for a simple grid not inside a live-grid)*/
                         if ($is.dataset === undefined && attrs.identifier !== 'grid') {
-                            $is.watchVariableDataSet('', element);
+                            $is.watchVariableDataSet('');
                         }
                         /* event emitted on building new markup from canvasDom */
                         handlers.push($rs.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
@@ -705,9 +706,7 @@ WM.module('wm.widgets.grid')
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
                          * the "dataNavigatorWatched" value is reset.*/
                         handlers.push($is.$watch('binddataset', function (newVal, oldVal) {
-                            var widgetName,
-                                variableType,
-                                boundToInnerDataSet;
+                            var innerDataSetRegEx = /dataSet(\[\$i\])?\./; //Anything which matches dataSet. or dataSet[$i]
                             if (newVal !== oldVal) {
                                 $is.dataNavigatorWatched = false;
                                 if ($is.dataNavigator) {
@@ -715,6 +714,10 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                             $is.setFlags();
+                            if (($is.isBoundToVariable && innerDataSetRegEx.test(newVal)) || $is.isBoundToSelectedItem || $is.isBoundToSelectedItemSubset) {
+                                //If bound to inner dataset, defualt value is not present. So, dataset watch may not be triggered. To prevent loading icon showing continuously, show no data found.
+                                $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
+                            }
                             //In run mode, If grid is bound to selecteditem subset, dataset is undefined and dataset watch will not be triggered. So, set the dataset to empty value
                             if (_.includes(newVal, 'selecteditem.')) {
                                 if (CONSTANTS.isRunMode) {
@@ -741,11 +744,7 @@ WM.module('wm.widgets.grid')
                                 wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable;
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
-                                if ($is.isBoundToFilter) {
-                                    wp.filtermode.disabled = true;
-                                } else {
-                                    wp.filtermode.disabled = false;
-                                }
+                                wp.filtermode.disabled = $is.isBoundToFilter;
                             }
                         }));
                         handlers.push($rs.$on('toggle-variable-state', function (event, boundVariableName, active) {
@@ -1574,7 +1573,7 @@ WM.module('wm.widgets.grid')
                                 //Watch will not be triggered if dataset and new value are equal. So trigger the property change handler manually
                                 //This happens in case, if dataset is directly updated.
                                 if (_.isEqual($is.dataset, newVal)) {
-                                    $is.watchVariableDataSet(newVal, $is.gridElement);
+                                    $is.watchVariableDataSet(newVal);
                                 } else {
                                     if (WM.isArray(newVal)) {
                                         $is.dataset = [].concat(newVal);
@@ -1630,7 +1629,7 @@ WM.module('wm.widgets.grid')
                     });
                 }
                 if (fields) {
-                    $is.watchVariableDataSet(fields, $is.gridElement);
+                    $is.watchVariableDataSet(fields);
                 }
             }
             function isDataValid() {
@@ -1687,7 +1686,7 @@ WM.module('wm.widgets.grid')
                     $is.callDataGridMethod('setStatus', 'error', $is.nodatamessage);
                 }
             }
-            function watchVariableDataSet(newVal, element) {
+            function watchVariableDataSet(newVal) {
                 /* TODO: In studio mode, service variable data should initially
                  be empty array, and metadata should be passed separately. */
                 var variableName,
