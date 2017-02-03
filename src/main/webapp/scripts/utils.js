@@ -2360,7 +2360,6 @@ WM.module('wm.utils', [])
          * @param paramValue - Value which is to be appended to formdata
          */
         function getFormData(formData, param, paramValue) {
-            var formDataContentType;
             if (isFileUploadSupported()) {
                 if (_.toLower(param.type) === "file" || _.toLower(param.items && param.items.type) === 'file') {
                     if (WM.isArray(paramValue)) {
@@ -2373,11 +2372,8 @@ WM.module('wm.utils', [])
                 } else {
                     if (WM.isObject(paramValue)) {
                         paramValue = JSON.stringify(paramValue);
-                        formDataContentType = "application/json";
-                    } else {
-                        formDataContentType = "text/plain";
                     }
-                    formData.append(param.name, new Blob([paramValue], {type: formDataContentType}));
+                    formData.append(param.name, paramValue);
                 }
                 return formData;
             }
