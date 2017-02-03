@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
-                    '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}" ng-href="{{item.link}}" target="{{linktarget}}">' +
+                    '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}" target="{{linktarget}}">' +
                     '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '<i class="app-icon {{item.icon}}"></i>' +
                     '{{item.label}}' +
@@ -241,9 +241,7 @@ WM.module('wm.widgets.form')
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
             'link': function (scope, element) {
                 scope.onSelect = function (args) {
-                    if (!args.$scope.item.link) {
-                        scope.$parent.onSelect(args);
-                    }
+                    scope.$parent.onSelect(args);
                 };
                 if (CONSTANTS.isRunMode) {
                     animation    = element.parent().isolateScope().animateitems;
@@ -258,7 +256,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS',  function ($templateCache, $compile, CONSTANTS) {
+    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window',  function ($templateCache, $compile, CONSTANTS, Utils, $window) {
         'use strict';
         return {
             'restrict': "E",
@@ -282,8 +280,15 @@ WM.module('wm.widgets.form')
                     $compile(element.contents())(scope);
                 }
                 scope.onSelect = function (args) {
-                    if (!args.$scope.item.link) {
-                        scope.$parent.onSelect(args);
+
+                    scope.$parent.onSelect(args);
+
+                    if (args.$item.action) {
+                        Utils.evalExp(element.closest('.dropdown').scope(), args.$item.action);
+                    }
+
+                    if (args.$item.link) {
+                        $window.location.href = args.$item.link;
                     }
                 };
             }
