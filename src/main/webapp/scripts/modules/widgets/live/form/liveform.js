@@ -254,10 +254,6 @@ WM.module('wm.widgets.live')
                         isValid,
                         deleteFn,
                         $invalidEle;
-                    if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
-                        wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
-                        return;
-                    }
                     $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
                     //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
                     if ($scope.operationType !== 'delete' && !$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
