@@ -93,8 +93,10 @@ WM.module('wm.widgets.form')
                     _.forEach(values, function (ele) {
                         //find chip object from dataset to get value and img source
                         chip =  _.find($s.chips, {'key' : ele});
-                        $s.selectedChips.push(constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
+                        $s.selectedChips.push($s.constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
+                } else {
+                    $s.selectedChips = chips;
                 }
             }
 
@@ -122,9 +124,9 @@ WM.module('wm.widgets.form')
                         imageFieldValue   =  $s.binddisplayimagesrc ? WidgetUtilService.getEvaluatedData($s, dataObj, {expressionName: 'displayimagesrc'}) : dataObj[imageField];
 
                         if (displayField) {
-                            return constructChip(displayFieldValue, dataFieldValue, imageFieldValue);
+                            return $s.constructChip(displayFieldValue, dataFieldValue, imageFieldValue);
                         }
-                        return constructChip(dataObj);
+                        return $s.constructChip(dataObj);
                     });
                 }
                 $s.chips         = chips;
@@ -330,10 +332,13 @@ WM.module('wm.widgets.form')
                 }
                 if (!newItem && $s.newItem) {
                     newItemKey    = Utils.getClonedObject($s.newItem.name);
-                    newItemObject = constructChip(newItemKey);
+                    newItemObject = $s.constructChip(newItemKey);
                 }
                 if (!newItemKey && !newItem) {
                     return;
+                }
+                if (isDuplicate($s, newItemObject)) {
+                    newItemObject.isDuplicate = true;
                 }
 
                 if ($s.onBeforeadd) {
@@ -432,8 +437,8 @@ WM.module('wm.widgets.form')
                             $s.addItem                   = addItem.bind(undefined, $s);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
-                            $s.constructChip             = constructChip.bind(undefined, $s);
                         }
+                        $s.constructChip             = constructChip.bind(undefined, $s);
 
                         if (!attrs.widgetid && attrs.scopedataset) {
                             //Form and filter usecase where scopedataset is updated programatically
