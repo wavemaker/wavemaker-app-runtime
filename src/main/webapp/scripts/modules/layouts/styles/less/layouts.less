@@ -662,43 +662,7 @@ body {
       font-size: 0.8em;
       padding: 0 1.25em;
     }
-    &.align-left .app-label {
-      text-align: left;
-    }
-    &.align-center {
-      .app-label {
-        text-align: center;
-      }
-      &.position-top {
-        text-align: center;
-        .form-control {
-          text-align: center;
-        }
-      }
-      .form-control-static + .form-control {
-        width: 100%;
-      }
-      .input-group, .app-blob-upload {
-        display: inline-table;
-      }
-    }
-    &.align-right {
-      .app-label {
-        text-align: right;
-      }
-      &.position-top {
-        direction: rtl;
-      }
-    }
-    &.position-left {
-      direction: ltr;
-    }
-    &.position-right {
-      direction: rtl;
-      label {
-        float: right;
-      }
-    }
+
     input:focus.ng-invalid {
       border-color: crimson;
     }
@@ -757,12 +721,88 @@ body {
       height: 1px;
     }
   }
-
-  .app-form {
+  /****************Alignment and position classes******************************/
+  .app-form, .app-liveform, .app-device-liveform, .app-livefilter {
+    /****************Caption Align left******************************/
+    &.align-left{
+      .app-label {
+        text-align: left;
+      }
+    }
+    /****************Caption Align Right******************************/
+    &.align-right {
+      .app-label {
+        text-align: right;
+      }
+      &.position-top {
+        .form-control, .app-toggle, .app-ratings, .input-group, .app-checkboxset, .app-radioset, .app-checkbox {
+          float: right;
+        }
+      }
+      .app-checkboxset .app-checkbox, .app-radioset .app-radio {
+        float: none;
+        label {
+          text-align: left;
+        }
+      }
+    }
+    /****************Caption Align Middle******************************/
+    &.align-center {
+      .app-label {
+        text-align: center;
+      }
+      &.position-top {
+        text-align: center;
+        .form-control {
+          text-align: center;
+        }
+      }
+      .input-group, .app-blob-upload {
+        display: inline-table;
+      }
+    }
+    /****************Caption Position top******************************/
     &.position-top {
       .control-label {
         display: block;
+      }
+      .form-control {
         width: 100%;
+      }
+    }
+    /************** Fixing widgets when Position Right is applied on the parent ****************/
+    &.position-right {
+      .form-control, .input-group, .app-ratings, .app-toggle, .app-switch, .app-fileupload, .app-button-wrapper, .control-label, .app-checkbox, .app-checkboxset, .app-radioset {
+        float: right;
+      }
+      .app-checkboxset .app-checkbox, .app-radioset .app-radio {
+        float: none;
+        label {
+          text-align: left;
+        }
+      }
+      //Datetime, date & time widgets
+      .app-datetime, .app-date, .app-timeinput {
+        .dropdown-menu {
+          left: 0 !important; /*!important is used to overwrite the inline styles*/
+          white-space: normal; /*In order to prevent the UI from breaking*/
+        }
+      }
+
+      //Tab Widget
+      .app-tabs {
+        .nav {
+          &.nav-tabs {
+            text-align: right;
+          }
+        }
+      }
+
+      .app-slider {
+        text-align: right; /*IE9 support*/
+        .range-input {
+          margin-top: 0.5em;
+        }
       }
     }
   }
@@ -1445,83 +1485,6 @@ body {
     margin-top: 0;
   }
 
-  /************** Fixing widgets when Position Right is applied on the parent ****************/
-  .position-right {
-    //Switch widget
-    .app-switch {
-      float: right;
-      .btn-group {
-        direction: ltr;
-      }
-    }
-
-    .app-search {
-      &.input-group {
-        .form-control {
-          float: right;
-        }
-      }
-    }
-
-    //Common styles for Radio, Checkbox, Radioset & Checkboxset widgets
-    .app-radioset, .app-checkboxset {
-      direction: ltr;
-    }
-
-    .radio, .checkbox, .radio-inline,  .checkbox-inline {
-      label {
-        text-align: right;
-      }
-
-      .caption {
-        margin-right: 1.5em;
-      }
-
-      input[type="radio"], input[type="checkbox"] {
-        right: 0;
-      }
-
-      //Reset position from left hand side
-      &.col-md-push-3 {
-        left: 0;
-      }
-    }
-     //Datetime, date & time widgets
-    .app-datetime, .app-date, .app-timeinput {
-      .dropdown-menu {
-        left: 0 !important; /*!important is used to overwrite the inline styles*/
-        white-space: normal; /*In order to prevent the UI from breaking*/
-      }
-    }
-
-    //Tab Widget
-    .app-tabs {
-      .nav {
-        &.nav-tabs {
-          text-align: right;
-        }
-      }
-    }
-
-    .app-toggle {
-      float: right;
-    }
-
-    .app-slider {
-      text-align: right; /*IE9 support*/
-      .range-input {
-        margin-top: 0.5em;
-      }
-    }
-
-    .app-fileupload {
-      float: right;
-
-      .app-button-wrapper {
-        float: right;
-      }
-    }
-  }
   .p {
     width: 100%;
     color: inherit;
