@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMAppObjectMapper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.commons.InvalidInputException;
-import com.wavemaker.commons.WMRuntimeException;
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
@@ -66,19 +66,25 @@ public class WMMultipartUtils {
         return toObject(multipartHttpServletRequest, instance, null);
     }
 
-    public static <T> T toObject(MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance, String serviceId) {
+    public static <T> T toObject(
+            MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance, String serviceId) {
         T t = null;
         try {
             MultipartFile multipartFile = multipartHttpServletRequest.getFile(WM_DATA_JSON);
             if (multipartFile == null) {
-                LOGGER.error("Request does not have wm_data_json multipart data");
-                throw new InvalidInputException("Invalid Input : wm_data_json part can not be NULL or Empty");
+                final String wmJson = multipartHttpServletRequest.getParameter(WM_DATA_JSON);
+                if (StringUtils.isBlank(wmJson)) {
+                    LOGGER.error("Request does not have wm_data_json multipart data");
+                    throw new InvalidInputException("Invalid Input : wm_data_json part can not be NULL or Empty");
+                }
+                t = toObject(wmJson, instance);
+            } else {
+                t = toObject(multipartFile, instance);
             }
-            t = toObject(multipartFile, instance);
             setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t, serviceId);
         } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException | SQLException e) {
             LOGGER.error("Exception while creating a new Instance with information: {}", t);
-            throw new WMRuntimeException("Exception while preparing multipart request",e);
+            throw new WMRuntimeException("Exception while preparing multipart request", e);
         }
         return t;
     }
@@ -87,6 +93,12 @@ public class WMMultipartUtils {
         WMAppObjectMapper objectMapper = WMAppObjectMapper.getInstance();
         return objectMapper.readValue(multipartFile.getInputStream(), instance);
     }
+
+    public static <T> T toObject(String json, Class<T> instance) throws IOException {
+        WMAppObjectMapper objectMapper = WMAppObjectMapper.getInstance();
+        return objectMapper.readValue(json, instance);
+    }
+
 
     /**
      * This Api is used to update blob content from old instance to new instance when blob type content is NULL in the new instance
@@ -120,7 +132,9 @@ public class WMMultipartUtils {
         return newInstance;
     }
 
-    private static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance, String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
+    private static <T> T setMultipartsToObject(
+            Map<String, MultipartFile> multiparts, T instance,
+            String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
         Class aClass = instance.getClass();
         for (String part : multiparts.keySet()) {
             if (!part.equals(WM_DATA_JSON)) {
@@ -135,7 +149,9 @@ public class WMMultipartUtils {
         return instance;
     }
 
-    private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field, String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
+    private static <T> T invokeMethod(
+            T instance, InputStream inputStream, Method method, Field field,
+            String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
             String content = com.wavemaker.commons.util.IOUtils.toString(inputStream);
@@ -147,7 +163,8 @@ public class WMMultipartUtils {
             Session session = sessionFactory.openSession();
             try {
                 session = sessionFactory.openSession();
-                Blob blob = Hibernate.getLobCreator(session).createBlob(new ByteArrayInputStream(byteArray), new Long(byteArray.length));
+                Blob blob = Hibernate.getLobCreator(session)
+                        .createBlob(new ByteArrayInputStream(byteArray), new Long(byteArray.length));
                 method.invoke(instance, blob);
             } finally {
                 if (session != null) {
@@ -155,8 +172,10 @@ public class WMMultipartUtils {
                 }
             }
         } else {
-            LOGGER.error("Casting multipart {} to {} is not supported", field.getName(), field.getType().getSimpleName());
-            throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
+            LOGGER.error("Casting multipart {} to {} is not supported", field.getName(),
+                    field.getType().getSimpleName());
+            throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType()
+                    .getSimpleName() + " is not supported");
         }
         return instance;
     }
@@ -191,11 +210,14 @@ public class WMMultipartUtils {
      * @param httpServletRequest  to prepare content type
      * @param httpServletResponse to generate response for the given field
      */
-    public static <T> void buildHttpResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public static <T> void buildHttpResponseForBlob(
+            T instance, String fieldName, HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
         try {
             byte[] bytes = getBlobBytes((T) instance, fieldName);
             httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
-            httpServletResponse.setHeader("Content-Disposition", "filename=" + fieldName + new Random().nextInt(99) + ";size=" + bytes.length);
+            httpServletResponse.setHeader("Content-Disposition",
+                    "filename=" + fieldName + new Random().nextInt(99) + ";size=" + bytes.length);
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
             httpServletResponse.setContentLength(contentLength);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -204,11 +226,12 @@ public class WMMultipartUtils {
 
     }
 
-    public static <T> DownloadResponse buildDownloadResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
+    public static <T> DownloadResponse buildDownloadResponseForBlob(
+            T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
         try {
             String filename = httpServletRequest.getParameter("filename");
-            if(StringUtils.isBlank(filename)) {
+            if (StringUtils.isBlank(filename)) {
                 filename = fieldName + new Random().nextInt(99);
             }
             byte[] bytes = getBlobBytes(instance, fieldName);
@@ -222,7 +245,9 @@ public class WMMultipartUtils {
         return downloadResponse;
     }
 
-    private static <T> byte[] getBlobBytes(final T instance, final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
+    private static <T> byte[] getBlobBytes(
+            final T instance,
+            final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
         String methodName = "get" + StringUtils.capitalize(fieldName);
         Method method = instance.getClass().getMethod(methodName);
         byte[] bytes = null;
