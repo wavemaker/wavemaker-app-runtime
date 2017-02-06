@@ -883,7 +883,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Place your text", "bindable": "in-bound"},
-                        "maxchars": {"type": "number"},
+                        "maxchars": {"type": "number",  "bindable": "in-bound"},
                         "updateon": {"type": "list", "value": "blur", "widget": "update-on"},
                         "updatedelay": {"type": "number", "value": 0},
                         "shortcutkey": {"type": "string"},
