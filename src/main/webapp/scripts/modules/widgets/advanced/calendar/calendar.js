@@ -309,20 +309,23 @@ WM.module('wm.widgets.advanced')
                             $is.onEventrender({$event: {}, $data: event, $view: view});
                         }
                         function setSelectedData(start, end) {
-                            var filteredDates   = [],
-                                dataset         = $is.dataset;
+                            var filteredDates = [],
+                                dataset       = $is.dataset,
+                                eventStartKey = $is.eventstart || 'start',
+                                eventEndKey   = $is.eventend || 'end',
+                                startDate     = moment(new Date(start)).format('MM/DD/YYYY'),
+                                endDate       = moment(new Date(end)).subtract(1, 'days').format('MM/DD/YYYY');
                             if (!dataset) {
                                 return;
                             }
                             dataset = dataset.data || dataset;
                             _.forEach(dataset, function (value) {
-                                if (!value.start) {
+                                if (!value[eventStartKey]) {
                                     return;
                                 }
-                                var eventDate   = moment(new Date(value.start)).format('MM/DD/YYYY'),
-                                    startDate   = moment(new Date(start)).format('MM/DD/YYYY'),
-                                    endDate     = moment(new Date(end)).format('MM/DD/YYYY'),
-                                    eventExists = moment(eventDate).isSameOrAfter(startDate) && moment(eventDate).isBefore(endDate);
+                                var eventStartDate   = moment(new Date(value[eventStartKey])).format('MM/DD/YYYY'),
+                                    eventEndDate   = moment(new Date(value[eventEndKey] || value[eventStartKey])).format('MM/DD/YYYY'),
+                                    eventExists = moment(startDate).isSame(eventStartDate) && moment(eventEndDate).isSame(endDate);
                                 if (eventExists) {
                                     filteredDates.push(value);
                                 }
