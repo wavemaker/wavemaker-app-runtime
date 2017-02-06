@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.export;
 
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -44,7 +45,7 @@ public abstract class ExportBuilder {
     protected CellStyle columnHeaderStyle(Workbook workbook) {
         CellStyle columnNameStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setBold(true);
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         font.setFontHeightInPoints((short) COLUMN_HEADER_FONT_SIZE);
         columnNameStyle.setWrapText(true);
         columnNameStyle.setFont(font);

@@ -21,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -44,8 +43,6 @@ public class CSVConverterUtil {
     private String separator = DEFAULT_SEPARATOR;
 
     private static final String DEFAULT_SEPARATOR = ",";
-
-    public static final int EXCEL_STYLE_ESCAPING = 0;
 
     public CSVConverterUtil(final Workbook workbook) {
         this.workbook = workbook;
@@ -152,7 +149,7 @@ public class CSVConverterUtil {
                 if (cell == null) {
                     csvLine.add("");
                 } else {
-                    if (cell.getCellTypeEnum() != CellType.FORMULA) {
+                    if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
                         csvLine.add(this.formatter.formatCellValue(cell));
                     } else {
                         csvLine.add(this.formatter.formatCellValue(cell, this.evaluator));
