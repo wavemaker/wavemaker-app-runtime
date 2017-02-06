@@ -284,11 +284,11 @@ WM.module('wm.widgets.form')
                     scope.$parent.onSelect(args);
 
                     if (args.$item.action) {
-                        Utils.evalExp(element.closest('.dropdown').scope(), args.$item.action);
-                    }
-
-                    if (args.$item.link) {
-                        $window.location.href = args.$item.link;
+                        Utils.evalExp(element.closest('.dropdown').scope(), args.$item.action).then(function () {
+                            if (args.$item.link) {
+                                $window.location.href = args.$item.link;
+                            }
+                        });
                     }
                 };
             }
@@ -325,6 +325,16 @@ WM.module('wm.widgets.form')
  *                  Height of the menu.
  * @param {string=} scopedatavalue
  *                  This property accepts the value for the Menu widget from a variable defined in the script workspace. <br>
+ * @param {string=} itemicon
+ *                  This property defines the value to be used as key for the icon from the list of values bound to the menu widget as an array of objects of different values.
+ * @param {string=} itemlabel
+ *                  This property defines the value to be used as key for the label from the list of values bound to the menu widget as an array of objects of different values.
+ * @param {string=} itemaction
+ *                  This property defines the value to be used as key for the action from the list of values bound to the menu widget as an array of objects of different values.
+ * @param {string=} itemlink
+ *                  This property defines the value to be used as key for the link from the list of values bound to the menu widget as an array of objects of different values.
+ * @param {string=} itemchildren
+ *                  This property specifies the sub-menu items
  * @param {string=} dataset
  *                  This property accepts the options to create the Menu widget from a wavemaker studio variable (live or static) which can hold object, array or string data.
  * @param {string=} datafield
@@ -379,15 +389,18 @@ WM.module('wm.widgets.form')
                    },
                    {
                        "label": "item2",
-                       "icon": "wi wi-euro-symbol"
+                       "icon": "wi wi-euro-symbol",
+                       "action": "Widgets.empForm.save()"
                    },
                    {
                        "label": "item3",
-                       "icon": "wi wi-euro-symbol"
+                       "icon": "wi wi-euro-symbol",
+                       "action": "Widgets.empForm.new()"
                    },
                    {
                        "label": "item4",
-                       "icon": "wi wi-euro-symbol"
+                       "icon": "wi wi-euro-symbol",
+                       "action": "Widgets.empForm.reset()"
                    }
                ];
             }
