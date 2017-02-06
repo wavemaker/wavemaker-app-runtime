@@ -137,12 +137,11 @@ wm.plugins.offline.run([
             if (str) {
                 str = decodeURIComponent(str);
                 _.forEach(str.split('&'), function (c) {
-                    var csplits = c.split('='),
-                        intVal = parseInt(csplits[1], 10);
-                    if (_.isNaN(intVal)) {
+                    var csplits = c.split('=');
+                    if (_.isEmpty(_.trim(csplits[1])) || isNaN(csplits[1])) {
                         result[csplits[0]] = csplits[1];
                     } else {
-                        result[csplits[0]] = intVal;
+                        result[csplits[0]] = parseInt(csplits[1], 10);
                     }
                 });
             }
