@@ -5,8 +5,8 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<span class="app-icon-wrapper" init-widget ng-style="{\'font-size\' : iconsize, \'opacity\' : opacity}">' +
-                '<i class="app-icon"  title="{{hint}}"  ng-style="{\'color\' : color}" ng-class="iconclass"></i> ' +
+            '<span class="app-icon-wrapper" init-widget>' +
+                '<i class="app-icon"></i> ' +
                 '<label class="app-label" ng-if="caption">{{caption}}</label>' +
             '</span>'
             );
@@ -15,14 +15,33 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']),
             notifyFor   = {
-                'iconposition': true
+                'iconposition': true,
+                'iconsize': true,
+                'opacity': true,
+                'iconclass': true,
+                'hint': true
             };
 
         //Define the property change handler. This function will be triggered when there is a change in the widget property
-        function propertyChangeHandler($is, $el, key, newVal) {
+        function propertyChangeHandler($el, $iNode, attrs, key, newVal, oldVal) {
             switch (key) {
             case 'iconposition':
                 $el.attr('icon-position', newVal);
+                break;
+            case 'iconsize':
+                $el[0].style.fontSize = newVal;
+                break;
+            case 'opacity':
+                $el[0].style.opacity = newVal;
+                break;
+            case 'color':
+                $iNode[0].style.color = newVal;
+                break;
+            case 'iconclass':
+                $iNode.removeClass(oldVal).addClass(newVal);
+                break;
+            case 'hint':
+                attrs.$set('title', newVal);
                 break;
             }
         }
@@ -37,7 +56,10 @@ WM.module('wm.widgets.basic')
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                    WidgetUtilService.registerPropertyChangeListener(
+                        propertyChangeHandler.bind(undefined, element, element.children().first(), attrs),
+                        scope,
+                        notifyFor);
                     /* register the property change handler */
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }

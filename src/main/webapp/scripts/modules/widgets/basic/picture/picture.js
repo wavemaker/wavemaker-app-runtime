@@ -5,20 +5,25 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/picture.html',
-                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles wm-image-cache="{{offline ? \'permanant\' : \'\'}}">'
+                '<img init-widget ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles>'
             );
+
+        $templateCache.put('template/mobile/widget/picture.html',
+            '<img init-widget ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles wm-image-cache="{{offline ? \'permanant\' : \'\'}}">'
+        );
     }])
-    .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.picture', ['wm.base', 'wm.base.events']),
             notifyFor = {
                 'pictureaspect': true,
                 'picturesource': true,
-                'shape': true
+                'shape': true,
+                'hint': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal) {
+        function propertyChangeHandler(scope, element, attrs, key, newVal) {
             switch (key) {
             case 'pictureaspect':
                 switch (newVal) {
@@ -34,6 +39,10 @@ WM.module('wm.widgets.basic')
                 case 'Both':
                     element.css({width: '100%', height: '100%'});
                     break;
+                case 'hint':
+                    attrs.$set('title', newVal);
+                    attrs.$set('alt', newVal);
+                    break;
                 }
                 break;
             case 'picturesource':
@@ -45,14 +54,19 @@ WM.module('wm.widgets.basic')
                 scope.imgClass = "img-" + newVal;
                 break;
             }
-
         }
 
         return {
             'restrict': 'E',
             'replace' : true,
             'scope'   : {},
-            'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/picture.html'),
+            'template': function ($tEl, $tAttrs) {
+                var templateId = 'template/widget/picture.html';
+                if (CONSTANTS.hasCordava) {
+                    templateId = 'template/mobile/widget/picture.html';
+                }
+                return WidgetUtilService.getPreparedTemplate(templateId, $tEl, $tAttrs);
+            },
             'link'    : {
                 'pre': function (scope, $el, attrs) {
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
@@ -60,7 +74,7 @@ WM.module('wm.widgets.basic')
                 'post': function (scope, element, attrs) {
 
                     /* register the property change handler */
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }
