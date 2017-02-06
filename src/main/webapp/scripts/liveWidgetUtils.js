@@ -1329,6 +1329,10 @@ WM.module('wm.widgets.live')
                     column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
                         'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-label>';
                     break;
+                case 'icon':
+                    column.customExpression = '<wm-icon caption="' + column.widgetConfig.title + '" iconclass="' + column.widgetConfig.icon + '" iconposition="' + column.widgetConfig.iconposition + '" ' +
+                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-icon>';
+                    break;
                 default:
                     if (column.type === 'blob') {
                         column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
@@ -1382,6 +1386,15 @@ WM.module('wm.widgets.live')
                         'title'    : val,
                         'class'    : '',
                         'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'icon':
+                    column.widgetConfig = {
+                        'title'        : val,
+                        'class'        : '',
+                        'icon'         : 'wi wi-star-border',
+                        'iconposition' : 'left',
+                        'ngClasses'    : widgetNgClasses
                     };
                     break;
                 default:
@@ -1462,6 +1475,17 @@ WM.module('wm.widgets.live')
                         'title'     : widgetTitle,
                         'class'     : widgetClass,
                         'ngClasses' : widgetNgClasses
+                    };
+                    break;
+                case 'icon':
+                    widgetTitle  = el.attr('caption');
+                    widgetIcon   = el.attr('iconclass');
+                    column.widgetConfig = {
+                        'title'        : widgetTitle,
+                        'icon'         : widgetIcon,
+                        'class'        : widgetClass,
+                        'iconposition' : el.attr('iconposition') || 'left',
+                        'ngClasses'    : widgetNgClasses
                     };
                     break;
                 default:
@@ -1854,7 +1878,7 @@ WM.module('wm.widgets.live')
              * function to get view mode widgets for grid
              */
             function getViewModeWidgets() {
-                return ['image', 'button', 'checkbox', 'label', 'anchor'];
+                return ['image', 'button', 'checkbox', 'label', 'anchor', 'icon'];
             }
             /**
              * @ngdoc function

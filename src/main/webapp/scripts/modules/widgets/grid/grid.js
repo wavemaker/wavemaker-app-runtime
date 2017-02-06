@@ -2418,6 +2418,7 @@ WM.module('wm.widgets.grid')
                 onFormRender: function ($row, e, operation) {
                     $is.formWidgets = LiveWidgetUtils.getFormFilterWidgets($row, 'data-field-name');
                     $is.onFormrender({$event: e, formWidgets: $is.formWidgets, $operation: operation});
+                    $rs.$safeApply($is);
                 },
                 onBeforeFormRender: function (rowData, e, operation) {
                     return $is.onBeforeformrender({$event: e, $rowData: rowData, $operation: operation});
