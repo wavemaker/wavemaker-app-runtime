@@ -27,7 +27,7 @@ WM.module('wm.widgets.basic')
                 ICON_CLASSES = {
                     'folder': {
                         'expanded' : 'wi-folder-open',
-                        'collapsed': 'wi-folder-close'
+                        'collapsed': 'wi-folder'
                     },
                     'circle-plus-minus': {
                         'expanded' : 'wi-remove-circle-outline',
