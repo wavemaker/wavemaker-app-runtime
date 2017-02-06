@@ -640,7 +640,8 @@ WM.module('wm.widgets.live')
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
                     labelLayout,
                     controlLayout,
-                    show = CONSTANTS.isRunMode ? 'show="{{formFields[' + index + '].show}}"' : '';
+                    displayLabel = '',
+                    show = CONSTANTS.isRunMode ? 'ng-show="{{formFields[' + index + '].show}}"' : '';
                 captionPosition = captionPosition || 'top';
                 //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
@@ -659,11 +660,15 @@ WM.module('wm.widgets.live')
                     controlLayout = $rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9';
                 }
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
-                widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
-                widgetType = widgetType.toLowerCase();
-                template = template +
-                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + ' role="input">' +
-                    '<label class="app-label control-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-if="formFields[0].displayname" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>' +
+                widgetType  = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
+                widgetType  = widgetType.toLowerCase();
+                if (fieldDef.displayname) { //Add label field, only if displayname is given
+                    displayLabel = '<label class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
+                }
+                //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
+                fieldDef.displayname = _.startsWith(fieldDef.displayname, 'bind:') ? '' : fieldDef.displayname;
+                template    = template +
+                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + ' role="input">' + displayLabel +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 
@@ -952,24 +957,32 @@ WM.module('wm.widgets.live')
              * @param {string} newVal new value for the key
              */
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
-                var template = '',
+                var template       = '',
                     wdgtProperties = scope.widgetProps,
-                    compileField = function () {
-                        if (CONSTANTS.isRunMode) {
-                            //On changing of a property in studio mode, generate the template again so that change is reflected
-                            template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
-                            //Destroy the scopes of the widgtes inside the form field
-                            element.find('.ng-isolate-scope')
-                                .each(function () {
-                                    WM.element(this).isolateScope().$destroy();
-                                });
-                            //Remove only live-field so that overlay won't get overrided
-                            element.find('.live-field').remove();
-                            element.append(template);
-                            $compile(element.contents())(parentScope);
-                        }
-                    },
-                    formWidget = parentScope.Widgets[scope.name + '_formWidget'];
+                    formWidget     = parentScope.Widgets[scope.name + '_formWidget'];
+
+                function compileField() {
+                    if (CONSTANTS.isRunMode) {
+                        //On changing of a property in studio mode, generate the template again so that change is reflected
+                        template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
+                        //Destroy the scopes of the widgtes inside the form field
+                        element.find('.ng-isolate-scope')
+                            .each(function () {
+                                WM.element(this).isolateScope().$destroy();
+                            });
+                        //Remove only live-field so that overlay won't get overrided
+                        element.find('.live-field').remove();
+                        element.append(template);
+                        $compile(element.contents())(parentScope);
+                    }
+                }
+
+                function setFormField() {
+                    if (CONSTANTS.isRunMode) {
+                        parentScope.formFields[index][key] = newVal;
+                    }
+                }
+
                 if (formWidget && key !== 'show') {
                     formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
                 }
@@ -994,15 +1007,19 @@ WM.module('wm.widgets.live')
                         Utils.getService('LiveWidgetsMarkupManager').updateFieldMarkup({'formName': parentScope.name, 'fieldName': scope.name});
                         element.parents('[widgettype="wm-gridcolumn"]').removeClass('hide');
                     }
-                    parentScope.formFields[index][key] = newVal;
+                    setFormField();
                     compileField();
+                    break;
+                case 'displayname':
+                    element.find('label.formfield-label').attr('title', newVal).text(newVal);
+                    setFormField();
                     break;
                 case 'disabled':
                 case 'readonly':
                 case 'required':
                 case 'validationmessage':
                 case 'hint':
-                    parentScope.formFields[index][key] = newVal;
+                    setFormField();
                     break;
                 case 'active':
                     if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
