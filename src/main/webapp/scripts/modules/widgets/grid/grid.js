@@ -257,7 +257,7 @@ WM.module('wm.widgets.grid')
                             '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
                                 '<wm-button ng-repeat="btn in _actions.header track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && isGridEditMode}" iconclass="{{btn.iconclass}}"' +
                                  ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}" hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-button>' +
-                                '<wm-menu autoclose="always" caption="Export" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
+                                '<wm-menu autoclose="always" caption="{{$root.appLocale.LABEL_EXPORT}}" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
