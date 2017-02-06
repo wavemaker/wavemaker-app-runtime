@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1932,6 +1932,7 @@ WM.module('wm.utils', [])
 
         //Function to evaluate expression
         function evalExp(scope, evtValue) {
+            var d = $q.defer();
             //Modifying expression in to array notation for variables with special characters in name
             if (_.includes(evtValue, 'Variables.')) {
                 var parts = evtValue.split('.');
@@ -1945,7 +1946,11 @@ WM.module('wm.utils', [])
                 } else {
                     $rootScope.$emit('invoke-service', evtValue);//Invoking Prefab events
                 }
+
+                d.resolve();
             });
+
+            return d.promise;
         }
 
         //Triggers custom events passed

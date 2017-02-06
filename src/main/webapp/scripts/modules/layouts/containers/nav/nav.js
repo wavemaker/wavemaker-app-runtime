@@ -13,8 +13,9 @@ WM.module('wm.layouts.containers')
         '$routeParams',
         'CONSTANTS',
         'FormWidgetUtils',
+        '$window',
 
-        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils) {
+        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils, $window) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers']),
                 notifyFor = {
@@ -74,7 +75,8 @@ WM.module('wm.layouts.containers')
                         labelField    = $is.itemlabel    || 'label',
                         itemField     = $is.itemlink     || 'link',
                         badgeField    = $is.itembadge    || 'badge',
-                        childrenField = $is.itemchildren || 'children';
+                        childrenField = $is.itemchildren || 'children',
+                        actionField   = $is.itemaction || 'action';
 
                     $is.nodes.forEach(function (node, index) {
 
@@ -87,6 +89,7 @@ WM.module('wm.layouts.containers')
                             itemClass    = node[iconField],
                             itemLink     = node[itemField],
                             itemBadge    = node[badgeField],
+                            itemAction   = node[actionField],
                             itemChildren = node[childrenField],
                             $menu;
 
@@ -107,6 +110,7 @@ WM.module('wm.layouts.containers')
                                 'dataset'     : 'bind:_nodes['+ index +']',
                                 'itemlabel'   : labelField,
                                 'itemlink'    : itemField,
+                                'itemaction'  : itemAction,
                                 'itemicon'    : iconField,
                                 'itemchildren': childrenField,
                                 'type'        : 'anchor',
@@ -119,7 +123,7 @@ WM.module('wm.layouts.containers')
                             $el.append($li);
                         } else {
                             $i.addClass(itemClass);
-                            $a.append($a_caption.html(itemLabel)).attr('href', itemLink).prepend($i);
+                            $a.append($a_caption.html(itemLabel)).prepend($i);
                             if (itemBadge) {
                                 $a.append($badge.html(itemBadge));
                             }
@@ -217,12 +221,24 @@ WM.module('wm.layouts.containers')
 
                             $el.on('click.on-select', '.app-anchor', function (e) {
                                 var $target = WM.element(this),
-                                    $li     = $target.closest('.app-nav-item');
+                                    $li     = $target.closest('.app-nav-item'),
+                                    itemLink,
+                                    itemAction;
                                 $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
                                 $li.addClass('active');
                                 $rs.$safeApply($is, function () {
                                     $is.selecteditem = $li.data('node-data');
                                     Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
+                                    itemLink   = $is.selecteditem.itemlink || $is.selecteditem.link;
+                                    itemAction = $is.selecteditem.itemaction || $is.selecteditem.action;
+
+                                    if (itemAction) {
+                                        Utils.evalExp($el.scope(), itemAction).then(function () {
+                                            if (itemLink) {
+                                                $window.location.href = itemLink;
+                                            }
+                                        });
+                                    }
                                 });
                             });
 
@@ -298,6 +314,8 @@ WM.module('wm.layouts.containers')
  *                  This property defines the value to be used as key for the icon from the list of values bound to the nav widget as an array of objects of different values.
  * @param {string=} itemlabel
  *                  This property defines the value to be used as key for the label from the list of values bound to the nav widget as an array of objects of different values.
+ * @param {string=} itemaction
+ *                  This property defines the value to be used as key for the action from the list of values bound to the nav widget as an array of objects of different values.
  * @param {string=} itemlink
  *                  This property defines the value to be used as key for the link from the list of values bound to the nav widget as an array of objects of different values.
  * @param {string=} itemchildren
@@ -326,7 +344,8 @@ WM.module('wm.layouts.containers')
                         {
                             "label": "Home",
                             "icon": "wi wi-home",
-                            "link": "#/home"
+                            "link": "#/home",
+                            "action": "Widgets.empForm.save()"
                         },
                         {
                             "label": "Dropdown",
@@ -344,11 +363,13 @@ WM.module('wm.layouts.containers')
                         {
                             "label": "Others",
                             "icon": "wi wi-shopping-cart",
-                            "link": "http://www.example.com"
+                            "link": "http://www.example.com",
+                            "action": "Widgets.empForm.new()"
                         },
                         {
                             "label": "Inventory",
-                            "icon": "wi wi-tags"
+                            "icon": "wi wi-tags",
+                            "action": "Widgets.empForm.reset()"
                         }
                    ];
               };
