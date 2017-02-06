@@ -95,6 +95,15 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            // This function returns the maximum number of decimal digits allowed.
+            function getDecimalCount(val) {
+                val = val || '9';
+                val = val.replace(/\%$/, '');
+
+                var n = val.lastIndexOf('.');
+                return (val.length - n - 1);
+            }
+
             //Updates caption placement of each progress bar
             function updateCaptionPlacement(element, isMultipleBar, captionPlacement) {
                 if (isMultipleBar) {
@@ -107,7 +116,7 @@ WM.module('wm.widgets.basic')
             }
 
             // if the progressbar is NOT multibar, update the bar when maxvalue, minvalue or datavalue are changed.
-            function updateProgressBar(scope, progressBarEl, oldDatavalue, newDatavalue) {
+            function updateProgressBar(scope, attrs, progressBarEl, oldDatavalue, newDatavalue) {
 
                 var isValueAPercentage,
                     progressBarWidth,
@@ -138,10 +147,6 @@ WM.module('wm.widgets.basic')
                     if (WM.isDefined(scope.datavalue)) {
                         displayValue = scope.datavalue * 100 / (scope.maxvalue - scope.minvalue);
                         progressBarWidth = displayValue + '%';
-
-                        if (scope.displayformat === DISPLAY_FORMAT.PERCENTAGE) {
-                            displayValue = progressBarWidth;
-                        }
                     } else {
                         displayValue = progressBarWidth = 0;
                     }
@@ -149,6 +154,17 @@ WM.module('wm.widgets.basic')
 
                 progressBarEl.css('width', progressBarWidth);
                 if (!$label.length || (newDatavalue !== oldDatavalue)) {
+                    // support for percentage / absolute displayformat in old project.
+                    if (attrs.displayformat === DISPLAY_FORMAT.PERCENTAGE) {
+                        displayValue = progressBarWidth;
+                    } else if (attrs.displayformat !== DISPLAY_FORMAT.ABSOLUTE) {
+                        displayValue = (displayValue.toFixed(getDecimalCount(scope.displayformat)));
+
+                        if (_.includes(scope.displayformat, '%')) {
+                            displayValue = displayValue + '%';
+                        }
+                    }
+
                     if ($label.length) {
                         $label.text(displayValue).attr('data-caption-placement', scope.captionplacement);
                     } else {
@@ -214,18 +230,18 @@ WM.module('wm.widgets.basic')
                 });
             }
 
-            function propertyChangeHandler(scope, element, progressBarEl, key, newVal, oldVal) {
+            function propertyChangeHandler(scope, element, attrs, progressBarEl, key, newVal, oldVal) {
                 switch (key) {
                 case 'minvalue':
                 case 'maxvalue':
-                    updateProgressBar(scope, progressBarEl);
+                    updateProgressBar(scope, attrs, progressBarEl);
                     break;
                 case 'datavalue':
                     if (!(WM.isArray(scope.dataset))) {
                         scope.isMultipleBar = false;
                         element.children('.multi-bar').remove();
                         if (WM.isNumber(newVal) || WM.isString(newVal)) {
-                            updateProgressBar(scope, progressBarEl, oldVal, newVal);
+                            updateProgressBar(scope, attrs, progressBarEl, oldVal, newVal);
                         }
                     }
                     break;
@@ -273,7 +289,7 @@ WM.module('wm.widgets.basic')
                             }
                         }
 
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, progressBarEl), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs, progressBarEl), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 }
