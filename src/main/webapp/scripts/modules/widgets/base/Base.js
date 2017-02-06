@@ -594,6 +594,7 @@ WM.module('wm.widgets.base', [])
                         "controls": {"show": false},
                         "multiselect": {"show": false},
                         "calendartype": {"show": false},
+                        "selectionmode": {"show": false},
                         "onEventdrop": {"show": false},
                         "onEventresize": {"show": false},
                         "eventstart": {"type": "list", "value": "start", "options": [""], "datasetfilter" : "terminals"},
