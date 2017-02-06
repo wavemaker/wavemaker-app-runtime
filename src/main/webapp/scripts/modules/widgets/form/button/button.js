@@ -6,8 +6,8 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/button.html',
-            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles ng-disabled="disabled" role="input" accesskey="{{::shortcutkey}}">' +
-                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}"  ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+            '<button class="btn app-button" init-widget apply-styles role="input">' +
+                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +
                 '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
@@ -22,11 +22,14 @@ WM.module('wm.widgets.form')
                 'iconclass': true,
                 'iconurl': true,
                 'caption': true,
-                'iconposition': true
+                'iconposition': true,
+                'hint': true,
+                'disabled': true,
+                'shortcutkey': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal) {
+        function propertyChangeHandler(scope, element, attrs, key, newVal) {
             switch (key) {
             case 'iconposition':
                 element.attr('icon-position', newVal);
@@ -42,6 +45,15 @@ WM.module('wm.widgets.form')
                 break;
             case 'caption':
                 Utils.setNodeContent(element.children('.btn-caption'), newVal);
+                break;
+            case 'hint':
+                attrs.$set('title', newVal);
+                break;
+            case 'disabled':
+                element[0].disabled = newVal;
+                break;
+            case 'shortcutkey':
+                attrs.$set('accesskey', newVal);
                 break;
             }
         }
@@ -63,7 +75,7 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
                         /*Called from form reset when users clicks on form reset*/
                         scope.reset = function () {

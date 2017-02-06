@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/label.html',
-            '<label class="app-label" title="{{hint}}" init-widget apply-styles></label>'
+            '<label class="app-label" init-widget apply-styles></label>'
             );
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -13,11 +13,12 @@ WM.module('wm.widgets.basic')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.label', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events']),
             notifyFor = {
                 'caption' : true,
-                'required': true
+                'required': true,
+                'hint': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, key, newVal) {
+        function propertyChangeHandler(element, attrs, key, newVal) {
             switch (key) {
             case 'caption':
                 Utils.setNodeContent(element, newVal);
@@ -28,6 +29,9 @@ WM.module('wm.widgets.basic')
                 } else {
                     element.removeClass('required');
                 }
+                break;
+            case 'hint':
+                attrs.$set('title', newVal);
                 break;
             }
         }
@@ -44,7 +48,7 @@ WM.module('wm.widgets.basic')
                 'post': function (scope, element, attrs) {
 
                     /* register the property change handler */
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, attrs), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }
