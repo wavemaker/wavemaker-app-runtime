@@ -14,6 +14,11 @@ WM.module('wm.widgets.basic')
                 'iconposition'    : true,
                 'contentsource'   : true,
                 'popoverplacement': CONSTANTS.isRunMode
+            },
+            interaction = {
+                'click': {'outsideClick' : 'outsideClick'},
+                'hover': {'mouseenter': 'none'},
+                'default' : {'mouseenter': 'none', 'outsideClick': 'outsideClick'}
             };
 
         function propertyChangeHandler($is, $el, transFn, key, nv) {
@@ -112,7 +117,7 @@ WM.module('wm.widgets.basic')
 
                 //Required in studio mode also to set partial params which is based on pageContainer and wmtransclude directives
                 template.attr({
-                    'page-container'       : 'page-container'
+                    'page-container' : 'page-container'
                 });
 
                 if (CONSTANTS.isRunMode) {
@@ -122,19 +127,23 @@ WM.module('wm.widgets.basic')
                         'uib-popover-template'  : '_popoverOptions.contenturl',
                         'popover-class'         : '{{_popoverOptions.customclass}}',
                         'popover-placement'     : '{{_popoverOptions.placement}}',
-                        'ng-mouseleave'         : '_popoverOptions.setHideTrigger()',
                         'popover-trigger'       : '_popoverOptions.trigger',
                         'popover-title'         : '{{title}}',
                         'popover-is-open'       : '_popoverOptions.isOpen',
                         'popover-append-to-body': 'true'
                     });
+
+                    //If interaction is not click then attach ng-mouseleave event
+                    if (tAttrs.interaction !== 'click') {
+                        template.attr('ng-mouseleave', '_popoverOptions.setHideTrigger()');
+                    }
                 }
                 return template[0].outerHTML;
             },
             'compile': function (tElement) {
                 return {
                     'pre': function ($is, $el, attrs) {
-                        var trigger = {'mouseenter': 'none', 'outsideClick': 'outsideClick'};
+                        var trigger = attrs.interaction ? interaction[attrs.interaction] : interaction.default;
                         $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
                         $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.$lazyLoad       = WM.noop;
@@ -158,7 +167,8 @@ WM.module('wm.widgets.basic')
                                         if (nv || $is._isFirstTime) {
                                             //Add custom mouseenter, leave events on popover
                                             $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
-                                            if ($popoverEl.length) {
+
+                                            if ($popoverEl.length && _.includes(['default', 'hover'], $is.interaction)) {
                                                 $popoverEl.on('mouseenter', function () {
                                                     $is._popoverOptions.isPopoverActive = true;
                                                     $rs.$safeApply($is);
@@ -168,6 +178,7 @@ WM.module('wm.widgets.basic')
                                                     $is._popoverOptions.setHideTrigger(true);
                                                 });
                                             }
+
                                             if ($is._popoverOptions.customclass) {
                                                 setStyleBlock($is);
                                             }
