@@ -297,6 +297,9 @@ WM.module('wm.widgets.form')
                                 $window.location.href = args.$item.link;
                             }
                         });
+                    } else if (args.$item.link) {
+                        //If action is not present and link is there
+                        $window.location.href = args.$item.link;
                     }
                 };
             }
