@@ -668,7 +668,7 @@ WM.module('wm.widgets.live')
                 //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
                 fieldDef.displayname = _.startsWith(fieldDef.displayname, 'bind:') ? '' : fieldDef.displayname;
                 template    = template +
-                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + ' role="input">' + displayLabel +
+                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + '>' + displayLabel +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 

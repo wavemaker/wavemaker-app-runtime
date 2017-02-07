@@ -171,7 +171,7 @@ WM.module('wm.widgets.live')
                     }
                     $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
                 };
-                $scope.prevDataValues = {};
+                $scope.prevDataValues = [];
                 $scope.findOperationType = function (variable) {
                     var operation,
                         isPrimary = false;
@@ -403,6 +403,7 @@ WM.module('wm.widgets.live')
                                 }
                                 onResult(requestData.row, true);
                                 $scope.clearData();
+                                $scope.prevDataValues = [];
                                 $scope.toggleMessage(true, $scope.deletemessage, 'success');
                                 $scope.isSelected = false;
                                 /*get updated data without refreshing page*/
