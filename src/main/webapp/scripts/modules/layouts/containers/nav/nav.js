@@ -97,8 +97,8 @@ WM.module('wm.layouts.containers')
                         // push the current object as an array into the internal array
                         $is._nodes.push(node[childrenField]);
 
-                        if ($routeParams.name === (itemLink && itemLink.substring(1))) {
-                            $a.addClass('active');
+                        if ($routeParams.name === (itemLink && itemLink.substring(2))) {
+                            $li.addClass('active');
                         }
 
                         if (itemChildren && WM.isArray(itemChildren)) {
@@ -229,15 +229,18 @@ WM.module('wm.layouts.containers')
                                 $rs.$safeApply($is, function () {
                                     $is.selecteditem = $li.data('node-data');
                                     Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
-                                    itemLink   = $is.selecteditem.itemlink || $is.selecteditem.link;
-                                    itemAction = $is.selecteditem.itemaction || $is.selecteditem.action;
 
-                                    if (itemAction) {
-                                        Utils.evalExp($el.scope(), itemAction).then(function () {
-                                            if (itemLink) {
-                                                $window.location.href = itemLink;
-                                            }
-                                        });
+                                    if ($is.selecteditem) {
+                                        itemLink   = $is.selecteditem.itemlink || $is.selecteditem.link;
+                                        itemAction = $is.selecteditem.itemaction || $is.selecteditem.action;
+
+                                        if (itemAction) {
+                                            Utils.evalExp($el.scope(), itemAction).then(function () {
+                                                if (itemLink) {
+                                                    $window.location.href = itemLink;
+                                                }
+                                            });
+                                        }
                                     }
                                 });
                             });
@@ -262,8 +265,9 @@ WM.module('wm.layouts.containers')
         'PropertiesFactory',
         'WidgetUtilService',
         'Utils',
+        '$routeParams',
 
-        function (PropertiesFactory, WidgetUtilService, Utils) {
+        function (PropertiesFactory, WidgetUtilService, Utils, $routeParams) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem', ['wm.base']);
 
@@ -278,6 +282,15 @@ WM.module('wm.layouts.containers')
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, $el, attrs) {
+                        //If nav is not data bound then manually set active to nav item if route param is same as nav item link
+                        var firstChild = $el.children().first();
+
+                        if (firstChild.length && firstChild.hasClass('app-anchor')) {
+                            if ($routeParams.name === (firstChild[0].hash && firstChild[0].hash.substring(2))) {
+                                $el.addClass('active');
+                            }
+                        }
+
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
                 }

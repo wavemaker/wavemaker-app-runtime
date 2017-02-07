@@ -256,7 +256,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window',  function ($templateCache, $compile, CONSTANTS, Utils, $window) {
+    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams',  function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams) {
         'use strict';
         return {
             'restrict': "E",
@@ -279,6 +279,14 @@ WM.module('wm.widgets.form')
                     element.off('click');
                     $compile(element.contents())(scope);
                 }
+
+                //If nav item is menu then set it links active if route param is same as link
+                if (element.closest('.app-nav-item').length && scope.item.link) {
+                    if ($routeParams.name === (scope.item.link && scope.item.link.substring(2))) {
+                        element.addClass('active');
+                    }
+                }
+
                 scope.onSelect = function (args) {
 
                     scope.$parent.onSelect(args);
