@@ -424,7 +424,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "datavalue": {"type": "string, object", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedatavalue": {"type": "string"},
-                        "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "yes, no, maybe"},
+                        "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "yes, no, maybe", "showPrettyExprInDesigner": true, "defaultvalue": "yes, no, maybe"},
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
@@ -707,7 +707,7 @@ WM.module('wm.widgets.base', [])
 
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false, "getTypeFrom": "dataset"},
                         "scopedatavalue": {"type": "string"},
-                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
+                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "bindable": "in-bound", "getTypeFrom": "dataset"},
@@ -786,7 +786,7 @@ WM.module('wm.widgets.base', [])
 
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "scopedatavalue": {"type": "string"},
-                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
+                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3", "showPrettyExprInDesigner": true, "defaultvalue": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
                         "selectedvalues": {"type": "string, object", "isList": true, "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
