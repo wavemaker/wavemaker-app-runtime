@@ -41,25 +41,11 @@ wm.variables.services.LoginVariableService = ['Variables',
         methods = {
             login: function (variable, options, success, error) {
                 var params = {},
-                    variableOwner = variable.owner,
                     variableEvents = VARIABLE_CONSTANTS.EVENTS,
-                    callBackScope,
                     errMsg,
                     paramKey,
                     output,
                     loginInfo = {};
-
-                /* get the callback scope for the variable based on its owner */
-                if (variableOwner === "App") {
-                    /* TODO: to look for a better option to get App/Page the controller's scope */
-                    callBackScope = $rootScope || {};
-                } else {
-                    if (variable._prefabName) {
-                        callBackScope = options.scope || {};
-                    } else {
-                        callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
-                    }
-                }
 
                 /* If login info provided along explicitly with options, don't look into the variable bindings for the same */
                 if (options.loginInfo) {
@@ -81,13 +67,13 @@ wm.variables.services.LoginVariableService = ['Variables',
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
                         Utils.triggerFn(error, errMsg);
-                        initiateCallback("onError", variable, callBackScope, errMsg);
+                        initiateCallback("onError", variable, errMsg);
                     }
                     return;
                 }
 
                 //Triggering 'onBeforeUpdate' and considering
-                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, params);
+                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, params);
                 if (_.isObject(output)) {
                     params = output;
                 } else if (output === false) {
@@ -114,7 +100,7 @@ wm.variables.services.LoginVariableService = ['Variables',
 
                             WM.forEach(variableEvents, function (event) {
                                 if (event !== 'onError' && event !== VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE) {
-                                    initiateCallback(event, variable, callBackScope, _.get(config, 'userInfo'));
+                                    initiateCallback(event, variable, _.get(config, 'userInfo'));
                                 }
                             });
 
@@ -158,7 +144,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                     errorMsg = errorMsg || "Invalid credentials.";
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, callBackScope, errorMsg);
+                        initiateCallback("onError", variable, errorMsg);
                     }
                     Utils.triggerFn(error, errorMsg);
                 });

@@ -77,7 +77,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
         function _onSocketOpen(variable, evt) {
             variable._socketConnected = true;
             // EVENT: ON_OPEN
-            initiateCallback(VARIABLE_CONSTANTS.EVENT.OPEN, variable, variable.activeScope, _.get(evt, 'data'), evt);
+            initiateCallback(VARIABLE_CONSTANTS.EVENT.OPEN, variable, _.get(evt, 'data'), evt);
         }
 
         /**
@@ -91,7 +91,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             variable._socketConnected = false;
             freeSocket(variable);
             // EVENT: ON_CLOSE
-            initiateCallback(VARIABLE_CONSTANTS.EVENT.CLOSE, variable, variable.activeScope, _.get(evt, 'data'), evt);
+            initiateCallback(VARIABLE_CONSTANTS.EVENT.CLOSE, variable, _.get(evt, 'data'), evt);
         }
 
         /**
@@ -105,7 +105,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             variable._socketConnected = false;
             freeSocket(variable);
             // EVENT: ON_ERROR
-            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, variable.activeScope, _.get(evt, 'data') || 'Error while connecting with ' + variable.service, evt);
+            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, _.get(evt, 'data') || 'Error while connecting with ' + variable.service, evt);
         }
 
         /**
@@ -121,7 +121,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
             var data = _.get(evt, 'data'), value, dataLength, dataLimit, shouldAddToLast, insertIdx;
             data = Utils.getValidJSON(data) || Utils.xmlToJson(data) || data;
             // EVENT: ON_MESSAGE
-            value = initiateCallback(VARIABLE_CONSTANTS.EVENT.MESSAGE_RECEIVE, variable, variable.activeScope, data, evt);
+            value = initiateCallback(VARIABLE_CONSTANTS.EVENT.MESSAGE_RECEIVE, variable, data, evt);
             data = WM.isDefined(value) ? value : data;
             if (shouldAppendData(variable)) {
                 variable.dataSet = variable.dataSet || [];
@@ -151,7 +151,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          */
         function _onBeforeSend(variable, message) {
             // EVENT: ON_BEFORE_SEND
-            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_SEND, variable, variable.activeScope, message);
+            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_SEND, variable, message);
         }
 
         /**
@@ -163,7 +163,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          */
         function _onBeforeSocketClose(variable, evt) {
             // EVENT: ON_BEFORE_CLOSE
-            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_CLOSE, variable, variable.activeScope, _.get(evt, 'data'), evt);
+            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_CLOSE, variable, _.get(evt, 'data'), evt);
         }
 
         /**
@@ -176,7 +176,7 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
          */
         function _onBeforeSocketOpen(variable, evt) {
             // EVENT: ON_BEFORE_OPEN
-            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_OPEN, variable, variable.activeScope, _.get(evt, 'data'), evt);
+            return initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_OPEN, variable, _.get(evt, 'data'), evt);
         }
 
         /**

@@ -41,30 +41,16 @@ wm.variables.services.LogoutVariableService = ['Variables',
 
         methods = {
             logout: function (variable, options, success, error) {
-                var variableOwner = variable.owner,
-                    variableEvents = VARIABLE_CONSTANTS.EVENTS,
-                    callBackScope,
+                var variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     logoutErrorMessage = "No authenticated user to logout.",
                     handleError,
                     redirectPage,
                     appManager;
 
-                /* get the callback scope for the variable based on its owner */
-                if (variableOwner === "App") {
-                    /* TODO: to look for a better option to get App/Page the controller's scope */
-                    callBackScope = $rootScope || {};
-                } else {
-                    if (variable._prefabName) {
-                        callBackScope = options.scope || {};
-                    } else {
-                        callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
-                    }
-                }
-
                 handleError = function (msg) {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, callBackScope, msg);
+                        initiateCallback("onError", variable, msg);
                     }
                     Utils.triggerFn(error, msg);
                 };
@@ -94,7 +80,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                         then(function () {
                                             WM.forEach(variableEvents, function (event) {
                                                 if (event !== "onError") {
-                                                    initiateCallback(event, variable, callBackScope);
+                                                    initiateCallback(event, variable);
                                                 }
                                             });
                                         });
