@@ -201,7 +201,11 @@ WM.module('wm.widgets.base')
                 //removing the data-evaluated attribute. If the evaluation value is correct this property is not required in design mode.
                 $el.removeAttr(dataAttrKey);
                 $is[key + '__updateFromWatcher'] = true;
-                if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
+                //For dataset widgets, show default dataset values, if dataset is not available in studio mode
+                if ($is.widgetid && propDetails.showPrettyExprInDesigner && propDetails.defaultvalue && (_.isEmpty(newVal) || (newVal.data && _.isEmpty(newVal.data)))) {
+                    value = propDetails.defaultvalue;
+                    $el.attr(dataAttrKey, '');
+                } else if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
                     //Check if "newVal" is a Pageable object.
                     if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                         // Check if the scope is configured to accept Pageable objects.
