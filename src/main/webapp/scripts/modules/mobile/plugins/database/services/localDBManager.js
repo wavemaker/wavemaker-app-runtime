@@ -1,4 +1,4 @@
-/*global wm, WM, _, window*/
+/*global wm, WM, _, window, moment*/
 /*jslint sub: true, unparam:true*/
 
 /**
@@ -18,6 +18,7 @@ wm.plugins.database.services.LocalDBManager = [
     'DeviceFileService',
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
+    'SecurityService',
     'Utils',
     function ($cordovaFile,
               $cordovaNetwork,
@@ -29,6 +30,7 @@ wm.plugins.database.services.LocalDBManager = [
               DeviceFileService,
               LocalDBStoreFactory,
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
+              SecurityService,
               Utils) {
         'use strict';
         var META_LOCATION = 'www/metadata/app',
@@ -37,8 +39,43 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectory,
             dbInstallDirectoryName,
             databases,
-            connectivityChecker;
-
+            connectivityChecker,
+            systemProperties = {
+                'USER_ID' : {
+                    'name' : 'USER_ID',
+                    'value' : function () {
+                        var defer = $q.defer();
+                        SecurityService.getUserId(defer.resolve, defer.reject);
+                        return defer.promise;
+                    }
+                },
+                'USER_NAME' : {
+                    'name' : 'USER_NAME',
+                    'value' : function () {
+                        var defer = $q.defer();
+                        SecurityService.getUserName(defer.resolve, defer.reject);
+                        return defer.promise;
+                    }
+                },
+                'DATE_TIME' : {
+                    'name' : 'DATE_TIME',
+                    'value' : function () {
+                        return moment().format('YYYY-MM-DDThh:mm:ss');
+                    }
+                },
+                'DATE' : {
+                    'name' : 'CURRENT_DATE',
+                    'value' : function () {
+                        return moment().format('YYYY-MM-DD');
+                    }
+                },
+                'TIME' : {
+                    'name' : 'TIME',
+                    'value' : function () {
+                        return moment().format('hh:mm:ss');
+                    }
+                }
+            };
         if (cordova) {
             if (Utils.isIOS()) {
                 dbInstallDirectoryName = 'LocalDatabase';
@@ -129,7 +166,14 @@ wm.plugins.database.services.LocalDBManager = [
                 if (queryData.nativeSql && !queryData.update) {
                     query = queryData.queryString;
                     params = _.map(query.match(/:[a-zA-Z0-9]+\s?/g), function (p) {
-                        return _.trim(p.substring(1));
+                        var paramObj;
+                        p = _.trim(p.substring(1));
+                        paramObj = _.find(queryData.parameters, {'name' : p});
+                        return {
+                            'name' : paramObj.name,
+                            'type' : paramObj.type,
+                            'variableType' : paramObj.variableType
+                        };
                     });
                     if (queryData.response) {
                         propertiesToTransform =  _.filter(queryData.response.properties, function (item) {
@@ -516,31 +560,35 @@ wm.plugins.database.services.LocalDBManager = [
          * @returns {object} a promise.
          */
         this.executeNamedQuery = function (dbName, queryName, params) {
-            var defer, queryData;
-            if (databases[dbName]) {
-                queryData = databases[dbName].queries[queryName];
-                if (queryData) {
-                    if (params && queryData.params) {
-                        params = _.map(queryData.params, function (p) {
-                            return params[p];
+            var queryData, paramPromises, self = this;
+            if (!databases[dbName] || !databases[dbName].queries[queryName]) {
+                return $q.reject('Query by name \'' + queryName + '\'Not Found');
+            }
+            queryData = databases[dbName].queries[queryName];
+            paramPromises = _.chain(queryData.params).filter(function (p) {
+                return p.variableType !== 'PROMPT';
+            }).forEach(function (p) {
+                var paramValue = systemProperties[p.variableType].value(p.name, params);
+                return $q.when(paramValue, function (v) {
+                    params[p.name] = v;
+                });
+            }).value();
+            return $q.all(paramPromises).then(function () {
+                params = _.map(queryData.params, function (p) {
+                    return params[p.name];
+                });
+                return self.executeSQLQuery(dbName, queryData.query, params).then(function (result) {
+                    if (result.rows && result.rows.length > 0
+                            && queryData.propertiesToTransform && queryData.propertiesToTransform.length > 0) {
+                        _.forEach(result.rows, function (row) {
+                            _.forEach(queryData.propertiesToTransform, function (p) {
+                                row[p.fieldName] = row[p.name];
+                            });
                         });
                     }
-                    return this.executeSQLQuery(dbName, queryData.query, params).then(function (result) {
-                        if (result.rows && result.rows.length > 0
-                                && queryData.propertiesToTransform && queryData.propertiesToTransform.length > 0) {
-                            _.forEach(result.rows, function (row) {
-                                _.forEach(queryData.propertiesToTransform, function (p) {
-                                    row[p.fieldName] = row[p.name];
-                                });
-                            });
-                        }
-                        return result;
-                    });
-                }
-            }
-            defer = $q.defer();
-            defer.reject('Query by name \'' + queryName + '\'Not Found');
-            return defer.promise;
+                    return result;
+                });
+            });
         };
 
         /**
