@@ -170,7 +170,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 headers = {},
                 requestBody,
                 url,
-                requiredParamMissing = false,
+                requiredParamMissing = [],
                 target,
                 pathParamRex,
                 invokeParams,
@@ -180,7 +180,8 @@ wm.variables.services.$servicevariable = ['Variables',
                 method,
                 formData,
                 formDataContentType,
-                isProxyCall;
+                isProxyCall,
+                isBodyTypeQuery = ServiceFactory.isBodyTypeQuery(variable);
 
             function getFormDataObj() {
                 if (formData) {
@@ -204,7 +205,7 @@ wm.variables.services.$servicevariable = ['Variables',
             _.forEach(operationInfo.parameters, function (param) {
                 var paramValue = param.sampleValue;
 
-                if (WM.isDefined(paramValue) && paramValue !== '') {
+                if ((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQuery) {
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
@@ -241,25 +242,40 @@ wm.variables.services.$servicevariable = ['Variables',
                         headers[param.name] = paramValue;
                         break;
                     case 'BODY':
-                        requestBody = paramValue;
+                        //For post/put query methods wrap the input
+                        if (isBodyTypeQuery) {
+                            requestBody = variable.dataBinding;
+                            //Check if all the required fields are provided with values
+                            if (!_.isEmpty(param.requiredFields)) {
+                                _.forEach(param.requiredFields, function (name) {
+                                    if (_.isUndefined(requestBody[name]) || requestBody[name] === '') {
+                                        requiredParamMissing.push(name);
+                                    }
+                                });
+                            }
+                        } else {
+                            requestBody = paramValue;
+                        }
                         break;
                     case 'FORMDATA':
                         requestBody = Utils.getFormData(getFormDataObj(), param, paramValue);
                         break;
                     }
                 } else if (param.required) {
-                    requiredParamMissing = param.name || param.id;
+                    requiredParamMissing.push(param.name || param.id);
                     return false;
                 }
             });
 
             // if required param not found, return error
+            requiredParamMissing = requiredParamMissing.join(',');
             if (requiredParamMissing) {
                 return {
                     'error': {
-                        'type': 'required_field_missing',
-                        'field': requiredParamMissing,
-                        'message': 'Required field : "' + requiredParamMissing + '" missing'
+                        'type'                    : 'required_field_missing',
+                        'field'                   : requiredParamMissing,
+                        'message'                 : 'Required field(s) missing: "' + requiredParamMissing + '"',
+                        'skipDefaultNotification' : true
                     }
                 };
             }
@@ -323,10 +339,10 @@ wm.variables.services.$servicevariable = ['Variables',
         /**
          * function to process error response from a service
          */
-        function processErrorResponse(variable, errMsg, errorCB, xhrObj, skipNotification) {
+        function processErrorResponse(variable, errMsg, errorCB, xhrObj, skipNotification, skipDefaultNotification) {
             // EVENT: ON_ERROR
             if (!skipNotification) {
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, errMsg, xhrObj);
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, errMsg, xhrObj, skipDefaultNotification);
             }
 
             /* trigger error callback */
@@ -467,7 +483,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     params = constructRestRequestParams(methodInfo, variable);
                 }
                 if (params.error && params.error.message) {
-                    processErrorResponse(variable, params.error.message, error, options.skipNotification);
+                    processErrorResponse(variable, params.error.message, error, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);
                     return;
                 }
             } else if (serviceType === SERVICE_TYPE_REST) {

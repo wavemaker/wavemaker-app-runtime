@@ -1411,7 +1411,7 @@ wm.variables.services.Variables = [
                     call('getData', name, {scope: scope, skipFetchData: !fetchData});
                 }
             },
-            initiateCallback = function (event, variable, response, info) {
+            initiateCallback = function (event, variable, response, info, skipDefaultNotification) {
                 /*checking if event is available and variable has event property and variable event property bound to function*/
                 var eventValues = variable[event],
                     retVal,
@@ -1419,7 +1419,7 @@ wm.variables.services.Variables = [
                     callBackScope = variable.activeScope;
                 if (eventValues) {
                     retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable, info);
-                } else if (event === VARIABLE_CONSTANTS.EVENT.ERROR) {
+                } else if ((event === VARIABLE_CONSTANTS.EVENT.ERROR) && !skipDefaultNotification) {
                     /* in case of error, if no event assigned, handle through default notification variable */
                     errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
                     if (errorVariable) {

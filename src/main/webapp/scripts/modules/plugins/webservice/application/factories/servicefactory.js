@@ -199,6 +199,26 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 return (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(type) !== -1);// || VARIABLE_CONSTANTS.SERVICE_TYPE_DATA === type);
             },
 
+            //Check if variable/operation is a query type and of put/post type
+            isBodyTypeQuery = function (variable) {
+                return variable.controller === 'QueryExecution' && _.includes(['post', 'put'], variable.operationType);
+            },
+
+            //Return params from swagger for post/put query types
+            getRawParams = function (operationObj, definitions) {
+              var refValue = _.get(operationObj, ['parameters', 0, 'schema', '$ref']),
+                  refKey   = _.last(_.split(refValue, '/')),
+                  defObj   = definitions[refKey],
+                  propObj  = _.get(defObj, ['allOf', 1]),
+                  operationList = [];
+              _.forEach(propObj.properties, function (value, key) {
+                  value.name = key;
+                  value.required = _.includes(propObj.required, key);
+                  operationList.push(value);
+              });
+              return operationList;
+            },
+
             processOperations = function (serviceObj, operations, swagger) {
                 var paramsKey,
                     isRestSupportedService = isRESTSupported(serviceObj.type),
@@ -234,8 +254,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         returnObj,
                         returnType,
                         returnFormat,
-                        dbOperationName,
-                        tag,
+                        rawParameters,
                         isDbServiceOp = function (type) {
                             return type === "hqlquery" || type === "nativequery" || type === "procedure";
                         };
@@ -243,9 +262,6 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (isDbServiceOp(operation.operationType)) {
                         returnType = operation.return;
                     } else {
-                        dbOperationName = operation.relativePath && operation.relativePath.split("/").pop();
-                        tag = _.get(operation, 'tags[0]');
-
                         // fetch return type and operation object from swagger
                         if (operation.responses && operation.responses['200'].schema) {
                             schemaObject = operation.responses['200'].schema;
@@ -297,7 +313,13 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     /* process the operation params as well */
                     if (!WM.element.isEmptyObject(operation[paramsKey])) {
                         operationObject.parameter = [];
-                        WM.forEach(operation[paramsKey], function (param) {
+                        //For post/put query methods get params from definitions
+                        if (isBodyTypeQuery(operationObject)) {
+                            rawParameters = getRawParams(operation, definitions);
+                        } else {
+                            rawParameters = operation[paramsKey];
+                        }
+                        WM.forEach(rawParameters, function (param) {
                             isList = param[IS_LIST_KEY];
 
                             /* special cases for MultiPart type params */
@@ -696,7 +718,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param {prefabName} prefab name
              * @param {object} having service output
              */
-            getPrefabTypes: getPrefabTypes
+            getPrefabTypes: getPrefabTypes,
+            isBodyTypeQuery: isBodyTypeQuery
         };
     }
 ];
