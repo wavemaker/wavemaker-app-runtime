@@ -112,11 +112,21 @@ html, body {
 .app-icon-wrapper {
   display: inline-block;
   position: relative;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
   &[icon-position="right"] {
     direction: rtl;
   }
   .app-icon {
-    vertical-align: baseline;
+    vertical-align: middle;
+  }
+  .app-label {
+    vertical-align: middle;
+    margin: 0;
+    text-overflow: ellipsis;
+    max-width: 95%;
+    overflow: hidden;
   }
 }
 
