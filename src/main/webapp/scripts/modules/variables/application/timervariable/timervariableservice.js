@@ -38,9 +38,8 @@ wm.variables.services.TimerVariableService = ['Variables',
                 var repeatTimer = variable.repeating,
                     delay = variable.delay || DEFAULT_TIMER_DELAY,
                     event = "onTimerFire",
-                    callBackScope = options.scope || $rootScope,
                     exec = function () {
-                        initiateCallback(event, variable, callBackScope);
+                        initiateCallback(event, variable);
                     };
 
                 variable._promise = repeatTimer ? $interval(exec, delay) : $timeout(function () {
