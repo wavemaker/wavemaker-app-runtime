@@ -240,6 +240,9 @@ WM.module('wm.layouts.containers')
                                                     $window.location.href = itemLink;
                                                 }
                                             });
+                                        } else if (itemLink) {
+                                            //If action is not present and link is there
+                                            $window.location.href = itemLink;
                                         }
                                     }
                                 });
