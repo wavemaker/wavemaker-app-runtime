@@ -38,6 +38,8 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.runtime.data.model.JavaType;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
+import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.transform.Transformers;
@@ -249,24 +251,34 @@ public class QueryHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> prepareParameters(RuntimeQuery query) {
-        Map<String, Object> params = new HashMap<>(query.getParameters().size());
+    public static Map<String, Object> prepareQueryParameters(RuntimeQuery query) {
         final List<QueryParameter> parameters = query.getParameters();
-        if (!parameters.isEmpty()) {
-            for (final QueryParameter parameter : parameters) {
-                Object convertedValue;
-                if (parameter.isList()) {
-                    convertedValue = new ArrayList<>();
-                    for (final Object object : (List<Object>) parameter.getTestValue()) {
-                        ((List<Object>) convertedValue).add(convertValue(parameter, object));
-                    }
-                } else {
-                    convertedValue = convertValue(parameter, parameter.getTestValue());
-                }
-                params.put(parameter.getName(), convertedValue);
-            }
+        Map<String, Object> params = new HashMap<>(parameters.size());
+        for (final QueryParameter parameter : parameters) {
+            params.put(parameter.getName(), prepareParam(parameter));
         }
         return params;
+    }
+
+    public static List<ProcedureParameter> prepareProcedureParameters(RuntimeProcedure procedure) {
+        final List<ProcedureParameter> parameters = procedure.getParameters();
+        for (final QueryParameter parameter : parameters) {
+                parameter.setTestValue(prepareParam(parameter));
+        }
+        return parameters;
+    }
+
+    private static Object prepareParam(final QueryParameter parameter) {
+        Object convertedValue;
+        if (parameter.isList()) {
+            convertedValue = new ArrayList<>();
+            for (final Object object : (List<Object>) parameter.getTestValue()) {
+                ((List<Object>) convertedValue).add(convertValue(parameter, object));
+            }
+        } else {
+            convertedValue = convertValue(parameter, parameter.getTestValue());
+        }
+        return convertedValue;
     }
 
     protected static Object convertValue(QueryParameter parameter, Object value) {
