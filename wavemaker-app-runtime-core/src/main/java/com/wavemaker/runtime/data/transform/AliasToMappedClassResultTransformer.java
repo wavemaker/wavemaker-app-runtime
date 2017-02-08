@@ -22,18 +22,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.springframework.beans.BeanUtils;
 
 import com.google.common.base.Optional;
-import com.wavemaker.runtime.data.annotations.ColumnAlias;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.annotations.ColumnAlias;
+import com.wavemaker.runtime.data.model.JavaType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -46,6 +49,32 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
 
     private Map<String, PropertyDescriptor> aliasVsDescriptorMap;
     private Map<String, String> fieldVsAliasMap;
+
+    private static MultiValueMap classNameVsJavaTypeMap = new MultiValueMap();
+
+    static {
+        classNameVsJavaTypeMap.put(JavaType.BYTE.getClassName(), JavaType.BYTE);
+        classNameVsJavaTypeMap.put(JavaType.SHORT.getClassName(), JavaType.SHORT);
+        classNameVsJavaTypeMap.put(JavaType.INTEGER.getClassName(), JavaType.INTEGER);
+        classNameVsJavaTypeMap.put(JavaType.LONG.getClassName(), JavaType.LONG);
+        classNameVsJavaTypeMap.put(JavaType.BIG_INTEGER.getClassName(), JavaType.BIG_INTEGER);
+        classNameVsJavaTypeMap.put(JavaType.FLOAT.getClassName(), JavaType.FLOAT);
+        classNameVsJavaTypeMap.put(JavaType.DOUBLE.getClassName(), JavaType.DOUBLE);
+        classNameVsJavaTypeMap.put(JavaType.BIG_DECIMAL.getClassName(), JavaType.BIG_DECIMAL);
+        classNameVsJavaTypeMap.put(JavaType.BOOLEAN.getClassName(), JavaType.BOOLEAN);
+        classNameVsJavaTypeMap.put(JavaType.YES_OR_NO.getClassName(), JavaType.YES_OR_NO);
+        classNameVsJavaTypeMap.put(JavaType.TRUE_OR_FALSE.getClassName(), JavaType.TRUE_OR_FALSE);
+        classNameVsJavaTypeMap.put(JavaType.CHARACTER.getClassName(), JavaType.CHARACTER);
+        classNameVsJavaTypeMap.put(JavaType.STRING.getClassName(), JavaType.STRING);
+        classNameVsJavaTypeMap.put(JavaType.TEXT.getClassName(), JavaType.TEXT);
+        classNameVsJavaTypeMap.put(JavaType.CLOB.getClassName(), JavaType.CLOB);
+        classNameVsJavaTypeMap.put(JavaType.BLOB.getClassName(), JavaType.BLOB);
+        classNameVsJavaTypeMap.put(JavaType.DATE.getClassName(), JavaType.DATE);
+        classNameVsJavaTypeMap.put(JavaType.TIME.getClassName(), JavaType.TIME);
+        classNameVsJavaTypeMap.put(JavaType.DATETIME.getClassName(), JavaType.DATETIME);
+        classNameVsJavaTypeMap.put(JavaType.TIMESTAMP.getClassName(), JavaType.TIMESTAMP);
+        classNameVsJavaTypeMap.put(JavaType.CURSOR.getClassName(), JavaType.CURSOR);
+    }
 
     public AliasToMappedClassResultTransformer(final Class resultClass) {
         Objects.requireNonNull(resultClass, "Result Class cannot be null");
@@ -62,12 +91,39 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                 final String alias = aliases[i];
 
                 final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
-                descriptor.getWriteMethod().invoke(object, tuple[i]);
+                Object transformedValue = transformValue(tuple[i], descriptor);
+                descriptor.getWriteMethod().invoke(object, transformedValue);
             }
             return object;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
         }
+    }
+
+    private Object transformValue(final Object value, final PropertyDescriptor descriptor) {
+        final Object dbValue = value;
+        Object transformedValue = null;
+        if(dbValue != null) {
+            if (dbValue instanceof List) {
+                transformedValue = transformField(descriptor, dbValue);
+            } else {
+                final String className = descriptor.getPropertyType().getName();
+                final Collection values = classNameVsJavaTypeMap.getCollection(className);
+                if(values != null) {
+                    for (final Object javaTypeObject : values) {
+                        if(transformedValue == null) {
+                            JavaType javaType = ((JavaType) javaTypeObject);
+                            transformedValue = javaType.fromDbValue(dbValue);
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    transformedValue = dbValue;
+                }
+            }
+        }
+        return transformedValue;
     }
 
     @Override
