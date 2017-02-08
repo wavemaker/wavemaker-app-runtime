@@ -160,7 +160,6 @@
   }
 
   .navbar {
-    background-color: inherit;
     border: 0;
     margin: 0;
     min-height: 0;
@@ -190,15 +189,12 @@
     }
     .navbar-nav {
       margin: auto;
-      background-color: inherit;
       > li {
         height: @app-mobile-nav-height;
         > .app-menu, > .app-popover {
           > a {
             line-height: @app-mobile-nav-height;
             text-decoration: none;
-            background-color: transparent;
-            color: inherit;
           }
           .caret {
             display: none;
@@ -214,22 +210,19 @@
       &.navbar-right {
         text-align: right;
         .dropdown {
-          background-color: inherit;
           > .app-button, > a {
-            background-color: transparent;
             font-size: inherit;
             padding: 0 5pt;
             line-height: @app-mobile-nav-height;
-            color: inherit;
             border: 0;
           }
           .dropdown-menu {
             position: absolute;
-            background-color: inherit;
             right: 0;
             left: auto;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+            background-color: #fff;
             > li > a {
-              color: inherit;
               &:hover {
                 background-color: rgba(0,0,0,0.1);
               }
@@ -240,7 +233,6 @@
       > li {
         display: inline-block;
         vertical-align: top;
-        background-color: inherit;
         white-space: nowrap;
         i {
           font-size: @app-mobile-nav-icon-size;
@@ -250,7 +242,6 @@
           display: inline-block;
           line-height: @app-mobile-nav-height;
           padding: 0 5pt;
-          color: inherit;
           &:hover {
             background-color: transparent;
           }
