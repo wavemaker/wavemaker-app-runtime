@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -126,18 +126,19 @@ public class NativeProcedureExecutor {
     }
 
     private static List<Map<String, Object>> readResultSet(Object resultSet) {
-        ResultSet rset = (ResultSet) resultSet;
         List<Map<String, Object>> result = new ArrayList<>();
-
         // Dump the cursor
         try {
-            while (rset.next()) {
-                Map<String, Object> rowData = new LinkedHashMap<String, Object>();
-                int colCount = rset.getMetaData().getColumnCount();
-                for (int i = 1; i <= colCount; i++) {
-                    rowData.put(rset.getMetaData().getColumnName(i), rset.getObject(i));
+            if (resultSet != null) {
+                ResultSet rset = (ResultSet) resultSet;
+                while (rset.next()) {
+                    Map<String, Object> rowData = new LinkedHashMap<>();
+                    int colCount = rset.getMetaData().getColumnCount();
+                    for (int i = 1; i <= colCount; i++) {
+                        rowData.put(rset.getMetaData().getColumnName(i), rset.getObject(i));
+                    }
+                    result.add(rowData);
                 }
-                result.add(rowData);
             }
         } catch (SQLException e) {
             throw new WMRuntimeException("Failed to process cursor ", e);
