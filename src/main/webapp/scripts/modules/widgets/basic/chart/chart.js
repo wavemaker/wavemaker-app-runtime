@@ -82,6 +82,14 @@ WM.module('wm.widgets.basic')
                 'showlegend'        : true,
                 'title'             : true,
                 'subheading'        : true
+            },
+        // Getting the relevant aggregation function based on the selected option
+            aggregationFnMap = {
+                'average' : 'AVG',
+                'count'   : 'COUNT',
+                'maximum' : 'MAX',
+                'minimum' : 'MIN',
+                'sum'     : 'SUM'
             };
 
         // Configuring the properties panel based on the type of the chart chosen
@@ -170,27 +178,11 @@ WM.module('wm.widgets.basic')
             return isAggregationEnabled(scope) || (isGroupByEnabled(scope.groupby) && scope.isVisuallyGrouped) || scope.orderby;
         }
 
-        //Gets the value by parsing upto the leaf node
-        function getLeafNodeVal(key, dataObj) {
-            var keys = key.split('.'),
-                data = dataObj,
-                i;
-            for (i = 0; i < keys.length; i += 1) {
-                if (data) {
-                    data = data[keys[i]];
-                } else { //If value becomes undefined then acceess the key directly
-                    data =  dataObj[key];
-                    break;
-                }
-            }
-            return data;
-        }
-
         /*Charts like Line,Area,Cumulative Line does not support any other datatype
         other than integer unlike the column and bar.It is a nvd3 issue. Inorder to
         support that this is a fix*/
         function getxAxisVal(scope, dataObj, xKey, index) {
-            var value = getLeafNodeVal(xKey, dataObj);
+            var value = _.get(dataObj, xKey);
             //If x axis is other than number type then add indexes
             if (ChartService.isLineTypeChart(scope.type) && !Utils.isNumberType(scope.xAxisDataType)) {
                 //Verification to get the unique data keys
@@ -273,7 +265,7 @@ WM.module('wm.widgets.basic')
         //Returns the single data point based on the type of the data chart accepts
         function valueFinder(scope, dataObj, xKey, yKey, index, shape) {
             var xVal = getxAxisVal(scope, dataObj, xKey, index),
-                value = getLeafNodeVal(yKey, dataObj),
+                value = _.get(dataObj, yKey),
                 yVal = parseFloat(value) || value,
                 dataPoint = {},
                 size = parseFloat(dataObj[scope.bubblesize]) || 2;
@@ -373,24 +365,6 @@ WM.module('wm.widgets.basic')
             return datum;
         }
 
-        // Getting the relevant aggregation function based on the selected option
-        function getAggregationFunction(option) {
-            switch (option) {
-            case 'average':
-                return 'AVG';
-            case 'count':
-                return 'COUNT';
-            case 'maximum':
-                return 'MAX';
-            case 'minimum':
-                return 'MIN';
-            case 'sum':
-                return 'SUM';
-            default:
-                return '';
-            }
-        }
-
         //Constructing the grouped data based on the selection of orderby, x & y axis
         function getGroupedData(scope, queryResponse, groupingColumn) {
             var  chartData = [],
@@ -466,7 +440,7 @@ WM.module('wm.widgets.basic')
 
             // adding aggregation column, if enabled
             if (isAggregationEnabled(scope)) {
-                columns.push(getAggregationFunction(scope.aggregation) + '(' + aggColumn + ') AS ' + getValidAliasName(aggColumn));
+                columns.push(aggregationFnMap[scope.aggregation] + '(' + aggColumn + ') AS ' + getValidAliasName(aggColumn));
             }
 
             //Remove aggregation column since it is already added
