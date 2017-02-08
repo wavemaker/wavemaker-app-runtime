@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.dao.procedure.parameters.TestParameter;
+import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
@@ -48,7 +49,7 @@ public class DesignTimeServiceUtils {
     public static List<ResolvableParam> prepareParameters(final RuntimeProcedure procedure) {
         List<ResolvableParam> testParameters = new ArrayList<>(procedure.getParameters().size());
 
-        final List<ProcedureParameter> parameters = procedure.getParameters();
+        final List<ProcedureParameter> parameters = QueryHelper.prepareProcedureParameters(procedure);
         for (final ProcedureParameter parameter : parameters) {
             testParameters.add(new TestParameter(parameter));
         }

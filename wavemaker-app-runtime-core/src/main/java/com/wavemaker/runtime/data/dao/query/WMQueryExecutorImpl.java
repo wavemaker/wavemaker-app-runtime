@@ -105,7 +105,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public Page<Object> executeRuntimeQuery(final RuntimeQuery query, final Pageable pageable) {
-        final Map<String, Object> prepareParameters = QueryHelper.prepareParameters(query);
+        final Map<String, Object> prepareParameters = QueryHelper.prepareQueryParameters(query);
         Page<Object> result;
         if (query.isNativeSql()) {
             result = executeNativeQuery(query.getQueryString(), prepareParameters, pageable);
@@ -121,7 +121,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
-                return QueryHelper.createQuery(runtimeQuery, QueryHelper.prepareParameters(runtimeQuery), session)
+                return QueryHelper.createQuery(runtimeQuery, QueryHelper.prepareQueryParameters(runtimeQuery), session)
                         .executeUpdate();
             }
 
