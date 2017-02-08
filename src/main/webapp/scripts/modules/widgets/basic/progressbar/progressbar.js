@@ -101,7 +101,8 @@ WM.module('wm.widgets.basic')
                 val = val.replace(/\%$/, '');
 
                 var n = val.lastIndexOf('.');
-                return (val.length - n - 1);
+
+                return (n === -1) ? 0 : (val.length - n - 1);
             }
 
             //Updates caption placement of each progress bar
