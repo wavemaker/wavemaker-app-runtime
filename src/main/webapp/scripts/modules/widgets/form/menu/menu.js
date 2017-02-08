@@ -274,6 +274,9 @@ WM.module('wm.widgets.form')
                 return template[0].outerHTML;
             },
             'link': function (scope, element) {
+                var menuScope = element.closest('.dropdown').isolateScope(),
+                    menuLink  = scope.item[menuScope.itemlink];
+
                 if (scope.item.children && scope.item.children.length > 0) {
                     element.append('<wm-menu-dropdown items="item.children"  linktarget="linktarget" menualign="menualign"/>');
                     element.off('click');
@@ -281,25 +284,26 @@ WM.module('wm.widgets.form')
                 }
 
                 //If nav item is menu then set it links active if route param is same as link
-                if (element.closest('.app-nav-item').length && scope.item.link) {
-                    if ($routeParams.name === (scope.item.link && scope.item.link.substring(2))) {
+                if (element.closest('.app-nav-item').length && menuLink) {
+                    if ($routeParams.name === menuLink.substring(2)) {
                         element.addClass('active');
                     }
                 }
 
                 scope.onSelect = function (args) {
+                    var itemLink   = args.$item[menuScope.itemlink],
+                        itemAction = args.$item[menuScope.itemaction];
 
                     scope.$parent.onSelect(args);
-
-                    if (args.$item.action) {
-                        Utils.evalExp(element.closest('.dropdown').scope(), args.$item.action).then(function () {
-                            if (args.$item.link) {
-                                $window.location.href = args.$item.link;
+                    if (itemAction) {
+                        Utils.evalExp(element.closest('.dropdown').scope(), itemAction).then(function () {
+                            if (itemLink) {
+                                $window.location.href = itemLink;
                             }
                         });
-                    } else if (args.$item.link) {
+                    } else if (itemLink) {
                         //If action is not present and link is there
-                        $window.location.href = args.$item.link;
+                        $window.location.href = itemLink;
                     }
                 };
             }
