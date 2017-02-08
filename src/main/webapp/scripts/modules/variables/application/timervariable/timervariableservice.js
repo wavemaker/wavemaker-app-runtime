@@ -38,6 +38,7 @@ wm.variables.services.TimerVariableService = ['Variables',
                 var repeatTimer = variable.repeating,
                     delay = variable.delay || DEFAULT_TIMER_DELAY,
                     event = "onTimerFire",
+                    callBackScope = options.scope || $rootScope,
                     exec = function () {
                         initiateCallback(event, variable);
                     };
