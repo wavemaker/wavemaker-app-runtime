@@ -220,8 +220,8 @@ WM.module('wm.layouts.containers')
                             }
 
                             $el.on('click.on-select', '.app-anchor', function (e) {
-                                var $target = WM.element(this),
-                                    $li     = $target.closest('.app-nav-item'),
+                                var $target    = WM.element(this),
+                                    $li        = $target.closest('.app-nav-item'),
                                     itemLink,
                                     itemAction;
                                 $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
@@ -231,8 +231,8 @@ WM.module('wm.layouts.containers')
                                     Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
 
                                     if ($is.selecteditem) {
-                                        itemLink   = $is.selecteditem.itemlink || $is.selecteditem.link;
-                                        itemAction = $is.selecteditem.itemaction || $is.selecteditem.action;
+                                        itemLink   = $is.selecteditem[$is.itemlink] || $is.selecteditem.link;
+                                        itemAction = $is.selecteditem[$is.itemaction] || $is.selecteditem.action;
 
                                         if (itemAction) {
                                             Utils.evalExp($el.scope(), itemAction).then(function () {
