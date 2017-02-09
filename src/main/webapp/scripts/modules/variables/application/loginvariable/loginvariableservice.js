@@ -79,7 +79,9 @@ wm.variables.services.LoginVariableService = ['Variables',
                 } else if (output === false) {
                     return;
                 }
+                $rootScope.$emit('toggle-variable-state', variable.name, true);
                 variable.promise = SecurityService.appLogin(params, function (response) {
+                    $rootScope.$emit('toggle-variable-state', variable.name, false);
                     var redirectUrl = response && response.url ? response.url : 'index.html',
                         appManager = Utils.getService("AppManager"),
                         lastLoggedinUser = SecurityService.getLastLoggedInUser();
@@ -141,6 +143,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                             $rootScope._noRedirect = undefined;
                         });
                 }, function (errorMsg) {
+                    $rootScope.$emit('toggle-variable-state', variable.name, false);
                     errorMsg = errorMsg || "Invalid credentials.";
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
