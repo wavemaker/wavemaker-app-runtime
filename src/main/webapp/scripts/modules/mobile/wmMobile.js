@@ -1,19 +1,48 @@
-/*global WM, window, _, cordova, document*/
+/*global WM, window, _, cordova, document, navigator */
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService',
+    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService', '$document',
         // Don't remove below services. This is required for initialization
         'DeviceFileService', 'DeviceFileCacheService',
-        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService) {
+        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService, $document) {
             'use strict';
+
+            var initialScreenSize,
+                $appEl,
+                pageReadyDeregister;
+
             /* Mark the mobileApplication type to true */
             $rootScope.isMobileApplicationType = true;
 
             if ($location.protocol() === 'file') {
                 CONSTANTS.hasCordova = true;
+                $appEl =  WM.element('.wm-app:first');
+                initialScreenSize = window.innerHeight;
+
+                $appEl.addClass('cordova');
+
+                // keyboard class is added when keyboard is open.
+                window.addEventListener('resize', function () {
+                    if (window.innerHeight < initialScreenSize) {
+                        $appEl.addClass('keyboard');
+                    } else {
+                        $appEl.removeClass('keyboard');
+                    }
+                });
+
                 $rootScope.$on('application-ready', function () {
                     AppAutoUpdateService.start();
+                });
+
+                pageReadyDeregister = $rootScope.$on('page-ready', function () {
+                    navigator.splashscreen.hide();
+                    pageReadyDeregister();
+                });
+
+                // On back button click, if activePage is landingPage then exit the app
+                $document.on('backbutton', function () {
+                    $rootScope.$emit('backbutton');
                 });
             }
             if (CONSTANTS.isRunMode) {
@@ -87,7 +116,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             };
             //On Application start
             $rootScope.$on('application-ready', function () {
-                 var msgContent = {key: 'on-load'};
+                var msgContent = {key: 'on-load'};
                 //Notify preview window that application is ready. Otherwise, identify the OS.
                 if (window.top !== window) {
                     window.top.postMessage(Utils.isIE9() ? JSON.stringify(msgContent) : msgContent, '*');
