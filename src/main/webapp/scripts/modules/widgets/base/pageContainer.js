@@ -101,10 +101,10 @@ WM.module('wm.widgets.base')
                     } else {
                         /* compile */
                         target.html($compile(partialMarkup)(scope));
+                        $timeout(function () {
+                            Utils.triggerFn(iScope.onLoad, {$isolateScope: iScope});
+                        }, undefined, false);
                     }
-                    $timeout(function () {
-                        Utils.triggerFn(iScope.onLoad, {$isolateScope: iScope});
-                    }, undefined, false);
                 } else {
                     return;
                 }
