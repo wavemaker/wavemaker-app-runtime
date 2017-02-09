@@ -50,6 +50,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_SECURITY: "SecurityServiceType",
     SERVICE_NAME_FEED: "FeedService",
     SERVICE_TYPE_WEBSOCKET: "WebSocketService",
+    BODY_FIELD: "bodyField",
     REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService", "WebSocketService"],
     PAGINATION_PARAMS: ["page", "size", "sort"],
     DEFAULT_VAR: {
