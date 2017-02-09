@@ -55,7 +55,9 @@ wm.variables.services.LogoutVariableService = ['Variables',
                     Utils.triggerFn(error, msg);
                 };
 
+                $rootScope.$emit('toggle-variable-state', variable.name, true);
                 SecurityService.isAuthenticated(function (isAuthenticated) {
+                    $rootScope.$emit('toggle-variable-state', variable.name, false);
                     if (isAuthenticated) {
                         variable.promise = SecurityService.appLogout(function (redirectUrl) {
                             redirectUrl = Utils.getValidJSON(redirectUrl);
@@ -93,6 +95,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                         handleError();
                     }
                 }, function () {
+                    $rootScope.$emit('toggle-variable-state', variable.name, false);
                     handleError(logoutErrorMessage);
                 });
             },
