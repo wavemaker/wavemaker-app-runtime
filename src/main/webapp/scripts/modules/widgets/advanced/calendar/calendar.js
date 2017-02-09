@@ -439,6 +439,7 @@ WM.module('wm.widgets.advanced')
                                     'select'          : onSelectProxy,
                                     'eventRender'     : eventRenderProxy,
                                     'viewRender'      : viewRenderProxy,
+                                    'unselectAuto'    : false,
                                     'dayNames'        : $locale.DATETIME_FORMATS.DAY,
                                     'dayNamesShort'   : $locale.DATETIME_FORMATS.SHORTDAY,
                                     'views'           : {
