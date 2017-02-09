@@ -78,60 +78,65 @@ WM.module('wm.layouts.containers')
                         childrenField = $is.itemchildren || 'children',
                         actionField   = $is.itemaction || 'action';
 
-                    $is.nodes.forEach(function (node, index) {
+                    $is.nodes = $is.nodes.reduce(function (result, node, index) {
 
-                        var $a           = WM.element('<a class="app-anchor"></a>'),
-                            $a_caption   = WM.element('<span class="anchor-caption"></span>'),
-                            $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
-                            $i           = WM.element('<i class="app-nav-icon"></i>'),
-                            $badge       = WM.element('<span class="badge"></span>'),
-                            itemLabel    = node[labelField],
-                            itemClass    = node[iconField],
-                            itemLink     = node[itemField],
-                            itemBadge    = node[badgeField],
-                            itemAction   = node[actionField],
-                            itemChildren = node[childrenField],
-                            $menu;
+                        if (Utils.validateAccessRoles(node[$is.userrole || 'role'])) {
+                            result.push(node);
+                            var $a           = WM.element('<a class="app-anchor"></a>'),
+                                $a_caption   = WM.element('<span class="anchor-caption"></span>'),
+                                $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
+                                $i           = WM.element('<i class="app-nav-icon"></i>'),
+                                $badge       = WM.element('<span class="badge"></span>'),
+                                itemLabel    = node[labelField],
+                                itemClass    = node[iconField],
+                                itemLink     = node[itemField],
+                                itemBadge    = node[badgeField],
+                                itemAction   = node[actionField],
+                                itemChildren = node[childrenField],
+                                $menu;
 
-                        // menu widget expects data as an array.
-                        // push the current object as an array into the internal array
-                        $is._nodes.push(node[childrenField]);
+                            // menu widget expects data as an array.
+                            // push the current object as an array into the internal array
+                            $is._nodes.push(node[childrenField]);
 
-                        if ($routeParams.name === (itemLink && itemLink.substring(2))) {
-                            $li.addClass('active');
-                        }
-
-                        if (itemChildren && WM.isArray(itemChildren)) {
-
-                            $menu = WM.element('<wm-menu>');
-
-                            $menu.attr({
-                                'caption'     : itemLabel,
-                                'dataset'     : 'bind:_nodes['+ index +']',
-                                'itemlabel'   : labelField,
-                                'itemlink'    : itemField,
-                                'itemaction'  : itemAction,
-                                'itemicon'    : iconField,
-                                'itemchildren': childrenField,
-                                'type'        : 'anchor',
-                                'iconclass'   : itemClass || '',
-                                'on-select'   : '_onMenuItemSelect($event, $item)',
-                                'autoclose'   : $is.autoclose
-                            });
-
-                            $li.append($menu);
-                            $el.append($li);
-                        } else {
-                            $i.addClass(itemClass);
-                            $a.append($a_caption.html(itemLabel)).prepend($i);
-                            if (itemBadge) {
-                                $a.append($badge.html(itemBadge));
+                            if ($routeParams.name === (itemLink && itemLink.substring(2))) {
+                                $li.addClass('active');
                             }
-                            $li.append($a);
-                            $el.append($li);
+
+                            if (itemChildren && WM.isArray(itemChildren)) {
+
+                                $menu = WM.element('<wm-menu>');
+
+                                $menu.attr({
+                                    'caption'     : itemLabel,
+                                    'dataset'     : 'bind:_nodes['+ index +']',
+                                    'itemlabel'   : labelField,
+                                    'itemlink'    : itemField,
+                                    'itemaction'  : itemAction,
+                                    'itemicon'    : iconField,
+                                    'itemchildren': childrenField,
+                                    'type'        : 'anchor',
+                                    'iconclass'   : itemClass || '',
+                                    'on-select'   : '_onMenuItemSelect($event, $item)',
+                                    'autoclose'   : $is.autoclose
+                                });
+
+                                $li.append($menu);
+                                $el.append($li);
+                            } else {
+                                $i.addClass(itemClass);
+                                $a.append($a_caption.html(itemLabel)).prepend($i);
+                                if (itemBadge) {
+                                    $a.append($badge.html(itemBadge));
+                                }
+                                $li.append($a);
+                                $el.append($li);
+                            }
                         }
 
-                    });
+                        return result;
+
+                    }, []);
 
                     $compile($el.contents())($is);
                 }
