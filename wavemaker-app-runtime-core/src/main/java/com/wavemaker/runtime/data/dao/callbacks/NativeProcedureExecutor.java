@@ -101,7 +101,7 @@ public class NativeProcedureExecutor {
                 statement.registerOutParameter(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
             if (param.getParameter().getParameterType().isInParam()) {
-                statement.setObject(i + 1, param.getValue());
+                statement.setObject(i + 1, param.getValue(), JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
         }
     }
