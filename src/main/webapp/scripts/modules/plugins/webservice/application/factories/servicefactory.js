@@ -201,7 +201,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
             //Check if variable/operation is a query type and of put/post type
             isBodyTypeQuery = function (variable) {
-                return variable.controller === 'QueryExecution' && _.includes(['post', 'put'], variable.operationType);
+                return (variable.controller === 'QueryExecution') && (variable.operationType !== 'get');
             },
 
             //Return params from swagger for post/put query types
@@ -212,8 +212,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
                   propObj  = _.get(defObj, ['allOf', 1]),
                   operationList = [];
               _.forEach(propObj.properties, function (value, key) {
-                  value.name = key;
-                  value.required = _.includes(propObj.required, key);
+                  value.name              = key;
+                  value[parameterTypeKey] = VARIABLE_CONSTANTS.BODY_FIELD;
+                  value.required          = _.includes(propObj.required, key);
                   operationList.push(value);
               });
               return operationList;
