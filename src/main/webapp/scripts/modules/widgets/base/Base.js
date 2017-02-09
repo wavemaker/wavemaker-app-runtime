@@ -452,15 +452,16 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "class": {"type": "string", "pattern": classRegex, "show": false},
-                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"},
-                        "itemaction": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
+                        "autoclose": {"type": "list", "options": ["outsideClick", "always", "disabled"], "value": "always"}
                     },
 
                     "wm.menu.dataProps": {
                         "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
-                        "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "objects"}
+                        "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "objects"},
+                        "itemaction": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "userrole": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
                     },
 
                     "wm.tree": {
@@ -1103,6 +1104,7 @@ WM.module('wm.widgets.base', [])
                         "itembadge": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemaction": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
+                        "userrole": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file', 'margin': ''} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -2041,7 +2043,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
-                {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itemaction", "itembadge", "itemchildren"], "parent": "properties"},
+                {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itemaction", "userrole", "itembadge", "itemchildren"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},

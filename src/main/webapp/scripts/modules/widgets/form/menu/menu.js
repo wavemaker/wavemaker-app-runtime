@@ -74,18 +74,25 @@ WM.module('wm.widgets.form')
             } else if (WM.isArray(newVal)) {
                 newVal = FormWidgetUtils.getOrderedDataSet(newVal, scope.orderby);
                 if (WM.isObject(newVal[0])) {
-                    transformFn = function (item) {
+                    transformFn = function (result, item) {
                         var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item.children);
-                        return {
-                            'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
-                            'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
-                            'disabled'  : item.disabled,
-                            'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link,
-                            'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
-                            'children'  : (WM.isArray(children) ? children : []).map(transformFn)
-                        };
+
+                        if (Utils.validateAccessRoles(item[scope.userrole || 'role'])) {
+                            result.push({
+                                'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
+                                'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
+                                'disabled'  : item.disabled,
+                                'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link,
+                                'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
+                                'children'  : (WM.isArray(children) ? children : []).reduce(transformFn, []),
+                                'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item.action,
+                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'}) || item.role
+                            });
+                        }
+
+                        return result;
                     };
-                    menuItems = newVal.map(transformFn);
+                    menuItems = newVal.reduce(transformFn, []);
                 } else {
                     menuItems = newVal.map(function (item) {
                         return {

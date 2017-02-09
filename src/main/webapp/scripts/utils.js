@@ -2384,6 +2384,23 @@ WM.module('wm.utils', [])
             }
         }
 
+        /**
+         * Validate if given access role is in current loggedin user access roles
+         * @param roleExp - roles available for current item
+         */
+        function validateAccessRoles(roleExp) {
+            var roles;
+
+            if (roleExp && CONSTANTS.isRunMode) {
+
+                roles = _.split(roleExp, ',').map(Function.prototype.call, String.prototype.trim);
+
+                return _.intersection(roles, $rootScope.userRoles).length;
+            }
+
+            return true;
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2518,4 +2535,5 @@ WM.module('wm.utils', [])
         this.isAppleProduct             = isAppleProduct;
         this.formatStyle                = formatStyle;
         this.getFormData                = getFormData;
+        this.validateAccessRoles        = validateAccessRoles;
     }]);
