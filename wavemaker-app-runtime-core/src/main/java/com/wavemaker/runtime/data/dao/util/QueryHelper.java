@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,6 +39,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
@@ -262,8 +263,11 @@ public class QueryHelper {
 
     public static List<ProcedureParameter> prepareProcedureParameters(RuntimeProcedure procedure) {
         final List<ProcedureParameter> parameters = procedure.getParameters();
-        for (final QueryParameter parameter : parameters) {
+        for (final ProcedureParameter parameter : parameters) {
+            final ProcedureParameterType parameterType = parameter.getParameterType();
+            if (parameterType.isInParam()) {
                 parameter.setTestValue(prepareParam(parameter));
+            }
         }
         return parameters;
     }
@@ -283,7 +287,14 @@ public class QueryHelper {
 
     protected static Object convertValue(QueryParameter parameter, Object value) {
         final JavaType javaType = parameter.getType();
-        return javaType.toDbValue(javaType.fromString(String.valueOf(value)));
+        Object convertedValue = null;
+        if (value != null) {
+            final String fromValue = String.valueOf(value);
+            if (StringUtils.isNotBlank(fromValue) || parameter.getType() == JavaType.STRING) {
+                convertedValue = javaType.toDbValue(javaType.fromString(fromValue));
+            }
+        }
+        return convertedValue;
     }
 
     public static Query createQuery(
