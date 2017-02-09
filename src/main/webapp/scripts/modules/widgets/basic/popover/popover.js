@@ -123,8 +123,6 @@ WM.module('wm.widgets.basic')
                 if (CONSTANTS.isRunMode) {
                     //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                     template.attr({
-                        'uib-popover'           : '{{_popoverOptions.content}}',
-                        'uib-popover-template'  : '_popoverOptions.contenturl',
                         'popover-class'         : '{{_popoverOptions.customclass}}',
                         'popover-placement'     : '{{_popoverOptions.placement}}',
                         'popover-trigger'       : '_popoverOptions.trigger',
@@ -132,6 +130,12 @@ WM.module('wm.widgets.basic')
                         'popover-is-open'       : '_popoverOptions.isOpen',
                         'popover-append-to-body': 'true'
                     });
+
+                    if (tAttrs.contentsource === 'inline') {
+                        template.attr('uib-popover', '{{_popoverOptions.content}}');
+                    } else {
+                        template.attr('uib-popover-template', '_popoverOptions.contenturl');
+                    }
 
                     //If interaction is not click then attach ng-mouseleave event
                     if (tAttrs.interaction !== 'click') {
@@ -149,44 +153,61 @@ WM.module('wm.widgets.basic')
                         $is.$lazyLoad       = WM.noop;
                     },
                     'post': function ($is, $el, attrs, nullCtrl, transcludeFn) {
-                        var isInlineContent = attrs.contentsource === 'inline';
+                        var isInlineContent = attrs.contentsource === 'inline',
+                            popoverScope,
+                            $popoverEl;
 
                         if (CONSTANTS.isRunMode) {
                             $is._isFirstTime = true;
                             if (isInlineContent) {
                                 $is._popoverOptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
                                 setStyleBlock($is);
-                            } else {
-                                var popoverScope = $is.$$childHead,
-                                    $popoverEl;
-                                if (popoverScope) {
-                                    /*Watch on popover isOpen to compile the partial markup
-                                      For first time when partial is not opened trigger the load to set partial content
-                                    */
-                                    popoverScope.$watch('isOpen', function (nv) {
-                                        if (nv || $is._isFirstTime) {
-                                            //Add custom mouseenter, leave events on popover
-                                            $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
+                            }
 
-                                            if ($popoverEl.length && _.includes(['default', 'hover'], $is.interaction)) {
-                                                $popoverEl.on('mouseenter', function () {
-                                                    $is._popoverOptions.isPopoverActive = true;
-                                                    $rs.$safeApply($is);
-                                                });
-                                                $popoverEl.on('mouseleave', function () {
-                                                    $is._popoverOptions.isPopoverActive = false;
-                                                    $is._popoverOptions.setHideTrigger(true);
-                                                });
+                            popoverScope = $is.$$childHead;
+
+                            if (popoverScope) {
+                                /*Watch on popover isOpen to compile the partial markup
+                                 For first time when partial is not opened trigger the load to set partial content
+                                 */
+                                popoverScope.$watch('isOpen', function (nv) {
+                                    if (nv || $is._isFirstTime) {
+                                        //On Open trigger onShow event
+                                        if (nv) {
+
+                                            if (!isInlineContent) {
+                                                Utils.triggerFn($is.onLoad, {'$isolateScope': $is});
                                             }
 
-                                            if ($is._popoverOptions.customclass) {
-                                                setStyleBlock($is);
-                                            }
-                                            Utils.triggerFn($is.$lazyLoad);
-                                            $is._isFirstTime = false;
+                                            Utils.triggerFn($is.onShow, {'$isolateScope' : $is});
                                         }
-                                    });
-                                }
+                                        //Add custom mouseenter, leave events on popover
+                                        $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
+
+                                        if ($popoverEl.length && _.includes(['default', 'hover'], $is.interaction)) {
+                                            $popoverEl.on('mouseenter', function () {
+                                                $is._popoverOptions.isPopoverActive = true;
+                                                $rs.$safeApply($is);
+                                            });
+                                            $popoverEl.on('mouseleave', function () {
+                                                $is._popoverOptions.isPopoverActive = false;
+                                                $is._popoverOptions.setHideTrigger(true);
+                                            });
+                                        }
+
+                                        if ($is._popoverOptions.customclass) {
+                                            setStyleBlock($is);
+                                        }
+
+                                        if (!isInlineContent) {
+                                            Utils.triggerFn($is.$lazyLoad);
+                                        }
+
+                                        $is._isFirstTime = false;
+                                    } else {
+                                        Utils.triggerFn($is.onHide, {'$isolateScope' : $is});
+                                    }
+                                });
                             }
                         }
 
