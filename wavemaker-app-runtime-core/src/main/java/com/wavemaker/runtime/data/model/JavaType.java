@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,14 +29,15 @@ import org.joda.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.converters.DateTimeConverter;
 import com.wavemaker.runtime.data.converters.DateTypeConverter;
 import com.wavemaker.runtime.data.converters.HibernateBackedJavaTypeConverter;
 import com.wavemaker.runtime.data.converters.JavaTypeConverter;
 import com.wavemaker.runtime.data.converters.ObjectTypeConverter;
+import com.wavemaker.runtime.data.converters.StringTypeConverter;
 import com.wavemaker.runtime.data.converters.TimeTypeConverter;
 import com.wavemaker.runtime.data.converters.TimestampTypeConverter;
-import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -68,8 +69,7 @@ public enum JavaType {
             new HibernateBackedJavaTypeConverter(TrueFalseType.INSTANCE.getJavaTypeDescriptor())),
     CHARACTER(char.class.getName(), Character.class.getName(),
             new HibernateBackedJavaTypeConverter(CharacterType.INSTANCE.getJavaTypeDescriptor())),
-    STRING(String.class.getName(),
-            new HibernateBackedJavaTypeConverter(StringType.INSTANCE.getJavaTypeDescriptor())),
+    STRING(String.class.getName(), new StringTypeConverter()),
     TEXT(String.class.getName(),
             new HibernateBackedJavaTypeConverter(StringType.INSTANCE.getJavaTypeDescriptor())),
     CLOB(String.class.getName(),
