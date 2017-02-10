@@ -209,12 +209,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
               var refValue = _.get(operationObj, ['parameters', 0, 'schema', '$ref']),
                   refKey   = _.last(_.split(refValue, '/')),
                   defObj   = definitions[refKey],
-                  propObj  = _.get(defObj, ['allOf', 1]),
                   operationList = [];
-              _.forEach(propObj.properties, function (value, key) {
+              _.forEach(defObj.properties, function (value, key) {
                   value.name              = key;
                   value[parameterTypeKey] = VARIABLE_CONSTANTS.BODY_FIELD;
-                  value.required          = _.includes(propObj.required, key);
+                  value.required          = _.includes(defObj.required, key);
                   operationList.push(value);
               });
               return operationList;
