@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,16 +22,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.google.common.base.Optional;
 import com.wavemaker.commons.WMRuntimeException;
@@ -45,35 +49,40 @@ import com.wavemaker.runtime.data.model.JavaType;
 public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResultTransformer implements
         WMResultTransformer {
 
-    private final Class resultClass;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AliasToMappedClassResultTransformer.class);
 
+    private static MultiValueMap<String, JavaType> classNameVsJavaTypeMap = new LinkedMultiValueMap<>();
+    private static Set<String> ignorableAliases = new HashSet<>();
+
+    private final Class resultClass;
     private Map<String, PropertyDescriptor> aliasVsDescriptorMap;
+
     private Map<String, String> fieldVsAliasMap;
 
-    private static MultiValueMap classNameVsJavaTypeMap = new MultiValueMap();
-
     static {
-        classNameVsJavaTypeMap.put(JavaType.BYTE.getClassName(), JavaType.BYTE);
-        classNameVsJavaTypeMap.put(JavaType.SHORT.getClassName(), JavaType.SHORT);
-        classNameVsJavaTypeMap.put(JavaType.INTEGER.getClassName(), JavaType.INTEGER);
-        classNameVsJavaTypeMap.put(JavaType.LONG.getClassName(), JavaType.LONG);
-        classNameVsJavaTypeMap.put(JavaType.BIG_INTEGER.getClassName(), JavaType.BIG_INTEGER);
-        classNameVsJavaTypeMap.put(JavaType.FLOAT.getClassName(), JavaType.FLOAT);
-        classNameVsJavaTypeMap.put(JavaType.DOUBLE.getClassName(), JavaType.DOUBLE);
-        classNameVsJavaTypeMap.put(JavaType.BIG_DECIMAL.getClassName(), JavaType.BIG_DECIMAL);
-        classNameVsJavaTypeMap.put(JavaType.BOOLEAN.getClassName(), JavaType.BOOLEAN);
-        classNameVsJavaTypeMap.put(JavaType.YES_OR_NO.getClassName(), JavaType.YES_OR_NO);
-        classNameVsJavaTypeMap.put(JavaType.TRUE_OR_FALSE.getClassName(), JavaType.TRUE_OR_FALSE);
-        classNameVsJavaTypeMap.put(JavaType.CHARACTER.getClassName(), JavaType.CHARACTER);
-        classNameVsJavaTypeMap.put(JavaType.STRING.getClassName(), JavaType.STRING);
-        classNameVsJavaTypeMap.put(JavaType.TEXT.getClassName(), JavaType.TEXT);
-        classNameVsJavaTypeMap.put(JavaType.CLOB.getClassName(), JavaType.CLOB);
-        classNameVsJavaTypeMap.put(JavaType.BLOB.getClassName(), JavaType.BLOB);
-        classNameVsJavaTypeMap.put(JavaType.DATE.getClassName(), JavaType.DATE);
-        classNameVsJavaTypeMap.put(JavaType.TIME.getClassName(), JavaType.TIME);
-        classNameVsJavaTypeMap.put(JavaType.DATETIME.getClassName(), JavaType.DATETIME);
-        classNameVsJavaTypeMap.put(JavaType.TIMESTAMP.getClassName(), JavaType.TIMESTAMP);
-        classNameVsJavaTypeMap.put(JavaType.CURSOR.getClassName(), JavaType.CURSOR);
+        classNameVsJavaTypeMap.add(JavaType.BYTE.getClassName(), JavaType.BYTE);
+        classNameVsJavaTypeMap.add(JavaType.SHORT.getClassName(), JavaType.SHORT);
+        classNameVsJavaTypeMap.add(JavaType.INTEGER.getClassName(), JavaType.INTEGER);
+        classNameVsJavaTypeMap.add(JavaType.LONG.getClassName(), JavaType.LONG);
+        classNameVsJavaTypeMap.add(JavaType.BIG_INTEGER.getClassName(), JavaType.BIG_INTEGER);
+        classNameVsJavaTypeMap.add(JavaType.FLOAT.getClassName(), JavaType.FLOAT);
+        classNameVsJavaTypeMap.add(JavaType.DOUBLE.getClassName(), JavaType.DOUBLE);
+        classNameVsJavaTypeMap.add(JavaType.BIG_DECIMAL.getClassName(), JavaType.BIG_DECIMAL);
+        classNameVsJavaTypeMap.add(JavaType.BOOLEAN.getClassName(), JavaType.BOOLEAN);
+        classNameVsJavaTypeMap.add(JavaType.YES_OR_NO.getClassName(), JavaType.YES_OR_NO);
+        classNameVsJavaTypeMap.add(JavaType.TRUE_OR_FALSE.getClassName(), JavaType.TRUE_OR_FALSE);
+        classNameVsJavaTypeMap.add(JavaType.CHARACTER.getClassName(), JavaType.CHARACTER);
+        classNameVsJavaTypeMap.add(JavaType.STRING.getClassName(), JavaType.STRING);
+        classNameVsJavaTypeMap.add(JavaType.TEXT.getClassName(), JavaType.TEXT);
+        classNameVsJavaTypeMap.add(JavaType.CLOB.getClassName(), JavaType.CLOB);
+        classNameVsJavaTypeMap.add(JavaType.BLOB.getClassName(), JavaType.BLOB);
+        classNameVsJavaTypeMap.add(JavaType.DATE.getClassName(), JavaType.DATE);
+        classNameVsJavaTypeMap.add(JavaType.TIME.getClassName(), JavaType.TIME);
+        classNameVsJavaTypeMap.add(JavaType.DATETIME.getClassName(), JavaType.DATETIME);
+        classNameVsJavaTypeMap.add(JavaType.TIMESTAMP.getClassName(), JavaType.TIMESTAMP);
+        classNameVsJavaTypeMap.add(JavaType.CURSOR.getClassName(), JavaType.CURSOR);
+
+        ignorableAliases.add("__hibernate_row_nr__");
     }
 
     public AliasToMappedClassResultTransformer(final Class resultClass) {
@@ -89,10 +98,15 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
             Object object = resultClass.newInstance();
             for (int i = 0; i < aliases.length; i++) {
                 final String alias = aliases[i];
-
-                final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
-                Object transformedValue = transformValue(tuple[i], descriptor);
-                descriptor.getWriteMethod().invoke(object, transformedValue);
+                if (aliasVsDescriptorMap.containsKey(alias)) {
+                    final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
+                    Object transformedValue = transformValue(tuple[i], descriptor);
+                    descriptor.getWriteMethod().invoke(object, transformedValue);
+                } else {
+                    if (!ignorableAliases.contains(alias)) {
+                        LOGGER.warn("Column: {} not found in type:{}, ignoring", alias, resultClass.getName());
+                    }
+                }
             }
             return object;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -101,25 +115,16 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     }
 
     private Object transformValue(final Object value, final PropertyDescriptor descriptor) {
-        final Object dbValue = value;
-        Object transformedValue = null;
-        if(dbValue != null) {
-            if (dbValue instanceof List) {
-                transformedValue = transformField(descriptor, dbValue);
+        Object transformedValue = value;
+        if (value != null) {
+            if (value instanceof List) {
+                transformedValue = transformField(descriptor, value);
             } else {
                 final String className = descriptor.getPropertyType().getName();
-                final Collection values = classNameVsJavaTypeMap.getCollection(className);
-                if(values != null) {
-                    for (final Object javaTypeObject : values) {
-                        if(transformedValue == null) {
-                            JavaType javaType = ((JavaType) javaTypeObject);
-                            transformedValue = javaType.fromDbValue(dbValue);
-                        } else {
-                            break;
-                        }
+                if (classNameVsJavaTypeMap.containsKey(className)) {
+                    for (final JavaType javaType : classNameVsJavaTypeMap.get(className)) {
+                        transformedValue = javaType.fromDbValue(value);
                     }
-                } else {
-                    transformedValue = dbValue;
                 }
             }
         }
