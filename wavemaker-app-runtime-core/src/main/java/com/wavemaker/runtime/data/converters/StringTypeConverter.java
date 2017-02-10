@@ -18,11 +18,17 @@ public class StringTypeConverter extends HibernateBackedJavaTypeConverter {
 
     @Override
     public Object fromDbValue(final Object value) {
+        String convertedValue;
         try {
-            return super.fromDbValue(value);
+            convertedValue = (String) super.fromDbValue(value);
         } catch (HibernateException e) {
-            LOGGER.debug("Not a string instance type, using String.valueOf for conversion", e.getMessage());
-            return String.valueOf(value);
+            if (byte[].class.equals(value.getClass())) {
+                convertedValue = new String(((byte[]) value));
+            } else {
+                LOGGER.debug("Not a string instance type, using String.valueOf for conversion", e.getMessage());
+                convertedValue = String.valueOf(value);
+            }
         }
+        return convertedValue;
     }
 }
