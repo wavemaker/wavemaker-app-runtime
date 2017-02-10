@@ -97,38 +97,12 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         try {
             Object object = resultClass.newInstance();
             for (int i = 0; i < aliases.length; i++) {
-                final String alias = aliases[i];
-                if (aliasVsDescriptorMap.containsKey(alias)) {
-                    final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
-                    Object transformedValue = transformValue(tuple[i], descriptor);
-                    descriptor.getWriteMethod().invoke(object, transformedValue);
-                } else {
-                    if (!ignorableAliases.contains(alias)) {
-                        LOGGER.warn("Column: {} not found in type:{}, ignoring", alias, resultClass.getName());
-                    }
-                }
+                applyValue(object, aliases[i], tuple[i]);
             }
             return object;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
         }
-    }
-
-    private Object transformValue(final Object value, final PropertyDescriptor descriptor) {
-        Object transformedValue = value;
-        if (value != null) {
-            if (value instanceof List) {
-                transformedValue = transformField(descriptor, value);
-            } else {
-                final String className = descriptor.getPropertyType().getName();
-                if (classNameVsJavaTypeMap.containsKey(className)) {
-                    for (final JavaType javaType : classNameVsJavaTypeMap.get(className)) {
-                        transformedValue = javaType.fromDbValue(value);
-                    }
-                }
-            }
-        }
-        return transformedValue;
     }
 
     @Override
@@ -141,9 +115,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         try {
             Object object = resultClass.newInstance();
             for (final Map.Entry<String, Object> entry : resultMap.entrySet()) {
-                final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(entry.getKey());
-
-                descriptor.getWriteMethod().invoke(object, transformField(descriptor, entry.getValue()));
+                applyValue(object, entry.getKey(), entry.getValue());
             }
             return object;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -171,20 +143,43 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         return alias;
     }
 
+    private void applyValue(
+            Object object, String alias, Object value) throws InvocationTargetException, IllegalAccessException {
+        if (aliasVsDescriptorMap.containsKey(alias)) {
+            final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
+            Object transformedValue = transformField(descriptor, value);
+            descriptor.getWriteMethod().invoke(object, transformedValue);
+        } else {
+            if (!ignorableAliases.contains(alias)) {
+                LOGGER.warn("Column: {} not found in type:{}, ignoring", alias, resultClass.getName());
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private Object transformField(final PropertyDescriptor descriptor, final Object value) {
         Object transformedValue = value;
-        if (value != null && value instanceof List) {
-            transformedValue = new ArrayList<>();
-            final Type innerType = ((ParameterizedType) descriptor.getReadMethod().getGenericReturnType())
-                    .getActualTypeArguments()[0];
+        if (value != null) {
+            if (value instanceof List) {
+                transformedValue = new ArrayList<>();
+                final Type innerType = ((ParameterizedType) descriptor.getReadMethod().getGenericReturnType())
+                        .getActualTypeArguments()[0];
 
-            final WMResultTransformer childTransformer = Transformers
-                    .aliasToMappedClass(TypeUtils.getRawType(innerType, null));
-            for (final Map<String, Object> val : ((List<Map<String, Object>>) value)) {
-                ((List) transformedValue).add(childTransformer.transformFromMap(val));
+                final WMResultTransformer childTransformer = Transformers
+                        .aliasToMappedClass(TypeUtils.getRawType(innerType, null));
+                for (final Map<String, Object> val : ((List<Map<String, Object>>) value)) {
+                    ((List) transformedValue).add(childTransformer.transformFromMap(val));
+                }
+            } else {
+                final String className = descriptor.getPropertyType().getName();
+                if (classNameVsJavaTypeMap.containsKey(className)) {
+                    for (final JavaType javaType : classNameVsJavaTypeMap.get(className)) {
+                        transformedValue = javaType.fromDbValue(value);
+                    }
+                }
             }
         }
+
         return transformedValue;
     }
 
@@ -216,7 +211,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
         Optional<String> rsColumn = Optional.absent();
         final ColumnAlias annotation = member.getAnnotation(ColumnAlias.class);
         if (annotation != null) {
-            rsColumn = Optional.fromNullable(annotation.value());
+            rsColumn = Optional.of(annotation.value());
         }
         return rsColumn;
     }
