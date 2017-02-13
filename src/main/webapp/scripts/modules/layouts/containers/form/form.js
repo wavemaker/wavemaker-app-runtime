@@ -294,26 +294,31 @@ WM.module('wm.layouts.containers')
             if (scope.onSubmit || formVariable) {
                 //If on submit is there execute it and if it returns true do service variable invoke else return
                 //If its a service variable call setInput and assign form data and invoke the service
-                if (formVariable && formVariable.category === 'wm.ServiceVariable') {
-                    formVariable.setInput(formData);
-                    formVariable.update({
-                        'skipNotification': true
-                    }, function (data) {
-                        toggleMessage(scope, scope.postmessage, 'success');
-                        onResult(scope, data, 'success', event);
+                if (formVariable) {
+                    if (formVariable.category === 'wm.ServiceVariable') {
+                        formVariable.setInput(formData);
+                        formVariable.update({
+                            'skipNotification': true
+                        }, function (data) {
+                            toggleMessage(scope, scope.postmessage, 'success');
+                            onResult(scope, data, 'success', event);
+                            Utils.triggerFn(scope.onSubmit, params);
+                            LiveWidgetUtils.closeDialog(element);
+                        }, function (errMsg) {
+                            template = scope.errormessage || errMsg;
+                            toggleMessage(scope, template, 'error');
+                            onResult(scope, errMsg, 'error', event);
+                            Utils.triggerFn(scope.onSubmit, params);
+                        });
+                    } else {
+                        /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
+                        $timeout(function () {
+                            $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
+                        });
                         Utils.triggerFn(scope.onSubmit, params);
                         LiveWidgetUtils.closeDialog(element);
-                    }, function (errMsg) {
-                        template = scope.errormessage || errMsg;
-                        toggleMessage(scope, template, 'error');
-                        onResult(scope, errMsg, 'error', event);
-                        Utils.triggerFn(scope.onSubmit, params);
-                    });
-                } else if (formVariable) {
-                    /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
-                    $timeout(function () {
-                        $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
-                    });
+                    }
+                } else {
                     Utils.triggerFn(scope.onSubmit, params);
                     LiveWidgetUtils.closeDialog(element);
                 }
@@ -363,9 +368,6 @@ WM.module('wm.layouts.containers')
                         scope.reset     = resetForm.bind(undefined, scope, element);
                         scope.submit    = submitForm.bind(undefined, scope, element);
                     } else {
-                        //binddataset: allowing user click on the binded dataset.
-                        scope.widgetProps.dataset.show = !!scope.binddataset;
-
                         //event emitted on building new markup from canvasDom
                         handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
                             //as multiple form directives will be listening to the event, apply field-definitions only for current form
