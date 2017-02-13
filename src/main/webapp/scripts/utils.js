@@ -2365,20 +2365,22 @@ WM.module('wm.utils', [])
          * @param paramValue - Value which is to be appended to formdata
          */
         function getFormData(formData, param, paramValue) {
+            var paramType = _.toLower(_.get(param, 'items.type') || param.type),
+                paramContentType = CONSTANTS.isStudioMode ? param['x-WM-CONTENT_TYPE'] : param.contentType;
             if (isFileUploadSupported()) {
-                if (_.toLower(param.type) === "file" || _.toLower(param.items && param.items.type) === 'file') {
-                    if (WM.isArray(paramValue)) {
-                        WM.forEach(paramValue, function (fileObject) {
-                            formData.append(param.name, getBlob(fileObject), fileObject.name);
-                        });
-                    } else {
-                        formData.append(param.name, getBlob(paramValue), paramValue && paramValue.name);
-                    }
-                } else {
+                if ((paramType === 'string') && (paramContentType === 'string' || !paramContentType)) {
                     if (WM.isObject(paramValue)) {
                         paramValue = JSON.stringify(paramValue);
                     }
                     formData.append(param.name, paramValue);
+                } else {
+                    if (WM.isArray(paramValue) && paramType === 'file') {
+                        WM.forEach(paramValue, function (fileObject) {
+                            formData.append(param.name, getBlob(fileObject), fileObject.name);
+                        });
+                    } else {
+                        formData.append(param.name, getBlob(paramValue, paramContentType), paramValue && paramValue.name);
+                    }
                 }
                 return formData;
             }
