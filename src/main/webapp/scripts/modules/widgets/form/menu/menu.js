@@ -305,12 +305,12 @@ WM.module('wm.widgets.form')
                     if (itemAction) {
                         Utils.evalExp(element.closest('.dropdown').scope(), itemAction).then(function () {
                             if (itemLink) {
-                                $window.location.href = itemLink;
+                                $window.open(itemLink, menuScope.linktarget);
                             }
                         });
                     } else if (itemLink) {
                         //If action is not present and link is there
-                        $window.location.href = itemLink;
+                        $window.open(itemLink, menuScope.linktarget);
                     }
                 };
             }

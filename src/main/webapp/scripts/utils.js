@@ -2391,7 +2391,7 @@ WM.module('wm.utils', [])
         function validateAccessRoles(roleExp) {
             var roles;
 
-            if (roleExp && CONSTANTS.isRunMode) {
+            if (roleExp && $rootScope.userRoles && CONSTANTS.isRunMode) {
 
                 roles = _.split(roleExp, ',').map(Function.prototype.call, String.prototype.trim);
 
