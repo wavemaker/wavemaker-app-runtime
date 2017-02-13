@@ -644,7 +644,7 @@ wm.variables.services.$liveVariable = [
                     }
                     query = 'q=' + query;
                 }
-                orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
+                orderByFields = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy);
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
                 return {

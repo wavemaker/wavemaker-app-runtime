@@ -1638,8 +1638,32 @@ wm.variables.services.Variables = [
                         getBindMap(field.type, curFieldObj, oldBindings[fieldName], visitedNodes);
                     });
                 }
-            };
+            },
 
+            getEvaluatedOrderBy = function (varOrder, optionsOrder) {
+                var optionFields,
+                    varOrderBy;
+                //If options order by is not defined, return variable order
+                if (!optionsOrder || WM.element.isEmptyObject(optionsOrder)) {
+                    return varOrder;
+                }
+                //If variable order by is not defined, return options order
+                if (!varOrder) {
+                    return optionsOrder;
+                }
+                //If both are present, combine the options order and variable order, with options order as precedence
+                varOrder     = _.split(varOrder, ',');
+                optionsOrder = _.split(optionsOrder, ',');
+                optionFields = _.map(optionsOrder, function (order) {
+                    return _.split(_.trim(order), ' ')[0];
+                });
+                //If a field is present in both options and variable, remove the variable orderby
+                _.remove(varOrder, function (orderBy) {
+                    return _.includes(optionFields, _.split(_.trim(orderBy), ' ')[0]);
+                });
+                varOrderBy = varOrder.length ? ',' + _.join(varOrder, ',') : '';
+                return _.join(optionsOrder, ',') + varOrderBy;
+            };
         /*
          * This object is used to collect all the variables and keep them organized
          * based on their nature.
@@ -2383,7 +2407,17 @@ wm.variables.services.Variables = [
             },
             getVariableConfig: function () {
                 return variableConfig;
-            }
+            },
+            /**
+             * @ngdoc method
+             * @name $Variables#getEvaluatedOrderBy
+             * @methodOf wm.variables.$Variables
+             * @description
+             * combines variable orderby and options orderby
+             * @params {string} varOrder variable order by
+             * @params {string} optionsOrder options order by
+             */
+            getEvaluatedOrderBy: getEvaluatedOrderBy
         };
 
         return returnObject;
