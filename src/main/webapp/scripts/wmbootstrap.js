@@ -542,15 +542,13 @@ Application
                 $rs.$on('app-logout-success', clearPagesCache);
 
                 // On back button click, if activePage is landingPage then exit the app
-                if (CONSTANTS.hasCordova && Utils.isAndroidPhone()) {
-                    $document.on('backbutton', function () {
-                        if (landingPageName === $rs.activePageName) {
-                            $window.navigator.app.exitApp();
-                        } else {
-                            $window.history.back();
-                        }
-                    });
-                }
+                $rs.$on('backbutton', function () {
+                    if (landingPageName === $rs.activePageName) {
+                        $window.navigator.app.exitApp();
+                    } else {
+                        $window.history.back();
+                    }
+                });
 
                 /**
                  * Fix for issue: Keypad opens for all mobile browsers on form submit.
@@ -799,14 +797,6 @@ Application
                         WM.noop,
                         true
                     );
-                }
-
-                if (CONSTANTS.hasCordova) {
-                    pageReadyDeregister = $rs.$on('page-ready', function () {
-                        WM.element('#wm-app-content').addClass('cordova');
-                        navigator.splashscreen.hide();
-                        pageReadyDeregister();
-                    });
                 }
 
                 // function to invoke a service during run time
