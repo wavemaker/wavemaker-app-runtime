@@ -25,6 +25,9 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
+import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
+import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
+
 public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
     /**
@@ -41,6 +44,7 @@ public class WMAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
                          HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
         if (HttpRequestUtils.isAjaxRequest(request)) {
+            response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             super.commence(request,response,authException);
