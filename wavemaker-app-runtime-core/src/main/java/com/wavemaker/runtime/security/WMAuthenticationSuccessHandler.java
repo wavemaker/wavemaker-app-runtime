@@ -32,6 +32,12 @@ import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.model.security.CSRFConfig;
 
+import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
+import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
+import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
+import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
+import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
+
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     public WMAuthenticationSuccessHandler() {
@@ -44,10 +50,10 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         addCsrfCookie(request, response);
         if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
-            response.setContentType("text/plain;charset=utf-8");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setDateHeader("Expires", 0);
-            response.setHeader("Pragma", "no-cache");
+            response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
+            response.setHeader(CACHE_CONTROL, NO_CACHE);
+            response.setDateHeader(EXPIRES, 0);
+            response.setHeader(PRAGMA, NO_CACHE);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().flush();
         } else {
