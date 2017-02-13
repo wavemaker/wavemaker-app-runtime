@@ -2088,6 +2088,8 @@ WM.module('wm.widgets.grid')
                         'exportFormat' : $item.label,
                         'logicalOp'    : 'AND',
                         'size'         : $is.exportdatasize
+                    }, function (errMsg) {
+                        wmToaster.error('Error', errMsg);
                     });
                 }
             }
