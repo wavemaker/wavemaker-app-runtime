@@ -423,7 +423,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         } else if (param.name === "page") {
                             param.sampleValue = options.page || param.sampleValue;
                         } else if (param.name === "sort") {
-                            param.sampleValue = options.orderBy || param.sampleValue || variable.orderBy;
+                            param.sampleValue = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy) || param.sampleValue;
                         }
                     }
                 });
@@ -864,7 +864,7 @@ wm.variables.services.$servicevariable = ['Variables',
             },
             download: function (options, errorHandler) {
                 var inputParams  = Utils.getClonedObject(this.dataBinding),
-                    methodInfo   = getMethodInfo(this, inputParams, {}),
+                    methodInfo   = getMethodInfo(this, inputParams, options),
                     requestParams;
 
                 methodInfo.relativePath += '/export/' + options.exportFormat;
