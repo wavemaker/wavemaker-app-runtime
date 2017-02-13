@@ -35,6 +35,12 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
 
+import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
+import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
+import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
+import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
+import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
+
 /**
  * Created by kishorer on 4/7/16.
  */
@@ -53,11 +59,11 @@ public class WMAppAccessDeniedHandler extends AccessDeniedHandlerImpl {
             errorResponseList.add(errorResponse);
             errorMap.put("errors", new ErrorResponses(errorResponseList));
             request.setCharacterEncoding(CommonConstants.UTF8);
-            response.setHeader("Cache-Control", "no-cache");
-            response.setDateHeader("Expires", 0);
-            response.setHeader("Pragma", "no-cache");
+            response.setHeader(CACHE_CONTROL, NO_CACHE);
+            response.setDateHeader(EXPIRES, 0);
+            response.setHeader(PRAGMA, NO_CACHE);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("text/plain;charset=utf-8");
+            response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
             PrintWriter writer = response.getWriter();
             writer.write(WMObjectMapper.getInstance().writeValueAsString(errorMap));
             writer.flush();
