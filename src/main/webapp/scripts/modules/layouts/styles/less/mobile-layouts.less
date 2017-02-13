@@ -193,18 +193,6 @@
     }
     .navbar-nav {
       margin: auto;
-      > li {
-        height: @app-mobile-nav-height;
-        > .app-menu, > .app-popover {
-          > a {
-            line-height: @app-mobile-nav-height;
-            text-decoration: none;
-          }
-          .caret {
-            display: none;
-          }
-        }
-      }
       .btn-back > * {
         vertical-align: middle;
       }
@@ -238,6 +226,17 @@
         display: inline-block;
         vertical-align: top;
         white-space: nowrap;
+        height: @app-mobile-nav-height;
+        > .app-menu, > .app-popover {
+          > a {
+            line-height: @app-mobile-nav-height;
+            text-decoration: none;
+            color: inherit;
+          }
+          .caret {
+            display: none;
+          }
+        }
         i {
           font-size: @app-mobile-nav-icon-size;
           vertical-align: middle;
@@ -246,6 +245,7 @@
           display: inline-block;
           line-height: @app-mobile-nav-height;
           padding: 0 5pt;
+          color: inherit;
           &:hover {
             background-color: transparent;
           }
