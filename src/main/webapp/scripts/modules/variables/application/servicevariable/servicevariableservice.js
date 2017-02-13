@@ -862,12 +862,20 @@ wm.variables.services.$servicevariable = ['Variables',
             setInput: function (key, val, options) {
                 return methods.setInput(this, key, val, options);
             },
-            download: function (options) {
-                var inputParams = Utils.getClonedObject(this.dataBinding),
-                    methodInfo  = getMethodInfo(this, inputParams, {});
+            download: function (options, errorHandler) {
+                var inputParams  = Utils.getClonedObject(this.dataBinding),
+                    methodInfo   = getMethodInfo(this, inputParams, {}),
+                    requestParams;
 
                 methodInfo.relativePath += '/export/' + options.exportFormat;
-                Utils.simulateFileDownload(constructRestRequestParams(methodInfo, this));
+                requestParams = constructRestRequestParams(methodInfo, this);
+
+                //If request params returns error then show an error toaster
+                if (_.hasIn(requestParams, 'error.message')) {
+                    Utils.triggerFn(errorHandler, requestParams.error.message);
+                } else {
+                    Utils.simulateFileDownload(requestParams);
+                }
             },
             init: function () {
                 if (this.isList) {
