@@ -65,19 +65,21 @@ WM.module('wm.widgets.basic')
         function setStyleBlock($is) {
             //Add style block to set width and height of popover to avoid flickering effect
             var styleBlock  = document.head.getElementsByClassName('popover-styles'),
-                css         = '.' + $is._popoverOptions.customclass + '{height: ' + Utils.formatStyle($is.popoverheight, 'px') + '; width: ' + Utils.formatStyle($is.popoverwidth, 'px') + '}';
+                css         = '.' + $is._popoverOptions.customclass + '{height: ' + Utils.formatStyle($is.popoverheight, 'px') + '; width: ' + Utils.formatStyle($is.popoverwidth, 'px') + '}',
+                arrowCss;
 
             if (!$is.popoverarrow) {
-                css += '.' + $is._popoverOptions.customclass + ' .arrow {display: none !important;}';
+                arrowCss = '.' + $is._popoverOptions.customclass + ' .arrow {display: none !important;}';
             }
             if (!styleBlock.length) {
                 styleBlock = document.createElement('style');
                 styleBlock.setAttribute('type', 'text/css');
                 styleBlock.setAttribute('class', 'popover-styles');
-                styleBlock.textContent = css;
+                styleBlock.textContent = css + arrowCss;
                 document.head.appendChild(styleBlock);
             } else {
                 styleBlock[0].sheet.insertRule(css, 0);
+                styleBlock[0].sheet.insertRule(arrowCss, 0);
             }
         }
 
