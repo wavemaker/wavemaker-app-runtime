@@ -263,7 +263,7 @@ WM.module('wm.widgets.grid')
                     '</div>' +
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || _actions.footer.length">' +
-                        '<div class="app-datagrid-paginator" data-ng-show="(widgetid || dataNavigator.dataSize) && show && shownavigation">' +
+                        '<div class="app-datagrid-paginator" ng-show="(isStudioMode || dataNavigator.dataSize) && show && shownavigation">' +
                             '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
@@ -362,6 +362,7 @@ WM.module('wm.widgets.grid')
                             $is.enablecolumnselection = attrs.enablecolumnselection = true;
                             WM.element(tElement.context).attr('enablecolumnselection', true);
                         }
+                        $is.isStudioMode = CONSTANTS.isStudioMode;
                     },
                     'post': function ($is, element, attrs) {
                         var runModeInitialProperties = {
@@ -741,7 +742,7 @@ WM.module('wm.widgets.grid')
                                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                                 /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
                                 wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable || $is.isBoundToFilter);
-                                wp.exportformat.show = wp.exportformat.showindesigner  = $is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable;
+                                wp.exportformat.show = wp.exportformat.showindesigner = wp.exportdatasize.show = wp.exportdatasize.showindesigner = ($is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable);
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
                                 wp.filtermode.disabled = $is.isBoundToFilter;
@@ -1884,6 +1885,7 @@ WM.module('wm.widgets.grid')
                     columnDef.pcDisplay     = true;
                     columnDef.mobileDisplay = true;
                     columnDef.searchable    = true;
+                    columnDef.type          = 'string';
                     WM.forEach($is.fullFieldDefs, function (column) {
                         if (column.field && column.field === columnDef.field) {
                             columnDef.pcDisplay = column.pcDisplay;

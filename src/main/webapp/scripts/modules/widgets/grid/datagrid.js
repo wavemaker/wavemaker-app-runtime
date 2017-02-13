@@ -753,11 +753,9 @@ $.widget('wm.datagrid', {
                         break;
                     }
                 }
-                if (isDefined(text) && colDef.field in item) {
+                if (isDefined(text)) {
                     rowData[colDef.field] = text;
-                } else if (!(colDef.field in item)) {
-                    rowData[colDef.field] = text;
-                } else if (fields.length > 1 && colDef.field in item) {
+                } else if (fields.length > 1 && _.has(item, colDef.field)) {
                     /* For case when coldef field name has ".", but data is in
                      * format [{'foo.bar': 'test'}], i.e. when the key value is
                      * not a nested object but a primitive value.
