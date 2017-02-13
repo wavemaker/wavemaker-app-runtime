@@ -299,18 +299,19 @@ WM.module('wm.widgets.form')
 
                 scope.onSelect = function (args) {
                     var itemLink   = args.$item[menuScope.itemlink],
-                        itemAction = args.$item[menuScope.itemaction];
+                        itemAction = args.$item[menuScope.itemaction],
+                        linkTarget = menuScope.linktarget || '_self';
 
                     scope.$parent.onSelect(args);
                     if (itemAction) {
                         Utils.evalExp(element.closest('.dropdown').scope(), itemAction).then(function () {
                             if (itemLink) {
-                                $window.open(itemLink, menuScope.linktarget);
+                                $window.open(itemLink, linkTarget);
                             }
                         });
                     } else if (itemLink) {
                         //If action is not present and link is there
-                        $window.open(itemLink, menuScope.linktarget);
+                        $window.open(itemLink, linkTarget);
                     }
                 };
             }

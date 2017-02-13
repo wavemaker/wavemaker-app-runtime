@@ -75,11 +75,13 @@ WM.module('wm.widgets.basic')
                 styleBlock = document.createElement('style');
                 styleBlock.setAttribute('type', 'text/css');
                 styleBlock.setAttribute('class', 'popover-styles');
-                styleBlock.textContent = css + arrowCss;
+                styleBlock.textContent = css + (arrowCss || '');
                 document.head.appendChild(styleBlock);
             } else {
                 styleBlock[0].sheet.insertRule(css, 0);
-                styleBlock[0].sheet.insertRule(arrowCss, 0);
+                if (arrowCss) {
+                    styleBlock[0].sheet.insertRule(arrowCss, 0);
+                }
             }
         }
 
