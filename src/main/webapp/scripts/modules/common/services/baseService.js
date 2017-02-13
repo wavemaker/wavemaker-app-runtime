@@ -180,14 +180,27 @@ wm.modules.wmCommon.services.BaseService = [
                 return returnVal;
             },
 
+            getLoginErrorMsg = function (error) {
+                return WM.isFunction(error.headers) && error.headers('X-WM-Login-ErrorMessage')
+            },
+
+            isPlatformSessionTimeout = function (error) {
+                var MSG_SESSION_NOT_FOUND = 'Session Not Found';
+                return error.status === 401 && getLoginErrorMsg(error) === MSG_SESSION_NOT_FOUND;
+            },
+
+            isLoginFailure = function (error) {
+                var MSG_LOGIN_FAILURE = 'Authentication Failed: Bad credentials';
+                return error.status === 401 && getLoginErrorMsg(error) === MSG_LOGIN_FAILURE;
+            },
+
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg, errorDetails = error, appManager, isLoginFailure,
+                var errTitle, errMsg, errorDetails = error, appManager,
                     HTTP_STATUS_MSG = {
                         404: "Requested resource not found"
                     };
-                isLoginFailure = WM.isFunction(error.headers) && error.headers('X-WM-Login-ErrorMessage');
                 /*if user is unauthorized, then show login dialog*/
-                if (error.status === 401 && !isLoginFailure && !config.isDirectCall) {
+                if (isPlatformSessionTimeout(error) && !config.isDirectCall) {
                     if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {
                         /*
                          * a failed app.variables.json file doesn't need to be re-invoked always after login
@@ -241,8 +254,8 @@ wm.modules.wmCommon.services.BaseService = [
                 }
 
                 /* check for login failure header */
-                if (isLoginFailure) {
-                    errMsg = isLoginFailure;
+                if (isLoginFailure(error)) {
+                    errMsg = getLoginErrorMsg(error);
                 }
 
                 /*check if failureCallback is defined*/

@@ -241,7 +241,7 @@ Application
                 }
 
                 function defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr) {
-                    if (jqxhr.status === 401 && !jqxhr.headers('X-WM-Login-ErrorMessage')) {
+                    if (jqxhr.status === 401) {
                         hidePageSwitchSpinner();
                         handleSessionTimeout(pageName, onSuccess, onError);
                     } else if (jqxhr.status === 403) {
