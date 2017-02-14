@@ -1393,6 +1393,10 @@ wm.variables.services.Variables = [
                 varCollectionObj[scope.$id][name].name = name;
                 self.studioCopy[owner][name] = varCollectionObj[scope.$id][name];
 
+                if (variableObj.category === 'wm.LiveVariable') {
+                    variableObj._isNew = true;
+                }
+
                 /* if app level variable make it available in the active page scope */
                 if (owner === VARIABLE_CONSTANTS.OWNER.APP) {
                     if ($rootScope.activePageName && pageScopeMap[$rootScope.activePageName]) {
@@ -1405,7 +1409,7 @@ wm.variables.services.Variables = [
                     }
                 }
                 if (!_.includes(CRUDMAP.CREATE[owner], name)) {
-                    CRUDMAP.CREATE[owner].push(name);/*Storing created variable name in map*/
+                    CRUDMAP.CREATE[owner].push(name);/*Storing  created variable name in map*/
                 }
                 if (isUpdate) {
                     call('getData', name, {scope: scope, skipFetchData: !fetchData});

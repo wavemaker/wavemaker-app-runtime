@@ -168,6 +168,7 @@ wm.variables.services.$liveVariable = [
                 DataModelDesignManager.getDataModel(projectID, variable.liveSource, false, function (database) {
                     var variableTable,
                         variableType,
+                        firstPrimaryKey,
                         tableNameToEntityNameMap = {},
                         entityNameToTableNameMap = {},
                         getJavaType = function (javaType) {
@@ -373,8 +374,16 @@ wm.variables.services.$liveVariable = [
                         }
                     });
 
-                    setVariableProp(variable, writableVariable, "propertiesMap", tableDetails[variableType]);
+                    setVariableProp(variable, writableVariable, 'propertiesMap', tableDetails[variableType]);
 
+                    if (writableVariable && writableVariable._isNew) {
+                        //For new variable, if orderby is not set, set the default orderby as primary field with ascending order
+                        firstPrimaryKey = _.head(variable.propertiesMap.primaryFields);
+                        if (!writableVariable.orderBy && firstPrimaryKey) {
+                            setVariableProp(variable, writableVariable, 'orderBy', firstPrimaryKey + ' asc');
+                        }
+                        variable._isNew = writableVariable._isNew = false;
+                    }
                     Utils.triggerFn(callback, projectID, variable, options, success);
                 }, WM.noop);
             },
