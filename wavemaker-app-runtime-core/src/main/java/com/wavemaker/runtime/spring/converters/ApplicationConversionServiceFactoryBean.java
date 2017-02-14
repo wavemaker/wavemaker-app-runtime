@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.spring.converters;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
@@ -23,10 +24,9 @@ import org.joda.time.LocalDateTime;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
-import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
-import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.util.StringUtils;
+import com.wavemaker.runtime.data.model.JavaType;
 
 /**
  * @Author: sowmyad
@@ -42,11 +42,15 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public Date convert(String source) {
-            if (StringUtils.isNumber(source)) {
-                return new Date(Long.parseLong(source));
-            } else {
-                return WMDateDeSerializer.getDate(source);
-            }
+            return ((Date) JavaType.DATE.fromString(source));
+        }
+    }
+
+    public static class WMStringToTimeConverter implements Converter<String, Time> {
+
+        @Override
+        public Time convert(String source) {
+            return (Time) JavaType.TIME.fromDbValue(source);
         }
     }
 
@@ -66,7 +70,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public LocalDateTime convert(String source) {
-            return WMLocalDateTimeDeSerializer.getLocalDateTime(source);
+            return (LocalDateTime) JavaType.DATETIME.fromString(source);
         }
     }
 
@@ -74,7 +78,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public Timestamp convert(final String source) {
-            return new Timestamp(Long.valueOf(source));
+            return ((Timestamp) JavaType.TIMESTAMP.fromString(source));
         }
     }
 }
