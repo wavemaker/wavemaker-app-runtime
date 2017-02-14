@@ -15,16 +15,23 @@
  */
 package com.wavemaker.runtime.data.model.returns;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 26/10/16
  */
 public class ReturnProperty {
 
+    @NotEmpty
     private String name;
     private String fieldName;
 
     private boolean optional;
+
+    @NotNull
     private FieldType fieldType;
 
     public ReturnProperty() {

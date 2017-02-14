@@ -18,12 +18,15 @@ package com.wavemaker.runtime.data.model.procedures;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 5/10/16
  */
 public class RuntimeProcedure {
 
+    @NotEmpty
     private String procedureString;
     private List<ProcedureParameter> parameters;
 

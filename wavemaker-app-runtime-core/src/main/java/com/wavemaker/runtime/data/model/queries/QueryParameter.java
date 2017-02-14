@@ -15,6 +15,10 @@
  */
 package com.wavemaker.runtime.data.model.queries;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
@@ -24,10 +28,13 @@ import com.wavemaker.runtime.data.replacers.providers.VariableType;
  */
 public class QueryParameter {
 
+    @NotEmpty
     private String name;
+    @NotNull
     private JavaType type;
     private boolean list;
 
+    @NotNull
     private VariableType variableType;
     private Object testValue;
 
