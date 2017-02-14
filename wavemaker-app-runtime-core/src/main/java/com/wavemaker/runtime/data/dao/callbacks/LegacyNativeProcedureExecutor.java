@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,13 @@ import org.hibernate.internal.SessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.runtime.data.model.CustomProcedure;
-import com.wavemaker.runtime.data.model.CustomProcedureParam;
-import com.wavemaker.runtime.data.model.ProcedureParamType;
-import com.wavemaker.runtime.data.util.ProceduresUtils;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.StringUtils;
 import com.wavemaker.commons.util.TypeConversionUtils;
+import com.wavemaker.runtime.data.model.CustomProcedure;
+import com.wavemaker.runtime.data.model.CustomProcedureParam;
+import com.wavemaker.runtime.data.util.ProceduresUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -73,7 +72,7 @@ public class LegacyNativeProcedureExecutor {
             List<Integer> outParams = new ArrayList<Integer>();
             for (int position = 0; position < customParams.size(); position++) {
                 CustomProcedureParam procedureParam = customParams.get(position);
-                if (ProceduresUtils.hasOutParamType(procedureParam)) {
+                if (procedureParam.getProcedureParamType().isOutParam()) {
 
                     LOGGER.info("Found out Parameter {}", procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
@@ -88,8 +87,7 @@ public class LegacyNativeProcedureExecutor {
                         outParams.add(position + 1);
                     }
                 }
-                if (procedureParam.getProcedureParamType().equals(ProcedureParamType.IN) || procedureParam
-                        .getProcedureParamType().equals(ProcedureParamType.IN_OUT)) {
+                if (procedureParam.getProcedureParamType().isInParam()) {
                     callableStatement.setObject(position + 1, procedureParam.getParamValue());
                 }
             }
@@ -136,8 +134,7 @@ public class LegacyNativeProcedureExecutor {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
                 if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2
-                        .equalsIgnoreCase(CURSOR) || customProcedureParam
-                        .getProcedureParamType().OUT == ProcedureParamType.OUT)
+                        .equalsIgnoreCase(CURSOR) || customProcedureParam.getProcedureParamType().isOutParam())
                     continue;
                 Object processedParamValue = getValueObject(customProcedureParam);
                 if (processedParamValue != null) {

@@ -20,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
-import com.wavemaker.runtime.data.model.ProcedureParamType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 
 /**
@@ -34,16 +33,11 @@ public class ProceduresUtils {
 
     public static boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
         for (CustomProcedureParam customProcedureParam : customProcedureParams) {
-            if (hasOutParamType(customProcedureParam)) {
+            if (customProcedureParam.getProcedureParamType().isOutParam()) {
                 return true;
             }
         }
         return false;
-    }
-
-    public static boolean hasOutParamType(CustomProcedureParam procedureParam) {
-        return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam
-                .getProcedureParamType().equals(ProcedureParamType.OUT);
     }
 
     public static String jdbcComplianceProcedure(String procedureStr, List<ProcedureParameter> params) {

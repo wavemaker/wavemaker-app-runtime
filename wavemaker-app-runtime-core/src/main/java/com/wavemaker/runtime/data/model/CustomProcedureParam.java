@@ -16,20 +16,22 @@
 package com.wavemaker.runtime.data.model;
 
 
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 
 public class CustomProcedureParam  {
 
 
     private Object paramValue = null;
     private String paramName = null;
-    private ProcedureParamType procedureParamType = null;
+    private ProcedureParameterType procedureParamType = null;
     private String valueType = null;
 
 	public CustomProcedureParam() {
 		super();
 	}
 
-    public CustomProcedureParam(String paramName, Object paramValue, ProcedureParamType procedureParamType, String valueType) {
+    public CustomProcedureParam(
+            String paramName, Object paramValue, ProcedureParameterType procedureParamType, String valueType) {
         this.procedureParamType = procedureParamType;
         this.paramName = paramName;
         this.valueType = valueType;
@@ -44,11 +46,11 @@ public class CustomProcedureParam  {
         this.paramName = paramName;
     }
 
-    public ProcedureParamType getProcedureParamType() {
+    public ProcedureParameterType getProcedureParamType() {
         return procedureParamType;
     }
 
-    public void setProcedureParamType(ProcedureParamType procedureParamType) {
+    public void setProcedureParamType(ProcedureParameterType procedureParamType) {
         this.procedureParamType = procedureParamType;
     }
 
