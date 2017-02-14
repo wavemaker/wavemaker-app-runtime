@@ -154,7 +154,26 @@ wm.variables.services.$servicevariable = ['Variables',
         function isQueryServiceVar(variable) {
             return variable.controller === CONTROLLER_TYPE_QUERY && variable.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA;
         }
-
+        /*
+        * Check for missing required params and format the date/time param values
+        * */
+        function getRequestBody(inputData, params) {
+            var requestBody = {},
+                missingParams= [],
+                paramValue;
+            _.forEach(params, function (param) {
+                paramValue = inputData[param.name];
+                if (WM.isDefined(paramValue) && (paramValue !== '')) {
+                    requestBody[param.name] = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
+                } else if (param.required) {
+                    missingParams.push(param.name || param.id);
+                }
+            });
+            return {
+                'requestBody'   : requestBody,
+                'missingParams' : missingParams
+            };
+        }
         /**
          * function to create the params to invoke the java service. creating the params and the corresponding
          * url to invoke based on the type of the parameter
@@ -167,6 +186,7 @@ wm.variables.services.$servicevariable = ['Variables',
             var queryParams = '',
                 directPath = operationInfo.directPath || '',
                 relativePath = operationInfo.basePath ? operationInfo.basePath + operationInfo.relativePath : operationInfo.relativePath,
+                tempResult,
                 headers = {},
                 requestBody,
                 url,
@@ -244,15 +264,9 @@ wm.variables.services.$servicevariable = ['Variables',
                     case 'BODY':
                         //For post/put query methods wrap the input
                         if (isBodyTypeQuery) {
-                            requestBody = variable.dataBinding;
-                            //Check if all the required fields are provided with values
-                            if (!_.isEmpty(param.requiredFields)) {
-                                _.forEach(param.requiredFields, function (name) {
-                                    if (_.isUndefined(requestBody[name]) || requestBody[name] === '') {
-                                        requiredParamMissing.push(name);
-                                    }
-                                });
-                            }
+                            tempResult = getRequestBody(variable.dataBinding, _.get(operationInfo, ['definitions', param.type]));
+                            requestBody = tempResult.requestBody;
+                            requiredParamMissing = _.concat(requiredParamMissing, tempResult.missingParams);
                         } else {
                             requestBody = paramValue;
                         }
