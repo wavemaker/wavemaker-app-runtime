@@ -182,6 +182,12 @@ wm.plugins.offline.services.ChangeLogService = [
                 var cbs = _.reverse(_.map(callbacks, "postFlush"));
                 flushInProgress = false;
                 return resetNetworkFailures().then(function () {
+                    if (stats.error === 0) {
+                        return flushContext.clear().then(function () {
+                            flushContext = undefined;
+                        });
+                    }
+                }).then(function () {
                     return executeDeferChain(cbs, [stats, flushContext]);
                 }).finally(function () {
                     Utils.triggerFn(fn, stats);
@@ -260,11 +266,6 @@ wm.plugins.offline.services.ChangeLogService = [
             'postFlush': function (stats, flushContext) {
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
                                 stats.success, stats.error, stats.completed, stats.total);
-                if (stats.error === 0) {
-                    return flushContext.clear().then(function () {
-                        flushContext = undefined;
-                    });
-                }
             },
             'preCall': function (change) {
                 $log.debug("%i. Invoking call %o", (1 + stats.completed), change);

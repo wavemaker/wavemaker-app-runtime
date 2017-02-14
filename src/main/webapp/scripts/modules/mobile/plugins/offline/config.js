@@ -199,7 +199,9 @@ wm.plugins.offline.run([
                         },
                         'postFlush' : function (stats) {
                             if (stats.total > 0) {
-                                location.assign(window.location.origin + window.location.pathname);
+                                LocalDBManager.close().finally(function () {
+                                    location.assign(window.location.origin + window.location.pathname);
+                                });
                             }
                         }
                     });
