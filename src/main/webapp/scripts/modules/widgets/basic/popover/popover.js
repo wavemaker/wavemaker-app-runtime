@@ -161,6 +161,8 @@ WM.module('wm.widgets.basic')
                             popoverScope,
                             $popoverEl;
 
+                        $is.appLocale = $el.scope().appLocale;
+
                         if (CONSTANTS.isRunMode) {
                             $is._isFirstTime = true;
                             if (isInlineContent) {
