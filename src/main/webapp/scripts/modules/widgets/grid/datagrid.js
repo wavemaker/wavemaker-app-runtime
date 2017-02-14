@@ -1538,9 +1538,9 @@ $.widget('wm.datagrid', {
                         }
                         $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
                     }
-                }
-                if (colDef.required) {
-                    $el.addClass('required-field form-group');
+                    if (colDef.required) {
+                        $el.addClass('required-field form-group');
+                    }
                 }
             });
             // Show editable row.
