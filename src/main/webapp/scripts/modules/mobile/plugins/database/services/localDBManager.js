@@ -19,6 +19,7 @@ wm.plugins.database.services.LocalDBManager = [
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
     'SecurityService',
+    '$timeout',
     'Utils',
     function ($cordovaFile,
               $cordovaNetwork,
@@ -31,6 +32,7 @@ wm.plugins.database.services.LocalDBManager = [
               LocalDBStoreFactory,
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
               SecurityService,
+              $timeout,
               Utils) {
         'use strict';
         var META_LOCATION = 'www/metadata/app',
@@ -482,6 +484,38 @@ wm.plugins.database.services.LocalDBManager = [
                 });
         }
 
+        function openDatabase(dbMetadata) {
+            var deferredDBCall = $q.defer(),
+                storePromises = [],
+                database = _.extend({}, dbMetadata);
+            database.connection = window.sqlitePlugin.openDatabase({
+                name: database.schema.name + '.db',
+                location: 'default'
+            }, deferredDBCall.resolve, deferredDBCall.reject);
+            database.stores = {};
+            return deferredDBCall.promise.then(function () {
+                _.forEach(database.schema.entities, function (entitySchema) {
+                    storePromises.push(LocalDBStoreFactory.createStore(database.connection, entitySchema));
+                });
+                return $q.all(storePromises).then(function (stores) {
+                    _.forEach(stores, function (store) {
+                        database.stores[store.schema.entityName] = store;
+                    });
+                    return database;
+                });
+            });
+        }
+
+        function closeDatabases() {
+            var closePromises = [];
+            _.forEach(databases, function (database) {
+                var defer = $q.defer();
+                database.connection.close(defer.resolve, defer.reject);
+                closePromises.push(defer.promise);
+            });
+            return $q.all(closePromises);
+        }
+
         /**
          * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBManager#canConnectToServer
@@ -495,6 +529,26 @@ wm.plugins.database.services.LocalDBManager = [
          * @returns {object} a promise.
          */
         this.canConnectToServer = canConnectToServer;
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#close
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         *
+         *
+         * @description
+         * Closes all databases.
+         *
+         * @returns {object} a promise.
+         */
+        this.close = function () {
+            var defer = $q.defer();
+            //Before closing databases, give some time for the pending transactions (if any).
+            $timeout(function () {
+                closeDatabases().then(defer.resolve, defer.reject);
+            }, 1000);
+            return defer.promise;
+        };
 
         /**
          * @ngdoc method
@@ -520,26 +574,11 @@ wm.plugins.database.services.LocalDBManager = [
                     .then(function (metadata) {
                         var dbPromises = [];
                         _.forEach(metadata, function (dbMetadata) {
-                            var dbPromise,
-                                storePromises = [],
-                                database = _.extend({}, dbMetadata);
-                            database.connection = $cordovaSQLite.openDB({
-                                name: database.schema.name + '.db',
-                                location: 'default'
-                            });
-                            database.stores = {};
-                            _.forEach(database.schema.entities, function (entitySchema) {
-                                storePromises.push(LocalDBStoreFactory.createStore(database.connection, entitySchema));
-                            });
-                            dbPromise = $q.all(storePromises).then(function (stores) {
-                                _.forEach(stores, function (store) {
-                                    database.stores[store.schema.entityName] = store;
-                                });
-                                databases[database.schema.name] = database;
-                            });
-                            dbPromises.push(dbPromise);
+                            dbPromises.push(openDatabase(dbMetadata).then(function (database) {
+                                databases[dbMetadata.schema.name] = database;
+                            }));
                         });
-                        $q.all(dbPromises).then(function (dbs) {
+                        $q.all(dbPromises).then(function () {
                             d.resolve(databases);
                         });
                     });
