@@ -197,7 +197,8 @@ wm.modules.wmCommon.services.BaseService = [
             failureHandler = function (config, successCallback, failureCallback, error) {
                 var errTitle, errMsg, errorDetails = error, appManager,
                     HTTP_STATUS_MSG = {
-                        404: "Requested resource not found"
+                        404: "Requested resource not found",
+                        401: "Requested resource requires authentication"
                     };
                 /*if user is unauthorized, then show login dialog*/
                 if (isPlatformSessionTimeout(error) && !config.isDirectCall) {
@@ -234,8 +235,8 @@ wm.modules.wmCommon.services.BaseService = [
                     errMsg = localeObject["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
                 } else {
                     /*assigning default error messages */
-                    errTitle = "Error!";
-                    errMsg = "Service call failed";
+                    errTitle = 'Error!';
+                    errMsg = 'Service call failed';
                 }
 
                 // check if error message present for responded http status
