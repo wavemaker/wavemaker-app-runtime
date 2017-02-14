@@ -22,7 +22,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
-import com.wavemaker.runtime.data.model.ProcedureParamType;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -38,10 +38,10 @@ public class ProceduresUtilsTest {
 
     public void hasOutParamTest() {
         ProceduresUtils p = new ProceduresUtils();
-        CustomProcedureParam cmp1 = new CustomProcedureParam("example", p, ProcedureParamType.OUT, "int");
-        CustomProcedureParam cmp2 = new CustomProcedureParam("Sample", p, ProcedureParamType.IN, "int");
-        CustomProcedureParam cmp3 = new CustomProcedureParam("test", p, ProcedureParamType.IN_OUT, "int");
-        CustomProcedureParam cmp4= new CustomProcedureParam("Checking",p,ProcedureParamType.IN,"int");
+        CustomProcedureParam cmp1 = new CustomProcedureParam("example", p, ProcedureParameterType.OUT, "int");
+        CustomProcedureParam cmp2 = new CustomProcedureParam("Sample", p, ProcedureParameterType.IN, "int");
+        CustomProcedureParam cmp3 = new CustomProcedureParam("test", p, ProcedureParameterType.IN_OUT, "int");
+        CustomProcedureParam cmp4 = new CustomProcedureParam("Checking", p, ProcedureParameterType.IN, "int");
         List<CustomProcedureParam> customProcedureParamList= new ArrayList<>();
         List<CustomProcedureParam> customProcedureParamList1= new ArrayList<>();
         List<CustomProcedureParam> customProcedureParamList2= new ArrayList<>();
@@ -60,12 +60,12 @@ public class ProceduresUtilsTest {
 
     public void hasOutParamTypeTest(){
         ProceduresUtils p = new ProceduresUtils();
-        CustomProcedureParam cmp1= new CustomProcedureParam("example",p,ProcedureParamType.OUT,"int");
-        assertTrue(ProceduresUtils.hasOutParamType(cmp1));
-        CustomProcedureParam cmp2= new CustomProcedureParam("sample",p,ProcedureParamType.IN,"int");
-        assertFalse(ProceduresUtils.hasOutParamType(cmp2));
-        CustomProcedureParam cmp3= new CustomProcedureParam("example",p,ProcedureParamType.IN_OUT,"int");
-        assertTrue(ProceduresUtils.hasOutParamType(cmp3));
+        CustomProcedureParam cmp1 = new CustomProcedureParam("example", p, ProcedureParameterType.OUT, "int");
+        assertTrue(cmp1.getProcedureParamType().isOutParam());
+        CustomProcedureParam cmp2 = new CustomProcedureParam("sample", p, ProcedureParameterType.IN, "int");
+        assertFalse(cmp2.getProcedureParamType().isOutParam());
+        CustomProcedureParam cmp3 = new CustomProcedureParam("example", p, ProcedureParameterType.IN_OUT, "int");
+        assertTrue(cmp3.getProcedureParamType().isOutParam());
 
     }
 
