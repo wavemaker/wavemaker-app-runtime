@@ -17,6 +17,8 @@ package com.wavemaker.runtime.data.model;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,9 +77,9 @@ public enum JavaType {
     BLOB("byte[]",
             new HibernateBackedJavaTypeConverter(BlobType.INSTANCE.getJavaTypeDescriptor())),
     DATE(Date.class.getName(), new DateTypeConverter()),
-    TIME(Date.class.getName(), new TimeTypeConverter()),
+    TIME(Time.class.getName(), new TimeTypeConverter()),
     DATETIME(LocalDateTime.class.getName(), new DateTimeConverter()),
-    TIMESTAMP(Date.class.getName(), new TimestampTypeConverter()),
+    TIMESTAMP(Timestamp.class.getName(), new TimestampTypeConverter()),
     CURSOR(Object.class.getName(), new ObjectTypeConverter());
     //    CALENDAR(),
 //    CALENDAR_DATE(),
