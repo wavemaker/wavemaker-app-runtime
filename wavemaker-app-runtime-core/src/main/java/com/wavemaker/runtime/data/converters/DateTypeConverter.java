@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.data.converters;
 
-import java.util.Date;
+import java.sql.Date;
 
 import org.hibernate.type.DateType;
 
