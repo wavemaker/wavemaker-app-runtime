@@ -45,17 +45,9 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
-        File targetDir = uploadDirectory;
-        if (StringUtils.isNotBlank(relativePath)) {
-            relativePath = relativePath.trim();
-            targetDir = new File(uploadDirectory.getAbsolutePath(), relativePath);
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
-            /* Find our upload directory, make sure it exists */
-            if (!targetDir.exists())
-                targetDir.mkdirs();
-        }
-
-        File outputFile = createUniqueFile(file.getOriginalFilename(), targetDir);
+        File outputFile = createUniqueFile(file.getOriginalFilename(), relativeUploadDirectory);
 
                 /* Write the file to the filesystem */
         FileOutputStream fos = new FileOutputStream(outputFile);
@@ -78,17 +70,9 @@ public class FileServiceManager {
      * ******************************************************************************
      */
     public File uploadFile(MultipartFile file, String targetFilename, String relativePath, File uploadDirectory) throws IOException {
-        File targetDir = uploadDirectory;
-        if (StringUtils.isNotBlank(relativePath)) {
-            relativePath = relativePath.trim();
-            targetDir = new File(uploadDirectory.getAbsolutePath(), relativePath);
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
-            /* Find our upload directory, make sure it exists */
-            if (!targetDir.exists())
-                targetDir.mkdirs();
-        }
-
-        File outputFile = new File(targetDir, targetFilename);
+        File outputFile = new File(relativeUploadDirectory, targetFilename);
 
         /* Write the file to the filesystem */
         FileOutputStream fos = new FileOutputStream(outputFile);
@@ -114,6 +98,13 @@ public class FileServiceManager {
         return outputFile;
     }
 
+    /**
+     * This method is deprecated, instead use the method {@link FileServiceManager#listFiles(File, String)}
+     */
+    public File[] listFiles(File uploadDirectory) throws IOException {
+        return listFiles(uploadDirectory, null);
+    }
+
 
     /**
      * *****************************************************************************
@@ -123,12 +114,11 @@ public class FileServiceManager {
      * RETURNS array of File
      * ******************************************************************************
      */
-    public File[] listFiles(File uploadDirectory) throws IOException {
-
-      /* Get a list of files; ignore any filename starting with "." as these are
-       * typically private or temporary files not for users to interact with
-       */
-        File[] files = uploadDirectory.listFiles(
+    public File[] listFiles(File uploadDirectory, String relativePath) throws IOException {
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
+        /*Get a list of files; ignore any filename starting with "." as these are
+        typically private or temporary files not for users to interact with*/
+        File[] files = relativeUploadDirectory.listFiles(
                 new java.io.FileFilter() {
                     @Override
                     public boolean accept(final File pathname) {
@@ -149,6 +139,14 @@ public class FileServiceManager {
     }
 
     /**
+     * This method is deprecated, instead use the method {@link FileServiceManager#deleteFile(String, String, File)}
+     */
+    @Deprecated
+    public boolean deleteFile(String file, File uploadDirectory) throws IOException {
+        return deleteFile(file, null, uploadDirectory);
+    }
+
+    /**
      * *****************************************************************************
      * NAME: deleteFile
      * DESCRIPTION:
@@ -158,8 +156,10 @@ public class FileServiceManager {
      * RETURNS boolean to indicate if success or failure of operation.
      * **************************************************************************
      */
-    public boolean deleteFile(String file, File uploadDirectory) throws IOException {
-        File f = (file.startsWith("/")) ? new File(file) : new File(uploadDirectory, file);
+    public boolean deleteFile(String file, String relativePath, File uploadDirectory) throws IOException {
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
+
+        File f = (file.startsWith("/")) ? new File(file) : new File(relativeUploadDirectory, file);
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your operating system, or your .password file.
@@ -167,6 +167,14 @@ public class FileServiceManager {
             throw new RuntimeException("Deletion of file at " + f.getAbsolutePath() + " is not allowed. ");
         }
         return f.delete();
+    }
+
+    /**
+     * This method is deprecated, instead use the method {@link FileServiceManager#downloadFile(String, String, File)}
+     */
+    @Deprecated
+    public File downloadFile(String file, File uploadDirectory) throws Exception {
+        return downloadFile(file, null, uploadDirectory);
     }
 
     /**
@@ -183,8 +191,9 @@ public class FileServiceManager {
      * RETURNS File
      * **************************************************************************
      */
-    public File downloadFile(String file, File uploadDirectory) throws Exception {
-        File f = (file.startsWith("/")) ? new File(file) : new File(uploadDirectory, file);
+    public File downloadFile(String file, String relativePath, File uploadDirectory) throws Exception {
+        File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
+        File f = (file.startsWith("/")) ? new File(file) : new File(relativeUploadDirectory, file);
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your .password file.
@@ -195,6 +204,23 @@ public class FileServiceManager {
             throw new Exception("File with name " + file + "  not found");
 
         return f;
+    }
+
+    private File getRelativeUploadDirectory(File uploadDirectory, String relativePath) {
+        File relativeUploadDirectory = uploadDirectory;
+        if (StringUtils.isNotBlank(relativePath)) {
+            relativePath = relativePath.trim();
+            if (!relativePath.endsWith("/")) {
+                relativePath = relativePath + "/";
+            }
+            relativeUploadDirectory = new File(uploadDirectory.getAbsolutePath(), relativePath);
+
+            /* Find our upload directory, make sure it exists */
+            if (!relativeUploadDirectory.exists()) {
+                relativeUploadDirectory.mkdirs();
+            }
+        }
+        return relativeUploadDirectory;
     }
 
 }
