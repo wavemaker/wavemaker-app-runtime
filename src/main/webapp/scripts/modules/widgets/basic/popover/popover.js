@@ -155,6 +155,7 @@ WM.module('wm.widgets.basic')
                         $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
                         $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.$lazyLoad       = WM.noop;
+                        $el.removeAttr('title');
                     },
                     'post': function ($is, $el, attrs, nullCtrl, transcludeFn) {
                         var isInlineContent = attrs.contentsource === 'inline',
