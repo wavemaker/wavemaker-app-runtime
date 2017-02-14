@@ -741,7 +741,7 @@ WM.module('wm.widgets.grid')
                             if ($is.widgetid) {
                                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                                 /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                                wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable || $is.isBoundToFilter);
+                                wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable) || ($is.isBoundToWidget ? !$is.isBoundToFilter : false);
                                 wp.exportformat.show = wp.exportformat.showindesigner = wp.exportdatasize.show = wp.exportdatasize.showindesigner = ($is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable);
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
