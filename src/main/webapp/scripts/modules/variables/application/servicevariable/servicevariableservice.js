@@ -157,7 +157,7 @@ wm.variables.services.$servicevariable = ['Variables',
         /*
         * Check for missing required params and format the date/time param values
         * */
-        function getRequestBody(inputData, params) {
+        function processRequestBody(inputData, params) {
             var requestBody = {},
                 missingParams= [],
                 paramValue;
@@ -186,7 +186,7 @@ wm.variables.services.$servicevariable = ['Variables',
             var queryParams = '',
                 directPath = operationInfo.directPath || '',
                 relativePath = operationInfo.basePath ? operationInfo.basePath + operationInfo.relativePath : operationInfo.relativePath,
-                tempResult,
+                bodyInfo,
                 headers = {},
                 requestBody,
                 url,
@@ -264,9 +264,9 @@ wm.variables.services.$servicevariable = ['Variables',
                     case 'BODY':
                         //For post/put query methods wrap the input
                         if (isBodyTypeQuery) {
-                            tempResult = getRequestBody(variable.dataBinding, _.get(operationInfo, ['definitions', param.type]));
-                            requestBody = tempResult.requestBody;
-                            requiredParamMissing = _.concat(requiredParamMissing, tempResult.missingParams);
+                            bodyInfo = processRequestBody(variable.dataBinding, _.get(operationInfo, ['definitions', param.type]));
+                            requestBody = bodyInfo.requestBody;
+                            requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
                         } else {
                             requestBody = paramValue;
                         }
