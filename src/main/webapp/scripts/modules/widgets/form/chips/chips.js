@@ -403,7 +403,8 @@ WM.module('wm.widgets.form')
                 'link'    : {
                     'pre' : function ($is, $el, attrs) {
 
-                        $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                        $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                        $is.constructChip = constructChip.bind(undefined, $is);
 
                         if (!attrs.widgetid) {
                             Object.defineProperty($is, '_model_', {
@@ -438,7 +439,6 @@ WM.module('wm.widgets.form')
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
                         }
-                        $s.constructChip             = constructChip.bind(undefined, $s);
 
                         if (!attrs.widgetid && attrs.scopedataset) {
                             //Form and filter usecase where scopedataset is updated programatically
