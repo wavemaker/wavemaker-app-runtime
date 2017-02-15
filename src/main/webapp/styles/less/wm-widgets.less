@@ -376,7 +376,7 @@ html, body {
   display: inline-block;
   position: relative;
   .app-button >.caret, .app-anchor >.caret {
-    border: none;
+    border: none !important;
     margin-top: 0.25em;
     margin-right: 0.3em;
     width: 6px;
@@ -2635,6 +2635,19 @@ If the height and width are not specified the video takes the height of the post
   .nvd3 {
     text {
       font-family: inherit;
+      font-size: inherit;
+      font-weight: normal;
+    }
+    .nv-axis {
+      line{
+        stroke: rgba(198,198,198,0.2);
+      }
+      path {
+        stroke: rgba(198,198,198,0.6);
+      }
+    }
+    &.nv-pie path {
+      stroke: rgba(198,198,198,0.2);
     }
   }
   .app-spinner {
