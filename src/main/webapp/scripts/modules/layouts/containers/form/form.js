@@ -4,7 +4,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/form.html',
-                '<form role="form" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
+                '<form role="form" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, formClassName]"' +
                     ' autocomplete="autocomplete" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
@@ -118,7 +118,7 @@ WM.module('wm.layouts.containers')
                 scope.captionAlignClass = "align-" + newVal;
                 break;
             case 'captionposition':
-                scope.captionPositionClass = "position-" + newVal;
+                scope.elScope.captionposition = newVal;
                 break;
             case 'novalidate':
                 if (newVal === true || newVal === 'true') {
