@@ -66,7 +66,6 @@ WM.module('wm.widgets.live')
                     'dataset'        : true,
                     'pagesize'       : CONSTANTS.isStudioMode,
                     'captionalign'   : true,
-                    'captionposition': true,
                     'captionsize'    : true
                 };
             //Function to get the match mode based on the filter selected
@@ -702,9 +701,6 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'captionalign':
                                     element.removeClass('align-' + oldVal).addClass('align-' + newVal);
-                                    break;
-                                case 'captionposition':
-                                    element.removeClass('position-' + oldVal).addClass('position-' + newVal);
                                     break;
                                 case 'captionsize':
                                     LiveWidgetUtils.setCaptionSize(element, newVal);
