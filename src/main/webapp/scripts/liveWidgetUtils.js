@@ -460,7 +460,7 @@ WM.module('wm.widgets.live')
                 return fields;
             }
 
-            function getDataSetFields(fieldDef, index) {
+            function getDataSetFields(fieldDef, index, $el) {
                 var template;
                 if (fieldDef.widget === 'autocomplete' || fieldDef.widget === 'typeahead') {
                     template = ' datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" displaylabel="{{formFields[' + index + '].displaylabel}}"';
@@ -468,7 +468,13 @@ WM.module('wm.widgets.live')
                     template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
                 }
                 if (!fieldDef.dataset) {
-                    template = template + ' scopedataset="formFields[' + index + '].dataset" dataset="" ';
+                    //In studio mode, set default option instead of scopedataset and add representational data indicator
+                    if (CONSTANTS.isStudioMode && $el) {
+                        template = template + ' dataset="Option 1, Option 2, Option 3" ';
+                        $el.attr('data-evaluated-dataset', '');
+                    } else {
+                        template = template + ' scopedataset="formFields[' + index + '].dataset" dataset="" ';
+                    }
                 } else {
                     template = template + ' dataset="{{formFields[' + index + '].dataset}}" ';
                 }
@@ -560,14 +566,14 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns radioset template */
-            function getRadiosetTemplate(fieldDef, index) {
-                var additionalFields = getDataSetFields(fieldDef, index);
+            function getRadiosetTemplate(fieldDef, index, $el) {
+                var additionalFields = getDataSetFields(fieldDef, index, $el);
                 return getDefaultTemplate('radioset', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns checkboxset template */
-            function getCheckboxsetTemplate(fieldDef, index) {
-                var additionalFields = getDataSetFields(fieldDef, index);
+            function getCheckboxsetTemplate(fieldDef, index, $el) {
+                var additionalFields = getDataSetFields(fieldDef, index, $el);
                 return getDefaultTemplate('checkboxset', fieldDef, index, '', '', '', additionalFields);
             }
 
@@ -596,8 +602,8 @@ WM.module('wm.widgets.live')
                 return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
             }
 
-            function getSwitchTemplate(fieldDef, index) {
-                var additionalFields = getDataSetFields(fieldDef, index);
+            function getSwitchTemplate(fieldDef, index, $el) {
+                var additionalFields = getDataSetFields(fieldDef, index, $el);
                 return getDefaultTemplate('switch', fieldDef, index, '', '', '', additionalFields);
             }
 
@@ -634,7 +640,7 @@ WM.module('wm.widgets.live')
              * @description
              * return template based on widgetType for liveFilter and liveForm.
              */
-            function getTemplate(fieldDef, index, captionPosition) {
+            function getTemplate(fieldDef, index, captionPosition, $el) {
                 var template = '',
                     widgetType,
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
@@ -686,10 +692,10 @@ WM.module('wm.widgets.live')
                     template += getCheckboxTemplate(fieldDef, index, widgetType);
                     break;
                 case 'checkboxset':
-                    template += getCheckboxsetTemplate(fieldDef, index);
+                    template += getCheckboxsetTemplate(fieldDef, index, $el);
                     break;
                 case 'radioset':
-                    template += getRadiosetTemplate(fieldDef, index);
+                    template += getRadiosetTemplate(fieldDef, index, $el);
                     break;
                 case 'slider':
                     template += getSliderTemplate(fieldDef, index);
@@ -723,7 +729,7 @@ WM.module('wm.widgets.live')
                     template += getRatingTemplate(fieldDef, index);
                     break;
                 case 'switch':
-                    template += getSwitchTemplate(fieldDef, index);
+                    template += getSwitchTemplate(fieldDef, index, $el);
                     break;
                 case 'currency':
                     template += getCurrencyTemplate(fieldDef, index);
@@ -997,6 +1003,7 @@ WM.module('wm.widgets.live')
                         if (scope.widget === 'autocomplete') {
                             FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
                         }
+                        element.removeAttr('data-evaluated-dataset');
                     }
                     break;
                 case 'inputtype':
