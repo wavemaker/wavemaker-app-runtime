@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                         '<i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
-                        '<span class="pull-right caret fa fa-caret-down"></span>' +
+                        '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
                     '</button>' +
                     '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
                     '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
-                        '<span class="pull-right caret fa fa-caret-down"></span>' +
+                        '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
                     '</a>' +
                     '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
@@ -131,10 +131,12 @@ WM.module('wm.widgets.form')
                 case POSITION.UP_LEFT:
                     element.addClass('dropup');
                     scope.menualign = 'pull-right';
+                    scope.menuCaret = "fa-caret-up";
                     break;
                 case POSITION.UP_RIGHT:
                     element.addClass('dropup');
                     scope.menualign = 'pull-left';
+                    scope.menuCaret = "fa-caret-up";
                     break;
                 case POSITION.INLINE:
                     scope.menualign = 'dropinline-menu';
@@ -164,6 +166,7 @@ WM.module('wm.widgets.form')
             'compile': function (tElement) {
                 return {
                     'pre': function (iScope, element, attrs) {
+                        iScope.menuCaret = "fa-caret-down";
                         //@Deprecated iconname; use iconclass instead
                         if (!attrs.iconclass && attrs.iconname) {
                             WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
