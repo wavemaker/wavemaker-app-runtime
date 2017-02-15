@@ -16,9 +16,6 @@
 package com.wavemaker.runtime.data.replacers.providers;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,13 +72,13 @@ public enum VariableType {
     DATE {
         @Override
         public Object getValue(final Class<?> fieldType) {
-            return new Date(Calendar.getInstance().getTime().getTime());
+            return SystemDefinedPropertiesBean.getInstance().getCurrentDate();
         }
     },
     TIME {
         @Override
         public Object getValue(final Class<?> fieldType) {
-            return new Time(Calendar.getInstance().getTime().getTime());
+            return SystemDefinedPropertiesBean.getInstance().getCurrentTime();
         }
     },
     DATE_TIME {
