@@ -65,16 +65,26 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         int colNum = STARTING_COLUMN_NUMBER;
         Row colHeaderRow = sheet.createRow(STARTING_ROW_NUMBER);
         final WMResultTransformer wmResultTransformer = Transformers.aliasToMappedClass(responseType);
-        for (final ReturnProperty property : returnPropertyList) {
-            String fieldName = wmResultTransformer.aliasToFieldName(property.getName());
+        if (returnPropertyList.size() == 1 && StringUtils.isBlank(returnPropertyList.get(0).getName())) {
+            final ReturnProperty property = returnPropertyList.get(0);
             final FieldType fieldType = property.getFieldType();
-            final ReferenceType type = fieldType.getType();
-            if (type == ReferenceType.PRIMITIVE) {
-                CellUtil.createCell(colHeaderRow, colNum, fieldName,
-                        columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
-                colNum++;
-            } else if (type == ReferenceType.ENTITY) {
-                colNum = addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()), fieldName, false);
+            if (fieldType.getType() == ReferenceType.ENTITY) {
+                addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()),
+                        property.getFieldName(), true);
+            }
+        } else {
+            for (final ReturnProperty property : returnPropertyList) {
+                String fieldName = wmResultTransformer.aliasToFieldName(property.getName());
+                final FieldType fieldType = property.getFieldType();
+                final ReferenceType type = fieldType.getType();
+                if (type == ReferenceType.PRIMITIVE) {
+                    CellUtil.createCell(colHeaderRow, colNum, fieldName,
+                            columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
+                    colNum++;
+                } else if (type == ReferenceType.ENTITY) {
+                    colNum = addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()),
+                            fieldName, false);
+                }
             }
         }
     }
