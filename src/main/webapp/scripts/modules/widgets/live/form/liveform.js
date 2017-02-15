@@ -1271,7 +1271,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition);
+                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition, element);
                             //Remove only live-field so that overlay won't get overrided
                             element.find('.live-field').remove();
                             element.append(template);
