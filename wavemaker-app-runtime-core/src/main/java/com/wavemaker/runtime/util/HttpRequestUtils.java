@@ -19,21 +19,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.wavemaker.runtime.rest.model.Message;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.rest.model.Message;
 
 /**
  * Created by ArjunSahasranam on 9/6/16.
@@ -84,6 +86,7 @@ public class HttpRequestUtils {
         RestHttpOutputMessage httpOutputMessage = new HttpRequestUtils.RestHttpOutputMessage();
         httpOutputMessage.setHttpHeaders(new HttpHeaders());
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+        formHttpMessageConverter.setPartConverters(getPartConverters());
         Message message;
         try {
             File file = File.createTempFile("requestBody",".tmp");
@@ -101,6 +104,22 @@ public class HttpRequestUtils {
         }
         return message;
     }
+
+    private static List<HttpMessageConverter<?>> getPartConverters(){
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+        StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter() {
+
+            @Override
+            protected MediaType getDefaultContentType(String t) throws IOException {
+                return null;
+            }
+        };
+        messageConverters.add(stringHttpMessageConverter);
+        messageConverters.add(new ByteArrayHttpMessageConverter());
+        messageConverters.add(new WmFileSystemResourceConverter());
+        return messageConverters;
+    }
+
 
     private static MultiValueMap<String, Object> getMultiValueMap(Map<String, Object> map) {
         MultiValueMap<String, Object> multiValueMap;
