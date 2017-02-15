@@ -85,6 +85,7 @@ WM.module('wm.layouts.page')
                             element.on(eventName, function () {
                                 skipEvent = true;
                             });
+                            appPage.addClass('left-panel-container');
                             appPage.on(eventName, function () {
                                 if (!skipEvent) {
                                     scope.collapse();
@@ -94,6 +95,7 @@ WM.module('wm.layouts.page')
                         };
                         scope.collapse = function () {
                             var appPage = element.closest('.app-page');
+                            appPage.removeClass('left-panel-container');
                             element.removeClass('visible');
                             element.off(eventName);
                             appPage.off(eventName);
