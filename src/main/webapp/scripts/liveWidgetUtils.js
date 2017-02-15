@@ -273,11 +273,11 @@ WM.module('wm.widgets.live')
                     'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
                     'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
                     'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'autocomplete', 'chips'],
-                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'autocomplete', 'chips'],
-                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'autocomplete', 'chips'],
-                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
-                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'autocomplete', 'chips'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
+                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'switch', 'autocomplete', 'chips'],
+                    'clob'       : ['text', 'textarea', 'richtext'],
+                    'blob'       : ['upload'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
                 };
                 return fieldTypeWidgetTypeMap;
             }
