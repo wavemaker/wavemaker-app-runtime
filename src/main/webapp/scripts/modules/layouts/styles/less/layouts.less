@@ -729,18 +729,12 @@ body {
   }
   /****************Alignment and position classes******************************/
   .app-form, .app-liveform, .app-device-liveform, .app-livefilter {
-    /****************Caption Align left******************************/
-    &.align-left{
-      .app-label {
-        text-align: left;
-      }
-    }
     /****************Caption Align Right******************************/
     &.align-right {
       .app-label {
         text-align: right;
       }
-      &.position-top {
+      .caption-top {
         .form-control, .app-toggle, .app-ratings, .input-group, .app-checkboxset, .app-radioset, .app-checkbox {
           float: right;
         }
@@ -757,27 +751,37 @@ body {
       .app-label {
         text-align: center;
       }
-      &.position-top {
+      .caption-top {
         text-align: center;
         .form-control {
           text-align: center;
+          width: 100%;
         }
       }
       .input-group, .app-blob-upload {
         display: inline-table;
       }
     }
-    /****************Caption Position top******************************/
-    &.position-top {
-      .control-label {
-        display: block;
-      }
-      .form-control {
-        width: 100%;
-      }
-    }
+
     /************** Fixing widgets when Position Right is applied on the parent ****************/
-    &.position-right {
+
+    .app-checkboxset, .app-radioset {
+      margin-bottom:0;
+    }
+    /*To remove the animation caused by ng-show/ng-hide*/
+    .ng-hide-add, .ng-hide-remove {
+      transition: 0s linear all;
+    }
+  }
+
+  .app-liveform-dialog {
+    .app-dialog-body {
+      padding: 0;
+    }
+  }
+ /*******Caption Styling in the composite widget********/
+  .app-composite-widget {
+    &.caption-right {
       .form-control, .input-group, .app-ratings, .app-toggle, .app-switch, .app-fileupload, .app-button-wrapper, .control-label, .app-checkbox, .app-checkboxset, .app-radioset {
         float: right;
       }
@@ -811,76 +815,13 @@ body {
         }
       }
     }
-  }
-
-  .app-liveform-dialog {
-    .app-dialog-body {
-      padding: 0;
-    }
-  }
-  /************** Composite Widget - Caption Position Styles ****************/
-  .caption-left, .caption-right {
-    > .app-currency, > .app-colorpicker {
-      direction: inherit; // To maintain positions of currency ($) on left hand side and text box on right hand side
-    }
-  }
-
-  .caption-left {
-    > * {
-      direction: ltr;
-      float: left;
-    }
-  }
-
-  .caption-right {
-    > * {
-      float: right;
-      left: auto; // To override col-md-push-2 inherited from bootstrap
-    }
-  }
-
-  .caption-top {
-    > .app-label {
-      width: 100%;
-    }
-  }
-  /************** Composite Widget - Caption Position Styles(to override style inside form) ****************/
-  .app-form, .app-liveform, .app-livefilter {
-
-    .caption-left.app-composite-widget, .caption-right.app-composite-widget {
-      > .app-currency, > .app-colorpicker {
-        direction: inherit; // To maintain positions of currency ($) on left hand side and text box on right hand side
+    &.caption-top {
+      .control-label {
+        width:100%
       }
     }
-
-
-    .app-checkboxset, .app-radioset {
-      margin-bottom:0;
-    }
-
-    .caption-left.app-composite-widget {
-      > * {
-        float: left;
-      }
-    }
-
-    .caption-right.app-composite-widget {
-      > * {
-        float: right;
-        left: auto; // To override col-md-push-2 inherited from bootstrap
-      }
-    }
-
-    .caption-top.app-composite-widget {
-      > .app-label {
-        width: 100%;
-      }
-    }
-    /*To remove the animation caused by ng-show/ng-hide*/
-    .ng-hide-add, .ng-hide-remove {
-      transition: 0s linear all;
-    }
   }
+
   .app-search {
     .app-textbox.ng-hide-animate {
       display: none !important;
