@@ -82,8 +82,7 @@ public class HQLQueryExportBuilder extends ExportBuilder {
                             columnHeaderStyle(colHeaderRow.getSheet().getWorkbook()));
                     colNum++;
                 } else if (type == ReferenceType.ENTITY) {
-                    colNum = addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()),
-                            fieldName, false);
+                    colNum = addEntityTypeHeaders(colHeaderRow, colNum, Class.forName(fieldType.getTypeRef()), fieldName, false);
                 }
             }
         }
@@ -95,6 +94,13 @@ public class HQLQueryExportBuilder extends ExportBuilder {
         while (results.next()) {
             Row dataRow = sheet.createRow(rowNum);
             int colNum = STARTING_COLUMN_NUMBER;
+            if (returnPropertyList.size() == 1 && StringUtils.isBlank(returnPropertyList.get(0).getName())) {
+                final ReturnProperty property = returnPropertyList.get(0);
+                final FieldType fieldType = property.getFieldType();
+                if (fieldType.getType() == ReferenceType.ENTITY) {
+                    addEntityTypeColumnData(results.get(colNum), dataRow, colNum, Class.forName(fieldType.getTypeRef()), true);
+                }
+            }
             for (final ReturnProperty returnProperty : returnPropertyList) {
                 Object data = results.get(colNum);
                 FieldType fieldType = returnProperty.getFieldType();
@@ -104,8 +110,7 @@ public class HQLQueryExportBuilder extends ExportBuilder {
                     DataSourceExporterUtil.setCellValue(data, cell);
                     colNum++;
                 } else if (type == ReferenceType.ENTITY) {
-                    colNum = addEntityTypeColumnData(data, dataRow, colNum, Class.forName(fieldType.getTypeRef()),
-                            true);
+                    colNum = addEntityTypeColumnData(data, dataRow, colNum, Class.forName(fieldType.getTypeRef()), false);
                 }
             }
             rowNum++;
