@@ -327,14 +327,15 @@ html, body {
     /* this is fix for spinner overflow issue when height of the window is changed */
     -webkit-transform: translate3d(0, 0, 0);
 
-    .spinner-image {
-      display: table-cell;
+
+    .spinner-messages, .spinner-text, .spinner-image {
       vertical-align: middle;
+      display: table-cell;
+    }
+    .spinner-image {
       font-size: 2em;
     }
     .spinner-text {
-      display: table-cell;
-      vertical-align: middle;
       text-align: left;
       padding-left: 0.5em;
     }
