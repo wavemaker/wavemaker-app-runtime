@@ -161,8 +161,7 @@ wm.plugins.database.services.LocalDBManager = [
 
         //Loads necessary details of queries
         function compactQueries(queriesByDB) {
-            var queries = {},
-                propertiesToTransform;
+            var queries = {};
             _.forEach(queriesByDB.queries, function (queryData) {
                 var query, params;
                 if (queryData.nativeSql && !queryData.update) {
@@ -177,16 +176,16 @@ wm.plugins.database.services.LocalDBManager = [
                             'variableType' : paramObj.variableType
                         };
                     });
-                    if (queryData.response) {
-                        propertiesToTransform =  _.filter(queryData.response.properties, function (item) {
-                            return item.fieldName !== item.name;
-                        });
-                    }
                     queries[queryData.name] = {
                         name: queryData.name,
                         query: query.replace(/:[a-zA-Z0-9]+\s?/g, '? '),
                         params: params,
-                        propertiesToTransform: propertiesToTransform
+                        response : {
+                            properties: _.map(queryData.response.properties, function (p) {
+                                p.nameInUpperCase = p.name.toUpperCase();
+                                return p;
+                            })
+                        }
                     };
                 }
             });
@@ -617,13 +616,27 @@ wm.plugins.database.services.LocalDBManager = [
                     return params[p.name];
                 });
                 return self.executeSQLQuery(dbName, queryData.query, params).then(function (result) {
-                    if (result.rows && result.rows.length > 0
-                            && queryData.propertiesToTransform && queryData.propertiesToTransform.length > 0) {
-                        _.forEach(result.rows, function (row) {
-                            _.forEach(queryData.propertiesToTransform, function (p) {
-                                row[p.fieldName] = row[p.name];
-                            });
+                    var firstRow,
+                        needTransform;
+                    if (!_.isEmpty(result.rows)) {
+                        firstRow = result.rows[0];
+                        needTransform = _.find(queryData.response.properties, function (p) {
+                            return !firstRow.hasOwnProperty(p.fieldName);
                         });
+                        if (!_.isUndefined(needTransform)) {
+                            result.rows = _.map(result.rows, function (row) {
+                                var transformedRow = {},
+                                    rowWithUpperKeys = {};
+                                //This is to make search for data as case-insensitive
+                                _.forEach(row, function (v, k) {
+                                    rowWithUpperKeys[k.toUpperCase()] = v;
+                                });
+                                _.forEach(queryData.response.properties, function (p) {
+                                    transformedRow[p.fieldName] = row[p.fieldName] || rowWithUpperKeys[p.nameInUpperCase];
+                                });
+                                return transformedRow;
+                            });
+                        }
                     }
                     return result;
                 });
