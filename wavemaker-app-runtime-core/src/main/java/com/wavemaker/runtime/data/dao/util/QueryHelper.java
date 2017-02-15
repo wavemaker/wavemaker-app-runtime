@@ -36,15 +36,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
+import com.wavemaker.runtime.data.replacers.providers.VariableType;
 import com.wavemaker.runtime.data.transform.Transformers;
-import com.wavemaker.runtime.system.SystemPropertiesUnit;
 
 public class QueryHelper {
 
@@ -81,8 +80,10 @@ public class QueryHelper {
     }
 
     private static void configureNamedParameter(Query query, Map<String, Object> params, String namedParameter) {
-        if (isSystemProperty(namedParameter)) {
-            query.setParameter(namedParameter, SystemPropertiesUnit.valueOf(namedParameter).getValue());
+        final VariableType variableType = VariableType.fromQueryParameter(namedParameter);
+        if (variableType.isSystemVariable()) {
+            // XXX meta data needed
+            query.setParameter(namedParameter, variableType.getValue(null));
         } else {
             Object val = params.get(namedParameter);
             if (val != null && val instanceof List) {
@@ -97,8 +98,10 @@ public class QueryHelper {
             Session session, String queryName, Query query, Map<String, Object> params,
             String namedParameter) {
 
-        if (isSystemProperty(namedParameter)) {
-            query.setParameter(namedParameter, SystemPropertiesUnit.valueOf(namedParameter).getValue());
+        final VariableType variableType = VariableType.fromQueryParameter(namedParameter);
+        if (variableType.isSystemVariable()) {
+            // XXX meta data needed
+            query.setParameter(namedParameter, variableType.getValue(null));
         } else {
             Object val = params.get(namedParameter);
             if (val != null && val instanceof List) {
@@ -130,18 +133,6 @@ public class QueryHelper {
                 }
             }
         }
-    }
-
-    private static boolean isSystemProperty(final String property) {
-        if (property.startsWith(CommonConstants.SYSTEM_PARAM_PREFIX)) {
-            try {
-                SystemPropertiesUnit systemPropertiesUnit = SystemPropertiesUnit.valueOf(property);
-                return true;
-            } catch (IllegalArgumentException e) {
-                //do nothing
-            }
-        }
-        return false;
     }
 
     public static String arrangeForSort(String queryStr, Sort sort, boolean isNative, Dialect dialect) {

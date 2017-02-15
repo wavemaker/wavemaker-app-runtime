@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,8 +25,8 @@ import java.util.Map;
 import org.apache.commons.lang3.ClassUtils;
 import org.joda.time.LocalDateTime;
 
-import com.wavemaker.runtime.system.SystemDefinedPropertiesBean;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.system.SystemDefinedPropertiesBean;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -54,7 +54,7 @@ public enum VariableType {
         public Object getValue(final Class<?> fieldType) {
             Object id = SystemDefinedPropertiesBean.getInstance().getCurrentUserId();
 
-            if (!String.class.equals(fieldType)) {
+            if (fieldType != null && !String.class.equals(fieldType)) {
                 try {
                     final Class<?> wrapper = ClassUtils.primitiveToWrapper(fieldType);
                     id = wrapper.getMethod("valueOf", String.class).invoke(null, id);
@@ -112,6 +112,10 @@ public enum VariableType {
     public abstract Object getValue(final Class<?> fieldType);
 
     public static VariableType fromQueryParameter(String name) {
-        return queryParamVsVariableType.get(name);
+        if (queryParamVsVariableType.containsKey(name)) {
+            return queryParamVsVariableType.get(name);
+        } else {
+            return PROMPT;
+        }
     }
 }
