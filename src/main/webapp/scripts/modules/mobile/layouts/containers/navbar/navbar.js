@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                         '</ul>' +
                     '</div>' +
                     '<div class="mobile-navbar-center search-container">' +
-                        '<wm-search query="{{query}}" scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" displayimagesrc="{{displayimagesrc}}" datavalue="{{datavalue}}" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
+                        '<wm-search scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" datafield="{{datafield}}" displayimagesrc="{{displayimagesrc}}" datavalue="bind:datavalue" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
                     '</div>' +
                     '<div class="mobile-navbar-right">' +
                         '<ul class="nav navbar-nav navbar-right">' +
