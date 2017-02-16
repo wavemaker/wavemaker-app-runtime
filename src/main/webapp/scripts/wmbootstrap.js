@@ -306,6 +306,7 @@ Application
                     if (!content) {
                         _load(pageName, deferred.resolve, deferred.reject, isPartial);
                     } else {
+                        Variables.setPageVariables(pageName, content.variables || {});
                         deferred.resolve(content);
                     }
 

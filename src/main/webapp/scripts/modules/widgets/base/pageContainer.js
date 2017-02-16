@@ -60,7 +60,6 @@ WM.module('wm.widgets.base')
                 if (CONSTANTS.isRunMode && iScope._widgettype === 'wm-popover' && iScope.contentsource === 'partial') {
                     //Class will be used to set popover height width to avoid flickering issue
                     iScope._popoverOptions.customclass = 'popover_' + iScope.$id + '_' + partialName + '_' + _.toLower($rootScope.activePageName);
-                    $rootScope.$emit('reset-partial-variables', partialName);
                 }
 
                 /* append the pageContentMarkup to original markup, to compile it manually*/
