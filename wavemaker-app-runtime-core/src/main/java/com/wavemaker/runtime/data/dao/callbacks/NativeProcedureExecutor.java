@@ -31,6 +31,7 @@ import org.hibernate.internal.SessionImpl;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
+import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
@@ -101,7 +102,9 @@ public class NativeProcedureExecutor {
                 statement.registerOutParameter(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
             if (param.getParameter().getParameterType().isInParam()) {
-                statement.setObject(i + 1, param.getValue(), JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                final Object value = param.getValue();
+                final Object convertedValue = QueryHelper.convertValue(param.getParameter(), value);
+                statement.setObject(i + 1, convertedValue, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
         }
     }
