@@ -749,12 +749,28 @@ wm.variables.services.Variables = [
                          * and the object has all fields empty, remove that object
                          */
                         if (CONSTANTS.isRunMode && variable.isList && variable.dataSet.length === 1) {
-                            var obj = variable.dataSet[0],
-                                keys = Object.keys(obj),
-                                isValueEmpty = function (val) {
-                                    return _.isEmpty(obj[val]);
+                            var firstObj   = variable.dataSet[0],
+                                isEmpty    = true,
+                                checkEmpty = function (obj) {
+                                    _.forEach(obj, function (value) {
+                                        if (!_.isEmpty(value)) {
+                                            if (_.isObject(value)) {
+                                                if (_.isArray(value)) {
+                                                    //If array, check if array is empty or if it has only one value and the value is empty
+                                                    isEmpty = _.isEmpty(value) || (value.length === 1 ? _.isEmpty(value[0]) : false);
+                                                } else {
+                                                    //If object, loop over the object to check if it is empty or not
+                                                    checkEmpty(value);
+                                                }
+                                            } else {
+                                                isEmpty = false;
+                                            }
+                                        }
+                                        return isEmpty;
+                                    });
                                 };
-                            if (keys.every(isValueEmpty)) {
+                            checkEmpty(firstObj);
+                            if (isEmpty) {
                                 variable.dataSet = [];
                             }
                         }
