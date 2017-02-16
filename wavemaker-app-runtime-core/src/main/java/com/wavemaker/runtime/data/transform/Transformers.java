@@ -31,6 +31,7 @@ public class Transformers {
 
         transformerMap.put(Object.class, AliasToEntityLinkedHashMapTransformer.INSTANCE);
         transformerMap.put(Map.class, AliasToEntityLinkedHashMapTransformer.INSTANCE);
+        transformerMap.put(Void.class, new VoidTransformer());
     }
 
     private static class TransformersHolder {
