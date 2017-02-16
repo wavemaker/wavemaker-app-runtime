@@ -30,7 +30,7 @@ public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetRes
     public static final AliasToEntityLinkedHashMapTransformer INSTANCE = new AliasToEntityLinkedHashMapTransformer();
 
 
-    private AliasToEntityLinkedHashMapTransformer() {
+    protected AliasToEntityLinkedHashMapTransformer() {
     }
 
     @Override
