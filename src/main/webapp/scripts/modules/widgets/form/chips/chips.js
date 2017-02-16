@@ -183,15 +183,15 @@ WM.module('wm.widgets.form')
 
             //Validate all chips and mark duplicates if exists after removing or editing chips
             function validateDuplicates($s) {
-                var groupedChips = _.groupBy($s.selectedChips, 'key');
-                _.forEach(groupedChips, function (chips) {
-                    //If more than one duplicates exists then mark them all as duplicates
-                    if (chips.length > 1) {
-                        _.forEach(chips, function (chip) {
-                            chip.isDuplicate = true;
-                        });
+                //Pick data of useful properties only
+                var chipsCopy = _.map($s.selectedChips, function (ele) { return _.pick(ele, ['key', 'value', 'wmImgSrc', 'fullValue']); });
+                _.forEach(chipsCopy, function (chip, index) {
+                    //If only one entry exists or if it is first occurance
+                    if ((_.findIndex(chipsCopy, chip) === _.findLastIndex(chipsCopy, chip)) || (_.findIndex(chipsCopy, chip) === index)) {
+                        $s.selectedChips[index].isDuplicate = false;
+                    } else {
+                        $s.selectedChips[index].isDuplicate = true;
                     }
-                    _.first(chips).isDuplicate = false;
                 });
             }
 
