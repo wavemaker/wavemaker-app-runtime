@@ -1716,9 +1716,16 @@ wm.variables.services.Variables = [
          * This delay is to wait for the widgets to compile so that the same(and app variables) can be consumed as input to the variables.
          */
         if (CONSTANTS.isRunMode) {
-            $rootScope.$on('page-ready', function () {
-                _.forEach(startUpdateQueue, makeVariableCall);
-                startUpdateQueue = [];
+            $rootScope.$on('page-ready', function (e, pageName) {
+                /*
+                 * checking on page name's equality to active page name.
+                 * when swift navigation among two pages is done,
+                 * the event for first page is emitted after the second page and its variables are loaded
+                 */
+                if (pageName === $rootScope.activePageName) {
+                    _.forEach(startUpdateQueue, makeVariableCall);
+                    startUpdateQueue = [];
+                }
             });
             $rootScope.$on('partial-ready', function (event, scope) {
                 if (lazySartUpdateQueue[scope.$id]) {
