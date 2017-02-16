@@ -456,15 +456,16 @@ WM.module('wm.widgets.basic')
 
             // This function returns the unique fields based on dataField
             function getUniqObjsByDataField(data, dataField) {
-                var uniqData;
-                if (dataField !== 'All Fields') {
-                    uniqData = _.uniqBy(data, dataField);
-                } else {
-                    uniqData = _.uniqWith(data, _.isEqual);
-                }
+                var uniqData,
+                    isAllFields = dataField === 'All Fields';
+
+                uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
 
                 // return objects having non empty datafield and display field values.
                 return _.filter(uniqData, function (obj) {
+                    if (isAllFields) {
+                        return _.trim(obj.wmDisplayLabel);
+                    }
                     return _.trim(obj[dataField]) && _.trim(obj.wmDisplayLabel);
                 });
             }
