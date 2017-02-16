@@ -5,10 +5,12 @@ WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaF
     var operations = {
         upload : {
             model: {
-                name: '',
-                path: '',
-                size: 0,
-                type: ''
+                'fileName'    : '',
+                'path'        : '',
+                'length'      : 0,
+                'success'     : false,
+                'inlinePath'  : '',
+                'errorMessage': ''
             },
             properties : [
                 {"target": "localFile", "type": "string", "value": "", "dataBinding": true},

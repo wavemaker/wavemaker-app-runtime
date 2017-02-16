@@ -53,7 +53,9 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
         this.uploadToServer = function (params, onSuccess, onFail) {
             var ft = new FileTransfer();
             ft.upload(params.file, params.serverUrl, function (evt) {
-                fileStore[params.file] = JSON.parse(evt.response)[0].path;
+                var response = JSON.parse(evt.response)[0];
+                fileStore[params.file]             = response.path;
+                fileStore[params.file + '?inline'] = response.inlinePath;
                 onSuccess(evt);
             }, onFail, params.ftOptions);
         };
@@ -77,16 +79,18 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
                 destFile = Date.now().toString();
             $cordovaFile.copyFile(soureDir, soureFile, uploadDir, destFile)
                 .then(function () {
+                    var filePath = uploadDir + '/' + destFile;
                     ChangeLogService.add('OfflineFileUploadService', 'uploadToServer', {
-                        'file': uploadDir + '/' + destFile,
+                        'file'     : filePath,
                         'serverUrl': serverUrl,
                         'ftOptions': ftOptions
                     });
                     defer.resolve({
-                        'fileName': soureFile,
-                        'path': uploadDir + '/' + destFile,
-                        'length': 0,
-                        'success': true
+                        'fileName'  : soureFile,
+                        'path'      : filePath,
+                        'length'    : 0,
+                        'success'   : true,
+                        'inlinePath': filePath + '?inline'
                     });
                 }, defer.reject.bind());
             return defer.promise;
