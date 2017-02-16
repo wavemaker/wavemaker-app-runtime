@@ -44,6 +44,8 @@ import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.replacers.providers.VariableType;
 import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
+import com.wavemaker.runtime.data.util.HQLQueryUtils;
 
 public class QueryHelper {
 
@@ -313,5 +315,38 @@ public class QueryHelper {
         return hqlQuery;
     }
 
+    public static Query createNewNativeQueryWithSorted(
+            Session session, SQLQuery query, Class<?> responseType, Sort sort) {
+        SQLQuery newQuery = query;
+        if (sort != null) {
+            final String arrangeForSortQuery = QueryHelper
+                    .arrangeForSort(query.getQueryString(), convertToNativeSort(responseType, sort), true,
+                            ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+            newQuery = session.createSQLQuery(arrangeForSortQuery);
+        }
 
+        return newQuery;
+    }
+
+    public static Query createNewHqlQueryWithSorted(Session session, Query query, Class<?> responseType, Sort sort) {
+        Query newQuery = query;
+        if (sort != null) {
+            final String arrangeForSortQuery = query.getQueryString().concat(" ").concat(HQLQueryUtils
+                    .buildOrderByClause(sort));
+            newQuery = session.createQuery(arrangeForSortQuery);
+        }
+        return newQuery;
+    }
+
+    private static Sort convertToNativeSort(Class<?> responseType, Sort actualSort) {
+        final WMResultTransformer transformer = Transformers.aliasToMappedClass(responseType);
+        List<Sort.Order> nativeOrders = new ArrayList<>();
+        for (final Sort.Order order : actualSort) {
+            String property = order.getProperty();
+            final String columnName = transformer.aliasFromFieldName(property);
+            nativeOrders.add(new Sort.Order(order.getDirection(), columnName, order.getNullHandling()));
+        }
+
+        return new Sort(nativeOrders);
+    }
 }
