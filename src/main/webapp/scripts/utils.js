@@ -2003,7 +2003,8 @@ WM.module('wm.utils', [])
                 CONTENT_TYPE    = 'Content-Type',
                 url             = requestParams.url,
                 encType         = _.get(requestParams.headers, CONTENT_TYPE),
-                params          = _.pickBy(requestParams.headers, function (val, key) {return key !== CONTENT_TYPE; });
+                params          = _.pickBy(requestParams.headers, function (val, key) {return key !== CONTENT_TYPE; }),
+                WS_CONSTANTS    = getService('WS_CONSTANTS');
 
             // Mobile app is not downloading the file via form submit. So using window.open method for mobile app.
             if (CONSTANTS.hasCordova) {
@@ -2027,8 +2028,12 @@ WM.module('wm.utils', [])
 
             /* process query params, append a hidden input element in the form against each param */
             queryParams += url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) : '';
-            queryParams += encType === getService('WS_CONSTANTS').CONTENT_TYPES.FORM_URL_ENCODED ? ((queryParams ? '&' : '') + requestParams.dataParams) : '';
-            setParamsFromURL(queryParams, params); //Set params for URL query params
+            queryParams += encType === WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED ? ((queryParams ? '&' : '') + requestParams.dataParams) : '';
+
+            //For Non body methods only, set the input fields from query parameters
+            if (_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, _.toUpper(requestParams.method))) {
+                setParamsFromURL(queryParams, params); //Set params for URL query params
+            }
             setParamsFromURL(requestParams.data, params); //Set params for request data
             _.forEach(params, function (val, key) {
                 paramElement = WM.element('<input type="hidden">');
