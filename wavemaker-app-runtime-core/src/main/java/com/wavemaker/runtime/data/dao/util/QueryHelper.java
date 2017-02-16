@@ -278,7 +278,7 @@ public class QueryHelper {
         return convertedValue;
     }
 
-    protected static Object convertValue(QueryParameter parameter, Object value) {
+    public static Object convertValue(QueryParameter parameter, Object value) {
         final JavaType javaType = parameter.getType();
         Object convertedValue = null;
         if (value != null) {
