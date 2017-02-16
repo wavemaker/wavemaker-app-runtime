@@ -895,13 +895,16 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (this.isList) {
                     Object.defineProperty(this, 'firstRecord', {
                         'get': function () {
-                            return _.get(methods.getDataSet(this), 'content[0]', {});
+                            var dataSet = methods.getDataSet(this);
+                            //For procedure(v1) data doesn't come under content
+                            return _.head(dataSet && dataSet.content) || _.head(dataSet) || {};
                         }
                     });
                     Object.defineProperty(this, 'lastRecord', {
                         'get': function () {
-                            var content = _.get(methods.getDataSet(this), 'content', []);
-                            return content[content.length - 1];
+                            var dataSet = methods.getDataSet(this);
+                            //For procedure(v1) data doesn't come under content
+                            return _.last(dataSet && dataSet.content) || _.last(dataSet) || {};
                         }
                     });
                 }
