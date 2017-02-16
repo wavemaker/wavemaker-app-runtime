@@ -315,15 +315,6 @@ WM.module('wm.layouts.page')
                             }
                         }
 
-                        /*For popover variables will not be set as init of popover will happen first and then setting variables
-                          so popover calls reset partial variables in case of partial content bind
-                        */
-                        $rs.$on('reset-partial-variables', function (evt, partialName) {
-                            if (partialName === pageName) {
-                                setVariables($s, containerScope, variableScope, pageName);
-                            }
-                        });
-
                         setVariables($s, containerScope, variableScope, pageName);
                     },
                     'post': function ($s, $el, attrs) {
