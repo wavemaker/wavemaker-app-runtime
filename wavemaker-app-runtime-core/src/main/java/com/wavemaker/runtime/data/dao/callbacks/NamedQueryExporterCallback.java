@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
@@ -42,16 +43,16 @@ import com.wavemaker.runtime.data.util.HQLQueryUtils;
  */
 public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOutputStream> {
 
+    private static Map<String, List<ReturnProperty>> queryNameVsMetaData = new HashMap<>();
     private String queryName;
     private Map<String, Object> params;
     private Pageable pageable;
     private ExportType exportType;
     private Class<?> responseType;
 
-    private static Map<String, List<ReturnProperty>> queryNameVsMetaData = new HashMap<>();
-
     public NamedQueryExporterCallback(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,Class<?> responseType,
+            final String queryName, final Map<String, Object> params, final ExportType exportType,
+            Class<?> responseType,
             final Pageable pageable) {
         this.queryName = queryName;
         this.params = params;
@@ -68,10 +69,14 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
         final boolean isNative = namedQuery instanceof SQLQuery;
         namedQuery.setFirstResult(pageable.getOffset());
         namedQuery.setMaxResults(pageable.getPageSize());
+        final Sort sort = pageable.getSort();
         if (isNative) {
+            namedQuery = QueryHelper
+                    .createNewNativeQueryWithSorted(session, (SQLQuery) namedQuery, responseType, sort);
             exporter = new NativeSQLDataExporter(DataSourceExporterUtil.constructResultSet(namedQuery.scroll()));
         } else {
-            if(!queryNameVsMetaData.containsKey(queryName)){
+            namedQuery = QueryHelper.createNewHqlQueryWithSorted(session, namedQuery, responseType, sort);
+            if (!queryNameVsMetaData.containsKey(queryName)) {
                 queryNameVsMetaData.put(queryName, buildMetaData(namedQuery));
             }
             exporter = new HQLQueryDataExporter(namedQuery.scroll(), queryNameVsMetaData.get(queryName));
@@ -79,7 +84,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
         return exporter.export(exportType, responseType);
     }
 
-    private List<ReturnProperty> buildMetaData(Query query){
+    private List<ReturnProperty> buildMetaData(Query query) {
         return HQLQueryUtils.extractMetaForHql(query);
     }
 }

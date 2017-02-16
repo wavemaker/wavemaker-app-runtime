@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -119,6 +119,22 @@ public class HQLQueryUtils {
         return properties;
     }
 
+    public static String buildOrderByClause(Sort sort) {
+        StringBuilder orderBy = new StringBuilder(ORDER_BY);
+        Iterator<Sort.Order> orderItr = sort.iterator();
+        while (orderItr.hasNext()) {
+            Sort.Order order = orderItr.next();
+            orderBy.append(" ")
+                    .append(order.getProperty())
+                    .append(" ")
+                    .append(order.getDirection());
+            if (orderItr.hasNext()) {
+                orderBy.append(",");
+            }
+        }
+        return orderBy.toString();
+    }
+
     private static WMQueryInfo buildHQL(String entityClass, String query, Pageable pageable) {
         WMQueryInfo queryInfo = new WMQueryInfo(query);
 
@@ -137,23 +153,6 @@ public class HQLQueryUtils {
         queryInfo.setQuery(FROM + entityClass + queryFilter + orderBy);
 
         return queryInfo;
-    }
-
-
-    private static String buildOrderByClause(Sort sort) {
-        StringBuilder orderBy = new StringBuilder(ORDER_BY);
-        Iterator<Sort.Order> orderItr = sort.iterator();
-        while (orderItr.hasNext()) {
-            Sort.Order order = orderItr.next();
-            orderBy.append(" ")
-                    .append(order.getProperty())
-                    .append(" ")
-                    .append(order.getDirection());
-            if (orderItr.hasNext()) {
-                orderBy.append(",");
-            }
-        }
-        return orderBy.toString();
     }
 
     private static boolean isSortAppliedOnPageable(Pageable pageable) {
