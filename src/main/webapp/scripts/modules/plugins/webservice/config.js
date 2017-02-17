@@ -148,6 +148,10 @@ wm.plugins.webServices.constant('WS_CONSTANTS', {
         MULTIPART_FORMDATA: "multipart/form-data",
         OCTET_STREAM: "application/octet-stream"
     },
+    CONTROLLER_NAMES: {
+        QUERY_CONTROLLER: "QueryExecutionController",
+        PROCEDURE_CONTROLLER: "ProcedureExecutionController"
+    },
     HTTP_STATUS_CODE: {
         CORS_FAILURE: -1
     }
