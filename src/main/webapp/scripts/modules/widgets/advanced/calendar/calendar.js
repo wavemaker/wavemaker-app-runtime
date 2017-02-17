@@ -34,12 +34,19 @@ WM.module('wm.widgets.advanced')
                 },
                 VIEW_TYPES = {
                     'BASIC' : 'basic',
-                    'AGENDA': 'agenda'
+                    'AGENDA': 'agenda',
+                    'LIST'  : 'list'
                 },
                 SELECTION_MODES = {
                     'NONE'     : 'none',
                     'SINGLE'   : 'single',
                     'MULTIPLE' : 'multiple'
+                },
+                LIST_BUTTONTEXT = {
+                    'DAY'   : 'Day',
+                    'MONTH' : 'Month',
+                    'YEAR'  : 'Year',
+                    'WEEK'  : 'Week'
                 };
 
             /* datavalue property is removed from the calendar widget.*/
@@ -58,16 +65,20 @@ WM.module('wm.widgets.advanced')
                         left += ' today';
                     }
 
+                    if (_.includes(ctrls, 'year')) {
+                        right += (viewType === VIEW_TYPES.LIST) ? 'listYear' : '';
+                    }
+
                     if (_.includes(ctrls, 'month')) {
-                        right += ' month';
+                        right += (viewType === VIEW_TYPES.LIST) ? ' listMonth' : ' month';
                     }
 
                     if (_.includes(ctrls, 'week')) {
-                        right += viewType === VIEW_TYPES.BASIC ?  ' basicWeek' : ' agendaWeek';
+                        right += (viewType === VIEW_TYPES.BASIC) ?  ' basicWeek' : (viewType === VIEW_TYPES.LIST) ? ' listWeek' : ' agendaWeek';
                     }
 
                     if (regEx.test(ctrls)) {
-                        right += viewType === VIEW_TYPES.BASIC ?  ' basicDay' : ' agendaDay';
+                        right += (viewType === VIEW_TYPES.BASIC) ?  ' basicDay' : (viewType === VIEW_TYPES.LIST) ? ' listDay' : ' agendaDay';
                     }
 
                     WM.extend($is.calendarOptions.calendar.header, {'left': left, 'right': right});
@@ -77,7 +88,7 @@ WM.module('wm.widgets.advanced')
             function calculateHeight(calendar, $el, $is) {
                 var $parentEl    = $el.parent(),
                     parentHeight = $parentEl.css('height'),
-                    elHeight     = $is.height,
+                    elHeight     = $is.height || '100%',
                     computedHeight;
                 if (_.includes(elHeight, '%')) {
                     if (_.includes(parentHeight, '%')) {
@@ -168,7 +179,7 @@ WM.module('wm.widgets.advanced')
                         return;
                     }
                     if (!isMobile) {
-                        if (newVal !== 'month') {
+                        if (newVal !== 'month' || $is.calendartype === VIEW_TYPES.LIST) {
                             calendar.defaultView = $is.calendartype + _.capitalize(newVal);
                         } else {
                             calendar.defaultView = newVal;
@@ -427,7 +438,6 @@ WM.module('wm.widgets.advanced')
                         } else {
                             $is.calendarOptions = {
                                 calendar: {
-                                    'height'          : parseInt($is.height, 10),
                                     'editable'        : true,
                                     'selectable'      : false,
                                     'header'          : headerOptions,
@@ -445,6 +455,18 @@ WM.module('wm.widgets.advanced')
                                     'views'           : {
                                         'month': {
                                             'eventLimit': 0
+                                        },
+                                        'listDay': {
+                                            'buttonText': LIST_BUTTONTEXT.DAY
+                                        },
+                                        'listWeek': {
+                                            'buttonText': LIST_BUTTONTEXT.WEEK
+                                        },
+                                        'listMonth': {
+                                            'buttonText': LIST_BUTTONTEXT.MONTH
+                                        },
+                                        'listYear': {
+                                            'buttonText': LIST_BUTTONTEXT.YEAR
                                         }
                                     }
                                 }
