@@ -200,8 +200,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
             },
 
             //Check if variable/operation is a query type and of put/post type
-            isBodyTypeQuery = function (variable) {
-                return (variable.controller === 'QueryExecution') && (variable.operationType !== 'get');
+            isBodyTypeQueryProcedure = function (variable) {
+                return (_.includes(['QueryExecution', 'ProcedureExecution'], variable.controller)) && (_.includes(['put', 'post'], variable.operationType));
             },
 
             //Return params from swagger for post/put query types
@@ -314,7 +314,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (!WM.element.isEmptyObject(operation[paramsKey])) {
                         operationObject.parameter = [];
                         //For post/put query methods get params from definitions
-                        if (isBodyTypeQuery(operationObject)) {
+                        if (isBodyTypeQueryProcedure(operationObject)) {
                             rawParameters = getRawParams(operation, definitions);
                         } else {
                             rawParameters = operation[paramsKey];
@@ -719,7 +719,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param {object} having service output
              */
             getPrefabTypes: getPrefabTypes,
-            isBodyTypeQuery: isBodyTypeQuery
+            isBodyTypeQueryProcedure: isBodyTypeQueryProcedure
         };
     }
 ];
