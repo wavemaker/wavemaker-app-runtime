@@ -109,7 +109,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"value": ""},
                     "startUpdate": {"hide": true, "value": ""},
                     "autoUpdate": {"hide": true, "value": ""},
-                    "redirectTo": {"type": "list", "options": [], value: "", "widgettype": "typeahead"},
+                    "redirectTo": {"type": "list", "options": [], value: "", "placeholder": "Search Redirect To", "widgettype": "typeahead"},
                     "useDefaultSuccessHandler": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true}
                 },
                 "wm.NavigationVariable": {

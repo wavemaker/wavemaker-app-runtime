@@ -28,7 +28,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(widgetid || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
                         '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified {{paginationclass}}">{{ondemandmessage}}</a>' +
                     '</div>' +
@@ -1319,9 +1319,10 @@ WM.module('wm.widgets.live')
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
                 $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;
-                $is.dataset     = []; // The data that is bound to the list. Stores the name for reference.
-                $is.fieldDefs   = []; // The data required by the wmListItem directive to populate the items
-                $is.noDataFound = false;
+                $is.dataset      = []; // The data that is bound to the list. Stores the name for reference.
+                $is.fieldDefs    = []; // The data required by the wmListItem directive to populate the items
+                $is.noDataFound  = false;
+                $is.isStudioMode = CONSTANTS.isStudioMode;
                 Object.defineProperty($is, 'selecteditem', {
                     configurable: true
                 });
