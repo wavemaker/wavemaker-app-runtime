@@ -827,7 +827,7 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
-                        "displayValue": {"type": "string, array", "getIsListFrom": "expr:multiple", "show": false, "bindable": "out-bound"}
+                        "displayValue": {"type": "string", "getIsListFrom": "expr:multiple", "show": false, "bindable": "out-bound"}
                     },
 
                     "wm.marquee": {
