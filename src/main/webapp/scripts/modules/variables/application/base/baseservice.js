@@ -694,7 +694,120 @@ wm.variables.services.Variables = [
                     startUpdateQueue.push(variable);
                 }
             },
+            /*
+            * Trigger update on variable based on run/studio mode
+            * */
+            updateVariableData = function (variable, name, context, scope, options) {
+                /* assign variable name to the variable object for later use */
+                variable.name = name;
+                if (variable.init) {
+                    variable.init();
+                }
+                if (runMode) {
+                    variable.activeScope = scope;
+                } else {
+                    /* this copy is used by binding dialog in STUDIO mode */
+                    self.studioCopy[context][name] = variable;
+                }
 
+                /* update variable bindings */
+                updateVariableBinding(variable, name, scope);
+
+                /*iterating over the collection to update the variables appropriately.*/
+                if (variable.category === "wm.Variable") {
+                    /*
+                     * Case: a LIST type static variable having only one object
+                     * and the object has all fields empty, remove that object
+                     */
+                    if (CONSTANTS.isRunMode && variable.isList && variable.dataSet.length === 1) {
+                        var firstObj   = variable.dataSet[0],
+                            isEmpty    = true,
+                            checkEmpty = function (obj) {
+                                _.forEach(obj, function (value) {
+                                    if (!_.isEmpty(value)) {
+                                        if (_.isObject(value)) {
+                                            if (_.isArray(value)) {
+                                                //If array, check if array is empty or if it has only one value and the value is empty
+                                                isEmpty = _.isEmpty(value) || (value.length === 1 ? _.isEmpty(value[0]) : false);
+                                            } else {
+                                                //If object, loop over the object to check if it is empty or not
+                                                checkEmpty(value);
+                                            }
+                                        } else {
+                                            isEmpty = false;
+                                        }
+                                    }
+                                    return isEmpty;
+                                });
+                            };
+                        checkEmpty(firstObj);
+                        if (isEmpty) {
+                            variable.dataSet = [];
+                        }
+                    }
+                } else if (variable.category === "wm.ServiceVariable") {
+                    if (runMode) {
+                        variable.canUpdate = true;
+                        if (variable.startUpdate) {
+                            processVariableStartUpdate(variable, scope);
+                        }
+                    } else {
+                        //fetching the meta data in design mode always
+                        if (WM.isFunction(variable.update)) {
+                            variable.update(options);
+                        }
+                    }
+                }  else if (variable.category === "wm.WebSocketVariable") {
+                    if (runMode) {
+                        if (variable.startUpdate) {
+                            processVariableStartUpdate(variable, scope);
+                        }
+                    } else {
+                        //fetching the meta data in design mode always
+                        if (WM.isFunction(variable.update)) {
+                            variable.update();
+                        }
+                    }
+                } else if (variable.category === "wm.LiveVariable") {
+                    migrateOrderBy(variable);
+                    if (runMode) {
+                        variable.canUpdate = true;
+                        if (variable.startUpdate) {
+                            processVariableStartUpdate(variable, scope);
+                        }
+                    } else {
+                        if (variable.startUpdate && WM.isFunction(variable.update)) {
+                            $timeout(function () {
+                                variable.update();
+                            }, null, false);
+                        } else {
+                            /*
+                             * In studio mode, DB and table related data is to be fetched and saved in the variable
+                             * So, getData is called in STUDIO mode for liva variables with all types of operations
+                             * since startUpdate is unset, table data is not required, hence skipFetchData flag is set
+                             */
+                            $timeout(function () {
+                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                                if (WM.isFunction(variable.update)) {
+                                    variable.update({skipFetchData: true});
+                                }
+                            }, null, false);
+                        }
+                    }
+                } else if (variable.category === "wm.LoginVariable") {
+                    if (runMode && variable.startUpdate) {
+                        processVariableStartUpdate(variable, scope);
+                    }
+                } else if (variable.category === "wm.TimerVariable") {
+                    if (runMode && variable.autoStart) {
+                        processVariableStartUpdate(variable, scope);
+                    }
+                } else if (variable.category === "wm.DeviceVariable") {
+                    if (runMode && variable.startUpdate) {
+                        processVariableStartUpdate(variable, scope);
+                    }
+                }
+            },
             /*
              * Updates the variables in a context with their latest values
              * context refers to the namespace for the variables collection, like 'app'/page/partial/prefab
@@ -726,116 +839,9 @@ wm.variables.services.Variables = [
                         }
                     });
                 }
-                WM.forEach(self.variableCollection[scope.$id], function (variable, name) {
-                    /* assign variable name to the variable object for later use */
-                    variable.name = name;
-                    if (variable.init) {
-                        variable.init();
-                    }
-                    if (runMode) {
-                        variable.activeScope = scope;
-                    } else {
-                        /* this copy is used by binding dialog in STUDIO mode */
-                        self.studioCopy[context][name] = variable;
-                    }
-
-                    /* update variable bindings */
-                    updateVariableBinding(variable, name, scope);
-
-                    /*iterating over the collection to update the variables appropriately.*/
-                    if (variable.category === "wm.Variable") {
-                        /*
-                         * Case: a LIST type static variable having only one object
-                         * and the object has all fields empty, remove that object
-                         */
-                        if (CONSTANTS.isRunMode && variable.isList && variable.dataSet.length === 1) {
-                            var firstObj   = variable.dataSet[0],
-                                isEmpty    = true,
-                                checkEmpty = function (obj) {
-                                    _.forEach(obj, function (value) {
-                                        if (!_.isEmpty(value)) {
-                                            if (_.isObject(value)) {
-                                                if (_.isArray(value)) {
-                                                    //If array, check if array is empty or if it has only one value and the value is empty
-                                                    isEmpty = _.isEmpty(value) || (value.length === 1 ? _.isEmpty(value[0]) : false);
-                                                } else {
-                                                    //If object, loop over the object to check if it is empty or not
-                                                    checkEmpty(value);
-                                                }
-                                            } else {
-                                                isEmpty = false;
-                                            }
-                                        }
-                                        return isEmpty;
-                                    });
-                                };
-                            checkEmpty(firstObj);
-                            if (isEmpty) {
-                                variable.dataSet = [];
-                            }
-                        }
-                    } else if (variable.category === "wm.ServiceVariable") {
-                        if (runMode) {
-                            variable.canUpdate = true;
-                            if (variable.startUpdate) {
-                                processVariableStartUpdate(variable, scope);
-                            }
-                        } else {
-                            //fetching the meta data in design mode always
-                            if (WM.isFunction(variable.update)) {
-                                variable.update();
-                            }
-                        }
-                    }  else if (variable.category === "wm.WebSocketVariable") {
-                        if (runMode) {
-                            if (variable.startUpdate) {
-                                processVariableStartUpdate(variable, scope);
-                            }
-                        } else {
-                            //fetching the meta data in design mode always
-                            if (WM.isFunction(variable.update)) {
-                                variable.update();
-                            }
-                        }
-                    } else if (variable.category === "wm.LiveVariable") {
-                        migrateOrderBy(variable);
-                        if (runMode) {
-                            variable.canUpdate = true;
-                            if (variable.startUpdate) {
-                                processVariableStartUpdate(variable, scope);
-                            }
-                        } else {
-                            if (variable.startUpdate && WM.isFunction(variable.update)) {
-                                $timeout(function () {
-                                    variable.update();
-                                }, null, false);
-                            } else {
-                                /*
-                                 * In studio mode, DB and table related data is to be fetched and saved in the variable
-                                 * So, getData is called in STUDIO mode for liva variables with all types of operations
-                                 * since startUpdate is unset, table data is not required, hence skipFetchData flag is set
-                                 */
-                                $timeout(function () {
-                                    /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                    if (WM.isFunction(variable.update)) {
-                                        variable.update({skipFetchData: true});
-                                    }
-                                }, null, false);
-                            }
-                        }
-                    } else if (variable.category === "wm.LoginVariable") {
-                        if (runMode && variable.startUpdate) {
-                            processVariableStartUpdate(variable, scope);
-                        }
-                    } else if (variable.category === "wm.TimerVariable") {
-                        if (runMode && variable.autoStart) {
-                            processVariableStartUpdate(variable, scope);
-                        }
-                    } else if (variable.category === "wm.DeviceVariable") {
-                        if (runMode && variable.startUpdate) {
-                            processVariableStartUpdate(variable, scope);
-                        }
-                    }
+                _.forEach(self.variableCollection[scope.$id], function (variable, name) {
+                    //Trigger update on variable based on run/studio mode
+                    updateVariableData(variable, name, context, scope);
                 });
             },
 
@@ -1428,7 +1434,7 @@ wm.variables.services.Variables = [
                     CRUDMAP.CREATE[owner].push(name);/*Storing  created variable name in map*/
                 }
                 if (isUpdate) {
-                    call('getData', name, {scope: scope, skipFetchData: !fetchData});
+                    updateVariableData(varCollectionObj[scope.$id][name], name, owner, scope, {skipFetchData: !fetchData})
                 }
             },
             initiateCallback = function (event, variable, response, info, skipDefaultNotification) {
