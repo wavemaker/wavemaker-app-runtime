@@ -50,7 +50,7 @@ wm.variables.services.Variables = [
         var runMode = CONSTANTS.isRunMode,
             DOT_EXPR_REX = /^\[("|')[\w\W]*(\1)\]$/g,
             MAIN_PAGE = 'Main',
-            startUpdateQueue = [],
+            startUpdateQueue = {},
             lazySartUpdateQueue = {},
             internalBoundNodeMap = {},
             variableConfig = {
@@ -691,7 +691,8 @@ wm.variables.services.Variables = [
                     lazySartUpdateQueue[scope.$id] = lazySartUpdateQueue[scope.$id] || [];
                     lazySartUpdateQueue[scope.$id].push(variable);
                 } else {
-                    startUpdateQueue.push(variable);
+                    startUpdateQueue[scope.$id] = startUpdateQueue[scope.$id] || [];
+                    startUpdateQueue[scope.$id].push(variable);
                 }
             },
             /*
@@ -1728,15 +1729,16 @@ wm.variables.services.Variables = [
                  * when swift navigation among two pages is done,
                  * the event for first page is emitted after the second page and its variables are loaded
                  */
-                if (pageName === $rootScope.activePageName) {
-                    _.forEach(startUpdateQueue, makeVariableCall);
-                    startUpdateQueue = [];
-                }
+                var pageScopeId = pageScopeMap[pageName].$id;
+                _.forEach(startUpdateQueue[pageScopeId], makeVariableCall);
+                delete startUpdateQueue[pageScopeId];
             });
             $rootScope.$on('partial-ready', function (event, scope) {
-                if (lazySartUpdateQueue[scope.$id]) {
-                    _.forEach(lazySartUpdateQueue[scope.$id], makeVariableCall);
-                    lazySartUpdateQueue[scope.$id] = undefined;
+                var queue = lazySartUpdateQueue[scope.$id] || startUpdateQueue[scope.$id];
+                if (queue) {
+                    _.forEach(queue, makeVariableCall);
+                    delete lazySartUpdateQueue[scope.$id];
+                    delete startUpdateQueue[scope.$id];
                 }
             });
         }
