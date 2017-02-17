@@ -201,7 +201,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 formData,
                 formDataContentType,
                 isProxyCall,
-                isBodyTypeQuery = ServiceFactory.isBodyTypeQuery(variable);
+                isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable);
 
             function getFormDataObj() {
                 if (formData) {
@@ -225,7 +225,7 @@ wm.variables.services.$servicevariable = ['Variables',
             _.forEach(operationInfo.parameters, function (param) {
                 var paramValue = param.sampleValue;
 
-                if ((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQuery) {
+                if ((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQueryProcedure) {
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
@@ -263,7 +263,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         break;
                     case 'BODY':
                         //For post/put query methods wrap the input
-                        if (isBodyTypeQuery) {
+                        if (isBodyTypeQueryProcedure) {
                             bodyInfo = processRequestBody(variable.dataBinding, _.get(operationInfo, ['definitions', param.type]));
                             requestBody = bodyInfo.requestBody;
                             requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
