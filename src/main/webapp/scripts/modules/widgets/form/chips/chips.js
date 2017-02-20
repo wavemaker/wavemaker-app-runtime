@@ -87,7 +87,8 @@ WM.module('wm.widgets.form')
                 }
                 var values,
                     chip;
-                if (!WM.isArray(chips) && chips !== "") {
+                chips = chips || [];
+                if (!WM.isArray(chips)) {
                     values  = _.split(chips, ',');
                     $s.selectedChips = [];
                     _.forEach(values, function (ele) {
