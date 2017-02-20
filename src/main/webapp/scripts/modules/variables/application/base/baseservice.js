@@ -1732,6 +1732,11 @@ wm.variables.services.Variables = [
                 var pageScopeId = pageScopeMap[pageName].$id;
                 _.forEach(startUpdateQueue[pageScopeId], makeVariableCall);
                 delete startUpdateQueue[pageScopeId];
+
+                if (startUpdateQueue[$rootScope.$id]) {
+                    _.forEach(startUpdateQueue[$rootScope.$id], makeVariableCall);
+                    delete startUpdateQueue[$rootScope.$id];
+                }
             });
             $rootScope.$on('partial-ready', function (event, scope) {
                 var queue = lazySartUpdateQueue[scope.$id] || startUpdateQueue[scope.$id];
