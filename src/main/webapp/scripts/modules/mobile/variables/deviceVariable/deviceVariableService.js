@@ -37,7 +37,7 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 successCb = function (data) {
                     variable.dataSet = data;
                     Utils.triggerFn(success);
-                    initiateCallback('onSuccess', variable, callBackScope, data);
+                    initiateCallback('onSuccess', variable, data);
                 },
                 errorCb = function () {
                     Utils.triggerFn(error);
