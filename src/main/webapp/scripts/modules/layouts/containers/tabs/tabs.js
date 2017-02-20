@@ -25,7 +25,8 @@ WM.module('wm.layouts.containers')
         /* get the properties related to the tabs */
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabs', ['wm.base']),
             notifyFor = {
-                'tabsposition': true
+                'tabsposition'    : true,
+                'defaultpaneindex': true
             };
 
         /*Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -34,6 +35,15 @@ WM.module('wm.layouts.containers')
             case 'tabsposition':
                 scope.setTabsPosition(newVal);
                 break;
+            case 'defaultpaneindex':
+            //If no active tab is set ie.. no isdefaulttab then honor the defaultpaneindex
+            if (!scope.activeTab) {
+                scope.activeTab = scope.tabs[newVal || 0];
+            }
+
+            scope.activeTab.select();
+
+            break;
             }
         }
 
@@ -181,12 +191,6 @@ WM.module('wm.layouts.containers')
                         }
                     }
 
-                    /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
-                    activeTab = activeTab || tabs[scope.defaultpaneindex];
-
-                    if (activeTab) {
-                        scope.selectTab(activeTab, false, true);
-                    }
                     /**
                      * @ngdoc function
                      * @name wm.layouts.containers.directive:wmTabs#next
