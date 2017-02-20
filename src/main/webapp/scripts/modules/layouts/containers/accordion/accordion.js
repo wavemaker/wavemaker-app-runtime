@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true" apply-styles="shell">' +
-                '<div class="panel-heading clearfix" ng-click="togglePane()" ng-class="{active: isActive}">' +
+                '<div class="panel-heading clearfix" ng-click="togglePane($event)" ng-class="{active: isActive}">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -38,11 +38,14 @@ WM.module('wm.layouts.containers')
             'template': $templateCache.get('template/layout/container/accordion.html'),
             'controller': function ($scope) {
                 /* Contains the isolateScopes of accordion-panes. */
-                this.panes = [];
+                this.panes     = [];
+                this.paneIndex = 0;
 
                 /* save the scope of the accordion-pane */
                 this.register = function (paneScope) {
                     this.panes.push(paneScope);
+                    paneScope.paneId = this.paneIndex;
+                    this.paneIndex++;
                 };
 
                 /* function to collapse the accordion-panes */
@@ -67,7 +70,19 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function (scope, element, attrs, ctrl) {
                         var defaultPane;
-                        defaultPane = _.find(ctrl.panes, function (pane) { return pane.isdefaultpane; }) || ctrl.panes[0];
+                            defaultPane = _.find(ctrl.panes, function (pane) {
+
+                                var isDefaultPane = false;
+
+                                if (attrs.defaultpaneindex) {
+                                    isDefaultPane = pane.paneId === scope.defaultpaneindex;
+                                } else {
+                                    isDefaultPane = pane.isdefaultpane;
+                                }
+
+                                return isDefaultPane;
+                            }) || ctrl.panes[scope.defaultpaneindex];
+
                         defaultPane.expand();
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -101,6 +116,9 @@ WM.module('wm.layouts.containers')
                         element.removeAttr('title');
                     },
                     'post': function (scope, element, attrs, panesCtrl) {
+
+                        var parentScope = element.closest('.app-accordion').isolateScope();
+
                         //To support backward compatibility for old projects
                         if (scope.title === undefined && !scope.bindtitle) {
                             scope.title = scope.heading || scope.bindheading;
@@ -109,15 +127,23 @@ WM.module('wm.layouts.containers')
                         panesCtrl.register(scope);
 
                         /* toggle the state of the pane */
-                        scope.togglePane = function () {
+                        scope.togglePane = function ($event) {
                             /* flip the active flag */
                             var flag = !scope.isActive;
+
                             if (flag) {
                                 /* some widgets like charts needs to be redrawn when a accordion pane becomes active for the first time */
                                 element.find('.ng-isolate-scope')
                                     .each(function () {
                                         Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                     });
+
+                                if (!scope.widgetid && parentScope.onChange && $event) {
+                                    parentScope.onChange({'$event': $event, '$scope': parentScope, 'newPaneIndex': scope.paneId, 'oldPaneIndex': (parentScope.activePane && parentScope.activePane.paneId) || 0});
+                                }
+
+                                parentScope.activePane = scope;
+
                                 // when pane content is set to display external page, triggering $lazyLoad on expand of the accordion pane will render the content.
                                 Utils.triggerFn(scope.$lazyLoad);
                                 /* trigger the onExpand call back */
@@ -183,6 +209,11 @@ WM.module('wm.layouts.containers')
  *                  True value for closeothers property will collapse the panes that are expanded on expand of a pane. <br>
  *                  False value for closeothers property will not collapse the expaneded panes on expand of a pane. <br>
  *                  Default value: `true`.
+ * @param {number=} defaultpaneindex
+ *                  Makes the pane active for given index.This property has backward compatibility for isdefaultpane property. </br>
+ *                  Default value: 0
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
  *
  * @example
     <example module="wmCore">
@@ -247,10 +278,6 @@ WM.module('wm.layouts.containers')
  * @param {string=} horizontalalign
  *                  Align the content of the accordion-header to left/right/center. <br>
  *                  Default value: `left`.
- * @param {boolean=} isdefaultpane
- *                  This is a bindable property. <br>
- *                  It will be used to make one accordion pane open by default. <br>
- *                  Default value: `false`.
  * @param {string=} on-expand
  *                  Callback function which will be triggered when the pane is expanded.
  * @param {string=} on-collapse

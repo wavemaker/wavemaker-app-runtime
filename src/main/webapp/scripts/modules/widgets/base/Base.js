@@ -1629,7 +1629,9 @@ WM.module('wm.widgets.base', [])
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Accordion Pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "tabindex": {"type": "number", "value": "0"}
+                        "tabindex": {"type": "number", "value": "0"},
+                        "defaultpaneindex": {"type": "number", "value": 0, "bindable": "in-bound"},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     "wm.accordionpane": {
@@ -1642,7 +1644,7 @@ WM.module('wm.widgets.base', [])
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
-                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"},
+                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
                         "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "color": {"type": "string", "hidelabel": true, "widget": "color"},
@@ -1670,7 +1672,9 @@ WM.module('wm.widgets.base', [])
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"},
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"}
+                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
+                        "defaultpaneindex": {"type": "number", "value": 0, "bindable": "in-bound"},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     "wm.tab": {
@@ -1682,7 +1686,7 @@ WM.module('wm.widgets.base', [])
                         "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "value": "Tab Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
-                        "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
+                        "isdefaulttab": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
                         "tabindex": {"type": "number", "value": "0"}
                     },
                     "wm.wizard": {
@@ -2048,7 +2052,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
-                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
+                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
