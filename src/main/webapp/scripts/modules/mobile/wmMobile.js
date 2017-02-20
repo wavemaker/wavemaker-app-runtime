@@ -45,17 +45,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                     $rootScope.$emit('backbutton');
                 });
             }
-            if (CONSTANTS.isRunMode) {
-                $rootScope.$on('$routeChangeStart', function () {
-                    WM.element('body >.app-spinner:first').removeClass('ng-hide');
-                });
-                $rootScope.$on('page-ready', function () {
-                    WM.element('body >.app-spinner:first').addClass('ng-hide');
-                });
-                $rootScope.$on('template-ready', function () {
-                    WM.element('body >.app-spinner:first').addClass('ng-hide');
-                });
-            }
         }])
     //Initialize variables
     .run(['Variables', 'WIDGET_CONSTANTS', 'BaseVariablePropertyFactory', 'DeviceVariableService', 'NavigationVariableService',

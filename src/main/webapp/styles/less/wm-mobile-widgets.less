@@ -118,6 +118,29 @@
   }
 }
 .mobile-app-page {
+  @app-page-content-loader-fg-color: rgba(0,0,0,0.5);
+  .app-page-content {
+    .app-page-content-loader {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      overflow: hidden;
+      .loader {
+        height: 0pt;
+        width: 100%;
+        &:before {
+          display: block;
+          position: absolute;
+          content: "";
+          width: 10%;
+          height: 2pt;
+          background-color: @app-page-content-loader-fg-color;
+          animation: toAndFro 2s linear infinite;
+        }
+      }
+    }
+  }
 /****************************************************************************************************
 *****************************************File upload ***************************************************
 ******************************************************************************************************/

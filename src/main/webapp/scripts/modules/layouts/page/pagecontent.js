@@ -6,8 +6,14 @@ WM.module('wm.layouts.page')
         $templateCache.put('template/layout/page/pagecontent.html',
             '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
             );
+        $templateCache.put('template/layout/page/pagecontent-loader.html',
+            '<div class="app-page-content-loader">' +
+            '<div class="loader bg-primary"></div>' +
+            '<div class="load-info"></div>' +
+            '</div>'
+            );
     }])
-    .directive('wmPageContent', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
+    .directive('wmPageContent', ['$route', '$rootScope', '$templateCache', '$timeout', 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function ($route, $rootScope, $templateCache, $timeout, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch']),
@@ -25,6 +31,27 @@ WM.module('wm.layouts.page')
             }
         }
 
+        /*Delays transclusion for the variables to load.*/
+        function waitForTransition($s, $ele) {
+            var iScope = $ele.isolateScope(),
+                $spinnerEl;
+            $ele.addClass('load');
+            $spinnerEl = WM.element($templateCache.get('template/layout/page/pagecontent-loader.html'));
+            $spinnerEl.appendTo($ele);
+            Utils.listenOnce($rootScope, 'page-transition-end', function () {
+                iScope.__load();
+                Utils.triggerFn($ele.scope().onPagePartLoad);
+            });
+            Utils.listenOnce($s, 'page-startupdate-variables-loaded', function () {
+                $timeout(function () {
+                    $spinnerEl.remove();
+                    $ele.removeClass('load');
+                }, 100);
+            });
+            iScope.loadmode = 'after-select';
+            Utils.triggerFn($ele.scope().registerPagePart);
+        }
+
         return {
             'restrict': 'E',
             'replace': true,
@@ -37,17 +64,8 @@ WM.module('wm.layouts.page')
                     'pre': function (scope, element) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        if (CONSTANTS.isRunMode) {
-                            Utils.triggerFn(element.scope().registerPagePart);
-
-                            /** We do not require a delay for page dialogs. Delay is required only for pages*/
-                            if(!element.closest('.app-dialog').length){
-                                scope.loadmode = 'after-delay';
-                                scope.loaddelay = 100;
-                            }
-                            scope.__onTransclude = function () {
-                                Utils.triggerFn(element.scope().onPagePartLoad);
-                            };
+                        if (CONSTANTS.isRunMode  && element.scope().__isWMPage) {
+                            waitForTransition(scope, element);
                         }
                     },
 

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var $appView = WM.element('#wm-app-content');
 
-    $appView.attr('ng-view', '');
+    $appView.attr('wm-page-view', '');
 
     // add a node to the DOM to determine the mobile view
     WM.element('<i id="wm-mobile-display"></i>').appendTo('.wm-app');
@@ -72,6 +72,148 @@ Application
             }
         ]
     )
+
+    /**
+     * @ngdoc service
+     * @name Application.$AsyncTaskManager
+     * @description
+     * This contains minimal API to control the execution of async tasks like 'setTimeout', 'setInterval' and
+     * angular digest cycles.
+     */
+    .service('AsyncTaskManager', ['$browser', '$rootScope', function ($browser, $rootScope) {
+        'use strict';
+        var pause = false,
+            timerId,
+            oDefer = $browser.defer,
+            oCancel = $browser.defer.cancel,
+            queue = [];
+        //resumes the deferred calls
+        function resume() {
+            pause = false;
+            _.forEach(queue, function (fn) {
+                fn();
+            });
+            $rootScope.$digest();
+            queue.length = 0;
+        }
+        // defers the execution if the state is 'PAUSE'
+        function defer(fn) {
+            return function () {
+                if (pause) {
+                    queue.push(fn);
+                } else {
+                    fn();
+                }
+            };
+        }
+        //Override to get control on digest cycle.
+        $browser.defer = function (fn, delay) {
+            return oDefer.call($browser, defer(fn), delay);
+        };
+        $browser.defer.cancel = oCancel;
+        /**
+         * @ngdoc function
+         * @name Application.$AsyncTaskManager#resumeAsyncTasks
+         * @methodOf Application.$AsyncTaskManager
+         * @function
+         *
+         * @description
+         * This method will invoke all async tasks that are paused so far (one by one chronologically).
+         */
+        this.resumeAsyncTasks = function () {
+            if (pause) {
+                window.clearTimeout(timerId);
+                resume();
+            }
+        };
+        /**
+         * @ngdoc function
+         * @name Application.$AsyncTaskManager#pauseAsyncTasks
+         * @methodOf Application.$AsyncTaskManager
+         * @function
+         *
+         * @description
+         * This method will pause all async tasks until resumeAsyncTasks is called or until timeout is reached.
+         *
+         * @param {int} timeoutInMillis the maximum time to wait for resume call.
+         */
+        this.pauseAsyncTasks = function (timeoutInMillis) {
+            if (!pause) {
+                pause = true;
+                if (timeoutInMillis > 0) {
+                    timerId = window.setTimeout(function () {
+                        resume();
+                    }, timeoutInMillis);
+                }
+            }
+        };
+    }])
+    .directive('wmPageView', [
+        '$$animateQueue',
+        '$compile',
+        '$route',
+        '$rootScope',
+        'AsyncTaskManager',
+        function (
+            $$animateQueue,
+            $compile,
+            $route,
+            $rootScope,
+            AsyncTaskManager
+        ) {
+            'use strict';
+            function removePage(page) {
+                var pageScope;
+                if (page) {
+                    pageScope = page.scope();
+                    if (pageScope) {
+                        pageScope.$destroy();
+                    }
+                    page.remove();
+                }
+            }
+            function update($scope, $element) {
+                var locals = $route.current && $route.current.locals,
+                    template = locals && locals.$template,
+                    pageScope = $scope.$new(),
+                    oldPage,
+                    newPage;
+                if (locals) {
+                    newPage = $compile(template)(pageScope);
+                    oldPage = $element.children().last();
+                    $element.append(newPage);
+                    if ($route.current.transition) {
+                        $$animateQueue.enabled(newPage, true);
+                        $$animateQueue.enabled(oldPage, true);
+                        oldPage.addClass($route.current.transition);
+                        $rootScope.$emit('page-transition-start');
+                        AsyncTaskManager.pauseAsyncTasks(500);
+                        $$animateQueue.push(newPage, 'enter').then(function () {
+                            removePage(oldPage);
+                            oldPage = undefined;
+                        });
+                        $$animateQueue.push(oldPage, 'leave').then(function () {
+                            removePage(oldPage);
+                            oldPage = undefined;
+                            $rootScope.$emit('page-transition-end');
+                        });
+                    } else {
+                        removePage(oldPage);
+                        oldPage = undefined;
+                        $rootScope.$emit('page-transition-end');
+                    }
+                }
+            }
+            return {
+                'restrict': 'A',
+                link: function ($scope, $element) {
+                    $rootScope.$on('$routeChangeSuccess', function () {
+                        update($scope, $element);
+                    });
+                    update($scope, $element);
+                }
+            };
+        }])
     .service('AppManager',
         [
             '$q',
@@ -762,8 +904,10 @@ Application
                     AppManager.hidePageSwitchSpinner();
                 });
 
-                // show the app-spinner on route change start
-                $rs.$on('$routeChangeStart', AppManager.showPageSwitchSpinner);
+                if (!$rs.isMobileApplicationType) {
+                    // show the app-spinner on route change start
+                    $rs.$on('$routeChangeStart', AppManager.showPageSwitchSpinner);
+                }
 
                 /*
                  * Following content loaded only application type projects, not template bundles, prefabs
