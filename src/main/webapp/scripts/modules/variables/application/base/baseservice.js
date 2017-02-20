@@ -974,9 +974,14 @@ wm.variables.services.Variables = [
                     // removing dataSet for live variable
                     if (!runMode && variable.category === "wm.LiveVariable") {
                         variables[name].dataSet = [];
-                    } else if (runMode && (variable.category === "wm.ServiceVariable" ||variable.category === "wm.WebSocketVariable")) {
+                    } else if (runMode && (variable.category === "wm.ServiceVariable" || variable.category === "wm.WebSocketVariable")) {
                         // Attaching service operation info to variables if in run mode
                         variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable._prefabName);
+
+                        // service variable migration for old service variables not having controller names
+                        if (runMode && !variable.controller && variable.operationId) {
+                            variables[name].controller = variable.operationId.split('_')[0].replace(/Controller$/, '');
+                        }
                     }
                 });
 
