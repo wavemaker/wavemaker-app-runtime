@@ -186,7 +186,10 @@ wm.modules.wmCommon.services.NavigationService = [
                     });
                 }
                 if (pageStackObject.isLastVisitedPage(pageName)) {
-                    nextTransitionToApply = pageStackObject.getCurrentPage().transition + '-exit';
+                    nextTransitionToApply = pageStackObject.getCurrentPage().transition;
+                    if (!_.isEmpty(nextTransitionToApply)) {
+                        nextTransitionToApply += '-exit';
+                    }
                     pageStackObject.goBack();
                 } else {
                     pageStackObject.addPage({
@@ -194,8 +197,10 @@ wm.modules.wmCommon.services.NavigationService = [
                         'transition' : nextTransitionToApply
                     });
                 }
-                WM.element('#wm-app-content:first').addClass('page-transition-' + nextTransitionToApply);
-                nextTransitionToApply = '';
+                if (!_.isEmpty(nextTransitionToApply)) {
+                    $next.transition = 'page-transition page-transition-' + nextTransitionToApply;
+                    nextTransitionToApply = '';
+                }
             }
         });
 
