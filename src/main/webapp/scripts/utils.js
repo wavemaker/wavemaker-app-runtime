@@ -2408,6 +2408,22 @@ WM.module('wm.utils', [])
             return true;
         }
 
+        /**
+         * Listens for an event for only one time and de-registers the event.
+         *
+         * @param $s Scope on which the event has to be listened
+         * @param event name of the event
+         * @param callBack function to invoke
+         */
+        function listenOnce($s, event, callBack) {
+            var deregisterEvent = $s.$on(event, function () {
+                if (callBack) {
+                    callBack.apply(undefined, arguments);
+                }
+                deregisterEvent();
+            });
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2543,4 +2559,5 @@ WM.module('wm.utils', [])
         this.formatStyle                = formatStyle;
         this.getFormData                = getFormData;
         this.validateAccessRoles        = validateAccessRoles;
+        this.listenOnce                 = listenOnce;
     }]);

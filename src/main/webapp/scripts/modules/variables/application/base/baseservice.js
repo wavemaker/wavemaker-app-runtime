@@ -24,7 +24,8 @@ wm.variables.services.Variables = [
     "BindingManager",
     "MetaDataFactory",
     "WIDGET_CONSTANTS",
-    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory, WIDGET_CONSTANTS) {
+    "$q",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory, WIDGET_CONSTANTS, $q) {
         "use strict";
 
         /**
@@ -643,13 +644,14 @@ wm.variables.services.Variables = [
              * @param variable
              */
             makeVariableCall = function (variable) {
-                var method;
+                var method, deferredVariableCall = $q.defer();
                 switch (variable.category) {
                 case 'wm.ServiceVariable':
                     method = 'update';
                     break;
                 case 'wm.WebSocketVariable':
                     method = 'open';
+                    deferredVariableCall.resolve();
                     break;
                 case 'wm.LiveVariable':
                     /*
@@ -668,14 +670,18 @@ wm.variables.services.Variables = [
                     break;
                 case 'wm.TimerVariable':
                     method = 'fire';
+                    deferredVariableCall.resolve();
                     break;
                 case 'wm.DeviceVariable':
                     method = 'invoke';
                     break;
                 }
                 if (WM.isFunction(variable[method])) {
-                    variable[method]();
+                    variable[method](undefined, deferredVariableCall.resolve, deferredVariableCall.reject);
+                } else {
+                    deferredVariableCall.reject();
                 }
+                return deferredVariableCall.promise;
             },
 
             /**
@@ -1734,8 +1740,12 @@ wm.variables.services.Variables = [
                  * when swift navigation among two pages is done,
                  * the event for first page is emitted after the second page and its variables are loaded
                  */
-                var pageScopeId = pageScopeMap[pageName].$id;
-                _.forEach(startUpdateQueue[pageScopeId], makeVariableCall);
+                var pageScope = pageScopeMap[pageName],
+                    pageScopeId = pageScope.$id;
+                $q.all(_.map(startUpdateQueue[pageScopeId], makeVariableCall))
+                    .finally(function () {
+                        pageScope.$broadcast('page-startupdate-variables-loaded');
+                    });
                 delete startUpdateQueue[pageScopeId];
 
                 if (startUpdateQueue[$rootScope.$id]) {

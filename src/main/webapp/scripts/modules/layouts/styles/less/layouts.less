@@ -467,6 +467,7 @@ body {
     }
   }
   /*********************application content********************/
+  @app-page-content-loader-fg-color: rgba(0,0,0,0.5);
   .app-content {
     position: relative;
     .width-height();
@@ -499,6 +500,18 @@ body {
           vertical-align: top;
           display: table-cell;
           float: none;
+        }
+      }
+    }
+    .app-page-content {
+      > .app-ng-transclude {
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
+      }
+      &.load {
+        overflow: hidden;
+        > .app-ng-transclude {
+          opacity: 0;
         }
       }
     }
@@ -865,6 +878,19 @@ body {
     animation: @name @duration ease-in;
   }
 
+
+  @keyframes toAndFro {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(100vw, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   .wmScaleInLeft {
     .animation('wmScaleInLeft', 0.3s);
   }
@@ -1105,79 +1131,80 @@ body {
   }
 
   #wm-app-content {
-    +.ng-enter, &.ng-leave{
-      position: fixed;
-      top: 0;
-      left: 0;
-      -webkit-backface-visibility: visible !important;
-      -ms-backface-visibility: visible !important;
-      backface-visibility: visible !important;
-      animation-duration: 0.5s;
-      animation-timing-function: linear;
-      -webkit-animation-fill-mode: forwards;
-      animation-fill-mode: forwards;
-
-      > .app-page >.app-left-panel {
+    >.page-transition {
+      &.app-page, +.app-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        -webkit-backface-visibility: visible !important;
+        -ms-backface-visibility: visible !important;
+        backface-visibility: visible !important;
+        animation-duration: 0.3s;
+        animation-timing-function: ease-in-out;
+        -webkit-animation-fill-mode: forwards;
+        animation-fill-mode: forwards;
+      }
+      > .app-page > .app-left-panel {
         display: none;
       }
     }
 
-    &.page-transition-slide {
-      &.ng-leave {
+    >.page-transition-slide {
+      &.ng-leave-active {
         animation-name: slideOutLeft;
       }
-      +.ng-enter {
+      +.ng-enter-active {
         animation-name: slideInRight;
       }
     }
 
-    &.page-transition-slide-exit {
-      &.ng-leave {
+    >.page-transition-slide-exit {
+      &.ng-leave-active {
         animation-name: slideOutRight;
       }
-      +.ng-enter {
+      +.ng-enter-active {
         animation-name: slideInLeft;
       }
     }
 
     /** popup **/
-    &.page-transition-pop +.ng-enter {
+    >.page-transition-pop +.ng-enter {
       animation-name: zoomIn ;
     }
 
-    &.page-transition-pop-exit {
-      &.ng-leave {
+    >.page-transition-pop-exit {
+      &.ng-leave-active {
         z-index: 1;
         animation-name: zoomOut;
       }
-      &.ng-enter {
+      &.ng-enter-active {
         z-index: 0;
       }
     }
 
-    &.page-transition-flip {
-      &.ng-leave {
+    >.page-transition-flip {
+      &.ng-leave-active {
         animation-name: flipExit;
       }
-      +.ng-enter {
+      +.ng-enter-active {
         animation-name: flipEntry;
       }
     }
 
-    &.page-transition-flip-exit {
-      &.ng-leave {
+    >.page-transition-flip-exit {
+      &.ng-leave-active {
         animation-name: flipReverseExit;
       }
-      +.ng-enter {
+      +.ng-enter-active {
         animation-name: flipReverseEntry;
       }
     }
 
     /** fade **/
-    &.page-transition-fade +.ng-enter {
+    >.page-transition-fade +.ng-enter-active {
       animation-name: fadeIn;
     }
-    &.page-transition-fade-exit.ng-leave {
+    >.page-transition-fade-exit.ng-leave-active {
       animation-name: fadeOut;
       z-index: 1;
     }
