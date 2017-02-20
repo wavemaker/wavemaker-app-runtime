@@ -2208,6 +2208,7 @@ wm.variables.services.Variables = [
                     /*Set the "liveSource" and "type" properties of the live-variable.*/
                     createdVariable.liveSource = variableDetails.service;
                     createdVariable.type = variableDetails.table;
+                    createdVariable.package = variableDetails.package;
                     createdVariable.category = variableCategory;
                     createdVariable.isDefault = true;
                     _.forEach(['maxResults', 'startUpdate', 'autoUpdate', 'bindCount'], function (property) {
