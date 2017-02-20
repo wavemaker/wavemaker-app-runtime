@@ -162,7 +162,7 @@ WM.module('wm.layouts.containers')
                      */
                     tabs.forEach(function (tab) {
                         if (!activeTab) {
-                            if (tab.isdefaulttab) {
+                            if (tab.isdefaulttab && !attrs.defaultpaneindex) {
                                 activeTab = tab;
                                 activeTab.isActive = true;
                             }
@@ -182,7 +182,7 @@ WM.module('wm.layouts.containers')
                     }
 
                     /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
-                    activeTab = activeTab || tabs[0];
+                    activeTab = activeTab || tabs[scope.defaultpaneindex];
 
                     if (activeTab) {
                         scope.selectTab(activeTab, false, true);
@@ -355,6 +355,9 @@ WM.module('wm.layouts.containers')
                         scope.$lazyLoad = WM.noop;
                     },
                     'post': function (scope, element, attrs, ctrl) {
+
+                        var parentScope = element.closest('.app-tabs').isolateScope();
+
                         //To support backward compatibility for old projects
                         if (scope.title === undefined && !scope.bindtitle) {
                             scope.title = scope.heading || scope.bindheading;
@@ -391,6 +394,11 @@ WM.module('wm.layouts.containers')
                                     Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                 });
                             scope.isActive = true;
+
+                            if (CONSTANTS.isRunMode && parentScope.onChange) {
+                                parentScope.onChange({'$event': $event, '$scope': parentScope, 'newPaneIndex': scope.tabId, 'oldPaneIndex': parentScope.activeTab.tabId || 0});
+                            }
+
                             ctrl.selectTab(scope);
                         };
 
@@ -495,7 +503,12 @@ WM.module('wm.layouts.containers')
  *                  Width of the tabs widget.
  * @param {string=} height
  *                  Height of the tabs widget.
- * @param {boolean=} tabsposition
+ * @param {number=} defaultpaneindex
+ *                  Makes the tab active for given index.This property has backward compatibility for isdefaulttab property. </br>
+ *                  Default value: 0
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
+ * @param {string=} tabsposition
  *                  Align the tab headers to left/right/top/bottom of the content. <br>
  *                  Default value: `top`
  * @param {string=} transition
@@ -608,10 +621,6 @@ WM.module('wm.layouts.containers')
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tab on the web page. <br>
  *                  Default value: `true`.
- * @param {boolean=} isdefaulttab
- *                  isdefaulttab is a bindable property. <br>
- *                  First tab with `isdefaulttab = true` will be displayed by default.<br>
- *                  Default value: `false`.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tab on the web page. <br>
