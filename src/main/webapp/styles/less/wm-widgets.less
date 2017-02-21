@@ -1786,6 +1786,7 @@ If the height and width are not specified the video takes the height of the post
 @app-grid-border-color: #D4D4D4;
 @app-grid-header-border-color: #B9B9B9;
 @app-grid-row-selected-color: #E2F7FF;
+@app-grid-column-selected-color: #A0CBD4;
 
 .app-grid {
   position: relative;
@@ -1994,6 +1995,9 @@ If the height and width are not specified the video takes the height of the post
         width: 4px;
         pointer-events: all;
       }
+      &.selected-column {
+        background-color: @app-grid-column-selected-color;
+      }
     }
 
 
@@ -2023,6 +2027,9 @@ If the height and width are not specified the video takes the height of the post
             i {
               font-size: inherit;
             }
+          }
+          &.selected-column {
+            background-color: @app-grid-column-selected-color;
           }
         }
       }
