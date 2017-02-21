@@ -249,7 +249,7 @@ public class QueryHelper {
         final List<QueryParameter> parameters = query.getParameters();
         Map<String, Object> params = new HashMap<>(parameters.size());
         for (final QueryParameter parameter : parameters) {
-            params.put(parameter.getName(), prepareParam(parameter));
+            params.put(parameter.getName(), prepareParam(parameter, query.isNativeSql()));
         }
         return params;
     }
@@ -259,32 +259,35 @@ public class QueryHelper {
         for (final ProcedureParameter parameter : parameters) {
             final ProcedureParameterType parameterType = parameter.getParameterType();
             if (parameterType.isInParam()) {
-                parameter.setTestValue(prepareParam(parameter));
+                parameter.setTestValue(prepareParam(parameter, true));
             }
         }
         return parameters;
     }
 
-    private static Object prepareParam(final QueryParameter parameter) {
+    private static Object prepareParam(final QueryParameter parameter, final boolean isNative) {
         Object convertedValue;
         if (parameter.isList()) {
             convertedValue = new ArrayList<>();
             for (final Object object : (List<Object>) parameter.getTestValue()) {
-                ((List<Object>) convertedValue).add(convertValue(parameter, object));
+                ((List<Object>) convertedValue).add(convertValue(parameter, object, isNative));
             }
         } else {
-            convertedValue = convertValue(parameter, parameter.getTestValue());
+            convertedValue = convertValue(parameter, parameter.getTestValue(), isNative);
         }
         return convertedValue;
     }
 
-    public static Object convertValue(QueryParameter parameter, Object value) {
+    public static Object convertValue(QueryParameter parameter, Object value, boolean isNative) {
         final JavaType javaType = parameter.getType();
         Object convertedValue = null;
         if (value != null) {
             final String fromValue = String.valueOf(value);
             if (StringUtils.isNotBlank(fromValue) || parameter.getType() == JavaType.STRING) {
-                convertedValue = javaType.toDbValue(javaType.fromString(fromValue));
+                convertedValue = javaType.fromString(fromValue);
+                if (isNative) {
+                    convertedValue = javaType.toDbValue(convertedValue);
+                }
             }
         }
         return convertedValue;
