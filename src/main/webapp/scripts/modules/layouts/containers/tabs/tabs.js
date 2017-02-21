@@ -41,7 +41,7 @@ WM.module('wm.layouts.containers')
                 scope.activeTab = scope.tabs[newVal || 0];
             }
 
-            scope.activeTab.select();
+            scope.selectTab(scope.activeTab, false, true);
 
             break;
             }
@@ -180,6 +180,8 @@ WM.module('wm.layouts.containers')
                             tab.isActive = false;
                         }
                     });
+
+                    scope.activeTab = activeTab;
 
                     /*selects a given tab and executes onBeforeSwitchTab before switching*/
                     function selectTab(tab, onBeforeSwitchTab) {
