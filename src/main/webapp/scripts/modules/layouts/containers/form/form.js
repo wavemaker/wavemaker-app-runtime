@@ -230,11 +230,13 @@ WM.module('wm.layouts.containers')
 
         function toggleMessage(scope, msg, type) {
             if (msg) {
-                if (scope.messagelayout === 'Inline') {
-                    scope.statusMessage = {'caption': msg || '', type: type};
-                } else {
-                    wmToaster.show(type, type.toUpperCase(), msg, undefined, 'trustedHtml');
-                }
+                $rootScope.$evalAsync(function () {
+                    if (scope.messagelayout === 'Inline') {
+                        scope.statusMessage = {'caption': msg || '', type: type};
+                    } else {
+                        wmToaster.show(type, type.toUpperCase(), msg, undefined, 'trustedHtml');
+                    }
+                });
             }
         }
 
