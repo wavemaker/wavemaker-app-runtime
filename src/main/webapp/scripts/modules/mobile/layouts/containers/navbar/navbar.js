@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                         '</ul>' +
                     '</div>' +
                     '<div class="mobile-navbar-center search-container">' +
-                        '<wm-search scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" datafield="{{datafield}}" displayimagesrc="{{displayimagesrc}}" datavalue="bind:datavalue" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
+                        '<wm-search query="query" dataset="{{binddataset}}" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" datafield="{{datafield}}" displayimagesrc="{{displayimagesrc}}" datavalue="bind:datavalue" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true" readonly="{{readonlySearchBar}}"></wm-search>' +
                     '</div>' +
                     '<div class="mobile-navbar-right">' +
                         '<ul class="nav navbar-nav navbar-right">' +
@@ -92,7 +92,6 @@ WM.module('wm.layouts.containers')
                 var $searchEle     = $el.find('.app-mobile-search'),
                     $searchElScope = $searchEle.isolateScope();
 
-                $is.query       = $searchElScope.query;
                 $is.datavalue   = $searchElScope.datavalue;
                 if ($is.onSearch) {
                     $is.onSearch({$event: event, $scope: $is});
@@ -172,11 +171,19 @@ WM.module('wm.layouts.containers')
                 'transclude': true,
                 'template'  : $templateCache.get('template/layouts/containers/mobile/navbar.html'),
                 'link'      : {
-                    'pre' : function ($is) {
+                    'pre' : function ($is, $el) {
                         // Applying widget properties to directive scope
                         $is.widgetProps   = widgetProps;
                         $is.showSearchbar = false;
                         $is.readonlySearchBar = CONSTANTS.isStudioMode ? true : false;
+
+                        var $s = $el.scope();
+
+                        Object.defineProperty($is, 'Variables', {
+                            get: function () {
+                                return $s.Variables;
+                            }
+                        });
                     },
                     'post': function ($is, $el, attrs) {
                         $is.leftNavPanel = ($el.closest('.app-page').find('.app-left-panel:first')).isolateScope();

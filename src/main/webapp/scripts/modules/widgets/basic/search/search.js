@@ -283,7 +283,6 @@ WM.module('wm.widgets.basic')
                 if (element.hasClass('app-mobile-search')) {
                     //update query on the input val change
                     $navbarElScope = element.closest('[data-role="mobile-navbar"]').isolateScope();
-                    $navbarElScope.query = inputVal;
                     $is.query = inputVal;
 
                     if (_action === 'ENTER') {
@@ -650,7 +649,8 @@ WM.module('wm.widgets.basic')
                 'scope': {
                     'scopedataset': '=?',
                     'onSubmit': '&',
-                    'onSelect': '&'
+                    'onSelect': '&',
+                    'query': '=?'
                 },
                 'template': function (tElement, tAttrs) {
                     var template, url = '', target, isWidgetInsideCanvas;
