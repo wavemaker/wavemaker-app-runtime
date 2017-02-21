@@ -28,7 +28,24 @@ WM.module('wm.layouts.containers')
     .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base', 'wm.layouts.panel.defaults']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base', 'wm.layouts.panel.defaults']),
+            notifyFor   = {
+                'defaultpaneindex': true
+            };
+
+        /*Define the property change handler. This function will be triggered when there is a change in the widget property */
+        function propertyChangeHandler(scope, key, newVal) {
+            switch (key) {
+            case 'defaultpaneindex':
+            //If no activepane is set ie.. no isdefaultpane then honor defaultpaneindex
+            if (!scope.activePane) {
+                scope.activePane = scope.panes[newVal || 0];
+            }
+            scope.activePane.expand();
+
+            break;
+            }
+        }
 
         return {
             'restrict': 'E',
@@ -38,12 +55,12 @@ WM.module('wm.layouts.containers')
             'template': $templateCache.get('template/layout/container/accordion.html'),
             'controller': function ($scope) {
                 /* Contains the isolateScopes of accordion-panes. */
-                this.panes     = [];
+                $scope.panes     = [];
                 this.paneIndex = 0;
 
                 /* save the scope of the accordion-pane */
                 this.register = function (paneScope) {
-                    this.panes.push(paneScope);
+                    $scope.panes.push(paneScope);
                     paneScope.paneId = this.paneIndex;
                     this.paneIndex++;
                 };
@@ -52,7 +69,7 @@ WM.module('wm.layouts.containers')
                 this.closeOthers = function () {
                     /* process the request only when closeothers attribute is present on accordion */
                     if ($scope.closeothers) {
-                        WM.forEach(this.panes, function (pane) {
+                        WM.forEach($scope.panes, function (pane) {
                             if (pane.isActive) {
                                 /* trigger the onCollapse method on the pane which is about to be collapsed */
                                 Utils.triggerFn(pane.onCollapse);
@@ -69,21 +86,15 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function (scope, element, attrs, ctrl) {
-                        var defaultPane;
-                            defaultPane = _.find(ctrl.panes, function (pane) {
 
-                                var isDefaultPane = false;
+                        _.forEach(scope.panes, function (pane) {
+                            if (pane.isdefaultpane && !attrs.defaultpaneindex) {
+                                scope.activePane = pane;
+                            }
+                        });
 
-                                if (attrs.defaultpaneindex) {
-                                    isDefaultPane = pane.paneId === scope.defaultpaneindex;
-                                } else {
-                                    isDefaultPane = pane.isdefaultpane;
-                                }
-
-                                return isDefaultPane;
-                            }) || ctrl.panes[scope.defaultpaneindex];
-
-                        defaultPane.expand();
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
