@@ -646,8 +646,7 @@ WM.module('wm.widgets.live')
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
                     labelLayout,
                     controlLayout,
-                    displayLabel = '',
-                    show = CONSTANTS.isRunMode ? 'ng-show="{{formFields[' + index + '].show}}"' : '';
+                    displayLabel = '';
                 captionPosition = captionPosition || 'top';
                 //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
@@ -674,7 +673,7 @@ WM.module('wm.widgets.live')
                 //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
                 fieldDef.displayname = _.startsWith(fieldDef.displayname, 'bind:') ? '' : fieldDef.displayname;
                 template    = template +
-                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" ' + show + '>' + displayLabel +
+                    '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 

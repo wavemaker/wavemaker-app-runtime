@@ -1127,6 +1127,7 @@ $.widget('wm.datagrid', {
             this._renderSearch();
         } else if (this.options.filtermode === this.CONSTANTS.MULTI_COLUMN) {
             this._renderRowFilter();
+            this.setColGroupWidths();
         }
     },
 
