@@ -337,6 +337,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                     if (param.type === "array") {
                                         isList = true;
                                         typeRef = param.items && param.items.type;
+                                        format  = param.items && param.items.format;
                                     } else {
                                         typeRef = param.type;
                                         format = param.format;
