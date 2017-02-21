@@ -379,7 +379,7 @@ WM.module('wm.prefabs')
 
                         /* called on load of the prefab template*/
                         function onTemplateLoad() {
-                            var pfScope = $el.find('[data-ng-controller]').scope();
+                            var pfScope = $el.find('[data-ng-controller], [ng-controller]').scope();
 
                             if (!pfScope || pfScope.$$destroyed) {
                                 return;
