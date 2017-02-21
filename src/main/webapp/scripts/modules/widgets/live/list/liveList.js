@@ -1445,6 +1445,7 @@ WM.module('wm.widgets.live')
                     $liTemplate,
                     variable,
                     _onDestroy,
+                    groupDataByUserDefinedFn,
                     handlers = [];
 
                 variable = Utils.getVariableName($is);
@@ -1456,6 +1457,15 @@ WM.module('wm.widgets.live')
                 setListClass($is); //To add classes in studio mode
 
                 if (CONSTANTS.isRunMode) {
+
+                    // Groupby is a javascript function and this code in script is undefined/uncommented then do not group the data.
+                    if ($is.groupby && _.includes($is.groupby, '(')) {
+                        groupDataByUserDefinedFn = $liScope[$is.groupby.split('(')[0]];
+                        if (!groupDataByUserDefinedFn) {
+                            $is.groupby = '';
+                        }
+                    }
+
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
                         liTemplateWrapper_end   = ' ng-init="addCurrentItemWidgets(this);"></li>';
