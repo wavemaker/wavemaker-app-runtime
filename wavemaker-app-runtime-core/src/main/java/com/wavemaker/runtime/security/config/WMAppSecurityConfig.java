@@ -20,6 +20,7 @@ import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RememberMeConfig;
 import com.wavemaker.commons.model.security.SSLConfig;
+import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.commons.model.security.XSSConfig;
 
 /**
@@ -43,6 +44,8 @@ public class WMAppSecurityConfig {
     private XSSConfig xssConfig;
 
     private CSRFConfig csrfConfig;
+
+    private TokenAuthConfig tokenAuthConfig;
 
     public boolean isEnforceSecurity() {
         return enforceSecurity;
@@ -100,6 +103,14 @@ public class WMAppSecurityConfig {
         this.csrfConfig = csrfConfig;
     }
 
+    public TokenAuthConfig getTokenAuthConfig() {
+        return tokenAuthConfig;
+    }
+
+    public void setTokenAuthConfig(final TokenAuthConfig tokenAuthConfig) {
+        this.tokenAuthConfig = tokenAuthConfig;
+    }
+
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
@@ -109,6 +120,7 @@ public class WMAppSecurityConfig {
                 ", sslConfig=" + sslConfig +
                 ", xssConfig=" + xssConfig +
                 ", csrfConfig=" + csrfConfig +
+                ", tokenAuthConfig= " + tokenAuthConfig +
                 '}';
     }
 }

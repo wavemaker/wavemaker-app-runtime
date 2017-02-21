@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -42,9 +41,9 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import com.wavemaker.commons.util.HttpRequestUtils;
 
 /**
  * WMAppTokenBasedPreAuthenticatedProcessingFilter for processing filters that handle pre-authenticated authentication requests, where it is assumed
@@ -74,7 +73,6 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
     private ApplicationEventPublisher eventPublisher = null;
 
-    public static final String WM_AUTH_TOKEN_NAME = "wm_auth_token";
     private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
 
 
@@ -104,6 +102,12 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
+        if (!wmTokenBasedAuthenticationService.isEnabled()) {
+            LOGGER.debug("Token based authentication service is disabled. Skipping");
+            chain.doFilter(request, response);
+            return;
+        }
 
         LOGGER.debug("Checking secure context token: [{}]", SecurityContextHolder.getContext().getAuthentication());
 
@@ -142,14 +146,14 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
         //extracting token from request param.
         try {
-            token = getQueryParamValue(request, WM_AUTH_TOKEN_NAME);
+            token = getQueryParamValue(request, wmTokenBasedAuthenticationService.getParameter());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
         //extracting token from header
         if (!StringUtils.isNotBlank(token)) {
-            token = request.getHeader(WM_AUTH_TOKEN_NAME);
+            token = request.getHeader(wmTokenBasedAuthenticationService.getParameter());
         }
 
         return token;

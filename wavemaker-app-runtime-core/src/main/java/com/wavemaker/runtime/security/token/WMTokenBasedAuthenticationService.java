@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -33,6 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.StringUtils;
 
+import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.exception.TokenGenerationException;
 import com.wavemaker.runtime.security.token.repository.InMemoryPersistentAuthTokenRepository;
@@ -55,6 +57,9 @@ import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenReposi
  */
 public class WMTokenBasedAuthenticationService {
 
+    @Autowired
+    private TokenAuthConfig tokenAuthConfig;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedAuthenticationService.class);
 
     public static final int DEFAULT_VALIDITY_SECONDS = 1800;
@@ -62,6 +67,7 @@ public class WMTokenBasedAuthenticationService {
 
     private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
     private String key = DEFAULT_KEY;
+
     private PersistentAuthTokenRepository<String, WMUser> persistentAuthTokenRepository;
 
     public WMTokenBasedAuthenticationService() {
@@ -77,6 +83,7 @@ public class WMTokenBasedAuthenticationService {
 
     @PostConstruct
     protected void init() {
+        this.tokenValiditySeconds = tokenAuthConfig.getTokenValiditySeconds();
         if (persistentAuthTokenRepository == null) {
             persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
         }
@@ -114,8 +121,16 @@ public class WMTokenBasedAuthenticationService {
         this.tokenValiditySeconds = tokenValiditySeconds;
     }
 
+    public String getParameter(){
+        return tokenAuthConfig.getParameter();
+    }
+
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public boolean isEnabled() {
+        return tokenAuthConfig.isEnabled();
     }
 
     protected WMUser toWMUser(final Authentication authentication) {
@@ -188,5 +203,6 @@ public class WMTokenBasedAuthenticationService {
     private boolean isInstanceOfUserDetails(Authentication authentication) {
         return authentication.getPrincipal() instanceof UserDetails;
     }
+
 
 }
