@@ -17,7 +17,7 @@ WM.module('wm.widgets.basic').
 
         function getAppSpinnerScope() {
             if (!appSpinner) {
-                appSpinner = WM.element('[name=globalspinner]:first').isolateScope();
+                appSpinner = WM.element('[name=globalspinner], [name=global-spinner]').eq(0).isolateScope();
             }
             return appSpinner;
         }
