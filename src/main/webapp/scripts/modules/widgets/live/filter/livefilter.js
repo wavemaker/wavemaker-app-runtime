@@ -371,7 +371,7 @@ WM.module('wm.widgets.live')
                                 case 'checkbox':
                                 case 'toggle':
                                     if (WM.isDefined(filterField._value) && filterField._value !== '') {
-                                        fieldValue = JSON.parse(filterField._value);
+                                        fieldValue = filterField.type === 'boolean' ? JSON.parse(filterField._value) : filterField._value;
                                     }
                                     break;
                                 default:

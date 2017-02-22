@@ -496,10 +496,12 @@ WM.module('wm.widgets.live')
                 /*clear the formFields*/
                 function emptyDataModel() {
                     $scope.formFields.forEach(function (dataValue) {
-                        if (dataValue.type === 'blob') {
-                            resetFileUploadWidget(dataValue);
-                        } else {
-                            dataValue.value = '';
+                        if (WM.isDefined(dataValue)) {
+                            if (dataValue.type === 'blob') {
+                                resetFileUploadWidget(dataValue);
+                            } else {
+                                dataValue.value = '';
+                            }
                         }
                     });
                 }
