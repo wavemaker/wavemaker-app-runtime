@@ -25,8 +25,9 @@ WM.module('wm.widgets.form')
         'WidgetUtilService',
         'FormWidgetUtils',
         'Utils',
+        'LiveWidgetUtils',
 
-        function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils) {
+        function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils, LiveWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors.abstracteditors']),
@@ -218,6 +219,12 @@ WM.module('wm.widgets.form')
                             scope.$watch('scopedataset', function (newVal) {
                                 /*generating the radioset based on the values provided*/
                                 updateSwitchOptions(scope, element, newVal);
+                            });
+                        }
+                        //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                        if (!attrs.widgetid && _.includes(scope.binddataset, 'selecteditem.')) {
+                            LiveWidgetUtils.fetchDynamicData(scope, element.scope(), function (data) {
+                                updateSwitchOptions(scope, element, data);
                             });
                         }
                     }

@@ -722,7 +722,7 @@ WM.module('wm.widgets.grid')
                             //In run mode, If grid is bound to selecteditem subset, dataset is undefined and dataset watch will not be triggered. So, set the dataset to empty value
                             if (_.includes(newVal, 'selecteditem.')) {
                                 if (CONSTANTS.isRunMode) {
-                                    LiveWidgetUtils.fetchDynamicData($is, function (data) {
+                                    LiveWidgetUtils.fetchDynamicData($is, element.scope(), function (data) {
                                         /*Check for sanity of data.*/
                                         if (WM.isDefined(data)) {
                                             $is.dataNavigatorWatched = true;
