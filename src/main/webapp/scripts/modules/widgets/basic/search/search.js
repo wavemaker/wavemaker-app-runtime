@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/form/search.html',
             '<div class="app-search input-group" role="input" init-widget has-model listen-property="dataset"' +
                 '>' +
-                '<span class="fa fa-arrow-left form-control-feedback back-btn" ng-click="closeSearch()"></span>' +
+                '<span class="wi wi-arrow-left form-control-feedback back-btn" ng-click="closeSearch()"></span>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
@@ -30,7 +30,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-is-open="isOpen"' +
                     ' typeahead-min-length="minLength" focus-target>' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
-                '<span class="fa fa-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
+                '<span class="wi wi-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form>' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
