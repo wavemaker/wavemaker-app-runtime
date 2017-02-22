@@ -39,7 +39,8 @@ $.widget('wm.datagrid', {
             'gridBody'        : 'app-datagrid-body',
             'deleteRow'       : 'danger',
             'ascIcon'         : 'wi wi-long-arrow-up',
-            'descIcon'        : 'wi wi-long-arrow-down'
+            'descIcon'        : 'wi wi-long-arrow-down',
+            'selectedColumn'  : 'selected-column'
         },
         dataStates: {
             'loading': '',
@@ -243,7 +244,7 @@ $.widget('wm.datagrid', {
                 headerClasses +=  ' ' + value.class;
             }
             if (value.selected) {
-                headerClasses += ' info';
+                headerClasses += ' ' + self.options.cssClassNames.selectedColumn + ' ';
             }
             if (field === 'checkbox' || field === 'radio') {
                 headerClasses += ' grid-col-small';
@@ -776,11 +777,16 @@ $.widget('wm.datagrid', {
 
     /* Select previously selected columns after refreshing grid data. */
     _reselectColumns: function () {
-        var selectedColumns = [];
-        if (this.gridHeader) {
-            selectedColumns = this.gridHeader.find('th.info');
+        var selectedColumns = [],
+            self = this;
+        //If enableColumnSelection is set to true, reselect the columns on data refresh
+        if (this.gridHeader && this.options.enableColumnSelection) {
+            selectedColumns = this.gridHeader.find('th.' + this.options.cssClassNames.selectedColumn);
+            //Call the column selection handler on each of the selected columns
             if (selectedColumns.length) {
-                selectedColumns.trigger('click');
+                selectedColumns.each(function () {
+                    self.columnSelectionHandler(undefined, $(this));
+                });
             }
         }
         //reset select all checkbox.
@@ -1311,9 +1317,11 @@ $.widget('wm.datagrid', {
         this.options.onHeaderClick(this.preparedHeaderData[id], e);
     },
     /* Handles column selection. */
-    columnSelectionHandler: function (e) {
-        e.stopImmediatePropagation();
-        var $th = $(e.target).closest('th.app-datagrid-header-cell'),
+    columnSelectionHandler: function (e, $headerCell) {
+        if (e) {
+            e.stopImmediatePropagation();
+        }
+        var $th = e ? $(e.target).closest('th.app-datagrid-header-cell') : $headerCell,
             id = $th.attr('data-col-id'),
             colDef = this.preparedHeaderData[id],
             field = colDef.field,
@@ -1324,21 +1332,22 @@ $.widget('wm.datagrid', {
                 colDef: colDef,
                 data: this.options.data.map(function (data) { return data[field]; }),
                 sortDirection: this._getColumnSortDirection(colDef.field)
-            };
+            },
+            selectedClass = this.options.cssClassNames.selectedColumn;
         selected = !selected;
         colDef.selected = selected;
         $column.data('selected', selected);
 
         if (selected) {
-            $column.addClass('info');
-            $th.addClass('info');
-            if ($.isFunction(this.options.onColumnSelect)) {
+            $column.addClass(selectedClass);
+            $th.addClass(selectedClass);
+            if ($.isFunction(this.options.onColumnSelect) && e) {
                 this.options.onColumnSelect(colInfo, e);
             }
         } else {
-            $column.removeClass('info');
-            $th.removeClass('info');
-            if ($.isFunction(this.options.onColumnDeselect)) {
+            $column.removeClass(selectedClass);
+            $th.removeClass(selectedClass);
+            if ($.isFunction(this.options.onColumnDeselect) && e) {
                 /*TODO: Confirm what to send to the callback (coldef?).*/
                 this.options.onColumnDeselect(colInfo, e);
             }
