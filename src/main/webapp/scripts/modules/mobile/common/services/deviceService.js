@@ -80,6 +80,11 @@ wm.modules.wmCommon.services.DeviceService = [
             $rootScope.$safeApply($rootScope);
         });
         /**
+         *
+         * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceService#onBackButtonTap
+         * @methodOf wm.modules.wmCommon.services.$DeviceService
+         * @description
          * When back button on android devices is tapped, then this function will invoke the given callback. The
          * registered callbacks are invoked in reverse chronological order. A callback can stop propagation by
          * returning boolean false.
