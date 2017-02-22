@@ -2335,7 +2335,7 @@ WM.module('wm.utils', [])
             if (valConstructorType === 'string' || valConstructorType === 'number') {
                 val = new Blob([val], {type: valContentType || 'text/plain'});
             } else if (valConstructorType === 'object' && getValidJSON(val)) {
-                val = new Blob([val], {type: valContentType || 'application/json'});
+                val = new Blob([WM.toJson(val)], {type: valContentType || 'application/json'});
             }
             return val;
         }
