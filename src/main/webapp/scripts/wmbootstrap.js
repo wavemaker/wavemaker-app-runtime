@@ -312,6 +312,7 @@ Application
                     SecurityService.getConfig(function (config) {
                         // if user found, 401 was thrown after session time
                         if (config.userInfo && config.userInfo.userName) {
+                            config.authenticated = false;
                             sessionTimeoutConfig = config.login.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
                             if (sessionTimeoutMethod === LOGIN_METHOD.DIALOG) {
