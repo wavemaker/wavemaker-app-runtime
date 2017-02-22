@@ -104,8 +104,9 @@ WM.module('wm.widgets.basic')
         '$q',
         '$templateCache',
         '$compile',
+        'LiveWidgetUtils',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $templateCache, $compile) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $templateCache, $compile, LiveWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
@@ -760,6 +761,13 @@ WM.module('wm.widgets.basic')
                                 setDataSet(newVal, $is, element);
                             });
                         }
+                        //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                        if (!attrs.widgetid && _.includes($is.binddataset, 'selecteditem.')) {
+                            LiveWidgetUtils.fetchDynamicData($is, element.scope(), function (data) {
+                                setDataSet(data, $is, element);
+                            });
+                        }
+
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
                         $is._getDisplayLabel = _getDisplayLabel.bind(undefined);

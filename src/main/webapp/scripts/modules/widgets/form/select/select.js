@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
             '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'Utils', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'Utils', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils, LiveWidgetUtils) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
@@ -379,6 +379,12 @@ WM.module('wm.widgets.form')
                         if (attrs.scopedataset) {
                             iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
                         }
+                    }
+                    //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                    if (!attrs.widgetid && _.includes(iScope.binddataset, 'selecteditem.')) {
+                        LiveWidgetUtils.fetchDynamicData(iScope, scope, function (data) {
+                            createSelectOptions(data, iScope, element);
+                        });
                     }
                 }
             }

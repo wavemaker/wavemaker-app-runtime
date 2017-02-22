@@ -1583,7 +1583,7 @@ WM.module('wm.widgets.live')
                 };
             }
 
-            function fetchReferenceDetails($scope) {
+            function fetchReferenceDetails($scope, elScope) {
                 var referenceWidget,
                     referenceBindDataSet,
                     referenceVariableName,
@@ -1596,7 +1596,7 @@ WM.module('wm.widgets.live')
                     bindDataSetSplit,
                     bindDataSet                 = $scope.binddataset,
                     widgetRegEx                 =  /Widgets./g,
-                    WidgetScopes                = $scope.Widgets,
+                    WidgetScopes                = elScope ? elScope.Widgets : $scope.Widgets,
                     isBoundToSelectedItemSubset = bindDataSet.indexOf('selecteditem.') !== -1;
                 //Get the reference widget name. As widget can be inner widget (like Widgets.tab.Widgets.grid), find the last inner widget
                 while (widgetRegEx.exec(bindDataSet) !== null) {
@@ -1633,13 +1633,13 @@ WM.module('wm.widgets.live')
                 }
                 return details;
             }
-            function fetchDynamicData($scope, success, error) {
+            function fetchDynamicData($scope, elScope, success, error) {
                 var reference,
                     referenceVariableKey,
                     watchSelectedItem,
                     referenceVariable;
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
-                reference         = fetchReferenceDetails($scope);
+                reference         = fetchReferenceDetails($scope, elScope);
                 referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
                 /*Check if a watch is not registered on selectedItem or if the relatedField is a one-to-many relation because this field value will directly be available in the data*/
                 if ($scope.selectedItemWatched || !referenceVariable || !referenceVariable.isRelatedFieldMany(reference.relatedFieldName)) {
