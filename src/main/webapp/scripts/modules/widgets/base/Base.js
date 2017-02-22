@@ -1687,7 +1687,9 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "value": "Tab Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
-                        "tabindex": {"type": "number", "value": "0"}
+                        "tabindex": {"type": "number", "value": "0"},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
+                        "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"}
                     },
                     "wm.wizard": {
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Step", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
