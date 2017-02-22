@@ -669,6 +669,8 @@ WM.module('wm.widgets.live')
                 widgetType  = widgetType.toLowerCase();
                 if (fieldDef.displayname) { //Add label field, only if displayname is given
                     displayLabel = '<label class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
+                } else {
+                    controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12';
                 }
                 //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
                 fieldDef.displayname = _.startsWith(fieldDef.displayname, 'bind:') ? '' : fieldDef.displayname;
