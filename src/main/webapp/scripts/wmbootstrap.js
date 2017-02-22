@@ -234,8 +234,9 @@ Application
             '$timeout',
             '$route',
             '$http',
+            'DeviceService',
 
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http) {
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService) {
                 'use strict';
 
                 var prevRoute,
@@ -686,7 +687,7 @@ Application
                 $rs.$on('app-logout-success', clearPagesCache);
 
                 // On back button click, if activePage is landingPage then exit the app
-                $rs.$on('backbutton', function () {
+                DeviceService.onBackButtonTap(function () {
                     if (landingPageName === $rs.activePageName) {
                         $window.navigator.app.exitApp();
                     } else {

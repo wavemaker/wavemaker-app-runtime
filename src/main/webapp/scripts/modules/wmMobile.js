@@ -18,6 +18,9 @@ wm.modules.wmCommon.services.DeviceService = ['$q', function ($q) {
         d.resolve();
         return d.promise;
     };
+    this.onBackButtonTap = function () {
+        return WM.noop;
+    };
 }];
 wm.modules.wmCommon.services.DeviceFileCacheService = WM.noop;
 wm.modules.wmCommon.services.DeviceFileDownloadService = WM.noop;

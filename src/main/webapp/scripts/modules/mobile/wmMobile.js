@@ -2,10 +2,10 @@
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService', '$document',
+    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService',
         // Don't remove below services. This is required for initialization
         'DeviceFileService', 'DeviceFileCacheService',
-        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService, $document) {
+        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService) {
             'use strict';
 
             var initialScreenSize,
@@ -38,11 +38,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 pageReadyDeregister = $rootScope.$on('page-ready', function () {
                     navigator.splashscreen.hide();
                     pageReadyDeregister();
-                });
-
-                // On back button click, if activePage is landingPage then exit the app
-                $document.on('backbutton', function () {
-                    $rootScope.$emit('backbutton');
                 });
             }
         }])
