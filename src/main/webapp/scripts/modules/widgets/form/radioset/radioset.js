@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
             '</ul>'
             );
     }])
-    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
+    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils) {
         'use strict';
         /*getting widget properties for the specific widget*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radioset', ['wm.base', 'wm.base.editors.dataseteditors']),
@@ -175,6 +175,13 @@ WM.module('wm.widgets.form')
                             constructRadioSet(scope, element, scope.scopedataset);
                         });
                     }
+                    //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                    if (!attrs.widgetid && _.includes(scope.binddataset, 'selecteditem.')) {
+                        LiveWidgetUtils.fetchDynamicData(scope, element.scope(), function (data) {
+                            constructRadioSet(scope, element, data);
+                        });
+                    }
+
                     element.removeAttr('tabindex');
                 }
             }

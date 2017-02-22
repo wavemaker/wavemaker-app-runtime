@@ -42,7 +42,8 @@ WM.module('wm.widgets.form')
         'WidgetUtilService',
         'Utils',
         'FormWidgetUtils',
-        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils) {
+        'LiveWidgetUtils',
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -448,6 +449,12 @@ WM.module('wm.widgets.form')
                                     $s.dataset = $s.scopedataset;
                                 }
                             }, true);
+                        }
+                        //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                        if (!attrs.widgetid && _.includes($s.binddataset, 'selecteditem.')) {
+                            LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
+                                createSelectOptions(data, $s);
+                            });
                         }
 
                         // register the property change handler
