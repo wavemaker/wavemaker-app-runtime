@@ -791,6 +791,12 @@ body {
       padding: 0;
     }
   }
+  /****************Caption Position top do not remove for old projects******************************/
+  [captionposition="top"]{
+    .control-label {
+      width: 100%;
+    }
+  }
  /*******Caption Styling in the composite widget********/
   .app-composite-widget {
     &.caption-right {
@@ -1509,6 +1515,12 @@ body {
   .app-livelist {
     .media-body {
       overflow: inherit;
+    }
+  }
+  .panel-heading {
+    .description {
+      font-size: .75em;
+      margin-top: 5px;
     }
   }
   //Angular UI bootstrap 1.1.0 related styles.
