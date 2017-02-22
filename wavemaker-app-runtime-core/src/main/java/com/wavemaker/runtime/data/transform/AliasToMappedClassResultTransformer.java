@@ -38,8 +38,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.google.common.base.Optional;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.annotations.ColumnAlias;
+import com.wavemaker.runtime.data.exception.TypeMappingException;
 import com.wavemaker.runtime.data.model.JavaType;
 
 /**
@@ -100,8 +102,8 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                 applyValue(object, aliases[i], tuple[i]);
             }
             return object;
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new WMRuntimeException("Cannot instantiate class:" + resultClass, e);
         }
     }
 
@@ -118,8 +120,8 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                 applyValue(object, entry.getKey(), entry.getValue());
             }
             return object;
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new WMRuntimeException("Error while converting result set to required type:" + resultClass, e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new WMRuntimeException("Cannot instantiate class:" + resultClass.getName(), e);
         }
     }
 
@@ -144,11 +146,16 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     }
 
     private void applyValue(
-            Object object, String alias, Object value) throws InvocationTargetException, IllegalAccessException {
+            Object object, String alias, Object value) {
         if (aliasVsDescriptorMap.containsKey(alias)) {
             final PropertyDescriptor descriptor = aliasVsDescriptorMap.get(alias);
             Object transformedValue = transformField(descriptor, value);
-            descriptor.getWriteMethod().invoke(object, transformedValue);
+            try {
+                descriptor.getWriteMethod().invoke(object, transformedValue);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new TypeMappingException(MessageResource.TYPE_MAPPING_FAILURE, e, alias, object.getClass()
+                        .getName());
+            }
         } else {
             if (!ignorableAliases.contains(alias)) {
                 LOGGER.warn("Column: {} not found in type:{}, ignoring", alias, resultClass.getName());
