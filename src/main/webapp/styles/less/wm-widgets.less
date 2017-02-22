@@ -1224,15 +1224,13 @@ body.modal-open {
 *********************************************************************************/
 /*File upload widget variables */
 @app-fileupload-border-color: rgba(0, 0, 0, 0.05);
-@app-fileupload-dropbox-color: #FCFCFC;
-@app-fileupload-hover-color: #337ab7;
-@app-fileupload-ext-background-color: #333;
+@app-fileupload-dropbox-bg-color: rgba(0,0,0,0.05);
+@app-fileupload-hover-color: rgba(0,0,0,0.2);
 
 .app-fileupload {
   overflow: hidden;
   position: relative;
   margin: 0 0 @app-standard-margin 0;
-  background-color: inherit;
   &[disabled="disabled"] {
     .app-multi-file-upload, .app-single-file-upload {
       .caption, .form-horizontal .file-input, .drop-box {
@@ -1318,6 +1316,7 @@ body.modal-open {
   /* style for the drop box*/
     .drop-box {
       border: 1px dashed @app-fileupload-border-color;
+      background-color: @app-fileupload-dropbox-bg-color;
       vertical-align: middle;
       text-align: center;
     /* style when try to drag the file in drop box*/
@@ -3044,7 +3043,7 @@ If the height and width are not specified the video takes the height of the post
     .app-dateinput {
       &.form-control {
         position: absolute;
-        z-index: -1;
+        z-index: -1 !important;
         width: 1px;
       }
     }
