@@ -465,7 +465,7 @@ WM.module('wm.widgets.basic')
                     if (isAllFields) {
                         return _.trim(obj.wmDisplayLabel);
                     }
-                    return _.trim(obj[dataField]) && _.trim(obj.wmDisplayLabel);
+                    return _.trim(_.get(obj, dataField)) && _.trim(obj.wmDisplayLabel);
                 });
             }
 
