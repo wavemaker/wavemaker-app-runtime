@@ -152,36 +152,8 @@ WM.module('wm.widgets.grid')
                 'DIALOG'    : 'dialog'
             };
 
-        function defineProps($is, $el) {
-            /*This is to make the "Variables" & "Widgets" available in the Data-navigator it gets compiled with the data table isolate Scope
-             * and "Variables", "Widgets" will not be available in that scope.
-             * element.scope() might refer to the controller scope/parent scope.*/
-            var _scope = $el.scope(); // scope inherited from controller's scope
-
-            Object.defineProperties($is, {
-                'Variables': {
-                    'get': function () {
-                        return _scope.Variables;
-                    },
-                    'set': WM.noop
-                },
-                'Widgets': {
-                    'get': function () {
-                        return _scope.Widgets;
-                    },
-                    'set': WM.noop
-                },
-                'item': {
-                    'get': function () {
-                        return _scope.item;
-                    },
-                    'set': WM.noop
-                }
-            });
-        }
-
         //Sets flags on data table like isBoundToLiveVariable etc.,
-        function setFlags($is) {
+        function setFlags($is, eleScope) {
             var binddataset = $is.binddataset,
                 variableType,
                 boundToInnerDataSet,
@@ -190,7 +162,7 @@ WM.module('wm.widgets.grid')
             $is.isBoundToVariable = _.startsWith(binddataset, 'bind:Variables.');
             $is.isBoundToWidget   = _.startsWith(binddataset, 'bind:Widgets.');
             $is.variableName      = Utils.getVariableName($is);
-            $is.variable          = _.get($is.Variables, $is.variableName);
+            $is.variable          = _.get(eleScope.Variables, $is.variableName);
             if ($is.isBoundToVariable && $is.variable) {
                 $is.variableType            = variableType = $is.variable.category;
                 $is.isBoundToStaticVariable = variableType === 'wm.Variable';
@@ -350,7 +322,8 @@ WM.module('wm.widgets.grid')
                          * and "Variables", "Widgets" will not be available in that scope.
                          * element.scope() might refer to the controller scope/parent scope.*/
                         var elScope    = element.scope();
-                        defineProps($is, element);
+                        $is.Variables  = elScope.Variables;
+                        $is.Widgets    = elScope.Widgets;
                         $is.pageParams = elScope.pageParams;
                         $is.appLocale  = $rs.appLocale;
                         $is.columns    = {};
@@ -642,7 +615,7 @@ WM.module('wm.widgets.grid')
                         $is.items             = [];
                         $is.shownavigation    = $is.navigation !== 'None';
                         $is.redraw            = _.debounce(_redraw, 150);
-                        $is.setFlags          = setFlags.bind(undefined, $is);
+                        $is.setFlags          = setFlags.bind(undefined, $is, element.scope());
                         //Backward compatibility for readonly grid
                         if (attrs.readonlygrid || !WM.isDefined(attrs.editmode)) {
                             if (attrs.readonlygrid === 'true') {
@@ -1766,7 +1739,7 @@ WM.module('wm.widgets.grid')
                                         }
                                     });
                                     $is.variableName = variableName;
-                                    $is.variable     = _.get($is.Variables, $is.variableName);
+                                    $is.variable     = _.get($is.gridElement.scope().Variables, $is.variableName);
                                 }
                             }
                             /*Check for studio mode.*/
@@ -2831,7 +2804,7 @@ WM.module('wm.widgets.grid')
                         });
                         //Fetch the filter options for select widget when filtermode is row
                         if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && columnDef.filterwidget === 'select') {
-                            variable = parentScope.Variables[Utils.getVariableName(parentScope)];
+                            variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
                             if (variable && variable.category === 'wm.LiveVariable') {
                                 columnDef.isLiveVariable = true;
                                 if (columnDef.relatedEntityName) {
