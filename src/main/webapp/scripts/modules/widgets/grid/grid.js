@@ -162,17 +162,20 @@ WM.module('wm.widgets.grid')
                 'Variables': {
                     'get': function () {
                         return _scope.Variables;
-                    }
+                    },
+                    'set': WM.noop
                 },
                 'Widgets': {
                     'get': function () {
                         return _scope.Widgets;
-                    }
+                    },
+                    'set': WM.noop
                 },
                 'item': {
                     'get': function () {
                         return _scope.item;
-                    }
+                    },
+                    'set': WM.noop
                 }
             });
         }
