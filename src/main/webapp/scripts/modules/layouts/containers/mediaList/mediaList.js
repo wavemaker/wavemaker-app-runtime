@@ -45,7 +45,8 @@ WM.module('wm.layouts.containers')
         'WidgetUtilService',
         'CONSTANTS',
         'Utils',
-        function ($templateCache, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
+        'DeviceService',
+        function ($templateCache, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, DeviceService) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.medialist', ['wm.base', 'wm.base.editors']),
                 notifyFor = {
@@ -187,7 +188,17 @@ WM.module('wm.layouts.containers')
 
             function runMode_postLinkFn($is, $el, attrs, listCtrl) {
                 var $mediaTemplate,
-                    $mediaScope = createChildScope($is, $el, listCtrl);
+                    $mediaScope = createChildScope($is, $el, listCtrl),
+                    backButtonListenerDeregister;
+                backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                    if ($is.selectedMediaIndex >= 0) {
+                        $is.selectedMediaIndex--;
+                        return false;
+                    }
+                });
+                $is.$on('$destroy', function () {
+                    backButtonListenerDeregister();
+                });
                 $is.$mediaScope = $mediaScope;
                 $mediaTemplate = prepareMediaListTemplate(listCtrl.$get('mediaListTemplate'), attrs);
                 $el.find('> ul').append($mediaTemplate);
