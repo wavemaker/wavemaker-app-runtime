@@ -101,7 +101,13 @@ public class NativeProcedureExecutor {
                 statement.registerOutParameter(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
             }
             if (param.getParameter().getParameterType().isInParam()) {
-                statement.setObject(i + 1, param.getValue(), JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                // not checking required flag in parameter since spring will handle this in deserialization.
+                if (param.getValue() != null) {
+                    statement.setObject(i + 1, param.getValue(),
+                            JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                } else {
+                    statement.setNull(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                }
             }
         }
     }
