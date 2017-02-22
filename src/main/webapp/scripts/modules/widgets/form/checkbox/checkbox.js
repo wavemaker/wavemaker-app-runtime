@@ -59,6 +59,20 @@ WM.module('wm.widgets.form')
             return value;
         }
 
+        function getDefaultValue(attrs) {
+            var _model_;
+            if (attrs.hasOwnProperty('uncheckedvalue')) {
+                if (attrs.uncheckedvalue === 'true') {
+                    _model_ = true;
+                } else if (attrs.uncheckedvalue === 'false') {
+                    _model_ = false;
+                } else {
+                    _model_ = attrs.uncheckedvalue;
+                }
+            }
+            return _model_;
+        }
+
         return {
             'restrict': 'E',
             'scope'   : {},
@@ -102,17 +116,7 @@ WM.module('wm.widgets.form')
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                     if (!attrs.datavalue && !attrs.scopedatavalue) {
-                        if (attrs.hasOwnProperty('uncheckedvalue')) {
-                            if (attrs.uncheckedvalue === 'true') {
-                                scope._model_ = true;
-                            } else if (attrs.uncheckedvalue === 'false') {
-                                scope._model_ = false;
-                            } else {
-                                scope._model_ = attrs.uncheckedvalue;
-                            }
-                        } else {
-                            scope._model_ = false;
-                        }
+                        scope._model_ = getDefaultValue(attrs);
                     }
 
                     scope._caption = '&nbsp;';
@@ -129,7 +133,7 @@ WM.module('wm.widgets.form')
 
                     /*Called from form reset when users clicks on form reset*/
                     scope.reset = function () {
-                        scope._model_ = false;
+                        scope._model_ = getDefaultValue(attrs) || false;
                     };
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
