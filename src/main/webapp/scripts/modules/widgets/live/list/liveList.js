@@ -1507,7 +1507,7 @@ WM.module('wm.widgets.live')
 
                     $is.$watch('binddataset', function (newVal) {
                         if (_.includes(newVal, 'selecteditem.')) {
-                            LiveWidgetUtils.fetchDynamicData($is, function (data) {
+                            LiveWidgetUtils.fetchDynamicData($is, $el.scope(), function (data) {
                                 onDataSetChange($is, $el, undefined, data, attrs, listCtrl);
                             });
                         }

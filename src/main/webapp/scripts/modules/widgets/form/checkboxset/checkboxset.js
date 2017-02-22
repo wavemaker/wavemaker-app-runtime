@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                 '</ul>'
             );
     }])
-    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
+    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.base.editors.dataseteditors']),
             notifyFor = {
@@ -208,6 +208,13 @@ WM.module('wm.widgets.form')
                             }
                         }, true);
                     }
+                    //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                    if (!attrs.widgetid && _.includes(scope.binddataset, 'selecteditem.')) {
+                        LiveWidgetUtils.fetchDynamicData(scope, element.scope(), function (data) {
+                            constructCheckboxSet(scope, element, data);
+                        });
+                    }
+
                     element.removeAttr('tabindex');
                 }
             }
