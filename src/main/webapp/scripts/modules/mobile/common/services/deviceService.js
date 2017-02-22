@@ -8,15 +8,18 @@
  * The 'wm.modules.wmCommon.services.$DeviceService' provides high-level API to interact with device.
  */
 wm.modules.wmCommon.services.DeviceService = [
+    '$document',
     '$q',
+    '$rootScope',
     'Utils',
     //This is required for initialization
     'OfflineSecurityService',
-    function ($q, Utils) {
+    function ($document, $q, $rootScope, Utils) {
         'use strict';
 
         var isDeviceReady = true,
             isDeviceReadyEventListeners   = [],
+            backBtnTapListeners = [],
             waitingFor = {};
 
         function triggerListeners(listeners) {
@@ -68,5 +71,31 @@ wm.modules.wmCommon.services.DeviceService = [
                 isDeviceReadyEventListeners.push(d.resolve);
             }
             return d.promise;
+        };
+
+        $document.on('backbutton', function () {
+            _.forEach(backBtnTapListeners, function (fn) {
+                return !(fn() === false);
+            });
+            $rootScope.$safeApply($rootScope);
+        });
+        /**
+         * When back button on android devices is tapped, then this function will invoke the given callback. The
+         * registered callbacks are invoked in reverse chronological order. A callback can stop propagation by
+         * returning boolean false.
+         *
+         * @param {Function} fn callback function to invoke.
+         * @returns {Function} a function to call to deregister
+         */
+        this.onBackButtonTap = function (fn) {
+            backBtnTapListeners.splice(0, 0, fn);
+            return function () {
+                var i = _.findIndex(backBtnTapListeners, function (v) {
+                    return v === fn;
+                });
+                if (i >= 0) {
+                    backBtnTapListeners.splice(i, 1);
+                }
+            };
         };
     }];
