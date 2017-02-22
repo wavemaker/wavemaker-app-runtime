@@ -11,7 +11,9 @@ WM.module('wm.layouts.page')
                 return {
                     'pre' : function ($scope, $ele) {
                         $ele.addClass('mobile-app-page');
-                        /**fnding the tabbar so that we can adjust the layout**/
+                    },
+                    'post': function ($scope, $ele) {
+                        // finding the tabbar so that we can adjust the layout
                         if ($ele.find('[data-role="mobile-tabbar"]').length > 0) {
                             $ele.addClass("has-tabbar");
                         }
