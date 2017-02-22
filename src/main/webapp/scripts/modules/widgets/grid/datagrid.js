@@ -43,7 +43,7 @@ $.widget('wm.datagrid', {
             'selectedColumn'  : 'selected-column'
         },
         dataStates: {
-            'loading': '',
+            'loading': 'Loading...',
             'ready': '',
             'error': 'An error occurred in loading the data.',
             'nodata': 'No data found.'
@@ -1400,7 +1400,7 @@ $.widget('wm.datagrid', {
                 isDataChanged = document.forms[$el.attr('form-name')][colDef.field].files.length > 0;
             } else {
                 //If new value and old value are not defined, then data is not changed
-                if (!text && (originalData === null || originalData === undefined)) {
+                if (!WM.isDefined(text) && (originalData === null || originalData === undefined)) {
                     isDataChanged = false;
                 } else {
                     //For datetime, compare the values in epoch format
