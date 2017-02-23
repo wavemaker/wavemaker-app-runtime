@@ -32,6 +32,7 @@ import org.joda.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.converters.BlobTypeConverter;
 import com.wavemaker.runtime.data.converters.DateTimeConverter;
 import com.wavemaker.runtime.data.converters.DateTypeConverter;
 import com.wavemaker.runtime.data.converters.HibernateBackedJavaTypeConverter;
@@ -74,8 +75,7 @@ public enum JavaType {
     STRING(String.class.getName(), new StringTypeConverter()),
     TEXT(String.class.getName(), new StringTypeConverter()),
     CLOB(String.class.getName(), new StringTypeConverter()),
-    BLOB("byte[]",
-            new HibernateBackedJavaTypeConverter(BlobType.INSTANCE.getJavaTypeDescriptor())),
+    BLOB("byte[]", new BlobTypeConverter()),
     DATE(Date.class.getName(), new DateTypeConverter()),
     TIME(Time.class.getName(), new TimeTypeConverter()),
     DATETIME(LocalDateTime.class.getName(), new DateTimeConverter()),
