@@ -34,15 +34,13 @@ import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.google.common.base.Optional;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.annotations.ColumnAlias;
 import com.wavemaker.runtime.data.exception.TypeMappingException;
-import com.wavemaker.runtime.data.model.JavaType;
+import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -53,7 +51,6 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AliasToMappedClassResultTransformer.class);
 
-    private static MultiValueMap<String, JavaType> classNameVsJavaTypeMap = new LinkedMultiValueMap<>();
     private static Set<String> ignorableAliases = new HashSet<>();
 
     private final Class resultClass;
@@ -62,28 +59,6 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     private Map<String, String> fieldVsAliasMap;
 
     static {
-        classNameVsJavaTypeMap.add(JavaType.BYTE.getClassName(), JavaType.BYTE);
-        classNameVsJavaTypeMap.add(JavaType.SHORT.getClassName(), JavaType.SHORT);
-        classNameVsJavaTypeMap.add(JavaType.INTEGER.getClassName(), JavaType.INTEGER);
-        classNameVsJavaTypeMap.add(JavaType.LONG.getClassName(), JavaType.LONG);
-        classNameVsJavaTypeMap.add(JavaType.BIG_INTEGER.getClassName(), JavaType.BIG_INTEGER);
-        classNameVsJavaTypeMap.add(JavaType.FLOAT.getClassName(), JavaType.FLOAT);
-        classNameVsJavaTypeMap.add(JavaType.DOUBLE.getClassName(), JavaType.DOUBLE);
-        classNameVsJavaTypeMap.add(JavaType.BIG_DECIMAL.getClassName(), JavaType.BIG_DECIMAL);
-        classNameVsJavaTypeMap.add(JavaType.BOOLEAN.getClassName(), JavaType.BOOLEAN);
-        classNameVsJavaTypeMap.add(JavaType.YES_OR_NO.getClassName(), JavaType.YES_OR_NO);
-        classNameVsJavaTypeMap.add(JavaType.TRUE_OR_FALSE.getClassName(), JavaType.TRUE_OR_FALSE);
-        classNameVsJavaTypeMap.add(JavaType.CHARACTER.getClassName(), JavaType.CHARACTER);
-        classNameVsJavaTypeMap.add(JavaType.STRING.getClassName(), JavaType.STRING);
-        classNameVsJavaTypeMap.add(JavaType.TEXT.getClassName(), JavaType.TEXT);
-        classNameVsJavaTypeMap.add(JavaType.CLOB.getClassName(), JavaType.CLOB);
-        classNameVsJavaTypeMap.add(JavaType.BLOB.getClassName(), JavaType.BLOB);
-        classNameVsJavaTypeMap.add(JavaType.DATE.getClassName(), JavaType.DATE);
-        classNameVsJavaTypeMap.add(JavaType.TIME.getClassName(), JavaType.TIME);
-        classNameVsJavaTypeMap.add(JavaType.DATETIME.getClassName(), JavaType.DATETIME);
-        classNameVsJavaTypeMap.add(JavaType.TIMESTAMP.getClassName(), JavaType.TIMESTAMP);
-        classNameVsJavaTypeMap.add(JavaType.CURSOR.getClassName(), JavaType.CURSOR);
-
         ignorableAliases.add("__hibernate_row_nr__");
     }
 
@@ -179,11 +154,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                 }
             } else {
                 final String className = descriptor.getPropertyType().getName();
-                if (classNameVsJavaTypeMap.containsKey(className)) {
-                    for (final JavaType javaType : classNameVsJavaTypeMap.get(className)) {
-                        transformedValue = javaType.fromDbValue(value);
-                    }
-                }
+                transformedValue = JavaTypeUtils.convert(className, value);
             }
         }
 
