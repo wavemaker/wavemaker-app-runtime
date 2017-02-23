@@ -15,8 +15,13 @@
  */
 package com.wavemaker.runtime.exception.resolver;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,22 +29,29 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.exception.SQLGrammarException;
+import org.hibernate.validator.method.MethodConstraintViolation;
+import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.wavemaker.runtime.data.exception.EntityNotFoundException;
-import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 
 /**
  * @author sunilp
@@ -54,9 +66,12 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
-        if (ex instanceof EntityNotFoundException) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return handleRuntimeException((EntityNotFoundException) ex);
+        if (ex instanceof MethodArgumentNotValidException) {
+            return handleMethodArgumentNotValidException((MethodArgumentNotValidException) ex, response);
+        } else if (ex instanceof MethodConstraintViolationException) {
+            return handleMethodConstraintViolationException((MethodConstraintViolationException) ex, response);
+        } else if (ex instanceof HttpMessageNotReadableException) {
+            return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((ConstraintViolationException) ex);
@@ -81,6 +96,66 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             logger.error("Unknown error for url {}", request.getRequestURI(), ex);
             return handleException(ex, response);
         }
+    }
+
+    private ModelAndView handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException methodArgumentNotValidException, HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
+        List<ObjectError> allErrors = bindingResult.getAllErrors();
+        if (allErrors != null) {
+            List<ErrorResponse> errorResponseList = new ArrayList<>(allErrors.size());
+            for (ObjectError objectError : allErrors) {
+                if (objectError instanceof FieldError) {
+                    FieldError fieldError = (FieldError) objectError;
+                    errorResponseList
+                            .add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, fieldError.getField(),
+                                    fieldError.getDefaultMessage()));
+                } else {
+                    errorResponseList
+                            .add(getErrorResponse(MessageResource.INVALID_OBJECT, objectError.getObjectName(),
+                                    objectError.getDefaultMessage()));
+                }
+                objectError.getObjectName();
+            }
+            return getModelAndView(errorResponseList);
+        } else {
+            return getModelAndView(Collections.EMPTY_LIST);
+        }
+    }
+
+    private ModelAndView handleMethodConstraintViolationException(
+            MethodConstraintViolationException ex,
+            HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        List<ErrorResponse> errorResponseList = new ArrayList();
+        Set<MethodConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+        if (constraintViolations != null) {
+            for (MethodConstraintViolation<?> methodConstraintViolation : constraintViolations) {
+                if (methodConstraintViolation.getKind().equals(MethodConstraintViolation.Kind.PARAMETER)) {
+                    Integer parameterIndex = methodConstraintViolation.getParameterIndex();
+                    String paramName = getParameterName(methodConstraintViolation, parameterIndex);
+                    paramName = (paramName != null) ? paramName : methodConstraintViolation.getParameterName();
+                    errorResponseList.add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, paramName,
+                            methodConstraintViolation.getMessage()));
+                }
+            }
+        }
+        return getModelAndView(errorResponseList);
+    }
+
+    private String getParameterName(MethodConstraintViolation<?> methodConstraintViolation, Integer parameterIndex) {
+        Method method = methodConstraintViolation.getMethod();
+        Annotation[] annotations = method.getParameterAnnotations()[parameterIndex];
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof RequestParam) {
+                return ((RequestParam) annotation).value();
+            }
+            if (annotation instanceof PathVariable) {
+                return ((PathVariable) annotation).value();
+            }
+        }
+        return null;
     }
 
     private ModelAndView handleRuntimeException(RuntimeException ex) {
