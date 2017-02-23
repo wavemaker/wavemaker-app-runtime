@@ -43,7 +43,7 @@ WM.module('wm.widgets.advanced')
                 '</div>'
             );
     }])
-    .directive('wmMobileFileBrowser', [ '$templateCache', 'CONSTANTS', function ($templateCache, CONSTANTS) {
+    .directive('wmMobileFileBrowser', [ '$templateCache', 'CONSTANTS', 'DeviceService', function ($templateCache, CONSTANTS, DeviceService) {
         'use strict';
         function loadFileSize(files, onComplete, index) {
             index = index || 0;
@@ -62,11 +62,21 @@ WM.module('wm.widgets.advanced')
             'template' : $templateCache.get('template/widget/advanced/mobileFileBrowser.html'),
             'scope'    : {'onSelect' : '&'},
             'link'     : function (scope) {
+                var backButtonListenerDeregister;
 
                 if (CONSTANTS.isStudioMode) {
                     return;
                 }
 
+                backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                    if (scope.show) {
+                        scope.show = false;
+                        return false;
+                    }
+                });
+                scope.$on('$destroy', function () {
+                    backButtonListenerDeregister();
+                });
                 scope.selectedFiles = [];
                 scope.directory = undefined;
                 scope.getFileExtension = function (fileName) {
