@@ -192,7 +192,7 @@ WM.module('wm.layouts.containers')
                     backButtonListenerDeregister;
                 backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
                     if ($is.selectedMediaIndex >= 0) {
-                        $is.selectedMediaIndex--;
+                        $is.selectedMediaIndex = -1;
                         return false;
                     }
                 });
