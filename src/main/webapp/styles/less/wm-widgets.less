@@ -2522,8 +2522,12 @@ If the height and width are not specified the video takes the height of the post
       cursor: pointer;
       display: inline-block;
       .tab-heading {
-        .badge {
+        * {
+          vertical-align: middle;
+        }
+        span.label {
           margin-left: 1em;
+          display:inline-block;
         }
       }
     }
