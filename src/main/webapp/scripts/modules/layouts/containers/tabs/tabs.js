@@ -325,7 +325,7 @@ WM.module('wm.layouts.containers')
                                 '<div class="tab-heading">' +
                                     '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
                                     '<span ng-bind="title"></span>' +
-                                    '<span ng-if="badgevalue" class="badge pull-right label label-{{badgetype}}">{{badgevalue}}</span>' +
+                                    '<span ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
                                 '</div>' +
                             '</a>' +
                           '</li>',
