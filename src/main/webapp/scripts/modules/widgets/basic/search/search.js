@@ -48,7 +48,7 @@ WM.module('wm.widgets.basic')
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
-                    ' uib-typeahead="item.wmDisplayLabel ||item for item in _getItems($viewValue) | limitTo:limit" ' +
+                    ' uib-typeahead="_getDisplayLabel(item) for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-is-open="isOpen"' +
@@ -119,7 +119,8 @@ WM.module('wm.widgets.basic')
                     'width'          : true,
                     'height'         : true,
                     'show'           : true
-                };
+                },
+                defaultQuery;
 
             // This function updates the query value.
             function updateModel($is, $el, immediate) {
@@ -134,8 +135,38 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            function getVariable($is, $s) {
+                return _.get($s, ['Variables', Utils.getVariableName($is, $s)]);
+            }
+
+            /**
+             * This function makes a variable call only for the default search, when datavalue is binded to some other record which is not in page.
+             * If datafield is ALL_FIELDS then datavalue is not modified.
+             * If datafield is not ALL_FIELDS then a variable call is made with datafield's value as datavalue.
+             * @param $is isolateScope
+             * @param $s element scope
+             * @returns promise
+             */
+            function fetchDefaultModel($is, $s) {
+                var variable = getVariable($is, $s),
+                    deferred = $q.defer();
+
+                if ($is.datafield === 'All Fields') {
+                    deferred.resolve($is._proxyModel);
+                }
+
+                if (variable && variable.category === 'wm.LiveVariable') {
+                    if (defaultQuery && $is.datavalue) {
+                        $is.retrieveDefaultQueryModel().then(function (response) {
+                            deferred.resolve(response);
+                        });
+                    }
+                }
+                return deferred.promise;
+            }
+
             // This function updates the queryModel and gets the matching item when datavalue is dynamically binded.
-            function updateQueryModel($is) {
+            function updateQueryModel($is, $el) {
                 // If dataset is array of strings, then update the queryModel.
                 if (WM.isArray($is.formattedDataSet) && !WM.isObject($is.formattedDataSet[0])) {
                     $is.queryModel = $is._proxyModel;
@@ -153,20 +184,18 @@ WM.module('wm.widgets.basic')
                     $is.datavalue.wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displaylabel'});
                     $is.datavalue.wmImgSrc       = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displayimagesrc'});
                 }
-                // set the queryModel by checking the matched item based on formattedDataSet.
-                $is.queryModel = _.find($is.formattedDataSet, function (item) {
-                    if ($is.datafield === 'All Fields' || $is.datafield === '') {
-                        return _.isEqual(item, $is._proxyModel);
-                    }
-                    // type conversion required here. hence `==` is used instead of `===`
-                    return _.get(item, $is.datafield) == $is._proxyModel;
-                }) || $is._proxyModel;
+
+                if (!$is.queryModel) {
+                    fetchDefaultModel($is, $el.scope()).then(function (_model_) {
+                        $is.queryModel = _model_;
+                    });
+                }
                 $is.updateModel();
             }
 
             // this function checks if the variable bound is a live variable or service variable
             function isVariableUpdateRequired($is, scope, calledFromSetDataSet) {
-                var variable          = _.get(scope, ['Variables', Utils.getVariableName($is, scope)]),
+                var variable          = getVariable($is, scope),
                     updateRequiredFor = ['wm.LiveVariable', 'wm.ServiceVariable'],
                     queryParams       = [];
 
@@ -218,6 +247,11 @@ WM.module('wm.widgets.basic')
                     dataSet = Utils.getClonedObject(data);
                     // if data-set is an array, show the 'listOfObjects' mode
                     if (WM.isArray(dataSet)) {
+                        // Removing null values from dataSet.
+                        _.remove(dataSet, function (o) {
+                            return WM.isUndefined(o) || _.isNull(o);
+                        });
+
                         dataSet = FormWidgetUtils.getOrderedDataSet(dataSet, $is.orderby);
                         // check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'
                         if (WM.isObject(dataSet[0])) {
@@ -252,7 +286,7 @@ WM.module('wm.widgets.basic')
                     $is.formattedDataSet = dataSet;
                     // update the queryModel, if the default value is given and formatted Dataset is defined.
                     if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && $is.datavalue)) {
-                        updateQueryModel($is);
+                        updateQueryModel($is, element);
                         $is.isDefaultValueExist = true;
                     }
                 }
@@ -280,6 +314,8 @@ WM.module('wm.widgets.basic')
                 var $navbarElScope,
                     _action = Utils.getActionFromKey(event),
                     inputVal = element.find('input').val();
+
+                defaultQuery = false;
 
                 if (element.hasClass('app-mobile-search')) {
                     //update query on the input val change
@@ -387,9 +423,9 @@ WM.module('wm.widgets.basic')
                 return inputFields;
             }
             // This function returns the query params depending upon the variable type
-            function getQueryRequestParams($is, variable, searchValue) {
+            function getQueryRequestParams($is, variable, searchValue, defaultQuery) {
                 var requestParams = {},
-                    searchInputs  = _.split($is.searchkey, ','),
+                    searchInputs  = defaultQuery ? _.split($is.datafield, ',') : _.split($is.searchkey, ','),
                     inputFields   = {};
 
                 // setup common request param values
@@ -455,11 +491,15 @@ WM.module('wm.widgets.basic')
             }
 
             // This function returns the unique fields based on dataField
-            function getUniqObjsByDataField(data, dataField) {
+            function getUniqObjsByDataField(data, dataField, displayField) {
                 var uniqData,
                     isAllFields = dataField === 'All Fields';
 
                 uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
+
+                if (!displayField) {
+                    return uniqData;
+                }
 
                 // return objects having non empty datafield and display field values.
                 return _.filter(uniqData, function (obj) {
@@ -481,9 +521,9 @@ WM.module('wm.widgets.basic')
                 return page === pageCount;
             }
             // This function fetch the updated variable data in case search widget is bound to some variable
-            function fetchVariableData($is, el, searchValue, $s) {
-                var variable      = _.get($s, ['Variables', Utils.getVariableName($is, $s)]),  // get the bound variable
-                    requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
+            function fetchVariableData($is, el, searchValue, $s, defaultQuery) {
+                var variable      = getVariable($is, $s),  // get the bound variable
+                    requestParams = getQueryRequestParams($is, variable, searchValue, defaultQuery), // params to be sent along with variable update call
                     deferred      = $q.defer(),
                     customFilter  = $filter('_custom_search_filter');
                 function handleQuerySuccess(response, props, pageOptions) {
@@ -568,6 +608,13 @@ WM.module('wm.widgets.basic')
                 return deferred.promise;
             }
 
+            // Fetching the data using datavalue as searched value.
+            function retrieveDefaultQueryModel($is, $el) {
+                return fetchVariableData($is, $el, $is.datavalue, $el.scope(), true).then(function (data) {
+                    return data && data[0];
+                });
+            }
+
             // this function checks if dataset is bound to any variable then add typeahead-wait-ms attribute
             function setQuerySearchAttributes(template, tAttrs) {
                 var inputTpl              = WM.element(template).find('input'),
@@ -640,7 +687,7 @@ WM.module('wm.widgets.basic')
                 localSearchedData = customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
                 setLoadingItemsFlag($is, false);
 
-                return getUniqObjsByDataField(localSearchedData, $is.datafield);
+                return getUniqObjsByDataField(localSearchedData, $is.datafield, $is.displaylabel);
             }
 
 
@@ -706,9 +753,14 @@ WM.module('wm.widgets.basic')
                                 }
                                 $is.queryModel = newVal; // set the default queryModel.
 
-                                updateQueryModel($is);
+                                updateQueryModel($is, $el);
                             }
                         });
+
+                        if ($el.attr('datavalue')) {
+                            defaultQuery = true;
+                        }
+                        $is.retrieveDefaultQueryModel = retrieveDefaultQueryModel.bind(undefined, $is, $el);
 
                     },
                     'post': function ($is, element, attrs) {
