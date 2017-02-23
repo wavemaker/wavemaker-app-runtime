@@ -44,7 +44,6 @@ public class SecurityInfo {
         this.authenticated = authenticated;
     }
 
-    @JsonProperty("login")
     public LoginConfig getLoginConfig() {
         return loginConfig;
     }
