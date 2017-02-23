@@ -43,7 +43,7 @@ WM.module('wm.widgets.form')
                     '</button>' +
                     /* list of selectedfiles UI */
                     '<ul class="list-group file-upload" ng-style="{height: filelistheight, overflow: overflow}" ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
-                        '<li class="list-group-item file-upload-status container" ng-repeat="ft in selectedFiles" >' +
+                        '<li class="list-group-item file-upload-status" ng-repeat="ft in selectedFiles" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}"></div>' +
                                 '<div class="media-body media-middle file-details">' +
@@ -55,7 +55,7 @@ WM.module('wm.widgets.form')
                     '</ul>' +
                     /* list of uploadedfiles UI */
                     '<ul class="list-group file-upload" ng-style="{height: filelistheight, overflow: overflow}" ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
-                        '<li class="list-group-item file-upload-status container {{ft.status}}" ng-hide="ft.status === \'abort\'" ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
+                        '<li class="list-group-item file-upload-status {{ft.status}}" ng-hide="ft.status === \'abort\'" ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
                                 '</div>' +
