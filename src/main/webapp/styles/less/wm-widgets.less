@@ -724,6 +724,17 @@ html, body {
     li {
       display: inline-block;
       margin-right: 1em;
+      label {
+        padding-left: 0;
+      }
+      input[type="checkbox"], input[type="radio"] {
+        position: relative;
+        margin: 0;
+        margin-right: .5em;
+      }
+      * {
+        vertical-align: middle;
+      }
     }
   }
 }
