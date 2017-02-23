@@ -18,7 +18,7 @@ WM.module('wm.widgets.dialog')
                     '</div>' +
                 '</div>'
             );
-    }]).directive('wmConfirmdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
+    }]).directive('wmConfirmdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', 'DeviceService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window, DeviceService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.confirmdialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -99,7 +99,8 @@ WM.module('wm.widgets.dialog')
                     }
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
-                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
+                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope(),
+                        backButtonListenerDeregister;
 
                     /* handles cancel button click*/
                     if (!scope.cancelButtonHandler) {
@@ -112,6 +113,16 @@ WM.module('wm.widgets.dialog')
                         scope.okButtonHandler = function () {
                             dialogCtrl._OkButtonHandler(attrs.onOk);
                         };
+                    }
+
+                    if (CONSTANTS.isRunMode && element.attr('inscript')) {
+                        backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                            scope.cancelButtonHandler();
+                            return false;
+                        });
+                        scope.$on('$destroy', function () {
+                            backButtonListenerDeregister();
+                        });
                     }
                     /*adding classes for ok and cancel button for studio*/
                     if (scope.okbuttonclass) {
