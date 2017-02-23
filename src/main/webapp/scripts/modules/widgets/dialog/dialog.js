@@ -153,7 +153,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', 'DialogService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils, DialogService) {
+    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', 'DialogService', 'DeviceService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils, DialogService, DeviceService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.designdialog", ["wm.basicdialog", "wm.base"]),
             notifyFor = {
@@ -216,7 +216,6 @@ WM.module('wm.widgets.dialog')
                      * else invoke the service and finally close the current dialog*/
                     if (eventName && eventName.indexOf("(") !== -1) {
                         Utils.triggerFn(callBack, callbackParams);
-                        return;
                     }
 
                     // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
@@ -291,6 +290,7 @@ WM.module('wm.widgets.dialog')
             "compile": function () {
                 return {
                     "pre": function (scope, element, attrs, ctrl) {
+                        var backButtonListenerDeregister;
                         scope.__readyQueue = [];
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         scope.whenReady = function (fn) {
@@ -301,6 +301,13 @@ WM.module('wm.widgets.dialog')
                         };
                         scope.open  = Utils.openDialog.bind(undefined, scope.dialogid);
                         scope.close = DialogService.close.bind(undefined, scope.dialogid);
+                        backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                            scope.hideDialog();
+                            return false;
+                        });
+                        scope.$on('$destroy', function () {
+                            backButtonListenerDeregister();
+                        });
                     },
                     "post": function (scope, element, attrs, ctrl) {
                         var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();

@@ -17,7 +17,7 @@ WM.module('wm.widgets.dialog')
                 '</div>' +
             '</div>'
             );
-    }]).directive('wmAlertdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
+    }]).directive('wmAlertdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', 'DeviceService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window, DeviceService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.alertdialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -100,7 +100,17 @@ WM.module('wm.widgets.dialog')
                     }
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
-                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope();
+                    var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope(),
+                        backButtonListenerDeregister;
+                    if (CONSTANTS.isRunMode && element.attr('inscript')) {
+                        backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                            dialogCtrl._CancelButtonHandler();
+                            return false;
+                        });
+                        scope.$on('$destroy', function () {
+                            backButtonListenerDeregister();
+                        });
+                    }
                     /* handles ok button click*/
                     if (!scope.okButtonHandler) {
                         scope.okButtonHandler = function () {
