@@ -1446,6 +1446,7 @@ WM.module('wm.widgets.live')
                     variable,
                     _onDestroy,
                     groupDataByUserDefinedFn,
+                    $dataNavigator,
                     handlers = [];
 
                 variable = Utils.getVariableName($is);
@@ -1457,6 +1458,13 @@ WM.module('wm.widgets.live')
                 setListClass($is); //To add classes in studio mode
 
                 if (CONSTANTS.isRunMode) {
+
+                    if ($is.navigation !== 'None') {
+                        $timeout(function () {
+                            $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]');
+                            $is.dataNavigator = $dataNavigator.isolateScope();
+                        });
+                    }
 
                     // Groupby is a javascript function and this code in script is undefined/uncommented then do not group the data.
                     if ($is.groupby && _.includes($is.groupby, '(')) {
@@ -1508,7 +1516,12 @@ WM.module('wm.widgets.live')
                     $is.$watch('binddataset', function (newVal) {
                         if (_.includes(newVal, 'selecteditem.')) {
                             LiveWidgetUtils.fetchDynamicData($is, $el.scope(), function (data) {
-                                onDataSetChange($is, $el, undefined, data, attrs, listCtrl);
+                                if (WM.isDefined(data)) {
+                                    if ($is.dataNavigator) {
+                                        $is.dataNavigator.dataset = data;
+                                    }
+                                    onDataChange($is, $el, data, attrs, listCtrl);
+                                }
                             });
                         }
                     });
