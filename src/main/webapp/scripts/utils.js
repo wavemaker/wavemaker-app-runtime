@@ -44,6 +44,7 @@ WM.module('wm.utils', [])
                 ZIP_FILE: /\.zip$/i,
                 EXE_FILE: /\.exe$/i,
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
+                NO_DOUBLE_QUOTES_ALLOWED: /^[^"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i,
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
                 SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
@@ -732,6 +733,11 @@ WM.module('wm.utils', [])
         /*function to check if quotes (both single and double) are NOT present in a string.*/
         function isQuoteNotPresent(str) {
             return REGEX.NO_QUOTES_ALLOWED.test(str);
+        }
+
+        //function to check if string contains double quotes
+        function isNoDoubleQuoteNotPresent(str) {
+            return REGEX.NO_DOUBLE_QUOTES_ALLOWED.test(str);
         }
 
         /*function to check if string contains HTML tags.*/
@@ -2456,6 +2462,7 @@ WM.module('wm.utils', [])
         this.hasSpecialCharacters       = hasSpecialCharacters;
         this.checkSpecialCharacters     = checkSpecialCharacters;
         this.isQuoteNotPresent          = isQuoteNotPresent;
+        this.isNoDoubleQuoteNotPresent  = isNoDoubleQuoteNotPresent;
         this.stringStartsWith           = stringStartsWith;
         this.stringEndsWith             = stringEndsWith;
         this.isStyleSheetLoaded         = isStyleSheetLoaded;
