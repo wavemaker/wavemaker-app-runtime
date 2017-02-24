@@ -13,6 +13,6 @@ public class BlobTypeConverter extends HibernateBackedJavaTypeConverter {
 
     @Override
     public Object fromDbValue(final Object value) {
-        return value;
+        return toDbValue(value, byte[].class);
     }
 }
