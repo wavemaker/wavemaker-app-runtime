@@ -282,7 +282,7 @@ wm.variables.services.$servicevariable = ['Variables',
             });
 
             // if required param not found, return error
-            requiredParamMissing = requiredParamMissing.join(',');
+            requiredParamMissing = requiredParamMissing.join(', ');
             if (requiredParamMissing) {
                 return {
                     'error': {
