@@ -185,6 +185,15 @@ WM.module('wm.widgets.basic')
                     $is.datavalue.wmImgSrc       = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displayimagesrc'});
                 }
 
+                // set the queryModel by checking the matched item based on formattedDataSet.
+                $is.queryModel = _.find($is.formattedDataSet, function (item) {
+                    if ($is.datafield === 'All Fields' || $is.datafield === '') {
+                        return _.isEqual(item, $is._proxyModel);
+                    }
+                    // type conversion required here. hence `==` is used instead of `===`
+                    return _.get(item, $is.datafield) == $is._proxyModel;
+                });
+
                 if (!$is.queryModel) {
                     fetchDefaultModel($is, $el.scope()).then(function (_model_) {
                         $is.queryModel = _model_;
