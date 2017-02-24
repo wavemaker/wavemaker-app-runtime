@@ -216,10 +216,8 @@ WM.module('wm.widgets.dialog')
                      * else invoke the service and finally close the current dialog*/
                     if (eventName && eventName.indexOf("(") !== -1) {
                         Utils.triggerFn(callBack, callbackParams);
-                    }
-
-                    // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
-                    if (callBack) {
+                    } else if (callBack) {
+                        // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
                         if (CONSTANTS.isStudioMode) {
                             if (WM.isFunction(callBack())) {
                                 Utils.triggerFn(callBack(), callbackParams);
