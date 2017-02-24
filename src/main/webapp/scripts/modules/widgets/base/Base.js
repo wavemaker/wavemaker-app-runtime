@@ -1996,7 +1996,7 @@ WM.module('wm.widgets.base', [])
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "minvalue": {"type": "number", "value": 0, "bindable": "in-bound"},
                         "maxvalue": {"type": "number", "value": 100, "bindable": "in-bound"},
-                        "datavalue": {"type": "number, string", "value": 30, "bindable": "in-out-bound", "widget": "string"},
+                        "datavalue": {"type": "number, string", "bindable": "in-out-bound", "widget": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "pollinterval": {"type": "number"},
                         "displayformat": {"type": "list", "options": ["9", "9.9", "9.99", "9.999", "9%", "9.9%", "9.99%", "9.999%"]},
