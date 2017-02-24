@@ -54,6 +54,14 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 return (operationId ? (_.find(serviceObj.operations, {'operationId' : operationId})) : serviceObj.operations[0]) || {};
             },
 
+            /**
+             * resets the cached operation info for a service
+             * @param serviceName
+             */
+            resetServiceOperations = function (serviceName) {
+                getServiceObjectByName(serviceName).operations = [];
+            },
+
         /*function to get list of services from the backend*/
             getServicesWithType = function (successCallBack, reloadFlag) {
                 /*sanity checking of the params*/
@@ -126,6 +134,14 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 /* if same queue is already in progress, do not send another request */
                 if (requestQueue['serviceDef'][serviceId].length > 1) {
                     return;
+                }
+
+                /*
+                 * TODO [VIBHU]: doing this to clear previous operation info if cached.
+                 * the getServiceOperations method needs to be merged with this method for consistency
+                 */
+                if (forceReload) {
+                    resetServiceOperations(serviceId);
                 }
 
                 /*invoking a service to get the operations that a particular service has and it's
