@@ -1082,6 +1082,7 @@ WM.module('wm.widgets.basic')
                 //Resetting the flag to false when the binding was removed
                 if (!newVal && !scope.binddataset) {
                     scope.isVisuallyGrouped = false;
+                    scope.axisoptions = null;
                 }
 
                 variableObj = elScope.Variables && elScope.Variables[variableName];
