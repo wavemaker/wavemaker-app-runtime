@@ -905,7 +905,7 @@ Application
                 if (!$rs.isMobileApplicationType) {
                     // show the app-spinner on route change start
                     $rs.$on('$routeChangeStart', AppManager.showPageSwitchSpinner);
-                    $rs.$on('page-ready', AppManager.hidePageSwitchSpinner);
+                    $rs.$on('page-startupdate-variables-loaded', AppManager.hidePageSwitchSpinner);
                     $rs.$on('template-ready', AppManager.hidePageSwitchSpinner);
                 }
 

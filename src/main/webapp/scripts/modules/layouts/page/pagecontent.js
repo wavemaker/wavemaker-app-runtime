@@ -32,7 +32,7 @@ WM.module('wm.layouts.page')
         }
 
         /*Delays transclusion for the variables to load.*/
-        function waitForTransition($s, $ele) {
+        function waitForTransition($ele) {
             var iScope = $ele.isolateScope(),
                 $spinnerEl;
             $ele.addClass('load');
@@ -42,7 +42,7 @@ WM.module('wm.layouts.page')
                 iScope.__load();
                 Utils.triggerFn($ele.scope().onPagePartLoad);
             });
-            Utils.listenOnce($s, 'page-startupdate-variables-loaded', function () {
+            Utils.listenOnce($rootScope, 'page-startupdate-variables-loaded', function () {
                 $timeout(function () {
                     $spinnerEl.remove();
                     $ele.removeClass('load');
@@ -62,11 +62,13 @@ WM.module('wm.layouts.page')
             'compile': function () {
                 return {
                     'pre': function (scope, element) {
-                        var isChildPage = element.closest('.app-page').closest('.app-page').length === 1;
+                        var page = element.closest('.app-page'),
+                            isPartOfPage = page.length === 1,
+                            isPartOfChildPage = page.parent().closest('.app-page').length === 1;
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        if (CONSTANTS.isRunMode  && element.scope().__isWMPage && !isChildPage) {
-                            waitForTransition(scope, element);
+                        if (CONSTANTS.isRunMode  && isPartOfPage && !isPartOfChildPage) {
+                            waitForTransition(element);
                         }
                     },
 
