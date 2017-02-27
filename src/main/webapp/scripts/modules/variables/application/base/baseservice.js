@@ -1744,7 +1744,7 @@ wm.variables.services.Variables = [
                     pageScopeId = pageScope.$id;
                 $q.all(_.map(startUpdateQueue[pageScopeId], makeVariableCall))
                     .finally(function () {
-                        pageScope.$broadcast('page-startupdate-variables-loaded');
+                        $rootScope.$emit('page-startupdate-variables-loaded', pageName);
                     });
                 delete startUpdateQueue[pageScopeId];
 
