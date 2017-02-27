@@ -152,7 +152,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
                     ((List) transformedValue).add(childTransformer.transformFromMap(val));
                 }
             } else {
-                final String className = descriptor.getPropertyType().getName();
+                final String className = descriptor.getPropertyType().getCanonicalName();
                 transformedValue = JavaTypeUtils.convert(className, value);
             }
         }
