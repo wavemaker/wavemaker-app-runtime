@@ -50,7 +50,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public Time convert(String source) {
-            return (Time) JavaType.TIME.fromDbValue(source);
+            return (Time) JavaType.TIME.fromString(source);
         }
     }
 
