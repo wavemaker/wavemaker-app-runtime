@@ -1495,6 +1495,10 @@ $.widget('wm.datagrid', {
             //Even after removing row, focus out is triggered and edit is called. In this case, return here
             return;
         }
+        //Select the current edited row
+        if (options.selectRow) {
+            this.selectRow(rowData, true);
+        }
         e       = e || {};
         e.data  = e.data  || {};
         action  = e.data.action || options.action;
