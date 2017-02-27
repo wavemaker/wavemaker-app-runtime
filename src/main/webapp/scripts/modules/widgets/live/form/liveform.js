@@ -87,6 +87,7 @@ WM.module('wm.widgets.live')
                                 '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" contentclass="noscroll" iconclass="{{iconclass}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
                                     '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform" autocomplete="' + ((attrs.autocomplete === 'true' || attrs.autocomplete === true) ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell" ng-class="[captionAlignClass]">' +
                                         '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
+                                            '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                             '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                         '</div>' +
                                         '<div class="hidden-form-elements"></div>' +
@@ -274,7 +275,6 @@ WM.module('wm.widgets.live')
                             return;
                         }
                     }
-                    resetFormState();
                     /*If live-form is in a dialog, then always fetch the formElement by name
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
@@ -298,6 +298,15 @@ WM.module('wm.widgets.live')
                             return;
                         }
                     }
+
+                    //If operation is update, form is not touched and current data and previous data is same, Show no changes detected message
+                    if ($scope.operationType === 'update' && formScope.ngform && formScope.ngform.$pristine && _.isEqual(data, prevData)) {
+                        $scope.toggleMessage(true, $scope.appLocale.MESSAGE_NO_CHANGES, 'info');
+                        return;
+                    }
+
+                    resetFormState();
+
                     requestData = {
                         'row'              : data,
                         'transform'        : true,
