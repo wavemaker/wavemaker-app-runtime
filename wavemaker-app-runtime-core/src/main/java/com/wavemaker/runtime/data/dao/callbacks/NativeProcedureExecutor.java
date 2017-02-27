@@ -49,7 +49,7 @@ public class NativeProcedureExecutor {
             connection = ((SessionImpl) session).connection();
             final CallableStatement statement = prepareStatement(connection, jdbcQuery, params);
             final boolean resultSetType = statement.execute();
-            Map<String, Object> result = getResultMap(statement, params, resultSetType);
+            Map<String, Object> result = getResultMap(statement, params, resultSetType, 0);
             return convert(result, type);
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
@@ -67,12 +67,12 @@ public class NativeProcedureExecutor {
 
     public static Map<String, Object> getResultMap(
             final CallableStatement statement, final List<ResolvableParam> params,
-            final boolean resultSetType) throws SQLException {
+            final boolean resultSetType, final int limit) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         if (resultSetType) {
-            result.put("content", readResultSet(statement.getResultSet()));
+            result.put("content", readResultSet(statement.getResultSet(), limit));
         }
-        result.putAll(readResponse(statement, params));
+        result.putAll(readResponse(statement, params, limit));
         return result;
     }
 
@@ -113,7 +113,7 @@ public class NativeProcedureExecutor {
     }
 
     private static Map<String, Object> readResponse(
-            CallableStatement statement, final List<ResolvableParam> params) throws SQLException {
+            CallableStatement statement, final List<ResolvableParam> params, final int limit) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
 
         for (int i = 0; i < params.size(); i++) {
@@ -122,7 +122,7 @@ public class NativeProcedureExecutor {
             if (param.getParameter().getParameterType().isOutParam()) {
                 Object value = statement.getObject(i + 1);
                 if (param.getParameter().getType() == JavaType.CURSOR) {
-                    value = readResultSet(value);
+                    value = readResultSet(value, limit);
                 }
                 result.put(param.getParameter().getName(), value);
             }
@@ -131,13 +131,14 @@ public class NativeProcedureExecutor {
         return result;
     }
 
-    private static List<Map<String, Object>> readResultSet(Object resultSet) {
+    private static List<Map<String, Object>> readResultSet(Object resultSet, final int limit) {
         List<Map<String, Object>> result = new ArrayList<>();
         // Dump the cursor
         try {
             if (resultSet != null) {
                 ResultSet rset = (ResultSet) resultSet;
-                while (rset.next()) {
+                int row = 0;
+                while ((limit > 0 && row++ < limit) && rset.next()) {
                     Map<String, Object> rowData = new LinkedHashMap<>();
                     int colCount = rset.getMetaData().getColumnCount();
                     for (int i = 1; i <= colCount; i++) {
