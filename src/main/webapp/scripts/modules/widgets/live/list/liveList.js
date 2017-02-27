@@ -1371,7 +1371,7 @@ WM.module('wm.widgets.live')
                         if ($is.multiselect) {
                             return $is._items;
                         }
-                        if (_.isEmpty($is.items)) {
+                        if (_.isEmpty($is._items)) {
                             return {};
                         }
                         return $is._items[0];
