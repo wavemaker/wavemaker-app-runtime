@@ -766,7 +766,11 @@ WM.module('wm.widgets.grid')
 
                             if (!$is.widgetid && attrs.scopedataset) {
                                 handlers.push($is.$watch('scopedataset', function (newVal) {
-                                    $is.dataset = newVal;
+                                    if ($is.dataNavigatorWatched) {
+                                        $is.dataNavigator.dataset = newVal;
+                                    } else {
+                                        $is.dataset = newVal;
+                                    }
                                 }));
                             }
                         }, 0, false);
