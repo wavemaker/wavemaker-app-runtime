@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.converters;
 
+import java.sql.Blob;
+
 import org.hibernate.type.BlobType;
 
 /**
@@ -13,6 +15,10 @@ public class BlobTypeConverter extends HibernateBackedJavaTypeConverter {
 
     @Override
     public Object fromDbValue(final Object value) {
-        return toDbValue(value, byte[].class);
+        if (value instanceof Blob) {
+            return toDbValue(value, byte[].class);
+        } else {
+            return value;
+        }
     }
 }
