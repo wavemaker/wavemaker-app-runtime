@@ -59,7 +59,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param serviceName
              */
             resetServiceOperations = function (serviceName) {
-                getServiceObjectByName(serviceName).operations = [];
+                getServiceObjectByName(serviceName).operations.length = 0;
             },
 
         /*function to get list of services from the backend*/
@@ -379,6 +379,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 parameterType: param[parameterTypeKey]
                             });
                         });
+                    } else {
+                        operationObject.parameter = [];
                     }
 
                     /* push an extra RequestBody param for WebSocketService */
