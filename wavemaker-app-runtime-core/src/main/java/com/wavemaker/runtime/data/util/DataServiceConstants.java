@@ -52,6 +52,10 @@ public class DataServiceConstants {
 
     public static final String WM_MY_SQL_CLOUD_PASSWORD = "cloudjee123";
 
+    public static final String QUERY_EXECUTION_CONTROLLER = "QueryExecutionController";
+
+    public static final String PROCEDURE_EXECUTION_CONTROLLER = "ProcedureExecutionController";
+
     private DataServiceConstants() {
     }
 
