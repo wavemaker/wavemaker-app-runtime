@@ -252,6 +252,8 @@ wm.modules.wmCommon.services.BaseService = [
                             errMsg += parseError(errorDetails) + (i > 0 ? "\n" : "");
                         });
                     }
+                } else if (error && error.data) {//Show the actual error for restService case
+                    errMsg = error.data;
                 }
 
                 /* check for login failure header */
