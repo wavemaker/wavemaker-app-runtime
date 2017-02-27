@@ -766,9 +766,8 @@ WM.module('wm.widgets.basic')
                             }
                         });
 
-                        if ($el.attr('datavalue')) {
-                            defaultQuery = true;
-                        }
+                        defaultQuery = $el.attr('datavalue') || $el.attr('scopedatavalue');
+
                         $is.retrieveDefaultQueryModel = retrieveDefaultQueryModel.bind(undefined, $is, $el);
 
                     },
