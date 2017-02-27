@@ -51,7 +51,9 @@ Application
         'DELAY'         : {
             'SEARCH_WAIT' : 500
         },
-        'DATA_SEARCH_LIMIT' : 10
+        'DATA_SEARCH_LIMIT' : 10,
+        'IFRAME_WINDOW_NAME': 'WM_RUN_WINDOW',
+        'WM_OAUTH_STATE': 'WMOAuthState'
     })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(
@@ -824,6 +826,7 @@ Application
             'MetaDataFactory',
             'DeviceService',
             'AppDefaults',
+            '$location',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -836,7 +839,7 @@ Application
             'TimerVariableService',
             '$websocketvariable',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults, $location) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
@@ -844,7 +847,9 @@ Application
                     pageReadyDeregister,
                     dateFormat,
                     timeFormat,
-                    dateTimeFormat;
+                    dateTimeFormat,
+                    locationQueryParams = $location.search(),
+                    stateParams = locationQueryParams.state;
 
                 $rs.projectName             = appProperties.name;
 
@@ -879,6 +884,16 @@ Application
                     AppManager.initI18nService(_.split(_WM_APP_PROPERTIES.supportedLanguages, ',') || ['en'], _WM_APP_PROPERTIES.defaultLanguage);
                 }
 
+                //search for the Auth Params if they exist.
+                stateParams = Utils.getValidJSON(stateParams);
+                if (_.get(stateParams, CONSTANTS.WM_OAUTH_STATE)) {
+                    if (!window.opener) { //for IE the window.opener reference doesn't exist so get the opener from the window name.
+                        window.opener = window.open('', CONSTANTS.IFRAME_WINDOW_NAME);
+                    }
+                    document.write("You may close the window now!");
+                    window.opener.location.reload();
+                    window.close();
+                }
 
                 /*
                  * Route Change Handler, for every page
@@ -1016,5 +1031,9 @@ Application
                         }
                     }
                 });
+
+                if (window.top !== window.self) {
+                    window.name = CONSTANTS.IFRAME_WINDOW_NAME;
+                }
             }
         ]);
