@@ -834,7 +834,7 @@ WM.module('wm.widgets.live')
                     matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
                     typeUtils = Utils.getService('TypeUtils'),
                     showOrHideMatchProperty = function () {
-                        if (!$is.dataset || $is.groupby === 'Javascript') {
+                        if (!$is.binddataset || $is.groupby === 'Javascript') {
                             return;
                         }
                         selectedVariable = selectedVariable || eleScope.Variables[variable];
