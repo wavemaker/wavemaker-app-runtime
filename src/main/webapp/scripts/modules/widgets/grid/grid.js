@@ -295,7 +295,10 @@ WM.module('wm.widgets.grid')
                             if (scope.multiselect) {
                                 return scope.items;
                             }
-                            return scope.items && scope.items[0];
+                            if (_.isEmpty(scope.items)) {
+                                return {};
+                            }
+                            return scope.items[0];
                         },
                         set: function (val) {
                             /*Select the rows in the table based on the new selected items passed*/
