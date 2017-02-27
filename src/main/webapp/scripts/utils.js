@@ -1304,7 +1304,8 @@ WM.module('wm.utils', [])
                     'isDeletable'   : options.isDeletable,
                     'title'         : options.title,
                     'onDelete'      : options.onDelete,
-                    'hasChildren'   : options.hasChildren
+                    'hasChildren'   : options.hasChildren,
+                    'deepSearch'   : options.deepSearch
                 },
                 parentIndex,
                 parentStartIndex,
