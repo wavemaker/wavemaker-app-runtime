@@ -835,6 +835,11 @@ WM.module('wm.widgets.basic')
                         if (CONSTANTS.isRunMode) {
                             // keyup event to enable/ disable close icon of the search input.
                             element.bind('keyup', onKeyUp.bind(undefined, $is, element));
+
+                            if (element.hasClass('app-mobile-search')) {
+                                element.find('input').focus();
+                            }
+
                             $timeout(function () {
                                 typeAheadInput    = element.find('input[uib-typeahead]');
                                 //If appended to body, add app search class to typeahead dropdown
