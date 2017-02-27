@@ -1966,6 +1966,12 @@ WM.module('wm.widgets.grid')
                 if (data) {
                     $is.serverData = data;
                 }
+                //For live variable, on update/insert while selecting the row, remove the keys with empty array
+                if ($is.variable && $is.variable.category === 'wm.LiveVariable') {
+                    item = _.omitBy(item, function (value) {
+                        return _.isArray(value) && _.isEmpty(value);
+                    });
+                }
                 $is.callDataGridMethod('selectRow', item, true);
             }
             /* deselect the given item*/
@@ -2000,7 +2006,7 @@ WM.module('wm.widgets.grid')
             function editRow(evt) {
                 var row;
                 if (evt && evt.target) {
-                    $is.callDataGridMethod('toggleEditRow', evt);
+                    $is.callDataGridMethod('toggleEditRow', evt, {'selectRow': true});
                 } else {
                     //For live form, call the update function with selected item
                     if ($is.editmode === 'form' || $is.editmode === 'dialog') {
