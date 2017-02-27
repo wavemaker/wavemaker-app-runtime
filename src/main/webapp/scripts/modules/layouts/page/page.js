@@ -52,6 +52,7 @@ WM.module('wm.layouts.page')
                             count,
                             subView,
                             AppManager;
+                        $s.__isWMPage = true;
                         /* if the page belongs to a prefab use the name of the prefab
                          * else if the project is of prefab type use `Main`
                          * else get the name of the page from the ng-controller attribute

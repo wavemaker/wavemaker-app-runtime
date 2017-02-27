@@ -67,7 +67,7 @@ WM.module('wm.layouts.page')
                             isPartOfChildPage = page.parent().closest('.app-page').length === 1;
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        if (CONSTANTS.isRunMode  && isPartOfPage && !isPartOfChildPage) {
+                        if (CONSTANTS.isRunMode  && scope.__isWMPage && isPartOfPage && !isPartOfChildPage) {
                             waitForTransition(element);
                         }
                     },
