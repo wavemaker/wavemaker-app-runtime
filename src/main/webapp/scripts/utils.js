@@ -2424,11 +2424,12 @@ WM.module('wm.utils', [])
          */
         function listenOnce($s, event, callBack) {
             var deregisterEvent = $s.$on(event, function () {
+                deregisterEvent();
                 if (callBack) {
                     callBack.apply(undefined, arguments);
                 }
-                deregisterEvent();
             });
+            return deregisterEvent;
         }
 
         this.camelCase                  = WM.element.camelCase;
