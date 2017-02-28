@@ -360,7 +360,8 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-default", "btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-inverse", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "no-border", "jumbotron"]},
-                        "margin": {"type": "string", "widget": "box-model"}
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
                     },
                     "wm.rating": {
                         "hint":  {"show": false},
@@ -846,7 +847,8 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": [ "h1", "h2", "h3", "h4", "h5", "h6", "p", "text-ellipsis", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "vertical-align-top", "vertical-align-middle", "vertical-align-bottom", "lead", "badge", "form-control-static", "control-label"]},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
-                        "wordbreak": {"type": "list", "options": ["break-word", "normal"]}
+                        "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
+                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
                     },
 
                     "wm.picture": {
@@ -1595,7 +1597,8 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "text-ellipsis", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "vertical-align-top", "vertical-align-middle", "vertical-align-bottom", "lead", "badge"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "text-ellipsis", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "vertical-align-top", "vertical-align-middle", "vertical-align-bottom", "lead", "badge"]},
+                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
                     },
                     "wm.popover": {
                         "contentsource": {"type": "list", "options": ['inline', 'partial'], value: "partial"},
