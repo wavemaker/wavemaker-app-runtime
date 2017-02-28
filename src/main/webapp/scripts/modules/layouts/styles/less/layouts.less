@@ -884,6 +884,17 @@ body {
     animation: @name @duration ease-in;
   }
 
+  @-webkit-keyframes toAndFro{
+    0%{
+      -webkit-transform : translate3d(0, 0, 0);
+    }
+    50% {
+      -webkit-transform : translate3d(1000%, 0, 0);
+    }
+    100%{
+      -webkit-transform : translate3d(0, 0, 0);
+    }
+  }
 
   @keyframes toAndFro {
     from {
@@ -1084,6 +1095,19 @@ body {
     }
   }
 
+  @-webkit-keyframes flipEntry {
+    0% {
+      opacity: 0;
+      -webkit-transform: perspective(1000px) rotateY(180deg);
+    }
+    50%{opacity: 0;}
+    51% {opacity : 1;}
+    100% {
+      opacity : 1;
+      -webkit-transform: perspective(1000px) rotateY(0deg);
+    }
+  }
+
   @keyframes flipEntry {
     0% {
       opacity: 0;
@@ -1094,6 +1118,19 @@ body {
     100% {
       opacity : 1;
       .transform(perspective(1000px) rotateY(0deg));
+    }
+  }
+
+  @-webkit-keyframes flipExit {
+    0% {
+      opacity: 1;
+      -webkit-transform: perspective(1000px) rotateY(0deg);
+    }
+    50%{opacity: 1;}
+    51% {opacity : 0;}
+    100% {
+      opacity : 0;
+      -webkit-transform: perspective(1000px) rotateY(-180deg);
     }
   }
 
@@ -1110,6 +1147,18 @@ body {
     }
   }
 
+  @-webkit-keyframes flipReverseEntry {
+    0% {
+      opacity: 0;
+      -webkit-transform: perspective(1000px) rotateY(-180deg);
+    }
+    50%{opacity: 0;}
+    51% {opacity : 1;}
+    100% {
+      opacity : 1;
+      -webkit-transform: perspective(1000px) rotateY(0deg);
+    }
+  }
   @keyframes flipReverseEntry {
     0% {
       opacity: 0;
@@ -1120,6 +1169,19 @@ body {
     100% {
       opacity : 1;
       .transform(perspective(1000px) rotateY(0deg));
+    }
+  }
+
+  @-webkit-keyframes flipReverseExit {
+    0% {
+      opacity: 1;
+      -webkit-transform: perspective(1000px) rotateY(0deg);
+    }
+    50%{opacity: 1;}
+    51% {opacity : 0;}
+    100% {
+      opacity : 0;
+      -webkit-transform: perspective(1000px) rotateY(180deg);
     }
   }
 
@@ -1144,8 +1206,11 @@ body {
         left: 0;
         -webkit-backface-visibility: visible !important;
         -ms-backface-visibility: visible !important;
+        -webkit-backface-visibility: visible !important;
         backface-visibility: visible !important;
+        -webkit-animation-duration: 0.3s;
         animation-duration: 0.3s;
+        -webkit-animation-timing-function: ease-in-out;
         animation-timing-function: ease-in-out;
         -webkit-animation-fill-mode: forwards;
         animation-fill-mode: forwards;
@@ -1157,30 +1222,36 @@ body {
 
     >.page-transition-slide {
       &.ng-leave-active {
+        -webkit-animation-name: slideOutLeft;
         animation-name: slideOutLeft;
       }
       +.ng-enter-active {
+        -webkit-animation-name: slideInRight;
         animation-name: slideInRight;
       }
     }
 
     >.page-transition-slide-exit {
       &.ng-leave-active {
+        -webkit-animation-name: slideOutRight;
         animation-name: slideOutRight;
       }
       +.ng-enter-active {
+        -webkit-animation-name: slideInLeft;
         animation-name: slideInLeft;
       }
     }
 
     /** popup **/
     >.page-transition-pop +.ng-enter {
+      -webkit-animation-name: zoomIn;
       animation-name: zoomIn ;
     }
 
     >.page-transition-pop-exit {
       &.ng-leave-active {
         z-index: 1;
+        -webkit-animation-name: zoomOut;
         animation-name: zoomOut;
       }
       &.ng-enter-active {
@@ -1190,27 +1261,33 @@ body {
 
     >.page-transition-flip {
       &.ng-leave-active {
+        -webkit-animation-name: flipExit;
         animation-name: flipExit;
       }
       +.ng-enter-active {
+        -webkit-animation-name: flipEntry;
         animation-name: flipEntry;
       }
     }
 
     >.page-transition-flip-exit {
       &.ng-leave-active {
+        -webkit-animation-name: flipReverseExit;
         animation-name: flipReverseExit;
       }
       +.ng-enter-active {
+        -webkit-animation-name: flipReverseEntry;
         animation-name: flipReverseEntry;
       }
     }
 
     /** fade **/
     >.page-transition-fade +.ng-enter-active {
+      -webkit-animation-name: fadeIn;
       animation-name: fadeIn;
     }
     >.page-transition-fade-exit.ng-leave-active {
+      -webkit-animation-name: fadeOut;
       animation-name: fadeOut;
       z-index: 1;
     }

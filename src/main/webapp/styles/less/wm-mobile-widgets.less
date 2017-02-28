@@ -127,7 +127,7 @@
       top: 0;
       overflow: hidden;
       .loader {
-        height: 0pt;
+        height: 0;
         width: 100%;
         &:before {
           display: block;
@@ -136,7 +136,8 @@
           width: 10%;
           height: 2pt;
           background-color: @app-page-content-loader-fg-color;
-          animation: toAndFro 2s linear infinite;
+          -webkit-animation: toAndFro 2s linear 0.1s infinite;
+          animation: toAndFro 2s linear 0.1s infinite;
         }
       }
     }
