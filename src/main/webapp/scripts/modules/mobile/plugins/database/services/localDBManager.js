@@ -633,6 +633,7 @@ wm.plugins.database.services.LocalDBManager = [
                                     rowWithUpperKeys[k.toUpperCase()] = v;
                                 });
                                 _.forEach(queryData.response.properties, function (p) {
+                                    transformedRow[p.name] = row[p.name];
                                     transformedRow[p.fieldName] = row[p.fieldName] || rowWithUpperKeys[p.nameInUpperCase];
                                 });
                                 return transformedRow;
