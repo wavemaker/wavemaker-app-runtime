@@ -173,18 +173,26 @@ wm.modules.wmCommon.services.NavigationService = [
             }
         }
 
+        function stopLoginPagePostLogin($p) {
+            SecurityService.getConfig(function (config) {
+                if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
+                    $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
+                    return;
+                }
+            });
+        }
+
         $rs.$on('$routeChangeStart', function (evt, $next, $p) {
             var pageName = $next.params.name;
             if (pageName) {
-                // if login page is being loaded and user is logged in, cancel that.
-                if ($rs.isApplicationType) {
-                    SecurityService.getConfig(function (config) {
-                        if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
-                            $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
-                            return;
-                        }
-                    });
-                }
+                /*
+                 * Commenting this code, one client project has Home_Page configured as Login Page.
+                 * So redirection to Home_Page post login is failing
+                 // if login page is being loaded and user is logged in, cancel that.
+                    if ($rs.isApplicationType) {
+                        stopLoginPagePostLogin($p);
+                    }
+                 */
                 if (pageStackObject.isLastVisitedPage(pageName)) {
                     nextTransitionToApply = pageStackObject.getCurrentPage().transition;
                     if (!_.isEmpty(nextTransitionToApply)) {
