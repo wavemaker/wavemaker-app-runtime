@@ -138,7 +138,7 @@ public class NativeProcedureExecutor {
             if (resultSet != null) {
                 ResultSet rset = (ResultSet) resultSet;
                 int row = 0;
-                while ((limit > 0 && row++ < limit) && rset.next()) {
+                while ((limit < 1 || row++ < limit) && rset.next()) {
                     Map<String, Object> rowData = new LinkedHashMap<>();
                     int colCount = rset.getMetaData().getColumnCount();
                     for (int i = 1; i <= colCount; i++) {
