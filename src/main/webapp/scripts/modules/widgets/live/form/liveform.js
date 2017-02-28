@@ -226,7 +226,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Function to show the message on top of the dialog or to display the toaster
                  * type can be error or success*/
-                $scope.toggleMessage = function (show, msg, type) {
+                $scope.toggleMessage = function (show, msg, type, header) {
                     var template;
                     if (show && msg) {
                         if ($scope.messagelayout === 'Inline') {
@@ -234,7 +234,7 @@ WM.module('wm.widgets.live')
                             $scope.statusMessage = {'caption': template || '', type: type};
                         } else {
                             template = (type === 'error' && $scope.errormessage) ? $scope.errormessage : msg;
-                            wmToaster.show(type, type.toUpperCase(), template, undefined, 'trustedHtml');
+                            wmToaster.show(type, WM.isDefined(header) ? header : type.toUpperCase(), template, undefined, 'trustedHtml');
                         }
                     } else {
                         $scope.statusMessage = null;
@@ -301,7 +301,7 @@ WM.module('wm.widgets.live')
 
                     //If operation is update, form is not touched and current data and previous data is same, Show no changes detected message
                     if ($scope.operationType === 'update' && formScope.ngform && formScope.ngform.$pristine && _.isEqual(data, prevData)) {
-                        $scope.toggleMessage(true, $scope.appLocale.MESSAGE_NO_CHANGES, 'info');
+                        $scope.toggleMessage(true, $scope.appLocale.MESSAGE_NO_CHANGES, 'info', '');
                         return;
                     }
 
