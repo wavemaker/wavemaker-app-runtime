@@ -127,6 +127,7 @@ wm.modules.wmCommon.services.BaseService = [
                     /* set extra config flags */
                     config.byPassResult = serviceParams.byPassResult;
                     config.isDirectCall = serviceParams.isDirectCall;
+                    config.isExtURL = serviceParams.isExtURL;
                     config.preventMultiple = serviceParams.preventMultiple;
 
                     return config;
@@ -239,6 +240,9 @@ wm.modules.wmCommon.services.BaseService = [
                     errMsg = 'Service call failed';
                 }
 
+                // check if error message present for responded http status
+                errMsg = HTTP_STATUS_MSG[error.status] || errMsg;
+
                 /* check for error code in the response */
                 if (_.get(error, 'data.errors')) {
                     errMsg = "";
@@ -249,12 +253,9 @@ wm.modules.wmCommon.services.BaseService = [
                             errMsg += parseError(errorDetails) + (i > 0 ? "\n" : "");
                         });
                     }
-                } else if (error && error.data) {//Show the actual error for restService case
+                } else if (CONSTANTS.isRunMode && config.isExtURL && !_.isEmpty(error.data)) {//Show the actual error for restService case
                     errMsg = error.data;
                 }
-
-                // check if error message present for responded http status
-                errMsg = HTTP_STATUS_MSG[error.status] || errMsg;
 
                 /* check for login failure header */
                 if (isLoginFailure(error)) {
