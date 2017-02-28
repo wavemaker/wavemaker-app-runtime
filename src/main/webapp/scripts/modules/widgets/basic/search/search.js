@@ -500,13 +500,13 @@ WM.module('wm.widgets.basic')
             }
 
             // This function returns the unique fields based on dataField
-            function getUniqObjsByDataField(data, dataField, displayField) {
+            function getUniqObjsByDataField(data, dataField, displayField, isLocalSearch) {
                 var uniqData,
                     isAllFields = dataField === 'All Fields';
 
                 uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
 
-                if (!displayField) {
+                if (!displayField && isLocalSearch) {
                     return uniqData;
                 }
 
@@ -536,7 +536,7 @@ WM.module('wm.widgets.basic')
                     deferred      = $q.defer(),
                     customFilter  = $filter('_custom_search_filter');
                 function handleQuerySuccess(response, props, pageOptions) {
-                    var data            = response.content || response,
+                    var data            = Utils.isPageable(response) ? response.content : response,
                         expressionArray = _.split($is.binddataset, '.'),
                         dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.'),
                         $I              = '[$i]',
@@ -696,7 +696,7 @@ WM.module('wm.widgets.basic')
                 localSearchedData = customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
                 setLoadingItemsFlag($is, false);
 
-                return getUniqObjsByDataField(localSearchedData, $is.datafield, $is.displaylabel);
+                return getUniqObjsByDataField(localSearchedData, $is.datafield, $is.displaylabel, true);
             }
 
 
