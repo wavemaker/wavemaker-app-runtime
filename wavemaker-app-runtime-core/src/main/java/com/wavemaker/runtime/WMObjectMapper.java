@@ -35,10 +35,20 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
@@ -238,6 +248,7 @@ public class WMObjectMapper extends ObjectMapper {
     private static class WMObjectReadMapper extends ObjectMapper {
 
         WMObjectReadMapper() {
+            setTypeFactory(TypeFactory.defaultInstance().withClassLoader(WMObjectReadMapper.class.getClassLoader()));
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             SimpleModule module = new SimpleModule("WMDefaultDeSerializer");
 
@@ -254,6 +265,7 @@ public class WMObjectMapper extends ObjectMapper {
     private static class WMObjectWriteMapper extends ObjectMapper {
 
         WMObjectWriteMapper() {
+            setTypeFactory(TypeFactory.defaultInstance().withClassLoader(WMObjectWriteMapper.class.getClassLoader()));
             disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // we are handling self references using @JsonIgnoreProperties
