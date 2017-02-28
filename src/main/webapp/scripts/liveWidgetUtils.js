@@ -673,7 +673,7 @@ WM.module('wm.widgets.live')
                     controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12';
                 }
                 //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
-                fieldDef.displayname = (CONSTANTS.isRunmode && _.startsWith(fieldDef.displayname, 'bind:')) ? '' : fieldDef.displayname;
+                fieldDef.displayname = (CONSTANTS.isRunMode && _.startsWith(fieldDef.displayname, 'bind:')) ? '' : fieldDef.displayname;
                 template    = template +
                     '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
