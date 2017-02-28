@@ -344,7 +344,8 @@ wm.variables.services.$servicevariable = ['Variables',
                 "headers": headers,
                 "dataParams": requestBody,
                 "authType": authType,
-                "isDirectCall": !isProxyCall
+                "isDirectCall": !isProxyCall,
+                "isExtURL": variable.serviceType === SERVICE_TYPE_REST
             };
 
             return invokeParams;
