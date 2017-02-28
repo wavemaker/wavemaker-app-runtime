@@ -93,13 +93,15 @@ WM.module('wm.layouts.containers')
                                 itemBadge    = node[badgeField],
                                 itemAction   = node[actionField],
                                 itemChildren = node[childrenField],
-                                $menu;
+                                $menu,
+                                routeRegex;
 
                             // menu widget expects data as an array.
                             // push the current object as an array into the internal array
                             $is._nodes.push(node[childrenField]);
-
-                            if ($routeParams.name === (itemLink && itemLink.substring(2))) {
+                            routeRegex = new RegExp('^(#\/|#)' + $routeParams.name);
+                            //itemLink can be #/routeName or #routeName
+                            if (itemLink && routeRegex.test(itemLink)) {
                                 $li.addClass('active');
                             }
 
