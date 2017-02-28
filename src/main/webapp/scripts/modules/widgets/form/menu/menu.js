@@ -285,7 +285,8 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 var menuScope = element.closest('.dropdown').isolateScope(),
-                    menuLink  = scope.item[menuScope.itemlink];
+                    menuLink  = scope.item[menuScope.itemlink],
+                    routeRegex;
 
                 if (scope.item.children && scope.item.children.length > 0) {
                     element.append('<wm-menu-dropdown items="item.children"  linktarget="linktarget" menualign="menualign"/>');
@@ -295,15 +296,22 @@ WM.module('wm.widgets.form')
 
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
-                    if ($routeParams.name === menuLink.substring(2)) {
+                    //itemLink can be #/routeName or #routeName
+                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name);
+                    if (routeRegex.test(menuLink)) {
                         element.addClass('active');
                     }
                 }
 
                 scope.onSelect = function (args) {
-                    var itemLink   = args.$item[menuScope.itemlink],
-                        itemAction = args.$item[menuScope.itemaction],
+                    var itemLink   = args.$item[menuScope.itemlink || 'link'],
+                        itemAction = args.$item[menuScope.itemaction || 'action'],
                         linkTarget = menuScope.linktarget || '_self';
+
+                    //If link starts with # and not with #/ replace with #/
+                    if (itemLink && _.startsWith(itemLink, '#') && !_.startsWith(itemLink, '#/')) {
+                        itemLink = _.replace(itemLink, '#', '#/');
+                    }
 
                     scope.$parent.onSelect(args);
                     if (itemAction) {
