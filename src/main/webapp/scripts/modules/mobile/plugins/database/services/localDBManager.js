@@ -391,7 +391,8 @@ wm.plugins.database.services.LocalDBManager = [
          * @returns {object} a promise.
          */
         this.pullData = function () {
-            return canConnectToServer()
+            return SecurityService.onUserLogin()
+                .then(canConnectToServer)
                 .then(function () {
                     // clears all data other than BUNDLED data
                     var promises = [];
