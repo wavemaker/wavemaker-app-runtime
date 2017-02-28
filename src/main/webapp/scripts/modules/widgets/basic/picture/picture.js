@@ -62,7 +62,7 @@ WM.module('wm.widgets.basic')
             'scope'   : {},
             'template': function ($tEl, $tAttrs) {
                 var templateId = 'template/widget/picture.html';
-                if (CONSTANTS.hasCordava) {
+                if (CONSTANTS.hasCordova) {
                     templateId = 'template/mobile/widget/picture.html';
                 }
                 return WidgetUtilService.getPreparedTemplate(templateId, $tEl, $tAttrs);
