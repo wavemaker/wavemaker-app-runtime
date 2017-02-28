@@ -257,10 +257,10 @@ WM.module('wm.widgets.basic')
                     path = '',
                     $liPath,
                     fn;
+                $el.find('.selected').removeClass('selected');
                 if (!$li.length) {
                     return;
                 }
-                $el.find('.selected').removeClass('selected');
                 $li.addClass('selected');
                 data = $li.data('nodedata');
 
@@ -347,6 +347,11 @@ WM.module('wm.widgets.basic')
                         $is.renderTree = _.debounce(renderTree, 20);
 
                         $is.selectNodeById = selectNode.bind(undefined, $is, $el, WM.noop());
+
+                        $is.deselectNode = function () {
+                            $is.selecteddata = {};
+                            $is.selectNodeById();
+                        };
 
                         var onPropertyChange = propertyChangeHandler.bind(undefined, $is, $el, attrs);
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
