@@ -205,15 +205,6 @@ WM.module('wm.widgets.basic')
                                      */
                                     popoverScope.$watch('isOpen', function (nv) {
                                         if (nv || $is._isFirstTime) {
-                                            //On Open trigger onShow event
-                                            if (nv) {
-
-                                                if (!isInlineContent) {
-                                                    Utils.triggerFn($is.onLoad, {'$isolateScope': $is});
-                                                }
-
-                                                Utils.triggerFn($is.onShow, {'$isolateScope' : $is});
-                                            }
                                             //Add custom mouseenter, leave events on popover
                                             $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
 
@@ -235,6 +226,28 @@ WM.module('wm.widgets.basic')
                                             if (!isInlineContent) {
                                                 Utils.triggerFn($is.$lazyLoad);
                                             }
+
+                                            $timeout(function () {
+                                                //On Open trigger onShow event
+                                                if (nv) {
+                                                    if (!isInlineContent) {
+
+                                                        if ($popoverEl.length) {
+                                                            var $parEl = $popoverEl.find('> .popover-inner > .popover-content > div > section.app-partial'),
+                                                                partialScope;
+
+                                                            if ($parEl.length) {
+                                                                partialScope  = $parEl.scope();
+                                                                $is.Widgets   = partialScope.Widgets;
+                                                                $is.Variables = partialScope.Variables;
+                                                            }
+                                                        }
+                                                        Utils.triggerFn($is.onLoad, {'$isolateScope': $is});
+                                                    }
+
+                                                    Utils.triggerFn($is.onShow, {'$isolateScope' : $is});
+                                                }
+                                            });
 
                                             $is._isFirstTime = false;
                                         } else {
