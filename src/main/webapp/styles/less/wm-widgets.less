@@ -3087,6 +3087,18 @@ If the height and width are not specified the video takes the height of the post
     .app-progress-label[data-caption-placement="hidden"] {
       display: none;
     }
+    .app-progress-label {
+      height: 100%;
+      display: inline-block;
+      vertical-align: middle;
+      &::before {
+        content: "";
+        height: 100%;
+        width: 1px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
   }
 }
 
