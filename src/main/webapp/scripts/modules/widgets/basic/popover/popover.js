@@ -131,7 +131,7 @@ WM.module('wm.widgets.basic')
                     if (CONSTANTS.isRunMode) {
                         //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                         template.attr({
-                            'popover-class'         : '{{_popoverOptions.customclass}}',
+                            'popover-class'         : '{{"app-popover " + _popoverOptions.customclass}}',
                             'popover-placement'     : '{{_popoverOptions.placement}}',
                             'popover-trigger'       : '_popoverOptions.trigger',
                             'popover-title'         : '{{title}}',
@@ -142,7 +142,7 @@ WM.module('wm.widgets.basic')
                         template.attr('uib-popover-template', '_popoverOptions.contenturl');
 
                         //If interaction is not click then attach ng-mouseleave event
-                        if (tAttrs.interaction !== 'click') {
+                        if (_.includes(['default', 'hover'], tAttrs.interaction)) {
                             template.attr('ng-mouseleave', '_popoverOptions.setHideTrigger()');
                         }
                     }
@@ -151,7 +151,7 @@ WM.module('wm.widgets.basic')
                 'compile': function (tElement) {
                     return {
                         'pre': function ($is, $el, attrs) {
-                            var trigger = attrs.interaction ? interaction[attrs.interaction] : interaction.default;
+                            var trigger = attrs.interaction ? interaction[attrs.interaction] : interaction.click;
                             $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
                             $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                             $is.$lazyLoad       = WM.noop;
