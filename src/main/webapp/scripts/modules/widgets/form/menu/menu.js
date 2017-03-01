@@ -297,7 +297,7 @@ WM.module('wm.widgets.form')
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
                     //itemLink can be #/routeName or #routeName
-                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name);
+                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
                     if (routeRegex.test(menuLink)) {
                         element.addClass('active');
                     }
