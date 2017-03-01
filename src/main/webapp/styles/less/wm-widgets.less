@@ -370,6 +370,10 @@ html, body {
     }
   }
 
+  .popover-title ~ .popover-content {
+    .calc('height', ~"calc(100% - 3em)");
+  }
+
   &.top,&.bottom{
     &.bottom-right, &.top-right {
       > .arrow {
