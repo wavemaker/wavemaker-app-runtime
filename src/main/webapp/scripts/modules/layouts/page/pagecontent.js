@@ -31,7 +31,7 @@ WM.module('wm.layouts.page')
             }
         }
 
-        /*Delays transclusion for the variables to load.*/
+        /*Delays transclusion for the transition and variables to load.*/
         function waitForTransition($ele) {
             var iScope = $ele.isolateScope(),
                 $spinnerEl;
@@ -62,12 +62,9 @@ WM.module('wm.layouts.page')
             'compile': function () {
                 return {
                     'pre': function (scope, element) {
-                        var page = element.closest('.app-page'),
-                            isPartOfPage = page.length === 1,
-                            isPartOfChildPage = page.parent().closest('.app-page').length === 1;
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        if (CONSTANTS.isRunMode  && element.scope().__isWMPage && isPartOfPage && !isPartOfChildPage) {
+                        if (CONSTANTS.isRunMode  &&  !$route.current.transitionCompleted) {
                             waitForTransition(element);
                         }
                     },
