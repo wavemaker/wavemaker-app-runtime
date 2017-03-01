@@ -160,13 +160,34 @@ WM.module('wm.widgets.basic')
                         'post': function ($is, $el, attrs) {
                             var isInlineContent = attrs.contentsource === 'inline',
                                 popoverScope,
-                                $popoverEl;
+                                $popoverEl,
+                                _scope  = $el.scope(); //scope inherited from controller's scope
 
-                            $is.appLocale = $el.scope().appLocale;
+                            $is.appLocale = _scope.appLocale;
 
                             if (CONSTANTS.isRunMode) {
                                 $is._isFirstTime = true;
                                 if (isInlineContent) {
+                                    /* This is to make the "Variables" & "Widgets" available in the inline content
+                                     * widgets it gets compiled with the popover isolate Scope
+                                     * and "Variables", "Widgets", "item" won't be available in that scope. */
+                                    Object.defineProperties($is, {
+                                        'Variables': {
+                                            'get': function () {
+                                                return _scope.Variables;
+                                            }
+                                        },
+                                        'Widgets': {
+                                            'get': function () {
+                                                return _scope.Widgets;
+                                            }
+                                        },
+                                        'item': {
+                                            'get': function () {
+                                                return _scope.item;
+                                            }
+                                        }
+                                    });
                                     $is._popoverOptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
                                     setStyleBlock($is);
 
