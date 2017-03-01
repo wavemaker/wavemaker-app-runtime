@@ -99,7 +99,7 @@ WM.module('wm.layouts.containers')
                             // menu widget expects data as an array.
                             // push the current object as an array into the internal array
                             $is._nodes.push(node[childrenField]);
-                            routeRegex = new RegExp('^(#\/|#)' + $routeParams.name);
+                            routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
                             //itemLink can be #/routeName or #routeName
                             if (itemLink && routeRegex.test(itemLink)) {
                                 $li.addClass('active');

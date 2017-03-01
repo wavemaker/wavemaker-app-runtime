@@ -975,7 +975,10 @@ WM.module('wm.widgets.live')
                         //Destroy the scopes of the widgtes inside the form field
                         element.find('.ng-isolate-scope')
                             .each(function () {
-                                WM.element(this).isolateScope().$destroy();
+                                var elIscope = WM.element(this).isolateScope();
+                                if (elIscope) {
+                                    elIscope.$destroy();
+                                }
                             });
                         //Remove only live-field so that overlay won't get overrided
                         element.find('.live-field').remove();
