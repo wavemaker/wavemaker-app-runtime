@@ -353,6 +353,33 @@ html, body {
   position: fixed;
 }
 
+//Popover styles
+.app-popover {
+  min-width: 50px;
+  min-height: 50px;
+  padding: 0;
+  .popover-content {
+    .width-height(100%, 100%);
+    overflow: auto;
+    padding: 0;
+    > div {
+      .width-height(100%, 100%);
+    }
+    .app-partial {
+      overflow: auto;
+    }
+  }
+
+  &.top,&.bottom{
+    &.bottom-right, &.top-right {
+      > .arrow {
+        left: auto !important;
+        right: 1em !important;
+      }
+    }
+  }
+}
+
 /********************************************************************************
 *********************************Form Elements classes***************************
 *********************************************************************************/
@@ -2670,14 +2697,14 @@ If the height and width are not specified the video takes the height of the post
     }
     .nv-axis {
       line{
-        stroke: rgba(198,198,198,0.2);
+        stroke: rgba(128,198,198,0.2);
       }
       path {
-        stroke: rgba(198,198,198,0.6);
+        stroke: rgba(128,198,198,0.6);
       }
     }
     &.nv-pie path {
-      stroke: rgba(198,198,198,0.6);
+      stroke: rgba(255,255,255,0.5);
     }
   }
   .app-spinner {

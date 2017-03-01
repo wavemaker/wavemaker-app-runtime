@@ -153,48 +153,16 @@ WM.module('wm.widgets.base', [])
                     'label': 'Top'
                 },
                 {
-                    'value': 'top-left',
-                    'label': 'Top Left'
-                },
-                {
-                    'value': 'top-right',
-                    'label': 'Top Right'
-                },
-                {
                     'value': 'bottom',
                     'label': 'Bottom'
-                },
-                {
-                    'value': 'bottom-left',
-                    'label': 'Bottom Left'
-                },
-                {
-                    'value': 'bottom-right',
-                    'label': 'Bottom Right'
                 },
                 {
                     'value': 'left',
                     'label': 'Left'
                 },
                 {
-                    'value': 'left-top',
-                    'label': 'Left Top'
-                },
-                {
-                    'value': 'left-bottom',
-                    'label': 'Left Bottom'
-                },
-                {
                     'value': 'right',
                     'label': 'Right'
-                },
-                {
-                    'value': 'right-top',
-                    'label': 'Right Top'
-                },
-                {
-                    'value': 'right-bottom',
-                    'label': 'Right Bottom'
                 }
             ],
             EVERYONE = "Everyone",
@@ -1610,7 +1578,7 @@ WM.module('wm.widgets.base', [])
                         "popoverheight" :  {"type": "string"},
                         "popoverarrow" :  {"type": "boolean", "value" : true},
                         "popoverautoclose": {"type": "boolean", "value" : true, "show": false},
-                        "interaction": {"type": "select-by-object", "options": [{'label': 'Click', 'value': 'click'}, {'label': 'Hover', 'value': 'hover'}, {'label': 'Click and Hover', 'value': 'default'}], value: "default"},
+                        "interaction": {"type": "select-by-object", "options": [{'label': 'Click', 'value': 'click'}, {'label': 'Hover', 'value': 'hover'}, {'label': 'Click and Hover', 'value': 'default'}], value: "click"},
                         "popoverplacement": {"type": "select-by-object", "options": popoverOptions, "value": "bottom"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
