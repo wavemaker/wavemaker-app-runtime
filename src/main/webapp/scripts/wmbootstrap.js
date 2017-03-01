@@ -185,6 +185,7 @@ Application
                     oldPage = $element.children().last();
                     $element.append(newPage);
                     if ($route.current.transition) {
+                        $route.current.transitionCompleted = false;
                         $$animateQueue.enabled(newPage, true);
                         $$animateQueue.enabled(oldPage, true);
                         oldPage.addClass($route.current.transition);
@@ -197,11 +198,13 @@ Application
                         $$animateQueue.push(oldPage, 'leave').then(function () {
                             removePage(oldPage);
                             oldPage = undefined;
+                            $route.current.transitionCompleted = true;
                             $rootScope.$emit('page-transition-end');
                         });
                     } else {
                         removePage(oldPage);
                         oldPage = undefined;
+                        $route.current.transitionCompleted = true;
                         $rootScope.$emit('page-transition-end');
                     }
                 }
