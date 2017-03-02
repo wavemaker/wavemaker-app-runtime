@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $tc.put('template/widget/richtexteditor.html',
             '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles role="input">' +
                 '<div text-angular ng-model="_model_" ta-disabled="readonly" placeholder="Enter text"></div>' +
-                '<div ng-bind-html="_model_" class="ta-preview" ng-if="showpreview"></div>' +
+                '<div ta-bind ng-model="_model_" class="ta-preview" ng-if="showpreview"></div>' +
                 '<input class="model-holder ng-hide" ng-disabled="disabled">' +
             '</div>'
             );
@@ -52,7 +52,8 @@ WM.module('wm.widgets.form')
                 notifyFor = {
                     'placeholder': true,
                     'showpreview': true
-                };
+                },
+                taApplyCustomRenderers;
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $taEl, key, nv) {
@@ -125,6 +126,10 @@ WM.module('wm.widgets.form')
 
                         ngModelCtrl = $el.children('[text-angular]').controller('ngModel');
                         ngModelCtrl.$viewChangeListeners.push(function () {
+                            if (!taApplyCustomRenderers) {
+                                taApplyCustomRenderers = $injector.get("taApplyCustomRenderers");
+                            }
+                            $is.htmlcontent = taApplyCustomRenderers($is.datavalue);
                             $is._onChange(new Event('change'));
                         });
 
@@ -181,6 +186,10 @@ WM.module('wm.widgets.form')
  * @param {string=} datavalue
  *                  This is the default value to  be displayed on rich-text-editor widget. <br>
  *                  Note that the display value is just what the user sees initially, and is not always the dataValue returned by the widget. <br>
+ *                  This is a bindable property.
+ * @param {string=} htmlcontent
+ *                  This is the output value of rich-text-editor widget. <br>
+ *                  This is the non-sanitized output of the widget. Includes iframe html content.<br>
  *                  This is a bindable property.
  * @param {boolean=} readonly
  *                   Selecting this checkbox property prevents the user from being able to change the data value of a widget. <br>

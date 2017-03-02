@@ -1629,6 +1629,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
                         "showpreview": {"type": "boolean", "value": false},
                         "placeholder": {"type": "string", "bindable": "in-bound"},
+                        "htmlcontent": {"type": "string", "bindable": "out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "scopedatavalue": {"type": "string"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
