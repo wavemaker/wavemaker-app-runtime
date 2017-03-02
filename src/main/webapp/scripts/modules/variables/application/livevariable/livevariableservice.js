@@ -716,6 +716,7 @@ wm.variables.services.$liveVariable = [
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         $rootScope.$emit('toggle-variable-state', variable.name, false);
+                        Utils.triggerFn(error);
                         return;
                     }
                     variable.canUpdate = false;
@@ -997,6 +998,7 @@ wm.variables.services.$liveVariable = [
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
                         $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
+                        Utils.triggerFn(error);
                         return;
                     }
                     inputFields = _.isObject(output) ? output : clonedFields;

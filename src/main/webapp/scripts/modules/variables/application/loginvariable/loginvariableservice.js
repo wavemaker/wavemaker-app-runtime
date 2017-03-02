@@ -77,6 +77,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                 if (_.isObject(output)) {
                     params = output;
                 } else if (output === false) {
+                    Utils.triggerFn(error);
                     return;
                 }
                 $rootScope.$emit('toggle-variable-state', variable.name, true);

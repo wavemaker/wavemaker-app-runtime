@@ -469,6 +469,7 @@ wm.variables.services.$servicevariable = ['Variables',
             if (CONSTANTS.isRunMode) {
                 output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, inputFields);
                 if (output === false) {
+                    Utils.triggerFn(error);
                     return;
                 }
                 if (_.isObject(output)) {
