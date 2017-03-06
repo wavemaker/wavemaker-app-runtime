@@ -304,7 +304,7 @@ WM.module('wm.widgets.form')
                 }
 
                 scope.onSelect = function (args) {
-                    var itemLink   = args.$item[menuScope.itemlink || 'link'],
+                    var itemLink   = WM.isObject(args.$item) ? args.$item[menuScope.itemlink || 'link'] : undefined,
                         itemAction = args.$item[menuScope.itemaction || 'action'],
                         linkTarget = menuScope.linktarget || '_self';
 
