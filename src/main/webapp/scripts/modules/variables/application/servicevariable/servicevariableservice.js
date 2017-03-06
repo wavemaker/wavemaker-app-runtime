@@ -164,7 +164,12 @@ wm.variables.services.$servicevariable = ['Variables',
             _.forEach(params, function (param) {
                 paramValue = inputData[param.name];
                 if (WM.isDefined(paramValue) && (paramValue !== '')) {
-                    requestBody[param.name] = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
+                    paramValue = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
+                    //Construct ',' separated string if param is not array type but value is an array
+                    if (WM.isArray(paramValue) && Utils.extractType(param.type) !== 'list') {
+                        paramValue = _.join(paramValue, ',');
+                    }
+                    requestBody[param.name] = paramValue;
                 } else if (param.required) {
                     missingParams.push(param.name || param.id);
                 }
@@ -229,6 +234,10 @@ wm.variables.services.$servicevariable = ['Variables',
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
+                    }
+                    //Construct ',' separated string if param is not array type but value is an array
+                    if (WM.isArray(paramValue) && Utils.extractType(param.type) !== 'list') {
+                        paramValue = _.join(paramValue, ',');
                     }
                     switch (param.parameterType.toUpperCase()) {
                     case 'QUERY':
