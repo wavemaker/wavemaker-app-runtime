@@ -20,6 +20,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
 /**
@@ -27,11 +28,10 @@ import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
  */
 public class XssStringDeserializer extends JsonDeserializer<String> {
 
-
     @Override
     public String deserialize(JsonParser jp, DeserializationContext context) throws IOException {
-        String data = jp.getText();
+        String value = StringDeserializer.instance.deserialize(jp, context);
         XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
-        return xssSecurityHandler.sanitizeRequestData(data);
+        return xssSecurityHandler.sanitizeRequestData(value);
     }
 }
