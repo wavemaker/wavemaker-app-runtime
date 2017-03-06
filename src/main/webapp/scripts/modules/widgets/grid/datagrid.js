@@ -1370,7 +1370,7 @@ $.widget('wm.datagrid', {
             dataValue,
             $elScope;
         text = this._getValue($ie, fields);
-        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
+        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
             $elScope = $el.children().isolateScope();
             if ($elScope) {
                 dataValue = $elScope.datavalue;
