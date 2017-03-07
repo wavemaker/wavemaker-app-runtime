@@ -334,8 +334,9 @@ public class QueryHelper {
     public static Query createNewHqlQueryWithSorted(Session session, Query query, Class<?> responseType, Sort sort) {
         Query newQuery = query;
         if (sort != null) {
+            final Sort actualSort = convertToNativeSort(responseType, sort);
             final String arrangeForSortQuery = query.getQueryString().concat(" ").concat(HQLQueryUtils
-                    .buildOrderByClause(sort));
+                    .buildOrderByClause(actualSort));
             newQuery = session.createQuery(arrangeForSortQuery);
         }
         return newQuery;
