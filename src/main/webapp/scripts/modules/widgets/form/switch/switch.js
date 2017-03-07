@@ -56,7 +56,8 @@ WM.module('wm.widgets.form')
 
             function setSelectedValue(scope) {
                 var options = scope.options;
-                if (WM.isDefined(scope._model_)) {
+                //If _model_ is defined and is not empty string, then set selected index (_model_ can be 0)
+                if (WM.isDefined(scope._model_) && _.trim(scope._model_).length) {
                     options.some(function (opt, index) {
 
                         if (_.isEqual(scope._model_, opt)
