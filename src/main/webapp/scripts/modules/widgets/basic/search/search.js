@@ -179,12 +179,6 @@ WM.module('wm.widgets.basic')
                     return;
                 }
 
-                if (WM.isObject($is.datavalue)) {
-                    // convert display-label-value to string, as ui.typeahead expects only strings
-                    $is.datavalue.wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displaylabel'});
-                    $is.datavalue.wmImgSrc       = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displayimagesrc'});
-                }
-
                 // set the queryModel by checking the matched item based on formattedDataSet.
                 $is.queryModel = _.find($is.formattedDataSet, function (item) {
                     if ($is.datafield === 'All Fields' || $is.datafield === '') {
@@ -649,10 +643,14 @@ WM.module('wm.widgets.basic')
                 typeAheadInput.controller('ngModel').$parsers[0]($is.query);
             }
             //Function to return the display label of the item
-            function _getDisplayLabel(item) {
+            function _getDisplayLabel($is, item) {
                 if (_.has(item, 'wmDisplayLabel')) {
                     return item.wmDisplayLabel;
                 }
+                if ($is.displaylabel) {
+                    return WidgetUtilService.getEvaluatedData($is, item, {expressionName: 'displaylabel'});
+                }
+
                 return item;
             }
             // returns the list of options which will be given to search typeahead
@@ -795,6 +793,10 @@ WM.module('wm.widgets.basic')
                             // add the selected object to the event.data and send to the user
                             $event.data = {'item': $item, 'model': $model, 'label': $label, 'query': $label};
 
+                            delete $item.wmImgSrc;
+                            delete $item.wmImgWidth;
+                            delete $item.wmDisplayLabel;
+
                             // set selected item on widget's exposed property
                             $is.datavalue = ($is.datafield && $is.datafield !== 'All Fields') ? ($item  && _.get($item, $is.datafield)) : $item;
                             $is.queryModel = $item;
@@ -830,7 +832,7 @@ WM.module('wm.widgets.basic')
 
                         // returns the list of options which will be given to search typeahead
                         $is._getItems = _getItems.bind(undefined, $is, element);
-                        $is._getDisplayLabel = _getDisplayLabel.bind(undefined);
+                        $is._getDisplayLabel = _getDisplayLabel.bind(undefined, $is);
 
                         if (CONSTANTS.isRunMode) {
                             // keyup event to enable/ disable close icon of the search input.
