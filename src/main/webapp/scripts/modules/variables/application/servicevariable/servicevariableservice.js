@@ -166,7 +166,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (WM.isDefined(paramValue) && (paramValue !== '')) {
                     paramValue = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
                     //Construct ',' separated string if param is not array type but value is an array
-                    if (WM.isArray(paramValue) && Utils.extractType(param.type) !== 'list') {
+                    if (WM.isArray(paramValue) && _.toLower(Utils.extractType(param.type)) === 'string') {
                         paramValue = _.join(paramValue, ',');
                     }
                     requestBody[param.name] = paramValue;
@@ -236,7 +236,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         paramValue = Utils.formatDate(paramValue, param.type);
                     }
                     //Construct ',' separated string if param is not array type but value is an array
-                    if (WM.isArray(paramValue) && Utils.extractType(param.type) !== 'list') {
+                    if (WM.isArray(paramValue) && _.toLower(Utils.extractType(param.type)) === 'string' && variable.serviceType === 'DataService') {
                         paramValue = _.join(paramValue, ',');
                     }
                     switch (param.parameterType.toUpperCase()) {
