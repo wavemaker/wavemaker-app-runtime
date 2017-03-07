@@ -90,7 +90,6 @@ wm.plugins.offline.run([
     'LocalDBService',
     'OfflineFileUploadService',
     'Utils',
-    'wmSpinner',
     'WebService',
     function ($cordovaNetwork,
               $rootScope,
@@ -100,7 +99,6 @@ wm.plugins.offline.run([
               LocalDBService,
               OfflineFileUploadService,
               Utils,
-              wmSpinner,
               WebService) {
         'use strict';
         var initializationDone;
@@ -194,9 +192,6 @@ wm.plugins.offline.run([
                     addOfflineNamedQuerySupport();
                     addOfflineFileUploadSupport();
                     ChangeLogService.registerCallback({
-                        'preFlush' : function () {
-                            wmSpinner.show('');
-                        },
                         'postFlush' : function (stats) {
                             if (stats.total > 0) {
                                 LocalDBManager.close().finally(function () {
@@ -204,9 +199,6 @@ wm.plugins.offline.run([
                                 });
                             }
                         }
-                    });
-                    $rootScope.$on('on-App-variables-ready', function () {
-                        LocalDBManager.pullData();
                     });
                 });
         }

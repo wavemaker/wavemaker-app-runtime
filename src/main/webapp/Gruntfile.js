@@ -654,6 +654,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/deviceMediaService.js',
                         '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js',
                         '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBManager.js',
+                        '<%= config.scripts %>/modules/mobile/plugins/database/services/localKeyValueService.js',
                         '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBStoreFactory.js',
                         '<%= config.scripts %>/modules/mobile/plugins/database/services/localDBService.js',
                         '<%= config.scripts %>/modules/mobile/plugins/offline/config.js',

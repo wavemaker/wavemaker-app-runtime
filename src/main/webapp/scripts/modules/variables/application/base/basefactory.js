@@ -148,13 +148,15 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"type": "list", "hide": true, "options": [], "required": true},
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "widgettype": "typeahead", "hide": true},
+                    "spinnerMessage": {"type": "string", "hide": true},
                     /*events*/
                     "onSuccess": {"type": "event", "options": variableEventOptions},
                     "onError": {"type": "event", "options": variableEventOptions},
                     "onProgress": {"type": "event", "options": variableEventOptions, "hide": true},
                     "onOnline": {"type": "event", "options": variableEventOptions, "hide": true},
                     "onOffline": {"type": "event", "options": variableEventOptions, "hide": true},
-                    "onBeforePush": {"type": "event", "options": variableEventOptions, "hide": true}
+                    "onBefore": {"type": "event", "options": variableEventOptions, "hide": true}
                 },
                 "wm.WebSocketVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},

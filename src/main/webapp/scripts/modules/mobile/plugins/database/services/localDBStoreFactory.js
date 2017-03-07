@@ -124,7 +124,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             if (sort) {
                 return ' ORDER BY ' + _.map(sort.split(','), function (field) {
                     var splits =  _.trim(field).split(' ');
-                    splits[0] = escapeName(store.fieldToColumnMapping[splits[0]]);
+                    splits[0] = escapeName(store.schema.name) + '.' + escapeName(store.fieldToColumnMapping[splits[0]]);
                     return splits.join(' ');
                 }).join(',');
             }
