@@ -22,9 +22,10 @@ wm.plugins.offline.services.ChangeLogService = [
     'Utils',
     '$log',
     '$injector',
+    'LocalKeyValueService',
     'SecurityService',
 
-    function (LocalDBManager, $q, Utils, $log, $injector, SecurityService) {
+    function (LocalDBManager, $q, Utils, $log, $injector, LocalKeyValueService, SecurityService) {
         'use strict';
         var contextKey = 'changeLogService.flushContext',
             flushContext,
@@ -195,28 +196,13 @@ wm.plugins.offline.services.ChangeLogService = [
             };
         }
 
-        function prepareForFlush() {
-            var filterCriteria = [{
-                'attributeName' : 'key',
-                'attributeValue' : contextKey,
-                'attributeType' : 'STRING',
-                'filterCondition' : 'EQUALS'
-            }];
-            return LocalDBManager.getStore('wavemaker', 'key-value').filter(filterCriteria).then(function (result) {
-                var id,
-                    context = {};
-                if (result && result.length > 0) {
-                    id = result[0].id;
-                    context = JSON.parse(result[0].value) || {};
-                }
+        function createContext() {
+            return LocalKeyValueService.get(contextKey).then(function (context) {
+                context = context || {};
                 return {
                     'clear' : function () {
-                        var defer = $q.defer();
-                        if (id > 0) {
-                            return LocalDBManager.getStore('wavemaker', 'key-value').delete(id);
-                        }
-                        defer.resolve();
-                        return defer.promise;
+                        context = {};
+                        return LocalKeyValueService.remove(contextKey);
                     },
                     'get' : function (key) {
                         var value = context[key];
@@ -227,15 +213,7 @@ wm.plugins.offline.services.ChangeLogService = [
                         return value;
                     },
                     'save' : function () {
-                        return LocalDBManager.getStore('wavemaker', 'key-value').save({
-                            'id' : id,
-                            'key' : contextKey,
-                            'value' : JSON.stringify(context)
-                        }).then(function (insertId) {
-                            if (insertId) {
-                                id = insertId;
-                            }
-                        });
+                        return LocalKeyValueService.put(contextKey, context);
                     }
                 };
             });
@@ -253,6 +231,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 stats.success = 0;
                 stats.error = 0;
                 stats.completed = 0;
+                stats.inProgress = true;
                 $log.debug('Starting flush');
                 return getStore().count([{
                     'attributeName' : 'hasError',
@@ -266,6 +245,7 @@ wm.plugins.offline.services.ChangeLogService = [
             'postFlush': function (stats, flushContext) {
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
                                 stats.success, stats.error, stats.completed, stats.total);
+                stats.inProgress = false;
             },
             'preCall': function (change) {
                 $log.debug("%i. Invoking call %o", (1 + stats.completed), change);
@@ -405,7 +385,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 onComplete = onFlushComplete(onComplete);
                 flushInProgress = true;
                 SecurityService.onUserLogin()
-                    .then(prepareForFlush)
+                    .then(createContext)
                     .then(function (context) {
                         flushContext = context;
                         return executeDeferChain(_.map(callbacks, "preFlush"), [flushContext]);

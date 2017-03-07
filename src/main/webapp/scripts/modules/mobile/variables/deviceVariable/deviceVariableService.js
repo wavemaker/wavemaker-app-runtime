@@ -6,42 +6,37 @@
  * @ngdoc service
  * @name wm.variables.DeviceVariableService
  * @requires $rootScope
- * @requires Varibales
+ * @requires Variables
  * @requires Utils
  * @requires BaseVariablePropertyFactory
  * @requires CONSTANTS
  * @description
  * The 'DeviceVariableService' provides methods to work with Mobile API.
  */
-wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils', 'CONSTANTS',
-    function ($rootScope, Variables, Utils, CONSTANTS) {
+wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils', 'CONSTANTS', 'BaseVariablePropertyFactory',
+    function ($rootScope, Variables, Utils, CONSTANTS, BaseVariablePropertyFactory) {
         "use strict";
-        var initiateCallback = Variables.initiateCallback,
-            availableServices = {};
-
-        function getCallBackScope(variable, options) {
-            /* get the callback scope for the variable based on its owner */
-            if (variable.owner === "App") {
-                return $rootScope || {};
+        var availableServices = {},
+            propertyGroups = BaseVariablePropertyFactory.getPropertyGroups();
+        function addPropertyToGroup(propertyDef) {
+            if (propertyDef.group && propertyDef.subGroup) {
+                var targetSubGroup = _.find(propertyGroups, {"name": propertyDef.subGroup, "parent": propertyDef.group});
+                if (targetSubGroup && _.findIndex(targetSubGroup.properties, propertyDef.target) < 0) {
+                    targetSubGroup.properties.push(propertyDef.target);
+                }
             }
-            if (variable._prefabName) {
-                return options.scope || {};
-            }
-            return (options && options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
         }
-
         function invoke(options, success, error) {
             var variable = this,
                 operation = availableServices[this.service][this.operation],
-                callBackScope = getCallBackScope(variable, options),
                 successCb = function (data) {
                     variable.dataSet = data;
                     Utils.triggerFn(success);
-                    initiateCallback('onSuccess', variable, data);
+                    Variables.initiateCallback('onSuccess', variable, data);
                 },
                 errorCb = function () {
                     Utils.triggerFn(error);
-                    initiateCallback('onError', variable, callBackScope);
+                    Variables.initiateCallback('onError', variable);
                 };
             if (operation && CONSTANTS.hasCordova) {
                 operation.invoke(this, options, successCb, errorCb);
@@ -73,8 +68,9 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
             *   }
             */
             addOperation : function (serviceName, operationName, serviceInfo) {
-                var service = availableServices[serviceName] =  (availableServices[serviceName] || {});
-                service[operationName]  = serviceInfo;
+                availableServices[serviceName] =  (availableServices[serviceName] || {});
+                availableServices[serviceName][operationName]  = serviceInfo;
+                _.forEach(serviceInfo.properties, addPropertyToGroup);
             },
             listServices : function () {
                 return _.sortBy(_.keys(availableServices));
@@ -86,9 +82,8 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 }
                 return operation;
             },
-            initiateCallback : function (eventName, variable, options, eventData) {
-                var callBackScope = getCallBackScope(variable, options);
-                Variables.initiateCallback(eventName, variable, callBackScope, eventData);
+            initiateCallback : function (eventName, variable, eventData) {
+                Variables.initiateCallback(eventName, variable, eventData);
             },
             listAllOperations : function (serviceName) {
                 return _.sortBy(_.keys(availableServices[serviceName]));
