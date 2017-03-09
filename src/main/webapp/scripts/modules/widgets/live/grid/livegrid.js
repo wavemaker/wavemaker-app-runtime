@@ -195,10 +195,10 @@ WM.module('wm.widgets.live')
                                         if (newForm) {
                                             /*if new form is to be shown after insert, skip the highlight of the row*/
                                             scope.grid.gridfirstrowselect = false;
-                                            scope.grid.initiateSelectItem('last', response, true);
+                                            scope.grid.initiateSelectItem(scope.grid.getNavigationTargetBySortInfo(), response, true);
                                         } else {
                                             /*The new row would always be inserted at the end of all existing records. Hence navigate to the last page and highlight the inserted row.*/
-                                            scope.grid.initiateSelectItem('last', response);
+                                            scope.grid.initiateSelectItem(scope.grid.getNavigationTargetBySortInfo(), response);
                                         }
                                         break;
                                     case 'update':

@@ -1313,6 +1313,10 @@ WM.module('wm.widgets.grid')
                     }
                 });
             }
+            /* Navigate the target to first, or last page depending on the sort information*/
+            function getNavigationTargetBySortInfo() {
+                return $is.sortInfo && $is.sortInfo.direction === 'desc' && _.includes($is.primaryKey,$is.sortInfo.field) ? 'first' : 'last';
+            }
             function insertRecord(options) {
                 var variable     = $is.variable,
                     variableType = $is.variable && $is.variable.category,
@@ -1334,7 +1338,7 @@ WM.module('wm.widgets.grid')
                             }
                             $is.toggleMessage(true, 'success', $is.insertmessage);
                             if (variableType === 'wm.LiveVariable') {
-                                $is.initiateSelectItem('last', response, undefined, $is.isBoundToStaticVariable, options.callBack);
+                                $is.initiateSelectItem($is.getNavigationTargetBySortInfo(), response, undefined, $is.isBoundToStaticVariable, options.callBack);
                                 $is.updateVariable(response, options.callBack);
                             }
                             Utils.triggerFn(options.success, response);
@@ -2264,6 +2268,7 @@ WM.module('wm.widgets.grid')
             $is.prepareFieldDefs             = prepareFieldDefs;
             $is.setDataGridOption            = setDataGridOption;
             $is.initiateSelectItem           = initiateSelectItem;
+            $is.getNavigationTargetBySortInfo= getNavigationTargetBySortInfo;
             $is.selectItem                   = selectItem;
             $is.highlightRow                 = $is.selectItem;
             $is.deselectItem                 = deselectItem;
