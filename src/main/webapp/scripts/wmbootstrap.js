@@ -321,6 +321,8 @@ Application
                             config.authenticated = false;
                             sessionTimeoutConfig = config.login.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
+                            Utils.triggerFn($rs.onSessionTimeout);
+                            $rs.$emit('on-sessionTimeout');
                             if (sessionTimeoutMethod === LOGIN_METHOD.DIALOG) {
                                 if (page) {
                                     BaseService.pushToErrorCallStack(null, function () {

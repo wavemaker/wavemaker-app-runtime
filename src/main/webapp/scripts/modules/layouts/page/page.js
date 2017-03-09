@@ -323,7 +323,10 @@ WM.module('wm.layouts.page')
                         if (CONSTANTS.isRunMode) {
                             // register session timeout handler
                             handlers.push($rs.$on('on-sessionTimeout', function () {
-                                Utils.triggerFn($s.onSessionTimeout);
+                                //check if 'onSessionTimeout' event is present in current partial page script
+                                if ($s.hasOwnProperty('onSessionTimeout')) {
+                                    Utils.triggerFn($s.onSessionTimeout);
+                                }
                             }));
 
                             /**
