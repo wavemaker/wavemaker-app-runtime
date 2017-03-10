@@ -961,6 +961,32 @@ wm.plugins.security.services.SecurityService = [
                     Utils.triggerFn(successCallback, response);
                 }, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#generateConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to re-generate provider xml file
+             *
+             * @param {object} params object containing parameters for the request
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            generateConfig: function (params, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'generateConfig',
+                    urlParams: {
+                        projectID: params.projectID
+                    }
+                }, function (response) {
+                    Utils.triggerFn(successCallback, response);
+                }, failureCallback);
+            },
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#setRoles
