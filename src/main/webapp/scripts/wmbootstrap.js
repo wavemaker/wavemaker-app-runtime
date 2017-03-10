@@ -1037,7 +1037,7 @@ Application
                     }
                 });
 
-                if (window.top !== window.self) {
+                if (window.top !== window.self && !window.name) {
                     window.name = CONSTANTS.IFRAME_WINDOW_NAME;
                 }
             }
