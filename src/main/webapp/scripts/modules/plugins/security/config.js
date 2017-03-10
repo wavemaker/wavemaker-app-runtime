@@ -120,6 +120,10 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/rolesconfig",
             method: "POST"
         },
+        generateConfig: {
+            url: "services/projects/:projectID/securityservice/generateconfig",
+            method: "POST"
+        },
         appLogin: {
             url: "j_spring_security_check",
             method: "POST",
