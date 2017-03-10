@@ -92,7 +92,7 @@ WM.module('wm.widgets.advanced')
                                 }
 
                                 if (rememberMeElement.length) {
-                                    $rememberMe = rememberMeElement.val();
+                                    $rememberMe = rememberMeElement.scope().datavalue;
                                 }
 
                                 // prevent the actions when the userName/Pwd fields are not valid.
