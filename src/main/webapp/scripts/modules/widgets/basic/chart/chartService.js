@@ -702,14 +702,14 @@ WM.module('wm.widgets.basic')
                         .showYAxis(propertyValueMap.showyaxis);
 
                     //Setting the labels if they are specified explicitly or taking the axiskeys chosen
-                    xaxislabel = propertyValueMap.xaxislabel || scope.xaxisdatakey || 'x caption';
-                    yaxislabel = propertyValueMap.yaxislabel || scope.yaxisdatakey || 'y caption';
+                    xaxislabel = propertyValueMap.xaxislabel || Utils.prettifyLabels(scope.xaxisdatakey) || 'x caption';
+                    yaxislabel = propertyValueMap.yaxislabel || Utils.prettifyLabels(scope.yaxisdatakey) || 'y caption';
                     //Adding the units to the captions if they are specified
                     xaxislabel += propertyValueMap.xunits ? '(' + propertyValueMap.xunits + ')' : '';
                     yaxislabel += propertyValueMap.yunits ? '(' + propertyValueMap.yunits + ')' : '';
 
                     chart.xAxis
-                        .axisLabel(Utils.prettifyLabels(xaxislabel))
+                        .axisLabel(xaxislabel)
                         .axisLabelDistance(propertyValueMap.xaxislabeldistance)
                         .staggerLabels(propertyValueMap.staggerlabels);
 
@@ -739,7 +739,7 @@ WM.module('wm.widgets.basic')
                         }
                     }
                     chart.yAxis
-                        .axisLabel(Utils.prettifyLabels(yaxislabel))
+                        .axisLabel(yaxislabel)
                         .axisLabelDistance(propertyValueMap.yaxislabeldistance)
                         .staggerLabels(propertyValueMap.staggerlabels)
                         .tickFormat(function (d) {
@@ -760,11 +760,6 @@ WM.module('wm.widgets.basic')
                     colors = propertyValueMap.customcolors;
                 }
 
-                //Converting strings to numbers
-                propertyValueMap.offsettop    = Number(propertyValueMap.offsettop);
-                propertyValueMap.offsetright  = Number(propertyValueMap.offsetright);
-                propertyValueMap.offsetbottom = Number(propertyValueMap.offsetbottom);
-                propertyValueMap.offsetleft   = Number(propertyValueMap.offsetleft);
                 showLegend = isShowLegend(propertyValueMap.showlegend);
                 chart.showLegend(showLegend)
                     .margin({top: propertyValueMap.offsettop, right: propertyValueMap.offsetright, bottom: propertyValueMap.offsetbottom, left: propertyValueMap.offsetleft})
