@@ -1910,24 +1910,6 @@ WM.module('wm.widgets.live')
 
             /**
              * @ngdoc function
-             * @name wm.widgets.live.closeDialog
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * This function closes the design dialog that form is wrapped
-             *
-             * @param {ele} element whose parent is dialog
-             */
-            function closeDialog(ele) {
-                var dialogEle;
-                dialogEle = ele.closest('.app-dialog');
-                if (dialogEle.length) {
-                    DialogService.hideDialog(dialogEle.attr('dialogid'));
-                }
-            }
-            /**
-             * @ngdoc function
              * @name wm.widgets.live.fetchRelatedFieldData
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -2016,7 +1998,6 @@ WM.module('wm.widgets.live')
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
             this.setCaptionSize             = setCaptionSize;
-            this.closeDialog                = closeDialog;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
             this.getEditModeWidget          = getEditModeWidget;
         }
