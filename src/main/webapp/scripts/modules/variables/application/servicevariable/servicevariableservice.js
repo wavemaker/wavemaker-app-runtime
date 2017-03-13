@@ -184,9 +184,10 @@ wm.variables.services.$servicevariable = ['Variables',
          * url to invoke based on the type of the parameter
          * @param operationInfo
          * @param variable
+         * @param inputFields to be considered for body type query/procedure variables
          * @returns {*}
          */
-        function constructRestRequestParams(operationInfo, variable) {
+        function constructRestRequestParams(operationInfo, variable, inputFields) {
             variable = variable || {};
             var queryParams = '',
                 directPath = operationInfo.directPath || '',
@@ -273,7 +274,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     case 'BODY':
                         //For post/put query methods wrap the input
                         if (isBodyTypeQueryProcedure) {
-                            bodyInfo = processRequestBody(variable.dataBinding, _.get(operationInfo, ['definitions', param.type]));
+                            bodyInfo = processRequestBody(inputFields, _.get(operationInfo, ['definitions', param.type]));
                             requestBody = bodyInfo.requestBody;
                             requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
                         } else {
@@ -505,7 +506,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                     };
                 } else {
-                    params = constructRestRequestParams(methodInfo, variable);
+                    params = constructRestRequestParams(methodInfo, variable, inputFields);
                 }
                 if (params.error && params.error.message) {
                     processErrorResponse(variable, params.error.message, error, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);
