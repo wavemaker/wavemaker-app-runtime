@@ -119,7 +119,6 @@ WM.module('wm.layouts.containers')
 
             return {
                 'scope' : {
-                    'onSelect': '&',
                     'menutype': '&',
                     'position': '&'
                 },
