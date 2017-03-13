@@ -45,7 +45,8 @@ wm.variables.services.LogoutVariableService = ['Variables',
                     logoutErrorMessage = "No authenticated user to logout.",
                     handleError,
                     redirectPage,
-                    appManager;
+                    appManager,
+                    output;
 
                 handleError = function (msg) {
                     /* if in RUN mode, trigger error events associated with the variable */
@@ -56,39 +57,43 @@ wm.variables.services.LogoutVariableService = ['Variables',
                 };
 
                 $rootScope.$emit('toggle-variable-state', variable.name, true);
+                // EVENT: ON_BEFORE_UPDATE
+                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable);
+                if (output === false) {
+                    Utils.triggerFn(error);
+                    return;
+                }
                 SecurityService.isAuthenticated(function (isAuthenticated) {
                     $rootScope.$emit('toggle-variable-state', variable.name, false);
                     if (isAuthenticated) {
                         variable.promise = SecurityService.appLogout(function (redirectUrl) {
-                            redirectUrl = Utils.getValidJSON(redirectUrl);
+                            // Reset Security Config.
+                            $rootScope.isUserAuthenticated = false;
+                            appManager = Utils.getService("AppManager");
+                            appManager.resetSecurityConfig().
+                            then(function () {
+                                // EVENT: ON_RESULT
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, redirectUrl);
+                                // EVENT: ON_SUCCESS
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, redirectUrl);
+                            });
+
                             //In case of CAS response will be the redirectUrl
+                            redirectUrl = Utils.getValidJSON(redirectUrl);
                             if (redirectUrl) {
                                 $window.location.href = redirectUrl.result;
-                            } else {
-                                if (variable.useDefaultSuccessHandler) {
-                                    redirectPage = variable.redirectTo;
-                                    /* backward compatibility (index.html/login.html may be present in older projects) */
-                                    if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
-                                        redirectPage = "";
-                                    }
-                                    $location.url(redirectPage);
-                                    $timeout(function () {
-                                        // reloading in timeout as, firefox and safari are not updating the url before reload(WMS-7887)
-                                        $window.location.reload();
-                                    });
-                                } else if (CONSTANTS.isRunMode) {
-                                    appManager = Utils.getService("AppManager");
-                                    appManager.resetSecurityConfig().
-                                        then(function () {
-                                            WM.forEach(variableEvents, function (event) {
-                                                if (event !== "onError") {
-                                                    initiateCallback(event, variable);
-                                                }
-                                            });
-                                        });
+                            } else if (variable.useDefaultSuccessHandler) {
+                                redirectPage = variable.redirectTo;
+                                /* backward compatibility (index.html/login.html may be present in older projects) */
+                                if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
+                                    redirectPage = "";
                                 }
+                                $location.url(redirectPage);
+                                $timeout(function () {
+                                    // reloading in timeout as, firefox and safari are not updating the url before reload(WMS-7887)
+                                    $window.location.reload();
+                                });
                             }
-                            $rootScope.isUserAuthenticated = false;
                             Utils.triggerFn(success);
                         }, handleError);
                     } else {
