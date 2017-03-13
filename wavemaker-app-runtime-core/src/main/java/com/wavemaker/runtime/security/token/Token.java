@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Token implements Serializable{
 
-    @JsonProperty("wm_auth_token")
+    @JsonProperty("WM_AUTH_TOKEN")
     private String wmAuthToken;
 
     public Token(final String wmAuthToken) {
