@@ -23,10 +23,7 @@ WM.module('wm.layouts.containers')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base']);
         return {
             'restrict' : 'E',
-            'scope'    : {
-                'onBeforesegmentchange' : '&',
-                'onSegmentchange' : '&'
-            },
+            'scope'    : {},
             'replace' : 'true',
             'transclude': true,
             'template' : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentedcontrol.html'),
