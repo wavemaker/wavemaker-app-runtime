@@ -305,7 +305,6 @@ WM.module('wm.layouts.containers')
                             toggleMessage(scope, scope.postmessage, 'success');
                             onResult(scope, data, 'success', event);
                             Utils.triggerFn(scope.onSubmit, params);
-                            LiveWidgetUtils.closeDialog(element);
                         }, function (errMsg) {
                             template = scope.errormessage || errMsg;
                             toggleMessage(scope, template, 'error');
@@ -318,12 +317,14 @@ WM.module('wm.layouts.containers')
                             $rootScope.$emit('invoke-service', formVariable.name, {scope: scope});
                         });
                         Utils.triggerFn(scope.onSubmit, params);
-                        LiveWidgetUtils.closeDialog(element);
+                        onResult(scope, {}, 'success', event);
                     }
                 } else {
                     Utils.triggerFn(scope.onSubmit, params);
-                    LiveWidgetUtils.closeDialog(element);
+                    onResult(scope, {}, 'success', event);
                 }
+            } else {
+                onResult(scope, {}, 'success', event);
             }
         }
         function bindEvents(scope, element) {
