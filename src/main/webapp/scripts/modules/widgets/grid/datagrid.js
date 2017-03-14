@@ -593,13 +593,13 @@ $.widget('wm.datagrid', {
             formName,
             checkedTmpl,
             placeholder   = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
-            dataValue     = (WM.isDefined(cellText) && cellText !== null) ? 'datavalue="' + cellText + '"' : '',
+            dataValue     = (WM.isDefined(cellText) && cellText !== null) ? cellText : undefined,
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
             disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned') ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
-            properties    = disabledTl + dataFieldName + eventTemplate + dataValue + required,
+            properties    = disabledTl + dataFieldName + eventTemplate + required,
             index         = colDef.index;
         switch (colDef.editWidgetType) {
         case 'select':
@@ -647,6 +647,10 @@ $.widget('wm.datagrid', {
         default:
             template = '<wm-text ' + properties + ' placeholder="' + placeholder + '"></wm-text>';
             break;
+        }
+        if (WM.isDefined(dataValue)) {
+            template = $(template);
+            template.attr('datavalue', dataValue);
         }
         $el.addClass(colDef.editWidgetType + '-widget');
         return this.options.getCompiledTemplate(template, this.preparedData[rowId] || {}, colDef);
