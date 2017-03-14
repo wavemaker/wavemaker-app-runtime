@@ -16,6 +16,7 @@ wm.plugins.database.services.LocalDBManager = [
     'BaseService',
     'DatabaseService',
     'DeviceFileService',
+    'LocalKeyValueService',
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
     'SecurityService',
@@ -29,6 +30,7 @@ wm.plugins.database.services.LocalDBManager = [
               BaseService,
               DatabaseService,
               DeviceFileService,
+              LocalKeyValueService,
               LocalDBStoreFactory,
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
               SecurityService,
@@ -42,42 +44,44 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectoryName,
             databases,
             connectivityChecker,
-            systemProperties = {
-                'USER_ID' : {
-                    'name' : 'USER_ID',
-                    'value' : function () {
-                        var defer = $q.defer();
-                        SecurityService.getUserId(defer.resolve, defer.reject);
-                        return defer.promise;
-                    }
-                },
-                'USER_NAME' : {
-                    'name' : 'USER_NAME',
-                    'value' : function () {
-                        var defer = $q.defer();
-                        SecurityService.getUserName(defer.resolve, defer.reject);
-                        return defer.promise;
-                    }
-                },
-                'DATE_TIME' : {
-                    'name' : 'DATE_TIME',
-                    'value' : function () {
-                        return moment().format('YYYY-MM-DDThh:mm:ss');
-                    }
-                },
-                'DATE' : {
-                    'name' : 'CURRENT_DATE',
-                    'value' : function () {
-                        return moment().format('YYYY-MM-DD');
-                    }
-                },
-                'TIME' : {
-                    'name' : 'TIME',
-                    'value' : function () {
-                        return moment().format('hh:mm:ss');
-                    }
+            lastPullTimestampKey = 'localDBManager.lastPullTimestamp',
+            systemProperties;
+        systemProperties = {
+            'USER_ID' : {
+                'name' : 'USER_ID',
+                'value' : function () {
+                    var defer = $q.defer();
+                    SecurityService.getUserId(defer.resolve, defer.reject);
+                    return defer.promise;
                 }
-            };
+            },
+            'USER_NAME' : {
+                'name' : 'USER_NAME',
+                'value' : function () {
+                    var defer = $q.defer();
+                    SecurityService.getUserName(defer.resolve, defer.reject);
+                    return defer.promise;
+                }
+            },
+            'DATE_TIME' : {
+                'name' : 'DATE_TIME',
+                'value' : function () {
+                    return moment().format('YYYY-MM-DDThh:mm:ss');
+                }
+            },
+            'DATE' : {
+                'name' : 'CURRENT_DATE',
+                'value' : function () {
+                    return moment().format('YYYY-MM-DD');
+                }
+            },
+            'TIME' : {
+                'name' : 'TIME',
+                'value' : function () {
+                    return moment().format('hh:mm:ss');
+                }
+            }
+        };
         if (cordova) {
             if (Utils.isIOS()) {
                 dbInstallDirectoryName = 'LocalDatabase';
@@ -388,31 +392,58 @@ wm.plugins.database.services.LocalDBManager = [
          * Clears and pulls data (other than 'BUNDLED') from server using the configured rules in offline configuration.
          * Before clearing data, it is checked whether connection can be made to server.
          *
+         * @param {boolean} clear if true, then data (other than 'BUNDLED') in the database will be deleted.
          * @returns {object} a promise.
          */
-        this.pullData = function () {
-            return SecurityService.onUserLogin()
+        this.pullData = function (clear) {
+            var defer = $q.defer(),
+                data = {
+                    'tasksCompleted' : 0,
+                    'tasksTotal' : 0,
+                    'inProgress' : true
+                },
+                pullStartTimestamp;
+            SecurityService.onUserLogin()
                 .then(canConnectToServer)
                 .then(function () {
-                    // clears all data other than BUNDLED data
-                    var promises = [];
-                    iterateExternalEntities(function (database, entity) {
-                        if (entity.syncType !== 'BUNDLED') {
-                            promises.push(database.stores[entity.entityName].clear());
-                        }
-                    });
-                    return $q.all(promises);
+                    if (clear) {
+                        // clears all data other than BUNDLED data
+                        var promises = [];
+                        iterateExternalEntities(function (database, entity) {
+                            if (entity.syncType !== 'BUNDLED') {
+                                promises.push(database.stores[entity.entityName].clear());
+                            }
+                        });
+                        return $q.all(promises);
+                    }
                 })
                 .then(function () {
                     // Pull data
                     var promises = [];
+                    pullStartTimestamp = _.now();
                     iterateExternalEntities(function (database, eSchema) {
                         if (eSchema.syncType === 'APP_START') {
-                            promises.push(pullDataFromServer(database.schema.name, eSchema));
+                            promises.push(pullDataFromServer(database.schema.name, eSchema).then(function () {
+                                data.tasksCompleted++;
+                                defer.notify(data);
+                            }));
                         }
                     });
+                    data.tasksTotal = promises.length;
                     return $q.all(promises);
+                }).then(function () {
+                    //after successful pull, store metrics and resolve the promise.
+                    LocalKeyValueService.put(lastPullTimestampKey, {
+                        'start' : pullStartTimestamp,
+                        'end' : _.now()
+                    });
+                    data.inProgress = false;
+                    defer.resolve(data);
+                }, function () {
+                    data.inProgress = false;
+                    defer.reject(data);
                 });
+            return defer.promise;
         };
 
         /**
@@ -562,7 +593,8 @@ wm.plugins.database.services.LocalDBManager = [
          * @returns {object} a promise.
          */
         this.loadDatabases = function () {
-            var d = $q.defer();
+            var d = $q.defer(),
+                self = this;
             if (databases) {
                 d.resolve(databases);
             } else {
@@ -579,6 +611,7 @@ wm.plugins.database.services.LocalDBManager = [
                             }));
                         });
                         $q.all(dbPromises).then(function () {
+                            LocalKeyValueService.init(self.getStore('wavemaker', 'key-value'));
                             d.resolve(databases);
                         });
                     });
@@ -727,5 +760,15 @@ wm.plugins.database.services.LocalDBManager = [
                 }
             });
             return $q.all(promises);
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#getLastPullTimestamp
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @returns {object} that have start and end timestamps of last successful pull of data from remote server.
+         */
+        this.getLastPullTime = function () {
+            return LocalKeyValueService.get(lastPullTimestampKey);
         };
     }];

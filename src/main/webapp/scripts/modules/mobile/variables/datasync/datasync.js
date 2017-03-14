@@ -1,6 +1,6 @@
 /*global WM, _*/
-WM.module('wm.variables').run(['ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'VARIABLE_CONSTANTS',
-    function (ChangeLogService, DeviceVariableService, LocalDBManager, VARIABLE_CONSTANTS) {
+WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'SecurityService', 'VARIABLE_CONSTANTS',
+    function ($rootScope, ChangeLogService, DeviceVariableService, LocalDBManager, SecurityService, VARIABLE_CONSTANTS) {
         "use strict";
         var operations,
             dataChangeTemplate = {
@@ -58,11 +58,34 @@ WM.module('wm.variables').run(['ChangeLogService', 'DeviceVariableService', 'Loc
         operations = {
             pull : {
                 owner : VARIABLE_CONSTANTS.OWNER.APP,
-                model: {},
-                properties : [],
+                model: {
+                    'tasksTotal' : 0,
+                    'tasksCompleted' : 0,
+                    'inProgress' : false
+                },
+                properties : [
+                    {"target": "clearData", "type": "boolean", "widgettype": "boolean-inputfirst", "value": true, "group" : "properties", "subGroup" : "behavior"},
+                    {"target": "startUpdate", "type": "boolean", "hide" : false},
+                    {"target": "onBefore", "hide" : false},
+                    {"target": "onProgress", "hide" : false},
+                    {"target": "spinnerContext", "hide" : false}
+                ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
-                    LocalDBManager.pullData().then(success, error);
+                    // If user is authenticated and online, then start the data pull process.
+                    SecurityService.onUserLogin()
+                        .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
+                        .then(function () {
+                            var clearData = variable.clearData === "true" || variable.clearData === true;
+                            DeviceVariableService.initiateCallback('onBefore', variable);
+                            $rootScope.$emit('toggle-variable-state', variable.name, true);
+                            LocalDBManager.pullData(clearData).then(success, error, function (progress) {
+                                variable.dataSet = progress;
+                                DeviceVariableService.initiateCallback('onProgress', variable, progress);
+                            }).finally(function () {
+                                $rootScope.$emit('toggle-variable-state', variable.name, false);
+                            });
+                        });
                 }
             },
             push : {
@@ -71,26 +94,32 @@ WM.module('wm.variables').run(['ChangeLogService', 'DeviceVariableService', 'Loc
                     'success' : 0,
                     'error' : 0,
                     'completed' : 0,
-                    'total' : 0
+                    'total' : 0,
+                    'inProgress' : false
                 },
                 properties : [
-                    {"target": "onBeforePush", "hide" : false},
-                    {"target": "onProgress", "hide" : false}
+                    {"target": "onBefore", "hide" : false},
+                    {"target": "onProgress", "hide" : false},
+                    {"target": "spinnerContext", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
-                invoke: function (variable, options) {
-                    LocalDBManager.canConnectToServer()
+                invoke: function (variable) {
+                    // If user is authenticated and online, then start the data push process.
+                    SecurityService.onUserLogin()
+                        .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
                         .then(getOfflineChanges)
                         .then(function (changes) {
                             if (changes.pendingToSync.total > 0) {
-                                DeviceVariableService.initiateCallback('onBeforePush', variable, options, changes);
+                                DeviceVariableService.initiateCallback('onBefore', variable, changes);
+                                $rootScope.$emit('toggle-variable-state', variable.name, true);
                                 ChangeLogService.flush(function (stats) {
                                     var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
                                     variable.dataSet = stats;
-                                    DeviceVariableService.initiateCallback(eventName, variable, options, stats);
+                                    $rootScope.$emit('toggle-variable-state', variable.name, false);
+                                    DeviceVariableService.initiateCallback(eventName, variable, stats);
                                 }, function (stats) {
                                     variable.dataSet = stats;
-                                    DeviceVariableService.initiateCallback('onProgress', variable, options, stats);
+                                    DeviceVariableService.initiateCallback('onProgress', variable, stats);
                                 });
                             }
                         });

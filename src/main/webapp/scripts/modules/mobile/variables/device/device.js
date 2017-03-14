@@ -127,9 +127,9 @@ WM.module('wm.variables').run([
                         isOffline: $cordovaNetwork.isOffline()
                     });
                     if ($cordovaNetwork.isOnline()) {
-                        DeviceVariableService.initiateCallback('onOnline', variable, options);
+                        DeviceVariableService.initiateCallback('onOnline', variable);
                     } else {
-                        DeviceVariableService.initiateCallback('onOffline', variable, options);
+                        DeviceVariableService.initiateCallback('onOffline', variable);
                     }
                 }
             },
