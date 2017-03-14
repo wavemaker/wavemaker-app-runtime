@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<span class="app-icon-wrapper" init-widget>' +
+            '<span class="app-icon-wrapper" apply-styles init-widget>' +
                 '<i class="app-icon"></i> ' +
                 '<label class="app-label" ng-if="caption">{{caption}}</label>' +
             '</span>'

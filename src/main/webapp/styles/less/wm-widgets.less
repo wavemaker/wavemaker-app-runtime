@@ -182,6 +182,7 @@ html, body {
     display: inline-block;
     overflow: hidden;
     line-height: 1em;
+    max-width: 100%;
   }
   img {
     line-height: 1em;
@@ -1107,6 +1108,14 @@ html, body {
 .app-colorpicker.input-group {
   width: 10em;
   position: relative;
+  .input-group-addon {
+    width: 25px;
+    position: absolute;
+    right: 0;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+  }
   .dropdown {
     position: absolute;
     .dropdown-menu {
