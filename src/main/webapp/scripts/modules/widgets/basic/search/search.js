@@ -156,7 +156,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (variable && variable.category === 'wm.LiveVariable') {
-                    if (defaultQuery && $is.datavalue) {
+                    if (defaultQuery && WM.isDefined($is.datavalue)) {
                         $is.retrieveDefaultQueryModel().then(function (response) {
                             deferred.resolve(response);
                         });
@@ -288,7 +288,7 @@ WM.module('wm.widgets.basic')
                     }
                     $is.formattedDataSet = dataSet;
                     // update the queryModel, if the default value is given and formatted Dataset is defined.
-                    if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && $is.datavalue)) {
+                    if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && WM.isDefined($is.datavalue))) {
                         updateQueryModel($is, element);
                         $is.isDefaultValueExist = true;
                     }
@@ -331,7 +331,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 // if query is empty string, then datavalue will be empty.
-                if (inputVal === ''  && $is.datavalue) {
+                if (inputVal === ''  && WM.isDefined($is.datavalue)) {
                     $is.datavalue = '';
                     $is.onSubmit({$event: event, $scope: $is});
                 }
@@ -568,7 +568,7 @@ WM.module('wm.widgets.basic')
                     if (!data.length) {
                         deferred.resolve([]);
                     } else {
-                        if ($is.datavalue) {
+                        if (WM.isDefined($is.datavalue)) {
                             $is.isDefaultValueExist = true;
                         }
                         /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
@@ -743,7 +743,7 @@ WM.module('wm.widgets.basic')
                         Object.defineProperty($is, '_model_', {
                             get: function () {
                                 // check if datavalue is null.
-                                if (!$is._proxyModel) {
+                                if (!WM.isDefined($is._proxyModel)) {
                                     return '';
                                 }
 
@@ -874,7 +874,7 @@ WM.module('wm.widgets.basic')
                         //Close the full screen mode in mobile view of auto complete
                         $is.closeSearch = function () {
                             $is.page = 1;
-                            if (!$is.datavalue) {
+                            if (!WM.isDefined($is.datavalue)) {
                                 $is.queryModel = '';
                             }
                             element.removeClass('full-screen');
