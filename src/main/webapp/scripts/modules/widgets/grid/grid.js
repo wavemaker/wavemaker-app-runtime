@@ -172,7 +172,8 @@ WM.module('wm.widgets.grid')
                     $is.isBoundToLiveVariableRoot = !boundToInnerDataSet;
                 } else {
                     $is.isBoundToServiceVariable = variableType === 'wm.ServiceVariable';
-                    if ($is.isBoundToServiceVariable && $is.variable.serviceType === 'DataService') {
+                    $is.isBoundToDataServiceType = ($is.isBoundToServiceVariable && $is.variable.serviceType === 'DataService');
+                    if ($is.isBoundToDataServiceType) {
                         $is.isBoundToProcedureServiceVariable = $is.variable.controller === 'ProcedureExecution';
                         $is.isBoundToQueryServiceVariable     = $is.variable.controller === 'QueryExecution';
                     }
@@ -184,6 +185,10 @@ WM.module('wm.widgets.grid')
                 $is.isBoundToSelectedItemSubset = binddataset.indexOf('selecteditem.') !== -1;
                 $is.isBoundToFilter             = $is.Widgets[widgetName] && ($is.Widgets[widgetName]._widgettype === 'wm-livefilter' || $is.Widgets[widgetName].widgettype === 'wm-livefilter');
             }
+        }
+
+        function showExportOptions($is) {
+            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToDataServiceType && !$is.isBoundToProcedureServiceVariable && $is.variable.isList);
         }
 
         return {
@@ -619,6 +624,7 @@ WM.module('wm.widgets.grid')
                         $is.shownavigation    = $is.navigation !== 'None';
                         $is.redraw            = _.debounce(_redraw, 150);
                         $is.setFlags          = setFlags.bind(undefined, $is, element.scope());
+                        $is.showExportOptions = showExportOptions.bind(undefined, $is);
                         //Backward compatibility for readonly grid
                         if (attrs.readonlygrid || !WM.isDefined(attrs.editmode)) {
                             if (attrs.readonlygrid === 'true') {
@@ -721,7 +727,7 @@ WM.module('wm.widgets.grid')
                                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                                 /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
                                 wp.pagesize.show     = !($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable) || ($is.isBoundToWidget ? !$is.isBoundToFilter : false);
-                                wp.exportformat.show = wp.exportformat.showindesigner = wp.exportdatasize.show = wp.exportdatasize.showindesigner = ($is.isBoundToLiveVariable || $is.isBoundToFilter || $is.isBoundToQueryServiceVariable);
+                                wp.exportformat.show = wp.exportformat.showindesigner = wp.exportdatasize.show = wp.exportdatasize.showindesigner = ($is.showExportOptions());
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
                                 wp.filtermode.disabled = $is.isBoundToFilter;
@@ -2074,7 +2080,7 @@ WM.module('wm.widgets.grid')
                     sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
                 if ($is.isBoundToFilter) {
                     $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize});
-                } else if ($is.isBoundToLiveVariable || $is.isBoundToQueryServiceVariable) {
+                } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
                     variable.download({
                         'matchMode'    : 'anywhere',
