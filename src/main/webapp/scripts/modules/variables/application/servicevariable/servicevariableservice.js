@@ -158,11 +158,11 @@ wm.variables.services.$servicevariable = ['Variables',
         * Check for missing required params and format the date/time param values
         * */
         function processRequestBody(inputData, params) {
-            var requestBody = {},
-                missingParams= [],
+            var requestBody   = {},
+                missingParams = [],
                 paramValue;
             _.forEach(params, function (param) {
-                paramValue = inputData[param.name];
+                paramValue = _.get(inputData, param.name);
                 if (WM.isDefined(paramValue) && (paramValue !== '')) {
                     paramValue = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
                     //Construct ',' separated string if param is not array type but value is an array
@@ -207,7 +207,9 @@ wm.variables.services.$servicevariable = ['Variables',
                 formData,
                 formDataContentType,
                 isProxyCall,
-                isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable);
+                isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable),
+                variableData,
+                params;
 
             function getFormDataObj() {
                 if (formData) {
@@ -274,7 +276,15 @@ wm.variables.services.$servicevariable = ['Variables',
                     case 'BODY':
                         //For post/put query methods wrap the input
                         if (isBodyTypeQueryProcedure) {
-                            bodyInfo = processRequestBody(inputFields, _.get(operationInfo, ['definitions', param.type]));
+                            if (inputFields) {
+                                variableData =  inputFields;
+                                params = _.get(operationInfo, ['definitions', param.type]);
+                            } else {
+                                //This is for Api Designer
+                                variableData =  paramValue || {};
+                                params = param.children;
+                            }
+                            bodyInfo = processRequestBody(variableData, params);
                             requestBody = bodyInfo.requestBody;
                             requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
                         } else {
