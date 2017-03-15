@@ -640,7 +640,7 @@ WM.module('wm.widgets.live')
                     }
 
                     if (WM.isObject(nv) && !WM.isArray(nv)) {
-                        nv = [nv];
+                        nv = _.isEmpty(nv) ? [] : [nv];
                     }
                     if (!$is.binddataset) {
                         if (WM.isString(nv)) {
