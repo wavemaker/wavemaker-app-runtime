@@ -117,7 +117,7 @@ WM.module("wm.widgets.basic")
                         maxResults,
                         currentPage,
                         startIndex;
-                    dataSize   = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : 1);
+                    dataSize   = WM.isArray(newVal) ? newVal.length : (newVal.data ? newVal.data.length : _.isEmpty(newVal) ? 0 : 1);
                     maxResults = ($scope.pagingOptions && $scope.pagingOptions.maxResults) || dataSize;
                     //For static variable, keep the current page. For other variables without pagination reset the page to 1
                     if (variable && variable.category === 'wm.Variable') {
