@@ -19,7 +19,8 @@ WM.module('wm.widgets.basic')
                 'iconsize': true,
                 'opacity': true,
                 'iconclass': true,
-                'hint': true
+                'hint': true,
+                'color': true
             };
 
         //Define the property change handler. This function will be triggered when there is a change in the widget property
