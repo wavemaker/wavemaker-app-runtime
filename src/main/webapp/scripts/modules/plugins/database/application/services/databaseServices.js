@@ -2188,6 +2188,9 @@ wm.plugins.database.services.DatabaseService = [
                     },
                     data: params.data
                 });
+            },
+            executeAggregateQuery: function (params, successCallback, failureCallback) {
+                return initiateAction("executeAggregateQuery", params, successCallback, failureCallback);
             }
         };
     }

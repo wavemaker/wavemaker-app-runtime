@@ -256,7 +256,7 @@ WM.module('wm.utils', [])
             separator = separator || ',';
 
             if (!isArray) {
-                namesArray = names.split(separator);
+                namesArray = _.split(names, separator);
             }
 
             modifiedNames = _.map(namesArray, prettifyLabel);

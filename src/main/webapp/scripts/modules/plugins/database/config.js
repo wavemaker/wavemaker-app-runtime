@@ -290,6 +290,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/queries/execute?page=:page&size=:size",
             method: "POST"
         },
+        executeAggregateQuery: {
+            url: "/services/:dataModelName/:entityName/aggregations?page=:page&size=:size&sort=:sort",
+            method: "POST"
+        },
         testRunQuery: {
             url: "/:service/:dataModelName/queries/test_run",
             method: "POST"
