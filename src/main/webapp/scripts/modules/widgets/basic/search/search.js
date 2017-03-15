@@ -436,7 +436,8 @@ WM.module('wm.widgets.basic')
                     'pagesize'           : $is.limit || $is.pagesize,
                     'page'               : $is.page || 1,
                     'skipDataSetUpdate'  : true, //don't update the actual variable
-                    'skipToggleState'    : true //Dont change the varibale toggle state as this is a independent call
+                    'skipToggleState'    : true, //Dont change the varibale toggle state as this is a independent call
+                    'inFlightBehavior'   : 'executeAll'
                 };
                 switch (variable.category) {
                 case 'wm.LiveVariable':

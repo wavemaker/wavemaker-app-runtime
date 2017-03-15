@@ -703,7 +703,7 @@ wm.variables.services.$liveVariable = [
 
                                 /* process next requests in the queue */
                                 variableActive[variable.activeScope.$id][variable.name] = false;
-                                processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                                processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
                             }, null, false);
                         }
                     };
@@ -714,7 +714,7 @@ wm.variables.services.$liveVariable = [
                     output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields);
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
-                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
                         $rootScope.$emit('toggle-variable-state', variable.name, false);
                         Utils.triggerFn(error);
                         return;
@@ -797,7 +797,7 @@ wm.variables.services.$liveVariable = [
                     if (CONSTANTS.isRunMode) {
                         /* process next requests in the queue */
                         variableActive[variable.activeScope.$id][variable.name] = false;
-                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
                     }
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
@@ -996,7 +996,7 @@ wm.variables.services.$liveVariable = [
                     output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields);
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
-                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
+                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData, options);
                         $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
                         Utils.triggerFn(error);
                         return;
