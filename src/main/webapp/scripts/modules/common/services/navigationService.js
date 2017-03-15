@@ -175,7 +175,7 @@ wm.modules.wmCommon.services.NavigationService = [
 
         function stopLoginPagePostLogin($p) {
             SecurityService.getConfig(function (config) {
-                if (config.securityEnabled && config.authenticated && pageName === config.login.pageName) {
+                if (config.securityEnabled && config.authenticated && pageName === config.loginConfig.pageName) {
                     $location.path(_.get($p, 'params.name') || _.get(config, 'userInfo.landingPage') || _.get(config.homePage));
                     return;
                 }

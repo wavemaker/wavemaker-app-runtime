@@ -316,10 +316,11 @@ Application
                     }
 
                     SecurityService.getConfig(function (config) {
+                        loginConfig = config.loginConfig;
                         // if user found, 401 was thrown after session time
                         if (config.userInfo && config.userInfo.userName) {
                             config.authenticated = false;
-                            sessionTimeoutConfig = config.login.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
+                            sessionTimeoutConfig = loginConfig.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
                             Utils.triggerFn($rs.onSessionTimeout);
                             $rs.$emit('on-sessionTimeout');
@@ -339,7 +340,6 @@ Application
                             }
                         } else {
                             // if no user found, 401 was thrown for first time login
-                            loginConfig = config.login;
                             loginMethod = loginConfig.type.toUpperCase();
                             switch (loginMethod) {
                             case LOGIN_METHOD.DIALOG:
@@ -621,7 +621,7 @@ Application
                                      * if it is persisted, the behavior will be same for mobile and web app
                                      */
                                     if (CONSTANTS.hasCordova) {
-                                        page = config.login.pageName;
+                                        page = config.loginConfig.pageName;
                                     } else {
                                         page = config.homePage;
                                     }
