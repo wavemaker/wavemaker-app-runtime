@@ -622,23 +622,16 @@ wm.plugins.security.services.SecurityService = [
 
             /**
              * @ngdoc function
-             * @name wm.security.$SecurityService#getCASOptions
+             * @name wm.security.$SecurityService#getSAMLOptions
              * @methodOf wm.security.$SecurityService
              * @function
              *
              * @description
-             * The API is used to get the values of configured CAS (Central Authentication Service) security provider.
-             * This API returns appropriate values on the basis of what is set earlier using configureCAS API.
+             * The API is used to get the values of configured SAML security provider.
+             * This API returns appropriate values on the basis of what is set earlier using configureSAML API.
              *
-             * Following are the fields which need to be set for using CAS:
-             * a) casURL - A CAS url
-             * b) projectURL - projects url.
-             * c) userDetailsProvider - A string which contains the value “CAS”.
-             * d) DatabaseOptions - DatabaseOptions object
              *
              * @param {string} projectID project id
-             * @param {function} successCallback to be called on success
-             * @param {function} failureCallback to be called on failure
              */
 
             getSAMLOptions: function (projectID) {
@@ -658,16 +651,23 @@ wm.plugins.security.services.SecurityService = [
              * @function
              *
              * @description
-             * The URL configures the SAML as the service provider. This mechanism enables the
-             * Configuration parameters should be sent through json object using RequestBody.
-             * Following 3 data members value to be set for using SAML:
-             * e) samlURL - A CAS url.
-             * f) projectURL - project url.
-             * g) userDetailsProvider - A string which contains the value “SAML”.
+             * Save SAML configurations.
+             * While calling this API, it is mandatory to set the requestBody.
+             * Following is the structure of SAMLOptions:
+             * 1. samlOptions - this property has all the saml related configuration.
+             *  a. createKeystore - (boolean) to auto generate key-store.
+             *  b. idpEndpointUrl - Identity Provider endpoint url.
+             *  c. idpMetadataUrl - Identity Provider metadata url.
+             *  d. idpPublicKey - Identity Provider public key.
+             *  e. keyAlias - Alias key.
+             *  f. keyStoreLocation - Path where the key-store is placed in the project.
+             *  g. keyStoreName - Name of the key-store.
+             *  h. keyStorePassword - Key-store password.
+             *  i. roleMappingEnabled - (boolean) whether the role is mapped.
+             *  j. subjectName - subject name for key-store.
+             * 2. generalOptions - It consist of 5 fields viz., enforceSecurity, enforceIndexHtml, useSSL, sslPort and dataSourceType respectively. To configure SAML, dataSourceType must be set to “SAML” and enforceSecurity must be true. Other options must be set as per the requirement.
              *
              * @param {object} params object containing parameters for the request
-             * @param {function} successCallback to be called on success
-             * @param {function} failureCallback to be called on failure
              */
 
             configSAML: function (params) {
@@ -683,31 +683,54 @@ wm.plugins.security.services.SecurityService = [
 
             /**
              * @ngdoc function
-             * @name wm.security.$SecurityService#configSAML
+             * @name wm.security.$SecurityService#loadIdpMetadata
              * @methodOf wm.security.$SecurityService
              * @function
              *
              * @description
-             * The URL configures the SAML as the service provider. This mechanism enables the
-             * Configuration parameters should be sent through json object using RequestBody.
-             * Following 3 data members value to be set for using SAML:
-             * e) samlURL - A CAS url.
-             * f) projectURL - project url.
-             * g) userDetailsProvider - A string which contains the value “SAML”.
+             * Loads SAML metadata through MetadataUrl.
+             *
+             * Url Parameters
+             * 1) Project ID
+             * 2) IDP Metadata URL
              *
              * @param {object} params object containing parameters for the request
-             * @param {function} successCallback to be called on success
-             * @param {function} failureCallback to be called on failure
              */
 
-            loadIdpMatadata: function (params) {
+            loadIdpMetadata: function (params) {
                 return BaseService.execute({
                     target: 'Security',
-                    action: 'loadIdpMatadata',
+                    action: 'loadIdpMetadata',
                     urlParams: {
                         projectID: params.projectID,
                         idpMetadataUrl: params.idpMetadataUrl
                     }
+                });
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#uploadIdpMetadata
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The uploaded xml file configures SAML as the service provider.
+             * Configuration parameters should be sent through json object using RequestBody.
+             *
+             * This call is a multipart data request. Metadata file should be sent in the request body.
+             *
+             * @param {object} params object containing parameters for the request
+             */
+
+            uploadIdpMetadata: function (params) {
+                return BaseService.execute({
+                    target: 'Security',
+                    action: 'uploadIdpMetadata',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.content
                 });
             },
 

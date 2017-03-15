@@ -80,9 +80,16 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/providers/saml",
             method: "POST"
         },
-        loadIdpMatadata: {
+        loadIdpMetadata: {
             url: "services/projects/:projectID/securityservice/providers/saml/loadidpmetadata?idpMetadataUrl=:idpMetadataUrl",
-            method: "get"
+            method: "GET"
+        },
+        uploadIdpMetadata: {
+            url: "services/projects/:projectID/securityservice/providers/saml/loadidpmetadata",
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            }
         },
         configCustomAuth: {
             url: "services/projects/:projectID/securityservice/providers/customauth",
