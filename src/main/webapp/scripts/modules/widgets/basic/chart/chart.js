@@ -23,7 +23,7 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
-    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, ChartService) {
+    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, Utils, ChartService, DatabaseService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.chart', ['wm.base']),
            // properties of the respective chart type
@@ -171,11 +171,10 @@ WM.module('wm.widgets.basic')
         function isDataFilteringEnabled(scope) {
             /*Query need to be triggered if any of the following cases satisfy
             * 1. Group By and aggregation both chosen
-            * 2. Group By alone with atleast two columns chosen, one of which is x axis
-            * 3. Only Order By is chosen
+            * 2. Only Order By is chosen
             * */
 
-            return isAggregationEnabled(scope) || (isGroupByEnabled(scope.groupby) && scope.isVisuallyGrouped) || scope.orderby;
+            return isAggregationEnabled(scope) || (!scope.isVisuallyGrouped && scope.orderby);
         }
 
         /*Charts like Line,Area,Cumulative Line does not support any other datatype
@@ -365,92 +364,53 @@ WM.module('wm.widgets.basic')
             return datum;
         }
 
+        //Returns orderby columns and their orders in two separate arrays
+        function getLodashOrderByFormat(orderby) {
+            var orderByColumns = [],
+                orders = [],
+                columns;
+            _.forEach(_.split(orderby, ','), function (col) {
+                columns = _.split(col, ':');
+                orderByColumns.push(columns[0]);
+                orders.push(columns[1]);
+            });
+            return {
+                'columns' : orderByColumns,
+                'orders'  : orders
+            };
+        }
+
+
         //Constructing the grouped data based on the selection of orderby, x & y axis
-        function getGroupedData(scope, queryResponse, groupingColumn) {
+        function getVisuallyGroupedData(scope, queryResponse, groupingColumn) {
             var  chartData = [],
                 groupData = {},
                 groupValues = [],
-                groupKey,
-                index = 0,
-                i;
+                orderByDetails;
             scope.xDataKeyArr = [];
-
-            while (queryResponse.length !== 0) {
-                groupKey = queryResponse[queryResponse.length - 1][groupingColumn];
-                //Data should be in ascending order of 'x', since there is tooltips issue incase of line chart
-                groupValues.push(valueFinder(scope, queryResponse[queryResponse.length - 1], scope.xaxisdatakey, scope.yaxisdatakey, 0));
-                queryResponse.splice(queryResponse.length - 1, 1);
-                for (i = queryResponse.length - 1; i >= 0; i -= 1) {
-                    /*Checking if the new column groupKey is same as the chosen groupKey
-                    Then pushing the data
-                    Then splicing the data since it is already pushed */
-                    if (groupKey === queryResponse[i][groupingColumn]) {
-                        index += 1;
-                        //Data should be in ascending order of 'x', since there is tooltips issue incase of line chart
-                        groupValues.push(valueFinder(scope, queryResponse[i], scope.xaxisdatakey, scope.yaxisdatakey, index));
-                        queryResponse.splice(i, 1);
-                    }
-                }
-
-                //Pushing the data with groupKey and values
+            queryResponse = _.orderBy(queryResponse, _.split(scope.groupby, ','));
+            if (scope.orderby) {
+                orderByDetails = getLodashOrderByFormat(scope.orderby);
+                queryResponse = _.orderBy(queryResponse, orderByDetails.columns, orderByDetails.orders);
+            }
+            queryResponse = _.groupBy(queryResponse, groupingColumn);
+            _.forEach(queryResponse, function (values, groupKey) {
+                groupValues = [];
+                _.forEachRight(values, function (value, index) {
+                    groupValues.push(valueFinder(scope, value, scope.xaxisdatakey, scope.yaxisdatakey, index));
+                });
                 groupData = {
                     key : groupKey,
                     values : groupValues
                 };
                 chartData.push(groupData);
-                groupValues = [];
-                index = 0;
-            }
+            });
             return chartData;
         }
 
-        //Construct orderby expression
-        function getOrderbyExpression(orderby) {
-            var orderbyCols = (orderby ? orderby.replace(/:/g, ' ') : '').split(','),
-                trimmedCols = '';
-            orderbyCols = orderbyCols.map(function (col) {
-                return col.trim();
-            });
-            trimmedCols = orderbyCols.join();
-            return trimmedCols;
-        }
-
-        //Replacing the '.' by the '_' because '.' is not supported in the alias names
+        //Replacing the '.' by the '$' because '.' is not supported in the alias names
         function getValidAliasName(aliasName) {
-            return aliasName ? aliasName.replace(/\./g, '_') : null;
-        }
-
-        // Returns the columns that are to be fetched in the query response
-        function getQueryColumns(scope) {
-            var columns = [],
-                groupbyColumns = scope.groupby && scope.groupby !== NONE ? scope.groupby.split(',') : [],
-                yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                expr,
-                xAxisKey = scope.xaxisdatakey,
-                aggColumn = scope.aggregationcolumn || [],
-                requiredColumns = [];
-
-            /*Merge all columns and filter unique ones and remove empty columns ('', undefined)
-            * 1. X Axis
-            * 2. Y Axis
-            * 3. Aggregation
-            * 4. Group By
-            * */
-            requiredColumns =  _.compact(_.uniq(_.concat(xAxisKey, yAxisKeys, groupbyColumns, aggColumn)));
-
-            // adding aggregation column, if enabled
-            if (isAggregationEnabled(scope)) {
-                columns.push(aggregationFnMap[scope.aggregation] + '(' + aggColumn + ') AS ' + getValidAliasName(aggColumn));
-            }
-
-            //Remove aggregation column since it is already added
-            requiredColumns = _.without(requiredColumns, aggColumn);
-
-            _.forEach(requiredColumns, function (column) {
-                expr = column + ' AS ' + getValidAliasName(column);
-                columns.push(expr);
-            });
-            return columns;
+            return aliasName ? aliasName.replace(/\./g, '$') : null;
         }
 
         /*Decides whether the data should be visually grouped or not
@@ -513,15 +473,15 @@ WM.module('wm.widgets.basic')
         }
 
         //Function to get the aggregated data after applying the aggregation & group by or order by operations.
-        function getAggregatedData(scope, element, groupingDetails, callback) {
-            var query,
-                variableName,
+        function getAggregatedData(scope, element, callback) {
+            var variableName,
                 variable,
-                columns,
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                orderbyexpression = getOrderbyExpression(scope.orderby),
-                groupbyExpression = groupingDetails.expression,
-                elScope = element.scope();
+                elScope = element.scope(),
+                data = {},
+                sortExpr = _.replace(scope.orderby, /:/g, ' '),
+                orderByColumn = _.first(_.split(sortExpr, ' ')),
+                columns = [];
 
             //Returning if the data is not yet loaded
             if (!scope.chartData) {
@@ -540,27 +500,36 @@ WM.module('wm.widgets.basic')
             if (!variable) {
                 return;
             }
-            columns = getQueryColumns(scope);
-            query = QueryBuilder.getQuery({
-                'tableName': variable.type,
-                'columns': columns,
-                'filterFields': scope.filterFields || variable.filterFields,
-                'groupby': groupbyExpression,
-                'orderby': orderbyexpression
-            });
+            columns = _.concat(columns, data.groupByFields, [scope.aggregationcolumn]);
+            if (_.includes(columns, orderByColumn)) {
+                sortExpr = getValidAliasName(sortExpr);
+            }
+            if (isGroupByEnabled(scope.groupby)) {
+                data.groupByFields = _.split(scope.groupby, ',');
+            }
+            if (isAggregationEnabled(scope)) {
+                data.aggregations =  [
+                    {
+                        "field": scope.aggregationcolumn,
+                        "type":  _.toUpper(scope.aggregation),
+                        "alias": getValidAliasName(scope.aggregationcolumn)
+                    }
+                ];
+            }
 
             //Execute the query.
-            QueryBuilder.executeQuery({
-                'databaseName': variable.liveSource,
-                'query': query,
-                'page': 1,
-                'size': variable.maxResults || 500,
-                'nativeSql': false
+            DatabaseService.executeAggregateQuery({
+                'dataModelName'    : variable.liveSource,
+                'entityName'       : variable.name,
+                'page'             : 1,
+                'size'             : variable.maxResults || 500,
+                'sort'             : sortExpr,
+                'url'              : $rootScope.project.deployedUrl,
+                'data'             : data
             }, function (response) {
                 //Transform the result into a format supported by the chart.
                 var chartData = [],
                     aggregationAlias = getValidAliasName(scope.aggregationcolumn),
-                    visualGroupingColumnAlias = groupingDetails.visualGroupingColumn ? getValidAliasName(groupingDetails.visualGroupingColumn) : '',
                     xAxisAliasKey = getValidAliasName(scope.xaxisdatakey),
                     yAxisAliasKeys = [];
 
@@ -573,25 +542,20 @@ WM.module('wm.widgets.basic')
                     // Set the response in the chartData based on 'aggregationColumn', 'xAxisDataKey' & 'yAxisDataKey'.
                     if (isAggregationEnabled(scope)) {
                         obj[scope.aggregationcolumn] = data[aggregationAlias];
+                        obj[scope.aggregationcolumn] = _.get(data, aggregationAlias) || _.get(data, scope.aggregationcolumn);
                     }
 
-                    if (visualGroupingColumnAlias) {
-                        obj[groupingDetails.visualGroupingColumn] = data[visualGroupingColumnAlias];
-                    }
-
-                    obj[scope.xaxisdatakey] = data[xAxisAliasKey];
-                    yAxisKeys.forEach(function (yAxisKey) {
-                        yAxisAliasKeys.push(getValidAliasName(yAxisKey));
-                    });
+                    obj[scope.xaxisdatakey] = _.get(data, xAxisAliasKey) || _.get(data, scope.xaxisdatakey);
 
                     yAxisKeys.forEach(function (yAxisKey, index) {
                         obj[yAxisKey] = data[yAxisAliasKeys[index]];
+                        obj[yAxisKey] = _.get(data, yAxisAliasKeys[index]) || _.get(data, yAxisKey);
                     });
 
                     chartData.push(obj);
                 });
 
-                scope.chartData = groupingDetails.isVisuallyGrouped ? getGroupedData(scope, chartData, groupingDetails.visualGroupingColumn) : chartData;
+                scope.chartData = chartData;
 
                 Utils.triggerFn(callback);
             }, function () {
@@ -853,12 +817,14 @@ WM.module('wm.widgets.basic')
             // get the chart object
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
-            // changing the default no data message
-            d3.select('#wmChart' + scope.$id + ' svg')
-                .datum(chartData)
-                .call(chart);
-            postPlotProcess(scope, element, chart);
-            return chart;
+            if (WM.isArray(chartData)) {
+                // changing the default no data message
+                d3.select('#wmChart' + scope.$id + ' svg')
+                    .datum(chartData)
+                    .call(chart);
+                postPlotProcess(scope, element, chart);
+                return chart;
+            }
         }
 
         // Plotting the chart with set of the properties set to it
@@ -912,13 +878,17 @@ WM.module('wm.widgets.basic')
             var groupingDetails = getGroupingDetails(scope);
             //If aggregation/group by/order by properties have been set, then get the aggregated data and plot the result in the chart.
             if (scope.binddataset && scope.isLiveVariable && (scope.filterFields || isDataFilteringEnabled(scope))) {
-                getAggregatedData(scope, element, groupingDetails, function () {
+                getAggregatedData(scope, element, function () {
                     plotChart(scope, element);
                 });
             } else { //Else, simply plot the chart.
                 //In case of live variable resetting the aggregated data to the normal dataset when the aggregation has been removed
                 if (scope.dataset && scope.dataset.data && scope.isLiveVariable) {
                     scope.chartData = scope.dataset.data;
+                    if (isGroupByEnabled(scope.groupby) && groupingDetails.isVisuallyGrouped) {
+                        scope.chartData = getVisuallyGroupedData(scope, scope.chartData, groupingDetails.visualGroupingColumn);
+                    }
+
                 }
                 plotChart(scope, element);
             }
