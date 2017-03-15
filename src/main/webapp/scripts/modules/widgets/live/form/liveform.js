@@ -1162,7 +1162,7 @@ WM.module('wm.widgets.live')
                             elScope = element.scope(),
                             defaultObj,
                             isLayoutDialog,
-                            externalForm = element.closest('form.app-form'),
+                            externalForm = element.closest('form.app-form, form.app-liveform').is('form.app-form'), //Check if nearest parent form is wm-form
                             parentEle    = element.parent(),
                             columnDefProps;
                         function setDefaultValue() {
@@ -1181,7 +1181,7 @@ WM.module('wm.widgets.live')
                             formWidget.$setValidity('custom', val);
                         }
                         if (parentEle.length) {
-                            parentScope = externalForm.length ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;
+                            parentScope = externalForm ? parentEle.closest('form.app-form').isolateScope().elScope : parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent;
                         } else {
                             parentScope = scope.$parent;
                         }
@@ -1283,7 +1283,7 @@ WM.module('wm.widgets.live')
                             $compile(element.contents())(parentScope);
                         } else {
                             template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
-                            if (externalForm.length) {
+                            if (externalForm) {
                                 element.closest('form.app-form').find('.hidden-form-elements').append($compile(template)(parentScope));
                             } else {
                                 element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentScope));
