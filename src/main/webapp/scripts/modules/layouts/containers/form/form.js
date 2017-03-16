@@ -112,7 +112,7 @@ WM.module('wm.layouts.containers')
             var value, resetBtnTemplate, $gridLayout;
             switch (key) {
             case 'captionsize':
-                LiveWidgetUtils.setCaptionSize(element, newVal);
+                scope.elScope.captionsize = newVal;
                 break;
             case 'captionalign':
                 scope.captionAlignClass = "align-" + newVal;

@@ -668,7 +668,7 @@ WM.module('wm.widgets.live')
                 widgetType  = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType  = widgetType.toLowerCase();
                 if (fieldDef.displayname) { //Add label field, only if displayname is given
-                    displayLabel = '<label class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
+                    displayLabel = '<label ng-style="{width: captionsize}" class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
                 } else {
                     controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12';
                 }
@@ -1891,22 +1891,6 @@ WM.module('wm.widgets.live')
             function getViewModeWidgets() {
                 return ['image', 'button', 'checkbox', 'label', 'anchor', 'icon'];
             }
-            /**
-             * @ngdoc function
-             * @name wm.widgets.live.setCaptionSize
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * Set the width of all labels in the form to the caption size
-             * @param {formEle} element from which widgets needs to be retrieved
-             * @param {value} width of the label
-             */
-            function setCaptionSize(formEle, value) {
-                formEle.find('.form-group .app-label.ng-isolate-scope').each(function () {
-                    WM.element(this).isolateScope().width = value;
-                });
-            }
 
             /**
              * @ngdoc function
@@ -1997,7 +1981,6 @@ WM.module('wm.widgets.live')
             this.getFormFilterWidgets       = getFormFilterWidgets;
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
-            this.setCaptionSize             = setCaptionSize;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
             this.getEditModeWidget          = getEditModeWidget;
         }

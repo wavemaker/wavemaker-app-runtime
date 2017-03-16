@@ -9,7 +9,6 @@ WM.module('wm.widgets.live')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.liveform', ['wm.base', 'wm.base.events.successerror', 'wm.layouts.panel.defaults']),
             notifyFor = {
                 'dataset'         : true,
-                'captionsize'     : true,
                 'novalidate'      : true,
                 'autocomplete'    : true,
                 'rowdata'         : true,
@@ -933,9 +932,6 @@ WM.module('wm.widgets.live')
                                         field.outputformat = scope.getOutputPatterns(field.type, field.outputformat);
                                     }
                                 });
-                                break;
-                            case 'captionsize':
-                                LiveWidgetUtils.setCaptionSize(element, newVal);
                                 break;
                             case 'novalidate':
                                 /*Add or remove the novalidate attribute based on the input*/
