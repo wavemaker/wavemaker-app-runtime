@@ -238,6 +238,7 @@ WM.module('wm.layouts.containers')
                         //$watch on step load ie.. step is active and trigger onLoad event
                         $is.$watch('status', function (nv) {
                             if (nv === STEP_STATUS.CURRENT) {
+                                $is.__load();
                                 if (CONSTANTS.isRunMode) {
                                     if ($is.onLoad) {
                                         $is.onLoad({$isolateScope: $is});
