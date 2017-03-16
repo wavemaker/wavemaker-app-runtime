@@ -1,4 +1,4 @@
-/*global WM, _ */
+/*global WM, _, location */
 /*Directive for menu */
 
 WM.module('wm.widgets.form')
@@ -268,6 +268,13 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams',  function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams) {
         'use strict';
+        function openLink(link, target) {
+            if (CONSTANTS.hasCordova && _.startsWith(link, '#')) {
+                location.href = link;
+            } else {
+                $window.open(link, target);
+            }
+        }
         return {
             'restrict': "E",
             'replace': true,
@@ -317,12 +324,12 @@ WM.module('wm.widgets.form')
                     if (itemAction) {
                         Utils.evalExp(element.closest('.dropdown').scope(), itemAction).then(function () {
                             if (itemLink) {
-                                $window.open(itemLink, linkTarget);
+                                openLink(itemLink, linkTarget);
                             }
                         });
                     } else if (itemLink) {
                         //If action is not present and link is there
-                        $window.open(itemLink, linkTarget);
+                        openLink(itemLink, linkTarget);
                     }
                 };
             }
