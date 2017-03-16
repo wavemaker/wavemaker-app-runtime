@@ -64,7 +64,7 @@ WM.module('wm.layouts.page')
                     'pre': function (scope, element) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        if (CONSTANTS.isRunMode  &&  !$route.current.transitionCompleted) {
+                        if (CONSTANTS.isRunMode  && $route.current && !$route.current.transitionCompleted) {
                             waitForTransition(element);
                         }
                     },
