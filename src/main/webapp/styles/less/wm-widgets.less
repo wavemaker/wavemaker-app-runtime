@@ -2304,9 +2304,73 @@ If the height and width are not specified the video takes the height of the post
           font-size: @app-richtexteditor-font-size;
           padding: 0.33em 0.66em;
           float: left;
+          &.toolbar-plugin {
+            position: relative;
+            padding: 0!important;
+            &.colorpicker {
+              width:32px;
+            }
+            .colorpicker .dropdown-menu{
+              min-width:auto;
+            }
+            .colorpicker-togglebtn {
+              width: 100%;
+              border-radius:0;
+              border-width: 0 0 4px 0;
+            }
+            &.fontname-plugin {
+              width:42px;
+              .font-list {
+                height: 350px;
+                overflow: scroll;
+                overflow-x: hidden;
+              }
+            }
+            &.formatheader-plugin {
+              width:auto;
+              .dropdown-toggle {
+                border:0;
+              }
+              .btn span {
+                width:100px;
+                display: inline-block;
+              }
+            }
+            .table-insert {
+              border:0;
+            }
+            &.fontname-plugin, &.formatheader-plugin {
+              .dropdown-menu {
+                .btn-default {
+                  border: 0;
+                  text-align:start;
+                  width:100%;
+                  padding:10px;
+                }
+              }
+            }
+          }
         }
         .btn-default[disabled] {
           pointer-events:none;
+        }
+        .table-plugin-text {
+          text-align: center;
+        }
+        .editor-grid-border {
+          td {
+            padding:1px 0;
+            a {
+              padding:0 10px;
+              border:1px solid #d6d6d6;
+              width:13px;
+              height:13px;
+              &.editor-active {
+                border-color: #3498db;
+                background: #3498db;
+              }
+            }
+          }
         }
       }
     }
@@ -2332,6 +2396,14 @@ If the height and width are not specified the video takes the height of the post
       img {
         position: relative;
         max-width: 100%;
+      }
+      td[contenteditable='true'] {
+        &:focus {
+          border: 2px rgba(128,128,128,0.5) solid;
+        }
+      }
+      .table {
+        table-layout: fixed;
       }
     }
   }
