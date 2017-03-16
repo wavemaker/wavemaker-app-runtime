@@ -28,14 +28,12 @@ wm.plugins.offline.services.ChangeLogService = [
     function (LocalDBManager, $q, Utils, $log, $injector, LocalKeyValueService, SecurityService) {
         'use strict';
         var contextKey = 'changeLogService.flushContext',
+            lastPushInfoKey = 'changeLogService.lastPushInfo',
             flushContext,
             services = {},
             callbacks = [],
             flushInProgress = false,
-            stats = {
-                'total': 0,
-                'success': 0
-            };
+            stats = {};
 
         function getService(serviceName) {
             var service = services[serviceName];
@@ -183,7 +181,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 var cbs = _.reverse(_.map(callbacks, "postFlush"));
                 flushInProgress = false;
                 return resetNetworkFailures().then(function () {
-                    if (stats.error === 0) {
+                    if (stats.failedTaskCount === 0) {
                         return flushContext.clear().then(function () {
                             flushContext = undefined;
                         });
@@ -227,11 +225,12 @@ wm.plugins.offline.services.ChangeLogService = [
                 $log.debug('Added the following call %o to log.', change);
             },
             'preFlush': function () {
-                stats.total = 0;
-                stats.success = 0;
-                stats.error = 0;
-                stats.completed = 0;
+                stats.totalTaskCount = 0;
+                stats.successfulTaskCount = 0;
+                stats.failedTaskCount = 0;
+                stats.completedTaskCount = 0;
                 stats.inProgress = true;
+                stats.startTime = _.now();
                 $log.debug('Starting flush');
                 return getStore().count([{
                     'attributeName' : 'hasError',
@@ -239,26 +238,28 @@ wm.plugins.offline.services.ChangeLogService = [
                     'attributeType' : 'NUMBER',
                     'filterCondition' : 'EQUALS'
                 }]).then(function (count) {
-                    stats.total = count;
+                    stats.totalTaskCount = count;
                 });
             },
             'postFlush': function (stats, flushContext) {
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
-                                stats.success, stats.error, stats.completed, stats.total);
+                                stats.successfulTaskCount, stats.failedTaskCount, stats.completedTaskCount, stats.totalTaskCount);
                 stats.inProgress = false;
+                stats.endTime = _.now();
+                LocalKeyValueService.put(lastPushInfoKey, stats);
             },
             'preCall': function (change) {
-                $log.debug("%i. Invoking call %o", (1 + stats.completed), change);
+                $log.debug("%i. Invoking call %o", (1 + stats.completedTaskCount), change);
             },
             'postCallError': function (change, response) {
-                stats.completed++;
-                stats.error++;
+                stats.completedTaskCount++;
+                stats.failedTaskCount++;
                 $log.error('call failed with the response %o.', response);
                 return flushContext.save();
             },
             'postCallSuccess': function (change, response) {
-                stats.completed++;
-                stats.success++;
+                stats.completedTaskCount++;
+                stats.successfulTaskCount++;
                 $log.debug('call returned the following response %o.', response);
                 return flushContext.save();
             }
@@ -410,8 +411,8 @@ wm.plugins.offline.services.ChangeLogService = [
          *      completed : 0
          *  }
          */
-        this.getFlushStats = function () {
-            return stats;
+        this.getLastPushInfo = function () {
+            return LocalKeyValueService.get(lastPushInfoKey);
         };
     }
 ];
