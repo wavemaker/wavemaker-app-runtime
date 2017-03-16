@@ -1682,7 +1682,8 @@ WM.module('wm.widgets.base', [])
                         "onNext": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPrev": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onSkip": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSkip": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "loadmode" : {"type" : "list", "show": false, "value" : "after-select"}
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
