@@ -55,12 +55,26 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 };
             });
         }
+
+        /**
+         * This function adds the old properties to the push dataSet to support old projects.
+         * @param data
+         * @returns {*}
+         */
+        function addOldPropertiesForPushData(data) {
+            var result = _.clone(data);
+            result.success = data.successfulTaskCount;
+            result.error = data.failedTaskCount;
+            result.completed = data.completedTaskCount;
+            result.total = data.totalTaskCount;
+            return result;
+        }
         operations = {
             pull : {
                 owner : VARIABLE_CONSTANTS.OWNER.APP,
                 model: {
-                    'tasksTotal' : 0,
-                    'tasksCompleted' : 0,
+                    'totalTaskCount' : 0,
+                    'completedTaskCount' : 0,
                     'inProgress' : false
                 },
                 properties : [
@@ -88,13 +102,40 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                         });
                 }
             },
+            lastPullInfo : {
+                owner : VARIABLE_CONSTANTS.OWNER.APP,
+                model: {
+                    'databases' : [{
+                        'name' : 'datbaseName',
+                        'entities': [{
+                            'entityName': 'entityName',
+                            'pulledRecordCount': 0
+                        }],
+                        'pulledRecordCount' : 0
+                    }],
+                    'totalPulledRecordCount' : 0,
+                    'startTime' : 0,
+                    'endTime' : 0
+                },
+                properties : [
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
+                    {"target": "spinnerContext", "hide" : false}
+                ],
+                requiredCordovaPlugins: [],
+                invoke: function (variable, options, success, error) {
+                    $rootScope.$emit('toggle-variable-state', variable.name, true);
+                    LocalDBManager.getLastPullInfo().then(success, error).finally(function () {
+                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                    });
+                }
+            },
             push : {
                 owner : VARIABLE_CONSTANTS.OWNER.APP,
                 model: {
-                    'success' : 0,
-                    'error' : 0,
-                    'completed' : 0,
-                    'total' : 0,
+                    'successfulTaskCount' : 0,
+                    'failedTaskCount' : 0,
+                    'completedTaskCount' : 0,
+                    'totalTaskCount' : 0,
                     'inProgress' : false
                 },
                 properties : [
@@ -114,15 +155,37 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                                 $rootScope.$emit('toggle-variable-state', variable.name, true);
                                 ChangeLogService.flush(function (stats) {
                                     var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
-                                    variable.dataSet = stats;
+                                    variable.dataSet = addOldPropertiesForPushData(stats);
                                     $rootScope.$emit('toggle-variable-state', variable.name, false);
                                     DeviceVariableService.initiateCallback(eventName, variable, stats);
                                 }, function (stats) {
-                                    variable.dataSet = stats;
+                                    variable.dataSet = addOldPropertiesForPushData(stats);
                                     DeviceVariableService.initiateCallback('onProgress', variable, stats);
                                 });
                             }
                         });
+                }
+            },
+            lastPushInfo : {
+                owner : VARIABLE_CONSTANTS.OWNER.APP,
+                model: {
+                    'successfulTaskCount' : 0,
+                    'failedTaskCount' : 0,
+                    'completedTaskCount' : 0,
+                    'totalTaskCount' : 0,
+                    'startTime' : 0,
+                    'endTime' : 0
+                },
+                properties : [
+                    {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
+                    {"target": "spinnerContext", "hide" : false}
+                ],
+                requiredCordovaPlugins: [],
+                invoke: function (variable, options, success, error) {
+                    $rootScope.$emit('toggle-variable-state', variable.name, true);
+                    ChangeLogService.getLastPushInfo().then(success, error).finally(function () {
+                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                    });
                 }
             },
             getOfflineChanges : {

@@ -193,7 +193,7 @@ wm.plugins.offline.run([
                     addOfflineFileUploadSupport();
                     ChangeLogService.registerCallback({
                         'postFlush' : function (stats) {
-                            if (stats.total > 0) {
+                            if (stats.totalTaskCount > 0) {
                                 LocalDBManager.close().finally(function () {
                                     location.assign(window.location.origin + window.location.pathname);
                                 });
