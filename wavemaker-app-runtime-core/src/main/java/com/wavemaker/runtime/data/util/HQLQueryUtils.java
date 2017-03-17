@@ -162,7 +162,7 @@ public class HQLQueryUtils {
         return queryInfo;
     }
 
-    private static boolean isSortAppliedOnPageable(Pageable pageable) {
+    public static boolean isSortAppliedOnPageable(Pageable pageable) {
         return (pageable != null) && (pageable.getSort() != null);
     }
 }
