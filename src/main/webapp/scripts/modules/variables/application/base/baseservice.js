@@ -520,7 +520,11 @@ wm.variables.services.Variables = [
                         if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
                             return;
                         }
-                        setValueToNode(target, obj, root, variable, Utils.getClonedObject(newVal)); // clonning newVal to keep the source clean
+                        //Skip cloning for blob column
+                        if (!_.includes(['blob', 'file'], obj.type)) {
+                            newVal = Utils.getClonedObject(newVal);
+                        }
+                        setValueToNode(target, obj, root, variable, newVal); // clonning newVal to keep the source clean
 
                         if (runMode) {
                             if (WM.isObject(newVal)) {
