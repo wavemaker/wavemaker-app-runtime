@@ -32,6 +32,11 @@ public class WMQueryInfo {
         this.parameters = new HashMap<>();
     }
 
+    public WMQueryInfo(final String query, final Map<String, Object> parameters) {
+        this.query = query;
+        this.parameters = parameters;
+    }
+
     public String getQuery() {
         return query;
     }

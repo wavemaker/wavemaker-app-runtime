@@ -140,7 +140,7 @@ public class QueryHelper {
     public static String arrangeForSort(String queryStr, Sort sort, boolean isNative, Dialect dialect) {
         if (isNative && sort != null) {
             final Iterator<Sort.Order> iterator = sort.iterator();
-            StringBuffer queryWithOrderBy = new StringBuffer(ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryStr));
+            StringBuilder queryWithOrderBy = new StringBuilder(ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryStr));
             int count = 0;
             while (iterator.hasNext()) {
                 Sort.Order order = iterator.next();
@@ -149,7 +149,7 @@ public class QueryHelper {
                             .name();
                     queryWithOrderBy.append(count == 0 ? ORDER_BY : ORDER_PROPERTY_SEPARATOR);
                     final String quotedParam = dialect.quote(quoteWithBackTick(order.getProperty()));
-                    queryWithOrderBy.append(quotedParam + EMPTY_SPACE + direction);
+                    queryWithOrderBy.append(quotedParam).append(EMPTY_SPACE).append(direction);
                     count++;
                 }
             }
@@ -164,7 +164,7 @@ public class QueryHelper {
         }
 
         if (str.charAt(0) != '`') {
-            return new StringBuilder().append(BACK_TICK).append(str).append(BACK_TICK).toString();
+            return BACK_TICK + str + BACK_TICK;
         }
 
         return str;
@@ -175,6 +175,11 @@ public class QueryHelper {
             query.setResultTransformer(Transformers.aliasToMappedClass(type));
         }
     }
+
+    public static Query createQuery(final Session session, final boolean isNative, final String query) {
+        return (isNative) ? session.createSQLQuery(query) : session.createQuery(query);
+    }
+
 
     public static Long getQueryResultCount(
             String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
@@ -306,14 +311,14 @@ public class QueryHelper {
 
     public static SQLQuery createNativeQuery(String queryString, Map<String, Object> params, final Session session) {
         SQLQuery sqlQuery = session.createSQLQuery(queryString);
-        QueryHelper.setResultTransformer(sqlQuery, Object.class);
+        QueryHelper.setResultTransformer(sqlQuery, Map.class);
         QueryHelper.configureParameters(sqlQuery, params);
         return sqlQuery;
     }
 
     public static Query createHQLQuery(String queryString, Map<String, Object> params, final Session session) {
         Query hqlQuery = session.createQuery(queryString);
-        QueryHelper.setResultTransformer(hqlQuery, Object.class);
+        QueryHelper.setResultTransformer(hqlQuery, Map.class);
         QueryHelper.configureParameters(hqlQuery, params);
         return hqlQuery;
     }
