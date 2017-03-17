@@ -161,7 +161,10 @@ WM.module('wm.widgets.advanced')
                                     eventSet.push(event);
                                 }
                             });
-                            $is.eventSources.push(eventSet);
+                            //as the calendar is not yet rendered, the fullcalendar tries to draw the events when events are bound. hence delay the event assignment.
+                            $timeout(function () {
+                                $is.eventSources.push(eventSet);
+                            });
                         }
                     }
                     break;
@@ -312,7 +315,7 @@ WM.module('wm.widgets.advanced')
                             $is.onEventclick({$event: jsEvent, $data: event, $view: view});
                         }
                         function viewRenderProxy(view) {
-                            $is.currentview = {start: view.start.format(), end: view.end.format()};
+                            $is.currentview = {start: view.start.format(), end: view.end.subtract(1, 'days').format()};
                             $is.onViewrender({$view: view});
                         }
                         function eventRenderProxy(event, jsEvent, view) {

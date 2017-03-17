@@ -536,7 +536,7 @@ WM.module('wm.widgets.base', [])
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "width": {"type": "string", "value": "100%", "pattern": dimensionRegex},
-                        "height": {"type": "string", "value": "500px", "pattern": dimensionRegex},
+                        "height": {"type": "string", "pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "selectionmode": {"type": "list", "widget": "select-by-object", "value": "none", "options": [{"label": "None", "value": "none"}, {"label": "Single", "value": "single"}, {"label": "Multiple", "value": "multiple"}]},
