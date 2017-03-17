@@ -1503,11 +1503,13 @@ wm.variables.services.Variables = [
             },
 
             /* process the requests in the queue for a variable based on the inFlightBehavior flag of the variable */
-            processRequestQueue = function (variable, requestQueue, handler) {
+            processRequestQueue = function (variable, requestQueue, handler, options) {
                 /* process request queue for the variable only if it is not empty */
                 if (requestQueue && requestQueue[variable.name] && requestQueue[variable.name].length) {
-                    var requestObj;
-                    switch (variable.inFlightBehavior) {
+                    var requestObj,
+                        inFlightBehavior = _.get(options, 'inFlightBehavior') || variable.inFlightBehavior;
+
+                    switch (inFlightBehavior) {
                     case 'executeLast':
                         requestObj = requestQueue[variable.name].pop();
                         handler(requestObj.variable, requestObj.options, requestObj.success, requestObj.error);
