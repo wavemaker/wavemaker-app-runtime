@@ -1984,7 +1984,7 @@ WM.module('wm.widgets.grid')
                     $is.serverData = data;
                 }
                 //For live variable, on update/insert while selecting the row, remove the keys with empty array
-                if ($is.variable && $is.variable.category === 'wm.LiveVariable') {
+                if (_.isObject(item) && $is.variable && $is.variable.category === 'wm.LiveVariable') {
                     item = _.omitBy(item, function (value) {
                         return _.isArray(value) && _.isEmpty(value);
                     });
@@ -2220,6 +2220,9 @@ WM.module('wm.widgets.grid')
                 checkFiltersApplied(variableSort);
                 if ($is.isClientSearch) {
                     data = Utils.getClonedObject(newVal);
+                    if (WM.isObject(data) && !WM.isArray(data)) {
+                        data = [data];
+                    }
                     data = getSearchResult(data, $is.filterInfo);
                     data = getSortResult(data, $is.sortInfo);
                     return data;
