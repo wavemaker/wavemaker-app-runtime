@@ -70,8 +70,10 @@ WM.module('wm.layouts.containers')
             }
             
             function navigateToStep($is, stepIndex) {
-                $is.currentStep        = $is.steps[stepIndex];
-                $is.currentStep.status = STEP_STATUS.CURRENT;
+                if ($is.steps[stepIndex]) {
+                    $is.currentStep        = $is.steps[stepIndex];
+                    $is.currentStep.status = STEP_STATUS.CURRENT;
+                }
             }
 
             return {
@@ -109,18 +111,23 @@ WM.module('wm.layouts.containers')
                     if (CONSTANTS.isRunMode) {
                         //Function to navigate to next step
                         $is.next = function () {
-                            var params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
+                            var params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex},
+                                stepIndex;
                             if ($is.currentStep.onNext) {
                                 if ($is.currentStep.onNext(params) === false) {
                                     return;
                                 }
                             }
                             $is.currentStep.status = STEP_STATUS.COMPLETED;
-                            navigateToStep($is, $is.currentStep.stepIndex + 1);
+                            stepIndex = $is.currentStep.stepIndex + 1;
+                            stepIndex = $is.steps[stepIndex].show ? stepIndex : stepIndex + 1;
+
+                            navigateToStep($is, stepIndex);
                         };
                         //Function to navigate to previous step
                         $is.prev = function () {
-                            var params;
+                            var params,
+                                stepIndex;
                             if ($is.currentStep.onPrev) {
                                 params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
                                 if ($is.currentStep.onPrev(params) === false) {
@@ -128,7 +135,9 @@ WM.module('wm.layouts.containers')
                                 }
                             }
                             $is.currentStep.status = STEP_STATUS.DISABLED;
-                            navigateToStep($is, $is.currentStep.stepIndex - 1);
+                            stepIndex = $is.currentStep.stepIndex - 1;
+                            stepIndex = $is.steps[stepIndex].show ? stepIndex : stepIndex - 1;
+                            navigateToStep($is, stepIndex);
                         };
                         //Function to skip current step
                         $is.skip = function () {
@@ -193,7 +202,7 @@ WM.module('wm.layouts.containers')
 
             var widgetProps    = PropertiesFactory.getPropertiesOf('wm.wizardstep', ['wm.base']),
                 STEP_STATUS    = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'},
-                $headerElement = '<li class="app-wizard-step" ng-class="{active: status === \'COMPLETED\', current: status === \'CURRENT\', disabled: status === \'DISABLED\'}">' +
+                $headerElement = '<li class="app-wizard-step" ng-show="show" ng-class="{active: status === \'COMPLETED\', current: status === \'CURRENT\', disabled: status === \'DISABLED\'}">' +
                                     '<a href="javascript:void(0)">' +
                                         '<span class="arrow"></span>' +
                                         '<i class="app-icon {{iconclass}}" ng-if="iconclass"></i> ' +
