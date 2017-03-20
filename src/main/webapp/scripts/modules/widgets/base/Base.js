@@ -52,7 +52,7 @@ WM.module('wm.widgets.base', [])
                 {
                     "name" : "Decimal Digits",
                     "groupOptions" : {
-                        ".f" :  "9",
+                        ".0f" :  "9",
                         ".1f" : "9.9",
                         ".2f" : "9.99",
                         ".3f" : "9.999"
