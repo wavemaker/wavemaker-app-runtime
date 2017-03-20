@@ -171,7 +171,7 @@ WM.module('wm.widgets.base', [])
                     "wm.base": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
+                        "deferload": {"type": "boolean", "value": false, "show": false},
                         "class": {"type": "string", "pattern": classRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
@@ -1007,7 +1007,7 @@ WM.module('wm.widgets.base', [])
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "class": {"type": "string", "pattern": classRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
+                        "deferload": {"type": "boolean", "value": false, "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
@@ -1275,7 +1275,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
+                        "deferload": {"type": "boolean", "value": false, "show": false},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]},
                         "columns": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"]},
                         "backgroundcolor": {"type": "string", "widget": "color", "show": false},
@@ -1331,7 +1331,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.view': {
                         "show": {"type": "boolean", "value": true, "bindable" : "in-out-bound"},
-                        "deferload": {"type": "boolean", "value": false, "show": false, "ignoreGetterSetters": true},
+                        "deferload": {"type": "boolean", "value": false, "show": false},
                         "viewgroup": {"type": "string", "value": "default"},
                         "animation": {"type": "list", "options": animationOptions}
                     },
