@@ -1162,7 +1162,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.panel': {
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "title": {"type": "string", "value": "Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
@@ -1677,6 +1677,8 @@ WM.module('wm.widgets.base', [])
                     "wm.wizardstep": {
                         "title": {"type": "string", "value": "Step Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "disablenext": {"type": "boolean", "value": false, "show": false},
+                        "disableprevious": {"type": "boolean", "value": false, "show": false},
+                        "disabledone": {"type": "boolean", "value": false, "show": false},
                         "enabledone": {"type": "boolean", "value": false, "show": false},
                         "enableskip": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
@@ -2030,7 +2032,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
+                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "interaction", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
