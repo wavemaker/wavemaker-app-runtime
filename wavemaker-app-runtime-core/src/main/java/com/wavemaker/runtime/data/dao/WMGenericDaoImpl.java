@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.data.dao.callbacks.RuntimePaginatedCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
@@ -47,11 +49,13 @@ import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
+import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
+import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
-import com.wavemaker.commons.util.Tuple;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
         WMGenericDao<Entity, Identifier> {
@@ -63,8 +67,9 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void init() {
-        if (getTemplate() == null)
+        if (getTemplate() == null) {
             throw new RuntimeException("hibernate template is not set.");
+        }
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
         this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
@@ -243,5 +248,18 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
             }
         });
+    }
+
+    @Override
+    public Page<Map<String, Object>> getAggregatedValues(
+            final AggregationInfo aggregationInfo, final Pageable pageable) {
+        HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
+        builder.withAggregationInfo(aggregationInfo);
+
+        final WMQueryInfo queryInfo = builder.build();
+        String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
+        return getTemplate()
+                .execute(new RuntimePaginatedCallback(queryInfo.getQuery(), countQuery, queryInfo.getParameters(),
+                        pageable));
     }
 }

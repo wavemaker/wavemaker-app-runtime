@@ -15,21 +15,18 @@
  */
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import java.util.List;
+import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate4.HibernateCallback;
 
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.QueryInfo;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 15/11/16
  */
-public class NamedQueryCallback<T> implements HibernateCallback<T> {
+public class NamedQueryCallback<T> extends AbstractQueryCallback<T> {
 
     private final QueryInfo<T> queryInfo;
 
@@ -38,15 +35,18 @@ public class NamedQueryCallback<T> implements HibernateCallback<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public T doInHibernate(final Session session) throws HibernateException {
-        final Query namedQuery = session.getNamedQuery(queryInfo.getQueryName());
-        QueryHelper.configureParameters(namedQuery, queryInfo.getParams());
-        QueryHelper.setResultTransformer(namedQuery, queryInfo.getReturnClass());
+    protected Query getQuery(final Session session) {
+        return session.getNamedQuery(queryInfo.getQueryName());
+    }
 
+    @Override
+    protected Map<String, Object> getParameters() {
+        return queryInfo.getParams();
+    }
 
-        final List list = namedQuery.list();
-        return list.isEmpty() ? null : (T) list.get(0);
+    @Override
+    protected Class<T> getReturnType() {
+        return queryInfo.getReturnClass();
     }
 
 }

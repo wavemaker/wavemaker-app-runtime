@@ -15,28 +15,23 @@
  */
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import java.util.List;
+import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.data.domain.Pageable;
 
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.google.common.base.Optional;
 import com.wavemaker.runtime.data.model.PageableQueryInfo;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 15/11/16
  */
-public class PaginatedNamedQueryCallback<T> implements HibernateCallback<Page<T>> {
+public class PaginatedNamedQueryCallback<T> extends AbstractPaginatedQueryCallback<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaginatedNamedQueryCallback.class);
 
@@ -47,37 +42,37 @@ public class PaginatedNamedQueryCallback<T> implements HibernateCallback<Page<T>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Page<T> doInHibernate(final Session session) throws HibernateException {
-        Query namedQuery = session.getNamedQuery(queryInfo.getQueryName());
-
-        final Class<T> responseType = queryInfo.getReturnClass();
-        final Sort sort = queryInfo.getPageable().getSort();
-        if (namedQuery instanceof SQLQuery) {
-            namedQuery = QueryHelper.createNewNativeQueryWithSorted(session, (SQLQuery) namedQuery,
-                    responseType, sort);
-        } else {
-            namedQuery = QueryHelper.createNewHqlQueryWithSorted(session, namedQuery, responseType, sort);
-        }
-        QueryHelper.setResultTransformer(namedQuery, responseType);
-        QueryHelper.configureParameters(namedQuery, queryInfo.getParams());
-
-        namedQuery.setFirstResult(queryInfo.getPageable().getOffset());
-        namedQuery.setMaxResults(queryInfo.getPageable().getPageSize());
-
-        return new WMPageImpl<T>((List<T>) namedQuery.list(), queryInfo.getPageable(), findCount(session));
+    protected Query getQuery(final Session session) {
+        return session.getNamedQuery(queryInfo.getQueryName());
     }
 
-    private long findCount(Session session) {
+    @Override
+    protected Optional<Query> getCountQuery(final Session session) {
+        Optional<Query> optionalQuery = Optional.absent();
+
         try {
             final Query countQuery = session.getNamedQuery(queryInfo.getQueryName() + "__count");
-            QueryHelper.configureParameters(countQuery, queryInfo.getParams());
 
-            final Object result = countQuery.uniqueResult();
-            return result == null ? 0 : ((Number) result).longValue();
+            optionalQuery = Optional.of(countQuery);
         } catch (MappingException e) {
             LOGGER.debug("Count query not configured, returning max count, ERROR:{} ", e.getMessage());
-            return Integer.MAX_VALUE;
         }
+
+        return optionalQuery;
+    }
+
+    @Override
+    protected Map<String, Object> getParameters() {
+        return queryInfo.getParams();
+    }
+
+    @Override
+    protected Pageable getPageable() {
+        return queryInfo.getPageable();
+    }
+
+    @Override
+    protected Class<T> getReturnType() {
+        return queryInfo.getReturnClass();
     }
 }
