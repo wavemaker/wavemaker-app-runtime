@@ -7,7 +7,7 @@ WM.module('wm.widgets.dialog')
         $templateCache.put('template/widget/dialog/logindialog.html',
                 '<div class="app-dialog modal-dialog app-login-dialog" ng-style="{width: width}" init-widget>' +
                     '<div class="modal-content">' +
-                        '<wm-dialogheader iconclass="{{iconclass}}" caption="{{title}}"></wm-dialogheader>' +
+                        '<wm-dialogheader closable="{{closable}}" iconclass="{{iconclass}}" caption="{{title}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" wmtransclude></div>' +
                     '</div>' +
                 '</div>'

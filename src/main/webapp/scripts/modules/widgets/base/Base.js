@@ -877,7 +877,7 @@ WM.module('wm.widgets.base', [])
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
                         "actiontitle": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "actionlink": {"type": "string", "show": false, "pattern": dimensionRegex},
-                        "closable": {"type": "boolean", "show": false},
+                        "closable": {"type": "boolean", "show": true, "value": true},
                         "contentclass": {"type": "string", "pattern": classRegex, "show": false}
                     },
                     "wm.dialog.dialogheader": {
@@ -886,7 +886,7 @@ WM.module('wm.widgets.base', [])
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
-                        "closable": {"type": "boolean", "show": false}
+                        "closable": {"type": "boolean", "show": true, "value": true}
                     },
                     "wm.dialog.onOk": {
                         "onOk": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
@@ -939,7 +939,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"show": false},
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "closable": {"type": "boolean", "value": true},
+                        "closable": {"type": "boolean", "value": false, "show": false},
                         "modal": {"type": "boolean", "value": true},
                         "keyboard": {"type": "boolean", "value": true},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
