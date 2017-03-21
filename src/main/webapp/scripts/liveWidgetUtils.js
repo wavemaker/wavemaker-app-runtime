@@ -16,17 +16,21 @@ WM.module('wm.widgets.live')
         'CONSTANTS',
         'WidgetUtilService',
         'Variables',
-        'QueryBuilder',
-        'DialogService',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, QueryBuilder, DialogService) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
                 eventTypes             = definedEvents.concat(['onMouseleave', 'onMouseenter', 'onClick', 'onSelect', 'onSubmit']),
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
-                isDataSetWidgets       = Utils.getDataSetWidgets();
+                isDataSetWidgets       = Utils.getDataSetWidgets(),
+                LIVE_CONSTANTS         = {
+                    'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',
+                    'EMPTY_VALUE' : $rs.appLocale.LABEL_NO_VALUE,
+                    'LABEL_KEY'   : 'key',
+                    'LABEL_VALUE' : 'value'
+                };
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#formatBooleanValue
@@ -425,7 +429,7 @@ WM.module('wm.widgets.live')
                     formEvents.push('onSubmit');
                 }
                 evtTypes          = _.pull(getEventTypes(), formEvents);
-                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted']);
+                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
                 fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
                     if (!fieldDef[field]) {
@@ -615,7 +619,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSearchTemplate(fieldDef, index) {
-                var additionalFields = ' type="autocomplete" relatedfield="{{formFields[' + index + '].relatedfield}}"  width="{{formFields[' + index + '].width}}"' +  getDataSetFields(fieldDef, index);
+                var additionalFields = ' type="autocomplete" dataoptions="formFields[' + index + '].dataoptions"  width="{{formFields[' + index + '].width}}"' +  getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
             }
             /**
@@ -999,15 +1003,25 @@ WM.module('wm.widgets.live')
                 switch (key) {
                 case 'dataset':
                     /*if studio-mode, then update the displayField & dataField in property panel for dataset widgets*/
-                    if (scope.widgetid && isDataSetWidgets[attrs.widget] && WM.isDefined(newVal) && newVal !== null) {
-                        if (newVal === '') {
-                            scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': ''});
+                    if (scope.widgetid && isDataSetWidgets[attrs.widget]) {
+                        if (WM.isDefined(newVal) && newVal !== null) {
+                            if (newVal === '') {
+                                scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
+                                wdgtProperties.limit.show = true;
+                            } else {
+                                wdgtProperties.limit.show = scope.widget === 'autocomplete';
+                            }
+                            WidgetUtilService.updatePropertyPanelOptions(scope);
+                            if (scope.widget === 'autocomplete') {
+                                FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
+                            }
+                            element.removeAttr('data-evaluated-dataset');
+                        } else {
+                            //Show limit if dataset is not bound
+                            wdgtProperties.limit.show = true;
                         }
-                        WidgetUtilService.updatePropertyPanelOptions(scope);
-                        if (scope.widget === 'autocomplete') {
-                            FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
-                        }
-                        element.removeAttr('data-evaluated-dataset');
+                        //Refresh the properties panel sub group show/false as limit property is updated
+                        scope.$emit('wms:refresh-properties-panel');
                     }
                     break;
                 case 'inputtype':
@@ -1170,6 +1184,7 @@ WM.module('wm.widgets.live')
                     if (widgetType === 'autocomplete') {
                         widgetProps.type.show = false;
                     }
+                    widgetProps.limit = {'type': 'number', 'show': true};
                 } else if (widgetType === 'upload') {
                     widgetProps = WM.extend(widgetProps, {
                         'readonly'   : {'type': 'boolean', 'bindable': 'in-bound', 'show': true},
@@ -1718,6 +1733,35 @@ WM.module('wm.widgets.live')
             }
             /**
              * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getDistinctFieldProperties
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns the properties required for dataset widgets
+             *
+             * @param {object} variable variable for the widget
+             * @param {object} formField definition of the column/ field
+             *
+             */
+            function getDistinctFieldProperties(variable, formField) {
+                var props = {},
+                    fieldColumn;
+                if (formField.isRelated) {
+                    props.tableName     = formField.lookupType;
+                    fieldColumn         = formField.lookupField;
+                    props.distinctField = fieldColumn;
+                    props.aliasColumn   = fieldColumn.replace('.', '$'); //For related fields, In response . is replaced by $
+                } else {
+                    props.tableName     = variable.propertiesMap.entityName;
+                    fieldColumn         = formField.field || formField.key;
+                    props.distinctField = fieldColumn;
+                    props.aliasColumn   = fieldColumn;
+                }
+                return props;
+            }
+            /**
+             * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getDistinctValues
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -1725,50 +1769,24 @@ WM.module('wm.widgets.live')
              * @description
              * Returns the distinct values for a field
              *
-             * @param {object} filterField definition of the column/ field
+             * @param {object} formField definition of the column/ field
+             * @param {string} widget widget property on the field
              * @param {object} variable variable for the widget
              * @param {function} callBack Function to be executed after fetching results
              *
              */
-            function getDistinctValues(filterField, variable, callBack) {
-                var query,
-                    tableName,
-                    columns,
-                    aliasColumn,
-                    fieldColumn,
+            function getDistinctValues(formField, widget, variable, callBack) {
+                var props,
                     dataSetWidgetTypes = Utils.getDataSetWidgets();
 
-                fieldColumn = filterField.field;
-                if (dataSetWidgetTypes[filterField.widget || filterField.filterwidget] && !filterField.tempDataset) {
-                    if (filterField.isRelated) {
-                        tableName   = filterField.lookupType;
-                        columns     = filterField.lookupField;
-                        aliasColumn = columns.replace('.', '_');
-                        query       = QueryBuilder.getQuery({
-                            'tableName' : tableName,
-                            'columns'   : [' DISTINCT ' + columns + ' AS ' + aliasColumn]
-                        });
-                    } else {
-                        aliasColumn = fieldColumn;
-                        query       = QueryBuilder.getQuery({
-                            'tableName' : variable.propertiesMap.entityName,
-                            'columns'   : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field]
-                        });
-                    }
-                    /* Sending size = 500 because we want to populate all data values in widgets
-                     * like select box, checkbox set etc.
-                     * NOTE: Currently backend is returning max. 100 records for any page size
-                     * more than 100. So this size will need to change once backend is fixed to
-                     * return all records instead of max 100 records in this case. */
-                    QueryBuilder.executeQuery({
-                        'databaseName' : variable.liveSource,
-                        'query'        : query,
-                        'page'         : 1,
-                        'size'         : 500,
-                        'nativeSql'    : false,
-                        'prefabName'   : variable._prefabName
+                if (dataSetWidgetTypes[formField[widget]] && !formField.isDataSetBound) {
+                    props = getDistinctFieldProperties(variable, formField);
+                    variable.getDistinctDataByFields({
+                        'fields'        : props.distinctField,
+                        'entityName'    : props.tableName,
+                        'pagesize'      : formField.limit
                     }, function (data) {
-                        callBack(filterField, data, aliasColumn);
+                        callBack(formField, data, props.aliasColumn);
                     });
                 }
             }
@@ -1918,15 +1936,15 @@ WM.module('wm.widgets.live')
                 primaryKeys         = boundVariable.getRelatedTablePrimaryKeys(relatedField);
                 columnDef.datafield = datafield;
                 displayField        = datafield === 'All Fields' ? undefined : datafield;
-                //For autocomplete widget, set the dataset and related field. Autocomplete widget will make the call to get related data
+                //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (widget === 'autocomplete' || widget === 'typeahead') {
-                    columnDef.relatedfield = relatedField;
+                    columnDef.dataoptions  = {'relatedField': relatedField};
                     columnDef.dataset      = parentScope.binddataset;
                     displayField           = displayField || (_.isEmpty(primaryKeys) ? undefined : primaryKeys[0]);
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displaylabel || displayField;
                 } else {
-                    boundVariable.getRelatedTableData(relatedField, {}, function (response) {
+                    boundVariable.getRelatedTableData(relatedField, {'pagesize': columnDef.limit}, function (response) {
                         columnDef.dataset       = response;
                         columnDef.isDefinedData = true;
                         displayField            = displayField || (_.isEmpty(primaryKeys) ? _.head(_.keys(_.get(response, '[0]'))) : primaryKeys[0]);
@@ -1934,6 +1952,112 @@ WM.module('wm.widgets.live')
                     });
                 }
             }
+
+            //Set the data field properties on dataset widgets
+            function setDataFields(formField, widget, dataOptions) {
+                if (formField[widget] === 'typeahead' || formField[widget] === 'autocomplete') { //For search widget, set search key and display label
+                    formField.datafield    = dataOptions.aliasColumn;
+                    formField.searchkey    = dataOptions.distinctField;
+                    formField.displaylabel = dataOptions.aliasColumn;
+                } else {
+                    formField.datafield    = LIVE_CONSTANTS.LABEL_KEY;
+                    formField.displayfield = LIVE_CONSTANTS.LABEL_VALUE;
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#setFieldDataSet
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to set the dataSet on the fields
+             *
+             * @param {object} formField definition of the column/ field
+             * @param {object} data data returned from the server
+             * @param {string} aliasColumn column field name
+             * @param {string} widget widget property on the field
+             * @param {boolean} isEnableEmptyFilter is null or empty values allowed on filter
+             *
+             */
+            function setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter) {
+                var emptySupportWidgets = ['select', 'radioset'],
+                    emptyOption         = {};
+                formField.dataset = [];
+                if (isEnableEmptyFilter && _.includes(emptySupportWidgets, formField[widget]) && !formField.isRange && !formField.multiple) {
+                    //If empty option is selected, push an empty object in to dataSet
+                    emptyOption[LIVE_CONSTANTS.LABEL_KEY]   = LIVE_CONSTANTS.EMPTY_KEY;
+                    emptyOption[LIVE_CONSTANTS.LABEL_VALUE] = LIVE_CONSTANTS.EMPTY_VALUE;
+                    formField.dataset.push(emptyOption);
+                }
+                _.each(data.content, function (key) {
+                    var value  = key[aliasColumn],
+                        option = {};
+                    if (value !== null && value !== '') {
+                        option[LIVE_CONSTANTS.LABEL_KEY]   = value;
+                        option[LIVE_CONSTANTS.LABEL_VALUE] = value;
+                        formField.dataset.push(option);
+                    }
+                });
+                setDataFields(formField, widget, aliasColumn);
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getDistinctValuesForField
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to fetch the distinct values for a field
+             *
+             * @param {object} scope scope of the widget
+             * @param {object} formFields definitions of the column/ field
+             * @param {string} widget widget property on the field
+             * @param {boolean} isEnableEmptyFilter is null or empty values allowed on filter
+             *
+             */
+            function getDistinctValuesForField(scope, formField, widget, isEnableEmptyFilter) {
+                var variable = scope.Variables[scope.variableName || Utils.getVariableName(scope)];
+                if (!variable || variable.category !== 'wm.LiveVariable' || scope.widgetid || !formField || formField.isDataSetBound) {
+                    return;
+                }
+                //For autocomplete widget, widget will fetch the data. Set properties on the widget itself. Other widgets, fetch the data.
+                if (formField[widget] === 'autocomplete') {
+                    formField.dataoptions = getDistinctFieldProperties(variable, formField);
+                    setDataFields(formField, widget, formField.dataoptions);
+                    formField.dataset     = scope.binddataset;
+                } else {
+                    getDistinctValues(formField, widget, variable, function (formField, data, aliasColumn) {
+                        setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter);
+                    });
+                }
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#fetchDistinctValues
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to fetch the distinct values for a field
+             *
+             * @param {object} scope scope of the widget
+             * @param {object} formFields definitions of the column/ field
+             * @param {string} widget widget property on the field
+             * @param {boolean} isEnableEmptyFilter is null or empty values allowed on filter
+             *
+             */
+            function fetchDistinctValues(scope, formFields, widget, isEnableEmptyFilter) {
+                if (scope.widgetid || _.isEmpty(scope[formFields])) {
+                    return;
+                }
+                _.forEach(scope[formFields], function (formField) {
+                    getDistinctValuesForField(scope, formField, widget, isEnableEmptyFilter)
+                });
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.getEditModeWidget
@@ -1983,6 +2107,10 @@ WM.module('wm.widgets.live')
             this.parseNgClasses             = parseNgClasses;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
             this.getEditModeWidget          = getEditModeWidget;
+            this.setFieldDataSet            = setFieldDataSet;
+            this.fetchDistinctValues        = fetchDistinctValues;
+            this.getDistinctValuesForField  = getDistinctValuesForField;
+            this.getDistinctFieldProperties = getDistinctFieldProperties;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

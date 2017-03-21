@@ -1487,7 +1487,7 @@ WM.module('wm.widgets.grid')
                     if (!$is.shownavigation) {
                         refreshLiveFilter();
                     }
-                    $is.Widgets[$is.widgetName].updateAllowedValues();
+                    $is.Widgets[$is.widgetName].fetchDistinctValues();
                     return;
                 }
                 if (variable && !$is.shownavigation) {
@@ -2766,6 +2766,7 @@ WM.module('wm.widgets.grid')
                             'searchable'        : (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'rowactionsposition': attrs.rowactionsposition,
+                            'limit'             : attrs.limit ? +attrs.limit : undefined,
                             'filterwidget'      : attrs.filterwidget || getFilterWidget(attrs.type || 'string'),
                             'filterplaceholder' : attrs.filterplaceholder,
                             'relatedEntityName' : attrs.relatedEntityName,
@@ -2829,10 +2830,23 @@ WM.module('wm.widgets.grid')
                                     return;
                                 }
                             }
-                            //Fetch the data for the related fields
-                            if (!attrs.dataset && columnDef.relatedEntityName && columnDef.primaryKey && isDataSetWidgets[columnDef.editWidgetType]) {
-                                bindings = _.split(columnDef.field, '.');
-                                LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
+                            if (attrs.dataset) {
+                                /*If dataset is undefined, fetch the default values for field*/
+                                columnDef.isDataSetBound = true;
+                            } else {
+                                if (isDataSetWidgets[columnDef.editWidgetType]) {
+                                    if (columnDef.relatedEntityName && columnDef.primaryKey) {
+                                        //Fetch the data for the related fields
+                                        columnDef.isDataSetBound = true;
+                                        bindings = _.split(columnDef.field, '.');
+                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
+                                    } else {
+                                        LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
+                                        if (columnDef.editWidgetType === 'autocomplete') {
+                                            columnDef.isDataSetBound = true;
+                                        }
+                                    }
+                                }
                             }
                         }
                         //Set the headet config for grouping structure
@@ -2848,7 +2862,7 @@ WM.module('wm.widgets.grid')
                             _.forEach(exprWatchHandlers, Utils.triggerFn);
                         });
                         //Fetch the filter options for select widget when filtermode is row
-                        if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && columnDef.filterwidget === 'select') {
+                        if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && isDataSetWidgets[columnDef.filterwidget]) {
                             variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
                             if (variable && variable.category === 'wm.LiveVariable') {
                                 columnDef.isLiveVariable = true;
@@ -2857,9 +2871,13 @@ WM.module('wm.widgets.grid')
                                     columnDef.lookupType  = columnDef.relatedEntityName;
                                     columnDef.lookupField = _.split(columnDef.field, '.')[1];
                                 }
-                                LiveWidgetUtils.getDistinctValues(columnDef, variable, function (field, data, aliascolumn) {
-                                    field.filterdataset = _.pull(_.map(data.content, aliascolumn), null);
-                                });
+                                if (columnDef.filterwidget === 'autocomplete') {
+                                    columnDef.filterdataoptions = LiveWidgetUtils.getDistinctFieldProperties(variable, columnDef);
+                                } else {
+                                    LiveWidgetUtils.getDistinctValues(columnDef, 'filterwidget', variable, function (field, data, aliascolumn) {
+                                        field.filterdataset = _.pull(_.map(data.content, aliascolumn), null);
+                                    });
+                                }
                             }
                         }
                     }

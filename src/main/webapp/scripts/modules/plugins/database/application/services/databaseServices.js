@@ -1856,6 +1856,26 @@ wm.plugins.database.services.DatabaseService = [
             searchTableDataWithQuery: function (params, successCallback, failureCallback) {
                 return initiateAction('searchTableDataWithQuery', params, successCallback, failureCallback);
             },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#getDistinctData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to fetch the distinct data specific to the given field
+             * @param {object} params
+             *                 Object containing name of the project & details of the table.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getDistinctDataByFields: function (params, successCallback, failureCallback) {
+                return initiateAction('getDistinctDataByFields', params, successCallback, failureCallback);
+            },
             /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#exportTableData

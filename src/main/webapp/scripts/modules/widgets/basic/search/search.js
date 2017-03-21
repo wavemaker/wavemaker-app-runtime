@@ -182,11 +182,13 @@ WM.module('wm.widgets.basic')
 
                 // set the queryModel by checking the matched item based on formattedDataSet.
                 $is.queryModel = _.find($is.formattedDataSet, function (item) {
+                    var itemValue;
                     if ($is.datafield === ALL_FIELDS || $is.datafield === '') {
                         return _.isEqual(item, $is._proxyModel);
                     }
                     // type conversion required here. hence `==` is used instead of `===`
-                    return _.get(item, $is.datafield) == $is._proxyModel;
+                    itemValue = _.get(item, $is.datafield);
+                    return itemValue && itemValue == $is._proxyModel;
                 });
 
                 if (!$is.queryModel) {
@@ -550,6 +552,12 @@ WM.module('wm.widgets.basic')
                         $is.page       = response.number + 1;
                         $is.isLastPage = isLastPage($is.page, response.totalElements, response.size);
                         $is.isPaginatedData = true;
+                        /*TODO: This workaround is because backend is not giving the last page in distinct api. Remove after issue is fixed in backend*/
+                        if ($is.page > 1 && !$is.isLastPage && _.isEmpty(response.content) && response.totalElements === CONSTANTS.INT_MAX_VALUE) {
+                            $is.isLastPage = true;
+                            deferred.resolve($is.itemList);
+                            return;
+                        }
                     }
                     //if data expression exists, extract the data from the expression path
                     if (dataExpression) {
@@ -606,8 +614,22 @@ WM.module('wm.widgets.basic')
                     if (!$is.searchkey) {
                         deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
                     } else {
-                        if ($is.relatedfield) {
-                            variable.getRelatedTableData($is.relatedfield, requestParams, handleQuerySuccess, handleQueryError);
+                        //If options are specified, make specifics calls to fetch the results
+                        if ($is.dataoptions) {
+                            if ($is.dataoptions.relatedField) { //Fetch the related field data
+                                variable.getRelatedTableData($is.dataoptions.relatedField, requestParams, handleQuerySuccess, handleQueryError);
+                            } else if ($is.dataoptions.distinctField) { //Fetch the distinct data
+                                variable.getDistinctDataByFields({
+                                    'fields'        : $is.dataoptions.distinctField,
+                                    'entityName'    : $is.dataoptions.tableName,
+                                    'page'          : $is.page,
+                                    'pagesize'      : $is.limit,
+                                    'filterFields'  : _.assign($is.dataoptions.filterFields, requestParams.filterFields)
+                                }, handleQuerySuccess, handleQueryError);
+                            }
+                            defaultQuery = false;
+                            //Remove the dataset watcher as explicit calls are made to fetch data
+                            Utils.triggerFn($is._watchers.dataset);
                         } else {
                             variable.update(requestParams, handleQuerySuccess, handleQueryError);
                         }
@@ -718,6 +740,7 @@ WM.module('wm.widgets.basic')
                 'replace': true,
                 'scope': {
                     'scopedataset': '=?',
+                    'dataoptions': '=?',
                     'onSubmit': '&',
                     'onSelect': '&',
                     'query': '=?'

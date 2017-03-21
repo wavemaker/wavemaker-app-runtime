@@ -1230,9 +1230,21 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        //Fetch the data for the related fields
-                        if (CONSTANTS.isRunMode && !attrs.dataset && attrs.isRelated && isDataSetWidgets[columnDef.widget]) {
-                            LiveWidgetUtils.fetchRelatedFieldData(columnDef, columnDef.key, 'All Fields', columnDef.widget, elScope, parentScope);
+                        if (CONSTANTS.isRunMode) {
+                            if (attrs.dataset) {
+                                /*If dataset is undefined, fetch the default values for field*/
+                                columnDef.isDataSetBound = true;
+                            } else {
+                                if (isDataSetWidgets[columnDef.widget]) {
+                                    if (attrs.isRelated) {
+                                        //Fetch the data for the related fields
+                                        columnDef.isDataSetBound = true;
+                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, columnDef.key, 'All Fields', columnDef.widget, elScope, parentScope);
+                                    } else {
+                                        LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'widget');
+                                    }
+                                }
+                            }
                         }
 
                         if (isLayoutDialog) {

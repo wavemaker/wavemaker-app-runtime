@@ -274,6 +274,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
                 'Content-Type': "application/x-www-form-urlencoded"
             }
         },
+        getDistinctDataByFields: {
+            url: "/:service/:dataModelName/:entityName/aggregations?page=:page&size=:size&:sort",
+            method: "POST"
+        },
         exportTableData: {
             url: "/:service/:dataModelName/:entityName/export/:exportFormat?size=:size&:sort",
             method: "POST"

@@ -600,16 +600,18 @@ $.widget('wm.datagrid', {
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
             properties    = disabledTl + dataFieldName + eventTemplate + required,
-            index         = colDef.index;
+            index         = colDef.index,
+            //If dataset is bound, set the dataset. Else, set the scopedataset.
+            dataSetTl     = colDef.isDataSetBound && !colDef.isDefinedData ? 'dataset="' + colDef.dataset + '"' : ' scopedataset="fullFieldDefs[' + index + '].dataset"';
         switch (colDef.editWidgetType) {
         case 'select':
             cellText = cellText || '';
-            template =  '<wm-select ' + properties + (colDef.isDefinedData ? ' scopedataset="fullFieldDefs[' + index + '].dataset"' : 'dataset="' + colDef.dataset + '"') + ' datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-select ' + properties + dataSetTl + ' datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'autocomplete':
         case 'typeahead':
             $el.addClass('datetime-wrapper');
-            template =  '<wm-search ' + properties + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" ' + (colDef.relatedfield ? ' relatedfield="' + colDef.relatedfield + '"' : '') + ' type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-search ' + properties + dataSetTl + ' datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" ' + (colDef.dataoptions ? ' dataoptions="fullFieldDefs[' + index + '].dataoptions"' : '') + ' type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
@@ -2132,7 +2134,8 @@ $.widget('wm.datagrid', {
             placeholder = field.filterplaceholder || '',
             fieldName   = field.field,
             widgetName  = ' name="' + this.options.name + '_filter_' + fieldName + '"',
-            template;
+            template,
+            filterOptions;
         widget = widget === 'number' ? 'text' : widget;
         widget = widget === 'autocomplete' ? 'search' : widget;
         template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange(\'' + fieldName + '\',\'' + field.type + '\')" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
@@ -2149,7 +2152,13 @@ $.widget('wm.datagrid', {
             template += ' orderby="' + fieldName + ':asc"';
             break;
         case 'autocomplete':
-            template += ' type="autocomplete" dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" on-submit="onRowFilterChange()" orderby="' + fieldName + ':asc"';
+            if (field.isLiveVariable) {
+                filterOptions = field.filterdataoptions;
+                template += ' dataoptions="fullFieldDefs[' + field.index + '].filterdataoptions" datafield="' + filterOptions.aliasColumn + '" searchkey="' + filterOptions.distinctField + '" displaylabel="' + filterOptions.aliasColumn + '"';
+            } else {
+                template += ' datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" orderby="' + fieldName + ':asc"';
+            }
+            template += ' dataset="' + this.options.getBindDataSet() + '" type="autocomplete" on-submit="onRowFilterChange()"';
             break;
         case 'time':
             template += ' timepattern="hh:mm:ss a" ';

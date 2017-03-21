@@ -414,8 +414,8 @@ wm.variables.services.$liveVariable = [
                 return value;
             },
             //Encode the value and wrap it inside single quotes
-            encodeWithQuotes = function (value, type) {
-                var encodedValue = encodeURIComponent(value);
+            encodeAndAddQuotes = function (value, type, skipEncode) {
+                var encodedValue = skipEncode ? value : encodeURIComponent(value);
                 type = _.toLower(type);
                 //For number types and boolean type, don't wrap the value in quotes
                 if ((Utils.isNumberType(type) && type !== 'float') || type === 'boolean') {
@@ -424,7 +424,7 @@ wm.variables.services.$liveVariable = [
                 return '\'' + encodedValue + '\'';
             },
             //Get the param value based on the filter condition
-            getParamValue = function (value, options, ignoreCase) {
+            getParamValue = function (value, options, ignoreCase, skipEncode) {
                 var param,
                     filterCondition = options.filterCondition,
                     dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES,
@@ -435,42 +435,42 @@ wm.variables.services.$liveVariable = [
                 }
                 switch (filterCondition) {
                 case dbModes.start:
-                    param = encodeWithQuotes(value + '%', type);
+                    param = encodeAndAddQuotes(value + '%', type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.end:
-                    param = encodeWithQuotes('%' + value, type);
+                    param = encodeAndAddQuotes('%' + value, type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.anywhere:
-                    param = encodeWithQuotes('%' + value + '%', type);
+                    param = encodeAndAddQuotes('%' + value + '%', type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.exact:
                 case dbModes.notequals:
-                    param = encodeWithQuotes(value, type);
+                    param = encodeAndAddQuotes(value, type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 case dbModes.between:
                     param = _.join(_.map(value, function (val) {
-                        return wrapInLowerCase(encodeWithQuotes(val, type), options, ignoreCase);
+                        return wrapInLowerCase(encodeAndAddQuotes(val, type, skipEncode), options, ignoreCase);
                     }), ' and ');
                     break;
                 case dbModes.in:
                     param = _.join(_.map(value, function (val) {
-                        return wrapInLowerCase(encodeWithQuotes(val, type), options, ignoreCase);
+                        return wrapInLowerCase(encodeAndAddQuotes(val, type, skipEncode), options, ignoreCase);
                     }), ', ');
                     param = '(' + param + ')';
                     break;
                 default:
-                    param = encodeWithQuotes(value, type);
+                    param = encodeAndAddQuotes(value, type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 }
                 return param || '';
             },
             //Generate the search query based on the filter options
-            getSearchQuery = function (filterOptions, operator, ignoreCase) {
+            getSearchQuery = function (filterOptions, operator, ignoreCase, skipEncode) {
                 var query,
                     params = [];
                 _.forEach(filterOptions, function (fieldValue) {
@@ -492,7 +492,7 @@ wm.variables.services.$liveVariable = [
                         fieldValue.filterCondition = filterCondition;
                     }
                     matchModeExpr  = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
-                    paramValue     = getParamValue(value, fieldValue, ignoreCase);
+                    paramValue     = getParamValue(value, fieldValue, ignoreCase, skipEncode);
                     fieldName      = wrapInLowerCase(fieldName, fieldValue, ignoreCase, true);
                     params.push(Utils.replace(matchModeExpr, [fieldName, paramValue]));
                 });
@@ -551,30 +551,34 @@ wm.variables.services.$liveVariable = [
                         });
                     } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
                         /*Based on the sqlType of the field, format the value & set the filter condition.*/
-                        switch (fieldType) {
-                        case 'integer':
-                            fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
-                                return parseInt(value, 10);
-                            }) : parseInt(fieldValue, 10);
-                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                            break;
-                        case 'date':
-                        case 'datetime':
-                        case 'timestamp':
-                            fieldValue      = Utils.formatDate(fieldValue, fieldType);
-                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                            break;
-                        case 'text':
-                        case 'string':
-                            if (WM.isArray(fieldValue)) {
-                                filterCondition = matchModes['exact'];
-                            } else {
-                                filterCondition = filterCondition || matchModes['anywhere'];
+                        if (fieldType) {
+                            switch (fieldType) {
+                                case 'integer':
+                                    fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
+                                            return parseInt(value, 10);
+                                        }) : parseInt(fieldValue, 10);
+                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                    break;
+                                case 'date':
+                                case 'datetime':
+                                case 'timestamp':
+                                    fieldValue = Utils.formatDate(fieldValue, fieldType);
+                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                    break;
+                                case 'text':
+                                case 'string':
+                                    if (WM.isArray(fieldValue)) {
+                                        filterCondition = matchModes['exact'];
+                                    } else {
+                                        filterCondition = filterCondition || matchModes['anywhere'];
+                                    }
+                                    break;
+                                default:
+                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                    break;
                             }
-                            break;
-                        default:
-                            filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                            break;
+                        } else {
+                            filterCondition = _.isString(fieldValue) ? matchModes['anywhere'] : matchModes['exact'];
                         }
                         attributeName = getAttributeName(variable, fieldName);
                         filterOption  = {
@@ -612,8 +616,8 @@ wm.variables.services.$liveVariable = [
                 if (_.isUndefined(options.searchWithQuery)) {
                     options.searchWithQuery = true;//Using query api instead of  search api
                 }
-                var filterFields = [],
-                    filterOptions,
+                var filterFields  = [],
+                    filterOptions = [],
                     orderByFields,
                     orderByOptions,
                     query,
@@ -644,14 +648,13 @@ wm.variables.services.$liveVariable = [
                  */
                 if (options.searchWithQuery && filterOptions.length) {
                     //Generate query for variable filter fields. This has AND logical operator
-                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ', variable.ignoreCase);
+                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ', variable.ignoreCase, options.skipEncode);
                     //Generate query for option filter fields. This has default logical operator as OR
-                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
+                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase, options.skipEncode);
                     if (optionsQuery) {
                         //If both variable and option query are present, merge them with AND
                         query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
                     }
-                    query = 'q=' + query;
                 }
                 orderByFields = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy);
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
@@ -726,7 +729,7 @@ wm.variables.services.$liveVariable = [
                 // if tableOptions object has query then set the dbOperation to 'searchTableDataWithQuery'
                 if (options.searchWithQuery) {
                     dbOperation = 'searchTableDataWithQuery';
-                    requestData = tableOptions.query;
+                    requestData = tableOptions.query ? ('q=' + tableOptions.query) : '';
                 } else {
                     dbOperation = (tableOptions.filter && tableOptions.filter.length) ? 'searchTableData' : 'readTableData';
                     requestData =  tableOptions.filter;
@@ -1385,17 +1388,46 @@ wm.variables.services.$liveVariable = [
                         'entityName'    : variable.type,
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
-                        'data'          : tableOptions.query || '',
+                        'data'          : tableOptions.query ? ('q=' + tableOptions.query) : '',
                         'filterMeta'    : tableOptions.filter,
                         'exportFormat'  : options.exportFormat,
                         'size'          : options.size
                     });
                 },
+                /*Function to get the distinct  data for specified field*/
+                getDistinctDataByFields: function (variable, options, success, error) {
+                    var tableOptions,
+                        dbOperation = 'getDistinctDataByFields',
+                        projectID   = $rootScope.project.id || $rootScope.projectName,
+                        requestData = {},
+                        options     = options || {};
+                    options.skipEncode = true;
+                    tableOptions = prepareTableOptions(variable, options);
+                    if (tableOptions.query) {
+                        requestData.filter = tableOptions.query;
+                    }
+                    requestData.groupByFields = _.isArray(options.fields) ? options.fields : [options.fields];
+                    DatabaseService[dbOperation]({
+                        'projectID'     : projectID,
+                        'service'       : variable._prefabName ? '' : 'services',
+                        'dataModelName' : variable.liveSource,
+                        'entityName'    : options.entityName || variable.type,
+                        'page'          : options.page || 1,
+                        'size'          : options.pagesize,
+                        'sort'          : options.sort || options.fields[0] + ' asc',
+                        'data'          : requestData,
+                        'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
+                    }, function (response) {
+                        if ((response && response.error) || !response) {
+                            Utils.triggerFn(error, response.error);
+                            return;
+                        }
+                        Utils.triggerFn(success, response);
+                    });
+                },
             /*Function to update the data associated with the related tables of the live variable*/
                 updateRelatedData: function (variable, options, success, error) {
                     var projectID = $rootScope.project.id || $rootScope.projectName;
-
-                    /*tableOptions = prepareTableOptions(variable, options);*/
 
                     /*Return if "relatedFieldName" is not passed in the options OR
                     if the relatedField is a one-to-many relation because this field value will directly be available in the data.
@@ -1649,6 +1681,10 @@ wm.variables.services.$liveVariable = [
                 download: function (options) {
                     options = options || {};
                     methods.download(this, options);
+                },
+                getDistinctDataByFields: function (options, success, error) {
+                    options = options || {};
+                    methods.getDistinctDataByFields(this, options, success, error);
                 },
                 updateRecord: function (options, success, error) {
                     var name = this.name;
