@@ -75,7 +75,7 @@ WM.module('wm.widgets.dialog')
             } else {
                 backdrop = true;
             }
-            keyboard = template.attr('keyboard');
+            keyboard = template.attr('closable');
             /* to change original keyboard value(which is string) to boolean because $uibModal.open expects boolean */
             keyboard = keyboard !== 'false';
             /* in case no params are passed, creating an empty object*/
@@ -245,7 +245,7 @@ WM.module('wm.widgets.dialog')
                     backdrop = true;
                 }
             }
-            keyboard = params.keyboard || template.attr('keyboard');
+            keyboard = params.closable || template.attr('closable');
             if (keyboard === 'false') {
                 /* to change original keyboard value(which is string) to boolean because $uibModal.open expects boolean */
                 keyboard = false;

@@ -186,6 +186,8 @@ WM.module('wm.widgets.dialog')
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the accordion on the web page. <br>
  *                  Default value: `true`.
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {list=} animation
  *                  This property controls the animation of the dialog. <br>
  *                  The animation is based on the css classes and works only in the run mode. <br>
@@ -211,7 +213,7 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-button on-click="confirmDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
+                <wm-button on-click="showDialog()" caption="Show Dialog" class="btn-primary"></wm-button>
                 <wm-view class="dialog-view">
                     <wm-confirmdialog name="confirmDialog" controller="Ctrl"
                         iconclass="wi wi-warning" message="I am a confirm box"
@@ -235,6 +237,9 @@ WM.module('wm.widgets.dialog')
                 }
                 $scope.onOpenedCallBack = function () {
                     console.log("inside opened callback");
+                }
+                $scope.showDialog = function () {
+                    DialogService.open("confirmDialog");
                 }
             }
         </file>

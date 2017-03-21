@@ -171,6 +171,8 @@ WM.module('wm.widgets.dialog')
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the dialog on the web page. <br>
  *                  Default value:`true`.
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {string=} page
  *                  page sets the page from the project whose content needs to be shown in the page dialog.
  * @param {list=} content
@@ -205,7 +207,7 @@ WM.module('wm.widgets.dialog')
                         oktext="OK" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
                     </wm-pagedialog>
                 </wm-view>
-                <wm-button on-click="pageDialog.show" caption="show dialog"></wm-button>
+                <wm-button on-click="showDialog()" caption="show dialog"></wm-button>
             </div>
         </file>
         <file name="script.js">
@@ -220,6 +222,9 @@ WM.module('wm.widgets.dialog')
                 }
                 $scope.onOpenedCallBack = function () {
                     console.log("inside opened callback");
+                }
+                $scope.showDialog = function () {
+                    DialogService.open("pageDialog");
                 }
             }
         </file>

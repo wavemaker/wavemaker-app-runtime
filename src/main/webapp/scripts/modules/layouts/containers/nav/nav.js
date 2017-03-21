@@ -80,7 +80,7 @@ WM.module('wm.layouts.containers')
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
 
-                        if (Utils.validateAccessRoles(node[$is.userrole || 'role'])) {
+                        if (Utils.validateAccessRoles(node[$is.userrole])) {
                             result.push(node);
                             var $a           = WM.element('<a class="app-anchor"></a>'),
                                 $a_caption   = WM.element('<span class="anchor-caption"></span>'),

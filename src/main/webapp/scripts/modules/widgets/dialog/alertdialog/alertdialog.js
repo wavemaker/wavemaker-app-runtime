@@ -173,6 +173,8 @@ WM.module('wm.widgets.dialog')
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the dialog on the web page. <br>
  *                  Default value: `true`.
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {list=} animation
  *                  This property controls the animation of the dialog. <br>
  *                  The animation is based on the css classes and works only in the run mode. <br>
