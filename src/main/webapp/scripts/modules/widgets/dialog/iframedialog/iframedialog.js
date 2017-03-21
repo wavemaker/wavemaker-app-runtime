@@ -132,6 +132,8 @@ WM.module('wm.widgets.dialog')
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the dialog on the web page. <br>
  *                  Default value: `true`.
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {string=} url
  *                  url sets the url whose content needs to be shown in the iframe dialog
  * @param {list=} animation

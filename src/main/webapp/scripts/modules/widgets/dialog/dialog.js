@@ -482,6 +482,8 @@ WM.module('wm.widgets.dialog')
  * @param {boolean=} modal
  *                  True value for Modal property shows up a modal dialog. <br>
  *                  Default value:`true`.
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {string=} iconclass
  *                  iconclass sets the icon for dialog header
  * @param {string=} on-close
@@ -504,7 +506,7 @@ WM.module('wm.widgets.dialog')
                         </wm-dialogactions>
                     </wm-dialog>
                 </wm-view>
-                <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
+                <wm-button on-click="showDialog()" caption="Show Dialog" class="btn-success"></wm-button>
             </div>
         </file>
         <file name="script.js">
@@ -514,6 +516,9 @@ WM.module('wm.widgets.dialog')
                 }
                 $scope.hideDialog = function () {
                     DialogService.close('sampleDialog');
+                }
+                 $scope.showDialog = function () {
+                    DialogService.open("sampleDialog");
                 }
             }
         </file>
@@ -550,6 +555,8 @@ WM.module('wm.widgets.dialog')
  *                  Possible values are "bounce", "flash", "pulse", "rubberBand", "shake", etc.
  * @param {string=} iconclass
  *                  iconclass sets the icon for dialog header
+ * @param {boolean=} closable
+ *                  closable enables close icon on header also enables close of dialog with ESC key
  * @param {string=} iconwidth
  *                  Optional, This sets the width of the icon in dialog header.
  * @param {string=} iconheight

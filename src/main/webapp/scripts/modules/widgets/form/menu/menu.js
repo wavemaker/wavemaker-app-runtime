@@ -77,7 +77,7 @@ WM.module('wm.widgets.form')
                     transformFn = function (result, item) {
                         var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item.children);
 
-                        if (Utils.validateAccessRoles(item[scope.userrole || 'role'])) {
+                        if (Utils.validateAccessRoles(item[scope.userrole])) {
                             result.push({
                                 'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
                                 'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
@@ -86,7 +86,7 @@ WM.module('wm.widgets.form')
                                 'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
                                 'children'  : (WM.isArray(children) ? children : []).reduce(transformFn, []),
                                 'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item.action,
-                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'}) || item.role
+                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'})
                             });
                         }
 

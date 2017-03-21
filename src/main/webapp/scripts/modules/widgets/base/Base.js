@@ -899,7 +899,7 @@ WM.module('wm.widgets.base', [])
                         "message": {"type": "string", "value": "I am an alert box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "alerttype": {"type": "list", "options": ["error", "information", "success", "warning"], "value": "error"},
                         "modal": {"type": "boolean", "value": false},
-                        "keyboard": {"type": "boolean", "value": true}
+                        "keyboard": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.confirmdialog": {
                         "title": {"type": "string", "value": "Confirm", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -909,7 +909,7 @@ WM.module('wm.widgets.base', [])
                         "message": {"type": "string", "value": "I am confirm box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "modal": {"type": "boolean", "value": false},
-                        "keyboard": {"type": "boolean", "value": true}
+                        "keyboard": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.iframedialog": {
                         "title": {"type": "string", "value": "External Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -923,7 +923,7 @@ WM.module('wm.widgets.base', [])
                         "showactions": {"type": "boolean", "value": true},
                         "showheader": {"type": "boolean", "value": true},
                         "modal": {"type": "boolean", "value": false},
-                        "keyboard": {"type": "boolean", "value": true}
+                        "keyboard": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -933,7 +933,7 @@ WM.module('wm.widgets.base', [])
                         "closable": {"type": "boolean", "value": true},
                         "showactions": {"type": "boolean", "value": true},
                         "modal": {"type": "boolean", "value": false},
-                        "keyboard": {"type": "boolean", "value": true}
+                        "keyboard": {"type": "boolean", "value": true, "show": false}
                     },
                     "wm.logindialog": {
                         "tabindex": {"show": false},
@@ -941,7 +941,7 @@ WM.module('wm.widgets.base', [])
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "closable": {"type": "boolean", "value": false, "show": false},
                         "modal": {"type": "boolean", "value": true},
-                        "keyboard": {"type": "boolean", "value": true},
+                        "keyboard": {"type": "boolean", "value": true, "show": false},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "maxlength": 256, "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
@@ -952,7 +952,7 @@ WM.module('wm.widgets.base', [])
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "keyboard": {"type": "boolean", "value": true},
+                        "keyboard": {"type": "boolean", "value": true, "show": false},
                         "closable": {"type": "boolean", "value": true},
                         "title": {"type": "string"},
                         "showheader": {"type": "boolean", "value": true}
