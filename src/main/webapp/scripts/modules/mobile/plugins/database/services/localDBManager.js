@@ -44,7 +44,7 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectoryName,
             databases,
             connectivityChecker,
-            lastPullTimestampKey = 'localDBManager.lastPullTimestamp',
+            lastPullInfoKey = 'localDBManager.lastPullInfo',
             systemProperties;
         systemProperties = {
             'USER_ID' : {
@@ -398,11 +398,14 @@ wm.plugins.database.services.LocalDBManager = [
         this.pullData = function (clear) {
             var defer = $q.defer(),
                 data = {
-                    'tasksCompleted' : 0,
-                    'tasksTotal' : 0,
+                    'completedTaskCount' : 0,
+                    'totalTaskCount' : 0,
                     'inProgress' : true
                 },
-                pullStartTimestamp;
+                pullInfo = {
+                    'databases' : [],
+                    'totalPulledRecordCount' : 0
+                };
             SecurityService.onUserLogin()
                 .then(canConnectToServer)
                 .then(function () {
@@ -420,23 +423,40 @@ wm.plugins.database.services.LocalDBManager = [
                 .then(function () {
                     // Pull data
                     var promises = [];
-                    pullStartTimestamp = _.now();
+                    pullInfo.startTime = _.now();
                     iterateExternalEntities(function (database, eSchema) {
                         if (eSchema.syncType === 'APP_START') {
-                            promises.push(pullDataFromServer(database.schema.name, eSchema).then(function () {
-                                data.tasksCompleted++;
+                            promises.push(pullDataFromServer(database.schema.name, eSchema).then(function (response) {
+                                var pullDatabaseInfo = _.find(pullInfo.databases, {'name' : database.schema.name});
+                                if (!pullDatabaseInfo) {
+                                    pullDatabaseInfo = {
+                                        'name' : database.schema.name,
+                                        'entities' : [],
+                                        'pulledRecordCount' : 0
+                                    };
+                                    pullInfo.databases.push(pullDatabaseInfo);
+                                }
+                                pullDatabaseInfo.entities.push({
+                                    'entityName' : eSchema.entityName,
+                                    'pulledRecordCount' : response.totalElements
+                                });
+                                pullInfo.totalPulledRecordCount += response.totalElements;
+                                data.completedTaskCount++;
                                 defer.notify(data);
                             }));
                         }
                     });
-                    data.tasksTotal = promises.length;
+                    data.totalTaskCount = promises.length;
                     return $q.all(promises);
                 }).then(function () {
                     //after successful pull, store metrics and resolve the promise.
-                    LocalKeyValueService.put(lastPullTimestampKey, {
-                        'start' : pullStartTimestamp,
-                        'end' : _.now()
+                    pullInfo.endTime = _.now();
+                    _.forEach(pullInfo.databases, function (database) {
+                        database.pulledRecordCount = _.reduce(database.entities, function (sum, entity) {
+                            return sum + entity.pulledRecordCount;
+                        }, 0);
                     });
+                    LocalKeyValueService.put(lastPullInfoKey, pullInfo);
                     data.inProgress = false;
                     defer.resolve(data);
                 }, function () {
@@ -764,11 +784,12 @@ wm.plugins.database.services.LocalDBManager = [
 
         /**
          * @ngdoc method
-         * @name wm.plugins.database.services.$LocalDBManager#getLastPullTimestamp
+         * @name wm.plugins.database.services.$LocalDBManager#getLastPullInfo
          * @methodOf wm.plugins.database.services.$LocalDBManager
-         * @returns {object} that have start and end timestamps of last successful pull of data from remote server.
+         * @returns {object} that have total no of records fetched, start and end timestamps of last successful pull
+         * of data from remote server.
          */
-        this.getLastPullTime = function () {
-            return LocalKeyValueService.get(lastPullTimestampKey);
+        this.getLastPullInfo = function () {
+            return LocalKeyValueService.get(lastPullInfoKey);
         };
     }];
