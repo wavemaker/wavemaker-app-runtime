@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                         '<wm-page-content>' +
                             '<div class="media-content">' +
                                 '<div class="image-container"  hm-swipe-left="showPrev()" hm-swipe-right="showNext()">' +
-                                    '<img class="center-block" ng-src="{{$eval(mediaurl, fieldDefs[selectedMediaIndex])}}" wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
+                                    '<img class="center-block" ng-src="{{fieldDefs[selectedMediaIndex].mediaUrlVal}}" wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
                                     '<a class="app-media-fullscreen-nav-control left" ng-show="selectedMediaIndex > 0" ng-click="showNext()">' +
                                         '<i class="wi wi-chevron-left"></i>' +
                                     '</a>' +
@@ -56,7 +56,7 @@ WM.module('wm.layouts.containers')
                 elementsMarkup =
                     '<li ng-repeat="item in fieldDefs" class="app-media-item" ng-click="showFullScreen($index)">' +
                         '<div ng-style="{\'width\': thumbnailWidth, \'height\': thumbnailHeight}" class="thumbnail">' +
-                            '<img class="thumbnail-image" ng-src="{{$eval(thumbnailURL, item)}}"  wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
+                            '<img class="thumbnail-image" ng-src="{{item.thumbnailUrlVal}}"  wm-image-cache="{{offline ? \'permanant\' : \'\'}}">' +
                             '<div class="thumbnail-details"></div>' +
                         '</div>' +
                     '</li>';
@@ -84,7 +84,13 @@ WM.module('wm.layouts.containers')
             /** With given data, creates media list items*/
             function updateFieldDefs($is, $el, data) {
                 $is.fieldDefs = data;
+
                 if (CONSTANTS.isRunMode) {
+                    _.forEach(data, function (field) {
+                        field.mediaUrlVal     = $is.$eval($is.mediaurl, field);
+                        field.thumbnailUrlVal = $is.$eval($is.thumbnailurl, field);
+                    });
+
                     $is.$mediaScope.fieldDefs = data;
                 }
             }
