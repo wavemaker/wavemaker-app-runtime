@@ -7,6 +7,7 @@ package com.wavemaker.runtime.data.model;
 public enum AggregationType {
     SUM,
     MIN,
-    MAX;
-
+    MAX,
+    AVG,
+    COUNT,
 }
