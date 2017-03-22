@@ -152,12 +152,26 @@ WM.module('wm.widgets.grid')
                 'DIALOG'    : 'dialog'
             };
 
+        function resetFlags($is) {
+            $is.isBoundToStaticVariable           = false;
+            $is.isBoundToLiveVariable             = false;
+            $is.isBoundToLiveVariableRoot         = false;
+            $is.isBoundToServiceVariable          = false;
+            $is.isBoundToDataServiceType          = false;
+            $is.isBoundToProcedureServiceVariable = false;
+            $is.isBoundToQueryServiceVariable     = false;
+            $is.isBoundToSelectedItem             = false;
+            $is.isBoundToSelectedItemSubset       = false;
+            $is.isBoundToFilter                   = false;
+        }
         //Sets flags on data table like isBoundToLiveVariable etc.,
         function setFlags($is, eleScope) {
             var binddataset = $is.binddataset,
                 variableType,
                 boundToInnerDataSet,
                 widgetName;
+            //Reset the variable and widget flags on $is before setting them.
+            resetFlags($is);
             //Set the variable and widget flags on $is
             $is.isBoundToVariable = _.startsWith(binddataset, 'bind:Variables.');
             $is.isBoundToWidget   = _.startsWith(binddataset, 'bind:Widgets.');
@@ -188,7 +202,7 @@ WM.module('wm.widgets.grid')
         }
 
         function showExportOptions($is) {
-            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToDataServiceType && !$is.isBoundToProcedureServiceVariable && $is.variable.isList);
+            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToDataServiceType && !$is.isBoundToProcedureServiceVariable && $is.variable && $is.variable.isList);
         }
 
         return {
@@ -776,6 +790,9 @@ WM.module('wm.widgets.grid')
                                         $is.dataNavigator.dataset = newVal;
                                     } else {
                                         $is.dataset = newVal;
+                                    }
+                                    if (_.isEmpty(newVal)) {
+                                        $is.resetSortStatus();
                                     }
                                 }));
                             }
@@ -2264,6 +2281,7 @@ WM.module('wm.widgets.grid')
             $is.formWidgets                  = {};
             $is.gridData                     = [];
             $is.updateMarkupForGrid          = updateMarkupForGrid;
+            $is.resetSortStatus              = resetSortStatus;
             $is.updateVariable               = updateVariable;
             $is.resetColumnDefinitions       = resetColumnDefinitions;
             $is.renderOperationColumns       = renderOperationColumns;
