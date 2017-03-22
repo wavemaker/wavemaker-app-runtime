@@ -520,7 +520,7 @@ WM.module('wm.widgets.basic')
             //Execute the query.
             DatabaseService.executeAggregateQuery({
                 'dataModelName'    : variable.liveSource,
-                'entityName'       : variable.name,
+                'entityName'       : variable.type,
                 'page'             : 1,
                 'size'             : variable.maxResults || 500,
                 'sort'             : sortExpr,
