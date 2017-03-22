@@ -1502,6 +1502,13 @@ wm.variables.services.Variables = [
                 delete self.variableCollection[scopeId];
             },
 
+            //Trigger error handler before discarding queued requests
+            triggerError = function (requestQueue) {
+              _.forEach(requestQueue, function (requestObj) {
+                  Utils.triggerFn(requestObj && requestObj.error);
+              });
+            },
+
             /* process the requests in the queue for a variable based on the inFlightBehavior flag of the variable */
             processRequestQueue = function (variable, requestQueue, handler, options) {
                 /* process request queue for the variable only if it is not empty */
@@ -1512,6 +1519,7 @@ wm.variables.services.Variables = [
                     switch (inFlightBehavior) {
                     case 'executeLast':
                         requestObj = requestQueue[variable.name].pop();
+                        triggerError(requestQueue);
                         handler(requestObj.variable, requestObj.options, requestObj.success, requestObj.error);
                         requestQueue[variable.name] = null;
                         break;
@@ -1520,6 +1528,7 @@ wm.variables.services.Variables = [
                         handler(requestObj.variable, requestObj.options, requestObj.success, requestObj.error);
                         break;
                     default:
+                        triggerError(requestQueue);
                         requestQueue[variable.name] = null;
                         break;
                     }
