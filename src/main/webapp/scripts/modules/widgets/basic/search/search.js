@@ -156,7 +156,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (variable && variable.category === 'wm.LiveVariable') {
-                    if (defaultQuery && WM.isDefined($is.datavalue)) {
+                    if (defaultQuery && WM.isDefined($is.datavalue) && $is.datavalue !== '') {
                         $is.retrieveDefaultQueryModel().then(function (response) {
                             deferred.resolve(response);
                         });
@@ -288,7 +288,7 @@ WM.module('wm.widgets.basic')
                     }
                     $is.formattedDataSet = dataSet;
                     // update the queryModel, if the default value is given and formatted Dataset is defined.
-                    if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && WM.isDefined($is.datavalue))) {
+                    if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && WM.isDefined($is.datavalue) && $is.datavalue !== '')) {
                         updateQueryModel($is, element);
                         $is.isDefaultValueExist = true;
                     }
@@ -569,7 +569,7 @@ WM.module('wm.widgets.basic')
                     if (!data.length) {
                         deferred.resolve([]);
                     } else {
-                        if (WM.isDefined($is.datavalue)) {
+                        if (WM.isDefined($is.datavalue) && $is.datavalue !== '') {
                             $is.isDefaultValueExist = true;
                         }
                         /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
