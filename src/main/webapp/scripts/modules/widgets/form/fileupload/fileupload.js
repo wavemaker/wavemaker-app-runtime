@@ -414,6 +414,11 @@ WM.module('wm.widgets.form')
                         }
                     }
                 };
+                if ($rootScope.isMobileApplicationType) {
+                    types[type].fields['content'] = {
+                        'type': 'file'
+                    };
+                }
                 break;
             }
             return type;

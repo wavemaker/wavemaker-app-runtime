@@ -1,28 +1,54 @@
-/*global WM, wm, window, cordova, _*/
+/*global WM, wm, window, cordova, _, FileReader, resolveLocalFileSystemURL, Blob */
 /*jslint sub: true */
 
 wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
     function ($q, $cordovaCamera, Utils) {
         'use strict';
 
+        function getFileName(filepath) {
+            return filepath.split('/').pop();
+        }
+
+        /**
+         * Converts the file to blob using filepath
+         * @param filePaths, array of file paths
+         * @returns fileObj having name, path, content
+         */
+        function getFiles(filePaths) {
+            var deferred  = $q.defer(),
+                filesObj,
+                $promises;
+
+            $promises = _.map(filePaths, Utils.convertToBlob);
+
+            $q.all($promises)
+                .then(function (filesList) {
+                    filesObj = _.map(filesList, function (fileObj) {
+                        var path = fileObj.filepath;
+                        return {
+                            'name'    : getFileName(path),
+                            'path'    : path,
+                            'content' : fileObj.blob
+                        };
+                    });
+                    deferred.resolve(filesObj);
+                }, deferred.reject);
+
+            return deferred.promise;
+        }
+
         // image picker for device.
         function imagePicker(multiple) {
             var deferred = $q.defer(),
-                filesObj = [],
                 maxImg = 1;
+
             if (multiple) {
                 maxImg = 10;
             }
             window.plugins.imagePicker.getPictures(
                 function (files) {
-                    // on success of pictures selection
-                    _.each(files, function (filepath) {
-                        filesObj.push({
-                            'name' : filepath.split('/').pop(),
-                            'path' : filepath
-                        });
-                    });
-                    deferred.resolve(filesObj);
+                    getFiles(files)
+                        .then(deferred.resolve, deferred.reject);
                 },
                 deferred.reject,
                 {
@@ -34,31 +60,23 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
         }
 
         function audioPicker(multiple) {
-            var deferred          = $q.defer(),
-                filesObj          = [];
+            var deferred = $q.defer(),
+                filePaths;
 
             //if multiple is true allows user to select multiple songs
             //if icloud is true will show iCloud songs
             window.plugins.mediapicker.getAudio(function (files) {
                 if (Utils.isAndroid()) {
+                    filePaths = [];
                     // android returns a object with file details.
-                    filesObj.push({
-                        name : files.title,
-                        path : files.exportedurl
-                    });
+                    filePaths.push(files.exportedurl);
                 } else {
                     // iOS returns array of file detail objects.
-                    _.each(files, function (file) {
-                        filesObj.push({
-                            name : file.title,
-                            path : file.exportedurl
-                        });
-                    });
+                    filePaths = _.map(files, 'exportedurl');
                 }
-                deferred.resolve(filesObj);
-            },
-                deferred.reject,
-                multiple, Utils.isIphone());
+                getFiles(filePaths)
+                    .then(deferred.resolve, deferred.reject);
+            }, deferred.reject, multiple, Utils.isIphone());
 
             return deferred.promise;
         }
@@ -66,7 +84,6 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
         // video picker for device.
         function videoPicker() {
             var deferred = $q.defer(),
-                filesObj = [],
                 cameraOptions = {
                     destinationType   : 1,  // file_uri
                     sourceType        : 0,  // photolibrary
@@ -75,15 +92,10 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
 
             $cordovaCamera.getPicture(cameraOptions)
                 .then(function (filepath) {
-                    // on video selection success
-                    filesObj.push({
-                        'name' : filepath.split("/").pop(),
-                        'path' : filepath
-                    });
-                    deferred.resolve(filesObj);
-                },
-                    deferred.reject
-                    );
+                    getFiles([filepath])
+                        .then(deferred.resolve, deferred.reject);
+                }, deferred.reject);
+
             return deferred.promise;
         }
 

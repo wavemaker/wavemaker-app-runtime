@@ -1,4 +1,4 @@
-/*global WM, X2JS, wm, window, document, navigator, Image, location, console, _, $, moment*/
+/*global WM, X2JS, wm, window, document, navigator, Image, location, console, _, $, moment, resolveLocalFileSystemURL, FileReader, Blob */
 /*jslint todo: true */
 
 /**
@@ -2348,6 +2348,31 @@ WM.module('wm.utils', [])
         }
 
         /**
+         * This function returns a blob object from the given file path
+         * @param filepath
+         * @returns promise having blob object
+         */
+        function convertToBlob(filepath) {
+            var deferred = $q.defer();
+
+            //Read the file entry from the file URL
+            resolveLocalFileSystemURL(filepath, function (fileEntry) {
+                fileEntry.file(function (file) {
+                    //file has the cordova file structure. To submit to the backend, convert this file to javascript file
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        var imgBlob = new Blob([this.result], {
+                            'type' : file.type
+                        });
+                        deferred.resolve({'blob' : imgBlob, 'filepath': filepath});
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+            }, deferred.reject);
+            return deferred.promise;
+        }
+
+        /**
          * Formats style with given format
          * 'px' is default
          * @param val - style value
@@ -2569,4 +2594,5 @@ WM.module('wm.utils', [])
         this.getFormData                = getFormData;
         this.validateAccessRoles        = validateAccessRoles;
         this.listenOnce                 = listenOnce;
+        this.convertToBlob              = convertToBlob;
     }]);

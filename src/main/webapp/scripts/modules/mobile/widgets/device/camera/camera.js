@@ -79,25 +79,16 @@ WM.module('wm.widgets.advanced')
 
             function updateModel($is, value) {
                 $is.localFilePath = $is.datavalue = $is._model_ = value;
-                //Read the file entry from the file URL
-                resolveLocalFileSystemURL($is.datavalue, function (fileEntry) {
-                    fileEntry.file(function (file) {
-                        //file has the cordova file structure. To submit to the backend, convert this file to javascript file
-                        var reader = new FileReader();
-                        reader.onloadend = function () {
-                            var imgBlob = new Blob([this.result], {
-                                    type: file.type
-                                });
-                            $is.localFile = imgBlob;
-                            $is.onSuccess({ $scope: $is, localFilePath: $is.datavalue, localFile: imgBlob});
-                        };
-                        reader.readAsArrayBuffer(file);
+
+                Utils.convertToBlob(value)
+                    .then(function (result) {
+                        $is.localFile = result.blob;
+                        $is.onSuccess({ $scope: $is, localFilePath: $is.datavalue, localFile: result.blob});
+                    }, function () {
+                        $is.localFile = undefined;
+                        $is.onSuccess({ $scope: $is, localFilePath: $is.datavalue});
                     });
-                }, function () {
-                    $is.localFile = undefined;
-                    //On error, return the file path only
-                    $is.onSuccess({$scope: $is, localFilePath: $is.datavalue});
-                });
+
                 $rs.$safeApply($is);
             }
 
