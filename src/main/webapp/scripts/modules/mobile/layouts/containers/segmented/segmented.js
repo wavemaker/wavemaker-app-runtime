@@ -96,7 +96,7 @@ WM.module('wm.layouts.containers')
                             $segmentsCtr = $element.find(".app-segments-container");
 
                         $scope.currentSelectedIndex = index;
-                        $scope.onBeforesegmentchange(eventData);
+                        Utils.triggerFn($scope.onBeforesegmentchange, eventData);
                         currentContent.onShow();
                         if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode && $scope.$root) {
                             $scope.$root.$emit('set-active-widget', currentContent.widgetid);
@@ -105,7 +105,7 @@ WM.module('wm.layouts.containers')
                             { scrollLeft: index * $segmentsCtr.width()},
                             { duration: "fast" }
                         );
-                        $scope.onSegmentchange(eventData);
+                        Utils.triggerFn($scope.onSegmentchange, eventData);
                     };
                     $scope.showContent(0);
                     /**add studio mode changes**/
