@@ -19,7 +19,7 @@ List of plugins/device widgets
 http://www.wavemaker.com/learn/app-development/widgets/widget-library/#mobile
 
 ## Release Notes
-[Latest Release Notes](http://www.wavemaker.com/learn/docs/wavemaker-studio-release-notes/)
+[Latest Release Notes](http://www.wavemaker.com/learn/wavemaker-release-notes/)
 
 ## Related Projects
 * [WaveMaker Sample Apps](https://github.com/wavemaker/wavemaker-sample-apps)
