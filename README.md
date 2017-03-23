@@ -11,9 +11,11 @@ http://www.wavemaker.com/learn/app-development/widgets/widget-library/
 
 ## Hybrid Mobile Widgets and Plugins
 Building hybrid mobile applications based on Cordova using WaveMaker Studio
+
 http://www.wavemaker.com/learn/hybrid-mobile/building-hybrid-mobile-apps/
 
 List of plugins/device widgets
+
 http://www.wavemaker.com/learn/app-development/widgets/widget-library/#mobile
 
 ## Release Notes
