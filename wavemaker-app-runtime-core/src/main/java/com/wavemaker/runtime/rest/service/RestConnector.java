@@ -62,7 +62,8 @@ public class RestConnector {
 
     private static CloseableHttpClient httpClientWthSecurity;
     private static CloseableHttpClient httpClientWthOutSecurity;
-
+    private static final int MAX_TOTAL = 500;
+    private static final int DEFAULT_MAX_PER_ROUTE = 50;
 
     public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
@@ -201,6 +202,9 @@ public class RestConnector {
             String hostName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
             String port = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
             String userName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
+            if(userName == null){
+                userName = "";
+            }
             String passWord = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
             int proxyPort = 0;
             if (port != null && !("".equals(port))) {
@@ -213,8 +217,8 @@ public class RestConnector {
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
-        poolingHttpClientConnectionManager.setMaxTotal(200);
-        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(10);
+        poolingHttpClientConnectionManager.setMaxTotal(MAX_TOTAL);
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
         return poolingHttpClientConnectionManager;
     }
 
