@@ -511,7 +511,7 @@ WM.module('wm.widgets.basic')
                 data.aggregations =  [
                     {
                         "field": scope.aggregationcolumn,
-                        "type":  _.toUpper(scope.aggregation),
+                        "type":  aggregationFnMap[scope.aggregation],
                         "alias": getValidAliasName(scope.aggregationcolumn)
                     }
                 ];
