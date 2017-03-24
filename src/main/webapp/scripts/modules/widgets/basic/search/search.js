@@ -120,7 +120,8 @@ WM.module('wm.widgets.basic')
                     'height'         : true,
                     'show'           : true
                 },
-                defaultQuery;
+                defaultQuery,
+                ALL_FIELDS = 'All Fields';
 
             // This function updates the query value.
             function updateModel($is, $el, immediate) {
@@ -151,7 +152,7 @@ WM.module('wm.widgets.basic')
                 var variable = getVariable($is, $s),
                     deferred = $q.defer();
 
-                if ($is.datafield === 'All Fields') {
+                if ($is.datafield === ALL_FIELDS) {
                     deferred.resolve($is._proxyModel);
                 }
 
@@ -181,7 +182,7 @@ WM.module('wm.widgets.basic')
 
                 // set the queryModel by checking the matched item based on formattedDataSet.
                 $is.queryModel = _.find($is.formattedDataSet, function (item) {
-                    if ($is.datafield === 'All Fields' || $is.datafield === '') {
+                    if ($is.datafield === ALL_FIELDS || $is.datafield === '') {
                         return _.isEqual(item, $is._proxyModel);
                     }
                     // type conversion required here. hence `==` is used instead of `===`
@@ -327,12 +328,15 @@ WM.module('wm.widgets.basic')
 
                     if (_action === 'ENTER') {
                         onsearchSubmit($navbarElScope, element);
+                        $is.result = [];
                     }
                 }
 
                 // if query is empty string, then datavalue will be empty.
-                if (inputVal === ''  && WM.isDefined($is.datavalue)) {
+                if (inputVal === ''  && (WM.isDefined($is.datavalue) || $is.result)) {
                     $is.datavalue = '';
+                    $is.result    = [];
+
                     $is.onSubmit({$event: event, $scope: $is});
                 }
                 $is.query = inputVal;
@@ -497,7 +501,7 @@ WM.module('wm.widgets.basic')
             // This function returns the unique fields based on dataField
             function getUniqObjsByDataField(data, dataField, displayField, isLocalSearch) {
                 var uniqData,
-                    isAllFields = dataField === 'All Fields';
+                    isAllFields = dataField === ALL_FIELDS;
 
                 uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
 
@@ -654,6 +658,11 @@ WM.module('wm.widgets.basic')
 
                 return item;
             }
+
+            function updateResult($is, matches) {
+                $is.result = ($is.datafield === ALL_FIELDS || !$is.datafield) ? matches : _.map(matches, $is.datafield);
+            }
+
             // returns the list of options which will be given to search typeahead
             function _getItems($is, element, searchValue) {
                 var customFilter      = $filter('_custom_search_filter'),
@@ -663,7 +672,8 @@ WM.module('wm.widgets.basic')
                     localSearchedData,
                     typeAheadInput,
                     typeAheadDropDown,
-                    $lastItem;
+                    $lastItem,
+                    matches;
 
                 setLoadingItemsFlag($is, true);
 
@@ -688,14 +698,18 @@ WM.module('wm.widgets.basic')
                             }
                         });
 
-                        return getUniqObjsByDataField(data, $is.datafield);
+                        matches    = getUniqObjsByDataField(data, $is.datafield);
+                        updateResult($is, matches);
+                        return matches;
                     });
                 }
                 // if variable update is not required then filter the local array and return the results
                 localSearchedData = customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
                 setLoadingItemsFlag($is, false);
 
-                return getUniqObjsByDataField(localSearchedData, $is.datafield, $is.displaylabel, true);
+                matches    = getUniqObjsByDataField(localSearchedData, $is.datafield, $is.displaylabel, true);
+                updateResult($is, matches);
+                return matches;
             }
 
 
@@ -799,9 +813,10 @@ WM.module('wm.widgets.basic')
                             delete $item.wmDisplayLabel;
 
                             // set selected item on widget's exposed property
-                            $is.datavalue = ($is.datafield && $is.datafield !== 'All Fields') ? ($item  && _.get($item, $is.datafield)) : $item;
+                            $is.datavalue  = ($is.datafield && $is.datafield !== ALL_FIELDS) ? ($item  && _.get($item, $is.datafield)) : $item;
                             $is.queryModel = $item;
-                            $is.query = $label;
+                            $is.query      = $label;
+                            $is.result     = [];
                             $is.closeSearch();
                             // call user 'onSubmit & onSelect' fn
                             $is.onSelect({$event: $event, $scope: $is, selectedValue: $is.datavalue});
