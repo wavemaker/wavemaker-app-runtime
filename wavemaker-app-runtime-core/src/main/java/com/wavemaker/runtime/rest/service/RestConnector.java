@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 
-import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +43,13 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.wavemaker.runtime.rest.model.HttpRequestDetails;
-import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.proxy.AppProxyConstants;
 import com.wavemaker.commons.util.SSLUtils;
+import com.wavemaker.runtime.AppRuntimeProperties;
+import com.wavemaker.runtime.rest.model.HttpRequestDetails;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 
 /**
  * @author Uday Shankar
@@ -55,7 +57,12 @@ import com.wavemaker.commons.util.SSLUtils;
 
 public class RestConnector {
 
+
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
+
+    private static CloseableHttpClient httpClientWthSecurity;
+    private static CloseableHttpClient httpClientWthOutSecurity;
+
 
     public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
@@ -85,42 +92,45 @@ public class RestConnector {
             httpClientContext, Class<T> t) {
 
         // equivalent to "http.protocol.handle-redirects", false
-        RequestConfig requestConfig = RequestConfig.custom().setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
-                .build();
 
         HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
 
         // Creating HttpClientBuilder and setting Request Config.
-        HttpClientBuilder httpClientBuilder = HttpClients.custom();
-        httpClientBuilder.setDefaultRequestConfig(requestConfig);
 
+
+        CloseableHttpClient httpClient = null;
         String endpointAddress = null;
         try {
             endpointAddress = URLDecoder.decode(httpRequestDetails.getEndpointAddress(), CommonConstants.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new WMRuntimeException("Failed to decode url " + httpRequestDetails.getEndpointAddress(), e);
         }
+
         if (endpointAddress.startsWith("https")) {
-            httpClientBuilder.setSSLSocketFactory(
-                    new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2","TLSv1.1","TLSv1"}, null, NoopHostnameVerifier.INSTANCE));
+            httpClient = getHttpClientWithSecurity();
+        } else {
+            httpClient = getHttpClientWthOutSecurity();
         }
 
-        if (httpRequestDetails.getProxy() != null) {
-            logger.debug("setting proxyProperties for request URL {}", httpRequestDetails.getEndpointAddress());
-            com.wavemaker.runtime.commons.model.Proxy proxy = httpRequestDetails.getProxy();
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(new AuthScope(proxy.getHostname(), proxy.getPort()), new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
-            httpClientBuilder.useSystemProperties();
-            httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-            httpClientBuilder.setProxy(new HttpHost(proxy.getHostname(), proxy.getPort()));
-        }
-        CloseableHttpClient httpClient = httpClientBuilder.build();
+
+        final RequestConfig requestConfig = RequestConfig.custom()
+                .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
+                .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                .build();
+
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient) {
             @Override
             protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
                 return httpClientContext;
             }
+
+            @Override
+            protected RequestConfig createRequestConfig(Object client) {
+                return requestConfig;
+            }
         };
+
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
@@ -150,4 +160,63 @@ public class RestConnector {
     public ResponseErrorHandler getExceptionHandler() {
         return new WMRestServicesErrorHandler();
     }
+
+
+    private CloseableHttpClient getHttpClientWithSecurity() {
+        if (httpClientWthSecurity == null) {
+            synchronized (RestConnector.class) {
+                if (httpClientWthSecurity == null) {
+                    httpClientWthSecurity = HttpClients.custom()
+                            .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
+                            .setDefaultCredentialsProvider(getCredentialProvider())
+                            .setConnectionManager(getConnectionManager())
+                            .build();
+                }
+            }
+        }
+        return httpClientWthSecurity;
+    }
+
+    private CloseableHttpClient getHttpClientWthOutSecurity() {
+        if (httpClientWthOutSecurity == null) {
+            synchronized (RestConnector.class) {
+                if (httpClientWthOutSecurity == null) {
+                    httpClientWthOutSecurity = HttpClients.custom()
+                            .setDefaultCredentialsProvider(getCredentialProvider())
+                            .setConnectionManager(getConnectionManager())
+                            .build();
+                }
+            }
+        }
+        return httpClientWthOutSecurity;
+    }
+
+
+    private CredentialsProvider getCredentialProvider() {
+
+        boolean isEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
+        CredentialsProvider credentialsProvider = null;
+        if (isEnabled == true) {
+            credentialsProvider = new BasicCredentialsProvider();
+            String hostName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
+            String port = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
+            String userName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
+            String passWord = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
+            int proxyPort = 0;
+            if (port != null && !("".equals(port))) {
+                proxyPort = Integer.valueOf(port);
+            }
+            credentialsProvider.setCredentials(new AuthScope(hostName, proxyPort), new UsernamePasswordCredentials(userName, passWord));
+        }
+        return credentialsProvider;
+    }
+
+    private PoolingHttpClientConnectionManager getConnectionManager() {
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        poolingHttpClientConnectionManager.setMaxTotal(200);
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(10);
+        return poolingHttpClientConnectionManager;
+    }
+
+
 }
