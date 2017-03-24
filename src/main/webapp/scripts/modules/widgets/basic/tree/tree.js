@@ -101,10 +101,10 @@ WM.module('wm.widgets.basic')
                         isNodeMatched = !!$is.$eval(_expr, node);
                     }
                     // Perform LastNode check only at level 0.(ie, deep = 0);
-                    if (!$is._selectNode && _expr) {
+                    if (!$is._selectNode) {
                         if ((_expr === 'FirstNode' && idx === 0)
-                                || (!deep && _expr === 'LastNode' && idx === nodes.length - 1)
-                                || isNodeMatched) {
+                            || (!deep && _expr === 'LastNode' && idx === nodes.length - 1)
+                            || isNodeMatched) {
                             // save a reference of the node to be selected in `_selectNode`
                             $is._selectNode = $li;
                             $is.datavalue   = nodeIdValue;
@@ -161,26 +161,35 @@ WM.module('wm.widgets.basic')
                 $el.find('i.collapsed').removeClass(ICON_CLASSES[ov].collapsed).addClass(ICON_CLASSES[nv].collapsed);
             }
 
-            function toggleExpandCollapseNode($is, $i, $li) {
-                var treeIcons = ICON_CLASSES[$is.treeicons || defaultTreeIconClass];
+            function toggleExpandCollapseNode($event, $is, $i, $li) {
+                var treeIcons = ICON_CLASSES[$is.treeicons || defaultTreeIconClass],
+                    fn,
+                    eventParams = {
+                        '$event'  : $event,
+                        '$scope'  : $is
+                    };
 
                 if ($i.hasClass('collapsed')) {
                     $i.removeClass('collapsed ' + treeIcons.collapsed).addClass('expanded ' + treeIcons.expanded);
                     $li.removeClass('collapsed').addClass('expanded');
+                    fn = $is.onExpand(eventParams);
                 } else if ($i.hasClass('expanded')) {
                     $i.removeClass('expanded ' + treeIcons.expanded).addClass('collapsed ' + treeIcons.collapsed);
                     $li.removeClass('expanded').addClass('collapsed');
+                    fn = $is.onCollapse(eventParams);
                 }
+                Utils.triggerFn(fn);
             }
             //returns the datavalue type from the nodeid
             function getDataValueType($is) {
                 return TypeUtils.getTypeForExpression($is.binddataset, $is, 'nodeid');
             }
 
-            function renderTree($el, $is, attrs) {
+            function renderTree($el, $is, attrs, forceRender) {
                 var levels = +attrs.levels || 0,
                     docFrag,
                     $li,
+                    $liPath,
                     data,
                     path = '',
                     fn;
@@ -190,6 +199,11 @@ WM.module('wm.widgets.basic')
                 if (attrs.widgetid) {
                     levels = 0;
                 }
+
+                if (forceRender) {
+                    $is._selectNode = undefined;
+                }
+
                 if ($is.nodes && $is.nodes.length) {
                     docFrag = document.createDocumentFragment();
                     constructNodes($is, $is.nodes, WM.element(docFrag), levels, 0, $is.datavalue);
@@ -199,14 +213,19 @@ WM.module('wm.widgets.basic')
                 if ($is._selectNode) {
                     $li = $is._selectNode;
                     $li.addClass('selected');
-                    data = $li.data('nodedata');
+                    data    = $li.data('nodedata');
+                    $liPath = $li.parentsUntil($el, 'li.parent-node.collapsed');
 
-                    $li.parentsUntil($el, 'li.parent-node.collapsed')
+                    if (!$liPath.length) {
+                        $liPath = $li;
+                    }
+
+                    $liPath
                         .each(function () {
                             var $current = WM.element(this),
                                 $i       = $current.children('i.collapsed'),
                                 $title   = $current.children('.title');
-                            toggleExpandCollapseNode($is, $i, $current);
+                            toggleExpandCollapseNode(undefined, $is, $i, $current);
 
                             path = '/' + $title.text() + path;
                         });
@@ -256,16 +275,18 @@ WM.module('wm.widgets.basic')
                     data,
                     path = '',
                     $liPath,
-                    fn;
+                    fn,
+                    nodeAction;
                 $el.find('.selected').removeClass('selected');
                 if (!$li.length) {
                     return;
                 }
                 $li.addClass('selected');
                 data = $li.data('nodedata');
+                nodeAction = data[$is.nodeaction || 'action'];
 
                 //if the selectNode is initiated by click event then use the element target from event
-                $liPath = target ? target.parents('.app-tree li') : $li.find('span.title').parents('.app-tree li');
+                $liPath = target ? target.parents('.app-tree li') : $li.find('> span.title').parents('.app-tree li');
 
                 //construct the path of the node
                 $liPath
@@ -285,7 +306,6 @@ WM.module('wm.widgets.basic')
                 $is.selecteditem      = Utils.getClonedObject(data) || {};
                 $is.selecteditem.path = path;
 
-                //if it is a click event update the datavalue and assign a watch as the previous watch will break after assigning
                 if (target) {
                     if ($is.nodeid) {
                         $is.datavalue = $is.$eval($is.nodeid, data);
@@ -294,10 +314,12 @@ WM.module('wm.widgets.basic')
                     } else {
                         $is.datavalue = Utils.getClonedObject(data) || {};
                     }
-                    $is.$watch('datavalue', function (newVal) {
-                        propertyChangeHandler($is, undefined, undefined, 'datavalue', newVal);
-                    }, true);
                 }
+
+                if (nodeAction) {
+                    Utils.evalExp($is, nodeAction);
+                }
+
                 fn = $is.onSelect({$event: evt, $scope: $is, $item: data, $path: path});
                 Utils.triggerFn(fn);
                 $rs.$safeApply($is);
@@ -307,15 +329,18 @@ WM.module('wm.widgets.basic')
 
                 element.on('click', function (evt) {
                     var target = WM.element(evt.target),
-                        li     = target.closest('li');
+                        li     = target.closest('li'),
+                        $i     = target.is('i') ? target : target.siblings('i.collapsed,i.expanded');
 
                     $is.selecteditem = {};
                     evt.stopPropagation();
 
-                    if (target.is('i')) {
-                        toggleExpandCollapseNode($is, target, li);
-                    } else if (target.is('span.title')) {
+                    if (target.is('span.title')) { //select the node only if it is nodelabel
                         selectNode($is, element, evt, li);
+                    }
+
+                    if (target.is('i') || (target.is('span.title') && $is.nodeclick === 'expand')) {
+                        toggleExpandCollapseNode(evt, $is, $i, li);
                     }
                 });
             }
@@ -346,6 +371,8 @@ WM.module('wm.widgets.basic')
                         // wait till all the properties are set in the scope.
                         $is.renderTree = _.debounce(renderTree, 20);
 
+                        $is.redraw = renderTree.bind(undefined, $el, $is, attrs, true);
+
                         $is.selectNodeById = selectNode.bind(undefined, $is, $el, WM.noop());
 
                         $is.deselectNode = function () {
@@ -361,15 +388,6 @@ WM.module('wm.widgets.basic')
                         if (!attrs.widgetid && attrs.scopedataset) {
                             $is.$watch('scopedataset', function (newVal) {
                                 onPropertyChange('scopedataset', newVal);
-                            }, true);
-                        }
-
-                        if (!attrs.widgetid && attrs.datavalue) {
-                            $is.$watch('datavalue', function (newVal) {
-                                if (!newVal) {
-                                    return;
-                                }
-                                onPropertyChange('datavalue', newVal);
                             }, true);
                         }
                     }
@@ -433,11 +451,11 @@ WM.module('wm.widgets.basic')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
-               <wm-tree scopedataset="nodes" levels="2" datavalue="id==8" nodelabel="name" nodeicon="icon" nodechildren="children"></wm-tree>
+                <wm-tree scopedataset="nodes" levels="2" datavalue="id==8" nodelabel="name" nodeicon="icon" nodechildren="children"></wm-tree>
             </div>
         </file>
         <file name="script.js">
-           function Ctrl($scope) {
+        function Ctrl($scope) {
            $scope.nodes = [
               {
                 "id": 1,
