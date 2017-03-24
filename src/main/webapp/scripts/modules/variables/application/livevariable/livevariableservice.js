@@ -408,7 +408,7 @@ wm.variables.services.$liveVariable = [
                     }
                 }
                 //If ignore case is true and type is string/ text and match mode is string type, wrap in lower()
-                if (ignoreCase && isStringType(type) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
+                if (ignoreCase && (!type || isStringType(type)) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
                     return 'lower(' + value + ')';
                 }
                 return value;
@@ -1400,13 +1400,17 @@ wm.variables.services.$liveVariable = [
                         dbOperation = 'getDistinctDataByFields',
                         projectID   = $rootScope.project.id || $rootScope.projectName,
                         requestData = {},
-                        options     = options || {};
+                        options     = options || {},
+                        sort;
                     options.skipEncode = true;
                     tableOptions = prepareTableOptions(variable, options);
                     if (tableOptions.query) {
                         requestData.filter = tableOptions.query;
                     }
                     requestData.groupByFields = _.isArray(options.fields) ? options.fields : [options.fields];
+                    sort = options.sort ||  requestData.groupByFields[0] + ' asc';
+                    sort = sort ? 'sort=' + sort : '';
+
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
                         'service'       : variable._prefabName ? '' : 'services',
@@ -1414,7 +1418,7 @@ wm.variables.services.$liveVariable = [
                         'entityName'    : options.entityName || variable.type,
                         'page'          : options.page || 1,
                         'size'          : options.pagesize,
-                        'sort'          : options.sort || options.fields[0] + ' asc',
+                        'sort'          : sort,
                         'data'          : requestData,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
@@ -1423,6 +1427,8 @@ wm.variables.services.$liveVariable = [
                             return;
                         }
                         Utils.triggerFn(success, response);
+                    }, function (errorMsg) {
+                        Utils.triggerFn(error, errorMsg);
                     });
                 },
             /*Function to update the data associated with the related tables of the live variable*/
@@ -1472,8 +1478,8 @@ wm.variables.services.$liveVariable = [
                         /* if callback function is provided, send the data to the callback */
                         Utils.triggerFn(success, response.content, undefined, {}, {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults});
 
-                    }, function (error) {
-                        Utils.triggerFn(error, error);
+                    }, function (errorMsg) {
+                        Utils.triggerFn(error, errorMsg);
                     });
                 },
             /*function to delete a row in the data associated with the live variable*/

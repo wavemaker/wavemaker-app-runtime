@@ -601,6 +601,7 @@ $.widget('wm.datagrid', {
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
             properties    = disabledTl + dataFieldName + eventTemplate + required,
             index         = colDef.index,
+            limit         = colDef.limit ? ' limit="' + colDef.limit + '" ' : '',
             //If dataset is bound, set the dataset. Else, set the scopedataset.
             dataSetTl     = colDef.isDataSetBound && !colDef.isDefinedData ? 'dataset="' + colDef.dataset + '"' : ' scopedataset="fullFieldDefs[' + index + '].dataset"';
         switch (colDef.editWidgetType) {
@@ -611,7 +612,7 @@ $.widget('wm.datagrid', {
         case 'autocomplete':
         case 'typeahead':
             $el.addClass('datetime-wrapper');
-            template =  '<wm-search ' + properties + dataSetTl + ' datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" ' + (colDef.dataoptions ? ' dataoptions="fullFieldDefs[' + index + '].dataoptions"' : '') + ' type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
+            template =  '<wm-search ' + properties + dataSetTl + limit + ' datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" ' + (colDef.dataoptions ? ' dataoptions="fullFieldDefs[' + index + '].dataoptions"' : '') + ' type="autocomplete" placeholder="' + placeholder + '"></wm-search>';
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
