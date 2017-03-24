@@ -154,15 +154,16 @@ WM.module('wm.widgets.basic')
 
                 if ($is.datafield === ALL_FIELDS) {
                     deferred.resolve($is._proxyModel);
-                }
-
-                if (variable && variable.category === 'wm.LiveVariable') {
-                    if (defaultQuery && WM.isDefined($is.datavalue) && $is.datavalue !== '') {
-                        $is.retrieveDefaultQueryModel().then(function (response) {
-                            deferred.resolve(response);
-                        });
+                } else {
+                    if (variable && variable.category === 'wm.LiveVariable') {
+                        if (defaultQuery && WM.isDefined($is.datavalue) && $is.datavalue !== '') {
+                            $is.retrieveDefaultQueryModel().then(function (response) {
+                                deferred.resolve(response);
+                            });
+                        }
                     }
                 }
+
                 return deferred.promise;
             }
 
