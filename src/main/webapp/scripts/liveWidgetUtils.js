@@ -970,7 +970,8 @@ WM.module('wm.widgets.live')
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
                 var template       = '',
                     wdgtProperties = scope.widgetProps,
-                    formWidget     = parentScope.Widgets[scope.name + '_formWidget'];
+                    $formWidgetEl  = element.find('[name="' + scope.name + '_formWidget"]'), //Find out the form widget inside the form field
+                    formWidget     = $formWidgetEl.length ? $formWidgetEl.isolateScope() : parentScope.Widgets[scope.name + '_formWidget'];
 
                 function compileField() {
                     if (CONSTANTS.isRunMode) {
