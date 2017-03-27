@@ -140,7 +140,7 @@ WM.module('wm.prefabs')
                 } else {
                     configUrl = CONSTANTS.isRunMode
                         ? 'app/prefabs/' + prefabName + '/config.json'
-                        : Utils.getProjectResourcePath(getProjectId()) + 'app/prefabs/' + prefabName + '/config.json';
+                        : Utils.getProjectResourcePath(getProjectId()) + 'WEB-INF/prefabs/' + prefabName + '/webapp/config.json';
 
                     Utils.fetchContent(
                         'json',
@@ -608,7 +608,7 @@ WM.module('wm.prefabs')
                 url = config.templateUrl.substr(0, config.templateUrl.lastIndexOf('/') + 1) + 'page.min.html';
                 /*read the file content*/
                 FileService.read({
-                    path: 'app/prefabs/' + prefabName + url,
+                    path: 'WEB-INF/prefabs/' + prefabName + '/webapp' + url,
                     projectID: $rs.project.id
                 }, function (prefabContent) {
                     var pageDom = WM.element("<div>" + prefabContent + "</div>"),
@@ -675,7 +675,7 @@ WM.module('wm.prefabs')
 
                 resourcePath = CONSTANTS.isRunMode
                                 ? 'app/prefabs/' + prefabName + '/'
-                                : 'services/projects/' + getProjectId() + '/resources/info/web/app/prefabs/' + prefabName + '/';
+                                : 'services/projects/' + getProjectId() + '/resources/info/web/WEB-INF/prefabs/' + prefabName + '/webapp/';
 
                 if (pendingTasks.resources[prefabName]) {
                     handler = $rs.$on(prefabName + '-dependencies-ready', function (evt, prefabContent) {
@@ -782,7 +782,7 @@ WM.module('wm.prefabs')
 
                         resourcePath = CONSTANTS.isRunMode
                             ? 'app/prefabs/' + prefabName + '/'
-                            : 'services/projects/' + getProjectId() + '/resources/info/web/app/prefabs/' + prefabName + '/';
+                            : 'services/projects/' + getProjectId() + '/resources/info/web/WEB-INF/prefabs/' + prefabName + '/webapp/';
 
                         $el.attr('href', getPrefabResourceUrl(href, resourcePath));
                     });
