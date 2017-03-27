@@ -202,13 +202,26 @@ WM.module('wm.layouts.containers')
 
             var widgetProps    = PropertiesFactory.getPropertiesOf('wm.wizardstep', ['wm.base']),
                 STEP_STATUS    = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'},
-                $headerElement = '<li class="app-wizard-step" ng-show="show" ng-class="{active: status === \'COMPLETED\', current: status === \'CURRENT\', disabled: status === \'DISABLED\'}">' +
+                $headerElement = '<li class="app-wizard-step" ng-show="showHeader" ng-class="{active: status === \'COMPLETED\', current: status === \'CURRENT\', disabled: status === \'DISABLED\'}">' +
                                     '<a href="javascript:void(0)">' +
                                         '<span class="arrow"></span>' +
                                         '<i class="app-icon {{iconclass}}" ng-if="iconclass"></i> ' +
                                         '<span class="step-title" ng-bind="title"></span>' +
                                     '</a>' +
-                                '</li>';
+                                '</li>',
+                notifyFor  = {
+                    'show' : true
+                };
+
+            //Define the property change handler. This function will be triggered when there is a change in the widget property
+            function propertyChangeHandler(scope, key, newVal) {
+                switch (key) {
+                case 'show':
+                    scope.showHeader = newVal || CONSTANTS.isStudioMode;
+                    break;
+                }
+            }
+
             return {
                 'restrict'  : 'E',
                 'scope'     : {
@@ -288,6 +301,10 @@ WM.module('wm.layouts.containers')
                             }
                             $rs.$safeApply($is);
                         });
+
+                        //register the property change handler
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
                 }

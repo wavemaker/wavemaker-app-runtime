@@ -2521,7 +2521,10 @@ WM.module('wm.widgets.base', [])
 
             function onScopeValueChangeProxy($is, $el, attrs, key, nv, ov, listeners) {
                 var $hiddenEleNode,
-                    $hiddenEl;
+                    $hiddenEl,
+                    studioModeHiddenWidgets,
+                    $targetEl,
+                    $headerEl;
 
                 if (key === 'placeholder' || key === 'type') {
                     if ($el.is('input') || $el.is('textarea')) {
@@ -2565,16 +2568,47 @@ WM.module('wm.widgets.base', [])
                         $el.addClass('animated ' + nv);
                     }
                 } else if (key === 'show') {
+                    studioModeHiddenWidgets = ['wm-form-field', 'wm-accordionpane', 'wm-tabpane', 'wm-wizardstep'];
+                    $headerEl = WM.element($is._headerElement);
+
                     //If Studio mode and form ele don't add ng-hide add a wrapper to show hidden field message
-                    if ($is.widgetid && $is.widgettype === 'wm-form-field') {
-                        $hiddenEleNode = WM.element('<div class="wm-widget-hidden-msg-overlay"><span class="pull-right badge">' + $rootScope.locale.MESSAGE_HIDDEN_FIELD + '</span></div>');
-                        if (nv) {
-                            $hiddenEl = $el.find('.wm-widget-hidden-msg-overlay');
-                            $hiddenEl.remove();
-                        } else {
-                            $el.append($hiddenEleNode);
+                    if ($is.widgetid && _.includes(studioModeHiddenWidgets, $is.widgettype)) {
+
+                        switch ($is.widgettype) {
+                        case 'wm-accordionpane':
+                            $targetEl = $el.find('.panel-heading');
+                            break;
+                        case 'wm-wizardstep':
+                        case 'wm-tabpane':
+                            $targetEl = $headerEl;
+                            break;
+                        default:
+                            $targetEl = $el;
+                            break;
                         }
-                    } else { //Except form-fields in studio mode for all other widgets in studio and run mode honor show property
+
+                        $hiddenEleNode = WM.element('<div class="wm-widget-hidden-msg-overlay ' + $is.widgettype + '" title="' + $rootScope.locale.LABEL_HIDDEN_WIDGET + '"><span class="pull-right wm-hidden-icon"></span></div>');
+
+                        if (nv) {
+
+                            //Special handling for wizardstep to add just icon and content in ::before
+                            if ($is.widgettype === 'wm-wizardstep') {
+                                $headerEl.removeClass('wm-hidden-overlay');
+                                $headerEl.find('.wm-hidden-icon').remove();
+                            } else {
+                                $hiddenEl = $targetEl.find('.wm-widget-hidden-msg-overlay');
+                                $hiddenEl.remove();
+                            }
+                        } else {
+
+                            if ($is.widgettype === 'wm-wizardstep') {
+                                $headerEl.addClass('wm-hidden-overlay');
+                                $headerEl.append(WM.element('<span class="pull-right wm-hidden-icon"></span>'))
+                            } else {
+                                $targetEl.append($hiddenEleNode);
+                            }
+                        }
+                    } else { //Except the list of widgets that has special representation in studio mode for all other widgets in studio and run mode honor show property
                         if (nv) {
                             $el.removeClass('ng-hide');
                         } else {

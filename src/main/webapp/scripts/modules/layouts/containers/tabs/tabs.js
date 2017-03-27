@@ -320,7 +320,7 @@ WM.module('wm.layouts.containers')
     .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'CONSTANTS', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rs, CONSTANTS, $compile) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base', 'wm.layouts']),
-            $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: isDisabled}" ng-show="show" ng-click="select($event)" role="tab" tabindex="-1" hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);">' +
+            $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: isDisabled}" ng-show="showHeader" ng-click="select($event)" role="tab" tabindex="-1" hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);">' +
                             '<a href="javascript:void(0);" role="button" tabindex="0">' +
                                 '<div class="tab-heading">' +
                                     '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
@@ -331,7 +331,8 @@ WM.module('wm.layouts.containers')
                           '</li>',
             $opt,
             notifyFor  = {
-                'disabled': CONSTANTS.isRunMode
+                'disabled': CONSTANTS.isRunMode,
+                'show'    : true
             };
 
         //Define the property change handler. This function will be triggered when there is a change in the widget property
@@ -339,6 +340,9 @@ WM.module('wm.layouts.containers')
             switch (key) {
             case 'disabled':
                 scope.isDisabled = newVal;
+                break;
+            case 'show':
+                scope.showHeader = newVal || CONSTANTS.isStudioMode;
                 break;
             }
         }
