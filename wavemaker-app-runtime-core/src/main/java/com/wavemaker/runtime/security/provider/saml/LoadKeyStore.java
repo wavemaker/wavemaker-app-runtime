@@ -48,6 +48,7 @@ import org.opensaml.xml.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.IOUtils;
@@ -60,7 +61,10 @@ public class LoadKeyStore {
 
     private static final Logger logger = LoggerFactory.getLogger(LoadKeyStore.class);
 
+    private static final String PROVIDERS_SAML_IDP_METADATA_FILE = "providers.saml.idpMetadataFile";
     private static final String PROVIDERS_SAML_IDP_METADATA_URL = "providers.saml.idpMetadataUrl";
+    private static final String PROVIDERS_SAML_IDP_METADATA_SOURCE = "providers.saml.idpMetadataSource";
+
     private static final String PROVIDERS_SAML_KEY_STORE_FILE = "providers.saml.keyStoreFile";
     private static final String PROVIDERS_SAML_KEY_STORE_PASSWORD = "providers.saml.keyStorePassword";
     private static final String KEY = "idpkey";
@@ -70,9 +74,12 @@ public class LoadKeyStore {
         if (file.exists()) {
             final Properties properties = PropertiesFileUtils.loadProperties(file);
             final String idpMetadataUrl = properties.getProperty(PROVIDERS_SAML_IDP_METADATA_URL);
+            final String idpMetadataFile = properties.getProperty(PROVIDERS_SAML_IDP_METADATA_FILE);
+            final String idpMetadatSource = properties.getProperty(PROVIDERS_SAML_IDP_METADATA_SOURCE);
             final String keyStoreFileName = properties.getProperty(PROVIDERS_SAML_KEY_STORE_FILE);
             final String keyStorePassword = properties.getProperty(PROVIDERS_SAML_KEY_STORE_PASSWORD);
-            if (StringUtils.isNotBlank(idpMetadataUrl) && StringUtils.isNotBlank(keyStoreFileName) && StringUtils.isNotBlank(keyStorePassword)) {
+
+            if (StringUtils.isNotBlank(keyStoreFileName) && StringUtils.isNotBlank(keyStorePassword)) {
                 File keyStoreFile = new File(getFileURI("saml/" + keyStoreFileName));
                 InputStream resourceAsStream = null; // stream closed in load method.
                 try {
@@ -81,9 +88,13 @@ public class LoadKeyStore {
                     new WMRuntimeException("File" + keyStoreFileName + "not found", e);
                 }
                 final KeyStore keyStore = load(resourceAsStream, keyStorePassword);
-
-                final String idpPublicKey = loadSAMLIdpMetadataUrl(idpMetadataUrl,
-                        new File(getFileURI("/saml/metadata/" + SAMLConstants.IDP_METADATA_XML)).getAbsolutePath());
+                String idpPublicKey = null;
+                if (MetadataSource.URL.name().equals(idpMetadatSource) && StringUtils.isNotBlank(idpMetadataUrl)) {
+                    idpPublicKey = loadSAMLIdpMetadataFromUrl(idpMetadataUrl,
+                            new File(getFileURI("/saml/metadata/" + SAMLConstants.IDP_METADATA_XML)).getAbsolutePath());
+                } else if (MetadataSource.FILE.name().equals(idpMetadatSource) && StringUtils.isNotBlank(idpMetadataFile)){
+                    idpPublicKey = loadSAMLIdpMetadataFromFile(idpMetadataFile);
+                }
                 if (idpPublicKey == null) {
                     throw new WMRuntimeException("Could not find public key in " + keyStoreFile.getAbsolutePath());
                 }
@@ -100,7 +111,6 @@ public class LoadKeyStore {
         }
     }
 
-
     private KeyStore load(InputStream keyStoreIS, String password) {
         logger.info("load keystore");
         KeyStore keystore = null;
@@ -115,42 +125,49 @@ public class LoadKeyStore {
         return keystore;
     }
 
-    private String loadSAMLIdpMetadataUrl(final String url, String filePath) {
-        logger.info("load metadata for {}", url);
-        String x509CertificateValue = null;
-        XMLObject metadata = null;
-        FilesystemMetadataProvider fileSystemMetadataProvider = null;
+    private String loadSAMLIdpMetadataFromUrl(final String idpMetadataUrl, String filePath) {
         File idpMetadataFile = new File(filePath);
+        logger.info("load metadata for {}", idpMetadataUrl);
         try {
             FileDownload fileDownload = new FileDownload();
-            idpMetadataFile = fileDownload.download(url, new File(filePath));
-        }catch (WMRuntimeException e){
-            logger.info("Failed to download metadata file for url {}", url);
+            idpMetadataFile = fileDownload.download(idpMetadataUrl, new File(filePath));
+        } catch (WMRuntimeException e) {
+            logger.info("Failed to download metadata file for url {}", idpMetadataUrl);
         }
-        try{
+        return readMetadataFile(idpMetadataFile);
+    }
+
+    private String loadSAMLIdpMetadataFromFile(String idpMetadataFilePath) {
+        logger.info("load metadata for {}", idpMetadataFilePath);
+        File idpMetadataFile = new File(getFileURI(idpMetadataFilePath));
+        return readMetadataFile(idpMetadataFile);
+    }
+
+    private String readMetadataFile(File idpMetadataFile){
+        XMLObject metadata = null;
+        FilesystemMetadataProvider fileSystemMetadataProvider = null;
+        try {
             fileSystemMetadataProvider = new FilesystemMetadataProvider(idpMetadataFile);
             fileSystemMetadataProvider.setParserPool(new BasicParserPool());
             fileSystemMetadataProvider.initialize();
             metadata = fileSystemMetadataProvider.getMetadata();
         } catch (MetadataProviderException e) {
-            throw new WMRuntimeException("Failed to read idp metadata from url " + url, e);
-        }finally {
+            throw new WMRuntimeException("Failed to read idp metadata ", e);
+        } finally {
             if (fileSystemMetadataProvider != null)
                 fileSystemMetadataProvider.destroy();
         }
-        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
-                .getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
+        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata).getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
         final List<KeyDescriptor> keyDescriptors = idpssoDescriptor.getKeyDescriptors();
         for (KeyDescriptor keyDescriptor : keyDescriptors) {
             if (UsageType.SIGNING == keyDescriptor.getUse()) {
                 final KeyInfo keyInfo = keyDescriptor.getKeyInfo();
                 final X509Data x509Data = keyInfo.getX509Datas().get(0);
                 final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates().get(0);
-                x509CertificateValue = x509Certificate.getValue();
+                return x509Certificate.getValue();
             }
         }
-
-        return x509CertificateValue;
+        return null;
     }
 
     private String createIdpCertificate(final String idpPublicKey) {

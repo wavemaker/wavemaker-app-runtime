@@ -26,7 +26,9 @@ public class SAMLConstants {
 
     public static final String IDP_KEY = "idpkey";
 
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_PROTOCOL = "urn:oasis:names:tc:SAML:2.0:protocol";
+    public static final String SAML_2_0_PROTOCOL = "urn:oasis:names:tc:SAML:2.0:protocol";
+
+    public static final String SAML_IDP_METADATA_BACKUP_LOCATION = "/saml/metadata/idpMetadata.xml";
 
 
 }

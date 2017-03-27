@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml.context.SAMLMessageContext;
 
-import static com.wavemaker.runtime.security.provider.saml.SAMLConstants.URN_OASIS_NAMES_TC_SAML_2_0_PROTOCOL;
+import static com.wavemaker.runtime.security.provider.saml.SAMLConstants.SAML_2_0_PROTOCOL;
 
 /**
  * Created by arjuns on 18/1/17.
@@ -57,7 +57,7 @@ public class SAMLHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public StringBuffer getRequestURL() {
-        SPSSODescriptor spssoDescriptor = context.getLocalEntityMetadata().getSPSSODescriptor(URN_OASIS_NAMES_TC_SAML_2_0_PROTOCOL);
+        SPSSODescriptor spssoDescriptor = context.getLocalEntityMetadata().getSPSSODescriptor(SAML_2_0_PROTOCOL);
         String endPoint = null;
         if (EndpointType.SSO == this.endpointType) {
             endPoint = getEndpoint(spssoDescriptor.getAssertionConsumerServices());
