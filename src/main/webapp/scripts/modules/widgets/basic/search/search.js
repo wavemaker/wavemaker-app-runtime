@@ -527,7 +527,11 @@ WM.module('wm.widgets.basic')
                 });
             }
             //Check if the page retrieved currently is the last page. If last page, don't send any more request
-            function isLastPage(page, dataSize, maxResults) {
+            function isLastPage(page, dataSize, maxResults, currentResults) {
+                //if last page info is not returned by backend and current results is less than max results, this is the last page
+                if (dataSize === CONSTANTS.INT_MAX_VALUE) {
+                    return currentResults !== 0 && currentResults < maxResults;
+                }
                 var pageCount = ((dataSize > maxResults) ? (Math.ceil(dataSize / maxResults)) : (dataSize < 0 ? 0 : 1));
                 return page === pageCount;
             }
@@ -551,7 +555,7 @@ WM.module('wm.widgets.basic')
                         $is.isPaginatedData = true;
                     } else if (WM.isObject(response) && Utils.isPageable(response)) {
                         $is.page       = response.number + 1;
-                        $is.isLastPage = isLastPage($is.page, response.totalElements, response.size);
+                        $is.isLastPage = isLastPage($is.page, response.totalElements, response.size, response.numberOfElements);
                         $is.isPaginatedData = true;
                         /*TODO: This workaround is because backend is not giving the last page in distinct api. Remove after issue is fixed in backend*/
                         if ($is.page > 1 && !$is.isLastPage && _.isEmpty(response.content) && response.totalElements === CONSTANTS.INT_MAX_VALUE) {
@@ -905,7 +909,7 @@ WM.module('wm.widgets.basic')
                                 typeAheadDropDown.bind('scroll', function () {
                                     var $item = WM.element(this);
                                     //If scroll is at the bottom and no request is in progress and next page records are available, fetch next page items.
-                                    if (!$is._loadingItems && !$is.isLastPage && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
+                                    if (!$is._loadingItems && !$is.isLastPage && $item.height() && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
                                         triggerSearch($is, typeAheadInput, true);
                                     }
                                 });
