@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.prefab.web;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.IOUtils;
 
 /**
@@ -23,11 +23,9 @@ public class PrefabWebContentServlet extends HttpServlet {
         String requestURL = getRequestURL(request);
         String prefabResourcePath = getPrefabResourcePath(requestURL);
 
-        byte[] resourceData = readResource(request, prefabResourcePath);
-        response.setContentLength(resourceData.length);
-
+        InputStream resourceStream = readResource(request, prefabResourcePath);
         OutputStream outputStream = response.getOutputStream();
-        IOUtils.copy(new ByteArrayInputStream(resourceData), outputStream, true, false);
+        IOUtils.copy(resourceStream, outputStream, true, false);
     }
 
     private String getRequestURL(HttpServletRequest request) {
@@ -40,20 +38,23 @@ public class PrefabWebContentServlet extends HttpServlet {
         int startIndex =  "/app/prefabs/".length();
         String prefabResourcePath = requestURL.substring(startIndex);
 
-        String prefabName = prefabResourcePath.substring(0, prefabResourcePath.indexOf("/"));
+        int endIndex = prefabResourcePath.indexOf("/");
+        if (endIndex == -1) {
+            throw new WMRuntimeException("Invalid path of requested resource " + prefabResourcePath);
+        }
+
+        String prefabName = prefabResourcePath.substring(0, endIndex);
         String resourcePath = prefabResourcePath.substring(prefabName.length());
         return "WEB-INF/prefabs/" + prefabName + "/webapp" + resourcePath;
     }
 
-    private byte[] readResource(HttpServletRequest request, String resourcePath) {
+    private InputStream readResource(HttpServletRequest request, String resourcePath) {
         ServletContext context = request.getSession().getServletContext();
-        InputStream resourceStream = null;
-        try {
-            resourceStream = context.getResourceAsStream(resourcePath);
-            String resourceData = IOUtils.toString(resourceStream);
-            return resourceData.getBytes();
-        } finally {
-            IOUtils.closeSilently(resourceStream);
+        InputStream inputStream = context.getResourceAsStream(resourcePath);
+
+        if (inputStream == null) {
+            throw new WMRuntimeException("Resource not found at " + resourcePath);
         }
+        return inputStream;
     }
 }
