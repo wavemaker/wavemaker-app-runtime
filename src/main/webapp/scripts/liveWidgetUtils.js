@@ -26,10 +26,11 @@ WM.module('wm.widgets.live')
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets(),
                 LIVE_CONSTANTS         = {
-                    'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',
-                    'EMPTY_VALUE' : $rs.appLocale.LABEL_NO_VALUE,
-                    'LABEL_KEY'   : 'key',
-                    'LABEL_VALUE' : 'value'
+                    'EMPTY_KEY'     : 'EMPTY_NULL_FILTER',
+                    'EMPTY_VALUE'   : $rs.appLocale.LABEL_NO_VALUE,
+                    'LABEL_KEY'     : 'key',
+                    'LABEL_VALUE'   : 'value',
+                    'NULL_EMPTY'    : ['null', 'empty']
                 };
             /**
              * @ngdoc function
@@ -2077,6 +2078,22 @@ WM.module('wm.widgets.live')
                 }
                 return (fieldTypeWidgetTypeMap[colDef.type] && fieldTypeWidgetTypeMap[colDef.type][0]) || 'text';
             }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getEnableEmptyFilter
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function checks if enable filter options is set on live filter
+             *
+             * @param {object} enableemptyfilter empty filter options
+             */
+            function getEnableEmptyFilter(enableemptyfilter) {
+                return enableemptyfilter && _.intersection(enableemptyfilter.split(','), LIVE_CONSTANTS.NULL_EMPTY).length > 0;
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2112,6 +2129,7 @@ WM.module('wm.widgets.live')
             this.fetchDistinctValues        = fetchDistinctValues;
             this.getDistinctValuesForField  = getDistinctValuesForField;
             this.getDistinctFieldProperties = getDistinctFieldProperties;
+            this.getEnableEmptyFilter       = getEnableEmptyFilter;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

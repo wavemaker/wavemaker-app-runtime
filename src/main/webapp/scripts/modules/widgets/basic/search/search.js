@@ -137,7 +137,10 @@ WM.module('wm.widgets.basic')
             }
 
             function getVariable($is, $s) {
-                return _.get($s, ['Variables', Utils.getVariableName($is, $s)]);
+                if ($s) {
+                    return _.get($s, ['Variables', Utils.getVariableName($is, $s)]);
+                }
+                return undefined;
             }
 
             /**

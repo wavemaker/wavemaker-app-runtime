@@ -57,9 +57,6 @@ WM.module('wm.widgets.live')
                     'EQUALS'      : 'exact'
                 },
                 dataSetWidgetTypes = Utils.getDataSetWidgets(),
-                getEnableEmptyFilter = function (enableemptyfilter) {
-                    return enableemptyfilter && _.intersection(enableemptyfilter.split(','), FILTER_CONSTANTS.NULLEMPTY).length > 0;
-                },
                 notifyFor = {
                     'dataset'        : true,
                     'pagesize'       : CONSTANTS.isStudioMode,
@@ -142,7 +139,7 @@ WM.module('wm.widgets.live')
                             if (WM.isDefined(newVal) && newVal !== '' && newVal !== null) {
                                 if (filterDef.isRange) {
                                     matchMode = getRangeMatchMode(filterDef.minValue, filterDef.maxValue);
-                                } else if (getEnableEmptyFilter($scope.enableemptyfilter) && newVal === FILTER_CONSTANTS.EMPTY_KEY) {
+                                } else if (LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter) && newVal === FILTER_CONSTANTS.EMPTY_KEY) {
                                     matchMode = getEmptyMatchMode($scope.enableemptyfilter);
                                 } else {
                                     matchMode = MATCH_MODES.EQUALS;
@@ -314,7 +311,7 @@ WM.module('wm.widgets.live')
                                 switch (filterField.widget) {
                                 case 'select':
                                 case 'radioset':
-                                    if (getEnableEmptyFilter($scope.enableemptyfilter) && filterField._value === FILTER_CONSTANTS.EMPTY_KEY) {
+                                    if (LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter) && filterField._value === FILTER_CONSTANTS.EMPTY_KEY) {
                                         matchMode  = getEmptyMatchMode($scope.enableemptyfilter);
                                         fieldValue = filterField._value;
                                     } else {
@@ -705,7 +702,7 @@ WM.module('wm.widgets.live')
                             //on load set filter widgets
                             scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
-                            scope.fetchDistinctValues = LiveWidgetUtils.fetchDistinctValues.bind(undefined, scope, 'formFields', 'widget', getEnableEmptyFilter(scope.enableemptyfilter));
+                            scope.fetchDistinctValues = LiveWidgetUtils.fetchDistinctValues.bind(undefined, scope, 'formFields', 'widget', LiveWidgetUtils.getEnableEmptyFilter(scope.enableemptyfilter));
                             //Will be called after setting filter property.
                             scope.redraw = function (forceRender) {
                                 if (forceRender) {
@@ -805,7 +802,7 @@ WM.module('wm.widgets.live')
                                 /*If dataset is undefined, fetch the default values for field*/
                                 columnsDef.isDataSetBound = true;
                             } else {
-                                LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget');
+                                LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget', LiveWidgetUtils.getEnableEmptyFilter(parentIsolateScope.enableemptyfilter));
                             }
                         }
                         scope.fieldDefConfig = columnsDef;
