@@ -15,11 +15,32 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
+import com.wavemaker.commons.model.security.saml.MetadataSource;
+
 /**
  * Created by ArjunSahasranam on 23/11/16.
  */
 public class SAMLConfig {
+    private String idpMetadataUrl;
+    private String idpMetadataFileLocation;
     private ValidateType validateType;
+    private MetadataSource metadataSource;
+
+    public String getIdpMetadataUrl() {
+        return idpMetadataUrl;
+    }
+
+    public void setIdpMetadataUrl(final String idpMetadataUrl) {
+        this.idpMetadataUrl = idpMetadataUrl;
+    }
+
+    public String getIdpMetadataFileLocation() {
+        return idpMetadataFileLocation;
+    }
+
+    public void setIdpMetadataFileLocation(final String idpMetadataFileLocation) {
+        this.idpMetadataFileLocation = idpMetadataFileLocation;
+    }
 
     public ValidateType getValidateType() {
         return validateType;
@@ -29,9 +50,17 @@ public class SAMLConfig {
         this.validateType = validateType;
     }
 
+    public MetadataSource getMetadataSource() {
+        return metadataSource;
+    }
+
+    public void setMetadataSource(final MetadataSource metadataSource) {
+        this.metadataSource = metadataSource;
+    }
+
     public enum ValidateType {
         STRICT,  // String.equals()
-        RELAXED, // DEV MODE 
+        RELAXED, // DEV MODE
         NONE // none
     }
 }
