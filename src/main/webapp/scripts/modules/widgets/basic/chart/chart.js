@@ -516,16 +516,10 @@ WM.module('wm.widgets.basic')
                     }
                 ];
             }
-
             //Execute the query.
-            DatabaseService.executeAggregateQuery({
-                'dataModelName'    : variable.liveSource,
-                'entityName'       : variable.type,
-                'page'             : 1,
-                'size'             : variable.maxResults || 500,
-                'sort'             : sortExpr,
-                'url'              : $rootScope.project.deployedUrl,
-                'data'             : data
+            variable.getAggregatedData({
+                'aggregations' : data,
+                'sort'         : sortExpr
             }, function (response) {
                 //Transform the result into a format supported by the chart.
                 var chartData = [],

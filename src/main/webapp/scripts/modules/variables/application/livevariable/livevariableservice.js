@@ -1431,6 +1431,34 @@ wm.variables.services.$liveVariable = [
                         Utils.triggerFn(error, errorMsg);
                     });
                 },
+
+                /*Function to get the aggregated data based on the fields chosen*/
+                getAggregatedData: function (variable, options, success, error) {
+                    var dbOperation = 'executeAggregateQuery',
+                        tableOptions;
+                    if (variable.filterFields) {
+                        tableOptions = prepareTableOptions(variable, {});
+                        options.aggregations.filter = tableOptions.query;
+                    }
+
+                    DatabaseService[dbOperation]({
+                        'dataModelName'    : variable.liveSource,
+                        'entityName'       : variable.type,
+                        'page'             : options.page || 1,
+                        'size'             : options.size || variable.maxResults,
+                        'sort'             : options.sort || '',
+                        'url'              : $rootScope.project.deployedUrl,
+                        'data'             : options.aggregations
+                    }, function (response) {
+                        if ((response && response.error) || !response) {
+                            Utils.triggerFn(error, response.error);
+                            return;
+                        }
+                        Utils.triggerFn(success, response);
+                    }, function (errorMsg) {
+                        Utils.triggerFn(error, errorMsg);
+                    });
+                },
             /*Function to update the data associated with the related tables of the live variable*/
                 updateRelatedData: function (variable, options, success, error) {
                     var projectID = $rootScope.project.id || $rootScope.projectName;
@@ -1691,6 +1719,10 @@ wm.variables.services.$liveVariable = [
                 getDistinctDataByFields: function (options, success, error) {
                     options = options || {};
                     methods.getDistinctDataByFields(this, options, success, error);
+                },
+                getAggregatedData: function (options, success, error) {
+                    options = options || {};
+                    methods.getAggregatedData(this, options, success, error);
                 },
                 updateRecord: function (options, success, error) {
                     var name = this.name;
