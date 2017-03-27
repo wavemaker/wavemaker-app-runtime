@@ -608,7 +608,9 @@ WM.module('wm.prefabs')
                 url = config.templateUrl.substr(0, config.templateUrl.lastIndexOf('/') + 1) + 'page.min.html';
                 /*read the file content*/
                 FileService.read({
-                    path: 'WEB-INF/prefabs/' + prefabName + '/webapp' + url,
+                    path: CONSTANTS.isRunMode
+                        ? 'app/prefabs/' + prefabName + url
+                        : 'WEB-INF/prefabs/' + prefabName + '/webapp' + url,
                     projectID: $rs.project.id
                 }, function (prefabContent) {
                     var pageDom = WM.element("<div>" + prefabContent + "</div>"),
