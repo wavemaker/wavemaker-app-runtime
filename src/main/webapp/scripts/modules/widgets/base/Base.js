@@ -314,6 +314,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.button": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
@@ -818,6 +819,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": [ "h1", "h2", "h3", "h4", "h5", "h6", "p", "text-ellipsis", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "vertical-align-top", "vertical-align-middle", "vertical-align-bottom", "lead", "badge", "form-control-static", "control-label"]},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
                         "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
@@ -1169,6 +1171,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
@@ -1240,6 +1243,7 @@ WM.module('wm.widgets.base', [])
                         "zindex": {"type": "string", "pattern": zindexRegex},
                         "visibility": {"type": "list", "options": visibilityOptions},
                         "display": {"type": "list", "options": displayOptions},
+                        "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1256,6 +1260,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.tile': {
                         "margin": {"type": "string", "widget": "box-model"},
+                        "conditionalclass": {"bindable": "in-bound"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1553,6 +1558,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.anchor": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
@@ -2049,7 +2055,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
-                {"properties": [ "class", "menuclass", "listclass", "itemclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
+                {"properties": [ "class", "conditionalclass", "menuclass", "listclass", "itemclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
                 {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},
@@ -2499,7 +2505,7 @@ WM.module('wm.widgets.base', [])
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
                 ' opacity overflow padding picturesource avatar textalign textdecoration verticalalign visibility ' +
-                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
+                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass conditionalclass';
 
 
             //use requestIdleCallback when available otherwise use setTimeout
@@ -2523,6 +2529,42 @@ WM.module('wm.widgets.base', [])
                 $rICQueue.push(element);
             }
 
+            //Returns array of classes that are evaluated true for given object or array
+            function arrayClasses(classVal) {
+                var classes = [];
+
+
+                if (WM.isArray(classVal)) {
+                    _.forEach(classVal, function(v) {
+                        classes = classes.concat(arrayClasses(v));
+                    });
+
+                    return classes;
+                } else if (WM.isObject(classVal)) {
+                    _.forEach(classVal, function(val, key) {
+                        if (val) {
+                            classes = classes.concat(key.split(' '));
+                        }
+                    });
+
+                    return classes;
+                }
+            }
+
+            //Gets list of classes to add and remove and applies on the $el
+            function updateClasses(oldClasses, newClasses, $el) {
+                var toAdd    = _.differenceWith(newClasses, oldClasses),
+                    toRemove = _.differenceWith(oldClasses, newClasses);
+
+                if (toAdd && toAdd.length) {
+                    $el.addClass(_.join(toAdd, ' '));
+                }
+                if (toRemove && toRemove.length) {
+                    $el.removeClass(_.join(toRemove, ' '));
+                }
+            }
+
+
             function onScopeValueChangeProxy($is, $el, attrs, key, nv, ov, listeners) {
                 var $hiddenEleNode,
                     $hiddenEl,
@@ -2538,11 +2580,29 @@ WM.module('wm.widgets.base', [])
                     }
                 } else if (key === 'backgroundimage') {
                     $is.picturesource = Utils.getBackGroundImageUrl(nv);
-                } else if (key === 'class') {
-                    if (ov) {
-                        $el.removeClass(ov).addClass(nv);
+                } else if (key === 'class' || key === 'conditionalclass') {
+                    if (key === 'conditionalclass' && WM.isObject(nv)) {
+                        var isArray    = WM.isArray(nv),
+                            newClasses = isArray ? nv : arrayClasses(nv || []),
+                            oldClasses;
+
+                        if (!ov) {
+                            //Add new Classes if no old value
+                            $el.addClass(_.join(newClasses, ' '));
+                        } else if (ov) {
+                            isArray    = WM.isArray(ov);
+                            oldClasses = isArray ? ov : arrayClasses(ov, $el);
+
+                            //update classes if old and nv value are different
+                            updateClasses(oldClasses, newClasses, $el);
+                        }
+
                     } else {
-                        $el.addClass(nv);
+                        if (ov) {
+                            $el.removeClass(ov).addClass(nv);
+                        } else {
+                            $el.addClass(nv);
+                        }
                     }
                 } else if (key === 'name') {
                     attrs.$set('name', nv);
