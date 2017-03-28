@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +33,10 @@ import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
  */
 public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport implements AuthoritiesProvider {
 
+    private static final String USERNAME = "username";
+    private static final String COLON_USERNAME = ":username";
+    private static final String Q_MARK = "?";
+
     private String authoritiesByUsernameQuery = "SELECT userid, role FROM User WHERE username = ?";
     private String rolePrefix = "ROLE_";
     private boolean rolesByQuery = false;
@@ -43,7 +46,10 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     @PostConstruct
     protected void init() {
         if (authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
-            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, "?");
+            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, COLON_USERNAME);
+        }
+        if (authoritiesByUsernameQuery.contains(Q_MARK)) {
+            authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(Q_MARK, COLON_USERNAME);
         }
     }
 
@@ -91,24 +97,20 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
         String authoritiesByUsernameQuery = getAuthoritiesByUsernameQuery();
-        authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace("?", "\'" + username + "\'");
         if (!isHql()) {
-            return getGrantedAuthoritiesByNativeSql(session, authoritiesByUsernameQuery);
+            return getGrantedAuthoritiesByNativeSql(session, authoritiesByUsernameQuery, username);
         } else {
-            return getGrantedAuthoritiesByHQL(session, authoritiesByUsernameQuery);
+            return getGrantedAuthoritiesByHQL(session, authoritiesByUsernameQuery,username);
         }
     }
 
-    private List<GrantedAuthority> getGrantedAuthoritiesByHQL(Session session, String authoritiesByUsernameQuery) {
-        final Query query = session.createQuery(authoritiesByUsernameQuery);
-        final List list = query.list();
+    private List<GrantedAuthority> getGrantedAuthoritiesByHQL(Session session, String authoritiesByUsernameQuery, String username) {
+        final List list = session.createQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 
-    private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(
-            final Session session, final String authoritiesByUsernameQuery) {
-        final Query query = session.createSQLQuery(authoritiesByUsernameQuery);
-        final List list = query.list();
+    private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(Session session, String authoritiesByUsernameQuery, String username) {
+        final List list = session.createSQLQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 

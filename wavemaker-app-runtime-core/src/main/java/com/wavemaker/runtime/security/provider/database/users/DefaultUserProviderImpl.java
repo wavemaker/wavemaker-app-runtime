@@ -18,6 +18,8 @@ package com.wavemaker.runtime.security.provider.database.users;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate4.HibernateCallback;
@@ -36,6 +38,10 @@ import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
  * Created by ArjunSahasranam on 11/3/16.
  */
 public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements UserProvider {
+
+    private static final String Q_MARK = "?";
+    private static final String COLON_USERNAME = ":username";
+    private static final String USERNAME = "username";
     private String usersByUsernameQuery = "SELECT userid, password, 1, username FROM User WHERE username = ?";
 
     public String getUsersByUsernameQuery() {
@@ -62,31 +68,21 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
         return wmUser;
     }
 
-    public UserDetails createUserDetails(String username, UserDetails userFromUserQuery,
+    public UserDetails createUserDetails(String username, UserDetails userDetails,
             List<GrantedAuthority> combinedAuthorities) {
-        String returnUsername = userFromUserQuery.getUsername();
-
-        WMUserDetails wmUserDetails = (WMUserDetails) userFromUserQuery;
-        String userLongName = wmUserDetails.getUserLongName();
-        int tenantId = wmUserDetails.getTenantId();
-        String userId = wmUserDetails.getUserId();
-        long loginTime = wmUserDetails.getLoginTime();
-
-        return new WMUser(userId, returnUsername, userFromUserQuery.getPassword(), userLongName, tenantId,
-                userFromUserQuery.isEnabled(),
-                true, true, true, combinedAuthorities, loginTime);
+        WMUserDetails wmUserDetails = (WMUserDetails) userDetails;
+        return new WMUser(wmUserDetails.getUserId(),  wmUserDetails.getUsername(), wmUserDetails.getPassword(), wmUserDetails.getUserLongName(),
+                wmUserDetails.getTenantId(), wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
+                wmUserDetails.getLoginTime());
     }
 
     private WMUser getWmUser(final Session session, final String username) {
         String usersByUsernameQuery = getUsersByUsernameQuery();
-        usersByUsernameQuery = usersByUsernameQuery.replace("?", "\'" + username + "\'");
         if (isHql()) {
-            final Query query = session.createQuery(usersByUsernameQuery);
-            final List list = query.list();
+            final List list = session.createQuery(usersByUsernameQuery).setParameter(USERNAME, username).list();
             return getWmUser(list);
         } else {
-            final Query query = session.createSQLQuery(usersByUsernameQuery);
-            final List list = query.list();
+            final List list = session.createSQLQuery(usersByUsernameQuery).setParameter(USERNAME, username).list();
             return getWmUser(list);
         }
     }
@@ -96,7 +92,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             Object[] resultMap = (Object[]) content.get(0);
             String userId = String.valueOf(resultMap[0]);
             String password = String.valueOf(resultMap[1]);
-            // MYSQL returns BigInteger. Enabled cloumn shoulld be introduced or "1" should be removed.
+            // MYSQL returns BigInteger. Enabled column should be introduced or "1" should be removed.
             int enabled = 0;
             final Object column3 = resultMap[2];
             if (column3 instanceof Integer) {
@@ -114,5 +110,13 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
                     true, AuthorityUtils.NO_AUTHORITIES, loginTime);
         }
         return null;
+    }
+
+    @PostConstruct
+    private void init() {
+        String usersByUsernameQuery = getUsersByUsernameQuery();
+        if (usersByUsernameQuery.contains(Q_MARK)) {
+            setUsersByUsernameQuery(usersByUsernameQuery.replace(Q_MARK, COLON_USERNAME));
+        }
     }
 }
