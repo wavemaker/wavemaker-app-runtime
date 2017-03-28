@@ -25,6 +25,10 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -60,8 +64,7 @@ public class RestConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
 
-    private static CloseableHttpClient httpClientWthSecurity;
-    private static CloseableHttpClient httpClientWthOutSecurity;
+    private static CloseableHttpClient defaultHttpClient;
     private static final int MAX_TOTAL = 500;
     private static final int DEFAULT_MAX_PER_ROUTE = 50;
 
@@ -107,11 +110,7 @@ public class RestConnector {
             throw new WMRuntimeException("Failed to decode url " + httpRequestDetails.getEndpointAddress(), e);
         }
 
-        if (endpointAddress.startsWith("https")) {
-            httpClient = getHttpClientWithSecurity();
-        } else {
-            httpClient = getHttpClientWthOutSecurity();
-        }
+        httpClient = getHttpClient();
 
 
         final RequestConfig requestConfig = RequestConfig.custom()
@@ -163,35 +162,19 @@ public class RestConnector {
     }
 
 
-    private CloseableHttpClient getHttpClientWithSecurity() {
-        if (httpClientWthSecurity == null) {
+    private CloseableHttpClient getHttpClient() {
+        if (defaultHttpClient == null) {
             synchronized (RestConnector.class) {
-                if (httpClientWthSecurity == null) {
-                    httpClientWthSecurity = HttpClients.custom()
-                            .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
+                if (defaultHttpClient == null) {
+                    defaultHttpClient = HttpClients.custom()
                             .setDefaultCredentialsProvider(getCredentialProvider())
                             .setConnectionManager(getConnectionManager())
                             .build();
                 }
             }
         }
-        return httpClientWthSecurity;
+        return defaultHttpClient;
     }
-
-    private CloseableHttpClient getHttpClientWthOutSecurity() {
-        if (httpClientWthOutSecurity == null) {
-            synchronized (RestConnector.class) {
-                if (httpClientWthOutSecurity == null) {
-                    httpClientWthOutSecurity = HttpClients.custom()
-                            .setDefaultCredentialsProvider(getCredentialProvider())
-                            .setConnectionManager(getConnectionManager())
-                            .build();
-                }
-            }
-        }
-        return httpClientWthOutSecurity;
-    }
-
 
     private CredentialsProvider getCredentialProvider() {
 
@@ -216,7 +199,12 @@ public class RestConnector {
     }
 
     private PoolingHttpClientConnectionManager getConnectionManager() {
-        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), new String[]{"TLSv1.2", "TLSv1.1", "TLSv1"}, null, NoopHostnameVerifier.INSTANCE))
+                .build();
+
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(registry);
         poolingHttpClientConnectionManager.setMaxTotal(MAX_TOTAL);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
         return poolingHttpClientConnectionManager;
