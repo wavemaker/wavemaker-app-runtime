@@ -70,10 +70,17 @@ WM.module('wm.layouts.containers')
             }
             
             function navigateToStep($is, stepIndex) {
-                if ($is.steps[stepIndex]) {
-                    $is.currentStep        = $is.steps[stepIndex];
+                var step = $is.steps[stepIndex];
+
+                //If only show then only navigate to next step else return false
+                if (step && step.show) {
+                    $is.currentStep        = step;
                     $is.currentStep.status = STEP_STATUS.CURRENT;
+
+                    return true;
                 }
+
+                return false;
             }
 
             return {
@@ -111,33 +118,50 @@ WM.module('wm.layouts.containers')
                     if (CONSTANTS.isRunMode) {
                         //Function to navigate to next step
                         $is.next = function () {
-                            var params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex},
+                            var prevStep = $is.currentStep,
+                                params   = {$isolateScope: $is, currentStep: prevStep, stepIndex: prevStep.stepIndex},
                                 stepIndex;
-                            if ($is.currentStep.onNext) {
-                                if ($is.currentStep.onNext(params) === false) {
+
+                            if (prevStep.onNext) {
+                                if (prevStep.onNext(params) === false) {
                                     return;
                                 }
                             }
-                            $is.currentStep.status = STEP_STATUS.COMPLETED;
-                            stepIndex = $is.currentStep.stepIndex + 1;
-                            stepIndex = $is.steps[stepIndex].show ? stepIndex : stepIndex + 1;
 
-                            navigateToStep($is, stepIndex);
+                            stepIndex = prevStep.stepIndex + 1;
+
+                            //Get step index of next step which has show true
+                            while (!$is.steps[stepIndex].show && stepIndex < $is.steps.length - 1) {
+                                stepIndex++;
+                            }
+
+                            //If there are any steps which has show then only change state of current step else remain same
+                            if (navigateToStep($is, stepIndex)) {
+                                prevStep.status = STEP_STATUS.COMPLETED;
+                            }
                         };
                         //Function to navigate to previous step
                         $is.prev = function () {
                             var params,
-                                stepIndex;
-                            if ($is.currentStep.onPrev) {
-                                params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
-                                if ($is.currentStep.onPrev(params) === false) {
+                                stepIndex,
+                                prevStep = $is.currentStep;
+
+                            if (prevStep.onPrev) {
+                                params = {$isolateScope: $is, currentStep: prevStep, stepIndex: prevStep.stepIndex};
+                                if (prevStep.onPrev(params) === false) {
                                     return;
                                 }
                             }
-                            $is.currentStep.status = STEP_STATUS.DISABLED;
-                            stepIndex = $is.currentStep.stepIndex - 1;
-                            stepIndex = $is.steps[stepIndex].show ? stepIndex : stepIndex - 1;
-                            navigateToStep($is, stepIndex);
+
+                            stepIndex = prevStep.stepIndex - 1;
+
+                            while(!$is.steps[stepIndex].show && stepIndex > 0) {
+                                stepIndex--;
+                            }
+
+                            if (navigateToStep($is, stepIndex)) {
+                                prevStep.status = STEP_STATUS.DISABLED;
+                            }
                         };
                         //Function to skip current step
                         $is.skip = function () {
@@ -180,8 +204,21 @@ WM.module('wm.layouts.containers')
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
                     'post': function ($is, element, attrs) {
-                        $is.currentStep = $is.steps[0];
-                        $is.currentStep.status = STEP_STATUS.CURRENT;
+                        var stepIndex = 0,
+                            currentStep;
+
+                        //On load also check the first show true step and make it as current step
+                        while (!$is.steps[stepIndex].show && stepIndex < $is.steps.length - 1) {
+                            stepIndex++;
+                        }
+
+                        currentStep = $is.steps[stepIndex];
+
+                        if (currentStep && currentStep.show) {
+                            $is.currentStep        = currentStep;
+                            $is.currentStep.status = STEP_STATUS.CURRENT;
+                        }
+
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                         //initialize the widget
                         WidgetUtilService.postWidgetCreate($is, element, attrs);
