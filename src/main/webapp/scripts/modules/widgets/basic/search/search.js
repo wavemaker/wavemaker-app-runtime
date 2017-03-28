@@ -343,7 +343,10 @@ WM.module('wm.widgets.basic')
                     $is.datavalue = '';
                     $is.result    = [];
 
-                    $is.onSubmit({$event: event, $scope: $is});
+                    // trigger onSubmit only when the search input is cleared off and do not trigger when tab is pressed.
+                    if (event.which !== 9) {
+                        $is.onSubmit({$event: event, $scope: $is});
+                    }
                 }
                 $is.query = inputVal;
                 $rs.$evalAsync(function () {
@@ -828,20 +831,18 @@ WM.module('wm.widgets.basic')
                         // on-select of type-ahead element, call the user-defined submit fn
                         $is.onTypeAheadSelect = function ($event, $item, $model, $label) {
                             $event = $event || {};
-                            // 'wmImgSrc' attr is found for the item select, then delete it
-                            if ($item && $item.wmImgSrc) {
+                            // 'wmImgSrc', 'wmDisplayLablel' attr is found for the item select, then delete it
+                            if ($item && ($item.wmImgSrc || $item.wmDisplayLabel)) {
                                 $item = Utils.getClonedObject($item);
                                 delete $item.wmImgSrc;
+                                delete $item.wmImgWidth;
+                                delete $item.wmDisplayLabel;
                             }
                             //store the previous item to make the button click functional
                             $item = searchItem = $item || ($is.datavalue === _.get(searchItem, $is.datafield) ? searchItem : undefined);
 
                             // add the selected object to the event.data and send to the user
                             $event.data = {'item': $item, 'model': $model, 'label': $label, 'query': $label};
-
-                            delete $item.wmImgSrc;
-                            delete $item.wmImgWidth;
-                            delete $item.wmDisplayLabel;
 
                             // set selected item on widget's exposed property
                             $is.datavalue  = ($is.datafield && $is.datafield !== ALL_FIELDS) ? ($item  && _.get($item, $is.datafield)) : $item;
