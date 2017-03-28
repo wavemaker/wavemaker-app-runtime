@@ -802,7 +802,7 @@ WM.module('wm.widgets.basic')
                                 $is._proxyModel = newVal;
 
                                 // check if datavalue is null.
-                                if (!WM.isDefined(newVal)) {
+                                if (!WM.isDefined(newVal) || newVal === '') {
                                     $is.queryModel = '';
                                     $rs.$evalAsync($is.updateModel);
                                     return;
