@@ -18,11 +18,19 @@ package com.wavemaker.runtime.data.dialect;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.dialect.PostgreSQL82Dialect;
 
+import com.wavemaker.commons.CommonConstants;
+
 /**
  * @author Dilip Kumar
  * @since 19/4/16
  */
 public class WMPostgresSQLDialect extends PostgreSQL82Dialect {
+
+    public WMPostgresSQLDialect() {
+        super();
+
+        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "timestamp without time zone");
+    }
 
     /**
      * PostgresDialect not handling cases where table or columns names in mixed or upper case.
