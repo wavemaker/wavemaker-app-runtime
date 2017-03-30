@@ -1017,6 +1017,10 @@ wm.variables.services.$liveVariable = [
                         if (Utils.isDateTimeType(fieldType)) {
                             fieldValue = Utils.formatDate(value, fieldType);
                             rowObject[key] = fieldValue;
+                        } else if (WM.isArray(value) && isStringType(fieldType)) {
+                            //Construct ',' separated string if param is not array type but value is an array
+                            fieldValue = _.join(value, ',');
+                            rowObject[key] = fieldValue;
                         }
                     });
                     //Merge inputFields along with dataObj while making Insert/Update/Delete
@@ -1047,6 +1051,9 @@ wm.variables.services.$liveVariable = [
                                 fieldType = getFieldType(fieldName, variableDetails);
                                 if (Utils.isDateTimeType(fieldType)) {
                                     fieldValue = Utils.formatDate(fieldValue, fieldType);
+                                } else if (WM.isArray(fieldValue) && isStringType(fieldType)) {
+                                    //Construct ',' separated string if param is not array type but value is an array
+                                    fieldValue = _.join(fieldValue, ',');
                                 }
                                 rowObject[fieldName] = fieldValue;
                             }
