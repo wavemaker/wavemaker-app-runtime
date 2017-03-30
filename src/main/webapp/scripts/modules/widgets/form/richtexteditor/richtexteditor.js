@@ -89,7 +89,7 @@ WM.module('wm.widgets.form')
                 };
                 toolbarConfig.fontColor   = {
                     'display': "<div class='toolbar-plugin colorpicker' ng-init='colorPicker.foreColor=\"#333\"'>" +
-                        "<button type='button' ng-style='{borderBottomColor:colorPicker.foreColor}' colorpicker colorpicker-is-open='isColorPickerOpen' colorpicker-parent='true' colorpicker-close-on-select ng-model='colorPicker.foreColor' class='btn btn-default colorpicker-togglebtn' ng-disabled='showHtml()'>" +
+                        "<button type='button' ng-style='{borderBottomColor:colorPicker.foreColor}' colorpicker colorpicker-is-open='isColorPickerOpen' colorpicker-parent='true' ng-model='colorPicker.foreColor' class='btn btn-default colorpicker-togglebtn' ng-disabled='showHtml()'>" +
                         "<i class='fa fa-font'></i>" +
                         "</button></div>",
                     'action': function (promise, restoreSelection) {
@@ -115,7 +115,7 @@ WM.module('wm.widgets.form')
                 };
                 toolbarConfig.backgroundColor = {
                     'display': "<div class='toolbar-plugin colorpicker'  ng-init='colorPicker.backColor=\"#333\"'>" +
-                        "<button type='button' ng-style='{borderBottomColor:colorPicker.backColor}' colorpicker colorpicker-is-open='isColorPickerOpen' colorpicker-parent='true' colorpicker-close-on-select ng-model='colorPicker.backColor' class='btn btn-default colorpicker-togglebtn' ng-disabled='showHtml()'>" +
+                        "<button type='button' ng-style='{borderBottomColor:colorPicker.backColor}' colorpicker colorpicker-is-open='isColorPickerOpen' colorpicker-parent='true' ng-model='colorPicker.backColor' class='btn btn-default colorpicker-togglebtn' ng-disabled='showHtml()'>" +
                         "<i class='fa fa-paint-brush'></i>" +
                         "</button>" +
                         "</div>",
@@ -177,7 +177,7 @@ WM.module('wm.widgets.form')
                 toolbarConfig.fontSize = {
                     'display': "<div class='toolbar-plugin fontname-plugin' uib-dropdown is-open='isOpen'>" +
                         "<button class='btn btn-default' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><i class='fa fa-text-height'></i><i class='fa fa-caret-down'></i></button>" +
-                        "<ul uib-dropdown-menu role='menu'><li role='menuitem' ng-repeat='o in options'><button class='btn btn-default' style='font-family: {{$parent.$parent.tools.fontName.font}};font-size: {{o.css}};' type='button' ng-click='selectSize($event, o.value)'>{{o.name}}</button></li></ul>" +
+                        "<ul uib-dropdown-menu class='fontsize-list' role='menu'><li role='menuitem' ng-repeat='o in options'><button class='btn btn-default' style='font-family: {{$parent.$parent.tools.fontName.font}};font-size: {{o.css}};' type='button' ng-click='selectSize($event, o.value)'>{{o.name}}</button></li></ul>" +
                         "</div>",
                     'action': function (promise, restoreSelection) {
                         var size = this.size,
@@ -205,7 +205,7 @@ WM.module('wm.widgets.form')
                 };
                 toolbarConfig.formatHeader = {
                     'display': "<div class='toolbar-plugin formatheader-plugin' uib-dropdown is-open='isOpen'>" +
-                        "<button class='btn btn-default' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><span></span><i class='fa fa-caret-down'></i></button>" +
+                        "<button class='btn btn-default active' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><span></span><i class='fa fa-caret-down'></i></button>" +
                         "<ul uib-dropdown-menu role='menu'><li role='menuitem' ng-repeat='(key, value) in options'><a ng-click='selectFormat($event, key)'><span ng-class='key.toLocaleLowerCase()'>{{value}}</span></a></li></ul>" +
                         "</div>",
                     'tooltiptext': 'Insert Style',

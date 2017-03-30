@@ -2328,10 +2328,9 @@ If the height and width are not specified the video takes the height of the post
             }
             &.fontname-plugin {
               width:42px;
-              .font-list {
-                height: 350px;
-                overflow: scroll;
-                overflow-x: hidden;
+              .font-list, .fontsize-list {
+                max-height: 185px;
+                overflow: auto;
               }
             }
             &.formatheader-plugin {
