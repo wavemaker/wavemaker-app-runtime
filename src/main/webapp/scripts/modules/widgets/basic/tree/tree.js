@@ -167,16 +167,18 @@ WM.module('wm.widgets.basic')
                     eventParams = {
                         '$event'  : $event,
                         '$scope'  : $is
-                    };
+                    },
+                    expandFn = WM.isFunction($is.onExpand) ? $is.onExpand : WM.noop,
+                    collapseFn = WM.isFunction($is.onCollapse) ? $is.onCollapse : WM.noop;
 
                 if ($i.hasClass('collapsed')) {
                     $i.removeClass('collapsed ' + treeIcons.collapsed).addClass('expanded ' + treeIcons.expanded);
                     $li.removeClass('collapsed').addClass('expanded');
-                    fn = $is.onExpand(eventParams);
+                    fn = expandFn(eventParams);
                 } else if ($i.hasClass('expanded')) {
                     $i.removeClass('expanded ' + treeIcons.expanded).addClass('collapsed ' + treeIcons.collapsed);
                     $li.removeClass('expanded').addClass('collapsed');
-                    fn = $is.onCollapse(eventParams);
+                    fn = collapseFn(eventParams);
                 }
                 Utils.triggerFn(fn);
             }
@@ -210,7 +212,7 @@ WM.module('wm.widgets.basic')
                     $el.append(docFrag);
                 }
 
-                if ($is._selectNode) {
+                if ($is._selectNode && !$is.widgetid) {
                     $li = $is._selectNode;
                     $li.addClass('selected');
                     data    = $li.data('nodedata');
@@ -230,7 +232,7 @@ WM.module('wm.widgets.basic')
                             path = '/' + $title.text() + path;
                         });
 
-                    $is.selecteditem = Utils.getClonedObject(data);
+                    $is.selecteditem = Utils.getClonedObject(data) || {};
                     $is.selecteditem.path = path;
 
                     fn = $is.onSelect({$event: undefined, $scope: $is, $item: data, $path: path});
@@ -276,7 +278,8 @@ WM.module('wm.widgets.basic')
                     path = '',
                     $liPath,
                     fn,
-                    nodeAction;
+                    nodeAction,
+                    elScope = $el.scope();
                 $el.find('.selected').removeClass('selected');
                 if (!$li.length) {
                     return;
@@ -317,7 +320,7 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (nodeAction) {
-                    Utils.evalExp($is, nodeAction);
+                    Utils.evalExp(elScope, nodeAction);
                 }
 
                 fn = $is.onSelect({$event: evt, $scope: $is, $item: data, $path: path});
