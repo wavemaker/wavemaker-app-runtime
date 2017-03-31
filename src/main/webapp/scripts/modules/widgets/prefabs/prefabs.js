@@ -430,11 +430,13 @@ WM.module('wm.prefabs')
                                         'templateContent': _content
                                     };
                                     compileTemplate(_content);
+                                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                                }, function() {
+                                    $is._methodsMap = {}; //needed as this will be used while generating prefab event options when config load fails
                                 });
                         } else { //dependencies already loaded.
                             compileTemplate(depsMap[prefabName].templateContent);
                         }
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
                         $is.showServerProps = $is.serverProps && _.keys($is.serverProps).length;
                     }
                 }
