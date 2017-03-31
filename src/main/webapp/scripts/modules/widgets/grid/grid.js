@@ -1237,6 +1237,7 @@ WM.module('wm.widgets.grid')
                     $is.callDataGridMethod('setStatus', 'nodata', $is.nodatamessage);
                     $is.selecteditem = undefined;
                 }
+                $is.callDataGridMethod('updateSelectAllCheckboxState');
             }
             function getCompiledTemplate(htm, row, colDef, refreshImg) {
                 var rowScope = $is.$new(),

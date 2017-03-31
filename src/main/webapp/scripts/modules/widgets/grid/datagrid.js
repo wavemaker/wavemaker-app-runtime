@@ -1242,7 +1242,7 @@ $.widget('wm.datagrid', {
 
     /* Checks the header checkbox if all table checkboxes are checked, else unchecks it. */
     updateSelectAllCheckboxState: function () {
-        if (!this.options.showHeader) {
+        if (!this.options.showHeader || !this.options.multiselect) {
             return;
         }
         //As rows visibility is checked, remove loading icon
@@ -1704,6 +1704,18 @@ $.widget('wm.datagrid', {
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
     },
+    //Function to close the current editing row
+    closeEditedRow: function() {
+      var $row = this.gridBody.find('tr.row-editing');
+      if ($row.length) {
+          //If new row, remove the row. Else, cancel the row edit
+          if (parseInt($row.attr('data-row-id'), 10) >= this.preparedData.length) {
+              this.removeNewRow($row);
+          } else {
+              this.cancelEdit($row);
+          }
+      }
+    },
     hideRowEditMode: function ($row) {
         var $editableElements = $row.find('td.cell-editing'),
             $editButton       = $row.find('.edit-row-button'),
@@ -1877,6 +1889,8 @@ $.widget('wm.datagrid', {
         if (direction !== '') {
             this.preparedHeaderData[id].sortInfo = {'sorted': true, 'direction': direction};
         }
+        this._setGridEditMode(false);
+        this.closeEditedRow();
         this.options.sortHandler.call(this, this.options.sortInfo, e, 'sort');
     },
     //Method to handle up and next key presses
