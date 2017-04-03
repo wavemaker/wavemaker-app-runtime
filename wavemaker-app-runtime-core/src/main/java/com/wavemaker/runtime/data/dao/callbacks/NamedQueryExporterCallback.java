@@ -65,23 +65,28 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
     public ByteArrayOutputStream doInHibernate(final Session session) throws HibernateException {
         final DataExporter exporter;
         Query namedQuery = session.getNamedQuery(queryName);
-        QueryHelper.configureParameters(namedQuery, params);
         final boolean isNative = namedQuery instanceof SQLQuery;
-        namedQuery.setFirstResult(pageable.getOffset());
-        namedQuery.setMaxResults(pageable.getPageSize());
         final Sort sort = pageable.getSort();
         if (isNative) {
             namedQuery = QueryHelper
                     .createNewNativeQueryWithSorted(session, (SQLQuery) namedQuery, responseType, sort);
+            setQueryProps(namedQuery);
             exporter = new NativeSQLDataExporter(DataSourceExporterUtil.constructResultSet(namedQuery.scroll()));
         } else {
             namedQuery = QueryHelper.createNewHqlQueryWithSorted(session, namedQuery, responseType, sort);
+            setQueryProps(namedQuery);
             if (!queryNameVsMetaData.containsKey(queryName)) {
                 queryNameVsMetaData.put(queryName, buildMetaData(namedQuery));
             }
             exporter = new HQLQueryDataExporter(namedQuery.scroll(), queryNameVsMetaData.get(queryName));
         }
         return exporter.export(exportType, responseType);
+    }
+
+    private void setQueryProps(final Query namedQuery) {
+        QueryHelper.configureParameters(namedQuery, params);
+        namedQuery.setFirstResult(pageable.getOffset());
+        namedQuery.setMaxResults(pageable.getPageSize());
     }
 
     private List<ReturnProperty> buildMetaData(Query query) {
