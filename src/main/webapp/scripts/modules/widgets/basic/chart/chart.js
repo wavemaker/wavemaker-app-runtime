@@ -81,6 +81,7 @@ WM.module('wm.widgets.basic')
                 'orderby'           : true,
                 'showlegend'        : true,
                 'title'             : true,
+                'nodatamessage'     : true,
                 'subheading'        : true
             },
         // Getting the relevant aggregation function based on the selected option
@@ -479,14 +480,10 @@ WM.module('wm.widgets.basic')
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 elScope = element.scope(),
                 data = {},
-                sortExpr = _.replace(scope.orderby, /:/g, ' '),
-                orderByColumn = _.first(_.split(sortExpr, ' ')),
-                columns = [];
-
-            //Returning if the data is not yet loaded
-            if (!scope.chartData) {
-                return;
-            }
+                sortExpr,
+                orderByColumns,
+                columns = [],
+                colAlias;
 
             //Set the variable name based on whether the widget is bound to a variable opr widget
             if (scope.binddataset.indexOf('bind:Variables.') !== -1) {
@@ -501,9 +498,15 @@ WM.module('wm.widgets.basic')
                 return;
             }
             columns = _.concat(columns, data.groupByFields, [scope.aggregationcolumn]);
-            if (_.includes(columns, orderByColumn)) {
-                sortExpr = getValidAliasName(sortExpr);
-            }
+            /*Orderby set at the chart widget level has high priority
+            If widget level orderby is not set variable level ordery is applied*/
+            sortExpr = scope.orderby ? _.replace(scope.orderby, /:/g, ' ') : variable.orderBy;
+            orderByColumns = getLodashOrderByFormat(scope.orderby).columns;
+            //If the orderby column is chosen either in groupby or orderby then replace . with $ for that column
+            _.forEach(_.intersection(columns, orderByColumns), function (col) {
+                colAlias = getValidAliasName(col);
+                sortExpr = _.replace(sortExpr, col, colAlias);
+            });
             if (isGroupByEnabled(scope.groupby)) {
                 data.groupByFields = _.split(scope.groupby, ',');
             }
