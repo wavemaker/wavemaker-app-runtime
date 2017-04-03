@@ -19,10 +19,6 @@ import java.lang.reflect.Method;
 import java.sql.ResultSet;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.ScrollableResults;
 import org.hibernate.internal.AbstractScrollableResults;
 
@@ -49,15 +45,10 @@ public class DataSourceExporterUtil {
     public static void setCellValue(Object data, final Cell cell) {
         try {
             if (data != null) {
-                Row row = cell.getRow();
-                Sheet sheet = row.getSheet();
                 if (!byte[].class.equals(data.getClass())) {
                     cell.setCellValue(data.toString());
                 } else {
-                    Drawing drawing = sheet.createDrawingPatriarch();
-                    ImageUtils.addImageToSheet(cell.getColumnIndex(), row.getRowNum(), sheet, drawing, (byte[]) data,
-                            Workbook.PICTURE_TYPE_JPEG, 20, 30, ImageUtils.EXPAND_ROW_AND_COLUMN);
-
+                    ImageUtils.addImageToSheet((byte[]) data, cell);
                 }
             }
         } catch (Exception e) {
