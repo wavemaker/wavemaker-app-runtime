@@ -1994,13 +1994,26 @@ WM.module('wm.utils', [])
                 params[param[0]] = decodeURIComponent(_.join(_.slice(param, 1), '='));
             });
         }
+
         /**
          * Simulates file download in an app through creating and submitting a hidden form in DOM.
          * The action will be initiated through a Service Variable
+         *
+         * Query Params
+         * The request params like query params are added as hidden input elements
+         *
+         * Header Params
+         * The header params for a request are also added along with hidden input elements.
+         * This is done as headers can not be set for a form POST call from JavaScript
+         *
+         * Finally, request parameters are sent as follows:
+         * For a GET request, the request data is sent along with the query params.
+         * For POST, it is sent as request body.
+         *
          * @param variable: the variable that is called from user action
          * @param requestParams object consisting the info to construct the XHR request for the service
          */
-        function simulateFileDownload(requestParams) {
+        function downloadThroughIframe(requestParams) {
             var iFrameElement,
                 formEl,
                 paramElement,
@@ -2059,6 +2072,94 @@ WM.module('wm.utils', [])
                 iFrameElement.contents().find('body').append(formEl);
                 formEl.submit();
             }, 100);
+        }
+
+        function downloadFilefromResponse(response, headerFn) {
+            // check for a filename
+            var filename = "";
+            var disposition = headerFn('Content-Disposition');
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                var matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+            }
+
+            var type = headerFn('Content-Type');
+            var blob = new Blob([response], { type: type });
+
+            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                window.navigator.msSaveBlob(blob, filename);
+            } else {
+                var URL = window.URL || window.webkitURL;
+                var downloadUrl = URL.createObjectURL(blob);
+
+                if (filename) {
+                    // use HTML5 a[download] attribute to specify filename
+                    var a = document.createElement("a");
+                    // safari doesn't support this yet
+                    if (typeof a.download === 'undefined') {
+                        var reader = new FileReader();
+                        reader.onloadend = function() {
+                            var url = reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
+                            var popup = window.open(url, '_blank');
+                            if(!popup) window.location.href = url;
+                            url = undefined; // release reference before dispatching
+                        };
+                        reader.readAsDataURL(blob);
+                    } else {
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                    }
+                } else {
+                    var popup = window.open(downloadUrl, '_blank');
+                    if(!popup) window.location.href = downloadUrl;
+                }
+
+                setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+            }
+        }
+
+        function downloadThroughAnchor(config) {
+            var url = config.url,
+                method = config.method,
+                data = config.dataParams,
+                headers = config.headers;
+            headers['Content-Type'] = headers['Content-Type'] || 'application/x-www-form-urlencoded';
+            $http({
+                method: method,
+                url: url,
+                data: data,
+                headers: headers,
+                responseType: 'arraybuffer'
+            }).then(function (response) {
+                setTimeout(function () {
+                    downloadFilefromResponse(response.data, response.headers);
+                }, 900);
+            }, function (err) {console.log('error', err)});
+        }
+
+        /**
+         * Downloads a file in the browser.
+         * Two methods to do so, namely:
+         * 1. downloadThroughAnchor, called if
+         *      - if a header is to be passed
+         *      OR
+         *      - if security is ON and XSRF token is to be sent as well
+         * NOTE: This method does not work with Safari version 10.0 and below
+         *
+         * 2. downloadThroughIframe
+         *      - this method works across browsers and uses an iframe to downlad the file.
+         * @param requestParams, request params object
+         */
+        function simulateFileDownload(requestParams) {
+            if (!_.isEmpty(requestParams.headers) || ($http.defaults.xsrfCookieName === CONSTANTS.XSRF_COOKIE_NAME)) {
+                downloadThroughAnchor(requestParams);
+            } else {
+                downloadThroughIframe(requestParams);
+            }
         }
 
 

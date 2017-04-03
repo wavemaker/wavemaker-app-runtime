@@ -53,7 +53,8 @@ Application
         },
         'DATA_SEARCH_LIMIT' : 10,
         'IFRAME_WINDOW_NAME': 'WM_RUN_WINDOW',
-        'WM_OAUTH_STATE': 'WMOAuthState'
+        'WM_OAUTH_STATE': 'WMOAuthState',
+        'XSRF_COOKIE_NAME': 'wm_xsrf_token'
     })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(
@@ -599,7 +600,7 @@ Application
                 function loadSecurityConfig(forcePageLoad) {
                     var deferred = $q.defer(),
                         page,
-                        XSRF_COOKIE = 'wm_xsrf_token';
+                        XSRF_COOKIE = CONSTANTS.XSRF_COOKIE_NAME;
 
                     if (!$rs.isApplicationType) {
                         if ($location.path() === '/') {
