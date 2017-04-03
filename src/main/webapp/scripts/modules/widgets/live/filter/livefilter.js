@@ -788,7 +788,7 @@ WM.module('wm.widgets.live')
                                 defaultVal = columnsDef.defaultvalue;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
                                 if (CONSTANTS.isRunMode) {
-                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type);
+                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type, columnsDef.widget);
                                 }
                                 columnsDef.value = defaultVal;
                                 if (columnsDef.isRange) {

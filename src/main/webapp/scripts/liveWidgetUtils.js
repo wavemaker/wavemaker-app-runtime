@@ -50,6 +50,9 @@ WM.module('wm.widgets.live')
                 if (value === 'false') {
                     return false;
                 }
+                if (/^\d+$/.test(value)) { //Check if the value is a string of number type like '123'
+                    return +value;
+                }
                 return value;
             }
 
@@ -282,7 +285,7 @@ WM.module('wm.widgets.live')
                     'list'       : ['select', 'radioset', 'checkboxset', 'switch', 'autocomplete', 'chips'],
                     'clob'       : ['text', 'textarea', 'richtext'],
                     'blob'       : ['upload'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'toggle', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
                 };
                 return fieldTypeWidgetTypeMap;
             }
