@@ -205,7 +205,6 @@ wm.variables.services.$servicevariable = ['Variables',
                 pswd,
                 method,
                 formData,
-                formDataContentType,
                 isProxyCall,
                 isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable),
                 variableData,
@@ -939,12 +938,12 @@ wm.variables.services.$servicevariable = ['Variables',
         return {
             getServiceModel           : function (params) {
                 var model = {},
-                    variable = params.variable,
+                    variable = params.variable || {},
                     prefabName = _.get(variable, '_prefabName');
                 if (prefabName) {
                     prefabDataTypes[prefabName] = params.types;
                 }
-                prepareServiceModel(params.typeRef, model, null, params.variable);
+                prepareServiceModel(params.typeRef, model, null, variable);
 
                 return model;
             },
