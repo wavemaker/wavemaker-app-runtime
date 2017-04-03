@@ -1455,6 +1455,9 @@ WM.module('wm.widgets.grid')
                 if (!_.isEmpty($is.sortInfo)) {
                     gridSortString = $is.sortInfo.field + ' ' + $is.sortInfo.direction;
                     variableSort = _.get($is.variable, ['_options', 'orderBy']) || variableSort;
+                    if (variableSort) { //If multiple order by fields are present, compare with the first one
+                        variableSort = _.head(_.split(variableSort, ','));
+                    }
                     if (gridSortString !== variableSort) {
                         $is.callDataGridMethod('resetSortIcons');
                         $is.sortInfo = {};

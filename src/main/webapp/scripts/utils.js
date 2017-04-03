@@ -781,7 +781,7 @@ WM.module('wm.utils', [])
          * Encodes the url as follows
          *  - the path part is encoded through encodeURI
          *  - the url params are encoded through encodeURIComponent. This is done to encode special characters not encoded through encodeURI
-         *  
+         *
          * @param url
          * @returns {*}
          */
@@ -2093,14 +2093,14 @@ WM.module('wm.utils', [])
          */
         function getOrderByExpr(pageableObj) {
             pageableObj = pageableObj || [];
-            var expr              = '',
+            var expressions       = [],
                 KEY_VAL_SEPARATOR = ' ',
                 FIELD_SEPARATOR   = ',';
-            _.forEach(pageableObj, function (obj, index) {
-                expr += obj.property + KEY_VAL_SEPARATOR + obj.direction.toLowerCase() + (index > 0 && index < pageableObj.length - 1 ? FIELD_SEPARATOR : '');
+            _.forEach(pageableObj, function (obj) {
+                expressions.push(obj.property + KEY_VAL_SEPARATOR + obj.direction.toLowerCase());
             });
 
-            return expr;
+            return _.join(expressions, FIELD_SEPARATOR);
         }
         /**
          * Returns the orderBy Expression based on the 'sort 'option in pageable object
@@ -2124,7 +2124,7 @@ WM.module('wm.utils', [])
          */
         function getTypes(type) {
             var types = [];
-            
+
             if (type === 'form-widgets') {
                 types = ["wm-label",
                     "wm-text",
