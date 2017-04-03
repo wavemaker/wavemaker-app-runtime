@@ -414,9 +414,9 @@ WM.module('wm.widgets.basic')
         }
 
         /*Decides whether the data should be visually grouped or not
-        Visually grouped when a different column is choosen in the group by other than x and y axis*/
+        Visually grouped when a different column is choosen in the group by other than x and y axis and aggregation is not chosen*/
         function getGroupingDetails(scope) {
-            if (isGroupByEnabled(scope.groupby)) {
+            if (isGroupByEnabled(scope.groupby) && !isAggregationEnabled(scope)) {
                 var isVisuallyGrouped = false,
                     visualGroupingColumn,
                     groupingExpression,
@@ -899,6 +899,8 @@ WM.module('wm.widgets.basic')
         }
 
         function getCutomizedOptions(scope, prop, fields) {
+            var groupByColumns = _.split(scope.groupby, ','),
+                aggColumns = _.split(scope.aggregationcolumn, ',');
             if (!scope.binddataset) {
                 return fields;
             }
@@ -910,13 +912,13 @@ WM.module('wm.widgets.basic')
             case 'xaxisdatakey':
                 //If group by enabled, columns chosen in groupby will be populated in x axis options
                 if (isGroupByEnabled(scope.groupby)) {
-                    newOptions = _.split(scope.groupby, ',');
+                    newOptions = groupByColumns;
                 }
                 break;
             case 'yaxisdatakey':
                 //If aggregation by enabled, columns chosen in aggregation will be populated in y axis options
                 if (isAggregationEnabled(scope)) {
-                    newOptions = _.split(scope.aggregationcolumn, ',');
+                    newOptions = aggColumns;
                 } else if (scope.isLiveVariable) {
                     //In case of live variable populating only numeric columns
                     newOptions = scope.numericColumns;
@@ -934,6 +936,12 @@ WM.module('wm.widgets.basic')
                     newOptions = scope.numericColumns;
                 }
                 break;
+            case 'orderby':
+                //Set the 'aggregationColumn' to show all keys in case of aggregation function is count or to numeric keys in all other cases.
+                if (scope.isLiveVariable && isAggregationEnabled(scope)) {
+                    newOptions = _.concat(groupByColumns, aggColumns);
+                }
+                break;
             case 'bubblesize':
                 if (scope.numericColumns && scope.numericColumns.length) {
                     newOptions = scope.numericColumns;
@@ -942,6 +950,11 @@ WM.module('wm.widgets.basic')
             }
 
             return newOptions || fields || scope.axisoptions;
+        }
+
+        // Based on the chart type, sets the options for the yaxisdatakey
+        function setOrderByColumns(scope) {
+            scope.widgetProps.orderby.options = getCutomizedOptions(scope, 'orderby');
         }
 
         //Function that iterates through all the columns and then fetching the numeric and non primary columns among them
@@ -1141,6 +1154,7 @@ WM.module('wm.widgets.basic')
                     if (isGroupByChecked) {
                         //Filtering x and y axis options based on the data filtering options
                         modifyAxesOptions(scope, key);
+                        setOrderByColumns(scope);
                     } else {
                         //Showing all options
                         scope.widgetProps.xaxisdatakey.options = getCutomizedOptions(scope, 'xaxisdatakey');
@@ -1157,6 +1171,7 @@ WM.module('wm.widgets.basic')
                     //Setting the group by columns when aggregation column is changed
                     setGroupByColumns(scope, newVal);
                     modifyAxesOptions(scope, key);
+                    setOrderByColumns(scope);
                 }
                 break;
             default:
