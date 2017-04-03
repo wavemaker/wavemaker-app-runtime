@@ -47,71 +47,82 @@ public class ServiceDefinitionService {
             ServiceDefinitionService.class);
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
-    private Map<String, ServiceDefinition> serviceDefsCache = null;
-    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefsCache = null;
+    private Map<String, ServiceDefinition> serviceDefinitionsCache = null;
+    private Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = null;
 
     @Autowired
     private PrefabManager prefabManager;
 
     public Map<String, ServiceDefinition> listServiceDefs() {
-        if (serviceDefsCache == null) {
-            loadServiceDefs();
+        if (serviceDefinitionsCache == null) {
+            loadServiceDefinitions();
         }
-        return serviceDefsCache;
+        return serviceDefinitionsCache;
     }
 
     public Map<String, ServiceDefinition> listPrefabServiceDefs(final String prefabName) {
-        if (prefabServiceDefsCache == null) {
-            loadPrefabsServiceDefs();
+        if (prefabServiceDefinitionsCache == null) {
+            loadPrefabsServiceDefinitions();
         }
-        if (prefabServiceDefsCache.get(prefabName) == null) {
+        Map<String, ServiceDefinition> serviceDefinitionMap = prefabServiceDefinitionsCache.get(prefabName);
+        if (serviceDefinitionMap == null) {
             throw new WMRuntimeException("Prefab with name " + prefabName + " does not exist in this project");
         }
-        return prefabServiceDefsCache.get(prefabName);
+        return serviceDefinitionMap;
     }
 
-    private synchronized void loadServiceDefs() {
-        if (serviceDefsCache == null) {
-            serviceDefsCache = new HashMap<>();
-            Resource[] resources = getServiceDefResources(false);
-            if (resources != null) {
-                for (Resource resource : resources) {
-                    try {
-                        serviceDefsCache.putAll(serviceDefinitionHelper.build(resource.getInputStream()));
-                    } catch (IOException e) {
-                        throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
+    private void loadServiceDefinitions() {
+        if (serviceDefinitionsCache == null) {
+            synchronized (this) {
+                if (serviceDefinitionsCache == null) {
+                    Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
+                    Resource[] resources = getServiceDefResources(false);
+                    if (resources != null) {
+                        for (Resource resource : resources) {
+                            try {
+                                serviceDefinitionsCache.putAll(serviceDefinitionHelper.build(resource.getInputStream()));
+                            } catch (IOException e) {
+                                throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
+                            }
+                        }
+                    } else {
+                        logger.warn("Service def resources does not exist for this project");
                     }
+                    this.serviceDefinitionsCache = serviceDefinitionsCache;
                 }
-            } else {
-                logger.warn("Service def resources does not exist for this project");
             }
         }
     }
 
-    private synchronized void loadPrefabsServiceDefs() {
-        if (prefabServiceDefsCache == null) {
-            prefabServiceDefsCache = new HashMap<>();
-            for (final Prefab prefab : prefabManager.getPrefabs()) {
-                runInPrefabClassLoader(prefab, new Runnable() {
-                    @Override
-                    public void run() {
-                        loadPrefabServiceDefs(prefab);
+    private void loadPrefabsServiceDefinitions() {
+        if (prefabServiceDefinitionsCache == null) {
+            synchronized (this) {
+                if (prefabServiceDefinitionsCache == null) {
+                    final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
+                    for (final Prefab prefab : prefabManager.getPrefabs()) {
+                        runInPrefabClassLoader(prefab, new Runnable() {
+                            @Override
+                            public void run() {
+                                loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache);
+                            }
+                        });
                     }
-                });
+                    this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
+                }
             }
         }
     }
 
-    private synchronized void loadPrefabServiceDefs(final Prefab prefab) {
-        if (prefabServiceDefsCache.get(prefab.getName()) == null) {
-            prefabServiceDefsCache.put(prefab.getName(), new HashMap<String, ServiceDefinition>());
+    private synchronized void loadPrefabServiceDefs(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache) {
+        if (prefabServiceDefinitionsCache.get(prefab.getName()) == null) {
+            prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<String, ServiceDefinition>());
         }
 
         Resource[] resources = getServiceDefResources(true);
         if (resources != null) {
             for (Resource resource : resources) {
                 try {
-                    prefabServiceDefsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
+                    prefabServiceDefinitionsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
                 } catch (IOException e) {
                     throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
                 }
