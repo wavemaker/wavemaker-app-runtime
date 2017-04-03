@@ -62,7 +62,8 @@ Application
             '$httpProvider',
             '$compileProvider',
             '$filterProvider',
-            function ($controllerProvider, $httpProvider, $compileProvider, $filterProvider) {
+            '$locationProvider',
+            function ($controllerProvider, $httpProvider, $compileProvider, $filterProvider, $locationProvider) {
                 'use strict';
 
                 Application.$controller = $controllerProvider.register;
@@ -71,6 +72,8 @@ Application
 
                 $httpProvider.useApplyAsync(true);
                 $controllerProvider.allowGlobals();
+
+                $locationProvider.hashPrefix('');
             }
         ]
     )

@@ -340,9 +340,9 @@ WM.module('i18n')
                 // load the localeBundle
                 return $http
                     .get(path)
-                    .success(function (response) {
+                    .then(function (response) {
                         // extend the $rs.locale object with the response json
-                        WM.extend($rs[localeKey], response, content);
+                        WM.extend($rs[localeKey], response.data, content);
                     });
             }
 
@@ -470,9 +470,9 @@ WM.module('i18n')
                 path  += _selectedLocale + '.json';
                 $http
                     .get(path)
-                    .success(function (response) {
+                    .then(function (response) {
                         // extend the $rs.locale object with the response json
-                        WM.extend($rs.appLocale, response);
+                        WM.extend($rs.appLocale, response.data);
                     });
             }
 
