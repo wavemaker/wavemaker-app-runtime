@@ -63,7 +63,9 @@ Application
             '$compileProvider',
             '$filterProvider',
             '$locationProvider',
-            function ($controllerProvider, $httpProvider, $compileProvider, $filterProvider, $locationProvider) {
+            '$qProvider',
+
+            function ($controllerProvider, $httpProvider, $compileProvider, $filterProvider, $locationProvider, $qProvider) {
                 'use strict';
 
                 Application.$controller = $controllerProvider.register;
@@ -74,6 +76,7 @@ Application
                 $controllerProvider.allowGlobals();
 
                 $locationProvider.hashPrefix('');
+                $qProvider.errorOnUnhandledRejections(false);
             }
         ]
     )
