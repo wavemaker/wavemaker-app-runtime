@@ -89,7 +89,10 @@ WM.module('wm.widgets.form')
                 var values,
                     chip;
                 chips = chips || [];
-                if (!WM.isArray(chips)) {
+                /*
+                * 1. In case of datavalue it will be string
+                * 2. In case of form, filter on field chosen, chips will be array of strings*/
+                if (!WM.isArray(chips) || (WM.isArray(chips) && !WM.isObject(_.first(chips)))) {
                     values  = _.split(chips, ',');
                     $s.selectedChips = [];
                     _.forEach(values, function (ele) {
