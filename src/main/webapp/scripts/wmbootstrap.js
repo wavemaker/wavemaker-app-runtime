@@ -300,7 +300,7 @@ Application
 
                     function getRedirectPage(config) {
                         var homePage = _WM_APP_PROPERTIES.homePage,
-                            loginPage = _.get(config, 'login.pageName'),
+                            loginPage = _.get(config, 'loginConfig.pageName'),
                             prevRedirectPage;
                         page = page || $location.path().replace('/', '');
                         if (page === homePage || page === loginPage) {
