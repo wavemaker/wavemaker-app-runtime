@@ -1902,7 +1902,7 @@ WM.module('wm.widgets.base', [])
                         "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none", "disabled" : true},
                         "aggregationcolumn": {"type": "list", "widget": "list", "disabled" : true, "datasetfilter" : "custom"},
                         "groupby": {"type": "list", "widget": "multi-select", "datasetfilter" : "custom"},
-                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "custom"},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
                         "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-bound", "show": false},

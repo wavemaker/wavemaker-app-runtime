@@ -1443,8 +1443,10 @@ wm.variables.services.$liveVariable = [
                 getAggregatedData: function (variable, options, success, error) {
                     var dbOperation = 'executeAggregateQuery',
                         tableOptions;
+                    options     = options || {};
+                    options.skipEncode = true;
                     if (variable.filterFields) {
-                        tableOptions = prepareTableOptions(variable, {});
+                        tableOptions = prepareTableOptions(variable, options);
                         options.aggregations.filter = tableOptions.query;
                     }
 
