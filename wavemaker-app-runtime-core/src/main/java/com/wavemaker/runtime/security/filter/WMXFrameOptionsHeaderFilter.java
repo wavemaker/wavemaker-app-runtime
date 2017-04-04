@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.security.xss.filter;
+package com.wavemaker.runtime.security.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -24,38 +26,35 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.web.header.HeaderWriter;
+import org.springframework.security.web.header.writers.XContentTypeOptionsHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.security.xss.handler.XSSSecurityHandler;
 
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN;
 
 /**
- * Filter implementation to add header X-XSS-Protection and XSS encode filter.
+ * Filter implementation to add header X-Frame-Options.
  */
-public class WMXSSFilter extends GenericFilterBean {
+public class WMXFrameOptionsHeaderFilter extends GenericFilterBean {
 
-    private XXssProtectionHeaderWriter xXssProtectionHeaderWriter = null;
+    private XFrameOptionsHeaderWriter xFrameOptionsHeaderWriter = null;
 
     @Override
     protected void initFilterBean() throws ServletException {
         super.initFilterBean();
-
-        xXssProtectionHeaderWriter = new XXssProtectionHeaderWriter();
-        xXssProtectionHeaderWriter.setBlock(true);
-        xXssProtectionHeaderWriter.setEnabled(true);
+        xFrameOptionsHeaderWriter = new XFrameOptionsHeaderWriter(SAMEORIGIN);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
-        xXssProtectionHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
-
-        XSSSecurityHandler xssSecurityHandler = XSSSecurityHandler.getInstance();
-        ServletRequestWrapper requestWrapper = xssSecurityHandler.getRequestWrapper(httpServletRequest);
-        chain.doFilter(requestWrapper, httpServletResponse);
+        xFrameOptionsHeaderWriter.writeHeaders(httpServletRequest, httpServletResponse);
+        chain.doFilter(httpServletRequest, httpServletResponse);
     }
 
     @Override
