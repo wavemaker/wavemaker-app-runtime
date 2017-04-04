@@ -2632,7 +2632,7 @@ WM.module('wm.widgets.base', [])
                         $el.addClass('animated ' + nv);
                     }
                 } else if (key === 'show') {
-                    studioModeHiddenWidgets = ['wm-form-field', 'wm-accordionpane', 'wm-tabpane', 'wm-wizardstep'];
+                    studioModeHiddenWidgets = ['wm-form-field', 'wm-accordionpane', 'wm-tabpane', 'wm-wizardstep', 'wm-tile'];
                     $headerEl = WM.element($is._headerElement);
 
                     //If Studio mode and form ele don't add ng-hide add a wrapper to show hidden field message
@@ -2643,6 +2643,8 @@ WM.module('wm.widgets.base', [])
                             $targetEl = $el.find('.panel-heading');
                             break;
                         case 'wm-wizardstep':
+                            $targetEl = $headerEl.find('>a');
+                            break;
                         case 'wm-tabpane':
                             $targetEl = $headerEl;
                             break;
@@ -2651,23 +2653,21 @@ WM.module('wm.widgets.base', [])
                             break;
                         }
 
-                        $hiddenEleNode = WM.element('<div class="wm-widget-hidden-msg-overlay ' + $is.widgettype + '" title="' + $rootScope.locale.LABEL_HIDDEN_WIDGET + '"><span class="pull-right wm-hidden-icon"></span></div>');
+                        $hiddenEleNode = WM.element('<div class="wm-hidden-overlay ' + $is.widgettype + '" title="' + $rootScope.locale.LABEL_HIDDEN_WIDGET + '"></span></div>');
 
                         if (nv) {
 
                             //Special handling for wizardstep to add just icon and content in ::before
                             if ($is.widgettype === 'wm-wizardstep') {
-                                $headerEl.removeClass('wm-hidden-overlay');
-                                $headerEl.find('.wm-hidden-icon').remove();
+                                $targetEl.removeClass('wm-hidden-overlay');
                             } else {
-                                $hiddenEl = $targetEl.find('.wm-widget-hidden-msg-overlay');
+                                $hiddenEl = $targetEl.find('.wm-hidden-overlay');
                                 $hiddenEl.remove();
                             }
                         } else {
 
                             if ($is.widgettype === 'wm-wizardstep') {
-                                $headerEl.addClass('wm-hidden-overlay');
-                                $headerEl.append(WM.element('<span class="pull-right wm-hidden-icon"></span>'))
+                                $targetEl.addClass('wm-hidden-overlay');
                             } else {
                                 $targetEl.append($hiddenEleNode);
                             }
