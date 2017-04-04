@@ -1237,7 +1237,7 @@ WM.module('wm.widgets.basic')
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 
-                        scope._plotChartProxy = _.debounce(plotChartProxy.bind(undefined, scope, element), 50);
+                        scope._plotChartProxy = _.debounce(plotChartProxy.bind(undefined, scope, element), 100);
 
                         if (!scope.theme) {
                             //Default theme for pie/donut is Azure and for other it is Terrestrial

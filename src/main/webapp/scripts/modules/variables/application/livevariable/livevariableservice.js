@@ -1443,29 +1443,31 @@ wm.variables.services.$liveVariable = [
                 getAggregatedData: function (variable, options, success, error) {
                     var dbOperation = 'executeAggregateQuery',
                         tableOptions;
-                    options     = options || {};
-                    options.skipEncode = true;
-                    if (variable.filterFields) {
-                        tableOptions = prepareTableOptions(variable, options);
-                        options.aggregations.filter = tableOptions.query;
-                    }
-
-                    DatabaseService[dbOperation]({
-                        'dataModelName'    : variable.liveSource,
-                        'entityName'       : variable.type,
-                        'page'             : options.page || 1,
-                        'size'             : options.size || variable.maxResults,
-                        'sort'             : options.sort || '',
-                        'url'              : $rootScope.project.deployedUrl,
-                        'data'             : options.aggregations
-                    }, function (response) {
-                        if ((response && response.error) || !response) {
-                            Utils.triggerFn(error, response.error);
-                            return;
+                    ProjectService.getDeployedUrl(function (deployedUrl) {
+                        options     = options || {};
+                        options.skipEncode = true;
+                        if (variable.filterFields) {
+                            tableOptions = prepareTableOptions(variable, options);
+                            options.aggregations.filter = tableOptions.query;
                         }
-                        Utils.triggerFn(success, response);
-                    }, function (errorMsg) {
-                        Utils.triggerFn(error, errorMsg);
+
+                        DatabaseService[dbOperation]({
+                            'dataModelName'    : variable.liveSource,
+                            'entityName'       : variable.type,
+                            'page'             : options.page || 1,
+                            'size'             : options.size || variable.maxResults,
+                            'sort'             : options.sort || '',
+                            'url'              : deployedUrl,
+                            'data'             : options.aggregations
+                        }, function (response) {
+                            if ((response && response.error) || !response) {
+                                Utils.triggerFn(error, response.error);
+                                return;
+                            }
+                            Utils.triggerFn(success, response);
+                        }, function (errorMsg) {
+                            Utils.triggerFn(error, errorMsg);
+                        });
                     });
                 },
             /*Function to update the data associated with the related tables of the live variable*/

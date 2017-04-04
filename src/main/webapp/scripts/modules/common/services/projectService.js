@@ -7,7 +7,7 @@
  * The `ProjectService` provides the details about the project apis.
  */
 
-wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, $location, Utils) {
+wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, $location, Utils, $rootScope) {
     'use strict';
 
     function run(details, successCallback, failureCallback) {
@@ -23,10 +23,10 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
         }, successCallback, failureCallback);
     }
 
-    function getDeployedUrl() {
+    function getDeployedUrl(successCallback, forceDeploy) {
         var locationUrl,
             lastIndex,
-            projectDeployedUrl;
+            projectDeployedUrl = $rootScope.project.deployedUrl;
 
         /*If $location.$$absUrl is of the form http://localhost:8080/WM2c908a52446c435b01446cfdacf50013/#/Main,
          * remove # and the page name to get only the deployed url of the project.*/
@@ -59,8 +59,23 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
                     true
                 );
             }
-
             return projectDeployedUrl;
+        } else {
+            if (forceDeploy || !projectDeployedUrl) {
+                //Deploy project if deployedUrl not available or forceDeploy is true
+                run({
+                    projectId: $rootScope.project.id
+                }, function (result) {
+                    projectDeployedUrl = Utils.removeProtocol(result);
+                    /*Save the deployed url of the project in the $rootScope so that it could be used in all calls to services of deployed app*/
+                    $rootScope.project.deployedUrl = projectDeployedUrl;
+                    Utils.triggerFn(successCallback, projectDeployedUrl);
+                    return projectDeployedUrl;
+                });
+            } else {
+                Utils.triggerFn(successCallback, projectDeployedUrl);
+                return projectDeployedUrl;
+            }
         }
     }
 
