@@ -507,8 +507,8 @@ WM.module('wm.widgets.basic')
             }
             columns = _.concat(columns, data.groupByFields, [scope.aggregationcolumn]);
             /*Orderby set at the chart widget level has high priority
-            If widget level orderby is not set variable level ordery is applied*/
-            sortExpr = scope.orderby ? _.replace(scope.orderby, /:/g, ' ') : variable.orderBy;
+            If widget level orderby is not and none of the groupby, aggregation are chosen then, variable level ordery is applied*/
+            sortExpr = (scope.orderby || isAggregationEnabled(scope)) ? _.replace(scope.orderby, /:/g, ' ') : variable.orderBy;
             orderByColumns = getLodashOrderByFormat(scope.orderby).columns;
             //If the orderby column is chosen either in groupby or orderby then replace . with $ for that column
             _.forEach(_.intersection(columns, orderByColumns), function (col) {
