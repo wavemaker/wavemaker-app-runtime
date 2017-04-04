@@ -387,7 +387,9 @@ WM.module('wm.widgets.basic')
             var  chartData = [],
                 groupData = {},
                 groupValues = [],
-                orderByDetails;
+                orderByDetails,
+                maxLength,
+                isAreaChart = ChartService.isAreaChart(scope.type);
             scope.xDataKeyArr = [];
             queryResponse = _.orderBy(queryResponse, _.split(scope.groupby, ','));
             if (scope.orderby) {
@@ -395,10 +397,14 @@ WM.module('wm.widgets.basic')
                 queryResponse = _.orderBy(queryResponse, orderByDetails.columns, orderByDetails.orders);
             }
             queryResponse = _.groupBy(queryResponse, groupingColumn);
+            //In case of area chart all the series data should be of same length
+            if (isAreaChart) {
+                maxLength = _.max(_.map(queryResponse, function (obj) {return obj.length; }));
+            }
             _.forEach(queryResponse, function (values, groupKey) {
-                groupValues = [];
+                groupValues = isAreaChart ? _.fill(new Array(maxLength), [0, 0]) : [];
                 _.forEachRight(values, function (value, index) {
-                    groupValues.push(valueFinder(scope, value, scope.xaxisdatakey, scope.yaxisdatakey, index));
+                    groupValues[index] = valueFinder(scope, value, scope.xaxisdatakey, scope.yaxisdatakey, index);
                 });
                 groupData = {
                     key : groupKey,
@@ -1067,7 +1073,7 @@ WM.module('wm.widgets.basic')
 
                 variableObj = elScope.Variables && elScope.Variables[variableName];
                 //setting the flag for the live variable in the scope for the checks
-                scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable';
+                scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable' && WM.isArray(newVal.data);
 
                 //If binded to a live variable feed options to the aggregation and group by
                 if (scope.isLiveVariable && CONSTANTS.isStudioMode) {

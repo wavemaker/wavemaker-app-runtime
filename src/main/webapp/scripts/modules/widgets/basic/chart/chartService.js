@@ -793,6 +793,7 @@ WM.module('wm.widgets.basic')
             this.isBarChart           = isBarChart;
             this.isBubbleChart        = isBubbleChart;
             this.isPieType            = isPieType;
+            this.isAreaChart          = isAreaChart;
             this.isChartDataJSON      = isChartDataJSON;
             this.isChartDataArray     = isChartDataArray;
             this.isLineTypeChart      = isLineTypeChart;
