@@ -103,6 +103,7 @@ WM.module('wm.widgets.basic')
 
         // Based on the chart type, sets the options for the yaxisdatakey
         function setYAxisDataKey(scope, options) {
+            options = options || getCutomizedOptions(scope, 'yaxisdatakey');
             if (ChartService.isPieType(scope.type)) {
                 scope.widgetProps.yaxisdatakey.widget = 'list';
                 scope.widgetProps.yaxisdatakey.options = options;
@@ -119,25 +120,26 @@ WM.module('wm.widgets.basic')
         function modifyAxesOptions(scope) {
             var xAxisOptions = [],
                 yAxisOptions = [],
-                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none');
+                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none' && scope.aggregationcolumn);
             //Check if the data-set has been bound and the value is available in data-set.
             if (scope.binddataset && WM.isObject(scope.dataset)) {
-                if (isAggregationApplied) {
-                    if (scope.groupby) {
-                        xAxisOptions = scope.groupby.split(',');
-                        //Choosing first column in group by as x axis
-                        scope.xaxisdatakey = xAxisOptions[0];
-                    }
-                    //If 'aggregation' is not 'none' and if the 'aggregationColumn' has not already been added into the axesOptions, then add it.
-                    if (isAggregationApplied && scope.aggregationcolumn) {
-                        yAxisOptions.push(scope.aggregationcolumn);
-                        //Choosing first column in aggregation by as y axis
-                        scope.yaxisdatakey = yAxisOptions[0];
-                    }
+                if (isGroupByEnabled(scope.groupby)) {
+                    xAxisOptions = scope.groupby.split(',');
+                    //Choosing first column in group by as x axis
+                    scope.xaxisdatakey = xAxisOptions[0];
                     //Setting x axis options with group by columns
                     scope.widgetProps.xaxisdatakey.options = xAxisOptions;
+                }
+                //If 'aggregation' is not 'none' and if the 'aggregationColumn' has not already been added into the axesOptions, then add it.
+                if (isAggregationApplied) {
+                    yAxisOptions.push(scope.aggregationcolumn);
+                    //Choosing first column in aggregation by as y axis
+                    scope.yaxisdatakey = yAxisOptions[0];
                     //Setting y axis options with aggregation columns
                     setYAxisDataKey(scope, yAxisOptions);
+                } else {
+                    //Setting y axis options with aggregation columns
+                    setYAxisDataKey(scope);
                 }
             } else if (!scope.binddataset) {//Else, set all the values to default.
                 scope.xaxisdatakey = scope.yaxisdatakey = '';
@@ -1167,7 +1169,7 @@ WM.module('wm.widgets.basic')
                     } else {
                         //Showing all options
                         scope.widgetProps.xaxisdatakey.options = getCutomizedOptions(scope, 'xaxisdatakey');
-                        setYAxisDataKey(scope, getCutomizedOptions(scope, 'yaxisdatakey'));
+                        setYAxisDataKey(scope);
                         //If groupby not selected then remove aggregation columns from markup
                         $rootScope.$emit('update-widget-property', 'aggregation', '');
                         $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
