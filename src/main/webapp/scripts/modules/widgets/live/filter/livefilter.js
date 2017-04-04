@@ -227,6 +227,9 @@ WM.module('wm.widgets.live')
                             orderBy,
                             isValid,
                             dataModel = {};
+                        if (!variable) {
+                            return;
+                        }
                         options = options || {};
                         page = options.page || page;
                         orderBy = WM.isDefined(options.orderBy) ? options.orderBy : ($scope.orderBy || '');

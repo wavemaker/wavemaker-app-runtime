@@ -1172,7 +1172,7 @@ $.widget('wm.datagrid', {
         var $row,
             id;
         //If visible flag is true, select the first visible row item
-        if (visible) {
+        if (visible && this.gridElement.find('tBody').is(':visible')) {
             this.__setStatus();
             $row = this.gridElement.find('tBody tr:visible:first');
         } else {
