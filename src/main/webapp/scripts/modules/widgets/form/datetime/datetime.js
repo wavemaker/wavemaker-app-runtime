@@ -240,6 +240,7 @@ WM.module('wm.widgets.form')
                     post: function ($is, $el, attrs) {
                         var onPropertyChange  = propertyChangeHandler.bind(undefined, $is, $el),
                             isCurrentDateTime = false,
+                            isClassAdded      = false,
                             timeInterval,
                             //Function to set/ cancel the timer based on the model passed
                             setTimeInterval = function (cancel) {
@@ -412,10 +413,6 @@ WM.module('wm.widgets.form')
                             WM.element('body').find('> [uib-datepicker-popup-wrap]').addClass('app-date');
                         });
 
-                        //Add app-datetime class to the wrapper that are appended to body
-                        $timeout(function () {
-                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
-                        });
                         //Set tab index as -1 for date input, as this should not be focused
                         $el.find('.app-dateinput').attr('tabindex', '-1');
 
@@ -460,6 +457,13 @@ WM.module('wm.widgets.form')
                             $is.$watch('isTimeOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListenerForTime, true);
+                                    //Add app-datetime class to the wrapper that are appended to body
+                                    if (!isClassAdded) {
+                                        $timeout(function () {
+                                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
+                                        }, 0, false);
+                                        isClassAdded = true;
+                                    }
                                 }
                             });
 

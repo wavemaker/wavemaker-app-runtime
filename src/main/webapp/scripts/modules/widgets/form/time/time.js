@@ -157,6 +157,7 @@ WM.module('wm.widgets.form')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, $is, $el),
                             isCurrentTime    = false,
                             CURRENT_TIME     = 'CURRENT_TIME',
+                            isClassAdded     = false,
                             timeInterval;
 
                         //Function to set/ cancel the timer based on the model passed
@@ -296,11 +297,6 @@ WM.module('wm.widgets.form')
                             setTimeInterval(true);
                         });
 
-                        //Add app-datetime class to the wrapper that are appended to body
-                        $timeout(function () {
-                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
-                        });
-
                         // Close the time picker popup on document click in capture phase
                         function docClickListener(e) {
                             var $target = WM.element(e.target);
@@ -320,6 +316,13 @@ WM.module('wm.widgets.form')
                             $is.$watch('isOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListener, true);
+                                    //Add app-datetime class to the wrapper that are appended to body
+                                    if (!isClassAdded) {
+                                        $timeout(function () {
+                                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
+                                        }, 0, false);
+                                        isClassAdded = true;
+                                    }
                                 }
                             });
 
