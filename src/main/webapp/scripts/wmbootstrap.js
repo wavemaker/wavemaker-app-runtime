@@ -6,10 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var $appView = WM.element('#wm-app-content');
 
-    $appView.attr({
-        'wm-page-view': '',
-        'ng-model-options': {'updateOn': 'change'}
-    });
+    $appView.attr('wm-page-view', '');
 
     // add a node to the DOM to determine the mobile view
     WM.element('<i id="wm-mobile-display"></i>').appendTo('.wm-app');
