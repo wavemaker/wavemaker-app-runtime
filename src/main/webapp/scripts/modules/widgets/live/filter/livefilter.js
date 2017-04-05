@@ -161,7 +161,7 @@ WM.module('wm.widgets.live')
                                     'filterFields'   : filterFields,
                                     'pagesize'       : filterField.limit
                                 }, function (data) {
-                                    LiveWidgetUtils.setFieldDataSet(filterField, data, fieldColumn, 'widget', $scope.enableemptyfilter);
+                                    LiveWidgetUtils.setFieldDataSet(filterField, data, fieldColumn, 'widget', LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter));
                                 });
                             }
                         });
