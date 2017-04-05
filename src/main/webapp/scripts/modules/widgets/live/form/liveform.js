@@ -466,7 +466,8 @@ WM.module('wm.widgets.live')
                 };
                 /*clear the file uploader widget for reset*/
                 function resetFileUploadWidget(dataValue, skipValueSet) {
-                    WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
+                    var $formEle = getFormElement();
+                    $formEle.find('[name=' + dataValue.key + ']').val('');
                     if (!skipValueSet) {
                         dataValue.href = '';
                         dataValue.value = null;
