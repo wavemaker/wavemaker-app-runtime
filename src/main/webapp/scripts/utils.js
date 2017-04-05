@@ -800,10 +800,7 @@ WM.module('wm.utils', [])
         }
 
         /*This function returns the url to the image after checking the validity of url*/
-        function getImageUrl(urlString, shouldEncode) {
-            if (CONSTANTS.isRunMode) {
-                return shouldEncode ? encodeUrl(urlString) : urlString;
-            }
+        function getImageUrl(urlString, shouldEncode, defaultUrl) {
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
              * When page is refreshed, loader.gif will be loaded first and it will be in 'style/images/'.
              * Prepend 'services/projects/' + $rootScope.project.id + '/web/resources/images/imagelists/'  if the image url is just image name in the project root,
@@ -811,8 +808,16 @@ WM.module('wm.utils', [])
             if (isValidWebURL(urlString)) {
                 return urlString;
             }
-            if (!isImageFile(urlString)) {
-                urlString = 'resources/images/imagelists/default-image.png';
+
+            //If no value is provided for picturesource assign pictureplaceholder or default-image
+            if (!urlString) {
+                urlString = defaultUrl || 'resources/images/imagelists/default-image.png';
+            }
+
+            if (CONSTANTS.isRunMode) {
+                urlString = shouldEncode ? encodeUrl(urlString) : urlString;
+            } else {
+                urlString = getProjectResourcePath($rootScope.project.id) + urlString;
             }
 
             // if the resource to be loaded is inside a prefab
@@ -820,7 +825,6 @@ WM.module('wm.utils', [])
                 return urlString;
             }
 
-            urlString = getProjectResourcePath($rootScope.project.id) + urlString;
             return urlString;
         }
 

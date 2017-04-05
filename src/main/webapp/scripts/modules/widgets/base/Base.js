@@ -829,7 +829,8 @@ WM.module('wm.widgets.base', [])
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
+                        "picturesource": {"type": "string", "bindable": "in-out-bound"},
+                        "pictureplaceholder": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-bound", "widget": "string"},
                         "encodeurl": {"type": "boolean", "value": false},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
                         "disabled": {"type": "boolean", "show": false, "bindable": "in-bound"},
@@ -1593,7 +1594,8 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "conditionalclass": {"show": false, "bindable": "in-bound"}
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box-model"},
@@ -2023,7 +2025,7 @@ WM.module('wm.widgets.base', [])
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
-                {"name": "picture", "properties": ["imageheight", "picturesource", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
+                {"name": "picture", "properties": ["imageheight", "picturesource", "pictureplaceholder", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
                 {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "imgsrc", "layoutkind", "columns", "layout", "stepstyle", "navtype", "stacked", "justified", "formlayout", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "filtermode", "searchlabel"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},

@@ -18,6 +18,7 @@ WM.module('wm.widgets.basic')
             notifyFor = {
                 'pictureaspect': true,
                 'picturesource': true,
+                'pictureplaceholder': true,
                 'shape': true,
                 'hint': true
             };
@@ -45,10 +46,14 @@ WM.module('wm.widgets.basic')
                     break;
                 }
                 break;
+            case 'pictureplaceholder':
             case 'picturesource':
+                //If picture source don't assign it to imagesource
+                newVal = (key === 'pictureplaceholder' && WM.isDefined(scope.picturesource)) ? scope.picturesource : newVal;
+
                 // ng src will not get updated if the image url is empty. So add dummy value
                 // The "blank" image will get a source of //:0 which won't cause a missing image icon to appear
-                scope.imagesource = WM.isDefined(newVal) ? Utils.getImageUrl(newVal, scope.encodeurl) : '//:0';
+                scope.imagesource = WM.isDefined(newVal) ? Utils.getImageUrl(newVal, scope.encodeurl, scope.pictureplaceholder) : '//:0';
                 break;
             case 'shape':
                 scope.imgClass = "img-" + newVal;
