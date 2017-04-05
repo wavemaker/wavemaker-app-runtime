@@ -467,7 +467,7 @@ wm.variables.services.$liveVariable = [
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
                 }
-                return param || '';
+                return WM.isDefined(param) ? param : '';
             },
             //Generate the search query based on the filter options
             getSearchQuery = function (filterOptions, operator, ignoreCase, skipEncode) {
