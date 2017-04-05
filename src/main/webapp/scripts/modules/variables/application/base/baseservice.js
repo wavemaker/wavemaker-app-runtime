@@ -1462,6 +1462,8 @@ wm.variables.services.Variables = [
                 if (eventValues) {
                     retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable, info);
                 } else if ((event === VARIABLE_CONSTANTS.EVENT.ERROR) && !skipDefaultNotification) {
+                    // trigger the common error handler present in app.js
+                    Utils.triggerFn($rootScope.onServiceError, variable, response, info);
                     /* in case of error, if no event assigned, handle through default notification variable */
                     errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
                     if (errorVariable) {
