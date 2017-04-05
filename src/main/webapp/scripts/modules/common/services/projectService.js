@@ -59,6 +59,7 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
                     true
                 );
             }
+            Utils.triggerFn(successCallback, projectDeployedUrl);
             return projectDeployedUrl;
         } else {
             if (forceDeploy || !projectDeployedUrl) {
