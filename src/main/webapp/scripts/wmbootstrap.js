@@ -616,9 +616,9 @@ Application
                                     page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
                                     $rs.userRoles = config.userInfo.userRoles;
                                     //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
-                                    $http.defaults.xsrfCookieName = XSRF_COOKIE;
                                     if (Utils.getCookieByName(XSRF_COOKIE)) {
                                         //set the header only if cookie 'wm_csrf_token' is set
+                                        $http.defaults.xsrfCookieName = XSRF_COOKIE;
                                         $http.defaults.xsrfHeaderName = config.csrfHeaderName;
                                     }
                                 } else {
