@@ -82,7 +82,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "startUpdate", "type": "boolean", "hide" : false},
                     {"target": "onBefore", "hide" : false},
                     {"target": "onProgress", "hide" : false},
-                    {"target": "spinnerContext", "hide" : false}
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
@@ -119,7 +120,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 },
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
-                    {"target": "spinnerContext", "hide" : false}
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
@@ -141,7 +143,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 properties : [
                     {"target": "onBefore", "hide" : false},
                     {"target": "onProgress", "hide" : false},
-                    {"target": "spinnerContext", "hide" : false}
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable) {
@@ -178,7 +181,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 },
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
-                    {"target": "spinnerContext", "hide" : false}
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
