@@ -116,11 +116,29 @@ WM.module('wm.widgets.basic')
             return !!(groupby && groupby !== NONE);
         }
 
-        // Displaying options for x and y axis based on the columns chosen in aggregation column and groupby
-        function modifyAxesOptions(scope) {
-            var xAxisOptions = [],
-                yAxisOptions = [],
-                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none' && scope.aggregationcolumn);
+        //Removing the properties from the markup
+        function resetProperties(scope) {
+            //set all the values to default.
+            scope.xaxisdatakey = scope.yaxisdatakey = '';
+            scope.xaxislabel = scope.yaxislabel = '';
+            scope.xunits = scope.yunits = '';
+            scope.bubblesize = '';
+            scope.widgetProps.aggregationcolumn.disabled = true;
+            scope.widgetProps.aggregation.disabled = true;
+            //Setting the values to the default
+            if (scope.widgetid && scope.active) {
+                $rootScope.$emit('update-widget-property', 'aggregation', '');
+                $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
+                $rootScope.$emit('update-widget-property', 'groupby', '');
+                $rootScope.$emit('update-widget-property', 'orderby', '');
+                $rootScope.$emit('update-widget-property', 'xdateformat', '');
+                $rootScope.$emit('update-widget-property', 'formattype', '');
+            }
+        }
+
+        // Displaying options for x axis based on the columns chosen in groupby column
+        function filterXAxisOptions(scope) {
+            var xAxisOptions = [];
             //Check if the data-set has been bound and the value is available in data-set.
             if (scope.binddataset && WM.isObject(scope.dataset)) {
                 if (isGroupByEnabled(scope.groupby)) {
@@ -130,6 +148,16 @@ WM.module('wm.widgets.basic')
                     //Setting x axis options with group by columns
                     scope.widgetProps.xaxisdatakey.options = xAxisOptions;
                 }
+            }
+            scope.$root.$emit('set-markup-attr', scope.widgetid, {'xaxisdatakey': scope.xaxisdatakey});
+        }
+
+        // Displaying options for y axis based on the columns chosen in aggregation column
+        function filterYAxisOptions(scope) {
+            var yAxisOptions = [],
+                isAggregationApplied = (isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== 'none' && scope.aggregationcolumn);
+            //Check if the data-set has been bound and the value is available in data-set.
+            if (scope.binddataset && WM.isObject(scope.dataset)) {
                 //If 'aggregation' is not 'none' and if the 'aggregationColumn' has not already been added into the axesOptions, then add it.
                 if (isAggregationApplied) {
                     yAxisOptions.push(scope.aggregationcolumn);
@@ -141,22 +169,8 @@ WM.module('wm.widgets.basic')
                     //Setting y axis options with aggregation columns
                     setYAxisDataKey(scope);
                 }
-            } else if (!scope.binddataset) {//Else, set all the values to default.
-                scope.xaxisdatakey = scope.yaxisdatakey = '';
-                scope.xaxislabel = scope.yaxislabel = '';
-                scope.xunits = scope.yunits = '';
-                scope.bubblesize = '';
-                scope.widgetProps.aggregationcolumn.disabled = true;
-                scope.widgetProps.aggregation.disabled = true;
-                //Setting the values to the default
-                if (scope.widgetid && scope.active) {
-                    $rootScope.$emit('update-widget-property', 'aggregation', '');
-                    $rootScope.$emit('update-widget-property', 'aggregationcolumn', '');
-                    $rootScope.$emit('update-widget-property', 'groupby', '');
-                    $rootScope.$emit('update-widget-property', 'orderby', '');
-                }
             }
-            scope.$root.$emit('set-markup-attr', scope.widgetid, {'xaxisdatakey': scope.xaxisdatakey, 'yaxisdatakey': scope.yaxisdatakey});
+            scope.$root.$emit('set-markup-attr', scope.widgetid, {'yaxisdatakey': scope.yaxisdatakey});
         }
 
         // Check if x and y axis that are chosen are valid to plot chart
@@ -391,7 +405,8 @@ WM.module('wm.widgets.basic')
                 groupValues = [],
                 orderByDetails,
                 maxLength,
-                isAreaChart = ChartService.isAreaChart(scope.type);
+                isAreaChart = ChartService.isAreaChart(scope.type),
+                yAxisKey = _.first(_.split(scope.yaxisdatakey, ','));
             scope.xDataKeyArr = [];
             queryResponse = _.orderBy(queryResponse, _.split(scope.groupby, ','));
             if (scope.orderby) {
@@ -406,7 +421,7 @@ WM.module('wm.widgets.basic')
             _.forEach(queryResponse, function (values, groupKey) {
                 groupValues = isAreaChart ? _.fill(new Array(maxLength), [0, 0]) : [];
                 _.forEachRight(values, function (value, index) {
-                    groupValues[index] = valueFinder(scope, value, scope.xaxisdatakey, scope.yaxisdatakey, index);
+                    groupValues[index] = valueFinder(scope, value, scope.xaxisdatakey, yAxisKey, index);
                 });
                 groupData = {
                     key : groupKey,
@@ -1101,7 +1116,9 @@ WM.module('wm.widgets.basic')
                     WidgetUtilService.updatePropertyPanelOptions(scope);
                     //hiding the aggregation,group by and order by upon binding to the service variable
                     ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
-                    modifyAxesOptions(scope);
+                    if (!scope.binddataset) {
+                        resetProperties(scope);
+                    }
                 }
 
                 if (newVal && newVal.filterFields) {
@@ -1150,7 +1167,7 @@ WM.module('wm.widgets.basic')
                 if (CONSTANTS.isStudioMode) {
                     //setting the aggregation columns
                     toggleAggregationColumnState(scope, newVal);
-                    modifyAxesOptions(scope);
+                    filterYAxisOptions(scope);
                     if (newVal !== NONE) {
                         //Setting the aggregation columns based on the aggregation function chosen
                         setAggregationColumns(scope, newVal);
@@ -1164,7 +1181,7 @@ WM.module('wm.widgets.basic')
                     widgetProps.groupby.selectedvalues = newVal;
                     if (isGroupByChecked) {
                         //Filtering x and y axis options based on the data filtering options
-                        modifyAxesOptions(scope, key);
+                        filterXAxisOptions(scope, key);
                         setOrderByColumns(scope);
                     } else {
                         //Showing all options
@@ -1181,7 +1198,7 @@ WM.module('wm.widgets.basic')
                 if (CONSTANTS.isStudioMode) {
                     //Setting the group by columns when aggregation column is changed
                     setGroupByColumns(scope, newVal);
-                    modifyAxesOptions(scope, key);
+                    filterYAxisOptions(scope, key);
                     setOrderByColumns(scope);
                 }
                 break;
