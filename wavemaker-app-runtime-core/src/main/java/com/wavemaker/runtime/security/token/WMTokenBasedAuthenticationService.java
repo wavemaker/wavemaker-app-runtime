@@ -19,7 +19,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.UUID;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -142,14 +141,17 @@ public class WMTokenBasedAuthenticationService {
                 UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
                 return toWMUser(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
             } else {
+                String password = "";
                 String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
-                String password = (String) usernamePasswordAuthenticationToken.getCredentials();
+                if(usernamePasswordAuthenticationToken.getCredentials() instanceof String){
+                    password = (String) usernamePasswordAuthenticationToken.getCredentials();
+                }
                 return toWMUser(username, password, authentication.getAuthorities());
             }
 
         } else if (authentication instanceof CasAuthenticationToken) {
             CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authentication;
-            if(casAuthenticationToken.getPrincipal() instanceof WMUser) {
+            if (casAuthenticationToken.getPrincipal() instanceof WMUser) {
                 return (WMUser) casAuthenticationToken.getPrincipal();
             }
         } else if (authentication instanceof RememberMeAuthenticationToken) {
