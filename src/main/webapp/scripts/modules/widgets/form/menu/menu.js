@@ -292,13 +292,17 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 var menuScope = element.closest('.dropdown').isolateScope(),
-                    menuLink  = scope.item[menuScope.itemlink],
+                    menuLink,
                     routeRegex;
 
                 if (scope.item.children && scope.item.children.length > 0) {
                     element.append('<wm-menu-dropdown items="item.children"  linktarget="linktarget" menualign="menualign"/>');
                     element.off('click');
                     $compile(element.contents())(scope);
+                }
+
+                if (menuScope && WM.isObject(scope.item)) {
+                    menuLink = scope.item[menuScope.itemLink || 'link'];
                 }
 
                 //If nav item is menu then set it links active if route param is same as link
@@ -311,13 +315,12 @@ WM.module('wm.widgets.form')
                 }
 
                 scope.onSelect = function (args) {
-                    var itemLink   = WM.isObject(args.$item) ? args.$item[menuScope.itemlink || 'link'] : undefined,
-                        itemAction = args.$item[menuScope.itemaction || 'action'],
+                    var itemAction = args.$item[menuScope.itemaction || 'action'],
                         linkTarget = menuScope.linktarget || '_self';
 
                     //If link starts with # and not with #/ replace with #/
-                    if (itemLink && _.startsWith(itemLink, '#') && !_.startsWith(itemLink, '#/')) {
-                        itemLink = _.replace(itemLink, '#', '#/');
+                    if (menuLink && _.startsWith(menuLink, '#') && !_.startsWith(menuLink, '#/')) {
+                        menuLink = _.replace(itemLink, '#', '#/');
                     }
 
                     scope.$parent.onSelect(args);
@@ -327,9 +330,9 @@ WM.module('wm.widgets.form')
                                 openLink(itemLink, linkTarget);
                             }
                         });
-                    } else if (itemLink) {
+                    } else if (menuLink) {
                         //If action is not present and link is there
-                        openLink(itemLink, linkTarget);
+                        openLink(menuLink, linkTarget);
                     }
                 };
             }

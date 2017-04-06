@@ -1583,7 +1583,7 @@ WM.module('wm.widgets.base', [])
                         "contentsource": {"type": "list", "options": ['inline', 'partial'], value: "partial"},
                         "content": {"type": "string", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
                         "inlinecontent": {"type": "string", "widget": "textarea"},
-                        "hyperlink": {"type": "string", "value": "", "show": false},
+                        "hyperlink": {"type": "string", "value": "", "show": false, "bindable": false},
                         "target": {"type": "string", "value" : "", "show": false},
                         "popoverwidth" :  {"type": "string"},
                         "popoverheight" :  {"type": "string"},

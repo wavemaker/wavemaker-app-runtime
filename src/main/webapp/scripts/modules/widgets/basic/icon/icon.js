@@ -7,7 +7,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/icon.html',
             '<span class="app-icon-wrapper" apply-styles init-widget>' +
                 '<i class="app-icon"></i> ' +
-                '<label class="app-label" ng-if="caption">{{caption}}</label>' +
+                '<label class="app-label"></label>' +
             '</span>'
             );
     }])
@@ -20,12 +20,16 @@ WM.module('wm.widgets.basic')
                 'opacity': true,
                 'iconclass': true,
                 'hint': true,
-                'color': true
+                'color': true,
+                'caption': true
             };
 
         //Define the property change handler. This function will be triggered when there is a change in the widget property
-        function propertyChangeHandler($el, $iNode, attrs, key, newVal, oldVal) {
+        function propertyChangeHandler($el, $iNode, $labelNode, attrs, key, newVal, oldVal) {
             switch (key) {
+            case 'caption':
+                Utils.setNodeContent($labelNode, newVal);
+                break;
             case 'iconposition':
                 $el.attr('icon-position', newVal);
                 break;
@@ -57,8 +61,10 @@ WM.module('wm.widgets.basic')
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
+                    var $children = element.children();
+
                     WidgetUtilService.registerPropertyChangeListener(
-                        propertyChangeHandler.bind(undefined, element, element.children().first(), attrs),
+                        propertyChangeHandler.bind(undefined, element, $children.first(), $children.last(), attrs),
                         scope,
                         notifyFor);
                     /* register the property change handler */
