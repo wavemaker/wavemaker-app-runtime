@@ -140,7 +140,8 @@ public class WMTokenBasedAuthenticationService {
                 return (WMUser) usernamePasswordAuthenticationToken.getPrincipal();
             } else if (usernamePasswordAuthenticationToken.getPrincipal() instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
-                return toWMUser(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                String password = userDetails.getPassword() == null ? userDetails.getUsername() : userDetails.getPassword();
+                return toWMUser(userDetails.getUsername(), password, userDetails.getAuthorities());
             } else {
                 String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
                 String password = (String) usernamePasswordAuthenticationToken.getCredentials();
