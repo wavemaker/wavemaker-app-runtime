@@ -1,8 +1,8 @@
 /*global WM, wm, window, cordova, _, FileReader, resolveLocalFileSystemURL, Blob */
 /*jslint sub: true */
 
-wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
-    function ($q, $cordovaCamera, Utils) {
+wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils', 'wmSpinner',
+    function ($q, $cordovaCamera, Utils, wmSpinner) {
         'use strict';
 
         function getFileName(filepath) {
@@ -61,7 +61,8 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
 
         function audioPicker(multiple) {
             var deferred = $q.defer(),
-                filePaths;
+                filePaths,
+                spinnerId = wmSpinner.show();
 
             //if multiple is true allows user to select multiple songs
             //if icloud is true will show iCloud songs
@@ -77,7 +78,9 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
                 getFiles(filePaths)
                     .then(deferred.resolve, deferred.reject);
             }, deferred.reject, multiple, Utils.isIphone());
-
+            deferred.promise.finally(function () {
+                wmSpinner.hide(spinnerId);
+            });
             return deferred.promise;
         }
 
