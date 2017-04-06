@@ -1459,19 +1459,30 @@ wm.variables.services.Variables = [
                     retVal,
                     errorVariable,
                     callBackScope = variable.activeScope;
-                if (eventValues) {
-                    retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable, info);
-                } else if ((event === VARIABLE_CONSTANTS.EVENT.ERROR) && !skipDefaultNotification) {
+
+                /**
+                 * For error event:
+                 * trigger app level error handler.
+                 * if no event is assigned, trigger default appNotification variable.
+                 */
+                if (event === VARIABLE_CONSTANTS.EVENT.ERROR && !skipDefaultNotification) {
                     // trigger the common error handler present in app.js
                     Utils.triggerFn($rootScope.onServiceError, variable, response, info);
-                    /* in case of error, if no event assigned, handle through default notification variable */
-                    errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
-                    if (errorVariable) {
-                        response = errorVariable.getMessage() || response;
-                        $rootScope.$evalAsync(function () {
-                            $rootScope.$emit("invoke-service", VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION, {scope: callBackScope, message: response});
-                        });
+                    if (!eventValues) {
+                        /* in case of error, if no event assigned, handle through default notification variable */
+                        errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
+                        if (errorVariable) {
+                            response = errorVariable.getMessage() || response;
+                            $rootScope.$evalAsync(function () {
+                                $rootScope.$emit("invoke-service", VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION, {scope: callBackScope, message: response});
+                            });
+                        }
                     }
+                }
+
+                // if event values assigned, trigger them
+                if (eventValues) {
+                    retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable, info);
                 }
                 return retVal;
             },
