@@ -1,4 +1,4 @@
-/*global wm, WM, FileTransfer, _, window, FormData, XMLHttpRequest*/
+/*global wm, WM, FileTransfer, _, window, FormData, XMLHttpRequest, localStorage*/
 /*jslint sub: true */
 /*Service for uploading files to backend server.*/
 wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 'CONSTANTS', function ($rootScope, Utils, $q, CONSTANTS) {
@@ -66,17 +66,23 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
                 'fileName'  : file.name,
                 'chunkedMode': false
             },
-            transferFn = function () {
-                ft.upload(file.path,
-                    uploadUrl,
-                    function (event) {
-                        defer.resolve(transformEvent(event));
-                    },
-                    function (event) {
-                        defer.reject(transformEvent(event));
-                    },
-                    ftOptions);
-            };
+            transferFn,
+            xsrfHeaderName,
+            xsrfToken;
+
+        ftOptions = Utils.addXsrfCookieHeader(ftOptions);
+
+        transferFn = function () {
+            ft.upload(file.path,
+                uploadUrl,
+                function (event) {
+                    defer.resolve(transformEvent(event));
+                },
+                function (event) {
+                    defer.reject(transformEvent(event));
+                },
+                ftOptions);
+        };
         ft.onprogress = function (event) {
             defer.notify(transformEvent(event));
         };

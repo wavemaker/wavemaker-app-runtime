@@ -1,4 +1,4 @@
-/*global WM, X2JS, wm, window, document, navigator, Image, location, console, _, $, moment, resolveLocalFileSystemURL, FileReader, Blob */
+/*global WM, X2JS, wm, window, document, navigator, Image, location, console, _, $, moment, resolveLocalFileSystemURL, FileReader, Blob, localStorage */
 /*jslint todo: true */
 
 /**
@@ -2081,34 +2081,46 @@ WM.module('wm.utils', [])
 
         function downloadFilefromResponse(response, headerFn) {
             // check for a filename
-            var filename = "";
-            var disposition = headerFn('Content-Disposition');
+            var filename = '',
+                filenameRegex,
+                matches,
+                type,
+                blob,
+                URL,
+                downloadUrl,
+                popup,
+                disposition = headerFn('Content-Disposition');
             if (disposition && disposition.indexOf('attachment') !== -1) {
-                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                var matches = filenameRegex.exec(disposition);
-                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                matches = filenameRegex.exec(disposition);
+                if (matches !== null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
             }
 
-            var type = headerFn('Content-Type');
-            var blob = new Blob([response], { type: type });
+            type = headerFn('Content-Type');
+            blob = new Blob([response], { type: type });
 
             if (typeof window.navigator.msSaveBlob !== 'undefined') {
                 // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
                 window.navigator.msSaveBlob(blob, filename);
             } else {
-                var URL = window.URL || window.webkitURL;
-                var downloadUrl = URL.createObjectURL(blob);
+                URL         = window.URL || window.webkitURL;
+                downloadUrl = URL.createObjectURL(blob);
 
-                if (filename) {
+                if (filename && !CONSTANTS.hasCordova) {
                     // use HTML5 a[download] attribute to specify filename
-                    var a = document.createElement("a");
+                    var a = document.createElement("a"),
+                        reader;
                     // safari doesn't support this yet
                     if (typeof a.download === 'undefined') {
-                        var reader = new FileReader();
-                        reader.onloadend = function() {
-                            var url = reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
-                            var popup = window.open(url, '_blank');
-                            if(!popup) window.location.href = url;
+                        reader = new FileReader();
+                        reader.onloadend = function () {
+                            var url   = reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;'),
+                                popup = window.open(url, '_blank');
+                            if (!popup) {
+                                window.location.href = url;
+                            }
                             url = undefined; // release reference before dispatching
                         };
                         reader.readAsDataURL(blob);
@@ -2119,31 +2131,71 @@ WM.module('wm.utils', [])
                         a.click();
                     }
                 } else {
-                    var popup = window.open(downloadUrl, '_blank');
-                    if(!popup) window.location.href = downloadUrl;
+                    popup = window.open(downloadUrl, '_blank');
+                    if (!popup) {
+                        window.location.href = downloadUrl;
+                    }
                 }
 
                 setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
             }
         }
 
+        /**
+         * This function returns the cookieValue if xsrf is enabled.
+         * In device, xsrf cookie is stored in localStorage.
+         * @returns xsrf cookie value
+         */
+        function isXsrfEnabled() {
+            if (CONSTANTS.hasCordova) {
+                return localStorage.getItem(CONSTANTS.XSRF_COOKIE_NAME);
+            }
+            return getCookieByName(CONSTANTS.XSRF_COOKIE_NAME);
+        }
+
+        /**
+         * This function includes xsrf headerName and cookie value in the request headers for mobile.
+         * xsrf cookie value will be accessed from localStorage.
+         * @param config
+         * @returns config including xsrf header
+         */
+        function addXsrfCookieHeader(config) {
+            if (isXsrfEnabled()) {
+                var xsrfToken      = localStorage.getItem(CONSTANTS.XSRF_COOKIE_NAME),
+                    xsrfHeaderName = $http.defaults.xsrfHeaderName;
+
+                config.headers = config.headers || {};
+                config.headers[xsrfHeaderName] = xsrfToken;
+            }
+            return config;
+        }
+
         function downloadThroughAnchor(config) {
-            var url = config.url,
-                method = config.method,
-                data = config.dataParams,
+            var url     = config.url,
+                method  = config.method,
+                data    = config.dataParams,
                 headers = config.headers;
+
             headers['Content-Type'] = headers['Content-Type'] || 'application/x-www-form-urlencoded';
-            $http({
-                method: method,
-                url: url,
-                data: data,
-                headers: headers,
-                responseType: 'arraybuffer'
-            }).then(function (response) {
+
+            getService('BaseService').send({
+                'target' : 'WebService',
+                'action' : 'invokeRuntimeRestCall',
+                'method' : method,
+                'config' : {
+                    'url'    : url,
+                    'method' : method,
+                    'headers': headers
+                },
+                'data'   : data,
+                'responseType': 'arraybuffer'
+            }, function (response, config) {
                 setTimeout(function () {
-                    downloadFilefromResponse(response.data, response.headers);
+                    downloadFilefromResponse(response, config.headers);
                 }, 900);
-            }, function (err) {console.log('error', err)});
+            }, function (err) {
+                console.log('error', err);
+            });
         }
 
         /**
@@ -2160,7 +2212,7 @@ WM.module('wm.utils', [])
          * @param requestParams, request params object
          */
         function simulateFileDownload(requestParams) {
-            if (!_.isEmpty(requestParams.headers) || ($http.defaults.xsrfCookieName === CONSTANTS.XSRF_COOKIE_NAME)) {
+            if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
                 downloadThroughAnchor(requestParams);
             } else {
                 downloadThroughIframe(requestParams);
@@ -2712,4 +2764,6 @@ WM.module('wm.utils', [])
         this.listenOnce                 = listenOnce;
         this.convertToBlob              = convertToBlob;
         this.isJSONDate                 = isJSONDate;
+        this.isXsrfEnabled              = isXsrfEnabled;
+        this.addXsrfCookieHeader        = addXsrfCookieHeader;
     }]);
