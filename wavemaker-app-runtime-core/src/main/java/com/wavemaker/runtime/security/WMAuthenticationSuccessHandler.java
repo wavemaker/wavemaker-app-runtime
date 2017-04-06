@@ -16,6 +16,8 @@
 package com.wavemaker.runtime.security;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -26,17 +28,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
 
+import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
+import com.wavemaker.runtime.security.model.LoginSuccessResponse;
 import com.wavemaker.runtime.util.HttpRequestUtils;
-import com.wavemaker.commons.CommonConstants;
-import com.wavemaker.commons.model.security.CSRFConfig;
 
-import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
-import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
-import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
-import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
-import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
+import static com.wavemaker.runtime.security.SecurityConstants.*;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
@@ -61,7 +61,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         }
     }
 
-    private void addCsrfCookie(HttpServletRequest request, HttpServletResponse response) {
+    private void addCsrfCookie(HttpServletRequest request, HttpServletResponse response) throws IOException {
         CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
@@ -69,6 +69,12 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
                 cookie.setPath("/");
                 response.addCookie(cookie);
+
+                PrintWriter writer = response.getWriter();
+                LoginSuccessResponse loginSuccessResponse = new LoginSuccessResponse();
+                loginSuccessResponse.setWmCsrfToken(csrfToken.getToken());
+                writer.println(JSONUtils.toJSON(loginSuccessResponse));
+                writer.flush();
             }
         }
     }
