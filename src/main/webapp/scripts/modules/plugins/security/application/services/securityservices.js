@@ -1,4 +1,4 @@
-/*global WM, wm, _, _WM_APP_PROPERTIES*/
+/*global WM, wm, _, _WM_APP_PROPERTIES, localStorage*/
 /*jslint todo: true */
 /*jslint nomen: true*/
 /**
@@ -1079,6 +1079,11 @@ wm.plugins.security.services.SecurityService = [
                         '&remember-me=' + rememberme +
                         customParams
                 }, function (response) {
+                    var isXsrfEnabled = response[CONSTANTS.XSRF_COOKIE_NAME];
+
+                    if (CONSTANTS.hasCordova) {
+                        localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, isXsrfEnabled || '');
+                    }
                     // After the successful login in device, this function triggers the pending onLoginCallbacks.
                     _.forEach(onLoginCallbacks, Utils.triggerFn);
 
@@ -1108,6 +1113,9 @@ wm.plugins.security.services.SecurityService = [
                 }, function (response) {
                     _.set(_config, 'authenticated', false);
                     _.set(_config, 'userInfo', null);
+                    if (CONSTANTS.hasCordova) {
+                        localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, '');
+                    }
                     Utils.triggerFn(successCallback, response);
                 }, failureCallback);
             },

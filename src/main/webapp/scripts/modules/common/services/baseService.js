@@ -1,4 +1,4 @@
-/*global WM, wm, _*/
+/*global WM, wm, _, localStorage*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -125,10 +125,11 @@ wm.modules.wmCommon.services.BaseService = [
                     }
 
                     /* set extra config flags */
-                    config.byPassResult = serviceParams.byPassResult;
-                    config.isDirectCall = serviceParams.isDirectCall;
-                    config.isExtURL = serviceParams.isExtURL;
+                    config.byPassResult    = serviceParams.byPassResult;
+                    config.isDirectCall    = serviceParams.isDirectCall;
+                    config.isExtURL        = serviceParams.isExtURL;
                     config.preventMultiple = serviceParams.preventMultiple;
+                    config.responseType    = serviceParams.responseType;
 
                     return config;
                 }
@@ -155,11 +156,18 @@ wm.modules.wmCommon.services.BaseService = [
 
         /* to return http promise*/
             getHttpPromise = function (params) {
-                var config = params;
+                var config = params,
+                    xsrfToken,
+                    xsrfHeaderName;
                 // this header is not required for direct hits (i.e. not through proxy).
                 if (!params.isDirectCall) {
                     config.headers = config.headers || {};
                     config.headers['X-Requested-With'] = 'XMLHttpRequest';
+
+                    // Passing the xsrf cookie in the request header for mobile when xsrf is enabled.
+                    if (CONSTANTS.hasCordova) {
+                        config = Utils.addXsrfCookieHeader(config);
+                    }
                 }
                 if (params.hasOwnProperty('target') && params.hasOwnProperty('action')) {
                     config = parseReplace(params);
