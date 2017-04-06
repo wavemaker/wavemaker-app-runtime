@@ -315,9 +315,9 @@ WM.module('wm.widgets.base', [])
                     "wm.button": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "conditionalclass": {"bindable": "in-bound"},
-                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
-                        "iconurl": {"type": "string", "bindable": "in-bound"},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
@@ -901,7 +901,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.alertdialog": {
                         "title": {"type": "string", "value": "Alert", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
+                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-warning", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am an alert box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "alerttype": {"type": "list", "options": ["error", "information", "success", "warning"], "value": "error"},
@@ -910,8 +910,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.confirmdialog": {
                         "title": {"type": "string", "value": "Confirm", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "canceltext": {"type": "string", "value": "CANCEL", "bindable": "in-bound"},
-                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
+                        "canceltext": {"type": "string", "value": "CANCEL", "bindable": "in-bound", "showPrettyExprInDesigner": true},
+                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-done", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am confirm box!", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -925,7 +925,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "value": "400", "pattern": dimensionRegex},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value": "wi wi-globe", "pattern": classRegex},
-                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
+                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "closable": {"type": "boolean", "value": true},
                         "showactions": {"type": "boolean", "value": true},
                         "showheader": {"type": "boolean", "value": true},
@@ -934,7 +934,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
+                        "oktext": {"type": "string", "value": "OK", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value" : "wi wi-file", "pattern": classRegex},
                         "closable": {"type": "boolean", "value": true},
@@ -1173,7 +1173,7 @@ WM.module('wm.widgets.base', [])
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "conditionalclass": {"bindable": "in-bound"},
-                        "iconurl": {"type": "string", "bindable": "in-bound"},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
@@ -1181,9 +1181,9 @@ WM.module('wm.widgets.base', [])
                         "enablefullscreen": {"type": "boolean"},
                         "expanded": {"type": "boolean", "value": true},
                         "closable": {"type": "boolean"},
-                        "helptext": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
+                        "helptext": {"type": "string", "bindable": "in-out-bound", "widget": "textarea", "showPrettyExprInDesigner": true},
                         "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "badgevalue": {"type": "string, number", "widget": "string", "bindable": "in-out-bound"},
+                        "badgevalue": {"type": "string, number", "widget": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "margin": {"type": "string", "widget": "box-model"},
                         /*Events*/
@@ -1207,7 +1207,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
-                        "iconurl": {"type": "string", "bindable": "in-bound"},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "margin": {"type": "string", "widget": "box-model"},
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturetitle": {"type": "string", "bindable": "in-bound"},
@@ -1560,13 +1560,13 @@ WM.module('wm.widgets.base', [])
                     "wm.anchor": {
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "conditionalclass": {"bindable": "in-bound"},
-                        "iconurl": {"type": "string", "bindable": "in-bound"},
+                        "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
                         "iconposition": {"type": "list", "options": ["left", "top", "right"]},
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
-                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "hyperlink": {"type": "string", "bindable": "in-out-bound"},
                         "encodeurl": {"type": "boolean", "value": false},
                         "target": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_self", "widget": "data-list"},
@@ -1624,7 +1624,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "value": "Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
-                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "isdefaultpane": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
@@ -1672,7 +1672,7 @@ WM.module('wm.widgets.base', [])
                         "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
                         "tabindex": {"type": "number", "value": "0"},
-                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"}
                     },
                     "wm.wizard": {

@@ -12,7 +12,7 @@ WM.module('wm.widgets.dialog')
                         '<wm-iframe encodeurl="{{encodeurl}}" iframesrc="{{iframeurl}}" height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
                     '</div>' +
                     '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                        '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                     '</div>' +
                 '</div>' +
             '</div>'

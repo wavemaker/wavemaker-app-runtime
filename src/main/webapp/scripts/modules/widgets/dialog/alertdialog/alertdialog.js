@@ -12,7 +12,7 @@ WM.module('wm.widgets.dialog')
                         '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
                     '</div>' +
                     '<div class="app-dialog-footer modal-footer">' +
-                        '<wm-button  class="btn-primary"  caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                     '</div>' +
                 '</div>' +
             '</div>'
