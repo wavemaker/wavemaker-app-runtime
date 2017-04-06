@@ -12,8 +12,8 @@ WM.module('wm.widgets.dialog')
                             '<p class="app-dialog-message {{messageclass}}"> {{message}}</p>' +
                         '</div>' +
                         '<div class="app-dialog-footer modal-footer">' +
-                            '<wm-button class="btn-secondary" name="{{dialogid}}-cancel" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button>' +
-                            '<wm-button class="btn-primary" name="{{dialogid}}-ok" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                            '<wm-button class="btn-secondary cancel-action" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button>' +
+                            '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                         '</div>' +
                     '</div>' +
                 '</div>'

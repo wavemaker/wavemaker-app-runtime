@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
                              '</div>' +
                         '</a>' +
                         '<div class="panel-actions">' +
-                            '<span ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
+                            '<span ng-if="badgevalue" class="app-badge label label-{{badgetype}}">{{badgevalue}}</span>' +
                             '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemaction="{{binditemaction || itemaction}}" userrole="{{binduserrole || userrole}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                             '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" ng-if="helptext" ng-click="toggleHelp()"></button>' +
                             '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
