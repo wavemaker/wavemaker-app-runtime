@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, window*/
 WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'SecurityService', 'VARIABLE_CONSTANTS',
     function ($rootScope, ChangeLogService, DeviceVariableService, LocalDBManager, SecurityService, VARIABLE_CONSTANTS) {
         "use strict";
@@ -32,7 +32,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     'hasError' : 0,
                     'errorMessage' : ''
                 }]
-            };
+            },
+            OFFLINE_PLUGIN_NOT_FOUND = 'Offline DB Plugin is required, but missing.';
 
         function generateChangeSet(changes) {
             return {
@@ -87,20 +88,24 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
-                    // If user is authenticated and online, then start the data pull process.
-                    SecurityService.onUserLogin()
-                        .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
-                        .then(function () {
-                            var clearData = variable.clearData === "true" || variable.clearData === true;
-                            DeviceVariableService.initiateCallback('onBefore', variable);
-                            $rootScope.$emit('toggle-variable-state', variable.name, true);
-                            LocalDBManager.pullData(clearData).then(success, error, function (progress) {
-                                variable.dataSet = progress;
-                                DeviceVariableService.initiateCallback('onProgress', variable, progress);
-                            }).finally(function () {
-                                $rootScope.$emit('toggle-variable-state', variable.name, false);
+                    if (window.SQLitePlugin) {
+                        // If user is authenticated and online, then start the data pull process.
+                        SecurityService.onUserLogin()
+                            .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
+                            .then(function () {
+                                var clearData = variable.clearData === "true" || variable.clearData === true;
+                                DeviceVariableService.initiateCallback('onBefore', variable);
+                                $rootScope.$emit('toggle-variable-state', variable.name, true);
+                                LocalDBManager.pullData(clearData).then(success, error, function (progress) {
+                                    variable.dataSet = progress;
+                                    DeviceVariableService.initiateCallback('onProgress', variable, progress);
+                                }).finally(function () {
+                                    $rootScope.$emit('toggle-variable-state', variable.name, false);
+                                });
                             });
-                        });
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
                 }
             },
             lastPullInfo : {
@@ -125,10 +130,14 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
-                    $rootScope.$emit('toggle-variable-state', variable.name, true);
-                    LocalDBManager.getLastPullInfo().then(success, error).finally(function () {
-                        $rootScope.$emit('toggle-variable-state', variable.name, false);
-                    });
+                    if (window.SQLitePlugin) {
+                        $rootScope.$emit('toggle-variable-state', variable.name, true);
+                        LocalDBManager.getLastPullInfo().then(success, error).finally(function () {
+                            $rootScope.$emit('toggle-variable-state', variable.name, false);
+                        });
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
                 }
             },
             push : {
@@ -147,26 +156,30 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "spinnerMessage", "hide" : false}
                 ],
                 requiredCordovaPlugins: [],
-                invoke: function (variable) {
-                    // If user is authenticated and online, then start the data push process.
-                    SecurityService.onUserLogin()
-                        .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
-                        .then(getOfflineChanges)
-                        .then(function (changes) {
-                            if (changes.pendingToSync.total > 0) {
-                                DeviceVariableService.initiateCallback('onBefore', variable, changes);
-                                $rootScope.$emit('toggle-variable-state', variable.name, true);
-                                ChangeLogService.flush(function (stats) {
-                                    var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
-                                    variable.dataSet = addOldPropertiesForPushData(stats);
-                                    $rootScope.$emit('toggle-variable-state', variable.name, false);
-                                    DeviceVariableService.initiateCallback(eventName, variable, stats);
-                                }, function (stats) {
-                                    variable.dataSet = addOldPropertiesForPushData(stats);
-                                    DeviceVariableService.initiateCallback('onProgress', variable, stats);
-                                });
-                            }
-                        });
+                invoke: function (variable, options, success, error) {
+                    if (window.SQLitePlugin) {
+                        // If user is authenticated and online, then start the data push process.
+                        SecurityService.onUserLogin()
+                            .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
+                            .then(getOfflineChanges)
+                            .then(function (changes) {
+                                if (changes.pendingToSync.total > 0) {
+                                    DeviceVariableService.initiateCallback('onBefore', variable, changes);
+                                    $rootScope.$emit('toggle-variable-state', variable.name, true);
+                                    ChangeLogService.flush(function (stats) {
+                                        var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
+                                        variable.dataSet = addOldPropertiesForPushData(stats);
+                                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                                        DeviceVariableService.initiateCallback(eventName, variable, stats);
+                                    }, function (stats) {
+                                        variable.dataSet = addOldPropertiesForPushData(stats);
+                                        DeviceVariableService.initiateCallback('onProgress', variable, stats);
+                                    });
+                                }
+                            });
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
                 }
             },
             lastPushInfo : {
@@ -186,10 +199,14 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
-                    $rootScope.$emit('toggle-variable-state', variable.name, true);
-                    ChangeLogService.getLastPushInfo().then(success, error).finally(function () {
-                        $rootScope.$emit('toggle-variable-state', variable.name, false);
-                    });
+                    if (window.SQLitePlugin) {
+                        $rootScope.$emit('toggle-variable-state', variable.name, true);
+                        ChangeLogService.getLastPushInfo().then(success, error).finally(function () {
+                            $rootScope.$emit('toggle-variable-state', variable.name, false);
+                        });
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
                 }
             },
             getOfflineChanges : {
@@ -204,7 +221,11 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 ],
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
-                    getOfflineChanges().then(success, error);
+                    if (window.SQLitePlugin) {
+                        getOfflineChanges().then(success, error);
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
                 }
             }
         };
