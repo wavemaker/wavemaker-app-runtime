@@ -93,7 +93,7 @@ WM.module('wm.layouts.containers')
                                 $old  : $scope.currentSelectedIndex,
                                 $new  : index
                             },
-                            $segmentsCtr = $element.find(".app-segments-container");
+                            $segmentsCtr = $element.find(">.app-segments-container");
 
                         $scope.currentSelectedIndex = index;
                         Utils.triggerFn($scope.onBeforesegmentchange, eventData);
