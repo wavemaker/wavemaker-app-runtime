@@ -84,7 +84,8 @@ WM.module('wm.widgets.live')
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
                     return '<div data-identifier="liveform" init-widget class="app-liveform liveform-dialog" >' +
                                 '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" contentclass="noscroll" iconclass="{{iconclass}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
-                                    '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform" autocomplete="' + ((attrs.autocomplete === 'true' || attrs.autocomplete === true) ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell" ng-class="[captionAlignClass]">' +
+                                    '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform" autocomplete="' + ((attrs.autocomplete === 'true' || attrs.autocomplete === true) ? 'on' : 'off') + '" ng-submit="formSave($event);" apply-styles="shell" ng-class="[captionAlignClass]"' +
+                                        ' live-form-with-dialog>' +
                                         '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-style="{height: height, overflow: height ? \'auto\': overflow, padding: padding}">' +
                                             '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                             '<div class="form-content">' + template.context.innerHTML + '</div>' +
@@ -770,6 +771,9 @@ WM.module('wm.widgets.live')
                 $scope.update = function () {
                     $scope.edit();
                 };
+                //Set form widgets scopes on live form
+                this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
+                $scope.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
             },
             compile: function () {
                 return {
@@ -1047,7 +1051,6 @@ WM.module('wm.widgets.live')
                                             $compile(actionsObj)(scope);
                                         }
                                         //on canvas update update widgets of form
-                                        scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
                                     }
                                 }
                             }));
@@ -1058,7 +1061,6 @@ WM.module('wm.widgets.live')
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         //Add widgets to form on load
-                        scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                         function initDependency(widgetname) {
                             var dependsonWidget = scope.Widgets[widgetname],
@@ -1440,6 +1442,16 @@ WM.module('wm.widgets.live')
                 });
             }
         };
+    })
+    .directive('liveFormWithDialog', function () {
+        'use strict';
+        //This directive is used to populate form widgets on live form scope in live form dialog mode
+        return {
+            'restrict': 'A',
+            'controller': function ($scope) {
+                this.populateFormWidgets = $scope.populateFormWidgets;
+            }
+        }
     });
 
 /**

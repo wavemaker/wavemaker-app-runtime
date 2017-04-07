@@ -1905,6 +1905,26 @@ WM.module('wm.widgets.live')
 
             /**
              * @ngdoc function
+             * @name wm.widgets.live.populateFormWidgets
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * function to set form widgets scopes on form/filter
+             *
+             * @param {object} $scope $scope of the parent widget
+             * @param {string} prop Property to be set on scope
+             * @param {object} fieldScope isolate scope of the form field
+             */
+            function populateFormWidgets($scope, prop, fieldScope) {
+                if (fieldScope.name && !_.endsWith(fieldScope.name, '_formWidget')) {
+                    $scope[prop] = $scope[prop] || {};
+                    $scope[prop][fieldScope.name] = fieldScope;
+                }
+            }
+
+            /**
+             * @ngdoc function
              * @name wm.widgets.live.getViewModeWidgets
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -2125,6 +2145,7 @@ WM.module('wm.widgets.live')
             this.setFormWidgetsValues       = setFormWidgetsValues;
             this.getWidgetProps             = getWidgetProps;
             this.getFormFilterWidgets       = getFormFilterWidgets;
+            this.populateFormWidgets        = populateFormWidgets;
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
