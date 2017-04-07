@@ -139,15 +139,11 @@ public class WMTokenBasedAuthenticationService {
                 return (WMUser) usernamePasswordAuthenticationToken.getPrincipal();
             } else if (usernamePasswordAuthenticationToken.getPrincipal() instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
-                String password = userDetails.getPassword() == null ? userDetails.getUsername() : userDetails.getPassword();
+                String password = userDetails.getPassword() == null ? "" : userDetails.getPassword();
                 return toWMUser(userDetails.getUsername(), password, userDetails.getAuthorities());
             } else {
-                String password = "";
                 String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
-                if(usernamePasswordAuthenticationToken.getCredentials() instanceof String){
-                    password = (String) usernamePasswordAuthenticationToken.getCredentials();
-                }
-                return toWMUser(username, password, authentication.getAuthorities());
+                return toWMUser(username, "" , authentication.getAuthorities());
             }
 
         } else if (authentication instanceof CasAuthenticationToken) {
