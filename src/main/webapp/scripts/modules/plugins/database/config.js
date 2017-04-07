@@ -383,42 +383,42 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "SQLServer": [
             {
                 "DB_VERSION": "SQL Server 2005",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "SQL Server 2008",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "SQL Server 2008R2",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "SQL Server 2012",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "Azure SQL Database",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "PDW 2008R2 AU34",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "SQL Server 2014",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             },
             {
                 "DB_VERSION": "SQL Server 2016",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
             }
         ],
