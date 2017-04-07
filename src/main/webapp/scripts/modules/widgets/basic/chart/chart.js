@@ -342,10 +342,6 @@ WM.module('wm.widgets.basic')
                     return scope.sampleData;
                 }
             } else {
-                //When invalid axis are chosen when aggregation is enabled then plot the chart with sample data
-                if ((!isValidAxis(scope) && isDataFilteringEnabled(scope))) {
-                    return scope.sampleData;
-                }
                 if (!scope.chartData || !scope.chartData.length) {
                     return [];
                 }
@@ -869,6 +865,10 @@ WM.module('wm.widgets.basic')
                 scope.clearCanvas = false;
             }
 
+            //In case of invalid axis show no data available message
+            if (!isValidAxis(scope)) {
+                datum = [];
+            }
             nv.addGraph(function () {
                 configureChart(scope, element, datum);
             }, function () {
@@ -890,7 +890,7 @@ WM.module('wm.widgets.basic')
                 scope.invalidConfig = false;
             });
             //Checking if x and y axis are chosen
-            if (!isValidAxis(scope)) {
+            if (!isValidAxis(scope) && CONSTANTS.isStudioMode) {
                 setErrMsg(scope, 'MESSAGE_INVALID_AXIS');
                 return [];
             }
