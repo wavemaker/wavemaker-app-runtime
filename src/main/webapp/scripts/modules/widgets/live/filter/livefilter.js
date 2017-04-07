@@ -513,6 +513,8 @@ WM.module('wm.widgets.live')
                         }
                     };
                     $scope.applyFilterOnField = applyFilterOnField;
+                    //Set form widgets scopes on live filter
+                    this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'filterWidgets');
                 },
                 template: function (element) {
                     filterMarkup = element.html();
@@ -696,14 +698,10 @@ WM.module('wm.widgets.live')
                                     /*To get dataset up on saving designer dialog for fields with widget type as checkboxsex, radioset */
                                     scope.filterConstructed = true;
                                 }
-                                //On canvas update update filter widgets
-                                scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
                             }));
                             scope.$on("$destroy", function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
-                            //on load set filter widgets
-                            scope.filterWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                             scope.fetchDistinctValues = LiveWidgetUtils.fetchDistinctValues.bind(undefined, scope, 'formFields', 'widget', LiveWidgetUtils.getEnableEmptyFilter(scope.enableemptyfilter));
                             //Will be called after setting filter property.

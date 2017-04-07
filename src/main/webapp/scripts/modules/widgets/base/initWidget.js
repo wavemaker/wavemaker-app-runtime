@@ -729,6 +729,7 @@ WM.module('wm.widgets.base')
 
             return {
                 'restrict': 'A',
+                'require': ['?^^wmLiveform', '?^^wmForm', '?^^wmLivefilter', '?^^liveFormWithDialog'],
                 'compile': function ($tEl, $tAttrs) {
 
                     processBoxModelProperties($tEl.context, $tAttrs);
@@ -854,6 +855,18 @@ WM.module('wm.widgets.base')
                             if (CONSTANTS.isRunMode) {
                                 overrideEventHandlers($is, $s, $el, attrs);
                                 $is.$element = $el; // expose the element ref on the isolateScope
+                            }
+                        },
+                        post: function ($is, $el, attrs, $ctrls) {
+                            //When widgets inside live form, live filter and form are compiled, add widget scopes to parent widget formWidgets property
+                            if ($ctrls[0]) {
+                                Utils.triggerFn($ctrls[0].populateFormWidgets, $is);
+                            } else if ($ctrls[1]) {
+                                Utils.triggerFn($ctrls[1].populateFormWidgets, $is);
+                            } else if ($ctrls[2]) {
+                                Utils.triggerFn($ctrls[2].populateFormWidgets, $is);
+                            } else if ($ctrls[3]) {
+                                Utils.triggerFn($ctrls[3].populateFormWidgets, $is);
                             }
                         }
                     };

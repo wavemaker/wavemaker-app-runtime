@@ -391,13 +391,15 @@ WM.module('wm.layouts.containers')
                     scope.clearMessage = clearMessage.bind(undefined, scope);
                     scope.elScope.ngform  = scope[scope.name];
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    //Set form widgets on load of form layout
-                    scope.formWidgets = LiveWidgetUtils.getFormFilterWidgets(element);
 
                     scope.$on('$destroy', function () {
                         handlers.forEach(Utils.triggerFn);
                     });
                 }
+            },
+            controller: function ($scope) {
+                //Set form widgets scopes on form
+                this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
             }
         };
     }]);
