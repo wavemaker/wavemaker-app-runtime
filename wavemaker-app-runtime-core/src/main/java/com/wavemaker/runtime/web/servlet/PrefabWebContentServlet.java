@@ -1,10 +1,11 @@
-package com.wavemaker.runtime.prefab.web;
+package com.wavemaker.runtime.web.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.InvalidPathException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,16 +23,9 @@ public class PrefabWebContentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String requestURL = getRequestURL(request);
-        try {
-            String prefabResourcePath = getPrefabResourcePath(requestURL);
-            InputStream resourceStream = readResource(request, prefabResourcePath);
-            OutputStream outputStream = response.getOutputStream();
-            IOUtils.copy(resourceStream, outputStream, true, false);
-        } catch (ResourceNotFoundException rnfe) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, rnfe.getMessage());
-        } catch (InvalidPathException ipe) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, ipe.getMessage());
-        }
+        String prefabResourceUrl = getPrefabResourcePath(requestURL);
+        RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(prefabResourceUrl);
+        requestDispatcher.forward(request, response);
     }
 
     private String getRequestURL(HttpServletRequest request) {
@@ -51,16 +45,6 @@ public class PrefabWebContentServlet extends HttpServlet {
 
         String prefabName = prefabResourcePath.substring(0, endIndex);
         String resourcePath = prefabResourcePath.substring(prefabName.length());
-        return "WEB-INF/prefabs/" + prefabName + "/webapp" + resourcePath;
-    }
-
-    private InputStream readResource(HttpServletRequest request, String resourcePath) throws ResourceNotFoundException {
-        ServletContext context = request.getSession().getServletContext();
-        InputStream inputStream = context.getResourceAsStream(resourcePath);
-
-        if (inputStream == null) {
-            throw new ResourceNotFoundException("Requested resource " + resourcePath + "not found");
-        }
-        return inputStream;
+        return "/WEB-INF/prefabs/" + prefabName + "/webapp" + resourcePath;
     }
 }
