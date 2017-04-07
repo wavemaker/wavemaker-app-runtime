@@ -48,7 +48,8 @@ WM.module('wm.utils', [])
                 VALID_HTML: /<[a-z][\s\S]*>/i,
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
                 SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
-                APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/
+                APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/,
+                JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -2562,6 +2563,16 @@ WM.module('wm.utils', [])
             return deregisterEvent;
         }
 
+        /**
+         * Returns true, if the given value is a JSON serialized form of date.
+         *
+         * @param str
+         * @returns {boolean}
+         */
+        function isJSONDate(str) {
+            return _.isString(str) && REGEX.JSON_DATE_FORMAT.test(str);
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2700,4 +2711,5 @@ WM.module('wm.utils', [])
         this.validateAccessRoles        = validateAccessRoles;
         this.listenOnce                 = listenOnce;
         this.convertToBlob              = convertToBlob;
+        this.isJSONDate                 = isJSONDate;
     }]);

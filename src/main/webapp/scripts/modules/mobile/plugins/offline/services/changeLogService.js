@@ -230,7 +230,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 stats.failedTaskCount = 0;
                 stats.completedTaskCount = 0;
                 stats.inProgress = true;
-                stats.startTime = _.now();
+                stats.startTime = new Date();
                 $log.debug('Starting flush');
                 return getStore().count([{
                     'attributeName' : 'hasError',
@@ -245,7 +245,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 $log.debug('flush completed. {Success : %i , Error : %i , completed : %i, total : %i }.',
                                 stats.successfulTaskCount, stats.failedTaskCount, stats.completedTaskCount, stats.totalTaskCount);
                 stats.inProgress = false;
-                stats.endTime = _.now();
+                stats.endTime = new Date();
                 LocalKeyValueService.put(lastPushInfoKey, stats);
             },
             'preCall': function (change) {
@@ -412,7 +412,15 @@ wm.plugins.offline.services.ChangeLogService = [
          *  }
          */
         this.getLastPushInfo = function () {
-            return LocalKeyValueService.get(lastPushInfoKey);
+            return LocalKeyValueService.get(lastPushInfoKey).then(function (info) {
+                if (_.isString(info.startTime)) {
+                    info.startTime = new Date(info.startTime);
+                }
+                if (_.isString(info.endTime)) {
+                    info.endTime = new Date(info.endTime);
+                }
+                return info;
+            });
         };
     }
 ];

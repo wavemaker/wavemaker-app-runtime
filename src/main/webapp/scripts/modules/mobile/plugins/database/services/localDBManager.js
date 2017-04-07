@@ -423,7 +423,7 @@ wm.plugins.database.services.LocalDBManager = [
                 .then(function () {
                     // Pull data
                     var promises = [];
-                    pullInfo.startTime = _.now();
+                    pullInfo.startTime = new Date();
                     iterateExternalEntities(function (database, eSchema) {
                         if (eSchema.syncType === 'APP_START') {
                             promises.push(pullDataFromServer(database.schema.name, eSchema).then(function (response) {
@@ -450,7 +450,7 @@ wm.plugins.database.services.LocalDBManager = [
                     return $q.all(promises);
                 }).then(function () {
                     //after successful pull, store metrics and resolve the promise.
-                    pullInfo.endTime = _.now();
+                    pullInfo.endTime = new Date();
                     _.forEach(pullInfo.databases, function (database) {
                         database.pulledRecordCount = _.reduce(database.entities, function (sum, entity) {
                             return sum + entity.pulledRecordCount;
@@ -790,6 +790,14 @@ wm.plugins.database.services.LocalDBManager = [
          * of data from remote server.
          */
         this.getLastPullInfo = function () {
-            return LocalKeyValueService.get(lastPullInfoKey);
+            return LocalKeyValueService.get(lastPullInfoKey).then(function (info) {
+                if (_.isString(info.startTime)) {
+                    info.startTime = new Date(info.startTime);
+                }
+                if (_.isString(info.endTime)) {
+                    info.endTime = new Date(info.endTime);
+                }
+                return info;
+            });
         };
     }];
