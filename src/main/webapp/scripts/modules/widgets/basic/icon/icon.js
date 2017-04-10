@@ -7,7 +7,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/icon.html',
             '<span class="app-icon-wrapper" apply-styles init-widget>' +
                 '<i class="app-icon"></i> ' +
-                '<label class="app-label"></label>' +
+                '<label class="app-label ng-hide"></label>' +
             '</span>'
             );
     }])
@@ -28,6 +28,11 @@ WM.module('wm.widgets.basic')
         function propertyChangeHandler($el, $iNode, $labelNode, attrs, key, newVal, oldVal) {
             switch (key) {
             case 'caption':
+                if (newVal) {
+                    $labelNode.removeClass('ng-hide');
+                } else {
+                    $labelNode.addClass('ng-hide');
+                }
                 Utils.setNodeContent($labelNode, newVal);
                 break;
             case 'iconposition':
