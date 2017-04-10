@@ -53,7 +53,7 @@ WM.module('wm.widgets.basic')
 
                 // ng src will not get updated if the image url is empty. So add dummy value
                 // The "blank" image will get a source of //:0 which won't cause a missing image icon to appear
-                scope.imagesource = WM.isDefined(newVal) ? Utils.getImageUrl(newVal, scope.encodeurl, scope.pictureplaceholder) : '//:0';
+                scope.imagesource = Utils.getImageUrl(newVal, scope.encodeurl, scope.pictureplaceholder);
                 break;
             case 'shape':
                 scope.imgClass = "img-" + newVal;
