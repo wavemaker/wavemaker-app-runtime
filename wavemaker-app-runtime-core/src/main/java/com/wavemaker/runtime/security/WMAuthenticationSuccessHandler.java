@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
 
+import com.google.common.base.Optional;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
@@ -47,7 +48,8 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
-        addCsrfCookie(request, response);
+        Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
+        addCsrfCookie(csrfTokenOptional, response);
         if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
             response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
@@ -55,27 +57,39 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             response.setDateHeader(EXPIRES, 0);
             response.setHeader(PRAGMA, NO_CACHE);
             response.setStatus(HttpServletResponse.SC_OK);
+            writeCsrfTokenToResponse(csrfTokenOptional, response);
             response.getWriter().flush();
         } else {
             super.onAuthenticationSuccess(request, response, authentication);
         }
     }
 
-    private void addCsrfCookie(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private Optional<CsrfToken> getCsrfToken(HttpServletRequest request) {
         CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-            if (csrfToken != null) {
-                Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-                cookie.setPath("/");
-                response.addCookie(cookie);
+            return Optional.fromNullable(csrfToken);
+        }
+        return Optional.absent();
+    }
 
-                PrintWriter writer = response.getWriter();
-                LoginSuccessResponse loginSuccessResponse = new LoginSuccessResponse();
-                loginSuccessResponse.setWmCsrfToken(csrfToken.getToken());
-                writer.println(JSONUtils.toJSON(loginSuccessResponse));
-                writer.flush();
-            }
+    private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletResponse response) {
+        if (csrfTokenOptional.isPresent()) {
+            CsrfToken csrfToken = csrfTokenOptional.get();
+            Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        }
+    }
+
+    private void writeCsrfTokenToResponse(Optional<CsrfToken> csrfTokenOptional, HttpServletResponse response) throws IOException {
+        if (csrfTokenOptional.isPresent()) {
+            CsrfToken csrfToken = csrfTokenOptional.get();
+            PrintWriter writer = response.getWriter();
+            LoginSuccessResponse loginSuccessResponse = new LoginSuccessResponse();
+            loginSuccessResponse.setWmCsrfToken(csrfToken.getToken());
+            writer.println(JSONUtils.toJSON(loginSuccessResponse));
+            writer.flush();
         }
     }
 
