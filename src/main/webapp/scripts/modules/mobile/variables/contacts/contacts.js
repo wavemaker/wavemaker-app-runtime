@@ -32,7 +32,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
                     var findOptions = {
                             filter : variable.contactFilter,
                             multiple : true,
-                            fields:  ['displayName']
+                            fields:  ['displayName', 'name']
                         };
 
                     function getName(c) {
