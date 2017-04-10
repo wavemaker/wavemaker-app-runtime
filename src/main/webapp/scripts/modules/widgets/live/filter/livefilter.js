@@ -434,7 +434,7 @@ WM.module('wm.widgets.live')
                                 'multiple'          :   '',
                                 'value'             :   '',
                                 'type'              :   column.type,
-                                'step'              :   LiveWidgetUtils.getStepValue(column.type),
+                                'step'              :   LiveWidgetUtils.getStepValue(column),
                                 'ismeridian'        :   '',
                                 'isPrimaryKey'      :   column.isPrimaryKey,
                                 'generator'         :   column.generator,
