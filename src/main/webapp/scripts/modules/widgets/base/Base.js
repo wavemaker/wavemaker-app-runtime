@@ -1066,7 +1066,11 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "scopedataset": {"type": "string"}
+                        "scopedataset": {"type": "string"},
+                        "itemid": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
+                        "itemaction": {"show": false},
+                        "userrole": {"show": false},
+                        "onBeforenavigate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     'wm.layouts.nav': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -2039,7 +2043,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
-                {"name": "actions", "properties": ["actions", "itemlabel", "itemicon", "itemlink", "itemaction", "userrole", "itembadge", "itemchildren"], "parent": "properties"},
+                {"name": "actions", "properties": ["actions", "itemid", "itemlabel", "itemicon", "itemlink", "itemaction", "userrole", "itembadge", "itemchildren"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
@@ -2071,7 +2075,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
-                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord"], "parent": "events"},
+                    "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice", "itemsperrow"], "parent": "device"},
                 {"name": "gridstyles", "properties": ['rowclass', 'rowngclass'], "parent": "properties"},
