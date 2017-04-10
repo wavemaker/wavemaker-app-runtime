@@ -490,8 +490,7 @@ WM.module('wm.widgets.grid')
                                 if ($is.widgetid) {
                                     if (newVal) {
                                         $is.radioselect = false;
-                                        wp.radioselect.show = false;
-                                        wp.radioselect.showindesigner = false;
+                                        wp.radioselect.disabled = false;
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'radioselect': false});
                                     }
                                     $is.setDataGridOption('multiselect', newVal);
@@ -501,8 +500,7 @@ WM.module('wm.widgets.grid')
                                 if ($is.widgetid) {
                                     if (newVal) {
                                         $is.multiselect = false;
-                                        wp.multiselect.show = false;
-                                        wp.multiselect.showindesigner = false;
+                                        wp.multiselect.disabled = false;
                                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'multiselect': false});
                                     }
                                     $is.setDataGridOption('showRadioColumn', newVal);
@@ -827,6 +825,7 @@ WM.module('wm.widgets.grid')
                             $is.gridOptions.rowNgClass = $is.rowngclass;
                             $is.gridOptions.rowClass   = $is.rowclass;
                             $is.gridOptions.editmode   = $is.editmode;
+                            $is.gridOptions.formPosition = $is.formposition;
                             /*Set isMobile value on the datagrid*/
                             $is.gridOptions.isMobile   = Utils.isMobile();
                             $is.renderOperationColumns();
