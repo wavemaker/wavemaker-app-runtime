@@ -373,7 +373,8 @@ WM.module('wm.widgets.live')
                             'orderBy'            : orderBy,
                             'page'               : page,
                             'pagesize'           : $scope.pagesize || 20,
-                            'skipDataSetUpdate' : true //dont update the actual variable dataset
+                            'skipDataSetUpdate'  : true, //dont update the actual variable dataset,
+                            'inFlightBehavior'   : 'executeAll'
                         }, function (data, propertiesMap, pageOptions) {
                             if (data.error) {
                                 /*disable readonly and show the appropriate error*/
@@ -546,9 +547,12 @@ WM.module('wm.widgets.live')
                                 scope.expanded = true;
                             }
 
-                            var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
-                                handlers = [],
-                                defaultButtonsArray = LiveWidgetUtils.getLiveWidgetButtons('LIVEFILTER');
+                            var handlers = [],
+                                defaultButtonsArray = LiveWidgetUtils.getLiveWidgetButtons('LIVEFILTER'),
+                                fieldsObj,
+                                buttonsObj,
+                                columns,
+                                designerObj;
                             scope.filterContainer = element;
                             scope.primaryKey = null;
 
@@ -556,73 +560,58 @@ WM.module('wm.widgets.live')
                                 return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout, +element.find('.app-grid-layout:first').attr('columns'));
                             };
 
+                            function onBindDataSetChange() {
+                                var elScope         = element.scope();
+                                scope.result        = scope.result || {
+                                        data: [],
+                                        options: { //Set default options with page 1
+                                            page: 1
+                                        }
+                                    };
+                                scope.variableName  = Utils.getVariableName(scope);
+                                scope.variableObj   = elScope.Variables && elScope.Variables[scope.variableName];
+                                //If variable is not available, return here
+                                if (!scope.variableObj) {
+                                    return;
+                                }
+                                scope.variableType              = scope.variableObj.category;
+                                //Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.
+                                scope.result.variableName       = scope.variableName;
+                                scope.result.propertiesMap      = scope.variableObj.propertiesMap;
+                                scope.result.widgetName         = scope.name;
+                                scope.result.isBoundToFilter    = true;
+
+                                //On load check if default value exists and apply filter, Call the filter with the result options
+                                scope.filter(scope.result.options);
+                            }
+
                             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                             function propertyChangeHandler(key, newVal, oldVal) {
                                 switch (key) {
                                 case "dataset":
-                                    var fieldsObj,
-                                        buttonsObj,
-                                        designerObj,
-                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap(),
-                                        elScope = element.scope();
-                                    /*If properties map is populated and if columns are presented for filter construction*/
+                                    //On dataset expressionchange, call the live filter and update variable on scope
+                                    if (scope.oldbinddataset !== scope.binddataset) {
+                                        onBindDataSetChange();
+                                        scope.oldbinddataset = scope.binddataset;
+                                    }
+
+                                    //If properties map is populated and if columns are presented for filter construction
                                     if (newVal && newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
-                                            /* old data cached to avoid live variable data's effect on filter.
-                                             * The filter is not depending on variable's data, as filter is making explicit call through QUERY
-                                             * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
-                                             */
-                                            scope.result = scope.result || {
-                                                data: [],
-                                                pagingOptions: newVal.pagingOptions,
-                                                options: { /*Set default options with page 1*/
-                                                    page: 1
-                                                }
-                                            };
-                                            scope.variableName = scope.binddataset.match(variableRegex)[1];
-                                            scope.variableObj = elScope.Variables && elScope.Variables[scope.variableName];
-                                            scope.variableType = scope.variableObj.category;
-                                            /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
-                                            scope.result.variableName = scope.variableName;
-                                            scope.result.propertiesMap = newVal.propertiesMap;
-                                            scope.result.widgetName = scope.name;
-                                            scope.result.isBoundToFilter = true;
-                                            /*transform the data to filter consumable data*/
+                                            //transform the data to filter consumable data
                                             fieldsObj = scope.constructDefaultData(newVal);
-                                            /*Set the type of the column to the default variable type*/
+                                            //Set the type of the column to the default variable type
                                             if (scope.formFields && newVal && newVal.propertiesMap) {
-                                                scope.formFields.forEach(function (filterField) {
-                                                    var filterObj = _.find(newVal.propertiesMap.columns, function (obj) {
-                                                        return obj.fieldName === filterField.field;
-                                                    });
+                                                columns = newVal.propertiesMap.columns;
+                                                _.forEach(scope.formFields, function (filterField) {
+                                                    var filterObj = _.find(columns, {'fieldName': filterField.field});
                                                     if (filterObj) {
                                                         filterField.type = filterObj.type;
-                                                        /*For backward compatibility of datetime column types, set widget to datetime*/
-                                                        if (CONSTANTS.isStudioMode && filterField.type === 'datetime' && (!filterField.widget || filterField.widget === 'text')) {
-                                                            filterField.widget = fieldTypeWidgetTypeMap[filterField.type][0];
-                                                            scope.$root.$emit("set-markup-attr", scope.widgetid, {
-                                                                'type': filterField.type,
-                                                                'widget': filterField.widget
-                                                            }, 'wm-filter-field[field=' + filterField.field + ']');
-                                                        }
                                                     }
-                                                });
-
-                                                //This creates filterFields as map with name of the field as key
-                                                scope.formFields.map(function (field) {
-                                                    scope.filterFields[field.key] = field;
                                                 });
                                             }
                                             buttonsObj = defaultButtonsArray;
-
-                                            /*On load check if default value exists and apply filter.
-                                            * Call the filter with the result options*/
-                                            scope.filter(scope.result.options);
                                         }
-                                        /* call method to update allowed values for select type filter fields */
-                                        _.forEach(scope.formFields, function (filterField) {
-                                            scope.applyFilterOnField(filterField, true);
-                                        });
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();
                                         scope.variableName = '';
@@ -646,6 +635,15 @@ WM.module('wm.widgets.live')
                                             widgettype: scope.widgettype
                                         };
                                         Utils.getService('LiveWidgetsMarkupManager').updateMarkupForLiveFilter(designerObj);
+                                    }
+
+                                    if (CONSTANTS.isRunMode && !_.isEmpty(scope.formFields)) {
+                                        //call method to update allowed values for select type filter fields
+                                        _.forEach(scope.formFields, function (filterField) {
+                                            scope.applyFilterOnField(filterField, true);
+                                            //This creates filterFields as map with name of the field as key
+                                            scope.filterFields[filterField.key] = filterField;
+                                        });
                                     }
                                     break;
                                 case "pagesize":
@@ -699,6 +697,7 @@ WM.module('wm.widgets.live')
                                     scope.filterConstructed = true;
                                 }
                             }));
+
                             scope.$on("$destroy", function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
