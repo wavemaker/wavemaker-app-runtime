@@ -866,7 +866,8 @@ $.widget('wm.datagrid', {
     addNewRow: function (skipFocus) {
         var rowId = this.gridBody.find('tr:visible').length,
             rowData = {},
-            $row;
+            $row,
+            $gridBody;
 
         if ($.isFunction(this.options.beforeRowInsert)) {
             this.options.beforeRowInsert();
@@ -878,9 +879,19 @@ $.widget('wm.datagrid', {
             if (!this.preparedData.length) {
                 this.setStatus('ready', this.dataStatus.ready);
             }
-            this.gridElement.find('tbody.app-datagrid-body').append($row);
+            $gridBody = this.gridElement.find('tbody.app-datagrid-body');
+            //Based on the form position, add new row at top or bottom
+            if (this.options.formPosition === 'top') {
+                $gridBody.prepend($row);
+            } else {
+                $gridBody.append($row);
+            }
             this._appendRowActions($row, true, rowData);
             this.attachEventHandlers($row);
+            //For quick edit, do not remove the delete button
+            if (this.options.editmode !== this.CONSTANTS.QUICK_EDIT) {
+                $row.find('.delete-row-button').hide();
+            }
             this._findAndReplaceCompiledTemplates();
             $row.trigger('click', [undefined, {action: 'edit', operation: 'new', skipFocus: skipFocus}]);
             this.updateSelectAllCheckboxState();
