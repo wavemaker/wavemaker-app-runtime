@@ -56,15 +56,38 @@ WM.module('wm.layouts.containers')
             var widgetProps  = PropertiesFactory.getPropertiesOf('wm.wizard', ['wm.base', 'wm.layouts', 'wm.containers']),
                 STEP_STATUS  = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'},
                 notifyFor    = {
-                    'stepstyle': true
+                    'stepstyle'  : true,
+                    'defaultstep': CONSTANTS.isRunMode,
+                    'addchild'   : CONSTANTS.isStudioMode
                 };
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, key, newVal, oldVal) {
+            function propertyChangeHandler($s, ctrl, key, newVal, oldVal) {
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'stepstyle':
                     $s.stepClass = newVal && newVal === 'justified' ? 'nav-justified': '';
+                    break;
+                case 'defaultstep':
+                    var step = _.find($s.steps, {'name': newVal}),
+                        stepIndex;
+
+                    //If the defaultstep has show true then only update the currentstep
+                    if (step && step.show) {
+                        $s.currentStep = step;
+                        step.status    = STEP_STATUS.CURRENT;
+                        stepIndex      = step.stepIndex - 1;
+
+                        //Mark all previous step status COMPLETED
+                        while(stepIndex >= 0) {
+                            $s.steps[stepIndex].status = STEP_STATUS.COMPLETED;
+                            stepIndex--;
+                        }
+                    }
+
+                    break;
+                case 'addchild':
+                    ctrl.updateStepList();
                     break;
                 }
             }
@@ -105,6 +128,18 @@ WM.module('wm.layouts.containers')
                         $compile(stepScope._headerElement)(stepScope);
                         this.dataStepId++;
                     };
+
+                    //Updates widget step list
+                    this.updateStepList = function () {
+                        var options = [{'label': 'None', 'value': 'none'}];
+
+                        _.map($is.steps, function (step) {
+                           options.push({'label': step.name, 'value': step.name});
+                        });
+
+                        $is.widgetProps.defaultstep.options = options;
+                    };
+
                     //Remove header element on removal of step
                     this.unRegisterHeaderElement = function (stepScope) {
                         stepHeaderTarget.find('[data-step-id="' + stepScope.stepIndex + '"]').remove();
@@ -203,7 +238,7 @@ WM.module('wm.layouts.containers')
                     'pre': function ($is, $el, attrs) {
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
-                    'post': function ($is, element, attrs) {
+                    'post': function ($is, element, attrs, ctrl) {
                         var stepIndex = 0,
                             currentStep;
 
@@ -219,7 +254,9 @@ WM.module('wm.layouts.containers')
                             $is.currentStep.status = STEP_STATUS.CURRENT;
                         }
 
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        ctrl.updateStepList();
+
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, ctrl), $is, notifyFor);
                         //initialize the widget
                         WidgetUtilService.postWidgetCreate($is, element, attrs);
                     }
@@ -247,14 +284,18 @@ WM.module('wm.layouts.containers')
                                     '</a>' +
                                 '</li>',
                 notifyFor  = {
-                    'show' : true
+                    'show' : true,
+                    'name' : CONSTANTS.isStudioMode
                 };
 
             //Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler(scope, key, newVal) {
+            function propertyChangeHandler(scope, ctrl, key, newVal) {
                 switch (key) {
                 case 'show':
                     scope.showHeader = newVal || CONSTANTS.isStudioMode;
+                    break;
+                case 'name':
+                    ctrl.updateStepList();
                     break;
                 }
             }
@@ -340,7 +381,7 @@ WM.module('wm.layouts.containers')
                         });
 
                         //register the property change handler
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, ctrl), $is, notifyFor);
 
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
@@ -378,6 +419,8 @@ WM.module('wm.layouts.containers')
  *                  Label to Done button
  * @param {string=} cancelbtnlabel
  *                  Label to Cancel button
+ * @param {string=} defaultstep
+ *                  Name of the step which should load first on load of wizard
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the wizard on the web page. <br>
