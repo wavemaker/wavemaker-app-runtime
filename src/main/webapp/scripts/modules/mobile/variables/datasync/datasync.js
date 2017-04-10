@@ -120,8 +120,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                         'pulledRecordCount' : 0
                     }],
                     'totalPulledRecordCount' : 0,
-                    'startTime' : new Date(),
-                    'endTime' : new Date()
+                    'startTime' : new Date().toJSON(),
+                    'endTime' : new Date().toJSON()
                 },
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
@@ -189,8 +189,8 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     'failedTaskCount' : 0,
                     'completedTaskCount' : 0,
                     'totalTaskCount' : 0,
-                    'startTime' : new Date(),
-                    'endTime' : new Date()
+                    'startTime' : new Date().toJSON(),
+                    'endTime' : new Date().toJSON()
                 },
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
