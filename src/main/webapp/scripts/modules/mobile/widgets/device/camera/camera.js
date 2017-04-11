@@ -29,8 +29,7 @@ WM.module('wm.widgets.advanced')
         function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture, Utils) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base','wm.base.advancedformwidgets']),
-                cameraOptions,
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base', 'wm.base.advancedformwidgets']),
                 notifyFor = {
                     'capturetype': true
                 },
@@ -50,7 +49,7 @@ WM.module('wm.widgets.advanced')
                 case 'capturetype':
                     if (newVal === CAPTURE_TYPE.IMAGE) {
                         showprops = true;
-                        cameraOptions = {
+                        $is.cameraOptions = {
                             'quality'         : $is.imagequality,
                             'destinationType' : 1, // 0-data url,1- file url
                             'sourceType'      : 1, // only camera
@@ -61,7 +60,7 @@ WM.module('wm.widgets.advanced')
                             'targetHeight'    : $is.imagetargetheight
                         };
                     } else {
-                        cameraOptions = {
+                        $is.cameraOptions = {
                             'limit': 1
                         };
                     }
@@ -100,10 +99,10 @@ WM.module('wm.widgets.advanced')
                 if (CONSTANTS.hasCordova) {
                     if ($is.capturetype === CAPTURE_TYPE.IMAGE) {
                         // start camera
-                        $cordovaCamera.getPicture(cameraOptions).then(updateModel.bind(undefined, $is));
+                        $cordovaCamera.getPicture($is.cameraOptions).then(updateModel.bind(undefined, $is));
                     } else {
                         // start video capture
-                        $cordovaCapture.captureVideo(cameraOptions).then(captureVideoSuccess.bind(undefined, $is));
+                        $cordovaCapture.captureVideo($is.cameraOptions).then(captureVideoSuccess.bind(undefined, $is));
                     }
                 } else {
                     $is.onSuccess({$scope: $is});
