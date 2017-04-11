@@ -2667,7 +2667,7 @@ WM.module('wm.widgets.base', [])
 
                             //Special handling for wizardstep to add just icon and content in ::before
                             if ($is.widgettype === 'wm-wizardstep') {
-                                $targetEl.removeClass('wm-hidden-overlay');
+                                $targetEl.removeClass('wm-hidden-overlay ' + $is.widgettype);
                             } else {
                                 $hiddenEl = $targetEl.find('.wm-hidden-overlay');
                                 $hiddenEl.remove();
@@ -2675,7 +2675,7 @@ WM.module('wm.widgets.base', [])
                         } else {
 
                             if ($is.widgettype === 'wm-wizardstep') {
-                                $targetEl.addClass('wm-hidden-overlay');
+                                $targetEl.addClass('wm-hidden-overlay ' + $is.widgettype);
                             } else {
                                 $targetEl.append($hiddenEleNode);
                             }
