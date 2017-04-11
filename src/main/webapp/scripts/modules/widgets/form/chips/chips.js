@@ -91,10 +91,16 @@ WM.module('wm.widgets.form')
                 chips = chips || [];
                 /*
                 * 1. In case of datavalue it will be string
-                * 2. In case of form, filter on field chosen, chips will be array of strings*/
-                if (!WM.isArray(chips) || (WM.isArray(chips) && !WM.isObject(_.first(chips)))) {
+                * 2. In case of form, filter on field chosen, chips will be array of strings
+                * 3. In case of variable's  first record, it will be object
+                */
+                $s.selectedChips = [];
+                if (WM.isObject(chips)) {
+                    var displayValue = _.get(chips, $s.displayfield),
+                        dataValue = $s.datafield === 'All Fields' ? displayValue : _.get(chips, $s.datafield);
+                    $s.selectedChips.push($s.constructChip(displayValue, dataValue, _.get(chips, $s.displayimagesrc)));
+                } else if (!WM.isArray(chips) || (WM.isArray(chips) && !WM.isObject(_.first(chips)))) {
                     values  = _.split(chips, ',');
-                    $s.selectedChips = [];
                     _.forEach(values, function (ele) {
                         //find chip object from dataset to get value and img source
                         chip =  _.find($s.chips, {'key' : ele});
