@@ -37,7 +37,7 @@ WM.module('wm.utils', [])
                 SUPPORTED_VIDEO_FORMAT: /\.(mp4|ogg|webm|wmv|mpeg|mpg|avi)$/i,
                 PAGE_RESOURCE_PATH: /^\/pages\/.*\.(js|css|html|json)$/,
                 MIN_PAGE_RESOURCE_PATH: /.*(page.min.html)$/,
-                VALID_EMAIL: /^[a-zA-Z][\w.]+@[a-zA-Z_]+?\.[a-zA-Z.]{1,4}[a-zA-Z]$/,
+                VALID_EMAIL: /^[a-zA-Z][\w.+]+@[a-zA-Z_]+?\.[a-zA-Z.]{1,4}[a-zA-Z]$/,
                 VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
                 VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
                 REPLACE_PATTERN: /\$\{([^\}]+)\}/g,
