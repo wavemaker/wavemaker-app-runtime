@@ -40,11 +40,11 @@ WM.module('wm.widgets.basic')
                 case 'Both':
                     element.css({width: '100%', height: '100%'});
                     break;
-                case 'hint':
-                    attrs.$set('title', newVal);
-                    attrs.$set('alt', newVal);
-                    break;
                 }
+                break;
+            case 'hint':
+                attrs.$set('title', newVal);
+                attrs.$set('alt', newVal);
                 break;
             case 'pictureplaceholder':
             case 'picturesource':
