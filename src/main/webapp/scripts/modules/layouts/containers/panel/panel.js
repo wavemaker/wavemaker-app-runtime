@@ -136,6 +136,11 @@ WM.module('wm.layouts.containers')
                                         if ($is.onExpand) {
                                             $is.onExpand({$event: $event, $scope: this});
                                         }
+                                        //Re-plot the widgets inside panel on expand
+                                        $el.find('.ng-isolate-scope')
+                                            .each(function () {
+                                                Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                            });
                                     }
 
                                     Utils.triggerFn($is.$lazyLoad);
