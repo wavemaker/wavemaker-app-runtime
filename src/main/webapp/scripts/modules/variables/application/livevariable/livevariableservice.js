@@ -406,6 +406,9 @@ wm.variables.services.$liveVariable = [
                     if (type === 'float') {
                         return 'wm_float(' + value + ')';
                     }
+                    if (type === 'boolean') {
+                        return 'wm_bool(' + value + ')';
+                    }
                 }
                 //If ignore case is true and type is string/ text and match mode is string type, wrap in lower()
                 if (ignoreCase && (!type || isStringType(type)) && _.includes(DB_CONSTANTS.DATABASE_STRING_MODES, options.filterCondition)) {
