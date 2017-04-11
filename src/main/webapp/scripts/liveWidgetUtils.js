@@ -386,20 +386,8 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns step attribute value based on input type*/
-            function getStepValue(type) {
-                switch (type) {
-                case 'text':
-                    return '';
-                case 'float':
-                case 'double':
-                case 'big_decimal':
-                    return 0.01;
-                case 'long':
-                case 'integer':
-                    return 1;
-                default:
-                    return undefined;
-                }
+            function getStepValue(fieldObj) {
+                return fieldObj.scale ? Math.pow(10, fieldObj.scale * -1) : 0;
             }
 
             function getCaptionByWidget(type, index, isRelated) {
@@ -559,7 +547,7 @@ WM.module('wm.widgets.live')
             /*Returns slider template */
             function getSliderTemplate(fieldDef, index) {
                 var additionalFields,
-                    stepVal = fieldDef.step || getStepValue(fieldDef.type);
+                    stepVal = fieldDef.step;
                 additionalFields = stepVal ? ' step="' + stepVal + '" ' : '';
                 return getDefaultTemplate('slider', fieldDef, index, '', '', '', additionalFields);
             }
@@ -601,7 +589,7 @@ WM.module('wm.widgets.live')
             /*Returns text template */
             function getTextNumberTemplate(fieldDef, index) {
                 var stepVal, additionalFields;
-                stepVal = fieldDef.step || getStepValue(fieldDef.type);
+                stepVal = fieldDef.step;
                 additionalFields = 'type="{{formFields[' + index + '].inputtype}}" ' + (stepVal ? (' step="' + stepVal + '"') : "");
                 return getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
@@ -618,7 +606,7 @@ WM.module('wm.widgets.live')
 
             function getCurrencyTemplate(fieldDef, index) {
                 var additionalFields,
-                    stepVal = fieldDef.step || getStepValue(fieldDef.type);
+                    stepVal = fieldDef.step;
                 additionalFields = 'currency="{{formFields[' + index + '].currency}}" ' + stepVal ? ' step="' + stepVal + '" ' : '';
                 return getDefaultTemplate('currency', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
@@ -804,7 +792,7 @@ WM.module('wm.widgets.live')
                             'mobileDisplay' : true
                         };
                         if (Utils.isNumberType(column.type)) {
-                            column.step = fieldObj.scale ? Math.pow(10, fieldObj.scale * -1) : 0;
+                            column.step = getStepValue(fieldObj);
                         }
                         column.widget = widgetsMap[column.type || 'custom'][0];
                         if (fieldObj.defaultValue) {
