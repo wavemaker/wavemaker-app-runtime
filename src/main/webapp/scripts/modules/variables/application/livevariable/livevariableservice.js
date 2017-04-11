@@ -420,8 +420,8 @@ wm.variables.services.$liveVariable = [
             encodeAndAddQuotes = function (value, type, skipEncode) {
                 var encodedValue = skipEncode ? value : encodeURIComponent(value);
                 type = _.toLower(type);
-                //For number types and boolean type, don't wrap the value in quotes
-                if ((Utils.isNumberType(type) && type !== 'float') || type === 'boolean') {
+                //For number types, don't wrap the value in quotes
+                if ((Utils.isNumberType(type) && type !== 'float')) {
                     return encodedValue;
                 }
                 return '\'' + encodedValue + '\'';
