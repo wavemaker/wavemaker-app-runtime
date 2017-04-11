@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,7 @@
  */
 package com.wavemaker.runtime.data.filter;
 
-import java.sql.Timestamp;
-
-import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.runtime.data.model.JavaType;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -27,19 +25,25 @@ public enum WMHqlFunction {
     DT {
         @Override
         public Object convertValue(final String fromValue) {
-            return WMLocalDateTimeDeSerializer.getLocalDateTime(fromValue);
+            return JavaType.DATETIME.fromString(fromValue);
         }
     },
     TS {
         @Override
         public Object convertValue(final String fromValue) {
-            return new Timestamp(Long.valueOf(fromValue));
+            return JavaType.TIMESTAMP.fromString(fromValue);
         }
     },
     FLOAT {
         @Override
         public Object convertValue(final String fromValue) {
-            return Float.valueOf(fromValue);
+            return JavaType.FLOAT.fromString(fromValue);
+        }
+    },
+    BOOL {
+        @Override
+        public Object convertValue(final String fromValue) {
+            return JavaType.BOOLEAN.fromString(fromValue);
         }
     };
 
