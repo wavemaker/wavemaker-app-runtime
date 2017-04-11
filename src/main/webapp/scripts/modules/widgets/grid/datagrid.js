@@ -399,7 +399,7 @@ $.widget('wm.datagrid', {
 
         htm = this.preparedHeaderData.reduce(function (prev, current, colIndex) {
             return prev + self._getColumnTemplate(row, colIndex, current);
-        }, '<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.pk + '" ' + rowNgClassExpr + '>');
+        }, '<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.$$pk + '" ' + rowNgClassExpr + '>');
 
         htm += '</tr>';
         if (rowNgClass) {
@@ -447,7 +447,7 @@ $.widget('wm.datagrid', {
             ngClass = colDef.ngclass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
             colExpression = colDef.customExpression,
-            ctId = row.pk + '-' + colId,
+            ctId = row.$$pk + '-' + colId,
             value,
             isCellCompiled = false,
             columnValue;
@@ -775,7 +775,7 @@ $.widget('wm.datagrid', {
 
             /* Add a unique identifier for each row. */
             rowData.index = self.options.startRowIndex + i;
-            rowData.pk = i;
+            rowData.$$pk = i;
             data.push(rowData);
         });
 
@@ -873,7 +873,7 @@ $.widget('wm.datagrid', {
             this.options.beforeRowInsert();
         }
         rowData.index = this.options.startRowIndex + rowId;
-        rowData.pk = rowId;
+        rowData.$$pk = rowId;
         if (this.options.editmode !== this.CONSTANTS.FORM && this.options.editmode !== this.CONSTANTS.DIALOG) {
             $row = $(this._getRowTemplate(rowData));
             if (!this.preparedData.length) {
