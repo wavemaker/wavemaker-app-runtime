@@ -811,7 +811,7 @@ WM.module('wm.utils', [])
             }
 
             //If no value is provided for picturesource assign pictureplaceholder or default-image
-            if (!urlString) {
+            if ((CONSTANTS.isStudioMode && !isImageFile(urlString)) || !urlString) {
                 urlString = defaultUrl || 'resources/images/imagelists/default-image.png';
             }
 
