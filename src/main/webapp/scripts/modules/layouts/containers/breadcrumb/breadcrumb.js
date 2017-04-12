@@ -127,9 +127,9 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template':
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
-                    '<li ng-repeat="item in nodes" ng-class="{\'active\':$last}">' +
+                    '<li ng-repeat="item in nodes track by $index" ng-class="{\'active\':$last}">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" ng-click = onItemClick(item.link)  ng-if="!$last">{{item.label}}</a>' +
+                        '<a title="{{item.label}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',
@@ -153,11 +153,11 @@ WM.module('wm.layouts.containers')
                     }
 
                     if (CONSTANTS.isRunMode) {
-                        scope.onItemClick = function (link) {
+                        scope.onItemClick = function ($item) {
                             var navFn = scope.onBeforenavigate,
-                                canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $link: link}) !== false  : true;
+                                canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $item: $item}) !== false  : true;
                             if (canNavigate) {
-                                $location.path(link);
+                                $location.path($item.link);
                             }
                         };
                     }
