@@ -5,7 +5,7 @@ WM.module('wm.layouts.page')
         'use strict';
         $templateCache.put('template/layout/page/header.html',
                 '<header data-role="page-header"  page-container init-widget class="app-header clearfix" apply-styles="container">' +
-                    '<div class="app-header-menu" data-role="page-left-panel-icon"><a class="app-header-action wi wi-menu"></a></div>' +
+                    '<div class="app-header-menu" data-role="page-left-panel-icon"><a class="app-header-action"><i class="wi wi-menu"></i></a></div>' +
                     '<div class="app-header-container" wmtransclude page-container-target></div>' +
                 '</header>'
             );

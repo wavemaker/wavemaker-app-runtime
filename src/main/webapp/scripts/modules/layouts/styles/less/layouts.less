@@ -1369,7 +1369,16 @@ body {
     display: none;
   }
   .app-header-action {
-    float: right;
+    .badge {
+      right: 1em;
+      top: 0em;
+      border-radius: 50%;
+      padding: 3px 5px;
+    }
+    + .dropdown-menu {
+      right: 0;
+      left: auto;
+    }
   }
   .app-prefab .app-page {
     width: 100%;
