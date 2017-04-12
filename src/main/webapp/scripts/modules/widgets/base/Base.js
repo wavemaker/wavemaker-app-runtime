@@ -398,6 +398,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
+                        "iconclass": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "number", "value": "0"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "margin": {"type": "string", "widget": "box-model"},
