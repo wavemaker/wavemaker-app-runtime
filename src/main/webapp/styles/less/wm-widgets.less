@@ -1632,8 +1632,14 @@ body.modal-open {
         transform: translate(-50%, 0%);
       }
     }
+    &.Inline {
+      .loading-data-msg {
+        left: 0;
+        bottom: 0;
+        z-index: 1;
+      }
+    }
   }
-
   &.On-Demand, &.Scroll {
     .loading-data-msg {
       height: 4em;
