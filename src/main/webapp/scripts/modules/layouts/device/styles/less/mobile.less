@@ -92,6 +92,9 @@
       .app-header-container {
         display:table-cell;
       }
+      .app-header-actions {
+        display: inline-block;
+      }
       .app-header-action {
         font-size: @app-mobile-nav-icon-size;
         text-decoration: none;
@@ -101,6 +104,13 @@
         line-height: @app-mobile-nav-height;
         vertical-align: middle;
         color: inherit;
+        padding: 0 !important;
+        .app-icon {
+          font-size: 1em;
+        }
+        .badge {
+          right: -1em;
+        }
       }
       .app-grid-layout {
         display: table;

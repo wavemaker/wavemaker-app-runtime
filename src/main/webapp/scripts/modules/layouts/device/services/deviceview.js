@@ -98,7 +98,7 @@ WM.module("wm.layouts.device")
         function bindSearchIconEvent(searchElements) {
 
             WM.forEach(searchElements, function (ele) {
-                var searchEle = WM.element('<a class="app-header-action wi wi-search"></a>');
+                var searchEle = WM.element('<a class="app-header-action"><i class="wi wi-search"></i></a>');
                 WM.element(ele).before(searchEle);
                 //Tap icon to show/hide search box
                 bindTapEvtHandler(searchEle, function () {
