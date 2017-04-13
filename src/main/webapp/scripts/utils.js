@@ -2499,7 +2499,7 @@ WM.module('wm.utils', [])
             var valConstructorType = _.toLower(_.get(val, 'constructor.name'));
             if (valConstructorType === 'string' || valConstructorType === 'number') {
                 val = new Blob([val], {type: valContentType || 'text/plain'});
-            } else if (valConstructorType === 'object' && getValidJSON(val)) {
+            } else if (_.includes(['array', 'object'], valConstructorType) && getValidJSON(val)) {
                 val = new Blob([WM.toJson(val)], {type: valContentType || 'application/json'});
             }
             return val;
