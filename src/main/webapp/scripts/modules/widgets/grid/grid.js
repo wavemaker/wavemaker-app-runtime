@@ -169,7 +169,9 @@ WM.module('wm.widgets.grid')
             var binddataset = $is.binddataset,
                 variableType,
                 boundToInnerDataSet,
-                widgetName;
+                WidgetScopes,
+                widgetType,
+                widgetDetails;
             //Reset the variable and widget flags on $is before setting them.
             resetFlags($is);
             //Set the variable and widget flags on $is
@@ -193,11 +195,14 @@ WM.module('wm.widgets.grid')
                     }
                 }
             } else if ($is.isBoundToWidget) {
-                widgetName                      = _.split(binddataset, '.')[1];
-                $is.widgetName                  = widgetName;
                 $is.isBoundToSelectedItem       = binddataset.indexOf('selecteditem') !== -1;
                 $is.isBoundToSelectedItemSubset = binddataset.indexOf('selecteditem.') !== -1;
-                $is.isBoundToFilter             = $is.Widgets[widgetName] && ($is.Widgets[widgetName]._widgettype === 'wm-livefilter' || $is.Widgets[widgetName].widgettype === 'wm-livefilter');
+                WidgetScopes                    = $is.Widgets;
+                //Get the reference widget name. As widget can be inner widget (like Widgets.tab.Widgets.grid), find the last inner widget
+                widgetDetails       = LiveWidgetUtils.getBoundWidgetDetails(binddataset, WidgetScopes);
+                $is.widgetName      = widgetDetails.widgetName;
+                widgetType          = _.get(widgetDetails.WidgetScopes, $is.widgetName + '._widgettype') || _.get(widgetDetails.WidgetScopes, $is.widgetName + '.widgettype');
+                $is.isBoundToFilter = widgetType === 'wm-livefilter';
             }
         }
 
