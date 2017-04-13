@@ -154,10 +154,16 @@ WM.module('wm.layouts.containers')
 
                     if (CONSTANTS.isRunMode) {
                         scope.onItemClick = function ($item) {
-                            var navFn = scope.onBeforenavigate,
+                            var link = $item.link,
+                                navFn = scope.onBeforenavigate,
                                 canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $item: $item}) !== false  : true;
                             if (canNavigate) {
-                                $location.path($item.link);
+                                /* removing spl characters from the beginning of the path.
+                                   1. #/Main  -> Main
+                                   2. .#/Main/abc -> Main/abc
+                                */
+                                link = link.match(/[\w]+.*/g)[0];
+                                $location.path(link);
                             }
                         };
                     }
