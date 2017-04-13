@@ -79,6 +79,19 @@ WM.module('wm.widgets.form')
                 return chipObj;
             }
 
+            //Evaluates and returns the display, data and image values based on the options chosen
+            function getEvaluatedValues($s, chip) {
+                //Support of display expression
+                var displayValue = WidgetUtilService.getEvaluatedData($s, chip, {fieldName: 'displayfield', expressionName: 'displayexpression'}),
+                    dataValue = $s.datafield === 'All Fields' ? displayValue : Utils.getEvaluatedExprValue(chip, $s.datafield),
+                    imageFieldValue   =  $s.binddisplayimagesrc ? WidgetUtilService.getEvaluatedData($s, chip, {expressionName: 'displayimagesrc'}) : _.get(chip, $s.displayimagesrc);
+                return {
+                    'displayField' : displayValue,
+                    'dataField'    : dataValue,
+                    'imageField'   : imageFieldValue
+                };
+            }
+
             //Update the selected chips
             function updateSelectedChips(chips, $s) {
                 //Ignore _model_ update when it triggered by within the widget
@@ -87,24 +100,30 @@ WM.module('wm.widgets.form')
                     return;
                 }
                 var values,
-                    chip;
+                    chip,
+                    value;
                 chips = chips || [];
                 /*
-                * 1. In case of datavalue it will be string
-                * 2. In case of form, filter on field chosen, chips will be array of strings
-                * 3. In case of variable's  first record, it will be object
+                * 1. In case of variable's  first record, it will be object
+                * 2. In case of datavalue it will be string, In case of form, filter on field chosen, chips will be array of strings
+                * 3. In case of default chips it will be array of objects
                 */
                 $s.selectedChips = [];
-                if (WM.isObject(chips)) {
-                    var displayValue = _.get(chips, $s.displayfield),
-                        dataValue = $s.datafield === 'All Fields' ? displayValue : _.get(chips, $s.datafield);
-                    $s.selectedChips.push($s.constructChip(displayValue, dataValue, _.get(chips, $s.displayimagesrc)));
+                if (WM.isObject(chips) && !WM.isArray(chips)) {
+                    values = getEvaluatedValues($s, chips);
+                    $s.selectedChips.push($s.constructChip(values.displayField, values.dataField, values.imageField));
                 } else if (!WM.isArray(chips) || (WM.isArray(chips) && !WM.isObject(_.first(chips)))) {
+                    if ($s.datafield === 'All Fields') {
+                        return;
+                    }
                     values  = _.split(chips, ',');
                     _.forEach(values, function (ele) {
+                        ele = _.trim(ele);
+                        value = parseFloat(ele, 10);
+                        ele = isNaN(value) ? ele : value;
                         //find chip object from dataset to get value and img source
-                        chip =  _.find($s.chips, {'key' : ele});
-                        $s.selectedChips.push($s.constructChip(ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
+                        chip =  _.find($s.chips, {'value' : ele});
+                        $s.selectedChips.push($s.constructChip(_.get(chip, 'key'), _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
                 } else {
                     $s.selectedChips = chips;
@@ -114,13 +133,9 @@ WM.module('wm.widgets.form')
             //Create list of options for the search
             function createSelectOptions(dataset, $s) {
                 var chips          = [],
-                    dataField      = $s.datafield,
                     displayField   = $s.displayfield || $s.displayexpression || $s.binddisplayexpression,
-                    imageField     = $s.displayimagesrc,
-                    displayFieldValue,
-                    dataFieldValue,
-                    imageFieldValue,
-                    value           = $s.value || $s.datavalue;
+                    value           = $s.value || $s.datavalue,
+                    values;
                 //Avoiding resetting empty values
                 if (($s.binddataset || $s.scopedataset) && (!displayField && !$s.datavalue)) {
                     return;
@@ -129,13 +144,9 @@ WM.module('wm.widgets.form')
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
                     chips = _.map(dataset, function (dataObj) {
-                        //Support of display expression
-                        displayFieldValue =  WidgetUtilService.getEvaluatedData($s, dataObj, {fieldName: 'displayfield', expressionName: 'displayexpression'});
-                        dataFieldValue    =  Utils.getEvaluatedExprValue(dataObj, dataField);
-                        imageFieldValue   =  $s.binddisplayimagesrc ? WidgetUtilService.getEvaluatedData($s, dataObj, {expressionName: 'displayimagesrc'}) : dataObj[imageField];
-
+                        values = getEvaluatedValues($s, dataObj);
                         if (displayField) {
-                            return $s.constructChip(displayFieldValue, dataFieldValue, imageFieldValue);
+                            return $s.constructChip(values.displayField, values.dataField, values.imageField);
                         }
                         return $s.constructChip(dataObj);
                     });
@@ -258,7 +269,7 @@ WM.module('wm.widgets.form')
                 var key = Utils.getActionFromKey($event),
                     activeElementIndices = [];
                 if (key === KEYS.DELETE) {
-                    if (!$s.selectedChips.length) {
+                    if (!$s.selectedChips.length || $s.readonly) {
                         return;
                     }
                     if ($s.newItem.name) {
