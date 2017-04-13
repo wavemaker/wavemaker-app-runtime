@@ -32,6 +32,10 @@ WM.module('wm.widgets.advanced')
                     'center': 'title',
                     'right' : 'month basicWeek basicDay'
                 },
+                CONTROL_OPTIONS = {
+                    'LIST': 'navigation, today, year, month, week, day',
+                    'OTHERS': 'navigation, today, month, week, day'
+                },
                 VIEW_TYPES = {
                     'BASIC' : 'basic',
                     'AGENDA': 'agenda',
@@ -53,9 +57,11 @@ WM.module('wm.widgets.advanced')
             if (!isMobile) {
                 delete widgetProps.datavalue;
             }
-            function updateCalendarOptions($is) {
+            function updateCalendarOptions($is, key, newVal) {
                 var ctrls = $is.controls, viewType = $is.calendartype, left = '', right = '',
-                    regEx = new RegExp('\\bday\\b', 'g');
+                    regEx = new RegExp('\\bday\\b', 'g'),
+                    wp,
+                    viewOptionIndex;
                 if (ctrls && viewType) {
                     if (_.includes(ctrls, 'navigation')) {
                         left += ' prev next';
@@ -83,12 +89,28 @@ WM.module('wm.widgets.advanced')
 
                     WM.extend($is.calendarOptions.calendar.header, {'left': left, 'right': right});
                 }
+                if (key === 'calendartype' && $is.widgetid) { //if the calendar type is changed then populate the list option in the view
+                    wp = $is.widgetProps;
+                    viewOptionIndex = wp.view.options.indexOf('year');
+                    if (newVal === VIEW_TYPES.LIST && viewOptionIndex == -1) {
+                        wp.view.options.push('year');
+                        wp.controls.options = CONTROL_OPTIONS.LIST;
+                    } else if (newVal !== VIEW_TYPES.LIST) {
+                        wp.controls.options = CONTROL_OPTIONS.OTHERS;
+                        if (viewOptionIndex > -1) {
+                            wp.view.options.splice(viewOptionIndex, 1);
+                        }
+                        if ($is.view === 'year') {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'view': 'month'});
+                        }
+                    }
+                }
             }
             //to calculate the height for the event limit and parsing the value when it is percentage based.
             function calculateHeight(calendar, $el, $is) {
                 var $parentEl    = $el.parent(),
                     parentHeight = $parentEl.css('height'),
-                    elHeight     = $is.height || '100%',
+                    elHeight     = $is.height || '600px',
                     computedHeight;
                 if (_.includes(elHeight, '%')) {
                     if (_.includes(parentHeight, '%')) {
@@ -140,7 +162,8 @@ WM.module('wm.widgets.advanced')
                 var calendar  = $is.calendarOptions && $is.calendarOptions.calendar,
                     eleScope  = $el.scope(),
                     eleIscope = $el.find('.uib-datepicker').isolateScope(),
-                    variable  = Utils.getVariableName($is, eleScope),
+                    variableName  = Utils.getVariableName($is, eleScope),
+                    variableCategory = _.get(eleScope.Variables, variableName + '.category'),
                     eventSet = [],
                     dataSet;
                 switch (key) {
@@ -150,7 +173,7 @@ WM.module('wm.widgets.advanced')
                         return;
                     }
                     $is.eventSources.length = 0;
-                    if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
+                    if (CONSTANTS.isRunMode || (variableCategory && variableCategory !== 'wm.ServiceVariable')) {
                         dataSet = Utils.getClonedObject(newVal.data || newVal);
                         dataSet = WM.isArray(dataSet) ? dataSet : WM.isObject(dataSet) ? [dataSet] : [];
                         dataSet = constructCalendarDataset($is, dataSet);
@@ -173,7 +196,7 @@ WM.module('wm.widgets.advanced')
                     break;
                 case 'controls':
                 case 'calendartype':
-                    updateCalendarOptions($is);
+                    updateCalendarOptions($is, key, newVal);
                     break;
                 case 'view':
                     //For Mobile calendar view property should be set on uib element iscope
@@ -316,7 +339,12 @@ WM.module('wm.widgets.advanced')
                         }
                         function viewRenderProxy(view) {
                             $is.currentview = {start: view.start.format(), end: view.end.subtract(1, 'days').format()};
-                            $is.onViewrender({$view: view});
+                            $timeout(function() {
+                                if ($is.calendartype === VIEW_TYPES.LIST) {
+                                    $el.find('.fc-list-table').addClass('table');
+                                }
+                                $is.onViewrender({$view: view});
+                            });
                         }
                         function eventRenderProxy(event, jsEvent, view) {
                             /*unable to pass jsEvent in angular expression, hence ignoring*/

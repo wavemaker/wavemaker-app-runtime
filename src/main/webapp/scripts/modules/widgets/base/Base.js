@@ -556,7 +556,7 @@ WM.module('wm.widgets.base', [])
                         "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals"},
                         "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals"},
                         "view": {"type": "list", "options": ["month", "week", "day"], "value": "month"},
-                        "controls": {"type": "list", "options": "navigation, today, year, month, week, day", "value": "navigation, today, year, month, week, day", "widget": "select-all"},
+                        "controls": {"type": "list", "options": "navigation, today, month, week, day", "value": "navigation, today, month, week, day", "widget": "select-all"},
                         "onViewrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventdrop": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
