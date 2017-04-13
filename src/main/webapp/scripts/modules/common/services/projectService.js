@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM, wm, _*/
 /*jslint todo: true */
 /**
  * @ngdoc service
@@ -38,6 +38,11 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
             if (projectDeployedUrl[lastIndex + 1] === "#") {
                 projectDeployedUrl = projectDeployedUrl.substr(0, lastIndex);
             }
+
+            if (_.includes(projectDeployedUrl, '?')) {
+                projectDeployedUrl = projectDeployedUrl.split('?')[0];
+            }
+
             if (projectDeployedUrl.indexOf('http') !== -1) {
                 /*Removing the protocol from the url*/
                 if (projectDeployedUrl.indexOf('https:') !== -1) {
