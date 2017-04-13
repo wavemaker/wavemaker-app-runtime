@@ -1,5 +1,5 @@
 /*global WM*/
-WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaFileTransfer', function ($rootScope, DeviceVariableService, $cordovaFileTransfer) {
+WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaFileTransfer', 'Utils', function ($rootScope, DeviceVariableService, $cordovaFileTransfer, Utils) {
     "use strict";
 
     var operations = {
@@ -27,6 +27,8 @@ WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaF
                 if (fileNameStartIndex >= 0) {
                     ftOptions.fileName  = fileName.substring(fileNameStartIndex + 1);
                 }
+
+                ftOptions = Utils.addXsrfCookieHeader(ftOptions);
 
                 $cordovaFileTransfer.upload(serverUrl, variable.localFile, ftOptions)
                     .then(function (data) {
