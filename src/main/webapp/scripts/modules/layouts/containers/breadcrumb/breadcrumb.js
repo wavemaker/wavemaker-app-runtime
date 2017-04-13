@@ -82,7 +82,7 @@ WM.module('wm.layouts.containers')
                     });
                 }
             } else if (WM.isArray(newVal)) {
-                nodes = constructNodes(newVal);
+                nodes = constructNodes(scope, newVal);
             } else if (WM.isObject(newVal)) {
                 // dynamically generate the path only if the itemchildren property is set.
                 if (scope.itemchildren) {
