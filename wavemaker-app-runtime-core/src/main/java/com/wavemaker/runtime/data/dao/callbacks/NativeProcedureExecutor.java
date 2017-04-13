@@ -142,7 +142,7 @@ public class NativeProcedureExecutor {
                     Map<String, Object> rowData = new LinkedHashMap<>();
                     int colCount = rset.getMetaData().getColumnCount();
                     for (int i = 1; i <= colCount; i++) {
-                        rowData.put(rset.getMetaData().getColumnName(i), rset.getObject(i));
+                        rowData.put(rset.getMetaData().getColumnLabel(i), rset.getObject(i));
                     }
                     result.add(rowData);
                 }
