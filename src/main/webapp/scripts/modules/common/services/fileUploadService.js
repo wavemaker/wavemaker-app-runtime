@@ -66,9 +66,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
                 'fileName'  : file.name,
                 'chunkedMode': false
             },
-            transferFn,
-            xsrfHeaderName,
-            xsrfToken;
+            transferFn;
 
         ftOptions = Utils.addXsrfCookieHeader(ftOptions);
 
