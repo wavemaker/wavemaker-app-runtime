@@ -684,7 +684,7 @@ wm.variables.services.$liveVariable = [
                     clonedFields,
                     dataObj = {},
                     requestData,
-                    handleError = function (response) {
+                    handleError = function (response, xhrObj) {
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
@@ -702,7 +702,7 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj);
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, response);
@@ -750,10 +750,10 @@ wm.variables.services.$liveVariable = [
                     'data'          : requestData,
                     'filterMeta'    : tableOptions.filter,
                     'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
-                }, function (response) {
+                }, function (response, xhrObj) {
 
                     if ((response && response.error) || !response || !WM.isArray(response.content)) {
-                        Utils.triggerFn(handleError, response.error);
+                        Utils.triggerFn(handleError, response.error, xhrObj);
                         return;
                     }
 
@@ -807,8 +807,8 @@ wm.variables.services.$liveVariable = [
                     }
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
-                }, function (error) {
-                    Utils.triggerFn(handleError, error);
+                }, function (error, details, xhrObj) {
+                    Utils.triggerFn(handleError, error, xhrObj);
                 });
 
                 if (CONSTANTS.isRunMode) {
@@ -1170,7 +1170,7 @@ wm.variables.services.$liveVariable = [
                     "id": WM.isDefined(options.id) ? encodeURIComponent(options.id) : compositeId,
                     "data": rowObject,
                     "url": variableDetails._prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variableDetails._prefabName) : $rootScope.project.deployedUrl
-                }, function (response) {
+                }, function (response, xhrObj) {
                     /* if error received on making call, call error callback */
                     if (response && response.error) {
                         /* If in RUN mode trigger error events associated with the variable */
@@ -1179,7 +1179,7 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error, xhrObj);
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error);
@@ -1210,7 +1210,7 @@ wm.variables.services.$liveVariable = [
                         }
                         Utils.triggerFn(success, response);
                     }
-                }, function (response) {
+                }, function (response, details, xhrObj) {
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
@@ -1219,7 +1219,7 @@ wm.variables.services.$liveVariable = [
                         $timeout(function () {
                             // EVENT: ON_ERROR
                             if (!options.skipNotification) {
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response, xhrObj);
                             }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
