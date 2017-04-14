@@ -129,7 +129,7 @@ WM.module('wm.layouts.containers')
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
                     '<li ng-repeat="item in nodes track by $index" ng-class="{\'active\':$last}">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
+                        '<a title="{{item.label}}" href="javascript:void(0)" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',
@@ -154,7 +154,7 @@ WM.module('wm.layouts.containers')
 
                     if (CONSTANTS.isRunMode) {
                         scope.onItemClick = function ($item) {
-                            var link = $item.link,
+                            var link = $item.link || '',
                                 navFn = scope.onBeforenavigate,
                                 canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $item: $item}) !== false  : true;
                             if (canNavigate) {
@@ -162,8 +162,9 @@ WM.module('wm.layouts.containers')
                                    1. #/Main  -> Main
                                    2. .#/Main/abc -> Main/abc
                                 */
-                                link = link.match(/[\w]+.*/g)[0];
-                                $location.path(link);
+                                link = _.first(link.match(/[\w]+.*/g));
+                                //search method is passed with empty object to remove url parameters.
+                                $location.path(link).search({});
                             }
                         };
                     }
