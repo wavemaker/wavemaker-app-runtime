@@ -300,7 +300,7 @@ WM.module('wm.widgets.live')
                     }
 
                     //If operation is update, form is not touched and current data and previous data is same, Show no changes detected message
-                    if ($scope.operationType === 'update' && formScope.ngform && formScope.ngform.$pristine && _.isEqual(data, prevData)) {
+                    if ($scope.operationType === 'update' && formScope.ngform && formScope.ngform.$pristine && ($scope.isSelected && _.isEqual(data, prevData))) {
                         $scope.toggleMessage(true, $scope.appLocale.MESSAGE_NO_CHANGES, 'info', '');
                         return;
                     }

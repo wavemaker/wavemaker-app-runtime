@@ -249,7 +249,7 @@ WM.module('wm.widgets.grid')
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
                             '<div class="panel-actions app-datagrid-actions" ng-if="exportOptions.length || _actions.header.length">' +
-                                '<wm-button ng-repeat="btn in _actions.header track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && isGridEditMode}" iconclass="{{btn.iconclass}}"' +
+                                '<wm-button ng-repeat="btn in _actions.header track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
                                  ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}" hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-button>' +
                                 '<wm-menu autoclose="always" caption="{{$root.appLocale.LABEL_EXPORT}}" ng-if="exportOptions.length" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
@@ -261,7 +261,7 @@ WM.module('wm.widgets.grid')
                             '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
-                            '<wm-button ng-repeat="btn in _actions.footer track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && isGridEditMode}" iconclass="{{btn.iconclass}}"' +
+                            '<wm-button ng-repeat="btn in _actions.footer track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
                                 ' on-click="{{btn.action}}" type="button" shortcutkey="{{btn.shortcutkey}}" tabindex="{{btn.tabindex}}"  hint="{{btn.title}}" disabled="bind:btn.disabled"></wm-button>' +
                         '</div>' +
                     '</div></div>';
@@ -789,9 +789,7 @@ WM.module('wm.widgets.grid')
                                     } else {
                                         $is.dataset = newVal;
                                     }
-                                    if (_.isEmpty(newVal)) {
-                                        $is.resetSortStatus();
-                                    }
+                                    $is.resetSortStatus();
                                 }));
                             }
                         }, 0, false);
@@ -2157,7 +2155,7 @@ WM.module('wm.widgets.grid')
                     $is.onRowFilterChange();
                 } else {
                     //If value is present, call the filter. Else, focus on the field
-                    if ($is.rowFilter[field].value) {
+                    if (WM.isDefined($is.rowFilter[field].value) && $is.rowFilter[field].value !== '') {
                         $is.onRowFilterChange();
                     } else {
                         $timeout(function () {
@@ -2470,6 +2468,9 @@ WM.module('wm.widgets.grid')
                         $is.formWidgets = {};
                     }
                     $rs.$safeApply($is);
+                },
+                setGridState: function (val) {
+                    $is.isLoading = val === 'loading';
                 },
                 noChangesDetected: function () {
                     $is.toggleMessage(true, 'info', $is.appLocale.MESSAGE_NO_CHANGES, '');

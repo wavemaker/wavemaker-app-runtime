@@ -1690,7 +1690,6 @@ $.widget('wm.datagrid', {
             $saveButton       = $row.find('.save-edit-row-button'),
             $editButton       = $row.find('.edit-row-button');
         this.disableActions(false);
-        this._setGridEditMode(false);
         $row.removeClass('row-editing');
         $editableElements.off('click');
         $editableElements.each(function () {
@@ -1714,6 +1713,7 @@ $.widget('wm.datagrid', {
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
+        this._setGridEditMode(false);
     },
     //Function to close the current editing row
     closeEditedRow: function() {
@@ -2474,7 +2474,7 @@ $.widget('wm.datagrid', {
         this._renderGrid();
     },
     __setStatus: function () {
-        var loadingIndicator = this.dataStatusContainer.find('.fa'),
+        var loadingIndicator = this.dataStatusContainer.find('i'),
             state            = this.dataStatus.state;
         this.dataStatusContainer.find('.message').text(this.dataStatus.message);
         if (state === 'loading') {
@@ -2507,6 +2507,7 @@ $.widget('wm.datagrid', {
     //This method is used to show or hide data loading/ no data found overlay
     setStatus: function (state, message) {
         this.dataStatus.state   = state;
+        this.options.setGridState(state);
         this.dataStatus.message = message || this.options.dataStates[state];
         //First time call the status function, afterwards use debounce with 100 ms wait
         if (this._setStatusCalled) {
