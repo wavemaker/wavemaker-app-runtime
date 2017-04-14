@@ -14,8 +14,9 @@ wm.plugins.security.services.SecurityService = [
     "$rootScope",
     "CONSTANTS",
     "$q",
+    "$http",
 
-    function (BaseService, Utils, $rs, CONSTANTS, $q) {
+    function (BaseService, Utils, $rs, CONSTANTS, $q, $http) {
         'use strict';
 
         /* to store general options & roles */
@@ -1079,16 +1080,21 @@ wm.plugins.security.services.SecurityService = [
                         '&remember-me=' + rememberme +
                         customParams
                 }, function (response) {
-                    var isXsrfEnabled = response[CONSTANTS.XSRF_COOKIE_NAME];
+                    getConfig(function (config) {
+                        var xsrfCookieValue = response[CONSTANTS.XSRF_COOKIE_NAME];
 
-                    if (CONSTANTS.hasCordova) {
-                        localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, isXsrfEnabled || '');
-                    }
-                    // After the successful login in device, this function triggers the pending onLoginCallbacks.
-                    _.forEach(onLoginCallbacks, Utils.triggerFn);
+                        //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
+                        if (CONSTANTS.hasCordova && xsrfCookieValue) {
+                            localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, xsrfCookieValue || '');
+                            $http.defaults.xsrfCookieName = CONSTANTS.XSRF_COOKIE_NAME;
+                            $http.defaults.xsrfHeaderName = config.csrfHeaderName;
+                        }
+                        // After the successful login in device, this function triggers the pending onLoginCallbacks.
+                        _.forEach(onLoginCallbacks, Utils.triggerFn);
 
-                    onLoginCallbacks.length = 0;
-                    Utils.triggerFn(successCallback, response);
+                        onLoginCallbacks.length = 0;
+                        Utils.triggerFn(successCallback, response);
+                    });
                 }, failureCallback);
             },
 

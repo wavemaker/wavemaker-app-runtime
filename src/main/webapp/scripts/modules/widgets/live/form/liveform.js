@@ -269,7 +269,7 @@ WM.module('wm.widgets.live')
                             //Find the first invalid untoched element and set it to touched.
                             // Safari does not form validations. this will ensure that error is shown for user
                             $invalidEle = $formEle.find('.ng-untouched.ng-invalid:first');
-                            if ($invalidEle.length) {
+                            if ($invalidEle.length && formScope.ngform[$invalidEle.attr('name')]) {
                                 formScope.ngform[$invalidEle.attr('name')].$setTouched();
                             }
                             return;
