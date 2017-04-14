@@ -186,6 +186,11 @@ WM.module('wm.widgets.basic')
                                             'get': function () {
                                                 return _scope.item;
                                             }
+                                        },
+                                        'row': {
+                                            'get': function () {
+                                                return _scope.row;
+                                            }
                                         }
                                     });
                                     $is._popoverOptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
