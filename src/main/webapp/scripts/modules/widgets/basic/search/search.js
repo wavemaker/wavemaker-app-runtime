@@ -53,7 +53,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-is-open="isOpen"' +
                     ' typeahead-min-length="minLength" >' +
-                '<i class="btn-close wi wi-cancel" ng-show="showClosebtn" ng-click="clearText();"></i>' +
+                '<i class="btn-close wi wi-cancel" ng-show="showClosebtn" ng-click="clearSearch();"></i>' +
             '</div>'
             );
     }])
