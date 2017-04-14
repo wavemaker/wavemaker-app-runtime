@@ -45,8 +45,9 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
             } else {
                 errorCb();
             }
-
-            $rootScope.$safeApply(variable.activeScope);
+            if (CONSTANTS.isRunMode) {
+                $rootScope.$safeApply(variable.activeScope);
+            }
         }
         return {
             /**
