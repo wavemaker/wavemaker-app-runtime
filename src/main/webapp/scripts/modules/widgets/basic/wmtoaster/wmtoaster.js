@@ -14,6 +14,11 @@ WM.module('wm.widgets.basic')
                     timeout = (timeout !== 0 && type === 'success') ? 5000 : 0;
                 }
 
+                // if the desc is an object, stringify it. $sce.trustAsHtml will throw an error otherwise
+                if (!bodyOutputType && WM.isObject(desc)) {
+                    desc = JSON.stringify(desc);
+                }
+
                 toaster.pop(type, title, desc, timeout, bodyOutputType || 'trustedHtml', onClickHandler, undefined, undefined, undefined, onHideCallback);
             }
         },  classlist = [],
