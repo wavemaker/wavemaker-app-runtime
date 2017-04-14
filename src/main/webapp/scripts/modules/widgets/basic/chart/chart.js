@@ -500,9 +500,10 @@ WM.module('wm.widgets.basic')
                 elScope = element.scope(),
                 data = {},
                 sortExpr,
-                orderByColumns,
                 columns = [],
-                colAlias;
+                colAlias,
+                orderByColumns,
+                groupByFields = [];
 
             //Set the variable name based on whether the widget is bound to a variable opr widget
             if (scope.binddataset.indexOf('bind:Variables.') !== -1) {
@@ -516,20 +517,22 @@ WM.module('wm.widgets.basic')
             if (!variable) {
                 return;
             }
-            columns = _.concat(columns, data.groupByFields, [scope.aggregationcolumn]);
-            /*Orderby set at the chart widget level has high priority
-            If widget level orderby is not and none of the groupby, aggregation are chosen then, variable level ordery is applied*/
-            sortExpr = (scope.orderby || isAggregationEnabled(scope)) ? _.replace(scope.orderby, /:/g, ' ') : variable.orderBy;
-            orderByColumns = getLodashOrderByFormat(scope.orderby).columns;
-            //If the orderby column is chosen either in groupby or orderby then replace . with $ for that column
-            _.forEach(_.intersection(columns, orderByColumns), function (col) {
-                colAlias = getValidAliasName(col);
-                sortExpr = _.replace(sortExpr, col, colAlias);
-            });
             if (isGroupByEnabled(scope.groupby)) {
-                data.groupByFields = _.split(scope.groupby, ',');
+                groupByFields = _.split(scope.groupby, ',');
+            }
+            if (scope.orderby) {
+                sortExpr = _.replace(scope.orderby, /:/g, ' ');
+                columns = _.uniq(_.concat(columns, groupByFields, [scope.aggregationcolumn]));
+                orderByColumns = getLodashOrderByFormat(scope.orderby).columns;
+                //If the orderby column is chosen either in groupby or orderby then replace . with $ for that column
+                _.forEach(_.intersection(columns, orderByColumns), function (col) {
+                    colAlias = getValidAliasName(col);
+                    sortExpr = _.replace(sortExpr, col, colAlias);
+                });
             }
             if (isAggregationEnabled(scope)) {
+                //Send the group by in the aggregations api only if aggregation is also chosen
+                data.groupByFields = groupByFields;
                 data.aggregations =  [
                     {
                         "field": scope.aggregationcolumn,
@@ -965,7 +968,7 @@ WM.module('wm.widgets.basic')
             case 'orderby':
                 //Set the 'aggregationColumn' to show all keys in case of aggregation function is count or to numeric keys in all other cases.
                 if (scope.isLiveVariable && isAggregationEnabled(scope)) {
-                    newOptions = _.concat(groupByColumns, aggColumns);
+                    newOptions = _.uniq(_.concat(groupByColumns, aggColumns));
                 }
                 break;
             case 'bubblesize':
@@ -978,9 +981,32 @@ WM.module('wm.widgets.basic')
             return newOptions || fields || scope.axisoptions;
         }
 
+        //Validates and returns valid sort epxression
+        function updateOrderByExpr(scope) {
+            var orderByConfig = getLodashOrderByFormat(scope.orderby),
+                columns = orderByConfig.columns,
+                orders = orderByConfig.orders,
+                orderByOptions = scope.widgetProps.orderby.options,
+                formats = [];
+            //Adding only valid columns which are present in options
+            _.forEach(columns, function (col, index) {
+                if (_.includes(orderByOptions, col)) {
+                    formats.push(_.join([col, orders[index]], ':'));
+                }
+            });
+            scope.orderby = _.join(formats, ',');
+            //updating the sort expression
+            scope.$root.$emit('set-markup-attr', scope.widgetid, {'orderby': scope.orderby});
+        }
+
+
         // Based on the chart type, sets the options for the yaxisdatakey
         function setOrderByColumns(scope) {
             scope.widgetProps.orderby.options = getCutomizedOptions(scope, 'orderby');
+            if (scope.widgetProps.orderby.options) {
+                //updates the orderby column based on the aggregation and orderby columns
+                updateOrderByExpr(scope);
+            }
         }
 
         //Function that iterates through all the columns and then fetching the numeric and non primary columns among them
@@ -1168,6 +1194,7 @@ WM.module('wm.widgets.basic')
                     //setting the aggregation columns
                     toggleAggregationColumnState(scope, newVal);
                     filterYAxisOptions(scope);
+                    setOrderByColumns(scope);
                     if (newVal !== NONE) {
                         //Setting the aggregation columns based on the aggregation function chosen
                         setAggregationColumns(scope, newVal);
