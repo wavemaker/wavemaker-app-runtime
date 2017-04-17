@@ -774,6 +774,30 @@ WM.module('wm.widgets.live')
                 //Set form widgets scopes on live form
                 this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
                 $scope.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
+
+                //Loop through the form fields and set touched state as touched
+                function setTouchedState (ngForm) {
+                    if (ngForm.$valid) { //If form is valid, return here
+                        return;
+                    }
+                    _.forEach(ngForm, function (field, key) {
+                        if (_.isObject(field)) {
+                            //Fields has $modelValue. Check for this property and call $setTouched
+                            if (_.has(field, '$modelValue') && field.$setTouched) {
+                                field.$setTouched();
+                            } else if (_.has(field, '$submitted') && key !== '$$parentForm') {
+                                //Check for the inner forms and call the set touched mehtod on inner form fields
+                                setTouchedState(field);
+                            }
+                        }
+                    });
+                }
+                //Highlight all the invalid states on save
+                $scope.highlightInvalidFields = function () {
+                    var $formEle     = getFormElement(),
+                        formScope    = ($scope.isLayoutDialog && $formEle.length) ? $formEle.scope() : $scope;
+                    setTouchedState(formScope.ngform);
+                };
             },
             compile: function () {
                 return {
