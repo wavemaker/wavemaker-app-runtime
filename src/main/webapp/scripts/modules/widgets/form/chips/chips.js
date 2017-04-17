@@ -116,7 +116,8 @@ WM.module('wm.widgets.form')
                     if ($s.datafield === 'All Fields') {
                         return;
                     }
-                    values  = _.split(chips, ',');
+                    //If chips is empty array_.split gives [''], which leads issue in filter reset so initialize with []
+                    values  = chips.length ? _.split(chips, ',') : [];
                     _.forEach(values, function (ele) {
                         ele = _.trim(ele);
                         value = parseFloat(ele, 10);
