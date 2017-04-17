@@ -2173,7 +2173,7 @@ WM.module('wm.utils', [])
         function downloadThroughAnchor(config) {
             var url     = config.url,
                 method  = config.method,
-                data    = config.dataParams,
+                data    = config.dataParams || config.data,
                 headers = config.headers;
 
             headers['Content-Type'] = headers['Content-Type'] || 'application/x-www-form-urlencoded';
