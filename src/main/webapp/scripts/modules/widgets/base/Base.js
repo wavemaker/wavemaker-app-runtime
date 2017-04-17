@@ -364,6 +364,7 @@ WM.module('wm.widgets.base', [])
                         "imageencodingtype": {"type": "list", "options": [ "JPEG", "PNG"], "value" : "JPEG"},
                         "savetogallery": {"type": "boolean", "value" : false},
                         "allowedit": {"type": "boolean", "value" : false},
+                        "correctorientation": {"type": "boolean", "value" : false},
                         "imagetargetwidth": {"type": "number"},
                         "imagetargetheight": {"type": "number"},
                         /* Events */
