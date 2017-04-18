@@ -42,6 +42,8 @@ import com.wavemaker.runtime.data.util.JDBCUtils;
  */
 public class NativeProcedureExecutor {
 
+    public static final String CONTENT_FIELD = "content";
+
     public static <T> T execute(
             Session session, String jdbcQuery, List<ResolvableParam> params, Class<T> type) {
         Connection connection = null;
@@ -70,7 +72,7 @@ public class NativeProcedureExecutor {
             final boolean resultSetType, final int limit) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         if (resultSetType) {
-            result.put("content", readResultSet(statement.getResultSet(), limit));
+            result.put(CONTENT_FIELD, readResultSet(statement.getResultSet(), limit));
         }
         result.putAll(readResponse(statement, params, limit));
         return result;
