@@ -148,6 +148,9 @@ WM.module('wm.widgets.advanced')
                 _.forEach(eventSource, function (obj) {
                     _.mapKeys(properties, function (value, key) {
                         var objVal = _.get(obj, value);
+                        if (!objVal) {
+                            return;
+                        }
                         if (key === 'start' || key === 'end') {
                             objVal = moment(objVal);
                         }
@@ -347,8 +350,13 @@ WM.module('wm.widgets.advanced')
                             });
                         }
                         function eventRenderProxy(event, jsEvent, view) {
-                            /*unable to pass jsEvent in angular expression, hence ignoring*/
-                            $is.onEventrender({$event: {}, $data: event, $view: view});
+                            $timeout(function() {
+                                if ($is.calendartype === VIEW_TYPES.LIST) {
+                                    $el.find('.fc-list-table').addClass('table');
+                                }
+                                /*unable to pass jsEvent in angular expression, hence ignoring*/
+                                $is.onEventrender({$event: {}, $data: event, $view: view});
+                            });
                         }
                         function setSelectedData(start, end) {
                             var filteredDates = [],
