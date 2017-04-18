@@ -124,7 +124,8 @@ WM.module('wm.widgets.form')
                         ele = isNaN(value) ? ele : value;
                         //find chip object from dataset to get value and img source
                         chip =  _.find($s.chips, {'value' : ele});
-                        $s.selectedChips.push($s.constructChip(_.get(chip, 'key'), _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
+                        // ele also need to be send since in security chips, there will not be any dataset
+                        $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
                 } else {
                     $s.selectedChips = chips;
