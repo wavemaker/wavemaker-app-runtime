@@ -620,6 +620,7 @@ WM.module('wm.widgets.grid')
                         if (attrs.gridcaption && !attrs.title) {
                             $is.title = $is.gridcaption;
                         }
+                        $is.noModifyTitle     = attrs.noModifyTitle === 'true';
                         $is.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
                         $is.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
                         $is.matchModeMsgs     = getMatchModeMsgs();
@@ -1890,6 +1891,7 @@ WM.module('wm.widgets.grid')
                     properties = data;
                 }
                 options.columnUpperBound = $is.displayAllFields ? -1 : 10;
+                options.noModifyTitle    = $is.noModifyTitle;
                 /*call utility function to prepare fieldDefs for grid against given data (A MAX OF 10 COLUMNS ONLY)*/
                 defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
                 /*append additional properties*/
