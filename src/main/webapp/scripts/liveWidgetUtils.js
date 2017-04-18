@@ -2161,6 +2161,39 @@ WM.module('wm.widgets.live')
                 return enableemptyfilter && _.intersection(enableemptyfilter.split(','), LIVE_CONSTANTS.NULL_EMPTY).length > 0;
             }
 
+            //Loop through the form fields and set touched state as touched
+            function setTouchedState(ngForm) {
+                if (ngForm.$valid) { //If form is valid, return here
+                    return;
+                }
+                _.forEach(ngForm, function (field, key) {
+                    if (_.isObject(field)) {
+                        //Fields has $modelValue. Check for this property and call $setTouched
+                        if (_.has(field, '$modelValue') && field.$setTouched) {
+                            field.$setTouched();
+                        } else if (_.has(field, '$submitted') && key !== '$$parentForm') {
+                            //Check for the inner forms and call the set touched mehtod on inner form fields
+                            setTouchedState(field);
+                        }
+                    }
+                });
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.highlightInvalidFields
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function loops through the form fields and set touched state as touched
+             *
+             * @param {object} ngForm angular form object
+             */
+            function highlightInvalidFields(ngForm) {
+                setTouchedState(ngForm)
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.setGetterSettersOnField
@@ -2236,6 +2269,7 @@ WM.module('wm.widgets.live')
             this.getDistinctValuesForField  = getDistinctValuesForField;
             this.getDistinctFieldProperties = getDistinctFieldProperties;
             this.getEnableEmptyFilter       = getEnableEmptyFilter;
+            this.highlightInvalidFields     = highlightInvalidFields;
             this.setGetterSettersOnField    = setGetterSettersOnField;
         }
     ])
