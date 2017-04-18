@@ -62,6 +62,7 @@
                 <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToSqlDateConverter"/>
                 <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToLocalDateTimeConverter"/>
                 <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToTimestampConverter"/>
+                <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToExportTypeConverter"/>
             </list>
         </property>
     </bean>
