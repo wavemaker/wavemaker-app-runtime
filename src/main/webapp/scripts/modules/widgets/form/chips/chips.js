@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
-                        '<input ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input form-control" type="text" ng-attr-placeholder="{{placeholder}}" ng-model="newItem.name" ng-keydown="handleKeyPressEvent($event)" ng-click="resetActiveState()"' +
+                        '<input ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input form-control" type="text" ng-attr-placeholder="{{placeholder}}" ng-model="newItem.name" ng-keydown="handleKeyPressEvent($event)" ng-click="updateStates($event)"' +
                             ' uib-typeahead="option as option.key for option in chips | filter:$viewValue"' +
                             ' spellcheck="false" autocomplete="off"' +
                             ' typeahead-on-select="addItem($event, $item)"' +
@@ -54,7 +54,8 @@ WM.module('wm.widgets.form')
                 KEYS  = {
                     'BACKSPACE' : 'BACKSPACE',
                     'ENTER'     : 'ENTER',
-                    'DELETE'    : 'DELETE'
+                    'DELETE'    : 'DELETE',
+                    'TAB'       : 'TAB'
                 },
                 ignoreUpdate;
 
@@ -225,21 +226,31 @@ WM.module('wm.widgets.form')
                 $event.preventDefault();
             }
 
-            //handle enter keypress event in case of edit mode
-            function handleEnterKeyPressEvent($s, $event, chip) {
-                var key    = Utils.getActionFromKey($event),
-                    values;
-                if (key === KEYS.ENTER) {
-                    chip.edit  = false;
-                    values     = _.split(chip.fullValue, '<');
-                    chip.key   = _.trim(values[0]);
-                    chip.value = _.trim(_.split(values[1], '>')[0]);
-                    //edit chip
-                    onModelUpdate($s, $event);
-                    validateDuplicates($s);
-                    stopEvent($event);
-                }
+            function updateChip($s, $event, chip) {
+                var values;
+                chip.edit  = false;
+                values     = _.split(chip.fullValue, '<');
+                chip.key   = _.trim(values[0]);
+                chip.value = _.trim(_.split(values[1], '>')[0]);
+                //edit chip
+                onModelUpdate($s, $event);
+                validateDuplicates($s);
+                stopEvent($event);
+            }
 
+            //handle enter keypress event in case of edit mode
+            function handleEnterKeyPressEvent($s, $el, $event, chip) {
+                var key    = Utils.getActionFromKey($event);
+                if (key === KEYS.ENTER || key === KEYS.TAB) {
+                    updateChip($s, $event, chip);
+                    if (key === KEYS.TAB) {
+                        chip.active = false;
+                        $el.find('.app-chip-input').focus();
+                    }
+                } else if (key === KEYS.DELETE) {
+                    //Avoid deleting chips in delete mode
+                    $event.stopPropagation();
+                }
             }
 
             //Check if max size is reached
@@ -327,6 +338,15 @@ WM.module('wm.widgets.form')
                         }
                     });
                 }
+            }
+
+            //Update the chip which are in edit mode
+            function updateStates($s, $event) {
+                var edittedChip = _.find($s.selectedChips, {'edit' : true});
+                if (edittedChip) {
+                    updateChip($s, $event, edittedChip);
+                }
+                $s.resetActiveState();
             }
 
             //Handle chip active behavior based on the multiple property
@@ -453,7 +473,7 @@ WM.module('wm.widgets.form')
                         init($s, attrs.widgetid);
 
                         if (!$s.isWidgetInsideCanvas) {
-                            $s.handleEnterKeyPressEvent  = handleEnterKeyPressEvent.bind(undefined, $s);
+                            $s.handleEnterKeyPressEvent  = handleEnterKeyPressEvent.bind(undefined, $s, $el);
                             $s.setActiveStates           = setActiveStates.bind(undefined, $s);
                             $s.makeEditable              = makeEditable.bind(undefined, $s);
                             $s.removeItem                = removeItem.bind(undefined, $s);
@@ -462,6 +482,7 @@ WM.module('wm.widgets.form')
                             $s.addItem                   = addItem.bind(undefined, $s);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
+                            $s.updateStates              = updateStates.bind(undefined, $s);
                         }
 
                         if (!attrs.widgetid && attrs.scopedataset) {
