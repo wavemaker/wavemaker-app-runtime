@@ -1084,8 +1084,10 @@ wm.plugins.security.services.SecurityService = [
                         var xsrfCookieValue = response[CONSTANTS.XSRF_COOKIE_NAME];
 
                         //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
-                        if (CONSTANTS.hasCordova && xsrfCookieValue) {
-                            localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, xsrfCookieValue || '');
+                        if (xsrfCookieValue) {
+                            if (CONSTANTS.hasCordova) {
+                                localStorage.setItem(CONSTANTS.XSRF_COOKIE_NAME, xsrfCookieValue || '');
+                            }
                             $http.defaults.xsrfCookieName = CONSTANTS.XSRF_COOKIE_NAME;
                             $http.defaults.xsrfHeaderName = config.csrfHeaderName;
                         }
