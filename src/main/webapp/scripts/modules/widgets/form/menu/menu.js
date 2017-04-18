@@ -307,7 +307,7 @@ WM.module('wm.widgets.form')
 
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
-                    //itemLink can be #/routeName or #routeName
+                    //menuLink can be #/routeName or #routeName
                     routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
                     if (routeRegex.test(menuLink)) {
                         element.addClass('active');
@@ -320,14 +320,14 @@ WM.module('wm.widgets.form')
 
                     //If link starts with # and not with #/ replace with #/
                     if (menuLink && _.startsWith(menuLink, '#') && !_.startsWith(menuLink, '#/')) {
-                        menuLink = _.replace(itemLink, '#', '#/');
+                        menuLink = _.replace(menuLink, '#', '#/');
                     }
 
                     scope.$parent.onSelect(args);
                     if (itemAction) {
                         Utils.evalExp(element.closest('.dropdown').scope(), itemAction).then(function () {
-                            if (itemLink) {
-                                openLink(itemLink, linkTarget);
+                            if (menuLink) {
+                                openLink(menuLink, linkTarget);
                             }
                         });
                     } else if (menuLink) {
