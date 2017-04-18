@@ -1,4 +1,4 @@
-/*global wm, WM, cordova*/
+/*global wm, WM, cordova, window*/
 /*jslint sub: true */
 WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($templateCache) {
@@ -32,7 +32,8 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
     '$q',
     '$rootScope',
     '$templateCache',
-    function ($compile, $cordovaFile, $cordovaFileOpener2, $cordovaFileTransfer, $http, $q, $rootScope, $templateCache) {
+    'DeviceService',
+    function ($compile, $cordovaFile, $cordovaFileOpener2, $cordovaFileTransfer, $http, $q, $rootScope, $templateCache, DeviceService) {
         'use strict';
         var config, ele, scope, fileName = 'app-auto-update.apk';
 
@@ -92,8 +93,8 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
             return deferred.promise;
         }
 
-        this.start = function () {
-            $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', 'build_meta.json')
+        function start() {
+            return $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', 'build_meta.json')
                 .then(function (data) {
                     config = JSON.parse(data)
                     if (config.buildMode === 'DEVELOPMENT_MODE') {
@@ -101,5 +102,9 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
                         checkForUpdate().then(getUserConfirmationAndInstall.bind(undefined));
                     }
                 });
-        };
+        }
+
+        if (window.cordova && window.cordova.file) {
+            start().finally(DeviceService.waitForInitialization('AppAutoUpdateService'));
+        }
     }];

@@ -2,10 +2,10 @@
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', 'AppAutoUpdateService',
+    .run(['$rootScope', '$location', 'CONSTANTS',
         // Don't remove below services. This is required for initialization
-        'DeviceFileService', 'DeviceFileCacheService',
-        function ($rootScope, $location, CONSTANTS, AppAutoUpdateService) {
+        'AppAutoUpdateService', 'DeviceFileService', 'DeviceFileCacheService',
+        function ($rootScope, $location, CONSTANTS) {
             'use strict';
 
             var initialScreenSize,
@@ -29,10 +29,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                     } else {
                         $appEl.removeClass('keyboard');
                     }
-                });
-
-                $rootScope.$on('application-ready', function () {
-                    AppAutoUpdateService.start();
                 });
 
                 pageReadyDeregister = $rootScope.$on('page-ready', function () {
