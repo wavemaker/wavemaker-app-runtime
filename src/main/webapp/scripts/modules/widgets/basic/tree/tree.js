@@ -134,22 +134,40 @@ WM.module('wm.widgets.basic')
                 });
             }
 
-            function getNodes($is, newVal) {
-                var nodes = [];
-                if (WM.isString(newVal)) {
+            function getNodesFromString(value) {
+                return value.split(',').map(function (item) {
+                    return {
+                        'label': item && item.trim()
+                    };
+                });
+            }
+
+            function getNodes($is, $el, newVal) {
+                var nodes = [],
+                    defaultValue = $is.widgetid && $is.widgetProps.dataset.value;
+
+                if (WM.isString(newVal) && !_.isEmpty(newVal)) {
                     newVal = newVal.trim();
                     if (newVal) {
-                        nodes = newVal.split(',').map(function (item) {
-                            return {
-                                'label': item && item.trim()
-                            };
-                        });
+                        nodes = getNodesFromString(newVal);
                     }
                 } else if (WM.isArray(newVal)) {
                     newVal = FormWidgetUtils.getOrderedDataSet(newVal, $is.orderby);
                     nodes = newVal;
                 } else if (WM.isObject(newVal)) {
                     nodes = [newVal];
+                } else if (_.isEmpty(newVal) && $is.widgetid) { //if the empty data is given then just show default value representation
+                    newVal = defaultValue;
+                    nodes = getNodesFromString(newVal);
+                }
+
+                //if the bound values are default values then show the representational data ribbon in studio
+                if ($is.widgetid) {
+                    if (newVal === defaultValue) {
+                        $el.attr('data-evaluated-dataset', '');
+                    } else {
+                        $el.removeAttr('data-evaluated-dataset');
+                    }
                 }
                 return nodes;
             }
@@ -245,7 +263,7 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'scopedataset':
                 case 'dataset':
-                    $is.nodes = getNodes($is, newVal.data || newVal);
+                    $is.nodes = getNodes($is, $el, newVal.data || newVal);
                     $is._selectNode = undefined;
                     $is.renderTree($el, $is, attrs);
                     break;
