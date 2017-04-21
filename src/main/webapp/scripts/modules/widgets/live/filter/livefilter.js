@@ -853,24 +853,8 @@ WM.module('wm.widgets.live')
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope);
 
-                        if (!scope.hasOwnProperty('datavalue')) {
-                            Object.defineProperty(scope, 'datavalue', {
-                                get: function () {
-                                    return _.get(parentIsolateScope, ['formFields', [index], 'value']);
-                                },
-                                set: function (val) {
-                                    _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
-                                }
-                            });
-                        }
-                        // show displayvalue property in formwidgets.
-                        if (scope.widget === 'select' && !scope.hasOwnProperty('displayvalue')) {
-                            Object.defineProperty(scope, 'displayvalue', {
-                                get: function () {
-                                    return _.get(parentIsolateScope, ['Widgets', scope.name + '_formWidget', 'displayvalue']);
-                                }
-                            });
-                        }
+                        LiveWidgetUtils.setGetterSettersOnField(scope, element);
+
                         //tabindex should be only on the input fields, remove tabindex on filter field
                         element.removeAttr('tabindex');
                     }
