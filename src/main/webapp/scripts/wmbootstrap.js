@@ -315,7 +315,7 @@ Application
                              *  a variable call fails resulting 401
                              *  in this case, redirectTo page should be 'page' and not undefined
                              */
-                            prevRedirectPage = _.get($location.search, 'redirectTo');
+                            prevRedirectPage = _.get($location.search(), 'redirectTo');
                             return !_.isEmpty(prevRedirectPage) ? prevRedirectPage : undefined;
                         }
 
