@@ -1009,15 +1009,12 @@ WM.module('wm.widgets.base')
                     watchers.length = 0;
 
                     if (TFNWatchers.length) {
+                        //execute watchers first time, before the interval
+                        evalTFNFilterExprs();
                         // If the interval is not setup, create one.
                         // keep only one interval all the time, the interval will execute all watchers together
                         if (!interval) {
-                            // execute watchers first time, before the interval
-                            evalTFNFilterExprs();
                             interval = $interval(evalTFNFilterExprs, TFN_INTERVAL);
-                        } else {
-                            // when the interval is present, execute only the last expr. [The one which is pushed to the queue after the interval setup]
-                            evalTFNFilterExprAndNotifyListener(TFNWatchers[TFNWatchers.length - 1]);
                         }
                     }
                 });
