@@ -15,9 +15,7 @@
  */
 package com.wavemaker.runtime.rest.service;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -47,8 +45,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.wavemaker.commons.CommonConstants;
-import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.proxy.AppProxyConstants;
 import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.AppRuntimeProperties;
@@ -104,14 +100,9 @@ public class RestConnector {
 
         CloseableHttpClient httpClient = null;
         String endpointAddress = null;
-        try {
-            endpointAddress = URLDecoder.decode(httpRequestDetails.getEndpointAddress(), CommonConstants.UTF8);
-        } catch (UnsupportedEncodingException e) {
-            throw new WMRuntimeException("Failed to decode url " + httpRequestDetails.getEndpointAddress(), e);
-        }
+        endpointAddress = httpRequestDetails.getEndpointAddress();
 
         httpClient = getHttpClient();
-
 
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
@@ -185,7 +176,7 @@ public class RestConnector {
             String hostName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
             String port = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
             String userName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
-            if(userName == null){
+            if (userName == null) {
                 userName = "";
             }
             String passWord = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
