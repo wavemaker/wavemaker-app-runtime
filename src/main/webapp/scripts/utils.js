@@ -766,10 +766,10 @@ WM.module('wm.utils', [])
                 if (queryParamsString) {
                     queryParams = queryParamsString.split('&');
                     _.forEach(queryParams, function (param) {
-                        var index = param.indexOf('='),
+                        var index = _.includes(param, '=') ? param.indexOf('=') : (param && param.length),
                             paramName = param.substr(0, index),
                             paramValue = param.substr(index + 1);
-                        encodedParams += paramName + '=' + encodeURIComponent(paramValue) + '&';
+                        encodedParams += paramName + '=' + encodeURIComponent(decodeURIComponent(paramValue)) + '&';
                     });
                     encodedParams = encodedParams.slice(0, -1);
                     url = url.replace(queryParamsString, encodedParams);
