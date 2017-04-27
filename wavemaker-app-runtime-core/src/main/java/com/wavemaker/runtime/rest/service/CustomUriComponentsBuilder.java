@@ -90,6 +90,22 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
     }
 
     @Override
+    public UriComponentsBuilder path(String path) {
+        try {
+            if (path != null) {
+                path = URLDecoder.decode(path, CommonConstants.UTF8);
+            }
+            replacePath(path);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to decode path", path);
+        }
+
+
+        return this;
+    }
+
+
+    @Override
     public UriComponentsBuilder query(String query) {
         if (query != null) {
             Matcher matcher = QUERY_PARAM_PATTERN.matcher(query);
@@ -102,7 +118,7 @@ public class CustomUriComponentsBuilder extends UriComponentsBuilder {
                         value = URLDecoder.decode(value, CommonConstants.UTF8);
                     }
                 } catch (UnsupportedEncodingException e) {
-                    logger.error("Failed to decode queryParams {}",query);
+                    logger.error("Failed to decode queryParams {}", query);
                 }
                 queryParam(name, (value != null ? value : (StringUtils.hasLength(eq) ? "" : null)));
             }
