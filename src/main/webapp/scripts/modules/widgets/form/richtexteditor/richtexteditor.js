@@ -51,7 +51,7 @@ WM.module('wm.widgets.form')
             }
 
             //sets the toolbar config to include new plugins
-            function setToolBarConfig(taOptions) {
+            function setToolBarConfig(taOptions, $el) {
                 toolbarConfig.insertTable = {
                     'display': "<div class='toolbar-plugin' ng-init='templateUrl=\"template/widget/richtexteditor/table.html\";'>" +
                         "<button type='button' uib-popover-template='templateUrl' popover-placement='bottom' popover-is-open='popoverIsOpen' ng-click='popoverIsOpen = !popoverIsOpen' class='btn btn-default table-insert' ng-disabled='showHtml()'>" +
@@ -146,13 +146,12 @@ WM.module('wm.widgets.form')
                         "<ul class='font-list' uib-dropdown-menu role='menu'><li role='menuitem' ng-repeat='font in options'><button class='btn btn-default' style='font-family: {{font.css}};' type='button' ng-click='selectFont($event, font.css)'>{{font.name}}</button></li></ul></div>",
                     'action': function (promise, restoreSelection) {
                         var font = this.font,
-                            editor = this.$editor(),
-                            $richTextEditor = editor.$parent.$element;
+                            editor = this.$editor();
                         if (!font) {
                             return promise.resolve();
                         }
                         this.font = undefined;
-                        $richTextEditor.find('[contenteditable]').trigger('click');
+                        $el.find('[contenteditable]').trigger('click');
                         return this.$editor().wrapSelection('fontName', font);
                     },
                     'selectFont': function(event, font) {
@@ -181,13 +180,12 @@ WM.module('wm.widgets.form')
                         "</div>",
                     'action': function (promise, restoreSelection) {
                         var size = this.size,
-                            editor = this.$editor(),
-                            $richTextEditor = editor.$parent.$element;
+                            editor = this.$editor();
                         if (!size) {
                             return promise.resolve();
                         }
                         this.size = undefined;
-                        $richTextEditor.find('[contenteditable]').trigger('click');
+                        $el.find('[contenteditable]').trigger('click');
                         return this.$editor().wrapSelection('fontSize', parseInt(size));
                     },
                     'selectSize': function (event, size) {
@@ -211,14 +209,13 @@ WM.module('wm.widgets.form')
                     'tooltiptext': 'Insert Style',
                     'action': function (promise, restoreSelection) {
                         var format = this.format,
-                            editor = this.$editor(),
-                            $richTextEditor = editor.$parent.$element;
+                            editor = this.$editor();
                         if (!format) {
                             return promise.resolve();
                         }
                         this.format = undefined;
                         this.$editor().queryFormatBlockState(format.toLowerCase());
-                        $richTextEditor.find('[contenteditable]').trigger('click');
+                        $el.find('[contenteditable]').trigger('click');
                         return this.$editor().wrapSelection('formatBlock', '<' + format + '>');
                     },
                     'selectFormat': function (event, format) {
@@ -374,11 +371,11 @@ WM.module('wm.widgets.form')
             }
 
             //loads the rich text editor config
-            function loadRichTextEditorConfig() {
+            function loadRichTextEditorConfig($el) {
                 var taRegisterTool = $injector.get('taRegisterTool'),
                     taOptions = $injector.get('taOptions');
 
-                setToolBarConfig(taOptions);
+                setToolBarConfig(taOptions, $el);
 
                 //register the extra configs we designed
                 _.forEach(toolbarConfig, function(config, widget) {
@@ -471,7 +468,7 @@ WM.module('wm.widgets.form')
                     'pre': function ($is, $el, attrs) {
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         if (!isConfigLoaded) {
-                            loadRichTextEditorConfig();
+                            loadRichTextEditorConfig($el);
                             isConfigLoaded = true;
                         }
                     },
