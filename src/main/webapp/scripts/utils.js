@@ -768,8 +768,9 @@ WM.module('wm.utils', [])
                     _.forEach(queryParams, function (param) {
                         var index = _.includes(param, '=') ? param.indexOf('=') : (param && param.length),
                             paramName = param.substr(0, index),
-                            paramValue = param.substr(index + 1);
-                        encodedParams += paramName + '=' + encodeURIComponent(decodeURIComponent(paramValue)) + '&';
+                            paramValue = param.substr(index + 1),
+                            decodedParamValue = getDecodedParamValue(paramValue);
+                        encodedParams += paramName + '=' + encodeURIComponent(decodedParamValue) + '&';
                     });
                     encodedParams = encodedParams.slice(0, -1);
                     url = url.replace(queryParamsString, encodedParams);
@@ -777,6 +778,15 @@ WM.module('wm.utils', [])
             }
             return url;
         }
+
+        function getDecodedParamValue(paramValue){
+            try {
+              paramValue = decodeURIComponent(paramValue);
+            } catch(e) {
+            }
+            return paramValue;
+        }
+
 
         /**
          * Encodes the url as follows
