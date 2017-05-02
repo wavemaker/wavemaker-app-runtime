@@ -289,9 +289,6 @@ WM.module('wm.widgets.form')
                 }
             }
             Utils.triggerFn(scope.onSuccess, {'$event': event, '$scope': scope});
-            if (!scope.multiple) {
-                wmToaster.show('success', 'File Uploaded');
-            }
         }
 
         // Checking if the selected file is valid for the choosen filter type
@@ -369,6 +366,11 @@ WM.module('wm.widgets.form')
                     onUploadError.bind(undefined, scope),
                     onUploadProgress.bind(undefined, scope));
             });
+
+            if (scope.fileTransfers.length) {
+                //show success toaster after all file transfers are successful
+                Promise.all(scope.fileTransfers).then(wmToaster.show('success', 'File Uploaded'));
+            }
         }
 
         /*Overwrite the caption only if they are default*/
