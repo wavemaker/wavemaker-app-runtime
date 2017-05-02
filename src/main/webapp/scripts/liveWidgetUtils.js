@@ -133,6 +133,7 @@ WM.module('wm.widgets.live')
                             displayName :    'Reset',
                             show        :    'true',
                             type        :    'button',
+                            'position'  :    'footer',
                             updateMode  :    true,
                             shortcutkey : ''
                         },
@@ -144,6 +145,7 @@ WM.module('wm.widgets.live')
                             displayName :   'Cancel',
                             show        :   'true',
                             type        :   'button',
+                            'position'  :   'footer',
                             updateMode  :   true,
                             shortcutkey : ''
                         },
@@ -155,6 +157,7 @@ WM.module('wm.widgets.live')
                             displayName :   'Save',
                             show        :   'true',
                             type        :   'submit',
+                            'position'  :   'footer',
                             updateMode  :   true,
                             shortcutkey : ''
                         },
@@ -166,6 +169,7 @@ WM.module('wm.widgets.live')
                             displayName :   'Delete',
                             show        :   'true',
                             type        :   'button',
+                            'position'  :   'footer',
                             updateMode  :   false,
                             shortcutkey : ''
                         },
@@ -177,6 +181,7 @@ WM.module('wm.widgets.live')
                             displayName :   'Edit',
                             show        :   'true',
                             type        :   'button',
+                            'position'  :   'footer',
                             updateMode  :   false,
                             shortcutkey : ''
                         },
@@ -188,6 +193,7 @@ WM.module('wm.widgets.live')
                             displayName :   'New',
                             show        :   'true',
                             type        :   'button',
+                            'position'  : 'footer',
                             updateMode  :   false,
                             shortcutkey : ''
                         }
@@ -202,6 +208,7 @@ WM.module('wm.widgets.live')
                             action      :   'filter()',
                             displayName :   'Filter',
                             show        :   'true',
+                            'position'  :   'footer',
                             type        :   'button',
                             shortcutkey : ''
                         },
@@ -211,6 +218,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-trash',
                             action      :   'clearFilter()',
                             displayName :   'Clear',
+                            'position'  :   'footer',
                             show        :   'true',
                             type        :   'button',
                             shortcutkey : ''
