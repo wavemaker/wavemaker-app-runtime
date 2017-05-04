@@ -26,6 +26,7 @@ import org.springframework.format.support.FormattingConversionServiceFactoryBean
 
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.util.StringUtils;
+import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.JavaType;
 
 /**
@@ -81,4 +82,13 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
             return ((Timestamp) JavaType.TIMESTAMP.fromString(source));
         }
     }
+
+    public static class WMStringToExportTypeConverter implements  Converter<String, ExportType> {
+
+        @Override
+        public ExportType convert(final String source) {
+            return ExportType.valueOf(org.apache.commons.lang3.StringUtils.upperCase(source));
+        }
+    }
+
 }
