@@ -2610,6 +2610,36 @@ WM.module('wm.utils', [])
             return true;
         }
 
+        function defineProps($is, $el) {
+            /*This is to make the "Variables" & "Widgets" available in the Data-navigator it gets compiled with the data table isolate Scope
+             * and "Variables", "Widgets" will not be available in that scope.
+             * element.scope() might refer to the controller scope/parent scope.*/
+            var _scope = $el.scope(); // scope inherited from controller's scope
+
+            Object.defineProperties($is, {
+                'Variables': {
+                    'get': function () {
+                        return _scope.Variables;
+                    }
+                },
+                'Widgets': {
+                    'get': function () {
+                        return _scope.Widgets;
+                    }
+                },
+                'item': {
+                    'get': function () {
+                        return _scope.item;
+                    }
+                },
+                'row': {
+                    'get': function () {
+                        return _scope.row;
+                    }
+                }
+            });
+        }
+
         /**
          * Listens for an event for only one time and de-registers the event.
          *
@@ -2773,6 +2803,7 @@ WM.module('wm.utils', [])
         this.formatStyle                = formatStyle;
         this.getFormData                = getFormData;
         this.validateAccessRoles        = validateAccessRoles;
+        this.defineProps                = defineProps;
         this.listenOnce                 = listenOnce;
         this.convertToBlob              = convertToBlob;
         this.isJSONDate                 = isJSONDate;
