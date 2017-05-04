@@ -144,8 +144,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java7</artifactId>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
