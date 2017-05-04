@@ -84,6 +84,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public void update(Entity entity) {
         getTemplate().update(entity);
         getTemplate().flush();
+        getTemplate().clear();
     }
 
     public void delete(Entity entity) {
