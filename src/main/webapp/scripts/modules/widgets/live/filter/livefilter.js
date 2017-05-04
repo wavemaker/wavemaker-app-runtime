@@ -420,7 +420,7 @@ WM.module('wm.widgets.live')
                                 'lookupType'        :   '',
                                 'lookupField'       :   '',
                                 'minPlaceholder'    :   '',
-                                'maxPlaceholder'    :   '',
+                                'maxplaceholder'    :   '',
                                 'placeholder'       :   '',
                                 'datepattern'       :   '',
                                 'class'             :   '',
@@ -468,7 +468,7 @@ WM.module('wm.widgets.live')
                     $scope.filterOnDefault = function () {
                         /*Check if default value is present for any filter field*/
                         var defaultObj = _.find($scope.formFields, function (obj) {
-                            return obj.value;
+                            return WM.isDefined(obj.value) || WM.isDefined(obj.minValue) || WM.isDefined(obj.maxValue);
                         });
                         /*If default value exists and data is loaded, apply the filter*/
                         if (defaultObj && $scope.result) {
@@ -729,6 +729,30 @@ WM.module('wm.widgets.live')
                         LiveWidgetUtils.preProcessFields('wm-filter-field', scope, attrs, tElement);
                     },
                     "post": function (scope, element, attrs) {
+
+                        /*Set the default value*/
+                        function setDefaultValueOnField(defaultProp, valueProp) {
+                            if (!columnsDef[defaultProp]) {
+                                return;
+                            }
+                            /*If the default value is bound variable, keep watch on the expression*/
+                            if (CONSTANTS.isRunMode && Utils.stringStartsWith(columnsDef[defaultProp], 'bind:')) {
+                                expr = columnsDef[defaultProp].replace('bind:', '');
+                                exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
+                                    parentIsolateScope.formFields[index][valueProp] = newVal;
+                                    /*Apply the filter after the default value change*/
+                                    parentIsolateScope.filterOnDefault();
+                                    parentIsolateScope.applyFilterOnField(columnsDef);
+                                }, {'deepWatch': true, 'allowPageable': true, 'acceptsArray': false}, 'datavalue');
+                            } else {
+                                defaultVal = columnsDef[defaultProp];
+                                /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
+                                if (CONSTANTS.isRunMode) {
+                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type, columnsDef.widget);
+                                }
+                                columnsDef[valueProp] = defaultVal;
+                            }
+                        }
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         var parent = element.parent();
@@ -765,38 +789,28 @@ WM.module('wm.widgets.live')
                         scope.required = columnsDef.required;
                         scope.readonly = columnsDef.readonly;
                         scope.disabled = columnsDef.disabled;
+
+                        //Hide the maxplaceholder and maxdefaultvalue, if range is not selected
+                        if (scope.widgetid) {
+                            scope.widgetProps.maxplaceholder.show = columnsDef.isRange;
+                            scope.widgetProps.maxdefaultvalue.show = columnsDef.isRange;
+                            scope.widgetProps.placeholder.displayKey = columnsDef.isRange ? 'LABEL_PROPERTY_MINPLACEHOLDER' : 'LABEL_PROPERTY_PLACEHOLDER';
+                            scope.widgetProps.defaultvalue.displayKey = columnsDef.isRange ? 'LABEL_PROPERTY_MINDEFAULTVALUE' : 'LABEL_PROPERTY_DEFAULTVALUE';
+                        }
+
                         //This is used to call base set and get methods on widgets
                         scope.FilterField.prototype.$is = parentIsolateScope;
                         /*Support for old projects which were using value for default value*/
                         columnsDefProps.defaultvalue = attrs.defaultvalue || attrs.value;
-                        /*Set the default value*/
-                        if (columnsDef.defaultvalue) {
-                            /*If the default value is bound variable, keep watch on the expression*/
-                            if (Utils.stringStartsWith(columnsDef.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = columnsDef.defaultvalue.replace('bind:', '');
-                                exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
-                                    parentIsolateScope.formFields[index].value = newVal;
-                                    if (columnsDef.isRange) {
-                                        parentIsolateScope.formFields[index].minValue = newVal;
-                                        parentIsolateScope.formFields[index].maxValue = newVal;
-                                    }
-                                    /*Apply the filter after the default value change*/
-                                    parentIsolateScope.filterOnDefault();
-                                    parentIsolateScope.applyFilterOnField(columnsDef);
-                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false}, 'datavalue');
-                            } else {
-                                defaultVal = columnsDef.defaultvalue;
-                                /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
-                                if (CONSTANTS.isRunMode) {
-                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type, columnsDef.widget);
-                                }
-                                columnsDef.value = defaultVal;
-                                if (columnsDef.isRange) {
-                                    columnsDef.minValue = defaultVal;
-                                    columnsDef.maxValue = defaultVal;
-                                }
-                            }
+
+                        //Set default values on the filter fields
+                        if (columnsDef.isRange) {
+                            setDefaultValueOnField('defaultvalue', 'minValue');
+                            setDefaultValueOnField('maxdefaultvalue', 'maxValue');
+                        } else {
+                            setDefaultValueOnField('defaultvalue', 'value');
                         }
+
                         if (CONSTANTS.isRunMode) {
                             if (attrs.dataset) {
                                 /*If dataset is undefined, fetch the default values for field*/

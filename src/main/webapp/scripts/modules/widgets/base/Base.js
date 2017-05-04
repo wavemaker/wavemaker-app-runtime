@@ -2029,7 +2029,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "picture", "properties": ["imageheight", "picturesource", "pictureplaceholder", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
@@ -2040,7 +2040,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["modal", "vertical", "avatar"], "parent": "properties"},
                 {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
-                {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
+                {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "maxdefaultvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "eventsdata", "properties": ["eventtitle", "eventstart", "eventend", "eventallday", "eventclass"], "parent": "properties"},
@@ -2048,7 +2048,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
-                {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
+                {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars", "minvalue", "maxvalue", "step"], "parent": "properties"},
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
@@ -2585,7 +2585,7 @@ WM.module('wm.widgets.base', [])
                     if ($el.is('input') || $el.is('textarea')) {
                         attrs.$set(key, nv);
                     } else {
-                        $el.find('input').attr(key, nv);
+                        $el.find('input').first().attr(key, nv);
                     }
                 } else if (key === 'backgroundimage') {
                     $is.picturesource = Utils.getBackGroundImageUrl(nv);
