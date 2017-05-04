@@ -58,7 +58,7 @@ public class NativeSQLExportBuilder extends ExportBuilder {
         ResultSetMetaData metaData = resultSet.getMetaData();
         final WMResultTransformer wmResultTransformer = Transformers.aliasToMappedClass(responseType);
         for (int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
-            String columnName = metaData.getColumnName(columnIndex);
+            String columnName = metaData.getColumnLabel(columnIndex);
             String fieldName = wmResultTransformer.aliasToFieldName(columnName);
             CellUtil.createCell(colHeaderRow, colNum, fieldName, columnHeaderStyle(sheet.getWorkbook()));
             colNum++;
