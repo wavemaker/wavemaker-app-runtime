@@ -181,7 +181,8 @@ WM.module('wm.utils', [])
                 'INAPPBROWSER'    : [{'name' : 'cordova-plugin-inappbrowser', 'spec' : '1.5.0'}],
                 'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.2.0'}],
                 'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : 'https://github.com/wavemaker/Cordova-sqlite-storage.git#pb-1.4.8'}]
-            };
+            },
+            exportTypesMap   = { 'EXCEL' : '.xlsx', 'CSV' : '.csv'};
 
         /* set default attrs for link */
         linkEl.rel = 'stylesheet';
@@ -2035,12 +2036,6 @@ WM.module('wm.utils', [])
                 params          = _.pickBy(requestParams.headers, function (val, key) {return key !== CONTENT_TYPE; }),
                 WS_CONSTANTS    = getService('WS_CONSTANTS');
 
-            // Mobile app is not downloading the file via form submit. So using window.open method for mobile app.
-            if (CONSTANTS.hasCordova) {
-                window.open(url, '_system');
-                return;
-            }
-
             /* look for existing iframe. If exists, remove it first */
             iFrameElement = $(IFRAME_NAME);
             if (iFrameElement.length) {
@@ -2112,7 +2107,7 @@ WM.module('wm.utils', [])
                 URL         = window.URL || window.webkitURL;
                 downloadUrl = URL.createObjectURL(blob);
 
-                if (filename && !CONSTANTS.hasCordova) {
+                if (filename) {
                     // use HTML5 a[download] attribute to specify filename
                     var a = document.createElement("a"),
                         reader;
@@ -2202,6 +2197,20 @@ WM.module('wm.utils', [])
             });
         }
 
+        // This function adds current timestamp to the fileName.
+        function getModifiedFileName(fileName, exportFormat) {
+            var fileExtension,
+                currentTimestamp = Date.now();
+
+            if (exportFormat) {
+                fileExtension = exportTypesMap[exportFormat];
+            } else {
+                fileExtension = '.' + _.last(_.split(fileName, '.'));
+                fileName = _.replace(fileName, fileExtension, '');
+            }
+            return fileName + '_' + currentTimestamp + fileExtension;
+        }
+
         /**
          * Downloads a file in the browser.
          * Two methods to do so, namely:
@@ -2213,10 +2222,14 @@ WM.module('wm.utils', [])
          *
          * 2. downloadThroughIframe
          *      - this method works across browsers and uses an iframe to downlad the file.
-         * @param requestParams, request params object
+         * @param requestParams request params object
+         * @param fileName name for the downloaded file via cordova file transfer in device
+         * @param exportFormat downloaded file format
          */
-        function simulateFileDownload(requestParams) {
-            if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
+        function simulateFileDownload(requestParams, fileName, exportFormat) {
+            if (CONSTANTS.hasCordova) {
+                $rootScope.$emit('device-file-download', requestParams, getModifiedFileName(fileName, exportFormat));
+            } else if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
                 downloadThroughAnchor(requestParams);
             } else {
                 downloadThroughIframe(requestParams);

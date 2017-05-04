@@ -157,7 +157,7 @@ wm.plugins.database.services.DatabaseService = [
                     connectionParams.headers = headers;
                 }
                 if (action === 'exportTableData') {
-                    Utils.simulateFileDownload(BaseService.parseReplace(connectionParams));
+                    Utils.simulateFileDownload(BaseService.parseReplace(connectionParams), connectionParams.urlParams.entityName, connectionParams.urlParams.exportFormat);
                 } else {
                     return BaseService.execute(connectionParams, successCallback, failureCallback);
                 }

@@ -2,10 +2,10 @@
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS',
+    .run(['$rootScope', '$location', 'CONSTANTS', '$cordovaFileTransfer', '$cordovaFileOpener2', 'Utils', '$cordovaFile', 'wmToaster', 'wmSpinner',
         // Don't remove below services. This is required for initialization
         'AppAutoUpdateService', 'DeviceFileService', 'DeviceFileCacheService',
-        function ($rootScope, $location, CONSTANTS) {
+        function ($rootScope, $location, CONSTANTS, $cordovaFileTransfer, $cordovaFileOpener2, Utils, $cordovaFile, wmToaster, wmSpinner) {
             'use strict';
 
             var initialScreenSize,
@@ -14,6 +14,10 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
 
             /* Mark the mobileApplication type to true */
             $rootScope.isMobileApplicationType = true;
+
+            function hideSpinner(id) {
+                wmSpinner.hide(id);
+            }
 
             if ($location.protocol() === 'file') {
                 CONSTANTS.hasCordova = true;
@@ -30,6 +34,40 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                         $appEl.removeClass('keyboard');
                     }
                 });
+
+                // This function downloads the file in device and open the file using fileOpener.
+                $rootScope.$on('device-file-download', function ($evt, config, fileName) {
+                    var fileDirectory,
+                        filepath,
+                        url = config.url,
+                        spinnerId = wmSpinner.show();
+
+                    if (Utils.isIOS()) {
+                        fileDirectory = cordova.file.dataDirectory;
+                    } else {
+                        fileDirectory = cordova.file.externalDataDirectory;
+                    }
+
+                    filepath = fileDirectory + fileName;
+
+                    $cordovaFileTransfer.download(url, filepath, {}, true)
+                        .then(function (fileEntry) {
+                            // find the mime type of the file and open the file.
+                            $cordovaFile.checkFile(filepath, '').then(function (entry) {
+                                entry.file(function (data) {
+                                    $cordovaFileOpener2.open(fileEntry.toURL(), data.type)
+                                        .then(hideSpinner.bind(undefined, spinnerId))
+                                        .catch(function () {
+                                            hideSpinner(spinnerId);
+                                            wmToaster.show('error',  'Failed to open the file.');
+                                        });
+                                });
+                            });
+                        }, function (error) {
+                            hideSpinner(spinnerId);
+                            wmToaster.show('error',  'Failed to download ', error);
+                        });
+                }, false);
 
                 pageReadyDeregister = $rootScope.$on('page-ready', function () {
                     navigator.splashscreen.hide();

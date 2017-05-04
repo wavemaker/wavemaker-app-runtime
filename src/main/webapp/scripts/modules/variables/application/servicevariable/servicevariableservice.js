@@ -548,7 +548,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
             /* if the service produces octet/stream, replicate file download through form submit */
             if (WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
-                Utils.simulateFileDownload(params);
+                Utils.simulateFileDownload(params, variable.dataBinding.file || variable.name, variable.dataBinding.exportType);
                 variableActive[variable.activeScope.$id][variable.name] = false;
                 return;
             }
@@ -905,7 +905,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (_.hasIn(requestParams, 'error.message')) {
                     Utils.triggerFn(errorHandler, requestParams.error.message);
                 } else {
-                    Utils.simulateFileDownload(requestParams);
+                    Utils.simulateFileDownload(requestParams, this.name, options.exportFormat);
                 }
             },
             init: function () {
