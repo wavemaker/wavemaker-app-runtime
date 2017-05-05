@@ -16,7 +16,7 @@ WM.module('wm.widgets.basic')
                 '>' +
                 '<span class="wi wi-arrow-left form-control-feedback back-btn" ng-click="closeSearch()"></span>' +
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
-                    ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
+                    ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-keydown="executeKeyDownEvent($event, query)" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
@@ -24,6 +24,7 @@ WM.module('wm.widgets.basic')
                     ' ng-disabled="disabled" ' +
                     ' autocomplete="off"' +
                     ' typeahead-loading="_loadingItems" ' +
+                    ' typeahead-editable="!allowonlyselect"' +
                     ' uib-typeahead="_getDisplayLabel(item) for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
@@ -755,7 +756,9 @@ WM.module('wm.widgets.basic')
                     'dataoptions': '=?',
                     'onSubmit': '&',
                     'onSelect': '&',
-                    'query': '=?'
+                    'query': '=?',
+                    'allowonlyselect': '=?',
+                    'onKeydown': '&'
                 },
                 'template': function (tElement, tAttrs) {
                     var template, url = '', target, isWidgetInsideCanvas;
@@ -944,6 +947,10 @@ WM.module('wm.widgets.basic')
                         //On re-render (in case of tabs or other container), calculate the width again
                         $is.redraw = function () {
                             setDropDownWidth($is, element);
+                        };
+
+                        $is.executeKeyDownEvent = function ($event) {
+                            $is.onKeydown({$event: $event, $scope: $is});
                         };
                     }
                 }

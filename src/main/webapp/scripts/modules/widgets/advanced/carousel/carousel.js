@@ -351,24 +351,13 @@ WM.module('wm.widgets.advanced')
                         }
                     },
                     'post': function ($is, $el, attrs, listCtrl) {
-                        var $s = $el.scope(),
-                            handlers = [],
+                        var handlers = [],
                             $slideTemplate,
                             _onDestroy,
                             $innerCarousel;
 
-                        Object.defineProperties($is, {
-                            'Variables': {
-                                get: function () {
-                                    return $s.Variables;
-                                }
-                            },
-                            'Widgets': {
-                                get: function () {
-                                    return $s.Widgets;
-                                }
-                            }
-                        });
+                        Utils.defineProps($is, $el);
+
                         if (CONSTANTS.isRunMode) {
                             if (!attrs.type) {
                                 $is.play();

@@ -915,31 +915,6 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function defineProps($is, $el) {
-                /*This is to make the "Variables" & "Widgets" available in the Data-navigator it gets compiled with the live-list isolate Scope
-                 * and "Variables", "Widgets" will not be available in that scope.
-                 * element.scope() might refer to the controller scope/parent scope.*/
-                var _scope = $el.scope(); // scope inherited from controller's scope
-
-                Object.defineProperties($is, {
-                    'Variables': {
-                        'get': function () {
-                            return _scope.Variables;
-                        }
-                    },
-                    'Widgets': {
-                        'get': function () {
-                            return _scope.Widgets;
-                        }
-                    },
-                    'item': {
-                        'get': function () {
-                            return _scope.item;
-                        }
-                    }
-                });
-            }
-
             function getEvalFn($is, attrs, property, val, itemAttr) {
                 var watchFn,
                     bindExpr,
@@ -1326,7 +1301,7 @@ WM.module('wm.widgets.live')
                 Object.defineProperty($is, 'selecteditem', {
                     configurable: true
                 });
-                defineProps($is, $el);
+                Utils.defineProps($is, $el);
                 $el.removeAttr('title');
             }
 

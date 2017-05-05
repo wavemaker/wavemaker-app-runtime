@@ -17,24 +17,10 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
-                        '<input ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input form-control" type="text" ng-attr-placeholder="{{placeholder}}" ng-model="newItem.name" ng-keydown="handleKeyPressEvent($event)" ng-click="updateStates($event)"' +
-                            ' uib-typeahead="option as option.key for option in chips | filter:$viewValue"' +
-                            ' spellcheck="false" autocomplete="off"' +
-                            ' typeahead-on-select="addItem($event, $item)"' +
-                            ' ng-disabled="disabled"' +
-                            ' typeahead-editable="!allowonlyselect"' +
-                            ' typeahead-min-length="1"' +
-                            ' ng-model-options="{debounce: 200}" typeahead-is-open="dropdown.open"' +
-                            ' typeahead-template-url="template/widget/form/chipsSearch.html">' +
+                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" searchkey="{{displayfield}}" allowonlyselect="true" displaylabel="{{displayexpression ? displayexpression : displayfield}}" displayimagesrc="{{displayimagesrc}}" datafield="All Fields" placeholder="{{placeholder}}" on-select="addItem($event, selectedValue, $scope)" on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)"></wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
             '</ul>'
-            );
-        $templateCache.put('template/widget/form/chipsSearch.html',
-            '<a>' +
-                '<img ng-src="{{match.model.wmImgSrc}}" ng-if="match.model.wmImgSrc">' +
-                '<span ng-bind-html="match.label | uibTypeaheadHighlight:query" title="{{chip.label}}" class="match-label"></span>' +
-            '</a>'
             );
     }])
     .directive('wmChips', [
@@ -43,7 +29,8 @@ WM.module('wm.widgets.form')
         'Utils',
         'FormWidgetUtils',
         'LiveWidgetUtils',
-        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils) {
+        '$rootScope',
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -57,7 +44,8 @@ WM.module('wm.widgets.form')
                     'DELETE'    : 'DELETE',
                     'TAB'       : 'TAB'
                 },
-                ignoreUpdate;
+                ignoreUpdate,
+                displayField;
 
             //Check if newItem already exists
             function isDuplicate($s, newItemObject) {
@@ -124,7 +112,7 @@ WM.module('wm.widgets.form')
                         value = parseFloat(ele, 10);
                         ele = isNaN(value) ? ele : value;
                         //find chip object from dataset to get value and img source
-                        chip =  _.find($s.chips, {'value' : ele});
+                        chip =  _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
                         // ele also need to be send since in security chips, there will not be any dataset
                         $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
@@ -134,9 +122,8 @@ WM.module('wm.widgets.form')
             }
 
             //Create list of options for the search
-            function createSelectOptions(dataset, $s) {
+            function createSelectOptions($s, dataset) {
                 var chips          = [],
-                    displayField   = $s.displayfield || $s.displayexpression || $s.binddisplayexpression,
                     value           = $s.value || $s.datavalue,
                     values;
                 //Avoiding resetting empty values
@@ -245,7 +232,7 @@ WM.module('wm.widgets.form')
                     updateChip($s, $event, chip);
                     if (key === KEYS.TAB) {
                         chip.active = false;
-                        $el.find('.app-chip-input').focus();
+                        $el.find('input').focus();
                     }
                 } else if (key === KEYS.DELETE) {
                     //Avoid deleting chips in delete mode
@@ -299,21 +286,18 @@ WM.module('wm.widgets.form')
             }
 
             //handle keypress events for input box
-            function handleKeyPressEvent($s, $el, $event) {
+            function handleKeyPressEvent($s, $el, $event, searchScope) {
                 var key = Utils.getActionFromKey($event),
                     lastTag,
                     newItem,
                     length = $s.selectedChips.length;
-                if (key === KEYS.ENTER) {
-                    $s.addItem($event);
+                if (key === KEYS.ENTER && searchScope.query) {
+                    $s.addItem($event, '', searchScope);
                     stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
+                    newItem = searchScope.query;
                     //Only in case of apple product remove the chip on click of delete button
-                    if (!length || $s.dropdown.open) {
-                        return;
-                    }
-                    newItem = $el.find('.app-chip-input').val();
-                    if (newItem) {
+                    if (!length || $s.dropdown.open || newItem) {
                         return;
                     }
                     lastTag = _.last($s.selectedChips);
@@ -366,21 +350,19 @@ WM.module('wm.widgets.form')
             }
 
             //Add the newItem to the list
-            function addItem($s, $event, newItem) {
-                var newItemKey,
-                    newItemObject = Utils.getClonedObject(newItem),
+            function addItem($s, element, $event, newItem, searchScope) {
+                var newItemObject = _.find($s.chips, {'key' : searchScope.query}) || _.find($s.chips, {'value' : searchScope.query}) || searchScope.query || searchScope.query,
                     allowAdd      = true;
                 //Don't add new chip if already reaches max size
-                if (checkMaxSize($s)) {
+                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || (!WM.isObject(newItem) && $s.allowonlyselect) || !newItemObject) {
                     return;
                 }
-                if (!newItem && $s.newItem) {
-                    newItemKey    = Utils.getClonedObject($s.newItem.name);
-                    newItemObject = $s.constructChip(newItemKey);
-                }
-                if (!newItemKey && !newItem) {
-                    return;
-                }
+                $rs.$safeApply(searchScope, function () {
+                    //clear search value
+                    searchScope.query = '';
+                    searchScope.reset();
+                });
+                newItemObject = $s.constructChip(_.get(newItemObject, 'key'), _.get(newItemObject, 'value'), _.get(newItemObject, 'wmImgSrc'));
                 if (isDuplicate($s, newItemObject)) {
                     newItemObject.isDuplicate = true;
                 }
@@ -393,6 +375,8 @@ WM.module('wm.widgets.form')
                     return;
                 }
                 $s.selectedChips.push(newItemObject);
+                //Focus on to search widget
+                element.find('input').focus();
                 checkMaxSize($s);
                 //add chip
                 onModelUpdate($s, $event);
@@ -432,7 +416,9 @@ WM.module('wm.widgets.form')
                         if ($s.orderby) {
                             data = FormWidgetUtils.getOrderedDataSet(data, $s.orderby);
                         }
-                        createSelectOptions(data, $s);
+                        if (data.length) {
+                            $s.createSelectOptions(data);
+                        }
                     }
                     break;
                 }
@@ -449,6 +435,7 @@ WM.module('wm.widgets.form')
 
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
+                        $is.createSelectOptions = _.debounce(createSelectOptions.bind(undefined, $is), 50);
 
                         if (!attrs.widgetid) {
                             Object.defineProperty($is, '_model_', {
@@ -467,9 +454,11 @@ WM.module('wm.widgets.form')
                                     }
                                 }
                             });
+                            Utils.defineProps($is, $el);
                         }
                     },
                     'post': function ($s, $el, attrs) {
+                        displayField = $s.displayfield || $s.displayexpression || $s.binddisplayexpression;
                         init($s, attrs.widgetid);
 
                         if (!$s.isWidgetInsideCanvas) {
@@ -479,7 +468,7 @@ WM.module('wm.widgets.form')
                             $s.removeItem                = removeItem.bind(undefined, $s);
                             $s.handleKeyPressEvent       = handleKeyPressEvent.bind(undefined, $s, $el);
                             $s.handleDeleteKeyPressEvent = handleDeleteKeyPressEvent.bind(undefined, $s);
-                            $s.addItem                   = addItem.bind(undefined, $s);
+                            $s.addItem                   = _.debounce(addItem.bind(undefined, $s, $el), 50);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
@@ -496,7 +485,7 @@ WM.module('wm.widgets.form')
                         //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
                         if (!attrs.widgetid && _.includes($s.binddataset, 'selecteditem.')) {
                             LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
-                                createSelectOptions(data, $s);
+                                $s.createSelectOptions(data);
                             });
                         }
 
