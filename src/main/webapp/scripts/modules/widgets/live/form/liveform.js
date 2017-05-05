@@ -1048,7 +1048,7 @@ WM.module('wm.widgets.live')
                                         element.html(defaultTemplate);
                                         element.find('.basic-btn-grp').empty();
                                         $compile(element.contents())(scope);
-                                        element.removeClass('app-device-liveform');
+                                        element.removeClass('app-device-liveform').addClass('app-liveform');
                                     }
                                 }
 
