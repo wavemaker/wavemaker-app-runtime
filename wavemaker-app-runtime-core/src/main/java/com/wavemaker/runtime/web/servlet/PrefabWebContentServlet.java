@@ -1,19 +1,22 @@
 package com.wavemaker.runtime.web.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.commons.util.HttpRequestUtils;
+import com.wavemaker.commons.util.IOUtils;
 
 /**
  * Created by kishore on 24/3/17.
@@ -43,9 +46,16 @@ public class PrefabWebContentServlet extends HttpServlet {
         String prefabName = prefabResourcePath.substring(0, endIndex);
         String resourceRelativePath = prefabResourcePath.substring(prefabName.length());
         String prefabResourceUpdatedPath = "/WEB-INF/prefabs/" + prefabName + "/webapp" + resourceRelativePath;
-        RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(prefabResourceUpdatedPath);
-        requestDispatcher.forward(request, response);
+        String contentType = new Tika().detect(resourceRelativePath);
+        if (contentType != null) {
+            response.setContentType(contentType);
+        }
+        InputStream inputStream = getServletContext().getResourceAsStream(prefabResourceUpdatedPath);
+        ServletOutputStream outputStream = response.getOutputStream();
+        IOUtils.copy(inputStream, outputStream, true, false);
     }
+
+
 
     private void writeErrorResponse(HttpServletRequest request, HttpServletResponse response, String prefabResourcePath) throws IOException {
         LOGGER.warn("Invalid prefab uri {} received", request.getRequestURI());
