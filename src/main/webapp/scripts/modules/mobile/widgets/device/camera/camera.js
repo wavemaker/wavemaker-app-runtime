@@ -50,14 +50,15 @@ WM.module('wm.widgets.advanced')
                     if (newVal === CAPTURE_TYPE.IMAGE) {
                         showprops = true;
                         $is.cameraOptions = {
-                            'quality'         : $is.imagequality,
-                            'destinationType' : 1, // 0-data url,1- file url
-                            'sourceType'      : 1, // only camera
-                            'allowEdit'       : $is.allowedit,
-                            'encodingType'    : $is.imageencodingtype === ENCODING_TYPE.JPEG ? 0 : 1,
-                            'saveToPhotoAlbum': $is.savetogallery,
-                            'targetWidth'     : $is.imagetargetwidth,
-                            'targetHeight'    : $is.imagetargetheight
+                            'quality'           : $is.imagequality,
+                            'destinationType'   : 1, // 0-data url,1- file url
+                            'sourceType'        : 1, // only camera
+                            'allowEdit'         : $is.allowedit,
+                            'correctOrientation': $is.correctorientation,
+                            'encodingType'      : $is.imageencodingtype === ENCODING_TYPE.JPEG ? 0 : 1,
+                            'saveToPhotoAlbum'  : $is.savetogallery,
+                            'targetWidth'       : $is.imagetargetwidth,
+                            'targetHeight'      : $is.imagetargetheight
                         };
                     } else {
                         $is.cameraOptions = {
@@ -65,12 +66,16 @@ WM.module('wm.widgets.advanced')
                         };
                     }
                     if (CONSTANTS.isStudioMode) {
-                        wp.imagequality.show      = showprops;
-                        wp.imageencodingtype.show = showprops;
-                        wp.savetogallery.show     = showprops;
-                        wp.allowedit.show         = showprops;
-                        wp.imagetargetwidth.show  = showprops;
-                        wp.imagetargetheight.show = showprops;
+                        wp.imagequality.show        = showprops;
+                        wp.imageencodingtype.show   = showprops;
+                        wp.savetogallery.show       = showprops;
+                        wp.allowedit.show           = showprops;
+                        wp.correctorientation.show  = showprops;
+                        wp.imagetargetwidth.show    = showprops;
+                        wp.imagetargetheight.show   = showprops;
+                        if ($is.active) {
+                            $is.$emit('wms:refresh-properties-panel');
+                        }
                     }
                     break;
                 }
