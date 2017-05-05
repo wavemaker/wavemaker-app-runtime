@@ -55,8 +55,16 @@ WM.module('wm.widgets.form')
 
         // This function sets the display value and modelProxy from _model_
         function setModelProxyAndDisplayVal(scope, _model_, isList) {
-            var selectedIndex = _.findKey(_dataSetModelProxyMap[scope.$id], _model_),
+            var selectedIndex,
                 val = _.get(scope.selectOptions, [selectedIndex, 'value']);
+
+            selectedIndex = _.findKey(_dataSetModelProxyMap[scope.$id], function (val) {
+                if (scope.datafield === ALLFIELDS) {
+                    return _.isEqual(val, _model_);
+                }
+                return val === _model_;
+            });
+
             if (isList) {
                 scope.modelProxy.push(selectedIndex);
                 scope.displayValue.push(val);
