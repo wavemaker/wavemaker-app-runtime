@@ -2021,7 +2021,8 @@ WM.module('wm.widgets.base', [])
             properties,
             propertyGroups,
             advancedPropertyGroups,
-            ignoreList;
+            ignoreList,
+            unSupportedProperties;
 
         if (CONSTANTS.isStudioMode) {
             result.propertyGroups = [
@@ -2112,6 +2113,9 @@ WM.module('wm.widgets.base', [])
         advancedPropertyGroups = result.advancedPropertyGroups;
 
         ignoreList = CONSTANTS.isRunMode ? {'accessroles': true, 'updateon': true, 'updatedelay': true} : {};
+        if ($rs.isMobileApplicationType) {
+            unSupportedProperties = ['hint', 'shortcutkey', 'tabindex'];
+        }
 
         //gives all the advanced properties list
         function getAdvancedProperties() {
@@ -2187,7 +2191,11 @@ WM.module('wm.widgets.base', [])
                     _.assign(widgetProps, mobileProps);
                 }
             }
-
+            _.forEach(unSupportedProperties, function (key) {
+                if (widgetProps[key]) {
+                    delete widgetProps[key];
+                }
+            });
             /* Inject show and disabled fields into each property object */
             if (CONSTANTS.isStudioMode) {
                 _.keys(widgetProps)
