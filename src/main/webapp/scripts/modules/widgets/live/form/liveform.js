@@ -62,12 +62,14 @@ WM.module('wm.widgets.live')
 
                 defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass]" ng-submit="formSave($event);" apply-styles="shell">' +
                                     '<div ng-show="isLayoutDialog" class="text-left"><i class="wi wi-gear app-dialogmode-icon"></i><span class="app-dialogmode-text">Live form in dialog mode</span></div>' +
-                                    '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
+                                    '<div class="panel-heading" ng-show="!isLayoutDialog && (title || subheading || iconclass || showButtons(\'header\'))">' +
                                         '<h3 class="panel-title">' +
                                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                                             '<div class="pull-left">' +
                                                 '<div class="heading">{{title}}</div>' +
                                                 '<div class="description">{{subheading}}</div>' +
+                                            '</div>' +
+                                            '<div class="form-action panel-actions basic-btn-grp">' +
                                             '</div>' +
                                         '</h3>' +
                                     '</div>' +
@@ -76,7 +78,7 @@ WM.module('wm.widgets.live')
                                         template.context.innerHTML +
                                     '</div>' +
                                     '<div class="hidden-form-elements"></div>' +
-                                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-hide="isLayoutDialog || !buttonArray"></div>' +
+                                    '<div class="basic-btn-grp form-action panel-footer clearfix" ng-show="!isLayoutDialog && showButtons(\'footer\')"></div>' +
                                 '</form>';
 
                 if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
@@ -91,7 +93,7 @@ WM.module('wm.widgets.live')
                                             '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                         '</div>' +
                                         '<div class="hidden-form-elements"></div>' +
-                                        '<div class="basic-btn-grp form-action modal-footer clearfix">' +
+                                        '<div class="basic-btn-grp form-action modal-footer clearfix panel-footer">' +
                                             '<div class="action-content"></div>' +
                                         '</div>' +
                                     '</form>' +
@@ -798,6 +800,12 @@ WM.module('wm.widgets.live')
                         formScope    = ($scope.isLayoutDialog && $formEle.length) ? $formEle.scope() : $scope;
                     setTouchedState(formScope.ngform);
                 };
+                //method to show/ hide actions bar
+                $scope.showButtons = function (position) {
+                    return _.some($scope.buttonArray, function (btn) {
+                        return _.includes(btn.position, position) && btn.updateMode === $scope.isUpdateMode;
+                    });
+                };
             },
             compile: function () {
                 return {
@@ -1416,6 +1424,7 @@ WM.module('wm.widgets.live')
                         var parentScope,
                             template,
                             index,
+                            $liveForm,
                             parentEle = element.parent(),
                             buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
@@ -1430,18 +1439,29 @@ WM.module('wm.widgets.live')
                             parentScope = scope.parentScope = (parentEle && parentEle.length > 0) ? parentEle.closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
 
+                        buttonDef.position = attrs.position || 'footer';
                         parentScope.buttonArray = parentScope.buttonArray || [];
                         index = parentScope.buttonArray.push(buttonDef) - 1;
                         parentScope.formCreated = true;
                         parentScope.formFieldCompiled = true;
                         template = getTemplate(buttonDef, index);
+                        $liveForm = element.closest('[data-identifier="liveform"]');
 
                         if (scope.formlayout === 'page') {
                             /* add actions to the buttonArray*/
                             scope.buttonArray[index].action = buttonDef.action;
                         } else {
-                            /*append the buttons template to element with class basic-btn-grp*/
-                            element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentScope));
+                            if (parentScope.isLayoutDialog) {
+                                $liveForm.find('.basic-btn-grp').append($compile(template)(parentScope));
+                            } else {
+                                /*append the buttons template to element with class basic-btn-grp*/
+                                if (_.includes(buttonDef.position, 'header')) {
+                                    $liveForm.find('.panel-heading .basic-btn-grp').append($compile(template)(parentScope));
+                                }
+                                if (_.includes(buttonDef.position, 'footer')) {
+                                    $liveForm.find('.panel-footer.basic-btn-grp').append($compile(template)(parentScope));
+                                }
+                            }
                         }
                         //Removing the default template for the directive
                         element.remove();

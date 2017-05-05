@@ -6,7 +6,7 @@ WM.module('wm.widgets.live')
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
                 '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget apply-styles="shell">' +
-                    '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
+                    '<div class="panel-heading" ng-show="title || subheading || iconclass || showButtons(\'header\')">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                             '<div class="pull-left">' +
@@ -14,6 +14,7 @@ WM.module('wm.widgets.live')
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
                             '<div class="panel-actions">' +
+                                '<div class="form-action basic-btn-grp"></div>' +
                                 '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
                             '</div>' +
                         '</h3>' +
@@ -22,7 +23,7 @@ WM.module('wm.widgets.live')
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
                         '<div class="hidden-filter-elements"></div>' +
                     '</div>' +
-                    '<div ng-show="expanded && buttonArray" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                    '<div ng-show="expanded && showButtons(\'footer\')" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
@@ -516,6 +517,12 @@ WM.module('wm.widgets.live')
                     $scope.applyFilterOnField = applyFilterOnField;
                     //Set form widgets scopes on live filter
                     this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'filterWidgets');
+                    //method to show/ hide actions bar
+                    $scope.showButtons = function (position) {
+                        return _.some($scope.buttonArray, function (btn) {
+                            return _.includes(btn.position, position);
+                        });
+                    };
                 },
                 template: function (element) {
                     filterMarkup = element.html();
@@ -905,7 +912,8 @@ WM.module('wm.widgets.live')
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
-                        var parent = element.parent();
+                        var parent = element.parent(),
+                            $livefilter;
                         scope.parentIsolateScope = (parent && parent.length > 0) ? parent.closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
                         var buttonTemplate, index, buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
@@ -913,6 +921,7 @@ WM.module('wm.widgets.live')
                             'iconname': attrs.iconname,
                             'type': 'button'
                         });
+                        buttonDef.position = attrs.position || 'footer';
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         scope.parentIsolateScope.columnsDefCreated = true;
@@ -920,7 +929,14 @@ WM.module('wm.widgets.live')
                         buttonTemplate = '<wm-button caption="' + buttonDef.displayName + '" show="{{buttonArray[' + index + '].show}}" hint="' + buttonDef.title + '"' +
                             'class="' + buttonDef.class + '" iconclass="' + buttonDef.iconclass + '"' +
                             'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '" shortcutkey="' + buttonDef.shortcutkey + '" disabled="' + buttonDef.disabled + '" tabindex="' + buttonDef.tabindex + '"></wm-button>';
-                        element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
+
+                        $livefilter = element.closest('[data-identifier="livefilter"]');
+                        if (_.includes(buttonDef.position, 'header')) {
+                            $livefilter.find('.panel-heading .basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
+                        }
+                        if (_.includes(buttonDef.position, 'footer')) {
+                            $livefilter.find('.panel-footer.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
+                        }
                         $compile(element.contents())(scope.parentIsolateScope);
                         //Removing the default template for the directive
                         element.remove();
