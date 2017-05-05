@@ -671,6 +671,12 @@ wm.variables.services.$liveVariable = [
         /*Function to initiate the callback and obtain the data for the callback variable.*/
             initiateCallback = Variables.initiateCallback,
             processRequestQueue = Variables.processRequestQueue,
+            //Set the _options on variable which can be used by the widgets
+            setVariableOptions = function(variable, options) {
+                variable._options =  variable._options || {};
+                variable._options.orderBy = options && options.orderBy;
+                variable._options.filterFields = options && options.filterFields;
+            },
         /*Function to fetch the data for the primary table.*/
             getPrimaryTableData = function (projectID, variable, options, success, error) {
 
@@ -788,9 +794,7 @@ wm.variables.services.$liveVariable = [
                         updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 
                         if (CONSTANTS.isRunMode) {
-                            variable._options =  variable._options || {};
-                            variable._options.orderBy = options && options.orderBy;
-                            variable._options.filterFields = options && options.filterFields;
+                            setVariableOptions(variable, options);
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
                                 initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, dataObj.data);
@@ -808,6 +812,7 @@ wm.variables.services.$liveVariable = [
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
                 }, function (error, details, xhrObj) {
+                    setVariableOptions(variable, options);
                     Utils.triggerFn(handleError, error, xhrObj);
                 });
 

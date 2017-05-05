@@ -856,9 +856,13 @@ body {
         opacity: 1;
         position: relative;
       }
-    }
-    .text-danger, .control-label.text-danger {
-      color: crimson;
+      .help-block {
+        width: 75%;
+        margin: 0;
+        &.text-danger, &.control-label.text-danger {
+          color: crimson;
+        }
+      }
     }
     .ng-touched.ng-invalid {
       border-color:  crimson;
