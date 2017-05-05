@@ -422,7 +422,7 @@ WM.module('wm.widgets.live')
                     formEvents.push('onSubmit');
                 }
                 evtTypes          = _.pull(getEventTypes(), formEvents);
-                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
+                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxplaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
                 fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
                     if (!fieldDef[field]) {
@@ -487,13 +487,13 @@ WM.module('wm.widgets.live')
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? minPlaceholderDefault : fieldDef.placeholder);
-                    fieldDef.maxPlaceholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.maxPlaceholder) ? maxPlaceholderDefault : fieldDef.maxPlaceholder);
+                    fieldDef.maxplaceholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.maxplaceholder) ? maxPlaceholderDefault : fieldDef.maxplaceholder);
                     template = template +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="' + fieldDef.placeholder + '" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="' + fieldDef.maxPlaceholder + '" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxplaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.displayformat ? '' : (_.isUndefined(fieldDef.placeholder) ? defaultPlaceholder : fieldDef.placeholder);
-                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="' + fieldDef.placeholder + '"' + readonly + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef) + ' scopedatavalue="formFields[' + index + '].value" placeholder="' + fieldDef.placeholder + '"' + readonly + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
             }
@@ -1163,10 +1163,7 @@ WM.module('wm.widgets.live')
                 widgetProps                   = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
                 widgetProps.displayname       =  {'type': "string", 'show': true, 'bindable': "in-bound"};
                 widgetProps.widget            = {'type': 'label', 'show': true};
-                if (fieldType === 'wm-form-field') {
-                    widgetProps.validationmessage      =  {'type': "string", 'bindable': "in-bound"};
-                    widgetProps.validationmessage.show = widgetProps.required && widgetProps.required.show;
-                }
+
                 if (_.includes(textWidgets, widgetType)) {
                     /*In form and filter, type conflicts with data type. Change the type to input type.*/
                     widgetProps.inputtype = WM.copy(widgetProps.type);
@@ -1187,7 +1184,17 @@ WM.module('wm.widgets.live')
                         'onTap'      : {'show': false}
                     });
                 }
+
                 setDefaultValueProps();
+
+                if (fieldType === 'wm-form-field') {
+                    widgetProps.validationmessage      =  {'type': "string", 'bindable': "in-bound"};
+                    widgetProps.validationmessage.show = widgetProps.required && widgetProps.required.show;
+                } else if (fieldType === 'wm-filter-field') {
+                    widgetProps.maxplaceholder =  {'type': "string", 'bindable': "in-bound", "show": true};
+                    widgetProps.maxdefaultvalue =  Utils.getClonedObject(widgetProps.defaultvalue);
+                }
+
                 /*No support for scopedatavalue and scopedataset for fields yet*/
                 if (widgetProps.scopedatavalue) {
                     delete widgetProps.scopedatavalue;
@@ -1224,6 +1231,9 @@ WM.module('wm.widgets.live')
                 }
                 if (!attrs.displayname && attrs.displayName) {
                     changeAttr('displayname', 'displayName');
+                }
+                if (!attrs.maxplaceholder && attrs.maxPlaceholder) {
+                    changeAttr('maxplaceholder', 'maxPlaceholder');
                 }
                 if (!attrs.maxchars && attrs.maxvalue && (attrs.inputtype === 'text' || attrs.inputtype === 'password' || attrs.widget === 'textarea')) {
                     changeAttr('maxchars', 'maxvalue');
