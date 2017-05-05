@@ -21,4 +21,9 @@ public class BlobTypeConverter extends HibernateBackedJavaTypeConverter {
             return value;
         }
     }
+
+    @Override
+    public Object toDbValue(final Object value, final Class<?> toType) {
+        return value instanceof Blob ? super.toDbValue(value, toType) : value;
+    }
 }
