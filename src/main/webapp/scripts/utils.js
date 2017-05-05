@@ -1491,6 +1491,8 @@ WM.module('wm.utils', [])
                 switch (event.which) {
                 case 8:
                     return 'BACKSPACE';
+                case 9:
+                    return 'TAB';
                 case 13:
                     return 'ENTER';
                 case 27:
