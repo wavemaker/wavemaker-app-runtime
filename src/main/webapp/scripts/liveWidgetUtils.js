@@ -1344,8 +1344,7 @@ WM.module('wm.widgets.live')
                 switch (column.widgetType) {
                 case 'image':
                     if (column.type === 'blob') {
-                        column.widgetConfig.src = "{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}";
-                        column.customExpression = '<img ng-if="columnValue != null" width="48px" class="" data-ng-src="' + column.widgetConfig.src + '"/>';
+                        column.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="{{columnValue}}" class="" data-ng-class=""></wm-picture>';
                     } else {
                         column.customExpression = '<wm-picture picturesource="' + column.widgetConfig.src + '" hint="' + column.widgetConfig.src + '"' +
                             ' class="' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-picture>';
@@ -1373,7 +1372,7 @@ WM.module('wm.widgets.live')
                     break;
                 default:
                     if (column.type === 'blob') {
-                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                     }
                 }
             }

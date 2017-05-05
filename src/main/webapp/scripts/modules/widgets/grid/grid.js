@@ -1244,14 +1244,14 @@ WM.module('wm.widgets.grid')
                 rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
                 rowScope.row = row;
                 rowScope.row.getProperty = function (field) {
-                    return row[field];
+                    return _.get(row, field);
                 };
                 //return the compiled template if the template is row i.e when colDef doesn't exist.
                 if (!colDef) {
                     return $compile(el)(rowScope);
                 }
                 rowScope.colDef = colDef;
-                rowScope.columnValue = row[colDef.field];
+                rowScope.columnValue = _.get(row, colDef.field);
                 if (refreshImg && colDef.widgetType === 'image') {
                     ngSrc = el.attr('data-ng-src');  //As url will be same but image changes in the backend after edit operation, add timestamp to src to force refresh the image
                     if (ngSrc) {
@@ -1936,9 +1936,9 @@ WM.module('wm.widgets.grid')
                         }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType === 'image') {
-                                columnDef.customExpression = '<img ng-if="columnValue != null" width="48px" class="wm-icon wm-icon24 wi wi-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                columnDef.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="{{columnValue}}" class="" data-ng-class=""></wm-picture>';
                             } else {
-                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                             }
                         }
                     }
@@ -2794,7 +2794,7 @@ WM.module('wm.widgets.grid')
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
-                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                                columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                             }
                         }
                         /* push the fieldDef in the object meant to have all fields */

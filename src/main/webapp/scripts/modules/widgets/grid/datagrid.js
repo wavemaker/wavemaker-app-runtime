@@ -454,7 +454,7 @@ $.widget('wm.datagrid', {
 
         if (colDef.field) {
             //setting the default value
-            columnValue = row[colDef.field];
+            columnValue = _.get(row, colDef.field);
         }
         value = _.get(row, colDef.field);
         if (value) {
@@ -533,7 +533,7 @@ $.widget('wm.datagrid', {
             htm += colExpression;
         } else {
             if (colDef.type !== 'custom') {
-                columnValue = row[colDef.field];
+                columnValue = _.get(row, colDef.field);
                 /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
                 * 2. Show "undefined" values as empty string. */
                 if ((this.options.filterNullRecords && columnValue === null) ||
