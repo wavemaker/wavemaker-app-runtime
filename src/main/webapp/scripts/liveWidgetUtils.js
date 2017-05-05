@@ -1613,21 +1613,25 @@ WM.module('wm.widgets.live')
                     'relatedData' : data.relatedData
                 };
             }
-
-            function fetchReferenceDetails($scope, elScope) {
-                var referenceWidget,
-                    referenceBindDataSet,
-                    referenceVariableName,
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getBoundWidgetDetails
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns the widget details - widget name, referenceWidget for the inner widgets
+             *
+             * @param {string} bindDataSet bound dataset of the widget
+             * @param {object} WidgetScopes Widget scopes
+             *
+             */
+            function getBoundWidgetDetails(bindDataSet, WidgetScopes) {
+                var widgetName,
                     relatedFieldName,
-                    relatedFieldType,
-                    fields,
-                    details,
-                    referenceVariable,
-                    widgetName,
                     bindDataSetSplit,
-                    bindDataSet                 = $scope.binddataset,
-                    widgetRegEx                 =  /Widgets./g,
-                    WidgetScopes                = elScope ? elScope.Widgets : $scope.Widgets,
+                    referenceWidget,
+                    widgetRegEx = /Widgets./g,
                     isBoundToSelectedItemSubset = bindDataSet.indexOf('selecteditem.') !== -1;
                 //Get the reference widget name. As widget can be inner widget (like Widgets.tab.Widgets.grid), find the last inner widget
                 while (widgetRegEx.exec(bindDataSet) !== null) {
@@ -1637,6 +1641,26 @@ WM.module('wm.widgets.live')
                     referenceWidget  = _.get(WidgetScopes, widgetName);
                     WidgetScopes     = referenceWidget && referenceWidget.Widgets;
                 }
+                return {
+                    'widgetName'       : widgetName,
+                    'relatedFieldName' : relatedFieldName,
+                    'referenceWidget'  : referenceWidget,
+                    'WidgetScopes'     : WidgetScopes
+                }
+            }
+
+            function fetchReferenceDetails($scope, elScope) {
+                var referenceBindDataSet,
+                    referenceVariableName,
+                    relatedFieldType,
+                    fields,
+                    details,
+                    referenceVariable,
+                    bindDataSet      = $scope.binddataset,
+                    WidgetScopes     = elScope ? elScope.Widgets : $scope.Widgets,
+                    widgetDetails    = getBoundWidgetDetails(bindDataSet, WidgetScopes),
+                    referenceWidget  = widgetDetails.referenceWidget,
+                    relatedFieldName = widgetDetails.relatedFieldName;
                 if (referenceWidget) {
                     referenceBindDataSet = referenceWidget.binddataset;
                     /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
@@ -2144,6 +2168,7 @@ WM.module('wm.widgets.live')
             this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
             this.fetchDynamicData           = fetchDynamicData;
             this.fetchReferenceDetails      = fetchReferenceDetails;
+            this.getBoundWidgetDetails      = getBoundWidgetDetails;
             this.getRowOperationsColumn     = getRowOperationsColumn;
             this.getDistinctValues          = getDistinctValues;
             this.setHeaderConfigForTable    = setHeaderConfigForTable;
