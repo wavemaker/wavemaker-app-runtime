@@ -728,7 +728,17 @@ WM.module('wm.utils', [])
 
         /*function to check valid java package name*/
         function isValidJavaPackageName(pkgName) {
-            return pkgName.match(/^\w[\w\d_.]*[\w\d]$/);
+            /*
+             * Matches fully qualified java class name
+             * eg:
+             * 1) com.WaveMaker.javaService --> true
+             * 2) $com.$WaveMaker.$javaService --> true
+             * 3) 1com.2WaveMaker.3javaService --> false numerics at the beginning of the class is not allowed
+             * 4) com.W@veM@ker.j@v@Serv!ce --> false
+             *
+             */
+            var VALID_CLASS_NAME_REGEX = /^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$/;
+            return VALID_CLASS_NAME_REGEX.test(pkgName);
         }
 
         /*function to check if quotes (both single and double) are NOT present in a string.*/
