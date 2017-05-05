@@ -798,7 +798,8 @@ WM.module('wm.widgets.live')
                 $scope.highlightInvalidFields = function () {
                     var $formEle     = getFormElement(),
                         formScope    = ($scope.isLayoutDialog && $formEle.length) ? $formEle.scope() : $scope;
-                    setTouchedState(formScope.ngform);
+
+                    LiveWidgetUtils.highlightInvalidFields(formScope.ngform);
                 };
                 //method to show/ hide actions bar
                 $scope.showButtons = function (position) {

@@ -390,6 +390,7 @@ WM.module('wm.layouts.containers')
                     }
                     scope.clearMessage = clearMessage.bind(undefined, scope);
                     scope.elScope.ngform  = scope[scope.name];
+                    scope.highlightInvalidFields = LiveWidgetUtils.highlightInvalidFields.bind(undefined, scope.elScope.ngform);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                     scope.$on('$destroy', function () {
