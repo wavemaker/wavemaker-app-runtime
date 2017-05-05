@@ -1365,24 +1365,8 @@ WM.module('wm.widgets.live')
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentScope, index), scope);
 
-                        if (!scope.hasOwnProperty('datavalue')) {
-                            Object.defineProperty(scope, 'datavalue', {
-                                get: function () {
-                                    return _.get(parentScope, ['formFields', [index], 'value']);
-                                },
-                                set: function (val) {
-                                    _.set(parentScope, ['formFields', [index], 'value'], val);
-                                }
-                            });
-                        }
-                        // show displayvalue property in formwidgets.
-                        if (scope.widget === 'select' && !scope.hasOwnProperty('displayvalue')) {
-                            Object.defineProperty(scope, 'displayvalue', {
-                                get: function () {
-                                    return _.get(parentScope, ['Widgets', scope.name + '_formWidget', 'displayvalue']);
-                                }
-                            });
-                        }
+                        LiveWidgetUtils.setGetterSettersOnField(scope, element);
+
                         scope.setValidationMessage = function (val) {
                             scope.validationmessage = val;
                             setValidity(scope.name, false);

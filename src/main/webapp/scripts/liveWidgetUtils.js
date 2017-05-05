@@ -585,6 +585,7 @@ WM.module('wm.widgets.live')
             /*Returns checkbox template */
             function getCheckboxTemplate(fieldDef, index, widgetType) {
                 var additionalFields = widgetType === 'toggle' ? 'type="toggle"' : '';
+                additionalFields += fieldDef.caption ? ' caption="' + fieldDef.caption + '" ' : '';
                 return getDefaultTemplate('checkbox', fieldDef, index, '', '', '', additionalFields);
             }
 
@@ -953,6 +954,17 @@ WM.module('wm.widgets.live')
                     break;
                 }
             }
+
+            //Get the inner form widget for the form field
+            function getFormFieldWidget(scope, element) {
+                var $formWidgetEl;
+                if (!scope.formWidget) {
+                    $formWidgetEl  = element.find('[name="' + scope.name + '_formWidget"]'); //Find out the form widget inside the form field
+                    scope.formWidget = $formWidgetEl.length ? $formWidgetEl.isolateScope() : undefined;
+                }
+                return scope.formWidget;
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#fieldPropertyChangeHandler
@@ -970,9 +982,8 @@ WM.module('wm.widgets.live')
              */
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
                 var template       = '',
-                    wdgtProperties = scope.widgetProps,
-                    $formWidgetEl  = element.find('[name="' + scope.name + '_formWidget"]'), //Find out the form widget inside the form field
-                    formWidget     = $formWidgetEl.length ? $formWidgetEl.isolateScope() : parentScope.Widgets[scope.name + '_formWidget'];
+                    wdgtProperties = scope.widgetProps, //Find out the form widget inside the form field
+                    formWidget     = getFormFieldWidget(scope, element);
 
                 function compileField() {
                     if (CONSTANTS.isRunMode) {
@@ -1087,8 +1098,6 @@ WM.module('wm.widgets.live')
                             widgetProps.defaultvalue      = WM.copy(widgetProps[defaultProp]);
                             widgetProps[defaultProp].show = false;
                         }
-                        //Ignore the default getter setter on datavalue as it is set explicitly for form field
-                        _.set(widgetProps.datavalue, 'ignoreGetterSetters', true);
                     };
                 widgetType = widgetType.toLowerCase();
                 switch (widgetType) {
@@ -1179,7 +1188,6 @@ WM.module('wm.widgets.live')
                 } else if (isDataSetWidgets[widgetType]) {
                     widgetProps.dataset.value   = '';
                     widgetProps.datafield.value = '';
-                    _.set(widgetProps.displayvalue, 'ignoreGetterSetters', true);
                     if (widgetType === 'autocomplete') {
                         widgetProps.type.show = false;
                     }
@@ -1210,6 +1218,12 @@ WM.module('wm.widgets.live')
                 if (widgetProps.scopedataset) {
                     delete widgetProps.scopedataset;
                 }
+                //Ignore the default getter setter on in out bound properties as it is set explicitly for form field
+                _.forEach(widgetProps, function (prop) {
+                   if (prop.bindable === 'in-out-bound' || prop.bindable === 'out-bound') {
+                       _.set(prop, 'ignoreGetterSetters', true);
+                   }
+                });
                 return widgetProps;
             }
             /**
@@ -2147,6 +2161,43 @@ WM.module('wm.widgets.live')
                 return enableemptyfilter && _.intersection(enableemptyfilter.split(','), LIVE_CONSTANTS.NULL_EMPTY).length > 0;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.setGetterSettersOnField
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * This function sets getters setters on in out properties of form field
+             *
+             * @param {object} scope scope of the form field widget
+             * @param {object} element form field element
+             */
+            function setGetterSettersOnField(scope, element) {
+                _.forEach(scope.widgetProps, function (value, key) {
+                    if (value.bindable === 'in-out-bound') {
+                        if (!scope.hasOwnProperty(key)) {
+                            Object.defineProperty(scope, key, {
+                                get: function () {
+                                    return  _.get(getFormFieldWidget(scope, element), key);
+                                },
+                                set: function (val) {
+                                    _.set(getFormFieldWidget(scope, element), key, val);
+                                }
+                            });
+                        }
+                    } else if (value.bindable === 'out-bound') {
+                        if (!scope.hasOwnProperty(key)) {
+                            Object.defineProperty(scope, key, {
+                                get: function () {
+                                    return  _.get(getFormFieldWidget(scope, element), key);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2185,6 +2236,7 @@ WM.module('wm.widgets.live')
             this.getDistinctValuesForField  = getDistinctValuesForField;
             this.getDistinctFieldProperties = getDistinctFieldProperties;
             this.getEnableEmptyFilter       = getEnableEmptyFilter;
+            this.setGetterSettersOnField    = setGetterSettersOnField;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
