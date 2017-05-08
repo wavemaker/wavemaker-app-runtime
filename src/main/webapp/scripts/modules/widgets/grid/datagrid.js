@@ -582,9 +582,17 @@ $.widget('wm.datagrid', {
     //Get event related template for editable widget
     _getEventTemplate: function (colDef) {
         var events   = _.filter(_.keys(colDef), function (key) {return _.startsWith(key, 'on'); }),
+            changeEvt,
             template = '';
+        //On change events for the widget
+        changeEvt = colDef.editWidgetType === 'autocomplete' ? 'onSubmit' : 'onChange';
+        events = _.union(events, [changeEvt]);
         _.forEach(events, function (eventName) {
-            template += ' ' + _.kebabCase(eventName) + '="' + colDef[eventName] + '" ';
+            template += ' ' + _.kebabCase(eventName) + '="';
+            if (eventName === 'onSubmit' || eventName === 'onChange') {
+                template += '_' + eventName + 'Field($event, $scope, newVal, oldVal);'
+            }
+            template += (colDef[eventName] || '') + '" ';
         });
         return template;
     },
@@ -603,7 +611,7 @@ $.widget('wm.datagrid', {
             index         = colDef.index,
             limit         = colDef.limit ? ' limit="' + colDef.limit + '" ' : '',
             //If dataset is bound, set the dataset. Else, set the scopedataset.
-            dataSetTl     = colDef.isDataSetBound && !colDef.isDefinedData ? 'dataset="' + colDef.dataset + '"' : ' scopedataset="fullFieldDefs[' + index + '].dataset"';
+            dataSetTl     = (colDef.isDataSetBound || colDef.isAutoCompleteDataSet) && !colDef.isDefinedData ? 'dataset="' + colDef.dataset + '"' : ' scopedataset="fullFieldDefs[' + index + '].dataset"';
         switch (colDef.editWidgetType) {
         case 'select':
             cellText = cellText || '';

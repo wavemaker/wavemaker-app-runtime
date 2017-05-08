@@ -48,59 +48,11 @@ WM.module('wm.widgets.live')
                     'NULL'        : 'null',
                     'EMPTY'       : 'empty'
                 },
-                MATCH_MODES = {
-                    'BETWEEN'     : 'between',
-                    'GREATER'     : 'greaterthanequal',
-                    'LESSER'      : 'lessthanequal',
-                    'NULL'        : 'null',
-                    'EMPTY'       : 'empty',
-                    'NULLOREMPTY' : 'nullorempty',
-                    'EQUALS'      : 'exact'
-                },
-                dataSetWidgetTypes = Utils.getDataSetWidgets(),
                 notifyFor = {
                     'dataset'        : true,
                     'pagesize'       : CONSTANTS.isStudioMode,
                     'captionalign'   : true
                 };
-            //Function to get the match mode based on the filter selected
-            function getEmptyMatchMode(enableemptyfilter) {
-                var matchMode,
-                    emptyFilterOptions = _.split(enableemptyfilter, ',');
-                if (_.intersection(emptyFilterOptions, FILTER_CONSTANTS.NULLEMPTY).length === 2) {
-                    matchMode = MATCH_MODES.NULLOREMPTY;
-                } else if (_.includes(emptyFilterOptions, FILTER_CONSTANTS.NULL)) {
-                    matchMode = MATCH_MODES.NULL;
-                } else if (_.includes(emptyFilterOptions, FILTER_CONSTANTS.EMPTY)) {
-                    matchMode = MATCH_MODES.EMPTY;
-                }
-                return matchMode;
-            }
-            //Function to get the match mode for range
-            function getRangeMatchMode(minValue, maxValue) {
-                var matchMode;
-                //If two values exists, then it is between. Otherwise, greater or lesser
-                if (minValue && maxValue) {
-                    matchMode = MATCH_MODES.BETWEEN;
-                } else if (minValue) {
-                    matchMode = MATCH_MODES.GREATER;
-                } else if (maxValue) {
-                    matchMode = MATCH_MODES.LESSER;
-                }
-                return matchMode;
-            }
-            //Function to get the field value for range
-            function getRangeFieldValue(minValue, maxValue) {
-                var fieldValue;
-                if (minValue && maxValue) {
-                    fieldValue = [minValue, maxValue];
-                } else if (minValue) {
-                    fieldValue = minValue;
-                } else if (maxValue) {
-                    fieldValue = maxValue;
-                }
-                return fieldValue;
-            }
 
             return {
                 restrict: 'E',
@@ -114,59 +66,6 @@ WM.module('wm.widgets.live')
                 controller: function ($scope, $attrs) {
                     var onResult,
                         filterController;
-                    //Function to get the updated values when filter on field is changed
-                    function applyFilterOnField(filterDef, isFirst) {
-                        var variable       = $scope.Variables[$scope.variableName],
-                            newVal         = filterDef.isRange ? getRangeFieldValue(filterDef.minValue, filterDef.maxValue) : filterDef.value,
-                            filterOnFields = _.filter($scope.formFields, {'filterOn': filterDef.field});
-                        if (!variable || (isFirst && (_.isUndefined(newVal) || newVal === ''))) {
-                            return;
-                        }
-                        //Loop over the fields for which the current field is filter on field
-                        _.forEach(filterOnFields, function (filterField) {
-                            var filterOn     = filterField.filterOn,
-                                filterFields = {},
-                                fieldColumn,
-                                type,
-                                matchMode;
-                            if (!dataSetWidgetTypes[filterField.widget] || filterField.isDataSetBound || filterOn === filterField.field) {
-                                return;
-                            }
-                            //For related fields, add lookupfield for query generation
-                            if (filterDef && filterDef.isRelated) {
-                                filterOn += '.' +  filterDef.lookupField;
-                            }
-                            type = _.toLower(variable.getSqlType(filterOn));
-                            if (WM.isDefined(newVal) && newVal !== '' && newVal !== null) {
-                                if (filterDef.isRange) {
-                                    matchMode = getRangeMatchMode(filterDef.minValue, filterDef.maxValue);
-                                } else if (LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter) && newVal === FILTER_CONSTANTS.EMPTY_KEY) {
-                                    matchMode = getEmptyMatchMode($scope.enableemptyfilter);
-                                } else {
-                                    matchMode = MATCH_MODES.EQUALS;
-                                }
-                                filterFields[filterOn] = {
-                                    'value'     : newVal,
-                                    'matchMode' : matchMode
-                                };
-                            } else {
-                                filterFields = {};
-                            }
-                            fieldColumn = filterField.field;
-
-                            if (filterField.widget === 'autocomplete') {
-                                filterField.dataoptions.filterFields = filterFields;
-                            } else {
-                                variable.getDistinctDataByFields({
-                                    'fields'         : fieldColumn,
-                                    'filterFields'   : filterFields,
-                                    'pagesize'       : filterField.limit
-                                }, function (data) {
-                                    LiveWidgetUtils.setFieldDataSet(filterField, data, fieldColumn, 'widget', LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter));
-                                });
-                            }
-                        });
-                    }
                     /*
                      * Extend the properties from the form controller exposed to end user in page script
                      * Kept in try/catch as the controller may not be available sometimes
@@ -206,7 +105,7 @@ WM.module('wm.widgets.live')
                                     filterField.value = '';
                                 }
                             }
-                            applyFilterOnField(filterField);
+                            $scope.applyFilterOnField(filterField);
                         });
                         //If variable has any bindings, wait for the bindings to be updated
                         $timeout(function () {
@@ -302,8 +201,8 @@ WM.module('wm.widgets.live')
                             }
                             if (filterField.isRange) {
                                 /*Based on the min and max values, decide the matchmode condition*/
-                                fieldValue = getRangeFieldValue(minValue, maxvalue);
-                                matchMode  = getRangeMatchMode(minValue, maxvalue);
+                                fieldValue = LiveWidgetUtils.getRangeFieldValue(minValue, maxvalue);
+                                matchMode  = LiveWidgetUtils.getRangeMatchMode(minValue, maxvalue);
                                 if (WM.isDefined(fieldValue)) {
                                     formFields[colName] = {
                                         'value'     : fieldValue,
@@ -316,7 +215,7 @@ WM.module('wm.widgets.live')
                                 case 'select':
                                 case 'radioset':
                                     if (LiveWidgetUtils.getEnableEmptyFilter($scope.enableemptyfilter) && filterField._value === FILTER_CONSTANTS.EMPTY_KEY) {
-                                        matchMode  = getEmptyMatchMode($scope.enableemptyfilter);
+                                        matchMode  = LiveWidgetUtils.getEmptyMatchMode($scope.enableemptyfilter);
                                         fieldValue = filterField._value;
                                     } else {
                                         if (filterField.type === 'boolean') {
@@ -500,7 +399,7 @@ WM.module('wm.widgets.live')
                     //On change of a field, if autoupdate is set, trigger the filter
                     $scope._onChangeField = function ($event, $is, newVal, oldVal) {
                         var index = $is.$element.closest('[data-role="filter-field"]').isolateScope().index;
-                        applyFilterOnField($scope.formFields[index]);
+                        $scope.applyFilterOnField($scope.formFields[index]);
                         //If old and new val are undefined/null/empty do not trigger the filter
                         if ($scope.autoupdate && !(!newVal && !oldVal)) {
                             $scope.filter();
@@ -509,12 +408,12 @@ WM.module('wm.widgets.live')
                     //On submit of a autocomplete field, if autoupdate is set, trigger the filter
                     $scope._onSubmitField = function ($event, $is) {
                         var index = $is.$element.closest('[data-role="filter-field"]').isolateScope().index;
-                        applyFilterOnField($scope.formFields[index]);
+                        $scope.applyFilterOnField($scope.formFields[index]);
                         if ($scope.autoupdate) {
                             $scope.filter();
                         }
                     };
-                    $scope.applyFilterOnField = applyFilterOnField;
+                    $scope.applyFilterOnField = LiveWidgetUtils.applyFilterOnField.bind(undefined, $scope);
                     //Set form widgets scopes on live filter
                     this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'filterWidgets');
                     //method to show/ hide actions bar
@@ -782,7 +681,6 @@ WM.module('wm.widgets.live')
                             columnsDef = new scope.FilterField(),
                             columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                                 'field'             : attrs.field || attrs.binding || attrs.name,
-                                'filterOn'          : attrs.filterOn,
                                 'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
                                 'lookupType'        : attrs.lookupType,

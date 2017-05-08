@@ -499,6 +499,7 @@ WM.module('wm.widgets.live')
                             if (!formField.value && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
                                 formEle.find('div[name=' + formField.name + '] input').val('');
                             }
+                            $scope.applyFilterOnField(formField);
                         });
                         $scope.constructDataObject();
                     }
@@ -560,6 +561,7 @@ WM.module('wm.widgets.live')
                 $scope.setDefaults = function () {
                     $scope.formFields.forEach(function (fieldObj) {
                         $scope.setDefaultValueToValue(fieldObj);
+                        $scope.applyFilterOnField(fieldObj);
                     });
                 };
                 $scope.setDefaultValueToValue = function (fieldObj) {
@@ -721,6 +723,7 @@ WM.module('wm.widgets.live')
                         } else {
                             formField.value = value;
                         }
+                        $scope.applyFilterOnField(formField);
                     });
                     $scope.setPrevDataValues();
                     $scope.constructDataObject();
@@ -807,6 +810,8 @@ WM.module('wm.widgets.live')
                         return _.includes(btn.position, position) && btn.updateMode === $scope.isUpdateMode;
                     });
                 };
+
+                $scope.applyFilterOnField = LiveWidgetUtils.applyFilterOnField.bind(undefined, $scope);
             },
             compile: function () {
                 return {
@@ -1203,6 +1208,7 @@ WM.module('wm.widgets.live')
                             } else {
                                 columnDef.value =  LiveWidgetUtils.getDefaultValue(columnDef.defaultvalue, undefined, columnDef.widget);
                             }
+                            parentScope.applyFilterOnField(columnDef);
                             parentScope.constructDataObject();
                         }
                         function setValidity(name, val) {
@@ -1247,6 +1253,7 @@ WM.module('wm.widgets.live')
                         parentScope.formFields = _.isArray(parentScope.formFields) ?  parentScope.formFields : [];
                         index = _.indexOf(parentScope.formFields, undefined);
                         index = index > -1 ? index : parentScope.formFields.length;
+                        scope.index = index;
                         parentScope.formFields[index] = columnDef;
 
                         /*If defaultValue is set then assign it to the attribute*/
@@ -1344,12 +1351,16 @@ WM.module('wm.widgets.live')
                             setValidity(fieldScope.name, true);
                         };
                         //On change of a field, update the dataoutput on form/liveform
-                        parentScope._onChangeField = parentScope._onChangeField || function () {
+                        parentScope._onChangeField = parentScope._onChangeField || function ($event, $is) {
+                            var formIndex = $is.$element.closest('[data-role="form-field"]').isolateScope().index;
                             parentScope.constructDataObject();
+                            parentScope.applyFilterOnField(parentScope.formFields[formIndex]);
                         };
                         //On submit of a autocomplete field, update the dataoutput on form/liveform
-                        parentScope._onSubmitField = parentScope._onSubmitField || function () {
+                        parentScope._onSubmitField = parentScope._onSubmitField || function ($event, $is) {
+                            var formIndex = $is.$element.closest('[data-role="form-field"]').isolateScope().index;
                             parentScope.constructDataObject();
+                            parentScope.applyFilterOnField(parentScope.formFields[formIndex]);
                         };
                         parentScope.$on('$destroy', function () {
                             if (exprWatchHandler) {

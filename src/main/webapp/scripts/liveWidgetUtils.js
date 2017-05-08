@@ -30,7 +30,18 @@ WM.module('wm.widgets.live')
                     'EMPTY_VALUE'   : $rs.appLocale.LABEL_NO_VALUE,
                     'LABEL_KEY'     : 'key',
                     'LABEL_VALUE'   : 'value',
-                    'NULL_EMPTY'    : ['null', 'empty']
+                    'NULL_EMPTY'    : ['null', 'empty'],
+                    'NULL'          : 'null',
+                    'EMPTY'         : 'empty'
+                },
+                MATCH_MODES = {
+                    'BETWEEN'     : 'between',
+                    'GREATER'     : 'greaterthanequal',
+                    'LESSER'      : 'lessthanequal',
+                    'NULL'        : 'null',
+                    'EMPTY'       : 'empty',
+                    'NULLOREMPTY' : 'nullorempty',
+                    'EQUALS'      : 'exact'
                 };
             /**
              * @ngdoc function
@@ -2012,19 +2023,22 @@ WM.module('wm.widgets.live')
                 }
                 primaryKeys         = boundVariable.getRelatedTablePrimaryKeys(relatedField);
                 columnDef.datafield = datafield;
+                if (CONSTANTS.isRunMode) {
+                    columnDef._primaryKey = _.isEmpty(primaryKeys) ? undefined : primaryKeys[0];
+                }
                 displayField        = datafield === 'All Fields' ? undefined : datafield;
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (widget === 'autocomplete' || widget === 'typeahead') {
                     columnDef.dataoptions  = {'relatedField': relatedField};
                     columnDef.dataset      = parentScope.binddataset;
-                    displayField           = displayField || (_.isEmpty(primaryKeys) ? undefined : primaryKeys[0]);
+                    displayField           = displayField || columnDef._primaryKey;
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displaylabel || displayField;
                 } else {
                     boundVariable.getRelatedTableData(relatedField, {'pagesize': columnDef.limit}, function (response) {
                         columnDef.dataset       = response;
                         columnDef.isDefinedData = true;
-                        displayField            = displayField || (_.isEmpty(primaryKeys) ? _.head(_.keys(_.get(response, '[0]'))) : primaryKeys[0]);
+                        displayField            = displayField || columnDef._primaryKey ||  _.head(_.keys(_.get(response, '[0]')));
                         columnDef.displayfield  = columnDef.displayfield || displayField;
                     });
                 }
@@ -2239,6 +2253,147 @@ WM.module('wm.widgets.live')
                 });
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getEmptyMatchMode
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to get the match mode based on the filter selected
+             *
+             * @param {object} enableemptyfilter empty filter options
+             */
+            function getEmptyMatchMode(enableemptyfilter) {
+                var matchMode,
+                    emptyFilterOptions = _.split(enableemptyfilter, ',');
+                if (_.intersection(emptyFilterOptions, LIVE_CONSTANTS.NULLEMPTY).length === 2) {
+                    matchMode = MATCH_MODES.NULLOREMPTY;
+                } else if (_.includes(emptyFilterOptions, LIVE_CONSTANTS.NULL)) {
+                    matchMode = MATCH_MODES.NULL;
+                } else if (_.includes(emptyFilterOptions, LIVE_CONSTANTS.EMPTY)) {
+                    matchMode = MATCH_MODES.EMPTY;
+                }
+                return matchMode;
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getRangeMatchMode
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to get the match mode for range
+             *
+             * @param {string} minValue min value selected
+             * @param {string} maxValue max value selected
+             */
+            function getRangeMatchMode(minValue, maxValue) {
+                var matchMode;
+                //If two values exists, then it is between. Otherwise, greater or lesser
+                if (minValue && maxValue) {
+                    matchMode = MATCH_MODES.BETWEEN;
+                } else if (minValue) {
+                    matchMode = MATCH_MODES.GREATER;
+                } else if (maxValue) {
+                    matchMode = MATCH_MODES.LESSER;
+                }
+                return matchMode;
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getRangeFieldValue
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to get the field value for range
+             *
+             * @param {string} minValue min value selected
+             * @param {string} maxValue max value selected
+             */
+            function getRangeFieldValue(minValue, maxValue) {
+                var fieldValue;
+                if (minValue && maxValue) {
+                    fieldValue = [minValue, maxValue];
+                } else if (minValue) {
+                    fieldValue = minValue;
+                } else if (maxValue) {
+                    fieldValue = maxValue;
+                }
+                return fieldValue;
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.applyFilterOnField
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Function to get the updated values when filter on field is changed
+             *
+             * @param {object} $scope scope of the filter field/form field
+             * @param {object} filterDef filter/form definition of the field
+             * @param {boolean} isFirst boolean value to check if this method is called on load
+             */
+            function applyFilterOnField($scope, filterDef, newVal, isFirst) {
+                var variable       = $scope.Variables[$scope.variableName],
+                    fieldName      = filterDef.field || filterDef.key,
+                    formFields     = $scope.formFields || $scope.fullFieldDefs,
+                    filterOnFields = _.filter(formFields, {'filterOn': fieldName});
+                newVal = newVal || (filterDef.isRange ? getRangeFieldValue(filterDef.minValue, filterDef.maxValue) : filterDef.value);
+                if (!variable || (isFirst && (_.isUndefined(newVal) || newVal === ''))) {
+                    return;
+                }
+                //Loop over the fields for which the current field is filter on field
+                _.forEach(filterOnFields, function (filterField) {
+                    var filterOn     = filterField.filterOn,
+                        filterKey    = filterField.field || filterField.key,
+                        lookUpField  = filterDef.lookupField || filterDef._primaryKey,
+                        filterFields = {},
+                        filterWidget = filterField.editWidgetType || filterField.widget,
+                        filterVal,
+                        fieldColumn,
+                        matchMode;
+                    if (!isDataSetWidgets[filterWidget] || filterField.isDataSetBound || filterOn === filterKey) {
+                        return;
+                    }
+                    //For related fields, add lookupfield for query generation
+                    if (filterDef && filterDef.isRelated) {
+                        filterOn += '.' +  lookUpField;
+                    }
+                    if (WM.isDefined(newVal) && newVal !== '' && newVal !== null) {
+                        if (filterDef.isRange) {
+                            matchMode = getRangeMatchMode(filterDef.minValue, filterDef.maxValue);
+                        } else if (getEnableEmptyFilter($scope.enableemptyfilter) && newVal === LIVE_CONSTANTS.EMPTY_KEY) {
+                            matchMode = getEmptyMatchMode($scope.enableemptyfilter);
+                        } else {
+                            matchMode = MATCH_MODES.EQUALS;
+                        }
+                        filterVal = (_.isObject(newVal) && !_.isArray(newVal)) ? newVal[lookUpField] : newVal;
+                        filterFields[filterOn] = {
+                            'value'     : filterVal,
+                            'matchMode' : matchMode
+                        };
+                    } else {
+                        filterFields = {};
+                    }
+                    fieldColumn = filterKey;
+
+                    if (filterWidget === 'autocomplete') {
+                        filterField.dataoptions.filterFields = filterFields;
+                    } else {
+                        variable.getDistinctDataByFields({
+                            'fields'         : fieldColumn,
+                            'filterFields'   : filterFields,
+                            'pagesize'       : filterField.limit
+                        }, function (data) {
+                            setFieldDataSet(filterField, data, fieldColumn, 'widget', getEnableEmptyFilter($scope.enableemptyfilter));
+                        });
+                    }
+                });
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2279,6 +2434,10 @@ WM.module('wm.widgets.live')
             this.getEnableEmptyFilter       = getEnableEmptyFilter;
             this.highlightInvalidFields     = highlightInvalidFields;
             this.setGetterSettersOnField    = setGetterSettersOnField;
+            this.applyFilterOnField         = applyFilterOnField;
+            this.getEmptyMatchMode          = getEmptyMatchMode;
+            this.getRangeMatchMode          = getRangeMatchMode;
+            this.getRangeFieldValue         = getRangeFieldValue;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
