@@ -159,7 +159,7 @@ WM.module('wm.widgets.basic')
                     deferred.resolve($is._proxyModel);
                 } else {
                     if (variable && variable.category === 'wm.LiveVariable') {
-                        if (defaultQuery && WM.isDefined($is.datavalue) && $is.datavalue !== '') {
+                        if (defaultQuery && WM.isDefined($is.datavalue) && !_.isNull($is.datavalue) && $is.datavalue !== '') {
                             $is.retrieveDefaultQueryModel().then(function (response) {
                                 deferred.resolve(response);
                             });
