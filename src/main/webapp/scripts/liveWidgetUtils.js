@@ -1309,6 +1309,14 @@ WM.module('wm.widgets.live')
                 handleBackwardCompatibility(fieldType, scope, attrs, tElement);
                /*Get the respective widget properties*/
                 scope.widgetProps = getWidgetProps(attrs.widget, fieldType);
+                //Apply app defaults for date time widgets
+                if (scope.widget === 'date') {
+                    attrs.appDefaults= '{"datepattern": "dateFormat"}';
+                } else if (scope.widget === 'time') {
+                    attrs.appDefaults= '{"timepattern": "timeFormat"}';
+                } else if (scope.widget === 'datetime' || scope.widget === 'timestamp') {
+                    attrs.appDefaults= '{"datepattern": "dateTimeFormat"}';
+                }
             }
 
             function parseNgClasses(classExpression) {
