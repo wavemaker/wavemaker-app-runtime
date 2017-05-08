@@ -982,9 +982,8 @@ WM.module('wm.widgets.base')
             }
 
             if (CONSTANTS.isRunMode) {
-                $rs.$on('locale-change', function () {
-                    evalTFNFilterExprs();
-                });
+                $rs.$on('locale-change', evalTFNFilterExprs);
+                $rs.$on('eval-tfn-watchers', evalTFNFilterExprs);
             }
 
             // register the watchers.

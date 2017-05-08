@@ -24,7 +24,7 @@ WM.module("wm.widgets.basic")
                 '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>{{$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
-    }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS) {
+    }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS, $timeout) {
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.navigation']),
             notifyFor = {
@@ -333,6 +333,9 @@ WM.module("wm.widgets.basic")
                     $scope.disableNavigation();
                     $scope.invokeSetRecord(event, data);
                     Utils.triggerFn(callback);
+                    $timeout(function () {
+                        $scope.$emit('eval-tfn-watchers');
+                    });
                 };
 
                 /*Function to get data for the current page*/
