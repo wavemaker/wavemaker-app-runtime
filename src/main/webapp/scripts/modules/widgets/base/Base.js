@@ -3130,9 +3130,12 @@ WM.module('wm.widgets.base', [])
 
                 // collection of properties required to be updated
                 _.forEach(scope.widgetProps, function (prop, name) {
-                    if (prop.datasetfilter) {
+                    if (prop.datasetfilter || prop.bindonly === 'expression') {
                         requiredProps[name] = prop;
                         resetProps[name] = (name === 'datafield' && prop.allfields) ? ALLFIELDS : '';
+                        if (name === 'displayexpression') {
+                            resetProps['bind' + name] = '';
+                        }
                     }
                 });
 
