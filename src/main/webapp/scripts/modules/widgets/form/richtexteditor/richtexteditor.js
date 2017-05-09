@@ -50,6 +50,55 @@ WM.module('wm.widgets.form')
                 scope.$editor().wrapSelection('insertHtml', content);
             }
 
+            function performTableOperation(el, evt, focusCellMethod) {
+                var nodeName,
+                    isTableType,
+                    self = this,
+                    tableMethods = {
+                        'next'  : 'focusNextCell',
+                        'prev'  : 'focusPrevCell',
+                        'delete': 'deleteRow'
+                    },
+                    tableNodes = ['TR', 'TD', 'TABLE'];
+                if (!el) {
+                    return;
+                }
+                nodeName = el.nodeName;
+                if (nodeName === 'FONT' || nodeName === '#text') {
+                    el = el.parentNode;
+                    isTableType = performTableOperation.call(this, el, evt, focusCellMethod);
+                } else {
+                    if (_.includes(tableNodes, nodeName)) {
+                        isTableType = true;
+                        self[tableMethods[focusCellMethod]](el);
+                        evt.preventDefault();
+                    }
+                }
+                return isTableType;
+            }
+
+            function closeAllPopups(tools, ignorePopup) {
+                var backgroundColor = _.get(tools, 'backgroundColor'),
+                    fontColor = _.get(tools, 'fontColor'),
+                    insertTable = _.get(tools, 'insertTable'),
+                    formatHeader = _.get(tools, 'formatHeader');
+                //close other colorpickers
+                if (ignorePopup !== 'backgroundColor' && _.get(backgroundColor, 'isColorPickerOpen')) {
+                    backgroundColor.isOpen = false;
+                    backgroundColor.$element.find('.colorpicker').removeClass('colorpicker-visible');
+                }
+                if (ignorePopup !== 'fontColor' && _.get(fontColor, 'isColorPickerOpen')) {
+                    fontColor.isOpen = false;
+                    fontColor.$element.find('.colorpicker').removeClass('colorpicker-visible');
+                }
+                if (ignorePopup !== 'insertTable' && _.get(insertTable, 'popoverIsOpen')) {
+                    insertTable.popoverIsOpen = false;
+                }
+                if (ignorePopup !== 'formatHeader' && _.get(formatHeader, 'isOpen')) {
+                    formatHeader.isOpen = false;
+                }
+            }
+
             //sets the toolbar config to include new plugins
             function setToolBarConfig(taOptions, $el) {
                 toolbarConfig.insertTable = {
@@ -60,31 +109,15 @@ WM.module('wm.widgets.form')
                     'iconclass': 'fa fa-table',
                     'tooltiptext': 'Insert table',
                     'action': function (promise, restoreSelection) {
-                        var backgroundPicker = _.get(this.$parent.tools, 'backgroundColor'),
-                            fontColorPicker = _.get(this.$parent.tools, 'fontColor'),
-                            watcher;
-                        //close other colorpickers
-                        if (_.get(backgroundPicker, 'isColorPickerOpen')) {
-                            backgroundPicker.isOpen = false;
-                            backgroundPicker.$element.find('.colorpicker').removeClass('colorpicker-visible');
-                        }
-                        if (_.get(fontColorPicker, 'isColorPickerOpen')) {
-                            fontColorPicker.isOpen = false;
-                            fontColorPicker.$element.find('.colorpicker').removeClass('colorpicker-visible');
-                        }
-                        //resume the editor selection after the popover closes.
-                        watcher = this.$watch('popoverIsOpen', function (nv) {
-                            if (!nv) {
-                                watcher();
-                                restoreSelection();
-                            }
-                        });
-                        return false;
+                        //close other popups
+                        closeAllPopups(this.$parent.tools, 'insertTable');
+                        promise.resolve();
                     },
                     'onSelect':  function (result) {
-                        this.$parent.popoverIsOpen = false;
+                        var _parent = this.$parent;
+                        _parent.popoverIsOpen = false;
                         insertIntoTextEditor(this, createTableMarkup(result));
-                        this.$root.$safeApply(this.$parent);
+                        this.$root.$safeApply(_parent);
                     }
                 };
                 toolbarConfig.fontColor   = {
@@ -95,20 +128,13 @@ WM.module('wm.widgets.form')
                     'action': function (promise, restoreSelection) {
                         var backgroundPicker = _.get(this.$parent.tools, 'backgroundColor'),
                             tablePopover = _.get(this.$parent.tools, 'insertTable');
-                        if (_.get(backgroundPicker, 'isColorPickerOpen')) {
-                            backgroundPicker.isOpen = false;
-                            backgroundPicker.$element.find('.colorpicker').removeClass('colorpicker-visible');
-                        }
-                        if (_.get(tablePopover, 'popoverIsOpen')) {
-                            tablePopover.popoverIsOpen = false;
-                        }
+                        closeAllPopups(this.$parent.tools, 'fontColor');
                         if (this.isOpen) {
                             this.$element.find('.colorpicker').removeClass('colorpicker-visible');
                         }
                         this.isOpen = !this.isOpen;
                         if (!this.colorPicker || !this.colorPicker.foreColor) {
-                            promise.resolve();
-                            return promise;
+                            return;
                         }
                         return this.$editor().wrapSelection('foreColor', this.colorPicker.foreColor);
                     }
@@ -122,20 +148,13 @@ WM.module('wm.widgets.form')
                     'action': function(promise, restoreSelection) {
                         var fontColorPicker = _.get(this.$parent.tools, 'fontColor'),
                             tablePopover = _.get(this.$parent.tools, 'insertTable');
-                        if (_.get(fontColorPicker, 'isColorPickerOpen')) {
-                            fontColorPicker.isOpen = false;
-                            fontColorPicker.$element.find('.colorpicker').removeClass('colorpicker-visible');
-                        }
-                        if (_.get(tablePopover, 'popoverIsOpen')) {
-                            tablePopover.popoverIsOpen = false;
-                        }
+                        closeAllPopups(this.$parent.tools, 'backgroundColor');
                         if (this.isOpen) {
                             this.$element.find('.colorpicker').removeClass('colorpicker-visible');
                         }
                         this.isOpen = !this.isOpen;
                         if (!this.colorPicker || !this.colorPicker.backColor) {
-                            promise.resolve();
-                            return promise;
+                            return;
                         }
                         return this.$editor().wrapSelection('backColor', this.colorPicker.backColor);
                     }
@@ -145,17 +164,14 @@ WM.module('wm.widgets.form')
                         "<button class='btn btn-default' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><i class='fa fa-font'></i><i class='fa fa-caret-down'></i></button>" +
                         "<ul class='font-list' uib-dropdown-menu role='menu'><li role='menuitem' ng-repeat='font in options'><button class='btn btn-default' style='font-family: {{font.css}};' type='button' ng-click='selectFont($event, font.css)'>{{font.name}}</button></li></ul></div>",
                     'action': function (promise, restoreSelection) {
-                        var font = this.font,
-                            editor = this.$editor();
-                        if (!font) {
-                            return promise.resolve();
-                        }
-                        this.font = undefined;
-                        $el.find('[contenteditable]').trigger('click');
-                        return this.$editor().wrapSelection('fontName', font);
+                        promise.resolve();
+                        closeAllPopups(this.$parent.tools, 'fontName');
                     },
                     'selectFont': function(event, font) {
-                        this.$parent.font = font;
+                        event.stopPropagation();
+                        var _parent = this.$parent;
+                        _parent.$editor().wrapSelection('fontName', font);
+                        _parent.isOpen = false;
                     },
                     'options': [
                         { name: 'Sans-Serif', css: 'Arial, Helvetica, sans-serif' },
@@ -179,17 +195,14 @@ WM.module('wm.widgets.form')
                         "<ul uib-dropdown-menu class='fontsize-list' role='menu'><li role='menuitem' ng-repeat='o in options'><button class='btn btn-default' style='font-family: {{$parent.$parent.tools.fontName.font}};font-size: {{o.css}};' type='button' ng-click='selectSize($event, o.value)'>{{o.name}}</button></li></ul>" +
                         "</div>",
                     'action': function (promise, restoreSelection) {
-                        var size = this.size,
-                            editor = this.$editor();
-                        if (!size) {
-                            return promise.resolve();
-                        }
-                        this.size = undefined;
-                        $el.find('[contenteditable]').trigger('click');
-                        return this.$editor().wrapSelection('fontSize', parseInt(size));
+                        promise.resolve();
+                        closeAllPopups(this.$parent.tools, 'fontSize');
                     },
                     'selectSize': function (event, size) {
-                        this.$parent.size = size;
+                        event.stopPropagation();
+                        var _parent = this.$parent;
+                        _parent.$editor().wrapSelection('fontSize', parseInt(size));
+                        _parent.isOpen = false;
                     },
                     'options': [
                         { name: 'xx-small', css: 'xx-small', value: 1 },
@@ -208,18 +221,17 @@ WM.module('wm.widgets.form')
                         "</div>",
                     'tooltiptext': 'Insert Style',
                     'action': function (promise, restoreSelection) {
-                        var format = this.format,
-                            editor = this.$editor();
-                        if (!format) {
-                            return promise.resolve();
-                        }
-                        this.format = undefined;
-                        this.$editor().queryFormatBlockState(format.toLowerCase());
-                        $el.find('[contenteditable]').trigger('click');
-                        return this.$editor().wrapSelection('formatBlock', '<' + format + '>');
+                        promise.resolve();
+                        closeAllPopups(this.$parent.tools, 'formatHeader');
                     },
                     'selectFormat': function (event, format) {
-                        this.$parent.format = format;
+                        event.stopPropagation();
+                        var _parent = this.$parent,
+                            _editor = _parent.$editor();
+                        _editor.queryFormatBlockState(format.toLowerCase());
+                        _editor.wrapSelection('formatBlock', '<' + format + '>');
+                        _parent.isOpen = false;
+                        this.activeState();
                     },
                     'setNodeName': function (el) {
                         var nodeName;
@@ -260,7 +272,6 @@ WM.module('wm.widgets.form')
                 //set the key mappings for the tab and shift tab combinations when inside the table to perform cell navigation
                 taOptions.keyMappings = [{
                     'commandKeyCode': 'TabKey',
-                    'tableNodes': ['TR', 'TD', 'TABLE'],
                     'addTableRow': function($el, columnLength) {
                         var columnTemplate = '<td contenteditable="true">&nbsp;</td>',
                             row = WM.element('<tr></tr>');
@@ -283,30 +294,10 @@ WM.module('wm.widgets.form')
                             }
                         }
                     },
-                    'isElTableType': function(el, evt) {
-                        var nodeName,
-                            isTableType,
-                            that = this;
-                        if (!el) {
-                            return;
-                        }
-                        nodeName = el.nodeName;
-                        if (nodeName === 'FONT' || nodeName === '#text') {
-                            el = el.parentNode;
-                            isTableType = this.isElTableType(el, evt);
-                        } else {
-                            if (_.includes(this.tableNodes, nodeName)) {
-                                isTableType = true;
-                                that.focusNextCell(el);
-                                evt.preventDefault();
-                            }
-                        }
-                        return isTableType;
-                    },
                     'testForKey': function (event) {
                         if (event.keyCode === 9 && !event.shiftKey) {
                             var currentEl = window.getSelection().getRangeAt(0).startContainer;
-                            if (this.isElTableType(currentEl, event)) {
+                            if (performTableOperation.call(this, currentEl, event, 'next')) {
                                 return false;
                             }
                             return true;
@@ -315,7 +306,6 @@ WM.module('wm.widgets.form')
                     }
                 }, {
                     'commandKeyCode': 'ShiftTabKey',
-                    'tableNodes': ['TR', 'TD', 'TABLE'],
                     'focusPrevCell': function(el) {
                         var prevEl = WM.element(el).prev();
                         if (prevEl.length) {
@@ -324,30 +314,27 @@ WM.module('wm.widgets.form')
                             WM.element(el).parent().prev().children(':last').focus();
                         }
                     },
-                    'isElTableType': function(el, evt) {
-                        var nodeName,
-                            isTableType,
-                            that = this;
-                        if (!el) {
-                            return;
-                        }
-                        nodeName = el.nodeName;
-                        if (nodeName === 'FONT' || nodeName === '#text') {
-                            el = el.parentNode;
-                            isTableType = this.isElTableType(el, evt);
-                        } else {
-                            if (_.includes(this.tableNodes, nodeName)) {
-                                isTableType = true;
-                                that.focusPrevCell(el);
-                                evt.preventDefault();
-                            }
-                        }
-                        return isTableType;
-                    },
                     'testForKey': function (event) {
                         if (event.keyCode === 9 && event.shiftKey) {
                             var currentEl = window.getSelection().getRangeAt(0).startContainer;
-                            if (this.isElTableType(currentEl, event)) {
+                            if (performTableOperation.call(this, currentEl, event, 'prev')) {
+                                return false;
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                }, {
+                    'commandKeyCode': 'DelTables',
+                    'deleteRow': function(el) {
+                        var tableRowEl = WM.element(el).closest('tr');
+                        tableRowEl.remove();
+                    },
+                    'testForKey': function(event) {
+                        var currentEl;
+                        if (event.keyCode === 46 && event.shiftKey) {
+                            currentEl = window.getSelection().getRangeAt(0).startContainer;
+                            if (performTableOperation.call(this, currentEl, event, 'delete')) {
                                 return false;
                             }
                             return true;
@@ -373,13 +360,22 @@ WM.module('wm.widgets.form')
             //loads the rich text editor config
             function loadRichTextEditorConfig($el) {
                 var taRegisterTool = $injector.get('taRegisterTool'),
-                    taOptions = $injector.get('taOptions');
+                    taOptions = $injector.get('taOptions'),
+                    taTools = $injector.get('taTools');
 
                 setToolBarConfig(taOptions, $el);
 
                 //register the extra configs we designed
                 _.forEach(toolbarConfig, function(config, widget) {
                     taRegisterTool(widget, config);
+                });
+
+                //override the undo action to replace the colors and other values set on action
+                _.set(taTools, 'undo.action' , function() {
+                    var tools = _.get($el.find('[text-angular-toolbar]').isolateScope(), 'tools');
+                    _.set(tools, 'backgroundColor.colorPicker.backColor', '#333');
+                    _.set(tools, 'fontColor.colorPicker.foreColor', '#333');
+                    return this.$editor().wrapSelection("undo", null);
                 });
             }
 
@@ -483,6 +479,18 @@ WM.module('wm.widgets.form')
                         var hiddenInputEl = $el.children('input'),
                             ngModelCtrl;
 
+                        function getChangeEvt() {
+                            var changeEvt;
+                            //for IE the event constructor doesn't work so use the createEvent proto
+                            if (typeof(Event) === 'function') {
+                                changeEvt = new Event('change');
+                            } else{
+                                changeEvt = document.createEvent('Event');
+                                changeEvt.initEvent('change', true, true);
+                            }
+                            return changeEvt;
+                        }
+
                         if (!attrs.widgetid && attrs.scopedatavalue) {
                             $is.$on('$destroy', $is.$watch('_model_', function (newVal) {
                                 hiddenInputEl.val(newVal);
@@ -495,7 +503,7 @@ WM.module('wm.widgets.form')
                                 taApplyCustomRenderers = $injector.get("taApplyCustomRenderers");
                             }
                             $is.htmlcontent = taApplyCustomRenderers($is.datavalue);
-                            $is._onChange(new Event('change'));
+                            $is._onChange(getChangeEvt());
                         });
 
                         /*Called from form reset when users clicks on form reset*/
