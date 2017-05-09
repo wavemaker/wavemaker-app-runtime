@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -41,6 +40,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -66,7 +66,10 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
-        if (ex instanceof MethodArgumentNotValidException) {
+        if (ex instanceof MethodArgumentTypeMismatchException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleRuntimeException((MethodArgumentTypeMismatchException) ex);
+        } else if (ex instanceof MethodArgumentNotValidException) {
             return handleMethodArgumentNotValidException((MethodArgumentNotValidException) ex, response);
         } else if (ex instanceof MethodConstraintViolationException) {
             return handleMethodConstraintViolationException((MethodConstraintViolationException) ex, response);
