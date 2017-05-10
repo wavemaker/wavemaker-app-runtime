@@ -26,7 +26,7 @@ WM.module('wm.layouts.page')
                 break;
             case 'animation':
                 var appPage = element.closest('.app-page');
-                if (newVal === 'slide-in') {
+                if (newVal === 'slide-in' && oldVal) {
                     appPage.addClass('slide-in-left-panel-container');
                 } else {
                     appPage.removeClass('slide-in-left-panel-container');
@@ -110,7 +110,6 @@ WM.module('wm.layouts.page')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        scope.collapse();
                     }
                 };
             }
