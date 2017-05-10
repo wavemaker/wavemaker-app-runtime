@@ -36,6 +36,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.wavemaker.commons.InvalidInputException;
+
 /**
  * Created by sunilp on 24/9/15.
  * <p/>
@@ -239,10 +241,10 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
             return null;
         }
 
-        int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE) - (oneIndexedParameters ? 1 : 0)
-                : defaultOrFallback.getPageNumber();
-        int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize)
-                : defaultOrFallback.getPageSize();
+        int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageParameterName, pageString, Integer.MAX_VALUE
+        ) - (oneIndexedParameters ? 1 : 0) : defaultOrFallback.getPageNumber();
+        int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(sizeParameterName, pageSizeString, maxPageSize
+        ) : defaultOrFallback.getPageSize();
 
         // Limit lower bound
         pageSize = pageSize < 1 ? maxPageSize : pageSize;
@@ -309,17 +311,18 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
      * Tries to parse the given {@link String} into an integer and applies the given boundaries. Will return the lower
      * boundary if the {@link String} cannot be parsed.
      *
+     * @param parameterName
      * @param parameter
      * @param upper
      * @return
      */
-    private int parseAndApplyBoundaries(String parameter, int upper) {
-
+    private int parseAndApplyBoundaries(String parameterName, String parameter, int upper) {
         try {
             int parsed = Integer.parseInt(parameter);
             return parsed < 0 ? 0 : parsed > upper ? upper : parsed;
         } catch (NumberFormatException e) {
-            return 0;
+            // cannot wrap the exception
+            throw new InvalidInputException(parameterName + " value is invalid");
         }
     }
 
