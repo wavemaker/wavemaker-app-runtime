@@ -15,7 +15,9 @@
  */
 package com.wavemaker.runtime.data.exception;
 
-public class EntityNotFoundException extends RuntimeException {
+import com.wavemaker.commons.WMRuntimeException;
+
+public class EntityNotFoundException extends WMRuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 
