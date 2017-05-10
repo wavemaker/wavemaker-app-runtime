@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +52,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 
 /**
@@ -78,6 +80,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((ConstraintViolationException) ex);
+        } else if (ex instanceof EntityNotFoundException) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return handleEntityNotFoundException((EntityNotFoundException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleRuntimeException((DataIntegrityViolationException) ex);
@@ -164,6 +169,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     private ModelAndView handleRuntimeException(RuntimeException ex) {
         String msg = ExceptionUtils.getRootCauseMessage(ex);
         ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+        return getModelAndView(errorResponse);
+    }
+
+    private ModelAndView handleEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.ENTITY_NOT_FOUND);
         return getModelAndView(errorResponse);
     }
 
