@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.hibernate4.HibernateQueryException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -48,6 +49,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
@@ -68,7 +70,10 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
-        if (ex instanceof MethodArgumentTypeMismatchException) {
+        if (ex instanceof InvalidInputException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleInvalidInputException((InvalidInputException) ex);
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((MethodArgumentTypeMismatchException) ex);
         } else if (ex instanceof MethodArgumentNotValidException) {
@@ -100,10 +105,22 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             return handleWMExceptions((WMRuntimeException) ex);
         } else if (ex instanceof HttpMessageNotReadableException) {
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
-        } else {
+        }  else if (ex instanceof HibernateQueryException){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleHibernateQueryException((HibernateQueryException) ex);
+        }else {
             logger.error("Unknown error for url {}", request.getRequestURI(), ex);
             return handleException(ex, response);
         }
+    }
+
+    private ModelAndView handleInvalidInputException(final InvalidInputException ex) {
+        return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, ex.getMessage()));
+    }
+
+    private ModelAndView handleHibernateQueryException(final HibernateQueryException ex) {
+        // Not using the root cause for now.
+        return getModelAndView(getErrorResponse(MessageResource.INVALID_SQL_QUERY));
     }
 
     private ModelAndView handleMethodArgumentNotValidException(
