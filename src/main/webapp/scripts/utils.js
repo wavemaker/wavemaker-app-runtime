@@ -156,7 +156,8 @@ WM.module('wm.utils', [])
                 'TIMESTAMP'      : 'timestamp',
                 'DATETIME'       : 'yyyy-MM-ddTHH:mm:ss',
                 'LOCALDATETIME'  : 'yyyy-MM-ddTHH:mm:ss',
-                'DATETIME_ORACLE': 'yyyy-MM-dd HH:mm:ss'
+                'DATETIME_ORACLE': 'yyyy-MM-dd HH:mm:ss',
+                'DATE_TIME'      : 'yyyy-MM-dd HH:mm:ss'
             },
             indexPage = getIndexPage(),
             pluginConfig = {

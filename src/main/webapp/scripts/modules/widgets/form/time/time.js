@@ -76,8 +76,8 @@ WM.module('wm.widgets.form')
                     inputEl.first().attr(key, nv);
                     break;
                 case 'timepattern':
-                    $is.showseconds = _.includes(nv, 'ss');
-                    $is.ismeridian  = _.includes(nv, 'hh');
+                    $is.showseconds = _.includes(nv, 's');
+                    $is.ismeridian  = _.includes(nv, 'h');
                     setTimeModel($is);
                     break;
                 }

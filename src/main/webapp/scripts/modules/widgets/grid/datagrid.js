@@ -450,7 +450,9 @@ $.widget('wm.datagrid', {
             ctId = row.$$pk + '-' + colId,
             value,
             isCellCompiled = false,
-            columnValue;
+            columnValue,
+            formatPattern = colDef.formatpattern,
+            datePattern = colDef.datepattern;
 
         if (colDef.field) {
             //setting the default value
@@ -464,28 +466,28 @@ $.widget('wm.datagrid', {
             isCellCompiled = true;
         }
 
-        if (!colDef.formatpattern) {
+        if (!formatPattern) {
             if (colDef.type === 'date' && this.options.dateFormat) {
-                colDef.formatpattern = 'toDate';
-                colDef.datepattern  = this.options.dateFormat;
+                formatPattern = 'toDate';
+                datePattern  = this.options.dateFormat;
             } else if (colDef.type === 'time' && this.options.timeFormat) {
-                colDef.formatpattern = 'toDate';
-                colDef.datepattern  = this.options.timeFormat;
+                formatPattern = 'toDate';
+                datePattern  = this.options.timeFormat;
             } else if (colDef.type === 'datetime' && this.options.dateTimeFormat) {
-                colDef.formatpattern = 'toDate';
-                colDef.datepattern  = this.options.dateTimeFormat;
+                formatPattern = 'toDate';
+                datePattern  = this.options.dateTimeFormat;
             }
         }
 
         /*constructing the expression based on the choosen format options*/
-        if (colDef.formatpattern && colDef.formatpattern !== "None" && !colExpression) {
-            switch (colDef.formatpattern) {
+        if (formatPattern && formatPattern !== "None" && !colExpression) {
+            switch (formatPattern) {
             case 'toDate':
-                if (colDef.datepattern) {
+                if (datePattern) {
                     if (colDef.type === 'datetime') {
                         columnValue = columnValue ? moment(columnValue).valueOf() : undefined;
                     }
-                    colExpression = "{{'" + columnValue + "' | toDate:'" + colDef.datepattern + "'}}";
+                    colExpression = "{{'" + columnValue + "' | toDate:'" + datePattern + "'}}";
                 }
                 break;
             case 'toCurrency':
@@ -2160,6 +2162,7 @@ $.widget('wm.datagrid', {
             placeholder = field.filterplaceholder || '',
             fieldName   = field.field,
             widgetName  = ' name="' + this.options.name + '_filter_' + fieldName + '"',
+            timeFormat  = this.options.timeFormat || 'hh:mm:ss a',
             template,
             filterOptions;
         widget = widget === 'number' ? 'text' : widget;
@@ -2187,7 +2190,7 @@ $.widget('wm.datagrid', {
             template += ' dataset="' + this.options.getBindDataSet() + '" type="autocomplete" on-submit="onRowFilterChange()"';
             break;
         case 'time':
-            template += ' timepattern="hh:mm:ss a" ';
+            template += ' timepattern="' + timeFormat + '" ';
             break;
         }
         template += '></wm-' + widget + '>';
