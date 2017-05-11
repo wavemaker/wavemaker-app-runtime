@@ -321,6 +321,10 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
             int parsed = Integer.parseInt(parameter);
             return parsed < 0 ? 0 : parsed > upper ? upper : parsed;
         } catch (NumberFormatException e) {
+            // Temporary fix
+            if (parameterName.equals("size") && parameter.equals(":size")) {
+                return 0;
+            }
             // cannot wrap the exception
             throw new InvalidInputException(parameterName + " value is invalid");
         }
