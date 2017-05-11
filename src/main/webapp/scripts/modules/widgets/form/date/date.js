@@ -17,7 +17,8 @@ WM.module('wm.widgets.form')
                     ' ng-disabled="disabled" ' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-change="_onChange({$event: $event, $scope: this})"' +
-                    ' ng-keyup="_onKeyUp($event)">' +
+                    ' ng-keyup="_onKeyUp($event)"' +
+                    ' autocomplete="off">' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
@@ -67,7 +68,9 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                 case 'disabled':
                     // prevent the click events on decrement/increment buttons
-                    element.css('pointer-events', (scope.readonly || scope.disabled) ? 'none' : 'all');
+                    if (CONSTANTS.isRunMode) {
+                        element.css('pointer-events', (scope.readonly || scope.disabled) ? 'none' : 'all');
+                    }
                     break;
                 case 'timestamp':
                     /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/

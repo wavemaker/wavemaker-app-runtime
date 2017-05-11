@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                     '<div class="btn-group btn-group-justified">' +
                         '<a title="{{opt[displayfield || \'label\']}}" focus-target href="javascript:void(0);" role="button" class="btn btn-default" name="wm-switch-{{opt}}" ng-disabled="disabled" ' +
                             ' ng-repeat="opt in options track by $index" ng-class="{\'selected\': selected.index === $index}"' +
-                            ' ng-click="selectOpt($event, $index)"><i ng-if="opt[iconclass || \'icon\']" class="app-icon {{opt[iconclass] || opt[\'icon\']}}"></i>{{opt[displayfield] || opt["label"]}}</a>' +
+                            ' ng-click="selectOpt($event, $index)"><i ng-if="opt[iconclass || \'icon\']" class="app-icon {{opt[iconclass] || opt[\'icon\']}}"></i>{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
                     '<span title="{{options[selected.index][displayfield || \'label\'] || _model_}}" class="btn btn-primary app-switch-overlay switch-handle" ><i ng-if="options[selected.index][iconclass || \'icon\']" class="app-icon {{options[selected.index][iconclass || \'icon\']}}"></i>{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
                     '<input name={{name}} class="model-holder ng-hide" ng-disabled="disabled" value="{{_model_}}"  ng-required="required">' +
