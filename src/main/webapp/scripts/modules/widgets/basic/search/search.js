@@ -687,7 +687,7 @@ WM.module('wm.widgets.basic')
                 if (_.has(item, 'wmDisplayLabel')) {
                     return item.wmDisplayLabel;
                 }
-                if ($is.displaylabel) {
+                if ($is.displaylabel || $is.binddisplaylabel) {
                     return WidgetUtilService.getEvaluatedData($is, item, {expressionName: 'displaylabel'});
                 }
 
