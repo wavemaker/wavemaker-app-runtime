@@ -40,7 +40,13 @@ public class CdnFileController extends AbstractController {
             // trim off the context path
             reqPath = reqPath.substring(request.getContextPath().length());
         }
-        reqPath = reqPath.substring(CDN_URL_PATTERN.length());
-        return new ModelAndView(new InternalResourceView("/" + reqPath));
+        if (reqPath.startsWith(CDN_URL_PATTERN) && !reqPath.equals(CDN_URL_PATTERN)) {
+            reqPath = reqPath.substring(CDN_URL_PATTERN.length());
+            if (reqPath.startsWith("wmapp/") || reqPath.startsWith("wmmobile/")) {
+                return new ModelAndView(new InternalResourceView("/" + reqPath));
+            }
+        }
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;
     }
 }
