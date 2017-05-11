@@ -473,6 +473,7 @@ WM.module('wm.prefabs')
              * Show the prefab upgradation dialog.
              */
             function showPrefabUpgradeDialog(prefabName) {
+                var prefab = getProjectPrefab(prefabName);
                 DialogService
                     .showDialog('upgradePrefabDialog', {
                         'resolve': {
@@ -488,8 +489,9 @@ WM.module('wm.prefabs')
                                     });
                                 };
                             },
-                            'prefabName': function () {
-                                return prefabName;
+                            'prefab': function() {
+                                prefab.conflictMessage = constructPrefabConflictMessage(prefab);
+                                return prefab;
                             }
                         }
                     });
