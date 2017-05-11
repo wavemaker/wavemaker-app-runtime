@@ -25,6 +25,7 @@ var Application =
     WM.module('Application',
         [
             'ngRoute',
+            'ngCookies',
             'ui.bootstrap',
             'wm.common',
             'wm.variables',
@@ -247,8 +248,9 @@ Application
             '$route',
             '$http',
             'DeviceService',
+            '$cookies',
 
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService) {
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies) {
                 'use strict';
 
                 var prevRoute,
@@ -481,7 +483,7 @@ Application
 
                 // This function returns the accepted languages list
                 function getAcceptedLanguages() {
-                    var languages = CONSTANTS.hasCordova ? navigator.languages : (Utils.getCookieByName('X-Accept-Language') || '').split(',');
+                    var languages = CONSTANTS.hasCordova ? navigator.languages : ($cookies.get('X-Accept-Language') || '').split(',');
                     return _.map(languages, _.toLower);
                 }
 

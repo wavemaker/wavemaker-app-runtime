@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1565,22 +1565,7 @@ WM.module('wm.utils', [])
         }
 
         function getCookieByName(name) {
-            var cookiesArray = document.cookie.split('; '),
-                cookies      = {};
-
-            if (_.some(cookiesArray, function (cookie) {
-                    var index           = cookie.indexOf('='),
-                        cookieName      = cookie.substr(0, index),
-                        cookieValue     = cookie.substr(index + 1);
-                    cookies[cookieName] = cookieValue;
-
-                    if (cookieName === name) { // break the loop when the required cookie is found
-                        return true;
-                    }
-
-                })) {
-                return decodeURIComponent(cookies[name]);
-            }
+            return $cookies.get(name);
         }
 
         /*Function to check whether the specified object is a pageable object or not.*/
