@@ -736,7 +736,8 @@ WM.module('wm.widgets.base', [])
                         "uncheckedvalue": {"type": "string"},
                         "scopedatavalue": {"type": "string"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
-                        "shortcutkey": {"type": "string"}
+                        "shortcutkey": {"type": "string"},
+                        "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"}
                     },
                     "wm.checkboxset": {
                         "width": {"type": "string", "pattern": dimensionRegex},
