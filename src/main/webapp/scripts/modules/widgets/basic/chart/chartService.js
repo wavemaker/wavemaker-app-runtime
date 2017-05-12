@@ -74,7 +74,7 @@ WM.module('wm.widgets.basic')
                         }
                     }
                 },
-                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'centerlabel', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints', 'interpolation'],
+                basicProperties = ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xnumberformat', 'xdateformat', 'ynumberformat', 'showvalues', 'showlabels', 'viewtype', 'areaviewtype', 'staggerlabels', 'reducexticks', 'offsettop', 'offsetbottom', 'offsetright', 'offsetleft', 'barspacing', 'xaxislabeldistance', 'yaxislabeldistance', 'theme', 'labeltype', 'donutratio', 'showlabelsoutside', 'showxdistance', 'showydistance', 'shape', 'nodatamessage', 'captions', 'showxaxis', 'showyaxis', 'centerlabel', 'customcolors', 'showlegend', 'legendtype', 'xdomain', 'ydomain', 'tooltips', 'linethickness', 'highlightpoints', 'interpolation', 'labelthreshold'],
                 barSpacingMap = {
                     'small' : 0.3,
                     'medium' : 0.5,
@@ -618,11 +618,16 @@ WM.module('wm.widgets.basic')
                         .labelType(propertyValueMap.labeltype)
                         .valueFormat(d3.format('%'))
                         .title(propertyValueMap.centerlabel)
-                        .labelThreshold(0.04)
+                        .labelThreshold(propertyValueMap.labelthreshold || 0.01)
                         .labelsOutside(labelConfig.showlabelsoutside);
                     if (isDonutChart(scope.type)) {
                         chart.donut(true)
                             .donutRatio(radius);
+                    }
+                    if (propertyValueMap.labeltype === 'key-value') {
+                        chart.labelType(function (d) {
+                            return d.data.x + ' ' + d.data.y;
+                        });
                     }
                     break;
                 case 'Bubble':
