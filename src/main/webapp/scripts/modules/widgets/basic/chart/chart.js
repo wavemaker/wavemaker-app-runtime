@@ -837,10 +837,11 @@ WM.module('wm.widgets.basic')
             chart = ChartService.initChart(scope, xDomainValues, yDomainValues, null, !scope.binddataset);
 
             if (WM.isArray(chartData)) {
+                scope.chart = chart;
                 // changing the default no data message
                 d3.select('#wmChart' + scope.$id + ' svg')
                     .datum(chartData)
-                    .call(chart);
+                    .call(scope.chart);
                 postPlotProcess(scope, element, chart);
                 return chart;
             }
