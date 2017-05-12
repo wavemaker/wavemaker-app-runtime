@@ -18,9 +18,9 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
+                    ' ng-class="{\'invalid-input\' : (query && !_model_ && type === \'autocomplete\')}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
-                    ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
                     ' autocomplete="off"' +
                     ' typeahead-loading="_loadingItems" ' +
@@ -29,6 +29,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-is-open="isOpen"' +
                     ' typeahead-min-length="minLength" focus-target>' +
+                '<input name={{name}} class="model-holder" ng-model="_model_" ng-required="required">' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="wi wi-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
@@ -693,6 +694,13 @@ WM.module('wm.widgets.basic')
             }
 
             function updateResult($is, matches) {
+                // on typing the value in input, make the datavalue undefined, if no matches found.
+                if (CONSTANTS.isRunMode && (!matches || _.isEmpty(matches))) {
+                    var query = $is.query;
+
+                    $is.datavalue = undefined;
+                    $is.queryModel = $is.query = query;
+                }
                 $is.result = ($is.datafield === ALL_FIELDS || !$is.datafield) ? matches : _.map(matches, $is.datafield);
             }
 
@@ -791,11 +799,6 @@ WM.module('wm.widgets.basic')
 
                         Object.defineProperty($is, '_model_', {
                             get: function () {
-                                // check if datavalue is null.
-                                if (!WM.isDefined($is._proxyModel)) {
-                                    return '';
-                                }
-
                                 return $is._proxyModel;
                             },
                             set: function (newVal) {

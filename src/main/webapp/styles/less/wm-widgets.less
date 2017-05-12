@@ -204,6 +204,20 @@ html, body {
   vertical-align: middle;
   input {
     height: 100%;
+    &.model-holder {
+      width: 0;
+      height: 0;
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      z-index: -1000;
+    }
+    &.invalid-input {
+      border-color: transparent;
+      background-image: none;
+      border-bottom: 2px solid #F44336;
+      outline: none;
+    }
   }
   .app-search-button {
     .remove-background();
