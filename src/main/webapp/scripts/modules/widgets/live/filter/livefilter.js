@@ -221,6 +221,11 @@ WM.module('wm.widgets.live')
                         $scope.filter(options);
                     };
 
+                    //debounce the filter function. If multiple filter calls are made at same time, calls will be delayed and last call is fired
+                    $scope._filter = _.debounce(function(options) {
+                        $scope.filter(options);
+                    }, 200);
+
                     $scope.filter = function (options) {
                         var formFields = {},
                             variable = $scope.Variables[$scope.variableName],
@@ -473,7 +478,7 @@ WM.module('wm.widgets.live')
                         });
                         /*If default value exists and data is loaded, apply the filter*/
                         if (defaultObj && $scope.result) {
-                            $scope.filter();
+                            $scope._filter($scope.result.options);
                         }
                     };
                     $scope.expandCollapsePanel = function ($event) {
@@ -589,7 +594,7 @@ WM.module('wm.widgets.live')
                                 scope.result.isBoundToFilter    = true;
 
                                 //On load check if default value exists and apply filter, Call the filter with the result options
-                                scope.filter(scope.result.options);
+                                scope._filter(scope.result.options);
                             }
 
                             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
