@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,9 +38,13 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.callbacks.RuntimePaginatedCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
@@ -109,9 +114,15 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         });
     }
 
+    @Override
+    public Page<Entity> list(Pageable pageable) {
+        return search(null, pageable);
+    }
+
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
+        validateSort(pageable.getSort());
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
@@ -122,14 +133,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         });
     }
 
-    public Page<Entity> list() {
-        return search(null, null);
-    }
-
     @SuppressWarnings("unchecked")
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
+        validateSort(pageable.getSort());
         validateQueryFilters(queryFilters);
-
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
@@ -154,6 +161,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
+        validateSort(pageable.getSort());
         return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
             @Override
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
@@ -166,7 +174,46 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
+    public long count() {
+        return getTemplate().execute(new HibernateCallback<Long>() {
+            @Override
+            public Long doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                return CriteriaUtils.getRowCount(criteria);
+            }
+        });
+    }
+
+    @Override
+    public long count(final String query) {
+        return getTemplate().execute(new HibernateCallback<Long>() {
+            @Override
+            public Long doInHibernate(Session session) throws HibernateException {
+                Tuple.Two<Query, Map<String, Object>> queryInfo =
+                        HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
+                return QueryHelper
+                        .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
+            }
+        });
+    }
+
+    @Override
+    public Page<Map<String, Object>> getAggregatedValues(
+            final AggregationInfo aggregationInfo, final Pageable pageable) {
+        validateSort(pageable.getSort());
+        HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
+        builder.withAggregationInfo(aggregationInfo);
+
+        final WMQueryInfo queryInfo = builder.build();
+        String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
+        return getTemplate()
+                .execute(new RuntimePaginatedCallback(queryInfo.getQuery(), countQuery, queryInfo.getParameters(),
+                        pageable));
+    }
+
+    @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
+        validateSort(pageable.getSort());
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(new HibernateCallback<ByteArrayOutputStream>() {
                     @Override
@@ -185,6 +232,9 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
+    public Page<Entity> list() {
+        return search(null, null);
+    }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
         if (ArrayUtils.isNotEmpty(queryFilters)) {
@@ -221,45 +271,28 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return attributeType.toJavaType(attributeValue);
     }
 
-    @Override
-    public Page<Entity> list(Pageable pageable) {
-        return search(null, pageable);
-    }
-
-    @Override
-    public long count() {
-        return getTemplate().execute(new HibernateCallback<Long>() {
-            @Override
-            public Long doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                return CriteriaUtils.getRowCount(criteria);
+    private void validateSort(Sort sort) {
+        if (sort != null) {
+            for (final Sort.Order order : sort) {
+                final String property = order.getProperty();
+                final String[] split = property.split("\\.");
+                try {
+                    if (split.length != 2) {//Field name of the same entity (eg:empId) is successfully fetched.
+                        //Field name of more than one related entity (eg:employee.department.name) also comes here and
+                        // throws error since it is not supported.
+                        this.entityClass.getDeclaredField(property);
+                    } else { //Field names of one related entity like eg:employee.firstname are handled here.
+                        final String propertyName = split[0];
+                        final Field propertyField = this.entityClass.getDeclaredField(propertyName);
+                        final Class<?> propertyTypeClass = propertyField.getType();
+                        propertyTypeClass.getDeclaredField(split[1]);
+                    }
+                } catch (NoSuchFieldException e) {
+                    throw new InvalidInputException(MessageResource.UNKNOWN_FIELD_NAME, property);
+                } catch (Exception e) {
+                    throw new WMRuntimeException(e);
+                }
             }
-        });
-    }
-
-    @Override
-    public long count(final String query) {
-        return getTemplate().execute(new HibernateCallback<Long>() {
-            @Override
-            public Long doInHibernate(Session session) throws HibernateException {
-                Tuple.Two<Query, Map<String, Object>> queryInfo =
-                        HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
-                return QueryHelper
-                        .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
-            }
-        });
-    }
-
-    @Override
-    public Page<Map<String, Object>> getAggregatedValues(
-            final AggregationInfo aggregationInfo, final Pageable pageable) {
-        HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
-        builder.withAggregationInfo(aggregationInfo);
-
-        final WMQueryInfo queryInfo = builder.build();
-        String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
-        return getTemplate()
-                .execute(new RuntimePaginatedCallback(queryInfo.getQuery(), countQuery, queryInfo.getParameters(),
-                        pageable));
+        }
     }
 }
