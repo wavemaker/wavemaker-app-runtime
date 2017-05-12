@@ -770,8 +770,14 @@ WM.module('wm.utils', [])
                         var index = _.includes(param, '=') ? param.indexOf('=') : (param && param.length),
                             paramName = param.substr(0, index),
                             paramValue = param.substr(index + 1),
+                            decodedParamValue;
+                        //add the = for param name only when the param value exists in the given param or empty value is assigned
+                        if (paramValue || _.includes(param, '=')) {
                             decodedParamValue = getDecodedParamValue(paramValue);
-                        encodedParams += paramName + '=' + encodeURIComponent(decodedParamValue) + '&';
+                            encodedParams += paramName + '=' + encodeURIComponent(decodedParamValue) + '&';
+                        } else {
+                            encodedParams += paramName + '&';
+                        }
                     });
                     encodedParams = encodedParams.slice(0, -1);
                     url = url.replace(queryParamsString, encodedParams);
