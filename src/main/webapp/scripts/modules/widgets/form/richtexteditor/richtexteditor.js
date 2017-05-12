@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $tc.put('template/widget/richtexteditor.html',
             '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles role="input">' +
-                '<div text-angular ng-model="_model_" ta-disabled="readonly" placeholder="Enter text"></div>' +
+                '<div text-angular ng-model="_model_" ta-disabled="readonly" placeholder=" "></div>' +
                 '<div ta-bind ng-model="_model_" class="ta-preview" ng-if="showpreview"></div>' +
                 '<input class="model-holder ng-hide" ng-disabled="disabled">' +
             '</div>'
@@ -24,7 +24,15 @@ WM.module('wm.widgets.form')
             'use strict';
 
             var toolbarConfig = {},
-                isConfigLoaded = false;
+                isConfigLoaded = false,
+                tooltipText = {
+                    'formatHeader': 'Insert Style',
+                    'insertTable': 'Insert table',
+                    'fontColor': 'Font Color',
+                    'backgroundColor': 'Background Color',
+                    'fontName': 'Font Name',
+                    'fontSize': 'Font Size'
+                };
 
             //creates the table markup
             function createTableMarkup(tableParams) {
@@ -107,7 +115,7 @@ WM.module('wm.widgets.form')
                         "<i class='fa fa-table'></i>" +
                         "</button></div>",
                     'iconclass': 'fa fa-table',
-                    'tooltiptext': 'Insert table',
+                    'tooltiptext': tooltipText.insertTable,
                     'action': function (promise, restoreSelection) {
                         //close other popups
                         closeAllPopups(this.$parent.tools, 'insertTable');
@@ -125,6 +133,7 @@ WM.module('wm.widgets.form')
                         "<button type='button' ng-style='{borderBottomColor:colorPicker.foreColor}' colorpicker colorpicker-is-open='isColorPickerOpen' colorpicker-parent='true' ng-model='colorPicker.foreColor' class='btn btn-default colorpicker-togglebtn' ng-disabled='showHtml()'>" +
                         "<i class='fa fa-font'></i>" +
                         "</button></div>",
+                    'tooltiptext': tooltipText.fontColor,
                     'action': function (promise, restoreSelection) {
                         var backgroundPicker = _.get(this.$parent.tools, 'backgroundColor'),
                             tablePopover = _.get(this.$parent.tools, 'insertTable');
@@ -145,6 +154,7 @@ WM.module('wm.widgets.form')
                         "<i class='fa fa-paint-brush'></i>" +
                         "</button>" +
                         "</div>",
+                    'tooltiptext': tooltipText.backgroundColor,
                     'action': function(promise, restoreSelection) {
                         var fontColorPicker = _.get(this.$parent.tools, 'fontColor'),
                             tablePopover = _.get(this.$parent.tools, 'insertTable');
@@ -167,6 +177,7 @@ WM.module('wm.widgets.form')
                         promise.resolve();
                         closeAllPopups(this.$parent.tools, 'fontName');
                     },
+                    'tooltiptext': tooltipText.fontName,
                     'selectFont': function(event, font) {
                         event.stopPropagation();
                         var _parent = this.$parent;
@@ -194,6 +205,7 @@ WM.module('wm.widgets.form')
                         "<button class='btn btn-default' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><i class='fa fa-text-height'></i><i class='fa fa-caret-down'></i></button>" +
                         "<ul uib-dropdown-menu class='fontsize-list' role='menu'><li role='menuitem' ng-repeat='o in options'><button class='btn btn-default' style='font-family: {{$parent.$parent.tools.fontName.font}};font-size: {{o.css}};' type='button' ng-click='selectSize($event, o.value)'>{{o.name}}</button></li></ul>" +
                         "</div>",
+                    'tooltiptext': tooltipText.fontSize,
                     'action': function (promise, restoreSelection) {
                         promise.resolve();
                         closeAllPopups(this.$parent.tools, 'fontSize');
@@ -219,7 +231,7 @@ WM.module('wm.widgets.form')
                         "<button class='btn btn-default active' type='button' uib-dropdown-toggle ng-disabled='showHtml()'><span></span><i class='fa fa-caret-down'></i></button>" +
                         "<ul uib-dropdown-menu role='menu'><li role='menuitem' ng-repeat='(key, value) in options'><a ng-click='selectFormat($event, key)'><span ng-class='key.toLocaleLowerCase()'>{{value}}</span></a></li></ul>" +
                         "</div>",
-                    'tooltiptext': 'Insert Style',
+                    'tooltiptext': tooltipText.formatHeader,
                     'action': function (promise, restoreSelection) {
                         promise.resolve();
                         closeAllPopups(this.$parent.tools, 'formatHeader');
