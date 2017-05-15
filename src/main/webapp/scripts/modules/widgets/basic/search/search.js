@@ -18,7 +18,7 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
-                    ' ng-class="{\'invalid-input\' : (query && !_model_ && type === \'autocomplete\')}"' +
+                    ' ng-class="{\'ng-invalid\' : (type === \'autocomplete\' && required && (!isDefined(_model_) || _model_ === \'\'))}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
                     ' ng-disabled="disabled" ' +
@@ -294,7 +294,7 @@ WM.module('wm.widgets.basic')
                         setDataSet(_.join(Object.keys(dataSet), ','), $is, element);
                         return;
                     }
-                    $is.formattedDataSet = dataSet;
+                    $is.formattedDataSet = $is.page > 1 ? $is.formattedDataSet.concat(dataSet) : dataSet;
                     // update the queryModel, if the default value is given and formatted Dataset is defined.
                     if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && WM.isDefined($is.datavalue) && $is.datavalue !== '')) {
                         updateQueryModel($is, element);
@@ -831,6 +831,8 @@ WM.module('wm.widgets.basic')
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element), $is, notifyFor);
 
+                        $is.isDefined = WM.isDefined;
+
                         // on-select of type-ahead element, call the user-defined submit fn
                         $is.onTypeAheadSelect = function ($event, $item, $model, $label) {
                             $event = $event || {};
@@ -916,7 +918,7 @@ WM.module('wm.widgets.basic')
                                 typeAheadDropDown.bind('scroll', function () {
                                     var $item = WM.element(this);
                                     //If scroll is at the bottom and no request is in progress and next page records are available, fetch next page items.
-                                    if (!$is._loadingItems && !$is.isLastPage && $item.height() && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
+                                    if (!$is._loadingItems && $is.isOpen && !$is.isLastPage && $item.height() && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
                                         triggerSearch($is, typeAheadInput, true);
                                     }
                                 });
