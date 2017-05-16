@@ -769,15 +769,8 @@ wm.variables.services.Variables = [
                         }
                     }
                 }  else if (variable.category === "wm.WebSocketVariable") {
-                    if (runMode) {
-                        if (variable.startUpdate) {
-                            processVariableStartUpdate(variable, scope);
-                        }
-                    } else {
-                        //fetching the meta data in design mode always
-                        if (WM.isFunction(variable.update)) {
-                            variable.update();
-                        }
+                    if (variable.startUpdate && runMode) {
+                        processVariableStartUpdate(variable, scope);
                     }
                 } else if (variable.category === "wm.LiveVariable") {
                     migrateOrderBy(variable);

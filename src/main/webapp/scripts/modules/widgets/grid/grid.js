@@ -180,10 +180,11 @@ WM.module('wm.widgets.grid')
             $is.variableName      = Utils.getVariableName($is);
             $is.variable          = _.get(eleScope.Variables, $is.variableName);
             if ($is.isBoundToVariable && $is.variable) {
-                $is.variableType            = variableType = $is.variable.category;
-                $is.isBoundToStaticVariable = variableType === 'wm.Variable';
-                $is.isBoundToLiveVariable   = variableType === 'wm.LiveVariable';
-                boundToInnerDataSet         = _.includes(binddataset, 'dataSet.');
+                $is.variableType               = variableType = $is.variable.category;
+                $is.isBoundToStaticVariable    = variableType === 'wm.Variable';
+                $is.isBoundToWebSocketVariable = variableType === 'wm.WebSocketVariable';
+                $is.isBoundToLiveVariable      = variableType === 'wm.LiveVariable';
+                boundToInnerDataSet            = _.includes(binddataset, 'dataSet.');
                 if ($is.isBoundToLiveVariable) {
                     $is.isBoundToLiveVariableRoot = !boundToInnerDataSet;
                 } else {
@@ -749,6 +750,12 @@ WM.module('wm.widgets.grid')
                                 wp.multiselect.show  = wp.multiselect.showindesigner = ($is.isPartOfLiveGrid ? false : wp.multiselect.show);
                                 /* If bound to live filter result, disable grid search. */
                                 wp.filtermode.disabled = $is.isBoundToFilter;
+                            }
+                            //Set grid columns on binddataset change if grid is bound to service variable
+                            if (CONSTANTS.isStudioMode && ($is.isBoundToServiceVariable || $is.isBoundToWebSocketVariable)) {
+                                var TypeUtils = Utils.getService('TypeUtils');
+                                $is.createGridColumns(TypeUtils.getFieldsForExpr($is.binddataset, {'getFieldInfo': true, 'filter' : 'terminal'}));
+                                $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
                             }
                         }));
                         handlers.push($rs.$on('toggle-variable-state', function (event, boundVariableName, active) {
@@ -1628,7 +1635,8 @@ WM.module('wm.widgets.grid')
                 var fields,
                     result,
                     f,
-                    dataKeys;
+                    dataKeys,
+                    TypeUtils;
 
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
                 result = LiveWidgetUtils.fetchReferenceDetails($is);
@@ -1640,11 +1648,9 @@ WM.module('wm.widgets.grid')
                         fields[key] = '';
                     });
                 } else if (result.relatedFieldType) {
+                    TypeUtils = Utils.getService('TypeUtils');
                     /*Invoke the function to fetch sample data-structure for the field.*/
-                    fields = $servicevariable.getServiceModel({
-                        typeRef: result.relatedFieldType,
-                        variable: result.referenceVariable
-                    });
+                    fields = TypeUtils.getFieldsForExpr(result.relatedFieldType, {'getFieldInfo' : true, 'filter' : 'terminal'});
                 }
                 if (fields) {
                     $is.watchVariableDataSet(fields);
@@ -1714,7 +1720,10 @@ WM.module('wm.widgets.grid')
                     isPageable = false,
                     widgetBindingDetails,
                     relatedTables;
-
+                $is.setFlags();
+                if (CONSTANTS.isStudioMode && ($is.isBoundToServiceVariable || $is.isBoundToWebSocketVariable)) {
+                    return;
+                }
                 //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
                 if ($is.dataNavigatorWatched && _.isUndefined(newVal) && $is.__fullData) {
                     return;
@@ -1723,7 +1732,7 @@ WM.module('wm.widgets.grid')
                 if ($is.variableInflight) {
                     $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
                 }
-                $is.setFlags();
+
                 result = Utils.getValidJSON(newVal);
 
                 /*Reset the values to undefined so that they are calculated each time.*/
@@ -1896,7 +1905,13 @@ WM.module('wm.widgets.grid')
                 options.columnUpperBound = $is.displayAllFields ? -1 : 10;
                 options.noModifyTitle    = $is.noModifyTitle;
                 /*call utility function to prepare fieldDefs for grid against given data (A MAX OF 10 COLUMNS ONLY)*/
-                defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
+                if (CONSTANTS.isStudioMode && ($is.isBoundToServiceVariable || $is.isBoundToWebSocketVariable)) {
+                    var StudioUtils = Utils.getService('StudioUtils');
+                    defaultFieldDefs = StudioUtils.getFieldsForService(properties);
+                } else {
+                    defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
+                }
+
                 /*append additional properties*/
                 WM.forEach(defaultFieldDefs, function (columnDef) {
                     var newColumn;
@@ -2699,8 +2714,8 @@ WM.module('wm.widgets.grid')
                             exprWatchHandlers = [],
                             config,
                             textAlignment = attrs.textalignment || 'left',
-                            backgroundColor = attrs.backgroundcolor || '',
-                            textColor = attrs.textcolor || '',
+                            backgroundColor = attrs.backgroundcolor,
+                            textColor = attrs.textcolor,
                             width = attrs.width === 'px' ?  '' : (attrs.width || ''),
                             styleDef = 'width: ' + width +
                                 '; background-color: ' + backgroundColor +
@@ -2756,15 +2771,15 @@ WM.module('wm.widgets.grid')
                             'generator'         : attrs.generator,
                             'widgetType'        : attrs.widgetType,
                             'style'             : styleDef,
-                            'class'             : attrs.colClass || '',
-                            'ngclass'           : attrs.colNgClass || '',
+                            'class'             : attrs.colClass,
+                            'ngclass'           : attrs.colNgClass,
                             'datepattern'       : attrs.datepattern,
                             'formatpattern'     : attrs.formatpattern === 'toNumber' ? 'numberToString' : attrs.formatpattern,
                             'currencypattern'   : attrs.currencypattern,
                             'fractionsize'      : attrs.fractionsize,
                             'suffix'            : attrs.suffix,
                             'prefix'            : attrs.prefix,
-                            'accessroles'       : attrs.accessroles || '',
+                            'accessroles'       : attrs.accessroles,
                             'dataset'           : attrs.dataset,
                             'datafield'         : attrs.datafield,
                             'placeholder'       : attrs.placeholder,

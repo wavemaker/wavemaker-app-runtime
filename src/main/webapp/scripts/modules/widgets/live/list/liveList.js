@@ -180,16 +180,15 @@ WM.module('wm.widgets.live')
             //* Fetch column bindings for the live list in case it is bound to a widget.
             function fetchDynamicColumns($is) {
                 var fields = [],
-                    result;
+                    result,
+                    TypeUtils;
                 result = getBoundWidgetDatasetDetails($is);
                 if (result.fields) {
                     fields = result.fields;
                 } else if (result.relFieldType) {
+                    TypeUtils = Utils.getService('TypeUtils');
                     //Invoke the function to fetch sample data-structure for the field.
-                    fields = $servicevariable.getServiceModel({
-                        typeRef: result.relFieldType,
-                        variable: result.refVariable
-                    });
+                    fields = TypeUtils.getFieldsForExpr(result.relatedFieldType);
                 }
                 return WM.isObject(fields) ? _.keys(fields) : fields;
             }

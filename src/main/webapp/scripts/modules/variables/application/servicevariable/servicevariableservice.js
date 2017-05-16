@@ -325,7 +325,7 @@ wm.variables.services.$servicevariable = ['Variables',
             // if the consumes has application/x-www-form-urlencoded and
             // if the http request of given method type can have body send the queryParams as Form Data
             if (_.includes(operationInfo.consumes, WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED)
-                    && !_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
+                && !_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
                 // remove the '?' at the start of the queryParams
                 if (queryParams) {
                     requestBody = (requestBody ? requestBody + '&' : '') + queryParams.substring(1);
@@ -796,7 +796,6 @@ wm.variables.services.$servicevariable = ['Variables',
                         }, function (result) {
                             /*Save the deployed url of the project in the $rootScope so that it could be used in all calls to services of deployed app*/
                             $rootScope.project.deployedUrl = Utils.removeProtocol(result);
-
                             getDataInRun(variable, options, success, error);
                         });
                     } else {
@@ -811,8 +810,6 @@ wm.variables.services.$servicevariable = ['Variables',
                         variable.dataSet = serviceModel;
                         Utils.triggerFn(success, serviceModel);
                     });
-                } else {
-                    getDataInStudio(variable, startNode, success, error);
                 }
             },
             setService: function (variable, service) {
@@ -935,17 +932,6 @@ wm.variables.services.$servicevariable = ['Variables',
         BaseVariablePropertyFactory.register('wm.ServiceVariable', serviceVariableObj, ['wm.Variable'], methods);
 
         return {
-            getServiceModel           : function (params) {
-                var model = {},
-                    variable = params.variable || {},
-                    prefabName = _.get(variable, '_prefabName');
-                if (prefabName) {
-                    prefabDataTypes[prefabName] = params.types;
-                }
-                prepareServiceModel(params.typeRef, model, null, variable);
-
-                return model;
-            },
             getServiceOperationInfo   : getServiceOperationInfo,
             getOperationId            : getOperationId,
             constructRestRequestParams: constructRestRequestParams
