@@ -2579,7 +2579,7 @@ WM.module('wm.utils', [])
          * @param paramValue - Value which is to be appended to formdata
          */
         function getFormData(formData, param, paramValue) {
-            var paramType = _.toLower(_.get(param, 'items.type') || param.type),
+            var paramType = _.toLower(extractType(_.get(param, 'items.type') || param.type)),
                 paramContentType = CONSTANTS.isStudioMode ? param['x-WM-CONTENT_TYPE'] : param.contentType;
             if (isFileUploadSupported()) {
                 if ((paramType === 'string') && (paramContentType === 'string' || !paramContentType)) {
