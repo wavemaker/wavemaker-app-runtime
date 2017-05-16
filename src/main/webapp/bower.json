@@ -13,6 +13,7 @@
         "angular-bootstrap-colorpicker": "https://github.com/buberdds/angular-bootstrap-colorpicker.git#v3.0.25",
         "angular-route": "1.6.4",
         "angular-scenario": "1.6.4",
+        "angular-cookies": "1.6.4",
         "angular-ui-bootstrap": "https://github.com/angular-ui/bootstrap-bower.git#v2.5.0",
         "angular-toaster": "https://github.com/jirikavi/AngularJS-Toaster.git#2.0.0",
         "textAngular": "https://github.com/fraywing/textAngular.git#v1.5.1",
