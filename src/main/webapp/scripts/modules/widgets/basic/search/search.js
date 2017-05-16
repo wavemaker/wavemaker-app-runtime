@@ -122,7 +122,6 @@ WM.module('wm.widgets.basic')
                     'height'         : true,
                     'show'           : true
                 },
-                defaultQuery,
                 ALL_FIELDS = 'All Fields';
 
             // This function updates the query value.
@@ -162,7 +161,7 @@ WM.module('wm.widgets.basic')
                 } else {
                     if (variable && variable.category === 'wm.LiveVariable') {
                         // Null values in query params returns all records. So datavalue other than null values are considered.
-                        if (defaultQuery && WM.isDefined($is.datavalue) && !_.isNull($is.datavalue) && $is.datavalue !== '') {
+                        if ($is.defaultQuery && WM.isDefined($is.datavalue) && !_.isNull($is.datavalue) && $is.datavalue !== '') {
                             $is.retrieveDefaultQueryModel().then(function (response) {
                                 deferred.resolve(response);
                             });
@@ -328,7 +327,7 @@ WM.module('wm.widgets.basic')
                     _action = Utils.getActionFromKey(event),
                     inputVal = element.find('input').val();
 
-                defaultQuery = false;
+                $is.defaultQuery = false;
 
                 if (element.hasClass('app-mobile-search')) {
                     //update query on the input val change
@@ -442,9 +441,9 @@ WM.module('wm.widgets.basic')
                 return inputFields;
             }
             // This function returns the query params depending upon the variable type
-            function getQueryRequestParams($is, variable, searchValue, defaultQuery) {
+            function getQueryRequestParams($is, variable, searchValue) {
                 var requestParams = {},
-                    searchInputs  = defaultQuery ? _.split($is.datafield, ',') : _.split($is.searchkey, ','),
+                    searchInputs  = $is.defaultQuery ? _.split($is.datafield, ',') : _.split($is.searchkey, ','),
                     inputFields   = {};
 
                 // setup common request param values
@@ -545,9 +544,9 @@ WM.module('wm.widgets.basic')
                 return page === pageCount;
             }
             // This function fetch the updated variable data in case search widget is bound to some variable
-            function fetchVariableData($is, el, searchValue, $s, defaultQuery) {
+            function fetchVariableData($is, el, searchValue, $s) {
                 var variable      = getVariable($is, $s),  // get the bound variable
-                    requestParams = getQueryRequestParams($is, variable, searchValue, defaultQuery), // params to be sent along with variable update call
+                    requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
                     deferred      = $q.defer(),
                     customFilter  = $filter('_custom_search_filter');
                 function handleQuerySuccess(response, props, pageOptions) {
@@ -641,7 +640,6 @@ WM.module('wm.widgets.basic')
                                     'filterFields'  : _.assign($is.dataoptions.filterFields, requestParams.filterFields)
                                 }, handleQuerySuccess, handleQueryError);
                             }
-                            defaultQuery = false;
                             //Remove the dataset watcher as explicit calls are made to fetch data
                             Utils.triggerFn($is._watchers.dataset);
                         } else {
@@ -654,7 +652,7 @@ WM.module('wm.widgets.basic')
 
             // Fetching the data using datavalue as searched value.
             function retrieveDefaultQueryModel($is, $el) {
-                return fetchVariableData($is, $el, $is.datavalue, $el.scope(), true).then(function (data) {
+                return fetchVariableData($is, $el, $is.datavalue, $el.scope()).then(function (data) {
                     return data && data[0];
                 });
             }
@@ -820,7 +818,7 @@ WM.module('wm.widgets.basic')
                             }
                         });
 
-                        defaultQuery = $el.attr('datavalue') || $el.attr('scopedatavalue');
+                        $is.defaultQuery = $el.attr('datavalue') || $el.attr('scopedatavalue');
 
                         $is.retrieveDefaultQueryModel = retrieveDefaultQueryModel.bind(undefined, $is, $el);
 
