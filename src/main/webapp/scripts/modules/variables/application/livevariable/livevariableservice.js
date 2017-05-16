@@ -643,7 +643,7 @@ wm.variables.services.$liveVariable = [
                     value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || options.matchMode];
                     filterFields.push(value);
                 });
-                if (variable.operation === 'read') {
+                if (variable.operation === 'read' || options.operation === 'read') {
                     filterOptions = getFilterOptions(variable, filterFields, options);
                 }
                 /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
@@ -1418,6 +1418,7 @@ wm.variables.services.$liveVariable = [
                         options     = options || {},
                         sort;
                     options.skipEncode = true;
+                    options.operation  = 'read';
                     tableOptions = prepareTableOptions(variable, options);
                     if (tableOptions.query) {
                         requestData.filter = tableOptions.query;
