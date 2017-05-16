@@ -40,6 +40,7 @@ import org.springframework.orm.hibernate4.HibernateQueryException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,6 +81,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex);
         } else if (ex instanceof MethodArgumentNotValidException) {
             return handleMethodArgumentNotValidException((MethodArgumentNotValidException) ex, response);
+        } else if (ex instanceof HttpRequestMethodNotSupportedException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleHttpRequestMethodNotSupportedException((HttpRequestMethodNotSupportedException) ex);
         } else if (ex instanceof MethodConstraintViolationException) {
             return handleMethodConstraintViolationException((MethodConstraintViolationException) ex, response);
         } else if (ex instanceof HttpMessageNotReadableException) {
@@ -117,6 +121,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             logger.error("Unknown error for url {}", request.getRequestURI(), ex);
             return handleException(ex, response);
         }
+    }
+
+    private ModelAndView handleHttpRequestMethodNotSupportedException(
+            final HttpRequestMethodNotSupportedException ex) {
+        return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, ex.getMessage()));
     }
 
     private ModelAndView handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException ex) {
