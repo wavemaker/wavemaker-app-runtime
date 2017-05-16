@@ -127,12 +127,24 @@ WM.module('wm.widgets.live')
                     formScope.ngform.$setUntouched();
                     formScope.ngform.$setPristine();
                 }
+
+                // Reset the search widget only when there is no default datavalue.
+                function resetSearch($el) {
+                    if ($el.hasClass('app-search')) {
+                        var $is = $el.isolateScope();
+
+                        $is.defaultQuery = $el.attr('scopedatavalue') || $el.attr('datavalue');
+                        return WM.isUndefined($is.datavalue) && $is.query && $is.queryModel;
+                    }
+                    return false;
+                }
+
                 //Reset the values of widgets inside the form
                 function resetFormFields(formEle) {
                     formEle.find('[role="input"]').each(function () {
                         var $inputEl = WM.element(this);
                         //Reset the widgets other than form fields
-                        if (_.isEmpty($inputEl.closest('[data-role="form-field"]'))) {
+                        if (_.isEmpty($inputEl.closest('[data-role="form-field"]')) || resetSearch($inputEl)) {
                             WM.element(this).isolateScope().reset();
                         }
                     });
