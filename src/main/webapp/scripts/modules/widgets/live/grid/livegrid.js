@@ -1,4 +1,4 @@
-/*global WM, window,confirm */
+/*global WM, window,confirm, _ */
 
 WM.module('wm.widgets.live')
     .run(["$templateCache", function ($templateCache) {
@@ -31,6 +31,14 @@ WM.module('wm.widgets.live')
                     wmToaster.show('error', 'ERROR', $rs.appLocale.LABEL_ACCESS_DENIED);
                 };
 
+            //Function to apply the filter on field values, once the dialog is opened
+            function applyFilterOnFields(scope) {
+                $timeout(function () {
+                    _.forEach(scope.gridform.formFields, function (field) {
+                        scope.gridform.applyFilterOnField(field);
+                    });
+                }, undefined, false);
+            }
             return {
                 restrict: 'E',
                 replace: true,
@@ -145,6 +153,7 @@ WM.module('wm.widgets.live')
                                     scope.gridform.new();
                                     if (scope.isLayoutDialog) {
                                         DialogService.showDialog(scope.gridform._dialogid, { 'resolve': {}, 'scope' : scope.gridform });
+                                        applyFilterOnFields(scope);
                                     }
                                 }));
                                 /*On update row call the form update function*/
@@ -165,6 +174,7 @@ WM.module('wm.widgets.live')
                                             'resolve': {},
                                             'scope': scope.gridform
                                         });
+                                        applyFilterOnFields(scope);
                                     }
                                 }));
                                 /* watch the primaryKey field in grid form , as soon as it updated change the live grid primary key */

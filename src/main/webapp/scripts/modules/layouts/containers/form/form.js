@@ -356,6 +356,7 @@ WM.module('wm.layouts.containers')
                     scope.elScope.formFields   = [];
                     scope.elScope.isUpdateMode = true;
                     scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
+                    scope.elScope.applyFilterOnField = WM.noop;
                     element.removeAttr('title');
                 },
                 'post': function (scope, element, attrs) {

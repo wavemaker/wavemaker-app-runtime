@@ -2294,6 +2294,15 @@ WM.module('wm.widgets.grid')
                     $is.callDataGridMethod('cancelEdit', $row);
                 }
             }
+            //On change of a field, update the filter on fields
+            function _onChangeField($event, $ws, newVal) {
+                $is.applyFilterOnField(_.find($is.fullFieldDefs, {'field': $ws.$element.attr('data-field-name')}), newVal);
+            }
+            //On submit of a autocomplete field, update the filter on fields
+            function _onSubmitField($event, $ws) {
+                $is.applyFilterOnField(_.find($is.fullFieldDefs, {'field': $ws.$element.attr('data-field-name')}), $ws.datavalue);
+            }
+
             $is.setGridData                  = setGridData.bind(undefined);
             $is.rowFilter                    = {};
             $is.filterInfo                   = {};
@@ -2343,6 +2352,9 @@ WM.module('wm.widgets.grid')
             $is.refreshData                  = refreshData;
             $is.onDataNavigatorDataSetChange = onDataNavigatorDataSetChange;
             $is.callDataGridMethod           = callDataGridMethod;
+            $is._onChangeField               = _onChangeField;
+            $is._onSubmitField               = _onSubmitField;
+            $is.applyFilterOnField           = LiveWidgetUtils.applyFilterOnField.bind(undefined, $is);
 
             $is.gridDataWatch = $is.$watch('gridData', function (newValue) {
                 var startRowIndex,
@@ -2469,6 +2481,10 @@ WM.module('wm.widgets.grid')
                     $rs.$safeApply($is);
                 },
                 onBeforeFormRender: function (rowData, e, operation) {
+                    //On Form render, update the filter on field values
+                    _.forEach($is.fullFieldDefs, function(fieldDef) {
+                        $is.applyFilterOnField(fieldDef, rowData[fieldDef.field]);
+                    });
                     return $is.onBeforeformrender({$event: e, $rowData: rowData, $operation: operation});
                 },
                 sortInfo: {
@@ -2797,7 +2813,8 @@ WM.module('wm.widgets.grid')
                             'filterplaceholder' : attrs.filterplaceholder,
                             'relatedEntityName' : attrs.relatedEntityName,
                             'checkedvalue'      : attrs.checkedvalue,
-                            'uncheckedvalue'    : attrs.uncheckedvalue
+                            'uncheckedvalue'    : attrs.uncheckedvalue,
+                            'filterOn'          : attrs.filterOn
                         };
                         columnDefProps.defaultvalue   = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
                         columnDefProps.editWidgetType = attrs.editWidgetType || LiveWidgetUtils.getEditModeWidget(columnDefProps);
@@ -2869,7 +2886,7 @@ WM.module('wm.widgets.grid')
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
                                         if (columnDef.editWidgetType === 'autocomplete') {
-                                            columnDef.isDataSetBound = true;
+                                            columnDef.isAutoCompleteDataSet = true;
                                         }
                                     }
                                 }
