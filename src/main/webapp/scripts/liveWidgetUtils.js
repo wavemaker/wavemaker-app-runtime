@@ -483,7 +483,7 @@ WM.module('wm.widgets.live')
                 } else {
                     template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
                 }
-                if (!fieldDef.dataset) {
+                if (!fieldDef.dataset || _.isObject(fieldDef.dataset)) {
                     //In studio mode, set default option instead of scopedataset and add representational data indicator
                     if (CONSTANTS.isStudioMode && $el) {
                         template = template + ' dataset="Option 1, Option 2, Option 3" ';
