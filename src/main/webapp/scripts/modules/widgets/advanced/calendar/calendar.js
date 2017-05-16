@@ -312,7 +312,7 @@ WM.module('wm.widgets.advanced')
                             singleEventClass    = multipleEventClass + ' one',
                             dateFormat          = 'YYYY/MM/DD',
                             wp                  = $is.widgetProps,
-                            appLocale           = _.get($is, '$root.appLocale');
+                            appLocale;
 
                         //returns the custom class for the events depending on the length of the events for that day.
                         function getDayClass(data) {
@@ -398,6 +398,22 @@ WM.module('wm.widgets.advanced')
                         function onEventChangeStart(event, jsEvent, ui, view) {
                             oldData = Utils.getClonedObject(event);
                         }
+                        //this function sets the locale for the calendar
+                        function setLocale() {
+                            $timeout(function() {
+                                appLocale = _.get($is, '$root.appLocale');
+                                $is.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
+                                $is.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
+                                $is.calendarOptions.calendar.buttonText    = {
+                                    'month': _.get(appLocale, 'LABEL_CALENDAR_MONTH') || BUTTON_TEXT.MONTH,
+                                    'week' : _.get(appLocale, 'LABEL_CALENDAR_WEEK') || BUTTON_TEXT.WEEK,
+                                    'day'  : _.get(appLocale, 'LABEL_CALENDAR_DAY') || BUTTON_TEXT.DAY,
+                                    'year' : _.get(appLocale, 'LABEL_CALENDAR_YEAR') || BUTTON_TEXT.YEAR,
+                                    'today': _.get(appLocale, 'LABEL_CALENDAR_TODAY') || BUTTON_TEXT.TODAY
+                                };
+                                $is.calendarOptions.calendar.locale = _.get($is, '$root.selectedLocale');
+                            });
+                        }
 
                         function renderMobileView(viewObj) {
                             var startDate,
@@ -480,13 +496,6 @@ WM.module('wm.widgets.advanced')
                             $is.calendarOptions = {
                                 calendar: {
                                     'editable'        : true,
-                                    'buttonText'      : {
-                                        'month': _.get(appLocale, 'LABEL_CALENDAR_MONTH') || BUTTON_TEXT.MONTH,
-                                        'week' : _.get(appLocale, 'LABEL_CALENDAR_WEEK') || BUTTON_TEXT.WEEK,
-                                        'day'  : _.get(appLocale, 'LABEL_CALENDAR_DAY') || BUTTON_TEXT.DAY,
-                                        'year' : _.get(appLocale, 'LABEL_CALENDAR_YEAR') || BUTTON_TEXT.YEAR,
-                                        'today': _.get(appLocale, 'LABEL_CALENDAR_TODAY') || BUTTON_TEXT.TODAY
-                                    },
                                     'locale'          : _.get($is.$root, 'selectedLocale') || 'en',
                                     'selectable'      : false,
                                     'header'          : headerOptions,
@@ -509,15 +518,14 @@ WM.module('wm.widgets.advanced')
                                 }
                             };
 
+                            setLocale();
+
                             //as multiselect is older property and used across projects use the check and change the selection mode to multiple.
                             if ($is.multiselect && !attrs.selectionmode) {
                                 $is.selectionmode = SELECTION_MODES.MULTIPLE;
                             }
 
-                            handlers.push($rs.$on('locale-change', function () {
-                                $is.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
-                                $is.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
-                            }));
+                            handlers.push($rs.$on('locale-change', setLocale));
 
                             /* add and removes an event source of choice */
                             $is.addRemoveEventSource = function (sources, source) {
