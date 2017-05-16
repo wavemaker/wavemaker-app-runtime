@@ -407,6 +407,7 @@ Application
                         // TODO: remove prevRoute variable when 403 page is implemented
                         wmToaster.show('error', $rs.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', $rs.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.');
                         $location.path(prevRoute);
+                        hidePageSwitchSpinner();
                     } else {
                         Utils.triggerFn(onError);
                     }
