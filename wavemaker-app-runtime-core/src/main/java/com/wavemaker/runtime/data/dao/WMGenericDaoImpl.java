@@ -122,7 +122,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable);
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
@@ -135,7 +135,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @SuppressWarnings("unchecked")
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable);
         validateQueryFilters(queryFilters);
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
@@ -161,7 +161,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable);
         return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
             @Override
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
@@ -200,7 +200,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable);
         HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
         builder.withAggregationInfo(aggregationInfo);
 
@@ -213,7 +213,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable);
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(new HibernateCallback<ByteArrayOutputStream>() {
                     @Override
@@ -271,8 +271,9 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return attributeType.toJavaType(attributeValue);
     }
 
-    private void validateSort(Sort sort) {
-        if (sort != null) {
+    private void validateSort(final Pageable pageable) {
+        if (pageable != null && pageable.getSort() != null) {
+            final Sort sort = pageable.getSort();
             for (final Sort.Order order : sort) {
                 final String property = order.getProperty();
                 final String[] split = property.split("\\.");
