@@ -232,7 +232,7 @@ wm.variables.services.$servicevariable = ['Variables',
             _.forEach(operationInfo.parameters, function (param) {
                 var paramValue = param.sampleValue;
 
-                if ((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQueryProcedure) {
+                if (((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQueryProcedure) && _.isEmpty(requiredParamMissing)) {
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
@@ -296,7 +296,6 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                 } else if (param.required) {
                     requiredParamMissing.push(param.name || param.id);
-                    return false;
                 }
             });
 
