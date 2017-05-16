@@ -606,7 +606,7 @@ $.widget('wm.datagrid', {
             dataValue     = (WM.isDefined(cellText) && cellText !== null) ? cellText : undefined,
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
-            disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned') ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
+            disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned' && !colDef.relatedEntityName) ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
             properties    = disabledTl + dataFieldName + eventTemplate + required,
@@ -1592,6 +1592,12 @@ $.widget('wm.datagrid', {
             $editableElements = $row.find('td.cell-editing');
             $editableElements.on('click', function (e) {
                 e.stopPropagation();
+            });
+            $editableElements.on('keydown', function (e) {
+                //To prevent up and down arrows, navigating to other rows in edit mode
+                if (e.which === 38 || e.which === 40) {
+                    e.stopPropagation();
+                }
             });
             if (!options.skipFocus && $editableElements) {
                 self.setFocusOnElement(e, $editableElements);

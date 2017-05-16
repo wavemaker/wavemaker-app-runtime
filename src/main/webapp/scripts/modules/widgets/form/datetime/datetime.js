@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             " app-defaults='{\"datepattern\": \"dateTimeFormat\"}' " +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keyup="_onKeyUp($event)">' +
+                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keyup="_onKeyUp($event)" autocomplete="off">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen" focus-target>' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
@@ -110,7 +110,9 @@ WM.module('wm.widgets.form')
                     inputEl.attr(key, nv);
                     buttonEl.attr('disabled', nv);
                     // prevent the click events on decrement/increment buttons
-                    $el.css('pointer-events', ($is.readonly || $is.disabled) ? 'none' : 'all');
+                    if (CONSTANTS.isRunMode) {
+                        $el.css('pointer-events', ($is.readonly || $is.disabled) ? 'none' : 'all');
+                    }
                     break;
                 case 'autofocus':
                     inputEl.first().attr(key, nv);

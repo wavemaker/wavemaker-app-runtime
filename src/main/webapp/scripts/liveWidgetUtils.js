@@ -1100,8 +1100,6 @@ WM.module('wm.widgets.live')
                             defaultProp = 'selectedvalue';
                         } else if (widgetType === 'checkboxset') {
                             defaultProp = 'selectedvalues';
-                        } else if (widgetType === 'switch') {
-                            defaultProp = 'defaultvalue';
                         } else {
                             defaultProp = 'datavalue';
                         }
@@ -2047,9 +2045,9 @@ WM.module('wm.widgets.live')
             //Set the data field properties on dataset widgets
             function setDataFields(formField, widget, dataOptions) {
                 if (formField[widget] === 'typeahead' || formField[widget] === 'autocomplete') { //For search widget, set search key and display label
-                    formField.datafield    = dataOptions.aliasColumn;
-                    formField.searchkey    = dataOptions.distinctField;
-                    formField.displaylabel = dataOptions.aliasColumn;
+                    formField.datafield    = dataOptions.aliasColumn || LIVE_CONSTANTS.LABEL_KEY;
+                    formField.searchkey    = dataOptions.distinctField || LIVE_CONSTANTS.LABEL_KEY;
+                    formField.displaylabel = dataOptions.aliasColumn || LIVE_CONSTANTS.LABEL_VALUE;
                 } else {
                     formField.datafield    = LIVE_CONSTANTS.LABEL_KEY;
                     formField.displayfield = LIVE_CONSTANTS.LABEL_VALUE;
@@ -2114,7 +2112,7 @@ WM.module('wm.widgets.live')
                     return;
                 }
                 //For autocomplete widget, widget will fetch the data. Set properties on the widget itself. Other widgets, fetch the data.
-                if (formField[widget] === 'autocomplete') {
+                if (formField[widget] === 'autocomplete' && _.includes(scope.binddataset, 'bind:Variables.')) {
                     formField.dataoptions = getDistinctFieldProperties(variable, formField);
                     setDataFields(formField, widget, formField.dataoptions);
                     formField.dataset     = scope.binddataset;
@@ -2394,6 +2392,29 @@ WM.module('wm.widgets.live')
                 });
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getDataTableFilterWidget
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Get the default filter widget type
+             *
+             * @param {string} type data type of the field
+             */
+            function getDataTableFilterWidget(type) {
+                var fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
+                    widget = fieldTypeWidgetTypeMap[type] && fieldTypeWidgetTypeMap[type][0];
+                if (type === 'boolean') {
+                    widget = 'select';
+                }
+                if (_.includes(['text', 'number', 'select', 'autocomplete', 'date', 'time', 'datetime'], widget)) {
+                    return widget;
+                }
+                return 'text';
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2438,6 +2459,7 @@ WM.module('wm.widgets.live')
             this.getEmptyMatchMode          = getEmptyMatchMode;
             this.getRangeMatchMode          = getRangeMatchMode;
             this.getRangeFieldValue         = getRangeFieldValue;
+            this.getDataTableFilterWidget   = getDataTableFilterWidget;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

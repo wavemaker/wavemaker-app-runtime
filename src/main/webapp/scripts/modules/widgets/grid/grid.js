@@ -2726,7 +2726,6 @@ WM.module('wm.widgets.grid')
                         };
 
                         var index,
-                            fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap(),
                             exprWatchHandlers = [],
                             config,
                             textAlignment = attrs.textalignment || 'left',
@@ -2762,17 +2761,7 @@ WM.module('wm.widgets.grid')
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = parentScope;
                         scope.fieldDef.prototype.$is  = parentScope;
-                        //Get the fefault filter widget type
-                        function getFilterWidget(type) {
-                            var widget = fieldTypeWidgetTypeMap[type] && fieldTypeWidgetTypeMap[type][0];
-                            if (type === 'boolean') {
-                                widget = 'select';
-                            }
-                            if (_.includes(['text', 'number', 'select', 'autocomplete', 'date', 'time', 'datetime'], widget)) {
-                                return widget;
-                            }
-                            return 'text';
-                        }
+
                         columnDefProps = {
                             'field'             : attrs.binding,
                             'displayName'       : attrs.caption,
@@ -2809,7 +2798,7 @@ WM.module('wm.widgets.grid')
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'rowactionsposition': attrs.rowactionsposition,
                             'limit'             : attrs.limit ? +attrs.limit : undefined,
-                            'filterwidget'      : attrs.filterwidget || getFilterWidget(attrs.type || 'string'),
+                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string'),
                             'filterplaceholder' : attrs.filterplaceholder,
                             'relatedEntityName' : attrs.relatedEntityName,
                             'checkedvalue'      : attrs.checkedvalue,
@@ -2885,7 +2874,7 @@ WM.module('wm.widgets.grid')
                                         LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
-                                        if (columnDef.editWidgetType === 'autocomplete') {
+                                        if (columnDef.editWidgetType === 'autocomplete' && _.includes(parentScope.binddataset, 'bind:Variables.')) {
                                             columnDef.isAutoCompleteDataSet = true;
                                         }
                                     }
