@@ -46,11 +46,12 @@ WM.module('wm.widgets.advanced')
                     'SINGLE'   : 'single',
                     'MULTIPLE' : 'multiple'
                 },
-                LIST_BUTTONTEXT = {
+               BUTTON_TEXT = {
                     'DAY'   : 'Day',
                     'MONTH' : 'Month',
                     'YEAR'  : 'Year',
-                    'WEEK'  : 'Week'
+                    'WEEK'  : 'Week',
+                    'TODAY' : 'Today'
                 };
 
             /* datavalue property is removed from the calendar widget.*/
@@ -310,7 +311,8 @@ WM.module('wm.widgets.advanced')
                             doubleEventClass    = multipleEventClass + ' two',
                             singleEventClass    = multipleEventClass + ' one',
                             dateFormat          = 'YYYY/MM/DD',
-                            wp                  = $is.widgetProps;
+                            wp                  = $is.widgetProps,
+                            appLocale           = _.get($is, '$root.appLocale');
 
                         //returns the custom class for the events depending on the length of the events for that day.
                         function getDayClass(data) {
@@ -375,7 +377,7 @@ WM.module('wm.widgets.advanced')
                                 }
                                 var eventStartDate   = moment(new Date(value[eventStartKey])).format('MM/DD/YYYY'),
                                     eventEndDate   = moment(new Date(value[eventEndKey] || value[eventStartKey])).format('MM/DD/YYYY'),
-                                    eventExists = moment(startDate).isSame(eventStartDate) && moment(eventEndDate).isSame(endDate);
+                                    eventExists = moment(startDate).isSameOrAfter(eventStartDate) && moment(eventEndDate).isBefore(endDate);
                                 if (eventExists) {
                                     filteredDates.push(value);
                                 }
@@ -478,6 +480,14 @@ WM.module('wm.widgets.advanced')
                             $is.calendarOptions = {
                                 calendar: {
                                     'editable'        : true,
+                                    'buttonText'      : {
+                                        'month': _.get(appLocale, 'LABEL_CALENDAR_MONTH') || BUTTON_TEXT.MONTH,
+                                        'week' : _.get(appLocale, 'LABEL_CALENDAR_WEEK') || BUTTON_TEXT.WEEK,
+                                        'day'  : _.get(appLocale, 'LABEL_CALENDAR_DAY') || BUTTON_TEXT.DAY,
+                                        'year' : _.get(appLocale, 'LABEL_CALENDAR_YEAR') || BUTTON_TEXT.YEAR,
+                                        'today': _.get(appLocale, 'LABEL_CALENDAR_TODAY') || BUTTON_TEXT.TODAY
+                                    },
+                                    'locale'          : _.get($is.$root, 'selectedLocale') || 'en',
                                     'selectable'      : false,
                                     'header'          : headerOptions,
                                     'eventDrop'       : onEventdropProxy,
@@ -494,18 +504,6 @@ WM.module('wm.widgets.advanced')
                                     'views'           : {
                                         'month': {
                                             'eventLimit': 0
-                                        },
-                                        'listDay': {
-                                            'buttonText': LIST_BUTTONTEXT.DAY
-                                        },
-                                        'listWeek': {
-                                            'buttonText': LIST_BUTTONTEXT.WEEK
-                                        },
-                                        'listMonth': {
-                                            'buttonText': LIST_BUTTONTEXT.MONTH
-                                        },
-                                        'listYear': {
-                                            'buttonText': LIST_BUTTONTEXT.YEAR
                                         }
                                     }
                                 }
