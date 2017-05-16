@@ -304,7 +304,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
         nativeTestRunQuery: {
             url: "services/projects/:projectID/database/services/:dataModelName/queries/testrun",
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            }
         },
 
 
@@ -315,7 +318,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
         testRunProcedure: {
             url: "services/projects/:projectID/database/services/:dataModelName/procedures/testrun",
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            }
         },
         proceduresInDatabase: {
             url: "services/projects/:projectID/database/services/:dataModelName/procedures",
