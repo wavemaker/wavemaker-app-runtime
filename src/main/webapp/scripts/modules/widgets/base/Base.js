@@ -184,13 +184,13 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "margin": {"type": "string", "widget": "box-model"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
+                        "fontsize": {"type": "number", "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons-radio"},
-                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align"},
+                        "textalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
+                        "fontstyle": {"type": "string", "options": ["italic"], "widget": "icons-checkbox"},
                         "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"}
+                        "fontfamily": {"type": "string", "hint": "Arial, Geneva"},
+                        "color": {"type": "string", "widget": "color"}
                     },
                     "wm.base.advancedformwidgets": {
                         "hint": {"type": "string", "bindable": "in-bound"},
@@ -199,13 +199,13 @@ WM.module('wm.widgets.base', [])
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
+                        "fontsize": {"type": "number", "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons-radio"},
-                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align"},
+                        "textalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"},
                         "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "fontstyle": {"type": "string", "options": ["italic"], "widget": "icons-checkbox"},
+                        "fontfamily": {"type": "string", "hint": "Arial, Geneva"},
+                        "color": {"type": "string", "widget": "color"},
                         "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "border-style"},
                         "bordercolor": {"type": "string", "widget": "color"},
@@ -294,7 +294,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.html": {
                         "content": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
-                        "textalign": {"type": "string", "options": ["left", "center", "right"], "hidelabel": true, "widget": "icons-align", "show": false}
+                        "textalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false}
                     },
                     "wm.icon": {
                         "hint": {"type": "string", "bindable": "in-bound"},
@@ -514,7 +514,7 @@ WM.module('wm.widgets.base', [])
                         /* ---- styles ----*/
 
                         "margin": {"type": "string", "widget": "box-model"},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"}
+                        "color": {"type": "string", "widget": "color"}
                     },
                     "wm.date": {
                         "placeholder": {"type": "string", "value": "Select date", "bindable": "in-bound"},
@@ -987,14 +987,14 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "color": {"type": "string", "widget": "color"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
+                        "fontsize": {"type": "number", "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons-radio"},
                         "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons-checkbox"},
+                        "fontstyle": {"type": "string", "options": ["italic"], "widget": "icons-checkbox"},
                         "fontVariant": {"type": "list", "options": ["normal", "small-caps"]},
-                        "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"}
+                        "fontfamily": {"type": "string", "hint": "Arial, Geneva"}
                     },
 
                     'wm.layouts': {
@@ -1011,7 +1011,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "color": {"type": "string", "widget": "color"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE}
                     },
@@ -1032,13 +1032,13 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "color": {"type": "string", "widget": "color"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
+                        "fontsize": {"type": "number", "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons-radio"},
                         "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons-checkbox"},
-                        "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"},
+                        "fontstyle": {"type": "string", "options": ["italic"], "widget": "icons-checkbox"},
+                        "fontfamily": {"type": "string", "hint": "Arial, Geneva"},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align"}
 
 
@@ -1650,7 +1650,7 @@ WM.module('wm.widgets.base', [])
                         "isdefaultpane": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
                         "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "color": {"type": "string", "widget": "color"},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE}
                     },
 
@@ -1942,7 +1942,7 @@ WM.module('wm.widgets.base', [])
                         "bordercolor": {"type": "string", "widget": "color"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
-                        "color": {"type": "string", "hidelabel": true, "widget": "color"},
+                        "color": {"type": "string", "widget": "color"},
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -2044,11 +2044,11 @@ WM.module('wm.widgets.base', [])
 
         if (CONSTANTS.isStudioMode) {
             result.propertyGroups = [
-                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic"},
-                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style"},
-                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
-                {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
-                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
+                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic", "iconClass":"wi wi-edit"},
+                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wi wi-palette"},
+                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wi wi-touch-app"},
+                {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wi wi-devices"},
+                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wi wi-shield"},
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
@@ -2085,7 +2085,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
                 {"properties": [ "class", "conditionalclass", "menuclass", "listclass", "itemclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
-                {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
+                {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontstyle", "fontweight", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
                 {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},
                 {"name": "displaystyle", "properties": ["iconcolor", "padding", "margin", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},

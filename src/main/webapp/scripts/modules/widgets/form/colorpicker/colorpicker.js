@@ -16,7 +16,7 @@ WM.module('wm.widgets.form')
                 ' ng-model="_model_"' +
                 ' ng-change="_onChange({$event: $event, $scope: this})"' +
                 ' accesskey="{{::shortcutkey}}"' +
-                '><span class="input-group-addon" ng-style="{backgroundColor:_model_}">&nbsp;</span></div>');
+                '><span class="input-group-addon colorpicker-container"><i class="colored-box" ng-style="{backgroundColor:_model_}">&nbsp;</i></span></div>');
     }])
     /*Colorpicker widget directive definition*/
     .directive('wmColorpicker', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
