@@ -429,7 +429,7 @@ WM.module('wm.widgets.form')
                     liClass = 'radio app-radio';
                     labelClass = 'app-radioset-label';
                     type = 'radio';
-                    required = ' data-ng-required="' + scope.required + '"';
+                    required = ' ng-required="required"';
                     break;
                 }
 
