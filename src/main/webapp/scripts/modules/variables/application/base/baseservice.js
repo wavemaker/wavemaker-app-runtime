@@ -49,7 +49,7 @@ wm.variables.services.Variables = [
          false: STUDIO mode
          */
         var runMode = CONSTANTS.isRunMode,
-            DOT_EXPR_REX = /^\[("|')[\w\W]*(\1)\]$/g,
+            DOT_EXPR_REX = /^\[("|')[\w\W]*(\1)\]$/,
             MAIN_PAGE = 'Main',
             startUpdateQueue = {},
             lazySartUpdateQueue = {},
