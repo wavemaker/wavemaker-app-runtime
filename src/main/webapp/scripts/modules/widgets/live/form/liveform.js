@@ -923,6 +923,9 @@ WM.module('wm.widgets.live')
                                             scope.translatedObj = translatedObj;
                                             /*Check if the formFields is defined, then in the formFields array override only certain fields.*/
                                             scope.formFields.forEach(function (fieldObject) {
+                                                if (!fieldObject) {
+                                                    return;
+                                                }
                                                 translatedObj.forEach(function (transObj) {
                                                     if (transObj.key === fieldObject.key) {
                                                         fieldObject.isRelated = transObj.isRelated;
@@ -931,7 +934,7 @@ WM.module('wm.widgets.live')
                                                 });
                                             });
 
-                                            variableObj =  elScope.Variables && elScope.Variables[scope.variableName];
+                                            variableObj =  _.get(elScope, 'Variables.' + scope.variableName);
                                             scope.variableObj = variableObj;
                                             if (variableObj) {
                                                 /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
@@ -944,7 +947,7 @@ WM.module('wm.widgets.live')
                                                 /* show only save button for liveform with page layout */
                                                 return scope.formlayout === 'page' ? button.key === 'save' : button.key === 'cancel' || button.key === 'save';
                                             });
-                                            variableObj = elScope.Variables && elScope.Variables[scope.variableName];
+                                            variableObj = _.get(elScope, 'Variables.' + scope.variableName);
                                             scope.variableObj = variableObj;
                                             if (variableObj) {
                                                 /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
@@ -964,7 +967,7 @@ WM.module('wm.widgets.live')
                                     }
                                 } else if (newVal) {
                                     scope.variableName = Utils.getVariableName(scope);
-                                    scope.variableObj  = elScope.Variables && elScope.Variables[scope.variableName];
+                                    scope.variableObj  = _.get(elScope, 'Variables.' + scope.variableName);
                                 } else {
                                     scope.variableName = '';
                                     scope.variableObj  = undefined;

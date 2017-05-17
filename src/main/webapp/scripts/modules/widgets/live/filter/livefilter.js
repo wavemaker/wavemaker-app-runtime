@@ -480,7 +480,7 @@ WM.module('wm.widgets.live')
                                         }
                                     };
                                 scope.variableName  = Utils.getVariableName(scope);
-                                scope.variableObj   = elScope.Variables && elScope.Variables[scope.variableName];
+                                scope.variableObj   = _.get(elScope, 'Variables.' + scope.variableName);
                                 //If variable is not available, return here
                                 if (!scope.variableObj) {
                                     return;
@@ -515,6 +515,9 @@ WM.module('wm.widgets.live')
                                             if (scope.formFields && newVal && newVal.propertiesMap) {
                                                 columns = newVal.propertiesMap.columns;
                                                 _.forEach(scope.formFields, function (filterField) {
+                                                    if (!filterField) {
+                                                        return;
+                                                    }
                                                     var filterObj = _.find(columns, {'fieldName': filterField.field});
                                                     if (filterObj) {
                                                         filterField.type = filterObj.type;
