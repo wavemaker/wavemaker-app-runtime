@@ -73,10 +73,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
-        if (ex instanceof InvalidInputException) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleInvalidInputException((InvalidInputException) ex);
-        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+        if (ex instanceof MethodArgumentTypeMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex);
         } else if (ex instanceof MethodArgumentNotValidException) {
@@ -91,9 +88,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((ConstraintViolationException) ex);
-        } else if (ex instanceof EntityNotFoundException) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return handleEntityNotFoundException((EntityNotFoundException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleRuntimeException((DataIntegrityViolationException) ex);
@@ -106,9 +100,18 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof QueryParameterMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((QueryParameterMismatchException) ex);
+        }
+
+        //WM Runtime Exceptions
+        else if (ex instanceof EntityNotFoundException) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return handleWMExceptions((WMRuntimeException) ex, MessageResource.ENTITY_NOT_FOUND);
+        } else if (ex instanceof InvalidInputException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleWMExceptions((WMRuntimeException) ex, MessageResource.INVALID_INPUT, ex.getMessage());
         } else if (ex instanceof WMRuntimeException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return handleWMExceptions((WMRuntimeException) ex);
+            return handleWMExceptions((WMRuntimeException) ex, null, null);
         } else if (ex instanceof HttpMessageNotReadableException) {
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else if (ex instanceof HibernateQueryException) {
@@ -136,10 +139,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     private ModelAndView handleHibernateJdbcException(final HibernateJdbcException ex) {
         // Not using the root cause for now.
         return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, INPUT_INVALID_MESSAGE));
-    }
-
-    private ModelAndView handleInvalidInputException(final InvalidInputException ex) {
-        return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, ex.getMessage()));
     }
 
     private ModelAndView handleHibernateQueryException(final HibernateQueryException ex) {
@@ -213,11 +212,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         return getModelAndView(errorResponse);
     }
 
-    private ModelAndView handleEntityNotFoundException(EntityNotFoundException ex) {
-        ErrorResponse errorResponse = getErrorResponse(MessageResource.ENTITY_NOT_FOUND);
-        return getModelAndView(errorResponse);
-    }
-
     private ModelAndView handleRuntimeException(DataIntegrityViolationException ex) {
         ErrorResponse errorResponse = getErrorResponse(MessageResource.DATA_INTEGRITY_VIOALATION,
                 ex.getMostSpecificCause().getMessage());
@@ -231,11 +225,13 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         return getModelAndView(errorResponse);
     }
 
-    private ModelAndView handleWMExceptions(WMRuntimeException ex) {
+    private ModelAndView handleWMExceptions(WMRuntimeException ex, MessageResource defaultMessageResource, Object... defaultArgs) {
         MessageResource messageResource = ex.getMessageResource();
-        ErrorResponse errorResponse = null;
+        ErrorResponse errorResponse;
         if (messageResource != null) {
             errorResponse = getErrorResponse(ex.getMessageResource(), ex.getArgs());
+        } else if (defaultMessageResource != null) {
+            errorResponse = getErrorResponse(defaultMessageResource, defaultArgs);
         } else {
             String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
             errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
