@@ -39,6 +39,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
 
     public WMCompositeHttpMessageConverter() {
         this.supportedMediaTypes.add(MediaType.ALL);
+        this.httpMessageConverterList.add(new DateHttpMessageConverter());
         this.httpMessageConverterList.add(new DownloadableHttpMessageConverter());
 
     }
