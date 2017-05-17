@@ -376,13 +376,13 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DRIVER_VERSIONS": {
         "Oracle": [
             {
-                "DB_VERSION": "Oracle 12.1 or 12cR1",
-                "DRIVER_VERSION": "ojdbc7.jar",
+                "DB_VERSION": "Oracle 11.2 or 11gR2",
+                "DRIVER_VERSION": "ojdbc6.jar",
                 "URL": ""
             },
             {
-                "DB_VERSION": "Oracle 11.2 or 11gR2",
-                "DRIVER_VERSION": "ojdbc6.jar",
+                "DB_VERSION": "Oracle 12.1 or 12cR1",
+                "DRIVER_VERSION": "ojdbc7.jar",
                 "URL": ""
             }
         ],
@@ -436,6 +436,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             },
             {
                 "DB_VERSION": "Express-C 10.5",
+                "DRIVER_VERSION": "db2jcc4.jar",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Express-C 11.1",
                 "DRIVER_VERSION": "db2jcc4.jar",
                 "URL": ""
             }
