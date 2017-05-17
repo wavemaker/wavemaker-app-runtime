@@ -927,7 +927,7 @@ $.widget('wm.datagrid', {
     selectRows: function (rows) {
         var self = this;
         /*Deselect all the previous selected rows in the table*/
-        self.gridBody.find('tr').each(function (index) {
+        self.gridBody.find('tr.app-datagrid-row').each(function (index) {
             if (self.preparedData[index].selected) {
                 $(this).trigger('click', [$(this), {skipSingleCheck: true}]);
             }

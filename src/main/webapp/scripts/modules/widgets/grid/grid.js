@@ -2370,6 +2370,11 @@ WM.module('wm.widgets.grid')
                     /* If colDefs are available, but not already set on the datagrid, then set them.
                      * This will happen while switching from markup to design tab. */
                     gridOptions = $is.callDataGridMethod('getOptions');
+
+                    if (!gridOptions) {
+                        return;
+                    }
+
                     if (!gridOptions.colDefs.length && $is.fieldDefs.length) {
                         $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
                     }
