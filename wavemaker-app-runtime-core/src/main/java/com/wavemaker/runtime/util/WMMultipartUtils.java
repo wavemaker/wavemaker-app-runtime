@@ -101,7 +101,8 @@ public class WMMultipartUtils {
 
 
     /**
-     * This Api is used to update blob content from old instance to new instance when blob type content is NULL in the new instance
+     * This Api is used to update blob content from old instance to new instance when blob type content is NULL in the
+     * new instance
      *
      * @param oldInstance : persisted instance.
      * @param newInstance : changes in the persisted instance.
@@ -180,6 +181,14 @@ public class WMMultipartUtils {
         return instance;
     }
 
+    public static byte[] toByteArray(MultipartFile file) {
+        try {
+            return file.getBytes();
+        } catch (IOException e) {
+            throw new WMRuntimeException("Error while reading multi part file", e);
+        }
+    }
+
     /**
      * get a match from a stream of data
      *
@@ -205,9 +214,9 @@ public class WMMultipartUtils {
     /**
      * Generate Http response for a field in any Instance
      *
-     * @param instance            any Instance
-     * @param fieldName           name of the field
-     * @param httpServletRequest  to prepare content type
+     * @param instance any Instance
+     * @param fieldName name of the field
+     * @param httpServletRequest to prepare content type
      * @param httpServletResponse to generate response for the given field
      */
     public static <T> void buildHttpResponseForBlob(
@@ -271,7 +280,7 @@ public class WMMultipartUtils {
      * Guess Content type for the given bytes using Magic apis.
      * If any exception using magic api, then getting content type from request.
      *
-     * @param bytes              stream of bytes
+     * @param bytes stream of bytes
      * @param httpServletRequest
      * @return content type for given bytes
      */

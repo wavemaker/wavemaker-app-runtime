@@ -19,6 +19,9 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wavemaker.runtime.data.model.JavaType;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 26/10/16
@@ -78,5 +81,10 @@ public class ReturnProperty {
 
     public void setOptional(final boolean optional) {
         this.optional = optional;
+    }
+
+    @JsonIgnore
+    public boolean isBlobType() {
+        return JavaType.BLOB.getClassName().equals(fieldType.getTypeRef());
     }
 }
