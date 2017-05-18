@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, _*/
 WM.module('wm.variables').run(['DeviceVariableService', '$cordovaBarcodeScanner', function (DeviceVariableService, $cordovaBarcodeScanner) {
     "use strict";
 
@@ -10,9 +10,23 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaBarcodeScanner'
                 cancelled : false
             },
             requiredCordovaPlugins: ['BARCODE_SCANNER'],
-            properties : [],
+            properties : [
+                {
+                    "target"    : "barcodeFormat",
+                    "type"      : "list",
+                    "options"   : _.keyBy(["ALL", "QR_CODE", "DATA_MATRIX", "UPC_E", "UPC_A", "EAN_8", "EAN_13", "CODE_128", "CODE_39", "ITF"]),
+                    "value"     : "ALL",
+                    "group"     : "properties",
+                    "subGroup"  : "behavior",
+                    "hide"      : false
+                }
+            ],
             invoke: function (variable, options, success, error) {
-                $cordovaBarcodeScanner.scan().then(function (data) {
+                var config;
+                if (variable.barcodeFormat && variable.barcodeFormat !== 'ALL') {
+                    config = {formats : variable.barcodeFormat};
+                }
+                $cordovaBarcodeScanner.scan(config).then(function (data) {
                     success(data);
                 }, error);
             }

@@ -31,16 +31,21 @@ WM.module('wm.widgets.advanced')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.advancedformwidgets']);
 
             function openBarcodeScanner($is) {
+                var config = null;
                 if (CONSTANTS.isStudioMode) {
                     return;
                 }
                 if (CONSTANTS.hasCordova) {
-                    $cordovaBarcodeScanner.scan()
-                        .then(function (data) {
-                            $is.datavalue = $is._model_ = data.text;
-                            $is.onSuccess({$scope: $is});
-                            $rs.$safeApply($is);
-                        });
+                    if ($is.barcodeformat && $is.barcodeformat !== 'ALL') {
+                        config = {
+                            'formats' : $is.barcodeformat
+                        };
+                    }
+                    $cordovaBarcodeScanner.scan(config).then(function (data) {
+                        $is.datavalue = $is._model_ = data.text;
+                        $is.onSuccess({$scope: $is});
+                        $rs.$safeApply($is);
+                    });
                 } else {
                     $is.onSuccess({$scope: $is});
                 }
