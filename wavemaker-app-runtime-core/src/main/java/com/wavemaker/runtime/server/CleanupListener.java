@@ -286,20 +286,20 @@ public class CleanupListener implements ServletContextListener {
             Map.Entry<Object, List> entry = mapEntryIterator.next();
             List knownLevels = entry.getValue();
             Iterator iterator = knownLevels.iterator();
-            List<Object> mirroredObjects = new ArrayList<>();
+            List<Object> removableMirroredObjects = new ArrayList<>();
             while (iterator.hasNext()) {
                 Object knownLevelObject = iterator.next();
                 Object levelObject = levelObjectField.get(knownLevelObject);
                 if (levelObject.getClass().getClassLoader() == Thread.currentThread().getContextClassLoader()) {
                     iterator.remove();
+                    removableMirroredObjects.add(mirroredLevelField.get(knownLevelObject));
                 }
-                mirroredObjects.add(mirroredLevelField.get(knownLevelObject));
             }
             iterator = knownLevels.iterator();
             while (iterator.hasNext()) {
                 Object knownLevelObject = iterator.next();
                 Object levelObject = levelObjectField.get(knownLevelObject);
-                if (mirroredObjects.contains(levelObject)) {
+                if (removableMirroredObjects.contains(levelObject)) {
                     iterator.remove();
                 }
             }
