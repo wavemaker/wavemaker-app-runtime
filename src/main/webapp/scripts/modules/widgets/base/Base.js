@@ -374,6 +374,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.barcodescanner": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
+                        "barcodeformat": {"type": "list", "options" : ["ALL", "QR_CODE", "DATA_MATRIX", "UPC_E", "UPC_A", "EAN_8", "EAN_13", "CODE_128", "CODE_39", "ITF"], "value" : "ALL"},
                         "caption": {"type": "string", "value": "", "bindable": "in-bound", "maxlength": 256, "showPrettyExprInDesigner": true },
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-barcode", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
@@ -2058,7 +2059,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
                     "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "interaction", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
-                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard"], "parent": "properties"},
+                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
