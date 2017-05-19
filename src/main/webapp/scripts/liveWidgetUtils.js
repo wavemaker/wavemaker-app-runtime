@@ -663,7 +663,9 @@ WM.module('wm.widgets.live')
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
                     labelLayout,
                     controlLayout,
-                    displayLabel = '';
+                    displayLabel = '',
+                    validAttr;
+
                 captionPosition = captionPosition || 'top';
                 //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
@@ -760,8 +762,14 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                template = template + '<p ng-if="!(ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode" class="help-block">{{formFields[' + index + '].hint}}</p>';
-                template = template + '<p ng-if="ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
+                validAttr = 'ngform[\'' + fieldDef.name + '_formWidget\'].$invalid';
+                // check for invalid class in autocomplete when $invalid is not set.
+                if (widgetType === 'autocomplete') {
+                    validAttr += ' || ngform[\'' + fieldDef.name + '_formWidget\'].$$element.hasClass(\'ng-invalid\')';
+                    validAttr = '(' + validAttr + ')';
+                }
+                template = template + '<p ng-if="!(' + validAttr + ' && ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode" class="help-block">{{formFields[' + index + '].hint}}</p>';
+                template = template + '<p ng-if="' + validAttr + ' &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></div>';
                 return template;
             }
