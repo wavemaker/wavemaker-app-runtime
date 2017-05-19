@@ -12,7 +12,8 @@ WM.module('wm.widgets.advanced')
         '$rootScope',
         '$timeout',
         '$templateCache',
-        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout, $tc) {
+        'DataFormatService',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout, $tc, DataFormatService) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 isMobile    = $rs.isMobileApplicationType || Utils.isMobile(),
@@ -52,7 +53,8 @@ WM.module('wm.widgets.advanced')
                     'YEAR'  : 'Year',
                     'WEEK'  : 'Week',
                     'TODAY' : 'Today'
-                };
+                },
+                dateFormats = DataFormatService.getDatePatterns();
 
             /* datavalue property is removed from the calendar widget.*/
             if (!isMobile) {
@@ -139,6 +141,25 @@ WM.module('wm.widgets.advanced')
                 $is.onEventrender({$isolateScope: $is, $scope: $is, $data: $is.eventData});
             }
 
+            function getEventValue(value, key) {
+                var isDate = false;
+
+                _.forEach(dateFormats, function(format) {
+                    //moment supports uppercase formats
+                    if (moment(value, format.toUpperCase(), true).isValid()) {
+                        isDate = true;
+                        return false;
+                    }
+                });
+
+                //if the value is date then for end date the value should be end of the day as the calendar is approximating it to the start.
+                if (isDate && key === 'end') {
+                    return moment(value).endOf('day');
+                }
+
+                return moment(value);
+            }
+
             function constructCalendarDataset($is, eventSource) {
                 var properties = {title : $is.eventtitle,
                     allday      : $is.eventallday,
@@ -153,7 +174,7 @@ WM.module('wm.widgets.advanced')
                             return;
                         }
                         if (key === 'start' || key === 'end') {
-                            objVal = moment(objVal);
+                            objVal = getEventValue(objVal, key);
                         }
                         obj[key] = objVal;
                     });
@@ -377,7 +398,7 @@ WM.module('wm.widgets.advanced')
                                 }
                                 var eventStartDate   = moment(new Date(value[eventStartKey])).format('MM/DD/YYYY'),
                                     eventEndDate   = moment(new Date(value[eventEndKey] || value[eventStartKey])).format('MM/DD/YYYY'),
-                                    eventExists = moment(startDate).isSameOrAfter(eventStartDate) && moment(eventEndDate).isBefore(endDate);
+                                    eventExists = moment(eventStartDate).isSameOrAfter(startDate) && moment(eventEndDate).isSameOrBefore(endDate);
                                 if (eventExists) {
                                     filteredDates.push(value);
                                 }
