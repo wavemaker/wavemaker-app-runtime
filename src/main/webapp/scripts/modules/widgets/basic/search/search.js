@@ -29,7 +29,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-is-open="isOpen"' +
                     ' typeahead-min-length="minLength" focus-target>' +
-                '<input name={{name}} class="model-holder" ng-model="_model_" ng-required="required">' +
+                '<input class="model-holder" ng-model="_model_" ng-required="required">' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="wi wi-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
