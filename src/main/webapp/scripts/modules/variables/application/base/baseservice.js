@@ -1218,10 +1218,13 @@ wm.variables.services.Variables = [
             },
 
            /* function to check if variable with specified name exists in the collection*/
-            isExists = function (variableName, caseSensitive) {
+            isExists = function (variableName, caseSensitive, unsavedVariableName) {
                 var variables = self.variableCollection,
                     arrOfVariables;
                 arrOfVariables = $rootScope.isPrefabTemplate ? _.keys(variables[MAIN_PAGE]) :  _.union(_.keys(variables[VARIABLE_CONSTANTS.OWNER.APP]), _.keys(variables[$rootScope.activePageName]));
+                if (unsavedVariableName) {
+                    arrOfVariables.push(unsavedVariableName);
+                }
                 return Utils.isDuplicateName(arrOfVariables, variableName, caseSensitive);
             },
 
@@ -1269,7 +1272,7 @@ wm.variables.services.Variables = [
             },
 
            /* function to create default non-conflicting name for a variable */
-            generateUniqueName = function (category, name, overWrite) {
+            generateUniqueName = function (category, name, overWrite, unsavedVariableName) {
                 var defaultName,
                     nameIteratorKey = category;
 
@@ -1281,7 +1284,7 @@ wm.variables.services.Variables = [
                     defaultName = variableCategoryToNameMap[category] + self.variableNameIterator[category];
                 }
 
-                if (!isExists(defaultName, true) || overWrite) {
+                if (!isExists(defaultName, true, unsavedVariableName) || overWrite) {
                     return defaultName;
                 }
 
@@ -1392,7 +1395,7 @@ wm.variables.services.Variables = [
                 if (name) {
                     defaultName = generateUniqueName(type, name, overWrite);
                 } else {
-                    defaultName = generateUniqueName(type);
+                    defaultName = generateUniqueName(type, undefined, undefined, options.unsavedVariableName);
                 }
 
                 /* create the variable object with its basic properties and return it */
