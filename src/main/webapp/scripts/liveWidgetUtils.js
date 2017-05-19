@@ -577,6 +577,7 @@ WM.module('wm.widgets.live')
             /*Returns checkbox template */
             function getCheckboxTemplate(fieldDef, index, widgetType) {
                 var additionalFields = widgetType === 'toggle' ? 'type="toggle"' : '';
+                additionalFields += fieldDef.caption ? ' caption="' + fieldDef.caption + '" ' : '';
                 return getDefaultTemplate('checkbox', fieldDef, index, '', '', '', additionalFields);
             }
 
