@@ -16,8 +16,7 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.List;
+import java.sql.ResultSet;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
@@ -31,11 +30,12 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
-import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
-import com.wavemaker.runtime.data.export.nativesql.NativeSQLDataExporter;
+import com.wavemaker.runtime.data.export.QueryExtractor;
+import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
+import com.wavemaker.runtime.data.export.nativesql.NativeQueryExtractor;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
-import com.wavemaker.runtime.data.model.returns.ReturnProperty;
-import com.wavemaker.runtime.data.util.HQLQueryUtils;
+import com.wavemaker.runtime.data.transform.Transformers;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -43,7 +43,6 @@ import com.wavemaker.runtime.data.util.HQLQueryUtils;
  */
 public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOutputStream> {
 
-    private static Map<String, List<ReturnProperty>> queryNameVsMetaData = new HashMap<>();
     private String queryName;
     private Map<String, Object> params;
     private Pageable pageable;
@@ -63,7 +62,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
 
     @Override
     public ByteArrayOutputStream doInHibernate(final Session session) throws HibernateException {
-        final DataExporter exporter;
+        QueryExtractor queryExtractor;
         Query namedQuery = session.getNamedQuery(queryName);
         final boolean isNative = namedQuery instanceof SQLQuery;
         final Sort sort = pageable.getSort();
@@ -71,26 +70,22 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
             namedQuery = QueryHelper
                     .createNewNativeQueryWithSorted(session, (SQLQuery) namedQuery, responseType, sort);
             setQueryProps(namedQuery);
-            exporter = new NativeSQLDataExporter(DataSourceExporterUtil.constructResultSet(namedQuery.scroll()));
+            WMResultTransformer resultTransformer = Transformers.aliasToMappedClass(responseType);
+            final ResultSet resultSet = DataSourceExporterUtil.constructResultSet(namedQuery.scroll());
+            queryExtractor = new NativeQueryExtractor(resultSet, resultTransformer);
         } else {
             namedQuery = QueryHelper.createNewHqlQueryWithSorted(session, namedQuery, responseType, sort);
+            QueryHelper.setResultTransformer(namedQuery, responseType);
             setQueryProps(namedQuery);
-            if (!queryNameVsMetaData.containsKey(queryName)) {
-                queryNameVsMetaData.put(queryName, buildMetaData(namedQuery));
-            }
-            exporter = new HQLQueryDataExporter(namedQuery.scroll(), queryNameVsMetaData.get(queryName));
+            queryExtractor = new HqlQueryExtractor(namedQuery.scroll());
         }
-        return exporter.export(exportType, responseType);
+        return DataExporter.export(queryExtractor, exportType);
     }
 
     private void setQueryProps(final Query namedQuery) {
         QueryHelper.configureParameters(namedQuery, params);
         namedQuery.setFirstResult(pageable.getOffset());
         namedQuery.setMaxResults(pageable.getPageSize());
-    }
-
-    private List<ReturnProperty> buildMetaData(Query query) {
-        return HQLQueryUtils.extractMetaForHql(query);
     }
 }
 

@@ -46,7 +46,8 @@ import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
-import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
+import com.wavemaker.runtime.data.export.QueryExtractor;
+import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
@@ -221,9 +222,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                                 .createHQLQuery(entityClass.getName(), query, pageable, session);
 
                         QueryHelper.configureParameters(queryInfo.v1, queryInfo.v2);
-                        DataExporter exporter = new HQLQueryDataExporter(queryInfo.v1.scroll(),
-                                HQLQueryUtils.extractMetaForHql(queryInfo.v1));
-                        return exporter.export(exportType, entityClass);
+                        QueryExtractor queryExtractor = new HqlQueryExtractor(queryInfo.v1.scroll());
+                        return DataExporter.export(queryExtractor, exportType);
                     }
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());

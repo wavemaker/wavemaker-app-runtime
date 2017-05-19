@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,18 +20,22 @@ import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 8/11/16
  */
-public abstract class DataExporter {
+public class DataExporter {
 
-    public abstract ByteArrayOutputStream export(ExportType exportType, Class<?> responseType);
+    public static ByteArrayOutputStream export(QueryExtractor extractor, ExportType exportType) {
+        ExportBuilder exportBuilder = new ExportBuilder(extractor);
+        final Workbook workbook = exportBuilder.build();
+        return exportWorkbook(workbook, exportType);
+    }
 
-    protected ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
+    protected static ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             if (exportType == ExportType.EXCEL) {
