@@ -56,10 +56,6 @@ WM.module('wm.widgets.advanced')
                 },
                 dateFormats = DataFormatService.getDatePatterns();
 
-            /* datavalue property is removed from the calendar widget.*/
-            if (!isMobile) {
-                delete widgetProps.datavalue;
-            }
             function updateCalendarOptions($is, key, newVal) {
                 var ctrls = $is.controls, viewType = $is.calendartype, left = '', right = '',
                     regEx = new RegExp('\\bday\\b', 'g'),
@@ -332,8 +328,8 @@ WM.module('wm.widgets.advanced')
                             doubleEventClass    = multipleEventClass + ' two',
                             singleEventClass    = multipleEventClass + ' one',
                             dateFormat          = 'YYYY/MM/DD',
-                            wp                  = $is.widgetProps,
-                            appLocale;
+                            appLocale,
+                            _calElement;
 
                         //returns the custom class for the events depending on the length of the events for that day.
                         function getDayClass(data) {
@@ -356,9 +352,31 @@ WM.module('wm.widgets.advanced')
                                 return '';
                             }
                         }
-                        function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
-                            var fn = $is[method] || WM.noop;
-                            fn({$event: jsEvent, $data: event, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                        //this function selects the default date given for the calendar
+                        function selectDate() {
+                            if (WM.isObject($is.datavalue)) {
+                                _calElement.fullCalendar('select', $is.datavalue.start, $is.datavalue.end);
+                            } else {
+                                _calElement.fullCalendar('select', moment($is.datavalue));
+                            }
+                        }
+                        //this function takes the calendar view to the default date given for the calendar
+                        function gotoDate() {
+                            _calElement.fullCalendar('gotoDate', moment($is.datavalue));
+                        }
+                        //this function takes the calendar view to the a year ahead or before based on the operation
+                        function gotoYear(operation) {
+                            var navigateTo;
+                            if (operation === 'next') {
+                                navigateTo = 'nextYear';
+                            } else {
+                                navigateTo = 'prevYear';
+                            }
+                            _calElement.fullCalendar(navigateTo);
+                        }
+                        //this function re-renders the events assigned to the calendar.
+                        function rerenderEvents() {
+                            _calElement.fullCalendar('rerenderEvents');
                         }
                         function eventClickProxy(event, jsEvent, view) {
                             $is.onEventclick({$event: jsEvent, $data: event, $view: view});
@@ -370,6 +388,7 @@ WM.module('wm.widgets.advanced')
                                     $el.find('.fc-list-table').addClass('table');
                                 }
                                 $is.onViewrender({$view: view});
+                                _calElement = $el.find('[calendar]');
                             });
                         }
                         function eventRenderProxy(event, jsEvent, view) {
@@ -588,6 +607,12 @@ WM.module('wm.widgets.advanced')
                                     propertyChangeHandler($is, $el, 'height');
                                 }, undefined, false);
                             };
+
+                            $is.gotoDate = gotoDate;
+                            $is.select = selectDate;
+                            $is.gotoPrevYear = gotoYear.bind(undefined, 'prev');
+                            $is.gotoNextYear = gotoYear.bind(undefined, 'next');
+                            $is.rerenderEvents = rerenderEvents;
                         }
 
                         // To be used by binding dialog to construct tree against exposed properties for the widget
