@@ -788,6 +788,16 @@ html, body {
   position: relative;
   max-width: 100%;
 }
+/**Style for setting required * on checkbox label, when title is not given for form field**/
+[widget="checkbox"][required="required"]:not([displayname]){
+  .app-checkbox {
+    label:after {
+      content: "*";
+      color: red;
+      margin-left: unit((@app-standard-size / 4) , px);
+    }
+  }
+}
 .app-anchor {
   cursor: pointer;
   display: inline-block;

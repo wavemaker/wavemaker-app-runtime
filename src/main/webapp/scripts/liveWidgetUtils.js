@@ -350,7 +350,7 @@ WM.module('wm.widgets.live')
                     }
                 });
                 /*Handle special cases properties*/
-                columnDef.displayname   = attrs.displayname || attrs.caption;
+                columnDef.displayname   = attrs.displayname || (widgetType === 'checkbox' ? '' : attrs.caption);
                 columnDef.pcDisplay     = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === 'true') : true;
                 columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === 'true') : true;
                 columnDef.type          = attrs.type || 'text';
