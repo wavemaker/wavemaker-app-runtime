@@ -22,15 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
-import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
-import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
-import com.wavemaker.runtime.rest.processor.request.PassDefaultHeadersRequestProcessor;
-import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
-import com.wavemaker.runtime.rest.processor.response.PrefixHttpResponseHeadersResponseProcessor;
-import com.wavemaker.runtime.rest.processor.response.UpdateCookiePathHttpResponseProcessor;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
+import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
+import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 
 /**
@@ -39,8 +36,6 @@ import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 public class RestRuntimeServiceCacheHelper {
 
     private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<String, Swagger>();
-
-    private Map<String, List<HttpResponseProcessor>> serviceIdVsHttpResponseProcessorsCache = new WeakHashMap<>();
 
     public Swagger getSwaggerDoc(String serviceId) throws IOException {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
@@ -62,16 +57,8 @@ public class RestRuntimeServiceCacheHelper {
         return httpRequestDataProcessors;
     }
 
-    public List<HttpRequestProcessor> getHttpRequestProcessors(String serviceId) {
-        List<HttpRequestProcessor> httpRequestProcessors = new ArrayList<>();
-        httpRequestProcessors.add(new PassDefaultHeadersRequestProcessor());
-        return httpRequestProcessors;
+    public RestRuntimeConfig getAppRuntimeConfig(String serviceId){
+        return WMAppContext.getInstance().getSpringBean(serviceId+"RestRuntimeConfig");
     }
 
-    public List<HttpResponseProcessor> getHttpResponseProcessors(String serviceId) {
-        List<HttpResponseProcessor> httpResponseProcessors = new ArrayList<>();
-        httpResponseProcessors.add(new UpdateCookiePathHttpResponseProcessor());
-        httpResponseProcessors.add(new PrefixHttpResponseHeadersResponseProcessor());
-        return httpResponseProcessors;
-    }
 }
