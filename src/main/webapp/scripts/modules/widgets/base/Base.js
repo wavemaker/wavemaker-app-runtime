@@ -1415,7 +1415,7 @@ WM.module('wm.widgets.base', [])
                         "formdata": {"type": "object", "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "novalidate": {"type": "boolean", "showindesigner": false, "show": false},
-                        "validationtype": {"type": "select-by-object", "options": [{"label": "Default", "value": "default"}, {"label": "Inline Only", "value": "inline"}, {"label": "No Validations", "value": "none"}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
+                        "validationtype": {"type": "select-by-object", "options": [{"label": "Default", "value": "default"}, {"label": "HTML", "value": "html"}, {"label": "No Validations", "value": "none"}], "value": "default", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false},
                         "defaultmode": {"type": "switch", "options": [{"label": "READ ONLY", "value": "View"}, {"label": "EDITABLE", "value": "Edit"}], "value": "View", "showindesigner": true, "displayfield": "label", "datafield": "value"},

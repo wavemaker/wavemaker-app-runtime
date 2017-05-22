@@ -269,7 +269,7 @@ WM.module('wm.widgets.live')
                         $invalidEle;
                     $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
                     //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
-                    if ($scope.operationType !== 'delete' && ($scope.validationtype === 'default' || $scope.validationtype === 'inline') && formScope.ngform && formScope.ngform.$invalid) {
+                    if ($scope.operationType !== 'delete' && ($scope.validationtype === 'html' || $scope.validationtype === 'default') && formScope.ngform && formScope.ngform.$invalid) {                        //For blob type required fields, even if file is present, required error is shown.
                         //For blob type required fields, even if file is present, required error is shown.
                         //To prevent this, if value is present set the required validity to true
                         WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
@@ -279,7 +279,7 @@ WM.module('wm.widgets.live')
                             }
                         });
                         if (formScope.ngform.$invalid) {
-                            if ($scope.validationtype === 'inline') {
+                            if ($scope.validationtype === 'default') {
                                 $scope.highlightInvalidFields();
                             }
                             //Find the first invalid untoched element and set it to touched.
@@ -822,7 +822,7 @@ WM.module('wm.widgets.live')
                     setTouchedState(formScope.ngform);
                 };
             },
-            compile: function () {
+            compile: function ($tEl) {
                 return {
                     pre: function (scope, element, attrs) {
                         var elScope = element.scope();
@@ -832,6 +832,15 @@ WM.module('wm.widgets.live')
                         /*check for formtype or layout values for backward compatability*/
                         if (attrs.formtype || attrs.layout) {
                             attrs.formlayout = attrs.formtype || attrs.layout;
+                        }
+
+                        //handle the backward compatibility for no validate
+                        if (attrs.novalidate) {
+                            if (!attrs.validationtype) {
+                                scope.validationtype = attrs.validationtype = (attrs.novalidate === 'true' ? 'none' : 'default');
+                                WM.element($tEl.context).attr('validationtype', scope.validationtype);
+                            }
+                            delete attrs.novalidate;
                         }
 
                         /*enable the form layout for device. For dialog, mode do not show it*/
@@ -987,17 +996,15 @@ WM.module('wm.widgets.live')
                                 break;
                             case 'novalidate':
                                 //Set validation type based on the novalidate property
-                                if (!scope.validationtype) {
-                                    if (newVal === true || newVal === "true") {
-                                        scope.validationtype = 'none'
-                                    } else {
-                                        scope.validationtype = 'default'
-                                    }
+                                if (newVal === true || newVal === "true") {
+                                    scope.validationtype = 'none'
+                                } else {
+                                    scope.validationtype = 'default'
                                 }
                                 break;
                             case 'validationtype':
                                 //Add or remove the novalidate attribute based on the input
-                                if (newVal === 'none' || newVal === 'inline') {
+                                if (newVal === 'none' || newVal === 'default') {
                                     element.attr('novalidate', '');
                                 } else {
                                     element.removeAttr('novalidate');
