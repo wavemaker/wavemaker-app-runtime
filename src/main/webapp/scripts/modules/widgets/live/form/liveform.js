@@ -10,6 +10,7 @@ WM.module('wm.widgets.live')
             notifyFor = {
                 'dataset'         : true,
                 'novalidate'      : true,
+                'validationtype'  : true,
                 'autocomplete'    : true,
                 'rowdata'         : true,
                 'formdata'        : true,
@@ -270,8 +271,7 @@ WM.module('wm.widgets.live')
                         $invalidEle;
                     $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
                     //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
-                    if ($scope.operationType !== 'delete' && !$scope.novalidate && formScope.ngform && formScope.ngform.$invalid) {
-                        //For blob type required fields, even if file is present, required error is shown.
+                    if ($scope.operationType !== 'delete' && ($scope.validationtype === 'default' || $scope.validationtype === 'inline') && formScope.ngform && formScope.ngform.$invalid) {                        //For blob type required fields, even if file is present, required error is shown.
                         //To prevent this, if value is present set the required validity to true
                         WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
                             var $blobEL = WM.element(this);
@@ -280,13 +280,17 @@ WM.module('wm.widgets.live')
                             }
                         });
                         if (formScope.ngform.$invalid) {
+                            if ($scope.validationtype === 'inline') {
+                                $scope.highlightInvalidFields();
+                            }
                             //Find the first invalid untoched element and set it to touched.
                             // Safari does not form validations. this will ensure that error is shown for user
-                            $invalidEle = $formEle.find('.ng-untouched.ng-invalid:first');
+                            $invalidEle = $formEle.find('.ng-invalid:visible:first');
                             if ($invalidEle.length && formScope.ngform[$invalidEle.attr('name')]) {
+                                $invalidEle.focus();
                                 formScope.ngform[$invalidEle.attr('name')].$setTouched();
+                                return;
                             }
-                            return;
                         }
                     }
                     /*If live-form is in a dialog, then always fetch the formElement by name
@@ -792,23 +796,6 @@ WM.module('wm.widgets.live')
                 this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
                 $scope.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
 
-                //Loop through the form fields and set touched state as touched
-                function setTouchedState (ngForm) {
-                    if (ngForm.$valid) { //If form is valid, return here
-                        return;
-                    }
-                    _.forEach(ngForm, function (field, key) {
-                        if (_.isObject(field)) {
-                            //Fields has $modelValue. Check for this property and call $setTouched
-                            if (_.has(field, '$modelValue') && field.$setTouched) {
-                                field.$setTouched();
-                            } else if (_.has(field, '$submitted') && key !== '$$parentForm') {
-                                //Check for the inner forms and call the set touched mehtod on inner form fields
-                                setTouchedState(field);
-                            }
-                        }
-                    });
-                }
                 //Highlight all the invalid states on save
                 $scope.highlightInvalidFields = function () {
                     var $formEle     = getFormElement(),
@@ -992,8 +979,18 @@ WM.module('wm.widgets.live')
                                 });
                                 break;
                             case 'novalidate':
-                                /*Add or remove the novalidate attribute based on the input*/
-                                if (newVal === true || newVal === "true") {
+                                //Set validation type based on the novalidate property
+                                if (!scope.validationtype) {
+                                    if (newVal === true || newVal === 'true') {
+                                        scope.validationtype = 'none'
+                                    } else {
+                                        scope.validationtype = 'default'
+                                    }
+                                }
+                                break;
+                            case 'validationtype':
+                                //Add or remove the novalidate attribute based on the input
+                                if (newVal === 'none' || newVal === 'inline') {
                                     element.attr('novalidate', '');
                                 } else {
                                     element.removeAttr('novalidate');
@@ -1244,6 +1241,7 @@ WM.module('wm.widgets.live')
                             'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
+                        columnDefProps.validationmessage = _.startsWith(attrs.validationmessage, 'bind:') ? '' :  attrs.validationmessage;
                         scope.FieldDef.prototype.$is = parentScope;
                         WM.extend(columnDef, columnDefProps);
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
@@ -1258,7 +1256,6 @@ WM.module('wm.widgets.live')
                         scope.readonly = columnDef.readonly;
                         scope.disabled = columnDef.disabled;
                         scope.multiple = columnDef.multiple;
-                        scope._validationmessage = columnDef.validationmessage;
                         //For normal form is update mode won't be set on parent scope, set it explicitly based on isupdatemode attribute
                         if (scope.isupdatemode === 'true') {
                             parentScope.isUpdateMode = true;
@@ -1362,7 +1359,6 @@ WM.module('wm.widgets.live')
                             var $field     = WM.element($event.target).closest('.live-field'),
                                 fieldScope = $field.parent('[data-role="form-field"]').isolateScope();
                             $field.removeClass('active');
-                            fieldScope.validationmessage = fieldScope._validationmessage;
                             setValidity(fieldScope.name, true);
                         };
                         //On change of a field, update the dataoutput on form/liveform
@@ -1395,7 +1391,7 @@ WM.module('wm.widgets.live')
                         LiveWidgetUtils.setGetterSettersOnField(scope, element);
 
                         scope.setValidationMessage = function (val) {
-                            scope.validationmessage = val;
+                            _.set(parentScope, ['formFields', [index], 'validationmessage'], val);
                             setValidity(scope.name, false);
                         };
                         parentScope.formfields = parentScope.formfields || {};

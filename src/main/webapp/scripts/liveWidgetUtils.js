@@ -2198,10 +2198,16 @@ WM.module('wm.widgets.live')
                     return;
                 }
                 _.forEach(ngForm, function (field, key) {
+                    var elVisible = true;
                     if (_.isObject(field)) {
                         //Fields has $modelValue. Check for this property and call $setTouched
                         if (_.has(field, '$modelValue') && field.$setTouched) {
-                            field.$setTouched();
+                            if (field.$$element) {
+                                elVisible = field.$$element.is(':visible');
+                            }
+                            if (elVisible) {
+                                field.$setTouched();
+                            }
                         } else if (_.has(field, '$submitted') && key !== '$$parentForm') {
                             //Check for the inner forms and call the set touched mehtod on inner form fields
                             setTouchedState(field);
