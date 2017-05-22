@@ -1838,7 +1838,7 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Search", "bindable": "in-bound"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
+                        "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "tabindex": {"type": "number", "value": "0"},
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "width": {"type": "string", "value": '100%', "pattern": dimensionRegex},
