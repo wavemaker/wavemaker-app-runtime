@@ -1241,7 +1241,7 @@ WM.module('wm.widgets.live')
                             'key'    : attrs.key || attrs.target || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
-                        columnDefProps.validationmessage = _.startsWith(attrs.validationmessage, 'bind:') ? '' :  attrs.validationmessage;
+                        columnDefProps.validationmessage = (CONSTANTS.isRunMode && _.startsWith(attrs.validationmessage, 'bind:')) ? '' :  attrs.validationmessage;
                         scope.FieldDef.prototype.$is = parentScope;
                         WM.extend(columnDef, columnDefProps);
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
