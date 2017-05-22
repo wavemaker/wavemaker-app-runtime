@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
+import java.util.Collection;
+
 import org.hibernate.HibernateException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -55,4 +57,12 @@ public class JavaTypeUtils {
         return convertedValue;
     }
 
+    public static boolean isKnownType(Class<?> type) {
+        final String typeName = type.getCanonicalName();
+        return classNameVsJavaTypeMap.containsKey(typeName);
+    }
+
+    public static boolean isNotCollectionType(final Class<?> typeClass) {
+        return !Collection.class.isAssignableFrom(typeClass);
+    }
 }

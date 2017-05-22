@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,16 +37,13 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.commons.InvalidInputException;
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.callbacks.RuntimePaginatedCallback;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.hqlquery.HQLQueryDataExporter;
@@ -66,6 +62,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         WMGenericDao<Entity, Identifier> {
 
     private Class<Entity> entityClass;
+    private SortValidator sortValidator;
 
     public abstract HibernateTemplate getTemplate();
 
@@ -78,6 +75,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
         this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
+        this.sortValidator = new SortValidator(entityClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -123,7 +121,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
-        validateSort(pageable);
+        this.sortValidator.validate(pageable);
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
             public Page doInHibernate(Session session) throws HibernateException {
@@ -136,7 +134,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @SuppressWarnings("unchecked")
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
-        validateSort(pageable);
+        this.sortValidator.validate(pageable);
         validateQueryFilters(queryFilters);
         return getTemplate().execute(new HibernateCallback<Page>() {
             @Override
@@ -162,7 +160,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
-        validateSort(pageable);
+        this.sortValidator.validate(pageable);
         return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
             @Override
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
@@ -201,7 +199,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
-        validateSort(pageable);
+        this.sortValidator.validate(pageable);
         HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
         builder.withAggregationInfo(aggregationInfo);
 
@@ -214,7 +212,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        validateSort(pageable);
+        this.sortValidator.validate(pageable);
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(new HibernateCallback<ByteArrayOutputStream>() {
                     @Override
@@ -270,31 +268,5 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     private Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {
         return attributeType.toJavaType(attributeValue);
-    }
-
-    private void validateSort(final Pageable pageable) {
-        if (pageable != null && pageable.getSort() != null) {
-            final Sort sort = pageable.getSort();
-            for (final Sort.Order order : sort) {
-                final String property = order.getProperty();
-                final String[] split = property.split("\\.");
-                try {
-                    if (split.length != 2) {//Field name of the same entity (eg:empId) is successfully fetched.
-                        //Field name of more than one related entity (eg:employee.department.name) also comes here and
-                        // throws error since it is not supported.
-                        this.entityClass.getDeclaredField(property);
-                    } else { //Field names of one related entity like eg:employee.firstname are handled here.
-                        final String propertyName = split[0];
-                        final Field propertyField = this.entityClass.getDeclaredField(propertyName);
-                        final Class<?> propertyTypeClass = propertyField.getType();
-                        propertyTypeClass.getDeclaredField(split[1]);
-                    }
-                } catch (NoSuchFieldException e) {
-                    throw new InvalidInputException(MessageResource.UNKNOWN_FIELD_NAME, property);
-                } catch (Exception e) {
-                    throw new WMRuntimeException(e);
-                }
-            }
-        }
     }
 }
