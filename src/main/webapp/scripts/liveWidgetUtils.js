@@ -1065,7 +1065,10 @@ WM.module('wm.widgets.live')
                         element.parents('[widgettype="wm-gridcolumn"]').removeClass('hide');
                     }
                     setFormField();
-                    compileField();
+                    //Compile the field only if field does not contaon form widget
+                    if (!element.find('[name="' + scope.name + '_formWidget"]').length) {
+                        compileField();
+                    }
                     break;
                 case 'displayname':
                     element.find('label.formfield-label').attr('title', newVal).text(newVal);
