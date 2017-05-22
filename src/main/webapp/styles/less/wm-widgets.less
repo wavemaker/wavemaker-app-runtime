@@ -791,7 +791,7 @@ html, body {
 /**Style for setting required * on checkbox label, when title is not given for form field**/
 [widget="checkbox"][required="required"]:not([displayname]){
   .app-checkbox {
-    label:after {
+    label.required:after {
       content: "*";
       color: red;
       margin-left: unit((@app-standard-size / 4) , px);
