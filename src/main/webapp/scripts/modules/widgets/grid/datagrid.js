@@ -391,21 +391,21 @@ $.widget('wm.datagrid', {
 
     /* Returns the table row template. */
     _getRowTemplate: function (row) {
-        var htm,
+        var $htm,
             self            = this,
             gridOptions     = self.options,
             rowNgClass      = gridOptions.rowNgClass,
             rowNgClassExpr  = rowNgClass ? 'ng-class="' + rowNgClass + '"' : '';
 
-        htm = this.preparedHeaderData.reduce(function (prev, current, colIndex) {
-            return prev + self._getColumnTemplate(row, colIndex, current);
-        }, '<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.$$pk + '" ' + rowNgClassExpr + '>');
+        $htm = $('<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.$$pk + '" ' + rowNgClassExpr + '></tr>');
+        this.preparedHeaderData.forEach(function (current, colIndex) {
+            $htm.append(self._getColumnTemplate(row, colIndex, current));
+        });
 
-        htm += '</tr>';
         if (rowNgClass) {
-            return gridOptions.getCompiledTemplate(htm, row);
+            return gridOptions.getCompiledTemplate($htm, row);
         }
-        return htm;
+        return $htm;
     },
 
     _getRowActionsColumnDefIndex: function () {
@@ -443,25 +443,21 @@ $.widget('wm.datagrid', {
 
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
-        var classes = this.options.cssClassNames.tableCell + ' ' + (colDef.class || ''),
-            ngClass = colDef.ngclass || '',
-            htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
-            colExpression = colDef.customExpression,
-            ctId = row.$$pk + '-' + colId,
-            value,
-            isCellCompiled = false,
+        var $htm,
             columnValue,
-            formatPattern = colDef.formatpattern,
-            datePattern = colDef.datepattern;
+            innerTmpl,
+            classes         = this.options.cssClassNames.tableCell + ' ' + (colDef.class || ''),
+            ngClass         = colDef.ngclass || '',
+            colExpression   = colDef.customExpression,
+            ctId            = row.$$pk + '-' + colId,
+            isCellCompiled  = false,
+            formatPattern   = colDef.formatpattern,
+            datePattern     = colDef.datepattern;
 
-        if (colDef.field) {
-            //setting the default value
-            columnValue = _.get(row, colDef.field);
-        }
-        value = _.get(row, colDef.field);
-        if (value) {
-            columnValue = value;
-        }
+        $htm = $('<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"></td>');
+
+        columnValue = _.get(row, colDef.field) ;
+
         if (ngClass) {
             isCellCompiled = true;
         }
@@ -522,17 +518,15 @@ $.widget('wm.datagrid', {
                 }
                 break;
             }
-            htm += 'title="' + colExpression + '"';
+            $htm.attr('title', colExpression);
         }
 
         if (colExpression) {
-            if (isCellCompiled) {
-                htm += '>';
-            } else {
-                htm += 'data-compiled-template="' + ctId + '">';
+            if (!isCellCompiled) {
+                $htm.attr('data-compiled-template', ctId);
                 isCellCompiled = true;
             }
-            htm += colExpression;
+            $htm.html(colExpression);
         } else {
             if (colDef.type !== 'custom') {
                 columnValue = _.get(row, colDef.field);
@@ -542,44 +536,43 @@ $.widget('wm.datagrid', {
                         _.isUndefined(columnValue)) {
                     columnValue = '';
                 }
-                htm += 'title="' + columnValue + '">';
-                htm += columnValue;
+                $htm.attr('title', columnValue);
+                $htm.html(columnValue);
             } else {
-                htm += '>';
                 switch (colDef.field) {
                 case 'checkbox':
-                    htm += this._getCheckboxTemplate(row, colDef.isMultiSelectCol);
+                    innerTmpl = this._getCheckboxTemplate(row, colDef.isMultiSelectCol);
                     break;
                 case 'radio':
-                    htm += this._getRadioTemplate(row);
+                    innerTmpl = this._getRadioTemplate(row);
                     break;
                 case 'rowOperations':
-                    htm += '<span class="actions-column" data-identifier="actionButtons"></span>';
+                    innerTmpl = '<span class="actions-column" data-identifier="actionButtons"></span>';
                     break;
                 case 'rowIndex':
-                    htm += row.index;
+                    innerTmpl = row.index;
                     break;
                 case 'none':
-                    htm += '';
+                    innerTmpl = '';
                     break;
                 default:
-                    htm += (_.isUndefined(columnValue) || columnValue === null) ? '' : columnValue;
+                    innerTmpl = (_.isUndefined(columnValue) || columnValue === null) ? '' : columnValue;
                 }
+                $htm.html(innerTmpl);
             }
         }
-        htm += '</td>';
 
         if (ngClass) {
-            htm = $(htm).attr({
+            $htm.attr({
                 'data-ng-class': ngClass,
                 'data-compiled-template': ctId
-            })[0].outerHTML;
+            });
         }
 
         if (isCellCompiled) {
-            this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef, true) || '';
+            this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate($htm, row, colDef, true) || '';
         }
-        return htm;
+        return $htm;
     },
     //Get event related template for editable widget
     _getEventTemplate: function (colDef) {
@@ -1504,7 +1497,7 @@ $.widget('wm.datagrid', {
             e.stopPropagation();
         }
         var $row = options.$row || $(e.target).closest('tr'),
-            $originalElements = $row.find('td'),
+            $originalElements = $row.find('td.app-datagrid-cell'),
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
             $saveButton = $row.find('.save-edit-row-button'),
@@ -2083,7 +2076,7 @@ $.widget('wm.datagrid', {
                     return $relatedTarget.is(invalidTargets);
                 }
                 //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row.
-                if (!$target.closest('td').is(':last-child') || $row.hasClass('danger') || e.relatedTarget === null) {
+                if (!$target.closest('td.app-datagrid-cell').is(':last-child') || $row.hasClass('danger') || e.relatedTarget === null) {
                     return;
                 }
                 //If focusout is because of input element or row action or current row, dont save the row
