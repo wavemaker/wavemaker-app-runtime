@@ -24,9 +24,9 @@ WM.module('wm.widgets.basic')
         },  classlist = [],
             idCount = 0,
             idMapper = {};
+        $rs.toasterClasses = {};
         //renders the custom notification call
         function renderNotification(template, newClass, timeout, position, onclickHandler, onHideCallback, scope) {
-            $rs.toasterClasses = {};
             $rs.toasterClasses[newClass] = 'custom-toaster ' + newClass;
             if (!_.includes(classlist, newClass)) {
                 idMapper[newClass] = ++idCount;
@@ -37,9 +37,8 @@ WM.module('wm.widgets.basic')
                 WM.element('body').append($compile(toastTemplate)($rs));
                 classlist.push(newClass);
             }
-            $rs.$safeApply($rs);
             $timeout(function () {
-                toaster.pop({ type: newClass, body: trustedHtml[0].outerHTML, onHideCallback: onHideCallback, toasterId: idMapper[newClass], timeout: timeout, bodyOutputType: 'trustedHtml', clickHandler: onclickHandler});
+                toaster.pop({type: newClass, body: trustedHtml[0].outerHTML, onHideCallback: onHideCallback, toasterId: idMapper[newClass], timeout: timeout, bodyOutputType: 'trustedHtml', clickHandler: onclickHandler});
             }, 350);
         }
 
@@ -139,7 +138,16 @@ WM.module('wm.widgets.basic')
              * @description
              * hides a toaster.
              */
-            hide: function () {
+            hide: function (toasterClass) {
+                if (toasterClass) {
+                    var toastClassIndex = classlist.indexOf(toasterClass);
+                    if (toastClassIndex > -1) {
+                        classlist.splice(toastClassIndex, 1);
+                    }
+                    //remove the element from dom
+                    WM.element('[name=' + toasterClass + ']').remove();
+                    return;
+                }
                 WM.element('.toast').hide();
             },
 
