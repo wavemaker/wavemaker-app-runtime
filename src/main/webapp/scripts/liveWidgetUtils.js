@@ -2432,6 +2432,30 @@ WM.module('wm.widgets.live')
                 return 'text';
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.setFormValidationType
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Add or remove the novalidate attribute based on the validation type
+             *
+             * @param {object} $is isolate scope of the widget
+             */
+            function setFormValidationType($is) {
+                var $ele;
+                if ($is.isLayoutDialog) {
+                    $ele = WM.element('body').find('.app-liveform-dialog[dialogid="' + $is._dialogid + '"] .app-liveform');
+                } else {
+                    $ele = $is.element;
+                }
+                if ($is.validationtype === 'none' || $is.validationtype === 'default') {
+                    $ele.attr('novalidate', '');
+                } else {
+                    $ele.removeAttr('novalidate');
+                }
+            }
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2477,6 +2501,7 @@ WM.module('wm.widgets.live')
             this.getRangeMatchMode          = getRangeMatchMode;
             this.getRangeFieldValue         = getRangeFieldValue;
             this.getDataTableFilterWidget   = getDataTableFilterWidget;
+            this.setFormValidationType      = setFormValidationType;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
