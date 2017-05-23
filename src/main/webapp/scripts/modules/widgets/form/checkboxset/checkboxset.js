@@ -27,45 +27,28 @@ WM.module('wm.widgets.form')
             };
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
-        function assignModelValue(scope, dataSet, checkboxValue) {
-            var selectedValues = [];
-            /*if checkboxValue is provided use that to assign model value else use the selectedvalue property if provided*/
-            if (checkboxValue) {
-                selectedValues.push(checkboxValue);
-            } else if (scope.selectedvalues === '') {
-                scope._model_ = [];
-            } else if (WM.isDefined(scope.selectedvalues)) {
-                selectedValues = Utils.convertToArray(scope.selectedvalues);
-                scope._model_ = [];
-            } else {
-                if ((!selectedValues || selectedValues.length === 0) && !WM.isDefined(scope._model_)) {
-                    scope._model_ = undefined;
-                } else if (WM.isDefined(scope._model_)) {
-                    scope._model_ = Utils.convertToArray(scope._model_);
+        function assignModelValue(scope, checkboxOption) {
+            if (checkboxOption) {
+                if (scope.datafield === 'All Fields') {
+                    if (scope.usekeys) {
+                        scope._model_.push(checkboxOption.key);
+                    } else {
+                        scope._model_.push(checkboxOption.dataObject);
+                    }
                 } else {
-                    scope._model_ = undefined;
+                    scope._model_.push(checkboxOption.key);
                 }
             }
-            /*iterating over the selectedvalues to push to model*/
-            _.forEach(selectedValues, function (value) {
-                scope._model_.push(FormWidgetUtils.getModelValue(scope, dataSet, value, checkboxValue));
-            });
         }
 
         function constructCheckboxSet(scope, element, dataSet) {
             var template,
                 compiledTemplate,
                 $headerEle;
-            scope.dataObject = {};
-            scope.dataKeys = [];
-            scope.checkedValues = {};
-            dataSet = FormWidgetUtils.getParsedDataSet(dataSet, scope, element);
-            /*creating dataKeys using the dataSet*/
-            FormWidgetUtils.createDataKeys(scope, dataSet);
-            /*assigning the value to the model, if selectedvalues are provided*/
-            assignModelValue(scope, dataSet);
-            /*creating the template for the widget*/
-            template = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
+
+            FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+
+            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
 
@@ -73,34 +56,6 @@ WM.module('wm.widgets.form')
                 $headerEle = element.closest('.property-value').find('.fixed-header');
                 FormWidgetUtils.setFixedHeader(element, $headerEle);
             }
-            /*register a click event handler for the radio*/
-            element.find('.app-checkboxset-label').on('click', function (evt) {
-                /*If the target has class, return here*/
-                if (_.includes(evt.target.classList, 'caption')) {
-                    return;
-                }
-                var checkedOption,
-                    inputElements = element.find('input:checked');
-                scope._model_ = [];
-
-                inputElements.each(function () {
-                    checkedOption = WM.element(this).val();
-                    assignModelValue(scope, dataSet, checkedOption);
-                });
-
-                /*updating the selectedvalues if the model array has values*/
-                /* TODO - to remove this condition (temporary fix to support chart properties in studio mode)*/
-                if (CONSTANTS.isStudioMode) {
-                    if (_.isArray(scope._model_) && _.isObject(scope._model_[0])) {
-                        return;
-                    }
-                    scope.selectedvalues = scope._model_.join(',');
-                }
-
-                /*triggering the change event of the input*/
-                Utils.triggerFn(scope._onChange, evt);
-                scope.$root.$safeApply(scope);
-            });
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -110,18 +65,17 @@ WM.module('wm.widgets.form')
 
             dataSet = scope.dataset || scope.scopedataset;
 
-            /*Checking if widget is bound to service variable*/
+            //Checking if widget is bound to service variable
             if (CONSTANTS.isStudioMode && scope.binddataset) {
                 isBoundToServiceVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory(scope) === "wm.ServiceVariable";
             }
             /*Monitoring changes for properties and accordingly handling respective changes.*/
             switch (key) {
             case 'dataset':
-                /*Displaying no data message when bound to service variable in studio mode*/
+                // Displaying no data message when bound to service variable in studio mode
                 if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {
                     FormWidgetUtils.appendMessage(element);
                 } else {
-                    /*generating the checkboxSet based on the values provided*/
                     constructCheckboxSet(scope, element, newVal);
                 }
                 break;
@@ -134,8 +88,8 @@ WM.module('wm.widgets.form')
                 }
                 break;
             case 'selectedvalues':
-                dataSet = FormWidgetUtils.getParsedDataSet(dataSet, scope, element);
-                assignModelValue(scope, dataSet);
+                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+                assignModelValue(scope);
                 break;
             case 'disabled':
                 element.find('input[type="checkbox"]').attr('disabled', newVal);
@@ -159,40 +113,16 @@ WM.module('wm.widgets.form')
             },
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.widgetProps           = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.orderedKeys           = [];
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                    /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-
-                    /* checks if the given value object is in the given model array of objects */
-                    scope.valueInModel = function (model, value, dataObject) {
-                        /*If the value is in model, return true*/
-                        if (_.includes(model, value)) {
-                            return true;
-                        }
-                        /*If model is equal to value, return true*/
-                        if (model === value) {
-                            return true;
-                        }
-                        /*If the dataobject is present in model, return true*/
-                        return (WM.isDefined(dataObject) && WM.isArray(model) && model.some(function (el) {
-                            if (_.isObject(el)) {
-                                return WM.equals(dataObject, el);
-                            }
-                            return dataObject == el;
-                        }));
-                    };
 
                     scope.groupFields = attrs.groupFields || false;
 
-                    /*Watch on the model, to check or uncheck the values of checkboxset*/
-                    scope.$watch('_model_', function () {
-                        FormWidgetUtils.updatedCheckedValues(scope);
-                    }, false);
-
-                    /*Called from form reset when users clicks on form reset*/
+                    // Called from form reset when users clicks on form reset
                     scope.reset = function () {
                         scope._model_ = [];
                     };
@@ -216,6 +146,52 @@ WM.module('wm.widgets.form')
                     }
 
                     element.removeAttr('tabindex');
+
+                    if (!scope.widgetid) {
+                        scope.$watch('_model_', function () {
+                            FormWidgetUtils.updatedCheckedValues(scope);
+                        }, false);
+
+                        element.on('click', '.app-checkboxset-label', function (evt) {
+                            if (_.includes(evt.target.classList, 'caption')) {
+                                return;
+                            }
+
+                            // reset all the isChecked flags.
+                            _.forEach(scope.displayOptions, function (dataObj) {
+                                dataObj.isChecked = false;
+                            });
+
+                            var checkedOption,
+                                inputElements = element.find('input:checked');
+                            scope._model_ = [];
+
+                            inputElements.each(function () {
+                                checkedOption = WM.element(this).val();
+
+                                // set isChecked flag for displayOptions.
+                                var checkedDisplayOption = _.find(scope.displayOptions, function (dataObj) {
+                                    return dataObj.key == checkedOption;
+                                });
+
+                                checkedDisplayOption.isChecked = true;
+
+                                assignModelValue(scope, checkedDisplayOption);
+                            });
+
+                            /*updating the selectedvalues if the model array has values*/
+                            /* TODO - to remove this condition (temporary fix to support chart properties in studio mode)*/
+                            if (CONSTANTS.isStudioMode) {
+                                if (_.isArray(scope._model_) && _.isObject(scope._model_[0])) {
+                                    return;
+                                }
+                                scope.selectedvalues = scope._model_.join(',');
+                            }
+
+                            Utils.triggerFn(scope._onChange, evt);
+                            scope.$root.$safeApply(scope);
+                        });
+                    }
                 }
             }
         };

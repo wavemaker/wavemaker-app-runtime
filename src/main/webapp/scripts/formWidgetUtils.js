@@ -17,7 +17,9 @@ WM.module('wm.widgets.form')
 
         function (WidgetUtilService, Utils, Variables, $servicevariable, $rootScope, $filter) {
             'use strict';
-            var ALLFIELDS = 'All Fields';
+            var ALLFIELDS   = 'All Fields',
+                CHECKBOXSET = 'wm-checkboxset',
+                RADIOSET    = 'wm-radioset';
 
             /**
              * @ngdoc function
@@ -91,29 +93,34 @@ WM.module('wm.widgets.form')
             }
 
             /**
-             * This function sets the display values of the checkboxset and radioset.
-             * Display values are obtained from the dataKeys of checkedValues in scope.
-             * displayvalue will be array of strings for checkboxset and string for radioset.
-             * @param scope
+             * This function sets the displayValue, isChecked flag for select, radioset, checkboxset widgets.
+             * @param scope widget's scope
+             * @param _modelProxy model value
              */
-            function setDisplayValues(scope) {
-                _.forEach(scope.checkedValues, function (value, dataKey) {
-                    // displayvalue will contains all the dataKeys whose checked value is true, Checkboxset will contain multiple selected values.
-                    if (scope._widgettype === 'wm-checkboxset') {
-                        scope.displayValue = scope.displayValue || [];
-                        if (value && !_.includes(scope.displayValue, dataKey)) {
-                            scope.displayValue.push(dataKey);
-                        } else if (!value && _.includes(scope.displayValue, dataKey)) {
-                            _.remove(scope.displayValue, function (value) {
-                                return value === dataKey;
-                            });
+            function setCheckedAndDisplayValues(scope, _modelProxy) {
+                var multipleValues = (scope._widgettype === CHECKBOXSET || (scope._widgettype === 'wm-select' && scope.multiple)),
+                    selectedOption;
+                scope.displayValue = multipleValues ? [] : '';
+
+                if (WM.isArray(_modelProxy)) {
+                    _.forEach(_modelProxy, function (val) {
+                        selectedOption = _.find(scope.displayOptions, function (obj) {
+                            return obj.key == val;
+                        });
+                        if (selectedOption) {
+                            selectedOption.isChecked = true;
+                            scope.displayValue.push(selectedOption.value);
                         }
+                    });
+                } else {
+                    selectedOption = _.find(scope.displayOptions, function (obj) {
+                        return obj.key == _modelProxy;
+                    });
+                    if (selectedOption) {
+                        selectedOption.isChecked = true;
+                        scope.displayValue = selectedOption.value;
                     }
-                    if (scope._widgettype === 'wm-radioset' && value) {
-                        // radioset will contain only one selected value.
-                        scope.displayValue = dataKey;
-                    }
-                });
+                }
             }
 
             /**
@@ -128,17 +135,33 @@ WM.module('wm.widgets.form')
              * @param {object} scope isolate scope of the widget
              */
             function updatedCheckedValues(scope) {
-                if (scope.dataKeys && scope.checkedValues) {
-                    var model = scope._model_,
-                        dataObj = (WM.isArray(scope.dataObject) ||  WM.isString(scope.dataObject)) ? {} : scope.dataObject;
-                    if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
-                        model = model.split(',');
-                    }
-                    _.forEach(scope.dataKeys, function (dataKey) {
-                        scope.checkedValues[dataKey] = scope.valueInModel(model, dataKey, dataObj[dataKey]);
-                    });
-                    setDisplayValues(scope);
+                var model = scope._model_,
+                    _modelProxy,
+                    selectedOption;
+                if (scope._widgettype === CHECKBOXSET && WM.isString(model) && model !== '') {
+                    model = model.split(',');
                 }
+
+                if (scope.datafield === ALLFIELDS && !scope.usekeys) {
+                    if (WM.isArray(model)) {
+                        _modelProxy = [];
+                        _.forEach(model, function (modelVal) {
+                            selectedOption = _.find(scope.displayOptions, {'dataObject': modelVal});
+                            _modelProxy.push(selectedOption.key);
+                        });
+                    } else {
+                        selectedOption = _.find(scope.displayOptions, {'dataObject': model});
+                        if (selectedOption) {
+                            _modelProxy = selectedOption.key;
+                        }
+                    }
+                } else {
+                    _modelProxy = model;
+                }
+                if (scope._widgettype === 'wm-select') {
+                    scope.modelProxy = _modelProxy;
+                }
+                setCheckedAndDisplayValues(scope, _modelProxy);
             }
 
             /**
@@ -155,11 +178,7 @@ WM.module('wm.widgets.form')
              */
             function createDataKeys(scope, dataSet) {
 
-                // using orderedKeys as dataKeys
                 function getKeys() {
-                    if (scope.orderedKeys.length) {
-                        return scope.orderedKeys;
-                    }
                     return Object.keys(scope.dataObject);
                 }
 
@@ -217,157 +236,116 @@ WM.module('wm.widgets.form')
                 return _.orderBy(dataset, fields, directions);
             }
 
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#parseDataSet
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
+            /*
              * parse dataSet to filter the options based on the datafield, displayfield & displayexpression
-             *
-             * @param {object} dataSet data set of the widget
-             * @param {object} scope isolate scope of the widget
-             * @param {object} element element of widget
              */
-            function parseDataSet(dataSet, scope) {
+            function extractDataObjects(dataSet, scope) {
                 /*store parsed data in 'data'*/
                 var data = dataSet,
-                    dataField = scope.datafield,
                     useKeys = scope.usekeys,
-                    objectKeys = [],
-                    orderedKeys = [],
-                    displayField = getDisplayField(dataSet, scope.displayfield);
+                    dataField = scope.datafield,
+                    displayField = getDisplayField(dataSet, scope.displayfield || scope.datafield),
+                    objectKeys  = [],
+                    key,
+                    value;
 
-                scope.widgetProps.displayfield.value = displayField;
+                if (WM.isString(dataSet)) {
+                    dataSet = _.map(_.split(dataSet, ','), _.trim);
+                }
+                data = [];
 
-                /*parsing the dataSet only if it is an array*/
-                if (WM.isArray(dataSet)) {
-                    dataSet = getOrderedDataSet(dataSet, scope.orderby);
-                    /*if only keys of the object within dataset value needs to be used.*/
-                    if (useKeys) {
-                        data = {};
-                        /*getting keys of the object*/
-                        objectKeys = WM.isObject(dataSet[0]) ? Object.keys(dataSet[0]) : [];
-                        /*iterating over object keys and creating checkboxset dataset*/
-                        _.forEach(objectKeys, function (key) {
-                            data[key] = key;
-                        });
+                if (useKeys) {
+                    /*getting keys of the object*/
+                    objectKeys = WM.isObject(dataSet[0]) ? Object.keys(dataSet[0]) : [];
+                    /*iterating over object keys and creating checkboxset dataset*/
+                    _.forEach(objectKeys, function (key) {
+                        data.push({'key' : key, 'value' : key});
+                    });
+                    return data;
+                }
+
+                // if filter dataSet if dataField is selected other than 'All Fields'
+                if (dataField && dataField !== ALLFIELDS) {
+                    //Widget selected item dataset will be object instead of array.
+                    if (WM.isObject(dataSet) && !WM.isArray(dataSet)) {
+                        key   = WidgetUtilService.getObjValueByKey(dataSet, dataField);
+                        value = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                        data.push({'key' : key, 'value' : value});
                     } else {
-                        /*if filter dataSet if datafield is select other than 'All Fields'*/
-                        if (dataField) {
-                            data = {};
-
+                        if (WM.isObject(dataSet[0])) {
                             _.forEach(dataSet, function (option) {
-                                var key = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
-                                data[key] = dataField === ALLFIELDS ? option : _.get(option, dataField);
-                                if (!_.includes(orderedKeys, key)) {
-                                    orderedKeys.push(key);
-                                }
+                                key   = WidgetUtilService.getObjValueByKey(option, dataField);
+                                value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                                data.push({'key' : key, 'value' : value});
+                            });
+                        } else {
+                            _.forEach(dataSet, function (option) {
+                                data.push({'key' : option, 'value' : option});
                             });
                         }
                     }
-                } else if (WM.isObject(dataSet)) {
-                    /* check for supporting data from sources other than live variable */
-                    data = {};
-                    /*getting keys of the object*/
-                    objectKeys = Object.keys(dataSet);
-                    /*iterating over object keys and creating checkboxset dataset*/
-                    _.forEach(objectKeys, function (key) {
-                        data[key] = key;
-                    });
+
+                } else {
+                    if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1) {
+                        key   = 0;
+                        value = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+
+                        data.push({'key' : key, 'value' : value, 'dataObject': dataSet});
+                    } else {
+                        _.forEach(dataSet, function (option, index) {
+                            if (WM.isObject(option)) {
+                                if (scope.datafield === ALLFIELDS) {
+                                    key = index;
+                                    value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+
+                                    data.push({'key' : key, 'value' : value, 'dataObject': option});
+                                } else {
+                                    key   = WidgetUtilService.getObjValueByKey(option, dataField);
+                                    value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                                    data.push({'key' : key, 'value' : value});
+                                }
+                            } else {
+                                if (WM.isArray(dataSet)) {
+                                    data.push({'key' : option, 'value' : option});
+                                } else {
+                                    data.push({'key' : index, 'value' : option});
+                                }
+                            }
+                        });
+                    }
                 }
-                scope.orderedKeys = orderedKeys;
                 return data;
             }
 
             /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#parseData
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
-             * function to check if the data must be parsed or not
-             *
-             * @param {object} scope isolate scope of the widget
+             * This function parses the dataset and extracts the displayOptions from parsed dataset.
+             * displayOption will contain datafield as key, displayfield as value.
+             * @param dataset dataset from which data is parsed.
+             * @param scope isolateScope of the widget.
              */
-            function parseData(scope) {
-                /*if dataset is a string, no need to parse data*/
-                if (WM.isString(scope.dataset || scope.scopedataset)) {
-                    return false;
-                }
-                /*if dataset is array of strings, no need to parse data*/
-                if ((WM.isArray(scope.dataset) && !WM.isObject(scope.dataset[0]))) {
-                    return false;
-                }
-                return (!(WM.isArray(scope.scopedataset) && !WM.isObject(scope.scopedataset[0])));
-            }
+            function extractDisplayOptions(dataset, scope) {
+                var isBoundToLiveVariable;
 
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#getParsedDataSet
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
-             * function to return the parsed dataset
-             *
-             * @param {object} dataSet data set of the widget
-             * @param {object} scope isolate scope of the widget
-             * @param {object} element element of the widget
-             *
-             */
-            function getParsedDataSet(dataSet, scope, element) {
-                /*assign dataSet according to liveVariable or other variable*/
-                dataSet = dataSet ? dataSet.data || dataSet : [];
+                scope.displayOptions = [];
 
-                /*filter the dataSet based on datafield & displayfield*/
-                if (parseData(scope)) {
-                    dataSet = parseDataSet(dataSet, scope, element);
-                }
-                return dataSet;
-            }
-
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#getModelValue
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
-             * function to return the model value
-             *
-             * @param {object} scope isolate scope of the widget
-             * @param {object} dataSet data set of the widget
-             * @param {object} value selected value
-             * @param {string} checkedValue current selected value
-             *
-             */
-            function getModelValue(scope, dataSet, value, checkedValue) {
-                var val = _.get(scope.dataObject, value);
-                //Don't trim in case of dataset is object
-                if (!WM.isObject(scope.dataObject)) {
-                    value = WM.isString(value) ? value.trim() : value;
+                if (!dataset) {
+                    return;
                 }
 
-                /*populating model if dataSet is string*/
-                if (WM.isString(dataSet)) {
-                    return value;
+                //Checking if widget is bound to service variable
+                if (scope.binddataset) {
+                    isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && getBoundVariableCategory(scope) === "wm.LiveVariable";
                 }
-                if (WM.isArray(dataSet)) {
-                    /*if dataSet is array and array values are objects*/
-                    if (WM.isObject(dataSet[0]) && val) {
-                        return val;
-                    }
-                    /*if dataSet is array*/
-                    return value;
+
+                // assign dataSet according to liveVariable or other variable
+                dataset = (isBoundToLiveVariable && dataset.hasOwnProperty('data')) ? dataset.data : dataset;
+                dataset = getOrderedDataSet(dataset, scope.orderby);
+                if (!_.isEmpty(dataset)) {
+                    dataset = extractDataObjects(dataset, scope);
                 }
-                /*if dataSet is object*/
-                if (checkedValue) {
-                    return val;
-                }
-                return value;
+
+                scope.displayOptions = _.uniqBy(dataset, 'key');
+                updatedCheckedValues(scope);
             }
 
             /**
@@ -404,7 +382,7 @@ WM.module('wm.widgets.form')
              * @function
              *
              * @description
-             * function to create the widget template for radioset and checkboxset based on the dataKeys created.
+             * function to create the widget template for radioset and checkboxset based on the displayOptions created.
              *
              * @param {object} scope isolate scope of the widget
              * @param {string} widgetType radioset or checkboxset
@@ -417,7 +395,7 @@ WM.module('wm.widgets.form')
                     type,
                     required = '',
                     groupedKeys = {},
-                    //Generate a unique name for inputs in widget, so that when widget is used multiple times (like livelist), each widget behaves independently
+                //Generate a unique name for inputs in widget, so that when widget is used multiple times (like livelist), each widget behaves independently
                     uniqueName  = 'name=' + (scope.name || widgetType) + Utils.generateGUId();
                 switch (widgetType) {
                 case 'checkboxset':
@@ -433,29 +411,46 @@ WM.module('wm.widgets.form')
                     break;
                 }
 
-                groupedKeys = getGroupedFields(scope.dataKeys, scope.groupFields);
+                if (scope.groupFields) {
+                    createDataKeys(scope, scope.dataset);
+                    groupedKeys = getGroupedFields(scope.dataKeys, scope.groupFields);
 
-                _.forEach(_.keys(groupedKeys), function (key) {
-                    if (key !== 'all') {
-                        template = template +
+                    _.forEach(_.keys(groupedKeys), function (key) {
+                        if (key !== 'all') {
+                            template = template +
                                 '<li class="' + liClass + ' group-header" title="' + key + '" data-fixed-header="true"><i class="wi wi-arrow-drop-down group-icon"></i><span class="group-title">' + key + '</span></li>';
-                    }
+                        }
 
-                    _.forEach(groupedKeys[key].keys, function (dataKey) {
-                        dataKey.title    = WM.isString(dataKey.title) ? dataKey.title.trim() : dataKey.title;
-                        //needed to parse the key if the bound dataset is having the key with '\'.
-                        var parsedKey = _.includes(dataKey.key, '\\') ? _.replace(dataKey.key, '\\', '\\\\') : dataKey.key;
-                        template = template +
-                            '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + parsedKey + "'" + ']}">' +
-                                '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
-                                    '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + parsedKey + "'" + ']"/>' +
-                                    '<span class="caption">' + dataKey.title + '</span>' +
+                        _.forEach(groupedKeys[key].keys, function (dataKey) {
+                            dataKey.title    = WM.isString(dataKey.title) ? dataKey.title.trim() : dataKey.title;
+                            //needed to parse the key if the bound dataset is having the key with '\'.
+                            var parsedKey = _.includes(dataKey.key, '\\') ? _.replace(dataKey.key, '\\', '\\\\') : dataKey.key;
+
+                            if (_.includes(scope.datavalue, parsedKey)) {
+                                dataKey.isChecked = true;
+                            }
+
+                            template = template +
+                                '<li class="' + liClass + ' {{itemclass}}" ng-class="{\'active\':' + dataKey.isChecked + '}">' +
+                                '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
+                                '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" ng-checked="' + dataKey.isChecked + '"/>' +
+                                '<span class="caption">' + dataKey.title + '</span>' +
                                 '</label>' +
-                            '</li>';
+                                '</li>';
+                        });
                     });
-                });
+                } else {
+                    template = template +
+                        '<li class="' + liClass + ' {{itemclass}}" ng-repeat="dataObj in displayOptions track by $index" ng-class="{\'active\': dataObj.isChecked}">' +
+                        '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="{{dataObj.value}}">' +
+                        '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index="{{$index}}" value="{{dataObj.key}}" tabindex="{{tabindex}}" ng-checked="dataObj.isChecked"/>' +
+                        '<span class="caption">{{dataObj.value.toString()}}</span>' +
+                        '</label>' +
+                        '</li>';
+                }
+
                 /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
-                template = template + '<input name="{{name}}" data-ng-disabled="disabled" data-ng-hide="true" class="model-holder" data-ng-model="_model_">'  + '<div data-ng-if="readonly || disabled" class="readonly-wrapper"></div>';
+                template = template + '<input name="{{name}}" ng-disabled="disabled" ng-hide="true" class="model-holder" ng-model="_model_">'  + '<div ng-if="readonly || disabled" class="readonly-wrapper"></div>';
                 return template;
             }
 
@@ -725,8 +720,8 @@ WM.module('wm.widgets.form')
             this.getDisplayField                 = getDisplayField;
             this.setPropertiesTextWidget         = setPropertiesTextWidget;
             this.createDataKeys                  = createDataKeys;
-            this.getParsedDataSet                = getParsedDataSet;
-            this.getModelValue                   = getModelValue;
+            this.extractDisplayOptions           = extractDisplayOptions;
+            this.setCheckedAndDisplayValues      = setCheckedAndDisplayValues;
             this.getRadiosetCheckboxsetTemplate  = getRadiosetCheckboxsetTemplate;
             this.getBoundVariableCategory        = getBoundVariableCategory;
             this.appendMessage                   = appendMessage;

@@ -26,72 +26,47 @@ WM.module('wm.widgets.form')
             };
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
-        function assignModelValue(scope, dataSet, radioValue) {
-            var selectedValue;
-            /*if radioValue is provided use that to assign model value else use the selectedvalue property if provided*/
-            /*Handling the case where the selected value itself is false*/
-            if (scope.selectedvalue === '') {
-                scope._model_ = selectedValue = undefined;
+        function assignModelValue(scope, radioOption) {
+            if (radioOption) {
+                if (scope.datafield === 'All Fields') {
+                    if (scope.usekeys) {
+                        scope._model_ = radioOption.key;
+                    } else {
+                        scope._model_ = radioOption.dataObject;
+                    }
+                } else {
+                    scope._model_ = radioOption.key;
+                }
             }
-            if (WM.isDefined(radioValue)) {
-                selectedValue = radioValue;
-            } else {
-                selectedValue = WM.isDefined(scope.selectedvalue) ? scope.selectedvalue : ((WM.isDefined(scope._model_) ? scope._model_ : undefined));
-            }
-
-            scope._model_ = FormWidgetUtils.getModelValue(scope, dataSet, selectedValue, radioValue);
         }
 
-        /*Function to build the radioset with the dataset*/
         function constructRadioSet(scope, element, dataSet) {
             var template,
                 compiledTemplate;
-            scope.dataObject = {};
-            scope.dataKeys = [];
-            scope.checkedValues = {};
-            dataSet = FormWidgetUtils.getParsedDataSet(dataSet, scope, element);
-            /*creating the dataKeys for the radioset*/
-            FormWidgetUtils.createDataKeys(scope, dataSet);
-            /*assigning value to the model if selectedvalue is provided*/
-            assignModelValue(scope, dataSet);
-            /*creating the template based on the dataKeys created*/
-            template = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'radioset');
-            /*compiling the appended template*/
+
+            FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+            assignModelValue(scope);
+
+            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'radioset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
-            /*register a click event handler for the radio*/
-            element.find('.app-radioset-label').on('click', function (evt) {
-                if (scope.disabled || scope.readonly || _.includes(evt.target.classList, 'caption')) {
-                    return;
-                }
-                var radioOption;
-                /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption
-                from the dataKeys array*/
-                radioOption = WM.element(this).find('input').attr('data-attr-index');
-                radioOption = scope.dataKeys[radioOption];
-                assignModelValue(scope, dataSet, radioOption);
-
-                Utils.triggerFn(scope._onChange, evt);
-                scope.$root.$safeApply(scope);
-            });
         }
 
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+        // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var dataSet = scope.dataset || scope.scopedataset,
                 isBoundToServiceVariable;
-            /*Checking if widget is bound to service variable*/
+            // Checking if widget is bound to service variable
             if (CONSTANTS.isStudioMode && scope.binddataset) {
                 isBoundToServiceVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory(scope) === "wm.ServiceVariable";
             }
-            /*Monitoring changes for properties and accordingly handling respective changes.*/
+
             switch (key) {
             case 'dataset':
-                /*Displaying no data message when bound to service variable in studio mode*/
+                // Displaying no data message when bound to service variable in studio mode
                 if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {
                     FormWidgetUtils.appendMessage(element);
                 } else {
-                    /*generating the radioset based on the values provided*/
                     constructRadioSet(scope, element, newVal);
                 }
                 break;
@@ -100,14 +75,12 @@ WM.module('wm.widgets.form')
             case 'usekeys':
             case 'orderby':
                 if (CONSTANTS.isRunMode || !isBoundToServiceVariable) {
-                    /*generating the radioset based on the values provided*/
                     constructRadioSet(scope, element, dataSet);
                 }
                 break;
             case 'selectedvalue':
-                /*generating the radioset based on the values provided*/
-                dataSet = FormWidgetUtils.getParsedDataSet(dataSet, scope, element);
-                assignModelValue(scope, dataSet);
+                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+                assignModelValue(scope);
                 break;
             case 'disabled':
                 element.find('input[type="radio"]').attr('disabled', newVal);
@@ -134,33 +107,14 @@ WM.module('wm.widgets.form')
             },
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.widgetProps           = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.orderedKeys           = [];
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                    /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
-                    /* checks if the given value object is in the given model array of objects */
-                    scope.valueInModel = function (model, value, dataObject) {
-                        if (!WM.isDefined(model)) {
-                            return false;
-                        }
-                        /*If model is equal to value, return true*/
-                        if (model === value) {
-                            return true;
-                        }
-                        /*If the dataobject is equal in model, return true*/
-                        return WM.equals(model, dataObject);
-                    };
-                    /*Watch on the model, to check or uncheck the values of checkboxset*/
-                    if (!scope.widgetid) {
-                        scope.$watch('_model_', function () {
-                            FormWidgetUtils.updatedCheckedValues(scope);
-                        });
-                    }
-
-                    /*Called from form reset when users clicks on form reset*/
+                    // Called from form reset when users clicks on form reset
                     scope.reset = function () {
                         scope._model_ = '';
                     };
@@ -183,6 +137,38 @@ WM.module('wm.widgets.form')
                     }
 
                     element.removeAttr('tabindex');
+
+                    if (!scope.widgetid) {
+                        scope.$watch('_model_', function () {
+                            FormWidgetUtils.updatedCheckedValues(scope);
+                        });
+
+                        element.on('click', '.app-radioset-label', function (evt) {
+                            if (scope.disabled || scope.readonly || _.includes(evt.target.classList, 'caption')) {
+                                return;
+                            }
+                            var dataObj = _.find(scope.displayOptions, {'isChecked': true}),
+
+                            /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption
+                             from the dataKeys array*/
+                                radioOption = WM.element(this).find('input').val(),
+                                checkedDisplayOption = _.find(scope.displayOptions, function (dataObj) {
+                                    return dataObj.key == radioOption;
+                                });
+
+                            if (dataObj) {
+                                dataObj.isChecked = false;
+                            }
+
+                            // set the isChecked flag for selected radioset value.
+                            checkedDisplayOption.isChecked = true;
+
+                            assignModelValue(scope, checkedDisplayOption);
+
+                            Utils.triggerFn(scope._onChange, evt);
+                            scope.$root.$safeApply(scope);
+                        });
+                    }
                 }
             }
         };

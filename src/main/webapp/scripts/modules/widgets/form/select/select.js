@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                 ' ng-required="required"' +
                 ' accesskey="{{::shortcutkey}}"' +
                 ' ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
-                ' ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
+                ' ng-options="option.key as $root.locale[option.value] || option.value for option in displayOptions">' +
                 '<option selected value="" ng-if="placeholder">{{placeholder}}</option>' +
             '</select>'
                 );
@@ -30,175 +30,36 @@ WM.module('wm.widgets.form')
                 'active'            : true,
                 'displayfield'      : true
             },
+            ALLFIELDS = 'All Fields';
 
-        /** store the whole object of the selected option - in '_dataSetModelProxyMap' */
-            _dataSetModelProxyMap = {},
-            _dataSetModelMap      = {},
-            _modelChangedManually = {},
-            ALLFIELDS             = 'All Fields';
+        function assignModelValue(scope) {
+            var selectedValue = scope.modelProxy,
+                selectedOption;
 
-        /*
-         * gets the key to map the select options out of dataSet
-         * if only one key is there in the option object it returns that key
-         * else the default key to be looked is 'dataValue'
-         */
-        function getKey(optionObject) {
-            var keys = Object.keys(optionObject);
-            /* if only one key, return it (can be anything other than 'dataValue' as well */
-            if (keys.length === 1) {
-                return keys[0];
-            }
-
-            /* return dataValue to be the default key */
-            return 'dataValue';
-        }
-
-        // This function sets the display value and modelProxy from _model_
-        function setModelProxyAndDisplayVal(scope, _model_, isList) {
-            var selectedIndex,
-                val = _.get(scope.selectOptions, [selectedIndex, 'value']);
-
-            selectedIndex = _.findKey(_dataSetModelProxyMap[scope.$id], function (val) {
-                if (scope.datafield === ALLFIELDS) {
-                    return _.isEqual(val, _model_);
-                }
-                return val === _model_;
-            });
-
-            if (isList) {
-                scope.modelProxy.push(selectedIndex);
-                scope.displayValue.push(val);
-            } else {
-                scope.modelProxy = selectedIndex;
-                scope.displayValue = val;
-            }
-        }
-
-        // This function sets the display value from modelProxy.
-        function setDisplayValFromModelProxy(scope, _modelProxy) {
-            var selectedModelObj;
-            // Retrieve display values from model.
             if (scope.multiple) {
+                scope._model_ = [];
                 scope.displayValue = [];
-                _.forEach(_modelProxy, function (model) {
-                    selectedModelObj = _.find(scope.selectOptions, ['key', model]);
-                    if (selectedModelObj) {
-                        scope.displayValue.push(selectedModelObj.value);
+                _.forEach(selectedValue, function (value) {
+                    if (scope.datafield === ALLFIELDS) {
+                        selectedOption = _.find(scope.displayOptions, {key : value});
+                        scope._model_.push(selectedOption.dataObject);
+                        scope.displayValue.push(selectedOption.value);
+                    } else {
+                        scope._model_.push(value);
+                        scope.displayValue.push(value);
                     }
                 });
             } else {
-                selectedModelObj = _.find(scope.selectOptions, ['key', _modelProxy]);
-                scope.displayValue = WM.isDefined(selectedModelObj) ? selectedModelObj.value : '';
-            }
-        }
-
-        /*
-         * watch the model
-         * and update the modelProxy,
-         * */
-        function updateModelProxy(scope, _model_) {
-            var _modelProxy;
-            /* to check if the function is not triggered from onChangeProxy */
-            if (!_modelChangedManually[scope.$id]) {
-                if (scope.datafield !== ALLFIELDS) {
-                    if (WM.isDefined(_model_)) {
-                        _modelProxy = WM.isObject(_model_) ? _model_ : _.toString(_model_);
-                    } else {
-                        _modelProxy = undefined;
-                    }
-
-                    scope.modelProxy = _modelProxy;
-                    if (WM.isDefined(_modelProxy)) {
-                        setDisplayValFromModelProxy(scope, _modelProxy);
-                    }
-                } else if (_dataSetModelMap[scope.$id]) {  /* check for sanity */
-                    //For multiple select with data field as All Fields, set model as array of objects
-                    if (scope.multiple && WM.isArray(_model_)) {
-                        if (!WM.isDefined(scope.modelProxy)) {
-                            scope.modelProxy = [];
-                        } else if (WM.isArray(scope.modelProxy)) {
-                            scope.modelProxy.length = 0;
-                        }
-                        if (!WM.isDefined(scope.displayValue)) {
-                            scope.displayValue = [];
-                        } else if (WM.isArray(scope.displayValue)) {
-                            scope.displayValue.length = 0;
-                        }
-                        // Retrieve display values from model.
-                        _.forEach(_model_, function (modelObj) {
-                            setModelProxyAndDisplayVal(scope, modelObj, true);
-                        });
-                    } else {
-                        setModelProxyAndDisplayVal(scope, _model_);
-                    }
-                }
-            }
-            /* reset the value */
-            _modelChangedManually[scope.$id] = false;
-        }
-
-        /*
-         * parse dataSet to filter the options based on the datafield, displayfield & displayexpression
-         */
-        function parseDataSet(dataSet, scope) {
-            /*store parsed data in 'data'*/
-            var data = dataSet,
-                dataField = scope.datafield,
-                displayField = FormWidgetUtils.getDisplayField(dataSet, scope.displayfield || scope.datafield),
-                orderedKeys = [],
-                key;
-
-            /*initialize the data, for 'All Fields'*/
-            _dataSetModelProxyMap[scope.$id] = {};
-            _dataSetModelMap[scope.$id] = {};
-            /*if filter dataSet if dataField is selected other than 'All Fields'*/
-            if (dataField && dataField !== ALLFIELDS) {
-                data = {};
-                //Widget selected item dataset will be object instead of array.
-                if (WM.isObject(dataSet) && !WM.isArray(dataSet)) {
-                    data[WidgetUtilService.getObjValueByKey(dataSet, dataField)] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
+                if (scope.datafield === ALLFIELDS) {
+                    selectedOption = _.find(scope.displayOptions, {key : selectedValue});
+                    scope._model_ = selectedOption.dataObject;
+                    scope.displayValue = selectedOption.value;
                 } else {
-                    _.forEach(dataSet, function (option) {
-                        key = WidgetUtilService.getObjValueByKey(option, dataField);
-                        if (!_.includes(orderedKeys, key)) {
-                            orderedKeys.push(key);
-                        }
-                        data[key] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                    });
-                }
-
-            } else {
-                data = {};
-                if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1) {
-                    data[0] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                    /*store parsed dataSet in scope*/
-                    _dataSetModelProxyMap[scope.$id][0] = dataSet;
-                    _dataSetModelMap[scope.$id][JSON.stringify(dataSet)] = '0';
-                } else {
-                    _.forEach(dataSet, function (option, index) {
-                        if (WM.isObject(option)) {
-                            if (scope.datafield === ALLFIELDS) {
-                                data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                                /*store parsed dataSet in scope*/
-                                _dataSetModelProxyMap[scope.$id][index] = option;
-                                _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
-                            } else {
-                                data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                            }
-                        } else {
-                            if (WM.isArray(dataSet)) {
-                                data[option] = option;
-                            } else {
-                                data[index] = option;
-                            }
-                        }
-                    });
+                    scope._model_ = selectedValue;
+                    scope.displayValue = selectedValue;
                 }
             }
-            scope.orderedKeys = orderedKeys;
-            return data;
         }
-
 
         /*function to create the options for the select widget, based on the different configurations that can be provided.
          Options can be provided as
@@ -206,77 +67,13 @@ WM.module('wm.widgets.form')
          * 2. application scope variable which is assigned to the dataSet attribute of the select widget from the studio.
          * 3. a wm-studio-variable which is bound to the widget's dataSet property.*/
         function createSelectOptions(dataset, scope) {
-            /* check for dataSet*/
-            if (!dataset) {
-                return;
-            }
-            /*assign dataSet according to liveVariable or other variable*/
-            dataset = dataset.hasOwnProperty('data') ? dataset.data : dataset;
-            var key;
-            /*checking if dataSet is present and it is not a string.*/
-            if (dataset && dataset.dataValue !== '') {
-                /*initializing select options*/
-                scope.selectOptions = [];
-                /*check if dataset is array*/
-                if (WM.isArray(dataset)) {
-                    dataset = FormWidgetUtils.getOrderedDataSet(dataset, scope.orderby);
-                    /*filter the dataSet based on datafield & displayfield*/
-                    dataset = parseDataSet(dataset, scope);
-                    /* if dataSet is an array of objects, convert it to object */
-                    if (WM.isObject(dataset[0])) {
-                        key = getKey(dataset[0]);
-                        /* if dataSet is an array, convert it to object */
-                        _.forEach(dataset, function (option) {
-                            scope.selectOptions.push({'key': key, 'value': option.name || option[key]});
-                        });
-                    } else if (WM.isArray(dataset)) {
-                        /* if dataSet is an array, convert it to object */
-                        _.forEach(dataset, function (option) {
-                            scope.selectOptions.push({"key": option, "value": option});
-                        });
-                    } else if (WM.isObject(dataset)) {
-                        if (scope.orderedKeys.length) {
-                            _.forEach(scope.orderedKeys, function (val) {
-                                scope.selectOptions.push({"key": _.toString(val), "value": dataset[val]});
-                            });
-                        } else {
-                            _.forEach(dataset, function (val, key) {
-                                scope.selectOptions.push({"key": key, "value": val});
-                            });
-                        }
-                    }
-                } else if (WM.isObject(dataset)) {
-                    /*filter the dataSet based on datafield & displayfield*/
-                    dataset = parseDataSet(dataset, scope);
-                    if (scope.orderedKeys.length) {
-                        _.forEach(scope.orderedKeys, function (val) {
-                            scope.selectOptions.push({"key": _.toString(val), "value": dataset[val]});
-                        });
-                    } else {
-                        _.forEach(dataset, function (val, key) {
-                            scope.selectOptions.push({"key": key, "value": val});
-                        });
-                    }
-                } else {
-                    /* if dataSet is an string, convert it to object */
-                    if (WM.isString(dataset)) {
-                        _.forEach(dataset.split(','), function (opt) {
-                            opt = opt.trim();
-                            scope.selectOptions.push({"key": opt, "value": opt});
-                        });
-                    } else {
-                        scope.selectOptions.push({"key": dataset, "value": dataset});
-                    }
-                }
-                updateModelProxy(scope, scope._model_);
-            }
+            FormWidgetUtils.extractDisplayOptions(dataset, scope);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
             switch (key) {
             case 'dataset':
-                /*creating options for the select element, whenever the property value changes*/
                 createSelectOptions(scope.dataset, scope, element);
                 break;
             case 'multiple':
@@ -302,31 +99,7 @@ WM.module('wm.widgets.form')
 
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
-            /*if "All Fields" is found in the widget mark up, then make the '_model_', an object*/
-            /*checking with 'attrs' for "backward compatibility", as displayField & dataField are implemented later*/
-            if (scope.readonly) {
-                scope.modelProxy = scope._model_;
-                return;
-            }
-
-            /* assign the modelProxy to the model when the selected datafield isn't all-fields*/
-            if (scope.datafield !== ALLFIELDS || (scope.dataset && WM.isString(scope.dataset))) {
-                scope._model_ = scope.modelProxy;
-                setDisplayValFromModelProxy(scope, scope.modelProxy);
-            } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
-                if (scope.multiple) {
-                    /*For multiple select with data field as All Fields, set model as array of objects*/
-                    var modelHolder = [];
-                    _.each(scope.modelProxy, function (proxy) {
-                        modelHolder.push(_dataSetModelProxyMap[scope.$id][proxy]);
-                    });
-                    scope._model_ = modelHolder;
-                } else {
-                    scope._model_ = _dataSetModelProxyMap[scope.$id][scope.modelProxy];
-                }
-            }
-            _modelChangedManually[scope.$id] = true;
-
+            assignModelValue(scope);
             if (WM.isFunction(scope._onChange)) {
                 scope._onChange({$event: args.$event, $scope: args.$scope});
             }
@@ -350,28 +123,8 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
-
-                    if (!attrs.widgetid) {
-                        Object.defineProperty(iScope, '_model_', {
-                            get: function () {
-                                return this._proxyModel;
-                            },
-                            set: function (newVal) {
-                                if (iScope._reset) {
-                                    $el.find('option').removeAttr('selected');
-                                    if (iScope.placeholder) {
-                                        $el.find('option:first').attr('selected', 'selected');
-                                    }
-                                    iScope._reset = false;
-                                    return;
-                                }
-                                this._proxyModel = newVal;
-                                _modelChangedManually[iScope.$id] = false;
-                                updateModelProxy(iScope, newVal);
-                            }
-                        });
-                    }
+                    iScope.widgetProps           = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.orderedKeys           = [];
                 },
                 'post': function (iScope, element, attrs) {
 
@@ -398,6 +151,19 @@ WM.module('wm.widgets.form')
                     /* fields defined in scope: {} MUST be watched explicitly */
                     /*watching scopedataset attribute to create options for the select element.*/
                     if (!attrs.widgetid) {
+                        iScope.$watch('_model_', function () {
+                            if (iScope._reset) {
+                                element.find('option').removeAttr('selected');
+                                if (iScope.placeholder) {
+                                    element.find('option:first').attr('selected', 'selected');
+                                }
+                                iScope._reset = false;
+                                return;
+                            }
+                            //assignModelValue(iScope);
+                            FormWidgetUtils.updatedCheckedValues(iScope);
+                        }, false);
+
                         if (attrs.scopedataset) {
                             iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
                         }
