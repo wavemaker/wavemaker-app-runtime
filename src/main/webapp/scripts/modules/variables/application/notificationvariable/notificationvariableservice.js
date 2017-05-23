@@ -28,11 +28,11 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     initiateCallback = Variables.initiateCallback;
 
                 //callback function to execute on click of the custom notification element
-                function customNotificationOnClick(toasterClass) {
+                function customNotificationOnClick(toasterObj) {
                     if (variable.onClick) {
                         initiateCallback('onClick', variable, scope, options.data);
                     } else {
-                        wmToaster.hide(toasterClass);
+                        wmToaster.hide(toasterObj);
                     }
                 }
                 //callback function to execute on hide of the custom notification element
@@ -57,7 +57,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     //check for the older projects not having content property in the variable
                     if (variable.dataBinding.content && variable.dataBinding.content === 'page') {
                         if (content) {
-                            wmToaster.createCustomNotification(content, variableName, timeout, positionClass, customNotificationOnClick.bind(undefined, variableName), customNotificationOnHide, scope);
+                            wmToaster.createCustomNotification(content, variableName, timeout, positionClass, customNotificationOnClick, customNotificationOnHide, scope);
                         }
                     } else {
                         wmToaster.show(type, "", body, timeout, undefined, customNotificationOnClick, customNotificationOnHide);

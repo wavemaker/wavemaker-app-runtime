@@ -138,8 +138,10 @@ WM.module('wm.widgets.basic')
              * @description
              * hides a toaster.
              */
-            hide: function (toasterClass) {
-                if (toasterClass) {
+            hide: function (toasterObj) {
+                var toasterClass;
+                if (WM.isObject(toasterObj) && _.includes(toasterObj.type, 'custom-toaster ')) {
+                    toasterClass = toasterObj.type.replace('custom-toaster ', '');
                     var toastClassIndex = classlist.indexOf(toasterClass);
                     if (toastClassIndex > -1) {
                         classlist.splice(toastClassIndex, 1);
