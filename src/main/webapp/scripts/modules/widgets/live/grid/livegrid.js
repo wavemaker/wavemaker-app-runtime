@@ -31,6 +31,13 @@ WM.module('wm.widgets.live')
                     wmToaster.show('error', 'ERROR', $rs.appLocale.LABEL_ACCESS_DENIED);
                 };
 
+            //On opening of the form, set the validation type on the form
+            function setValidationType($is) {
+                $timeout(function () {
+                   LiveWidgetUtils.setFormValidationType($is.gridform);
+                });
+            }
+
             //Function to apply the filter on field values, once the dialog is opened
             function applyFilterOnFields(scope) {
                 $timeout(function () {
@@ -154,6 +161,7 @@ WM.module('wm.widgets.live')
                                     if (scope.isLayoutDialog) {
                                         DialogService.showDialog(scope.gridform._dialogid, { 'resolve': {}, 'scope' : scope.gridform });
                                         applyFilterOnFields(scope);
+                                        setValidationType(scope);
                                     }
                                 }));
                                 /*On update row call the form update function*/
@@ -175,6 +183,7 @@ WM.module('wm.widgets.live')
                                             'scope': scope.gridform
                                         });
                                         applyFilterOnFields(scope);
+                                        setValidationType(scope);
                                     }
                                 }));
                                 /* watch the primaryKey field in grid form , as soon as it updated change the live grid primary key */

@@ -285,7 +285,7 @@ WM.module('wm.widgets.live')
                             }
                             //Find the first invalid untoched element and set it to touched.
                             // Safari does not form validations. this will ensure that error is shown for user
-                            $invalidEle = $formEle.find('.ng-invalid:visible:first');
+                            $invalidEle = $formEle.find(':not(form).ng-invalid:visible:first');
                             if ($invalidEle.length && formScope.ngform[$invalidEle.attr('name')]) {
                                 $invalidEle.focus();
                                 formScope.ngform[$invalidEle.attr('name')].$setTouched();
@@ -996,12 +996,7 @@ WM.module('wm.widgets.live')
                                 }
                                 break;
                             case 'validationtype':
-                                //Add or remove the novalidate attribute based on the input
-                                if (newVal === 'none' || newVal === 'default') {
-                                    element.attr('novalidate', '');
-                                } else {
-                                    element.removeAttr('novalidate');
-                                }
+                                LiveWidgetUtils.setFormValidationType(scope);
                                 break;
                             case 'autocomplete':
                                 /*Set the auto complete on/off based on the input*/
