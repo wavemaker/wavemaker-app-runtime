@@ -548,7 +548,7 @@ WM.module('wm.widgets.live')
                 } else {
                     template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" ng-show="formFields[' + index + '].href"><i class="wi wi-file"></i></a>';
                 }
-                template = template + '<input wm-valid-file class="app-blob-upload" data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ' +
+                template = template + '<input wm-valid-file class="app-blob-upload" data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key + \'_formWidget\'}}" ng-required="{{formFields[' + index + '].required}}" ' +
                     'ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"' + eventTl + '/>';
                 return template;
             }
@@ -634,19 +634,6 @@ WM.module('wm.widgets.live')
             function getSearchTemplate(fieldDef, index) {
                 var additionalFields = ' type="autocomplete" dataoptions="formFields[' + index + '].dataoptions"  width="{{formFields[' + index + '].width}}"' +  getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
-            }
-            /**
-             * @ngdoc function
-             * @name wm.widgets.live.LiveWidgetUtils#getHiddenTemplate
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * returns the hidden template for liveFilter and liveForm.
-             */
-            function getHiddenTemplate(fieldDef, index) {
-                var additionalFields = 'type="hidden" ';
-                return getDefaultTemplate('text', fieldDef, index, '', '', '', additionalFields);
             }
             /**
              * @ngdoc function
@@ -1004,25 +991,6 @@ WM.module('wm.widgets.live')
                     wdgtProperties = scope.widgetProps, //Find out the form widget inside the form field
                     formWidget     = getFormFieldWidget(scope, element);
 
-                function compileField() {
-                    if (CONSTANTS.isRunMode) {
-                        //On changing of a property in studio mode, generate the template again so that change is reflected
-                        template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
-                        //Destroy the scopes of the widgtes inside the form field
-                        element.find('.ng-isolate-scope')
-                            .each(function () {
-                                var elIscope = WM.element(this).isolateScope();
-                                if (elIscope) {
-                                    elIscope.$destroy();
-                                }
-                            });
-                        //Remove only live-field so that overlay won't get overrided
-                        element.find('.live-field').remove();
-                        element.append(template);
-                        $compile(element.contents())(parentScope);
-                    }
-                }
-
                 function setFormField() {
                     if (CONSTANTS.isRunMode) {
                         parentScope.formFields[index][key] = newVal;
@@ -1065,10 +1033,6 @@ WM.module('wm.widgets.live')
                         element.parents('[widgettype="wm-gridcolumn"]').removeClass('hide');
                     }
                     setFormField();
-                    //Compile the field only if field does not contaon form widget
-                    if (!element.find('[name="' + scope.name + '_formWidget"]').length) {
-                        compileField();
-                    }
                     break;
                 case 'displayname':
                     element.find('label.formfield-label').attr('title', newVal).text(newVal);
@@ -2438,7 +2402,6 @@ WM.module('wm.widgets.live')
             this.getColumnDef               = getColumnDef;
             this.getButtonDef               = getButtonDef;
             this.getTemplate                = getTemplate;
-            this.getHiddenTemplate          = getHiddenTemplate;
             this.translateVariableObject    = translateVariableObject;
             this.getColumnCountByLayoutType = getColumnCountByLayoutType;
             this.getCustomFieldKey          = getCustomFieldKey;
