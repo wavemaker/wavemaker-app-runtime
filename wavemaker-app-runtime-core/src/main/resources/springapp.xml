@@ -20,6 +20,10 @@
                            conversion-service="applicationConversionService">
         <mvc:message-converters>
             <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
+                <property name="writeAcceptCharset" value="false"/>
+            </bean>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
                     <bean class="com.wavemaker.runtime.WMAppObjectMapper"/>
