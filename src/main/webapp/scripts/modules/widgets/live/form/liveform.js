@@ -58,7 +58,6 @@ WM.module('wm.widgets.live')
                                 '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
-                                '<div class="hidden-form-elements"></div>' +
                         '</form>';
 
                 defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass]" ng-submit="formSave($event);" apply-styles="shell">' +
@@ -78,7 +77,6 @@ WM.module('wm.widgets.live')
                                         '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                         template.context.innerHTML +
                                     '</div>' +
-                                    '<div class="hidden-form-elements"></div>' +
                                     '<div class="basic-btn-grp form-action panel-footer clearfix" ng-show="!isLayoutDialog && showButtons(\'footer\')"></div>' +
                                 '</form>';
 
@@ -93,7 +91,6 @@ WM.module('wm.widgets.live')
                                             '<wm-message ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                             '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                         '</div>' +
-                                        '<div class="hidden-form-elements"></div>' +
                                         '<div class="basic-btn-grp form-action modal-footer clearfix panel-footer">' +
                                             '<div class="action-content"></div>' +
                                         '</div>' +
@@ -1076,7 +1073,6 @@ WM.module('wm.widgets.live')
                                     scope.formFields = undefined;
                                     scope.buttonArray = undefined;
                                     element.find('.form-elements').empty();
-                                    element.find('.hidden-form-elements').empty();
                                     element.find('.basic-btn-grp').empty();
                                     scope.formConstructed = fromDesigner;
                                     /*If the event has been emitted after changes in the liveFormDesigner then empty the form and reconstruct*/
@@ -1340,20 +1336,13 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition, element);
-                            //Remove only live-field so that overlay won't get overrided
-                            element.find('.live-field').remove();
-                            element.append(template);
-                            $compile(element.contents())(parentScope);
-                        } else {
-                            template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
-                            if (externalForm) {
-                                element.closest('form.app-form').find('.hidden-form-elements').append($compile(template)(parentScope));
-                            } else {
-                                element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentScope));
-                            }
-                        }
+
+                        template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition, element);
+                        //Remove only live-field so that overlay won't get overrided
+                        element.find('.live-field').remove();
+                        element.append(template);
+                        $compile(element.contents())(parentScope);
+
                         parentScope._onFocusField = parentScope._onFocusField ||  function ($event) {
                             WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
                         };

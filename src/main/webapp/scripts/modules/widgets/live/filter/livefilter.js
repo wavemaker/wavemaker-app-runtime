@@ -21,7 +21,6 @@ WM.module('wm.widgets.live')
                     '</div>' +
                     '<div ng-show="expanded" class="panel-body" apply-styles="inner-shell">' +
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
-                        '<div class="hidden-filter-elements"></div>' +
                     '</div>' +
                     '<div ng-show="expanded && showButtons(\'footer\')" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
@@ -588,7 +587,6 @@ WM.module('wm.widgets.live')
                                     scope.buttonArray = undefined;
 
                                     element.find('[data-identifier="filter-elements"]').empty();
-                                    element.find('.hidden-filter-elements').empty();
                                     element.find('.basic-btn-grp').empty();
 
                                     /* if layout grid template found, simulate canvas dom addition of the elements */
@@ -755,14 +753,9 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        if (!CONSTANTS.isRunMode || columnsDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnsDef, index, parentIsolateScope.captionposition, element);
-                            element.html(template);
-                            $compile(element.contents())(parentIsolateScope);
-                        } else {
-                            template = LiveWidgetUtils.getHiddenTemplate(columnsDef, index);
-                            element.closest('[data-identifier="livefilter"]').find('> .hidden-filter-elements').append($compile(template)(parentIsolateScope));
-                        }
+                        template = LiveWidgetUtils.getTemplate(columnsDef, index, parentIsolateScope.captionposition, element);
+                        element.html(template);
+                        $compile(element.contents())(parentIsolateScope);
 
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {

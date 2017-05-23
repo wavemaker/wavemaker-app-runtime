@@ -22,7 +22,6 @@ WM.module('wm.layouts.containers')
                                 '<span>{{:: $root.locale.MESSAGE_CANNOT_GENERATE_FIELDS_IN_STUDIO}}</span>' +
                             '</div>' +
                         '</div>' +
-                        '<div class="hidden-form-elements"></div>' +
                     '</div>' +
                     '</form>'
             );
@@ -380,7 +379,6 @@ WM.module('wm.layouts.containers')
                             }
                             scope.elScope.formFields = undefined;
                             element.find('.form-elements').empty();
-                            element.find('.hidden-form-elements').empty();
                             var markupObj = WM.element('<div>' + markup + '</div>');
                             /* if layout grid template found, simulate canvas dom addition of the elements */
                             $rootScope.$emit('prepare-element', markupObj, function () {
