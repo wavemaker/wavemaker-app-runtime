@@ -32,6 +32,7 @@ WM.module('wm.layouts.containers')
             notifyFor = {
                 'captionsize'     : true,
                 'novalidate'      : true,
+                'validationtype'  : true,
                 'autocomplete'    : true,
                 'submitbutton'    : true,
                 'resetbutton'     : true,
@@ -120,11 +121,11 @@ WM.module('wm.layouts.containers')
                 scope.elScope.captionposition = newVal;
                 break;
             case 'novalidate':
-                if (newVal === true || newVal === 'true') {
-                    element.attr('novalidate', '');
-                } else {
-                    element.removeAttr('novalidate');
-                }
+                //Set validation type based on the novalidate property
+                scope.validationtype = (newVal === true || newVal === 'true') ? 'none' : 'default';
+                break;
+            case 'validationtype':
+                LiveWidgetUtils.setFormValidationType(scope);
                 break;
             case 'autocomplete':
                 value = (newVal === true || newVal === 'true') ? 'on' : 'off';
@@ -283,6 +284,12 @@ WM.module('wm.layouts.containers')
                 template,
                 formData,
                 formVariable = getFormVariable(scope, element);
+
+            //Disable the form submit if form is in invalid state.
+            if (LiveWidgetUtils.validateFieldsOnSubmit(scope, scope.elScope.ngform, element)) {
+                return;
+            }
+
             resetFormState(scope);
             //Set the values of the widgets inside the form (other than form fields) in form data
             formData = scope.constructDataObject();
@@ -347,57 +354,69 @@ WM.module('wm.layouts.containers')
             'scope': {},
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
-            'link': {
-                'pre': function (scope, element, attrs) {
-                    scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+            'compile': function ($tEl) {
+                return {
+                    'pre': function (scope, element, attrs) {
+                        scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
-                    scope.elScope = element.scope().$new();
-                    scope.elScope.formFields   = [];
-                    scope.elScope.isUpdateMode = true;
-                    scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
-                    scope.elScope.applyFilterOnField = WM.noop;
-                    element.removeAttr('title');
-                },
-                'post': function (scope, element, attrs) {
-                    var handlers = [];
-                    scope.statusMessage = undefined;
+                        scope.elScope = element.scope().$new();
+                        scope.elScope.formFields = [];
+                        scope.elScope.isUpdateMode = true;
+                        scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
+                        scope.elScope.applyFilterOnField = WM.noop;
+                        element.removeAttr('title');
 
-                    /* register the property change handler */
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
-
-                    if (!scope.widgetid) {
-                        bindEvents(scope, element);
-                        scope.resetForm = resetForm.bind(undefined, scope, element);
-                        scope.reset     = resetForm.bind(undefined, scope, element);
-                        scope.submit    = submitForm.bind(undefined, scope, element);
-                    } else {
-                        //event emitted on building new markup from canvasDom
-                        handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
-                            //as multiple form directives will be listening to the event, apply field-definitions only for current form
-                            if (!markup || scope.$id !== scopeId) {
-                                return;
+                        //handle the backward compatibility for no validate
+                        if (attrs.novalidate) {
+                            if (!attrs.validationtype) {
+                                scope.validationtype = attrs.validationtype = (attrs.novalidate === 'true' ? 'none' : 'default');
+                                WM.element($tEl.context).attr('validationtype', scope.validationtype);
                             }
-                            scope.elScope.formFields = undefined;
-                            element.find('.form-elements').empty();
-                            var markupObj = WM.element('<div>' + markup + '</div>');
-                            /* if layout grid template found, simulate canvas dom addition of the elements */
-                            $rootScope.$emit('prepare-element', markupObj, function () {
-                                element.find('.form-elements').append(markupObj);
-                                $compile(markupObj)(scope);
-                            });
-                        }));
-                    }
-                    scope.clearMessage = clearMessage.bind(undefined, scope);
-                    scope.elScope.ngform  = scope[scope.name];
-                    scope.highlightInvalidFields = LiveWidgetUtils.highlightInvalidFields.bind(undefined, scope.elScope.ngform);
-                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                            delete attrs.novalidate;
+                        }
+                    },
+                    'post': function (scope, element, attrs) {
+                        var handlers = [];
+                        scope.statusMessage = undefined;
+                        scope.element = element;
 
-                    scope.$on('$destroy', function () {
-                        handlers.forEach(Utils.triggerFn);
-                    });
-                }
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
+
+                        if (!scope.widgetid) {
+                            bindEvents(scope, element);
+                            scope.resetForm = resetForm.bind(undefined, scope, element);
+                            scope.reset = resetForm.bind(undefined, scope, element);
+                            scope.submit = submitForm.bind(undefined, scope, element);
+                        } else {
+                            //event emitted on building new markup from canvasDom
+                            handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
+                                //as multiple form directives will be listening to the event, apply field-definitions only for current form
+                                if (!markup || scope.$id !== scopeId) {
+                                    return;
+                                }
+                                scope.elScope.formFields = undefined;
+                                element.find('.form-elements').empty();
+                                var markupObj = WM.element('<div>' + markup + '</div>');
+                                /* if layout grid template found, simulate canvas dom addition of the elements */
+                                $rootScope.$emit('prepare-element', markupObj, function () {
+                                    element.find('.form-elements').append(markupObj);
+                                    $compile(markupObj)(scope);
+                                });
+                            }));
+                        }
+                        scope.clearMessage = clearMessage.bind(undefined, scope);
+                        scope.elScope.ngform = scope[scope.name];
+                        scope.highlightInvalidFields = LiveWidgetUtils.highlightInvalidFields.bind(undefined, scope.elScope.ngform);
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        scope.$on('$destroy', function () {
+                            handlers.forEach(Utils.triggerFn);
+                        });
+                    }
+                };
             },
-            controller: function ($scope) {
+            'controller': function ($scope) {
                 //Set form widgets scopes on form
                 this.populateFormWidgets = LiveWidgetUtils.populateFormWidgets.bind(undefined, $scope, 'formWidgets');
             }

@@ -1356,7 +1356,8 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.form': {
                         "title": {"type": "string",  "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "novalidate": {"type": "boolean", "value": false, "showindesigner": true},
+                        "novalidate": {"type": "boolean", "show": false},
+                        "validationtype": {"type": "select-by-object", "options": [{"label": "Default", "value": "default"}, {"label": "HTML", "value": "html"}, {"label": "No Validations", "value": "none"}], "value": "default", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
                         "action": {"type": "string", "bindable": "in-bound", "showindesigner": true},
                         "target": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "", "widget": "data-list", "showindesigner": true},
@@ -2531,7 +2532,7 @@ WM.module('wm.widgets.base', [])
 
 
             //use requestIdleCallback when available otherwise use setTimeout
-            $rIC = window.requestIdelCallback || window.setTimeout;
+            $rIC = window.requestIdleCallback || window.setTimeout;
 
             $rICQueue = [];
 

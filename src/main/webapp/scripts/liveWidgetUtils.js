@@ -2420,6 +2420,50 @@ WM.module('wm.widgets.live')
                     $ele.removeAttr('novalidate');
                 }
             }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.validateFieldsOnSubmit
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Disable the form submit if form is in invalid state. Highlight all the invalid fields if validation type is default
+             *
+             * @param {object} $scope isolate scope of the widget
+             * @param {object} ngForm angular form object
+             * @param {object} $formEle form element
+             */
+            function validateFieldsOnSubmit($scope, ngForm, $formEle) {
+                var $invalidEle;
+                //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
+                if ($scope.operationType !== 'delete' && ($scope.validationtype === 'html' || $scope.validationtype === 'default') && ngForm && ngForm.$invalid) {
+                    //For blob type required fields, even if file is present, required error is shown.
+                    //To prevent this, if value is present set the required validity to true
+                    WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
+                        var $blobEL = WM.element(this);
+                        if ($blobEL.val()) {
+                            ngForm[$blobEL.attr('name')].$setValidity('required', true);
+                        }
+                    });
+                    if (ngForm.$invalid) {
+                        if ($scope.validationtype === 'default') {
+                            $scope.highlightInvalidFields();
+                        }
+                        //Find the first invalid untoched element and set it to touched.
+                        // Safari does not form validations. this will ensure that error is shown for user
+                        $invalidEle = $formEle.find(':not(form).ng-invalid:visible:first');
+                        if ($invalidEle.length && ngForm[$invalidEle.attr('name')]) {
+                            $invalidEle.focus();
+                            ngForm[$invalidEle.attr('name')].$setTouched();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                return false;
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2465,6 +2509,7 @@ WM.module('wm.widgets.live')
             this.getRangeFieldValue         = getRangeFieldValue;
             this.getDataTableFilterWidget   = getDataTableFilterWidget;
             this.setFormValidationType      = setFormValidationType;
+            this.validateFieldsOnSubmit     = validateFieldsOnSubmit;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

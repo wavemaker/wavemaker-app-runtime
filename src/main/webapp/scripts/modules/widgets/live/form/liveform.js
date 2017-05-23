@@ -264,32 +264,14 @@ WM.module('wm.widgets.live')
                         $formEle     = getFormElement(),
                         formScope    = $scope.isLayoutDialog && $formEle.length ? $formEle.scope() : $scope,
                         isValid,
-                        deleteFn,
-                        $invalidEle;
+                        deleteFn;
                     $scope.operationType = $scope.operationType || $scope.findOperationType(variable);
+
                     //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
-                    if ($scope.operationType !== 'delete' && ($scope.validationtype === 'html' || $scope.validationtype === 'default') && formScope.ngform && formScope.ngform.$invalid) {                        //For blob type required fields, even if file is present, required error is shown.
-                        //To prevent this, if value is present set the required validity to true
-                        WM.element($formEle.find('input[type="file"].app-blob-upload')).each(function () {
-                            var $blobEL = WM.element(this);
-                            if ($blobEL.val()) {
-                                formScope.ngform[$blobEL.attr('name')].$setValidity('required', true);
-                            }
-                        });
-                        if (formScope.ngform.$invalid) {
-                            if ($scope.validationtype === 'default') {
-                                $scope.highlightInvalidFields();
-                            }
-                            //Find the first invalid untoched element and set it to touched.
-                            // Safari does not form validations. this will ensure that error is shown for user
-                            $invalidEle = $formEle.find(':not(form).ng-invalid:visible:first');
-                            if ($invalidEle.length && formScope.ngform[$invalidEle.attr('name')]) {
-                                $invalidEle.focus();
-                                formScope.ngform[$invalidEle.attr('name')].$setTouched();
-                                return;
-                            }
-                        }
+                    if (LiveWidgetUtils.validateFieldsOnSubmit($scope, formScope.ngform, $formEle)) {
+                        return;
                     }
+
                     /*If live-form is in a dialog, then always fetch the formElement by name
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
@@ -986,11 +968,7 @@ WM.module('wm.widgets.live')
                                 break;
                             case 'novalidate':
                                 //Set validation type based on the novalidate property
-                                if (newVal === true || newVal === 'true') {
-                                    scope.validationtype = 'none'
-                                } else {
-                                    scope.validationtype = 'default'
-                                }
+                                scope.validationtype = (newVal === true || newVal === 'true') ? 'none' : 'default';
                                 break;
                             case 'validationtype':
                                 LiveWidgetUtils.setFormValidationType(scope);
