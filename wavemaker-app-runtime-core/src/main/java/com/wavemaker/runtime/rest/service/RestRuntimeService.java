@@ -27,23 +27,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.proxy.AppProxyConstants;
+import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
+import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
-import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
+import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
+import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessorContext;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.proxy.AppProxyConstants;
-import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
-import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -73,7 +74,8 @@ public class RestRuntimeService {
 
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
-        List<HttpRequestProcessor> httpRequestProcessors = restRuntimeServiceCacheHelper.getHttpRequestProcessors(serviceId);
+        RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
+        List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
         for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
             httpRequestProcessor.process(httpRequestProcessorContext);
         }
@@ -85,7 +87,7 @@ public class RestRuntimeService {
         HttpResponseDetails httpResponseDetails = invokeRestCall(httpRequestDetails);
 
         HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
-        List<HttpResponseProcessor> httpResponseProcessors = restRuntimeServiceCacheHelper.getHttpResponseProcessors(serviceId);
+        List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
         for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
             httpResponseProcessor.process(httpResponseProcessorContext);
         }

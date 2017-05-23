@@ -16,31 +16,50 @@
 package com.wavemaker.runtime.rest.processor.response;
 
 import java.net.HttpCookie;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.util.HttpResponseUtils;
 
 /**
  * @author Uday Shankar
  */
-public class UpdateCookiePathHttpResponseProcessor implements HttpResponseProcessor {
+public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor implements InitializingBean {
+
+    private boolean clearCookieHeader;
+    private boolean updateCookiePath;
 
     @Override
-    public void process(HttpResponseProcessorContext httpResponseProcessorContext) {
+    public void afterPropertiesSet() throws Exception {
+        if (clearCookieHeader && updateCookiePath) {
+            throw new WMRuntimeException("Cannot have both clearCookieHeader and updateCookiePath set");
+        }
+    }
+
+
+    @Override
+    public void doProcess(HttpResponseProcessorContext httpResponseProcessorContext) {
         HttpResponseDetails httpResponseDetails = httpResponseProcessorContext.getHttpResponseDetails();
-        List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
-        String cookiePath = getCookiePath(httpResponseProcessorContext.getHttpServletRequest());
-        if (StringUtils.isNotBlank(cookiePath) && CollectionUtils.isNotEmpty(cookies)) {
-            for (HttpCookie httpCookie : cookies) {
-                httpCookie.setPath(cookiePath);//Updates path
+        if(updateCookiePath) {
+            List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
+            String cookiePath = getCookiePath(httpResponseProcessorContext.getHttpServletRequest());
+            if (StringUtils.isNotBlank(cookiePath) && CollectionUtils.isNotEmpty(cookies)) {
+                for (HttpCookie httpCookie : cookies) {
+                    httpCookie.setPath(cookiePath);//Updates path
+                }
+                HttpResponseUtils.setCookies(httpResponseDetails, cookies);
             }
-            HttpResponseUtils.setCookies(httpResponseDetails, cookies);
+        }
+        if(clearCookieHeader){
+            HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
         }
     }
 
@@ -58,5 +77,21 @@ public class UpdateCookiePathHttpResponseProcessor implements HttpResponseProces
             sb.append(httpServletRequest.getPathInfo());
         }
         return sb.toString();
+    }
+
+    public boolean isClearCookieHeader() {
+        return clearCookieHeader;
+    }
+
+    public void setClearCookieHeader(boolean clearCookieHeader) {
+        this.clearCookieHeader = clearCookieHeader;
+    }
+
+    public boolean isUpdateCookiePath() {
+        return updateCookiePath;
+    }
+
+    public void setUpdateCookiePath(boolean updateCookiePath) {
+        this.updateCookiePath = updateCookiePath;
     }
 }
