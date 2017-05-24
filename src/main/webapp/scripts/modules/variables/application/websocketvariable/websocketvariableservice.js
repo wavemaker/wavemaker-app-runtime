@@ -12,8 +12,8 @@
  * The '$websocketvariable' provides methods to work with web socket variables
  */
 
-wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils', '$servicevariable', 'ServiceFactory',
-    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils, $servicevariable, ServiceFactory) {
+wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Variables', 'VARIABLE_CONSTANTS', '$websocket', 'Utils', '$servicevariable', 'ServiceFactory', 'CONSTANTS',
+    function (BaseVariablePropertyFactory, Variables, VARIABLE_CONSTANTS, $websocket, Utils, $servicevariable, ServiceFactory, CONSTANTS) {
         "use strict";
 
         var scope_var_socket_map = {},
@@ -221,6 +221,11 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
                 return _socket;
             }
 
+            //Trigger error if unsecured webSocket is used in secured domain, ignore in mobile device
+            if (!CONSTANTS.hasCordova && Utils.isInsecureContentRequest(url)) {
+                Utils.triggerFn(_onSocketError.bind(undefined, variable));
+                return;
+            }
             _socket = $websocket(url);
             _socket.onOpen(_onSocketOpen.bind(undefined, variable));
             _socket.onError(_onSocketError.bind(undefined, variable));
