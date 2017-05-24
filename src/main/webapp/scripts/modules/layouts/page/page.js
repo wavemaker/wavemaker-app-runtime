@@ -15,27 +15,34 @@ WM.module('wm.layouts.page')
         function (DeviceViewService, CONSTANTS, $rs, $routeParams, Utils, $timeout, Variables, NavigationVariableService, $location) {
             'use strict';
 
-            var appVariableReadyFired = false;
+            var appVariableReadyFired = false,
+                unregister;
+
+            //Sets page title
+            function setPageTitle(pageTitle) {
+                document.title = pageTitle;
+            }
 
             // Update the title of the page in run mode
             function updatePageTitle($s, $el, pageTitle) {
-                var expr,
-                    unregister;
+                var expr;
+
                 if (WM.isDefined(pageTitle)) {
                     if (_.startsWith(pageTitle, 'bind:')) {
                         expr = _.replace(pageTitle, 'bind:', '');
                         unregister = $s.$watch(expr, function (nv) {
                             if (WM.isDefined(nv)) {
-                                document.title = nv;
+                                setPageTitle(nv);
                             }
                         });
+
                         $s.$on('$destroy', unregister);
                         $el.on('$destroy', unregister);
                     } else {
-                        document.title = pageTitle;
+                        setPageTitle(pageTitle);
                     }
                 } else {
-                    document.title = $rs.activePageName + ' - ' + $rs.projectName;
+                    setPageTitle($rs.activePageName + ' - ' + $rs.projectName);
                 }
             }
 
@@ -67,6 +74,16 @@ WM.module('wm.layouts.page')
                             $s.Widgets   = {};
                             $rs.pageParams = $s.pageParams = $location.search();
                             $rs._pageReady = false;
+
+                            Object.defineProperty($s, 'pageTitle', {
+                               'get': function () {
+                                   return document.title;
+                               },
+                                'set': function (val) {
+                                   Utils.triggerFn(unregister);
+                                   setPageTitle(val);
+                                }
+                            });
                             // only expose the widgets of the active page to rootScope
                             if (!$s.$parent.partialname && !$s.prefabname) {
                                 $rs.Widgets       = $s.Widgets;

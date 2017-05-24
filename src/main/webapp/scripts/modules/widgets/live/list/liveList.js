@@ -73,6 +73,7 @@ WM.module('wm.widgets.live')
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
+                ngInitTemplate = ' ng-init="addCurrentItemWidgets(this);"',
                 notifyFor = {
                     'dataset'        : true,
                     'groupby'        : true,
@@ -302,7 +303,7 @@ WM.module('wm.widgets.live')
                 $el.data('$scrollParent', $scrollParent);
             }
 
-            function applyWrapper($tmplContent, attrs, flag) {
+            function applyWrapper($tmplContent, attrs, flag, hasCurrentItemWidgets) {
                 var tmpl = liTemplateWrapper_start;
 
                 if (attrs.hasOwnProperty('onMouseenter')) {
@@ -311,6 +312,10 @@ WM.module('wm.widgets.live')
 
                 if (attrs.hasOwnProperty('onMouseleave')) {
                     tmpl += ' ng-mouseleave="onMouseleave({$event: $event, $scope: this})" ';
+                }
+
+                if (hasCurrentItemWidgets) {
+                    tmpl += ngInitTemplate;
                 }
 
                 tmpl += liTemplateWrapper_end;
@@ -325,14 +330,16 @@ WM.module('wm.widgets.live')
             }
 
             function prepareLITemplate(tmpl, attrs, flag, name) {
-                var $tmpl = WM.element(tmpl),
-                    $div  = WM.element('<div></div>').append($tmpl),
-                    parentDataSet = attrs.dataset || attrs.scopedataset;
+                var $tmpl                 = WM.element(tmpl),
+                    $div                  = WM.element('<div></div>').append($tmpl),
+                    parentDataSet         = attrs.dataset || attrs.scopedataset,
+                    hasCurrentItemWidgets = false;
 
                 if (parentDataSet) {
                     Utils.updateTmplAttrs($div, parentDataSet, name);
+                    hasCurrentItemWidgets = $div.attr('has-currentitem-widgets');
                 }
-                $tmpl = applyWrapper($tmpl, attrs, flag);
+                $tmpl = applyWrapper($tmpl, attrs, flag, hasCurrentItemWidgets);
 
                 return $tmpl;
             }
@@ -508,7 +515,7 @@ WM.module('wm.widgets.live')
                                                 '</div>' +
                                                 '</h4></li>';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 
@@ -1453,7 +1460,7 @@ WM.module('wm.widgets.live')
 
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" ng-focus="onFocus($event)" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
-                        liTemplateWrapper_end   = ' ng-init="addCurrentItemWidgets(this);"></li>';
+                        liTemplateWrapper_end   = '></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, false, $is.name);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);

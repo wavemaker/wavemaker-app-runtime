@@ -6,17 +6,17 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layout/container/card.html',
             '<div init-widget class="app-card card app-panel" listen-property="actions" apply-styles="shell">' +
-                '<div class="app-card-header panel-heading" ng-show="title || subheading || iconclass || iconurl || actions">' +
-                    '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
+                '<div class="app-card-header panel-heading" ng-if="showHeader">' +
+                    '<div class="app-card-avatar" ng-if="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
-                        '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="iconurl"></wm-picture>' +
+                        '<img class="img-circle" ng-src="{{iconurl}}" ng-if="iconurl" />' +
                     '</div>' +
                     '<div class="app-card-header-text">' +
                         '<h4 class="card-heading">{{title}}</h4>' +
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
                     '</div>' +
-                    '<div class="panel-actions">' +
-                        '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
+                    '<div class="panel-actions" ng-if="actions">' +
+                        '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                     '</div>' +
                 '</div>' +
                 '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'height\':imageheight}">' +
@@ -33,7 +33,27 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events', 'wm.menu.dataProps']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events', 'wm.menu.dataProps']),
+            notifyFor   = {
+                'title'     : true,
+                'subheading': true,
+                'iconclass' : true,
+                'iconurl'   : true,
+                'actions'   : true
+            };
+
+        // Define the property change handler. This function will be triggered when there is a change in the widget property
+        function propertyChangeHandler($is, key) {
+            switch (key) {
+            case 'title':
+            case 'subheading':
+            case 'iconclass':
+            case 'iconurl':
+            case 'actions':
+                $is.showHeader = $is.title || $is.subheading || $is.iconclass || $is.iconurl || $is.actions;
+                break;
+            }
+        }
 
         return {
             'restrict': 'E',
@@ -63,6 +83,7 @@ WM.module('wm.layouts.containers')
                         scope.title = scope.heading || scope.bindheading;
                     }
 
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
             }
