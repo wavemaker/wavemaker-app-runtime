@@ -126,7 +126,8 @@ WM.module('wm.utils', [])
                 'switch'       : true,
                 'autocomplete' : true,
                 'chips'        : true,
-                'typeahead'    : true
+                'typeahead'    : true,
+                'rating'       : true
             },
             daysOptions = [{
                 'name': 'Sunday',
