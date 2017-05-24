@@ -32,7 +32,7 @@ public class PrefixHttpResponseHeadersResponseProcessor extends AbstractHttpResp
 
     private String headerPrefix;
 
-    private List<String> defaultResponseHeadersList;
+    private List<String> excludeList;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -48,10 +48,12 @@ public class PrefixHttpResponseHeadersResponseProcessor extends AbstractHttpResp
         List<String> keys = new ArrayList<>(responseHeaders.keySet());
         for (String responseHeaderKey : keys) {
             boolean matched = false;
-            for (String defaultResponseHeader : defaultResponseHeadersList) {
-                if (StringUtils.equalsIgnoreCase(responseHeaderKey, defaultResponseHeader)) {
-                    matched = true;
-                    break;
+            if (excludeList != null) {
+                for (String excludeHeader : excludeList) {
+                    if (StringUtils.equalsIgnoreCase(responseHeaderKey, excludeHeader)) {
+                        matched = true;
+                        break;
+                    }
                 }
             }
             if (!matched) {
@@ -66,7 +68,7 @@ public class PrefixHttpResponseHeadersResponseProcessor extends AbstractHttpResp
         this.headerPrefix = headerPrefix;
     }
 
-    public void setDefaultResponseHeadersList(List<String> defaultResponseHeadersList) {
-        this.defaultResponseHeadersList = defaultResponseHeadersList;
+    public void setExcludeList(List<String> excludeList) {
+        this.excludeList = excludeList;
     }
 }
