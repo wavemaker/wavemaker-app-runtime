@@ -285,7 +285,7 @@ public class QueryHelper {
 
     public static Object convertValue(QueryParameter parameter, Object value, boolean isNative) {
         final JavaType javaType = parameter.getType();
-        Object convertedValue = null;
+        Object convertedValue = value;
         if (value != null && javaType != JavaType.BLOB) {
             final String fromValue = String.valueOf(value);
             if (StringUtils.isNotBlank(fromValue) || parameter.getType() == JavaType.STRING) {

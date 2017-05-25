@@ -32,6 +32,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.model.JavaType;
+import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 import com.wavemaker.runtime.data.util.JDBCUtils;
@@ -121,12 +122,15 @@ public class NativeProcedureExecutor {
         for (int i = 0; i < params.size(); i++) {
             final ResolvableParam param = params.get(i);
 
-            if (param.getParameter().getParameterType().isOutParam()) {
-                Object value = statement.getObject(i + 1);
-                if (param.getParameter().getType() == JavaType.CURSOR) {
+            final ProcedureParameter parameter = param.getParameter();
+            if (parameter.getParameterType().isOutParam()) {
+                Object value = parameter.getType() == JavaType.BLOB ?
+                        statement.getBlob(i + 1) :
+                        statement.getObject(i + 1);
+                if (parameter.getType() == JavaType.CURSOR) {
                     value = readResultSet(value, limit);
                 }
-                result.put(param.getParameter().getName(), value);
+                result.put(parameter.getName(), value);
             }
         }
 

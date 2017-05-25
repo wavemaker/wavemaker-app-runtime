@@ -51,6 +51,13 @@ public class ReturnProperty {
         this.fieldType = fieldType;
     }
 
+    public ReturnProperty(final ReturnProperty other) {
+        this.name = other.name;
+        this.fieldName = other.fieldName;
+        this.optional = other.optional;
+        this.fieldType = other.fieldType;
+    }
+
     public String getName() {
         return name;
     }
@@ -86,5 +93,10 @@ public class ReturnProperty {
     @JsonIgnore
     public boolean isBlobType() {
         return JavaType.BLOB.getClassName().equals(fieldType.getTypeRef());
+    }
+
+    @Override
+    public ReturnProperty clone() {
+        return new ReturnProperty(this);
     }
 }

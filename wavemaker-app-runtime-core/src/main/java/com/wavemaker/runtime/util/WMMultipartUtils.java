@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.google.common.base.Optional;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.WMAppContext;
@@ -55,6 +57,9 @@ import net.sf.jmimemagic.MagicParseException;
 public class WMMultipartUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMMultipartUtils.class);
+
+    private static final int READ_LIMIT_FOR_CONTENT_TYPE = 2048;
+    private static final int FILE_NAME_LENGTH = 12;
 
     public static final String WM_DATA_JSON = "wm_data_json";
 
@@ -165,7 +170,7 @@ public class WMMultipartUtils {
             try {
                 session = sessionFactory.openSession();
                 Blob blob = Hibernate.getLobCreator(session)
-                        .createBlob(new ByteArrayInputStream(byteArray), new Long(byteArray.length));
+                        .createBlob(new ByteArrayInputStream(byteArray), byteArray.length);
                 method.invoke(instance, blob);
             } finally {
                 if (session != null) {
@@ -254,6 +259,34 @@ public class WMMultipartUtils {
         return downloadResponse;
     }
 
+    public static DownloadResponse buildDownloadResponse(
+            HttpServletRequest request, InputStream is, boolean download) {
+        DownloadResponse downloadResponse = new DownloadResponse();
+        try {
+            String filename = request.getParameter("filename");
+
+            if (StringUtils.isBlank(filename)) {
+                filename = RandomStringUtils.randomAlphanumeric(FILE_NAME_LENGTH);
+            }
+
+
+            downloadResponse.setContents(is);
+            downloadResponse.setInline(!download);
+
+            downloadResponse.setContentType(request.getContentType());
+            downloadResponse.setFileName(filename);
+
+            final Optional<MagicMatch> magicMatchOptional = getMagicType(is);
+            if (magicMatchOptional.isPresent()) {
+                downloadResponse.setContentType(magicMatchOptional.get().getMimeType());
+                downloadResponse.setFileName(filename + "." + magicMatchOptional.get().getExtension());
+            }
+        } catch (IOException | MagicException e) {
+            throw new WMRuntimeException("Failed to prepare response.", e);
+        }
+        return downloadResponse;
+    }
+
     private static <T> byte[] getBlobBytes(
             final T instance,
             final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
@@ -295,6 +328,18 @@ public class WMMultipartUtils {
             contentType = httpServletRequest.getContentType();
         }
         return contentType;
+    }
+
+    private static Optional<MagicMatch> getMagicType(final InputStream is) throws IOException, MagicException {
+        Optional<MagicMatch> result = Optional.absent();
+        if (is.markSupported()) {
+            byte[] bytes = new byte[READ_LIMIT_FOR_CONTENT_TYPE];
+            is.mark(READ_LIMIT_FOR_CONTENT_TYPE);
+            is.read(bytes);
+            is.reset();
+            result = Optional.of(getMagicMatch(bytes));
+        }
+        return result;
     }
 
     private static MagicMatch getMagicMatch(byte[] data) throws MagicException {
