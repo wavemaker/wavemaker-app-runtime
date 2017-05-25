@@ -52,7 +52,7 @@ WM.module('wm.widgets.live')
 
                 pageTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-device-liveform panel liveform-inline" ng-class="[captionAlignClass]" ng-submit="formSave($event);" apply-styles="shell">' +
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
-                                    '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
+                                    '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" margin="unset 0" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
                                 '<div ng-show="isLayoutDialog" class="text-left"><i class="wi wi-gear app-dialogmode-icon"></i><span class="app-dialogmode-text">Live form in dialog mode</span></div>' +
                                 '<div class="form-elements panel-body" ng-class="{\'update-mode\': isUpdateMode }" ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
