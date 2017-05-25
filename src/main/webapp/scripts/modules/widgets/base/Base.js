@@ -971,7 +971,7 @@ WM.module('wm.widgets.base', [])
                     "wm.spinner": {
                         "show": {"type": "boolean", "value": false},
                         "caption": {"type": "string", "value": "Loading...", "maxlength": 256},
-                        "servicevariabletotrack": {"type": "list", "options": []},
+                        "servicevariabletotrack": {"type": "list", "options": [], "widget": "multi-select"},
                         "iconclass": {"type": "string", "value": "fa fa-circle-o-notch", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "image": {"type": "string", "bindable": "in-bound"},

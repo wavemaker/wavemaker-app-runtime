@@ -72,6 +72,8 @@ WM.module('wm.widgets.basic')
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
+                    var variablesToTrack = _.split(scope.servicevariabletotrack, ','),
+                        spinnerStatusMap = {};
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -84,8 +86,11 @@ WM.module('wm.widgets.basic')
 
                     if (!scope.widgetid) {
                         scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
-                            if (variableName === scope.servicevariabletotrack) {
-                                scope.show = show;
+                            if (_.includes(variablesToTrack, variableName)) {
+                                spinnerStatusMap[variableName] = show;
+                                scope.show = _.some(spinnerStatusMap, function (val) {
+                                    return val;
+                                });
                             }
                         }));
                     }
