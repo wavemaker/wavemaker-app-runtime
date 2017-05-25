@@ -24,14 +24,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.service.ProcedureDesignService;
 import com.wavemaker.runtime.service.QueryDesignService;
-import com.wavemaker.commons.util.PropertiesFileUtils;
-import com.wavemaker.commons.wrapper.StringWrapper;
+import com.wavemaker.runtime.util.MultipartQueryUtils;
 
 /**
  * @author Sowmya
@@ -66,7 +68,9 @@ public class AppRuntimeController {
     // XXX restrict this method in app runtime.
     @RequestMapping(method = RequestMethod.POST, value = "/{serviceId}/queries/test_run")
     public DesignServiceResponse testRunQuery(
-            @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
+            @PathVariable("serviceId") String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
+        RuntimeQuery query = MultipartQueryUtils.readContent(request, RuntimeQuery.class);
+        MultipartQueryUtils.setMultiparts(query.getParameters(), request.getMultiFileMap());
         return queryDesignService.testRunQuery(serviceId, query, pageable);
     }
 
