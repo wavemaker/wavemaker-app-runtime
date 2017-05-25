@@ -615,7 +615,7 @@ WM.module('wm.widgets.live')
             }
 
             function getRatingTemplate(fieldDef, index) {
-                var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ';
+                var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ' + getDataSetFields(fieldDef, index);
                 return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
             }
 
