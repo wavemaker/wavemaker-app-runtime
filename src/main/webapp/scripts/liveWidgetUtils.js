@@ -377,6 +377,8 @@ WM.module('wm.widgets.live')
                 columnDef.show          = WM.isDefined(attrs.show) ? (attrs.show === 'false' ? false : (attrs.show === 'true' || attrs.show)) : true;
                 columnDef.name          = columnDef.name || columnDef.key || columnDef.field;
                 columnDef.step          = !isNaN(columnDef.step) ? +columnDef.step : undefined;
+                //Set required to false for widgets, which do not support required property
+                columnDef.required      = _.includes(['checkboxset', 'chips', 'rating', 'silder', 'richtext'], widgetType) ? false : columnDef.required;
                 return columnDef;
             }
             /**
