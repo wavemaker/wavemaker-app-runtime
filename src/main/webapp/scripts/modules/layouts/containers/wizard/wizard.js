@@ -243,7 +243,7 @@ WM.module('wm.layouts.containers')
                             currentStep;
 
                         //On load also check the first show true step and make it as current step
-                        while (!$is.steps[stepIndex].show && stepIndex < $is.steps.length - 1) {
+                        while (!_.isEmpty($is.steps) && !$is.steps[stepIndex].show && stepIndex < $is.steps.length - 1) {
                             stepIndex++;
                         }
 

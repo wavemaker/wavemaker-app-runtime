@@ -104,6 +104,9 @@ WM.module('wm.layouts.containers')
                     var _tab = $scope.activeTab,
                         i,
                         tabs = $scope.tabs;
+                    if (!tab) {
+                        return;
+                    }
                     if (_tab) {
                         Utils.triggerFn(_tab.onDeselect);
                         _tab.isActive = false;
@@ -294,9 +297,10 @@ WM.module('wm.layouts.containers')
 
                         // wait till the tab headers are rendered
                         $timeout(function () {
+                            var _liPosition;
                             $li = $ul.children();
-
-                            if ($li.last().position().left > $ul.width()) {
+                            _liPosition = $li.last().position();
+                            if (_liPosition && (_liPosition.left > $ul.width())) {
                                 $ul.on('mousewheel', function (e) {
                                     e.stopPropagation();
                                     e.preventDefault();
