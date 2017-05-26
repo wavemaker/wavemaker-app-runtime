@@ -1,11 +1,13 @@
-/*global WM*/
+/*global WM, _*/
 
 WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" hm-swipe-left="collapse();" data-ng-class="animation" apply-styles="container">' +
-                    '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
+                '<aside data-role="page-left-panel" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
+                '       data-ng-class="[animation, expanded ? \'left-panel-expanded\' : \'left-panel-collapsed\']" ' +
+                '       apply-styles="container">' +
+                '   <div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
     }])
@@ -14,22 +16,79 @@ WM.module('wm.layouts.page')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
                 'columnwidth': true,
+                'xscolumnwidth': true,
                 'animation': true
             };
 
+
+        function setLeftPanelWidth(element, devices, newVal, oldVal) {
+            _.forEach(devices, function (device) {
+                if (newVal) {
+                    element.addClass('col-' + device + '-' + newVal);
+                }
+                if (oldVal) {
+                    element.removeClass('col-' + device + '-' + oldVal);
+                }
+            });
+        }
+
+        function setPageWidthAndPosition(appPage, devices, newVal, oldVal) {
+            _.forEach(devices, function (device) {
+                if (newVal) {
+                    appPage.addClass(' left-panel-container-' + device + '-' + (12 - newVal));
+                }
+                if (oldVal) {
+                    appPage.removeClass(' left-panel-container-' + device + '-' + (12 - oldVal));
+                }
+            });
+        }
+
+        function listenForCollapseAction(scope, element, appPage) {
+            var eventName = 'click.leftNavToggle',
+                skipEvent = true;
+            element.on(eventName, function () {
+                skipEvent = true;
+            });
+            appPage.on(eventName, function () {
+                if (!skipEvent) {
+                    scope.collapse();
+                }
+                skipEvent = false;
+            });
+            return function () {
+                element.off(eventName);
+                appPage.off(eventName);
+            };
+        }
+
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, key, newVal, oldVal) {
+        function propertyChangeHandler(element, scope, key, newVal, oldVal) {
+            var appPage;
             switch (key) {
             case 'columnwidth':
                 /*If columnwidth is passed set the appropriate class*/
-                element.removeClass('col-md-' + oldVal + ' col-sm-' + oldVal).addClass('col-md-' + newVal + ' col-sm-' + newVal);
+                setLeftPanelWidth(element, ['md', 'sm'], newVal, oldVal);
+                if (scope.animation === 'slide-in') {
+                    setPageWidthAndPosition(element.closest('.app-page'), ['md', 'sm'], newVal, oldVal);
+                }
+                break;
+            case 'xscolumnwidth':
+                /*If columnwidth is passed set the appropriate class*/
+                setLeftPanelWidth(element, ['xs'], newVal, oldVal);
+                if (scope.animation === 'slide-in') {
+                    setPageWidthAndPosition(element.closest('.app-page'), ['xs'], newVal, oldVal);
+                }
                 break;
             case 'animation':
-                var appPage = element.closest('.app-page');
-                if (newVal === 'slide-in' && oldVal) {
-                    appPage.addClass('slide-in-left-panel-container');
-                } else {
-                    appPage.removeClass('slide-in-left-panel-container');
+                appPage = element.closest('.app-page');
+                if (newVal === 'slide-in') {
+                    appPage.removeClass('slide-over-left-panel-container')
+                        .addClass('slide-in-left-panel-container');
+                    setPageWidthAndPosition(appPage, ['md', 'sm'], scope.columnwidth);
+                    setPageWidthAndPosition(appPage, ['xs'], scope.xscolumnwidth);
+                } else if (newVal === 'slide-over') {
+                    appPage.removeClass('slide-in-left-panel-container')
+                        .addClass('slide-over-left-panel-container');
                 }
                 break;
             }
@@ -65,50 +124,46 @@ WM.module('wm.layouts.page')
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
                         if (scope.columnwidth) {
-                            WM.element(element).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
+                            setLeftPanelWidth(element, ['md', 'sm'], scope.columnwidth);
                         }
-                        var eventName = 'click.leftNavToggle';
                         scope.toggle = function () {
-                            if (element.hasClass('visible')) {
+                            if (scope.expanded) {
                                 scope.collapse();
                             } else {
                                 scope.expand();
                             }
                         };
                         scope.expand = function () {
-                            var appPage = element.closest('.app-page'),
-                                skipEvent = true;
-                            element.addClass('visible');
-                            if (scope.animation === 'slide-in') {
-                                appPage.addClass('slide-in-left-panel-container slide-left');
+                            var appPage = element.closest('.app-page');
+                            scope.expanded = true;
+                            if (!($rootScope.isTabletApplicationType && scope.animation === 'slide-in')) {
+                                scope.destroyCollapseActionListener = listenForCollapseAction(scope, element, appPage);
                             }
-                            element.on(eventName, function () {
-                                skipEvent = true;
-                            });
-                            appPage.addClass('left-panel-container');
-                            appPage.on(eventName, function () {
-                                if (!skipEvent) {
-                                    scope.collapse();
-                                }
-                                skipEvent = false;
-                            });
+                            appPage.addClass('left-panel-expanded-container')
+                                .removeClass('left-panel-collapsed-container');
+                            if (scope.animation === 'slide-in') {
+                                setPageWidthAndPosition(appPage, ['md', 'sm'], scope.columnwidth);
+                                setPageWidthAndPosition(appPage, ['xs'], scope.xscolumnwidth);
+                            }
+                            $rootScope.leftPanelVisible = true;
+                            $rootScope.$safeApply(scope);
                         };
                         scope.collapse = function () {
                             var appPage = element.closest('.app-page');
-                            appPage.removeClass('left-panel-container');
-                            element.removeClass('visible');
-                            element.off(eventName);
-                            appPage.off(eventName);
+                            scope.expanded = false;
+                            appPage.addClass('left-panel-collapsed-container')
+                                .removeClass('left-panel-expanded-container');
                             if (scope.animation === 'slide-in') {
-                                appPage.removeClass('slide-left');
-                                //Remove the container class after the animation completion.
-                                $timeout(function () {
-                                    appPage.removeClass('slide-in-left-panel-container');
-                                }, 600);
+                                setPageWidthAndPosition(appPage, ['md', 'sm'], null, scope.columnwidth);
+                                setPageWidthAndPosition(appPage, ['xs'], null, scope.xscolumnwidth);
                             }
+                            $rootScope.leftPanelVisible = false;
+                            Utils.triggerFn(scope.destroyCollapseActionListener);
+                            $rootScope.$safeApply(scope);
                         };
+                        element.closest('.app-page').addClass('left-panel-collapsed-container');
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

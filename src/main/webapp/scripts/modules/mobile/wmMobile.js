@@ -1,4 +1,4 @@
-/*global WM, window, _, cordova, document, navigator */
+/*global WM, window, _, $, cordova, document, navigator */
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
@@ -9,11 +9,17 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             'use strict';
 
             var initialScreenSize,
-                $appEl,
-                pageReadyDeregister;
+                $appEl = WM.element('.wm-app:first'),
+                pageReadyDeregister,
+                MINIMUM_TAB_WIDTH = 768;
 
             /* Mark the mobileApplication type to true */
             $rootScope.isMobileApplicationType = true;
+
+            if (CONSTANTS.isRunMode) {
+                $rootScope.isTabletApplicationType =  (WM.element(window).width() >= MINIMUM_TAB_WIDTH);
+                $appEl.addClass('wm-mobile-app');
+            }
 
             function hideSpinner(id) {
                 wmSpinner.hide(id);
@@ -21,7 +27,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
 
             if ($location.protocol() === 'file') {
                 CONSTANTS.hasCordova = true;
-                $appEl =  WM.element('.wm-app:first');
                 initialScreenSize = window.innerHeight;
 
                 $appEl.addClass('cordova');

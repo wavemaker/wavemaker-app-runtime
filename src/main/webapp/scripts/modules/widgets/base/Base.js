@@ -1168,7 +1168,17 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.leftpanel': {
                         "columnwidth": {"type": "list", "options": columnWidths, "value": "2"},
+                        "xscolumnwidth": {"type": "list", "options": columnWidths, "value": "10", "show" : false},
                         "animation" : {"type": "list", "options": ["slide-in", "slide-over"], "value" : "slide-in"}
+                    },
+
+                    'wm.layouts.leftpanel.tab': {
+                        "columnwidth": {"type": "list", "options": columnWidths, "value": "3"},
+                        "xscolumnwidth": {"type": "list", "options": columnWidths, "value": "10", "show" : false}
+                    },
+                    'wm.layouts.leftpanel.mobile': {
+                        "columnwidth": {"type": "list", "options": columnWidths, "value": "3", "show" : false},
+                        "xscolumnwidth": {"type": "list", "options": columnWidths, "value": "10", "show" : true}
                     },
                     'wm.layouts.rightpanel': {
                         "columnwidth": {"type": "list", "options": columnWidths, "value": "2"}
@@ -2081,7 +2091,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "captionwidth", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "loadingicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
-                {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "taborder"], "parent": "properties"},
+                {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "xscolumnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
@@ -2204,11 +2214,10 @@ WM.module('wm.widgets.base', [])
                         });
                 });
             }
-            if ($rs.isMobileApplicationType) {
-                mobileProps = properties[widget + '.mobile'];
-                if (mobileProps) {
-                    _.assign(widgetProps, mobileProps);
-                }
+            if ($rs.isTabletApplicationType) {
+                _.assign(widgetProps, properties[widget + '.mobile'], properties[widget + '.tab']);
+            } else if ($rs.isMobileApplicationType) {
+                _.assign(widgetProps, properties[widget + '.mobile']);
             }
             _.forEach(unSupportedProperties, function (key) {
                 if (widgetProps[key]) {
