@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM,FormData, wm*/
 /*jslint todo: true */
 /**
  * @ngdoc service
@@ -70,7 +70,8 @@ wm.plugins.database.services.DatabaseService = [
                 connectionParams,
                 urlParams,
                 requestData,
-                headers;
+                headers,
+                httpDetails;
 
             config      = BaseServiceManager.getConfig();
             config      = Utils.getClonedObject(config.Database[action]);
@@ -111,17 +112,37 @@ wm.plugins.database.services.DatabaseService = [
                 headers.skipSecurity = 'true';
                 headers['Content-Type'] = headers['Content-Type'] || 'application/json';
                 /*(!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy is added in endpointAddress to differentiate desktop from saas*/
-                connectionParams = {
-                    'data': {
+                if (action === 'testRunQuery') {
+                    headers['Content-Type'] = undefined;
+                    httpDetails = {
                         'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
                         'method'            : config.method,
-                        'requestBody'       : JSON.stringify(requestData),
+                        'content-Type'      : 'multipart/form-data',
                         'headers'           : headers
-                    },
-                    'urlParams'         : {
-                        projectID: $rootScope.project.id
-                    }
-                };
+                    };
+                    requestData.append('wm_httpRequestDetails', new Blob([JSON.stringify(httpDetails)], {
+                        type: 'application/json'
+                    }));
+                    connectionParams = {
+                        'data': requestData,
+                        'headers': headers,
+                        'urlParams'         : {
+                            projectID: $rootScope.project.id
+                        }
+                    };
+                } else {
+                    connectionParams = {
+                        'data': {
+                            'endpointAddress'   : $window.location.protocol + (!$rootScope.preferences.workspace.loadXDomainAppDataUsingProxy ? ('//' + $window.location.host) : '') + params.url + config.url,
+                            'method'            : config.method,
+                            'requestBody'       : JSON.stringify(requestData),
+                            'headers'           : headers
+                        },
+                        'urlParams'         : {
+                            projectID: $rootScope.project.id
+                        }
+                    };
+                }
                 WebService.testRestService(connectionParams, function (response) {
                     var parsedData = Utils.getValidJSON(response.responseBody),
                         errMsg,
