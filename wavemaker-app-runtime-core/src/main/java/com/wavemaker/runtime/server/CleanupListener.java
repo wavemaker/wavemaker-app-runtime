@@ -397,11 +397,7 @@ public class CleanupListener implements ServletContextListener {
             if (thread.isAlive() && !(thread == Thread.currentThread()) &&
                     (thread.getContextClassLoader() == Thread.currentThread().getContextClassLoader())) {
                 try {
-                    if (thread.getName().startsWith("C3P0PooledConnectionPoolManager") && thread.getName().toLowerCase()
-                            .contains("helper")) {
-                        logger.info("Joining C3P0PooledConnectionPoolManager Helper Thread {}", thread);
-                        thread.join(2000);
-                    } else if (thread.getName().startsWith("Thread-")) {
+                    if (thread.getName().startsWith("Thread-")) {
                         Field targetField = Thread.class.getDeclaredField("target");
                         targetField.setAccessible(true);
                         Runnable runnable = (Runnable) targetField.get(thread);

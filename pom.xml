@@ -52,7 +52,8 @@
         <cxf-tools-wsdlto-frontend-jaxws.version>2.7.11</cxf-tools-wsdlto-frontend-jaxws.version>
         <cxf-tools-common.version>2.7.11</cxf-tools-common.version>
 
-        <c3po.version>0.9.5.1</c3po.version>
+        <hikaricp.version>2.4.12</hikaricp.version>
+
         <jsoup.version>1.8.3</jsoup.version>
         <poi.version>3.10.1</poi.version>
         <poi.ooxml.version>3.10.1</poi.ooxml.version>
@@ -429,11 +430,10 @@
                 <version>${hibernate.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>${c3po.version}</version>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP-java7</artifactId>
+                <version>${hikaricp.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>

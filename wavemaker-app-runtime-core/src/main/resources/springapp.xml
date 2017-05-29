@@ -76,8 +76,6 @@
         <property name="systemProperties">
             <map>
                 <entry key="user.language" value="en"/>
-                <entry key="com.mchange.v2.c3p0.management.ManagementCoordinator"
-                       value="com.mchange.v2.c3p0.management.NullManagementCoordinator"/>
             </map>
         </property>
     </bean>
