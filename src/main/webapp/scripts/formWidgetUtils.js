@@ -182,6 +182,11 @@ WM.module('wm.widgets.form')
                     return Object.keys(scope.dataObject);
                 }
 
+                if (!dataSet) {
+                    scope.dataKeys = [];
+                    return;
+                }
+
                 /*if dataSet is an array, process it to create the keys for the radioset.*/
                 if (WM.isArray(dataSet)) {
                     /*if array values are objects*/
