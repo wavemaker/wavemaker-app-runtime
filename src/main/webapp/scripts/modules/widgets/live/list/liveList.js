@@ -1312,10 +1312,10 @@ WM.module('wm.widgets.live')
             }
 
             function configureDnD($el, $is) {
-                var data;
-                $el.find('.app-livelist-container').sortable({
+                var $ulEle = $el.find('.app-livelist-container');
+                $ulEle.sortable({
                     'appendTo'    : 'body',
-                    'containment' : $el.find('.app-livelist-container'),
+                    'containment' : $ulEle,
                     'delay'       : 100,
                     'opacity'     : 0.8,
                     'helper'      : 'clone',
@@ -1326,19 +1326,27 @@ WM.module('wm.widgets.live')
                         WM.element(this).data('oldIndex', ui.item.index());
                     },
                     'update'      : function (evt, ui) {
-                        var newIndex,
+                        var changedItem = {},
+                            newIndex,
                             oldIndex,
                             draggedItem,
-                            $dragEl;
+                            $dragEl,
+                            data;
 
-                        data        = data || Utils.getClonedObject($is.$liScope.fieldDefs);
+                        data        = $is.$liScope.fieldDefs;
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
                         draggedItem = _.pullAt(data, oldIndex)[0];
-
                         data.splice(newIndex, 0, draggedItem);
-                        Utils.triggerFn($is.onReorder, {$event: evt, $data: data });
+                        // cancel the sort even. as the data model is changed Angular will render the list.
+                        $ulEle.sortable("cancel");
+                        changedItem = {
+                            oldIndex: oldIndex,
+                            newIndex: newIndex,
+                            item: data[newIndex]
+                        };
+                        Utils.triggerFn($is.onReorder, {$event: evt, $data: data, $changedItem: changedItem});
                         $dragEl.removeData('oldIndex');
                     }
                 });
