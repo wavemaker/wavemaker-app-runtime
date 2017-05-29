@@ -43,6 +43,11 @@ WM.module('wm.widgets.live')
                     'NULLOREMPTY' : 'nullorempty',
                     'EQUALS'      : 'exact'
                 };
+
+            //Returns true if widget is autocomplete or chips
+            function isSearchWidgetType(widget) {
+                return _.includes(['autocomplete', 'typeahead', 'chips'], widget);
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#formatBooleanValue
@@ -478,8 +483,8 @@ WM.module('wm.widgets.live')
 
             function getDataSetFields(fieldDef, index, $el) {
                 var template;
-                if (fieldDef.widget === 'autocomplete' || fieldDef.widget === 'typeahead') {
-                    template = ' datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" displaylabel="{{formFields[' + index + '].displaylabel}}"';
+                if (isSearchWidgetType(fieldDef.widget)) {
+                    template = ' datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" displaylabel="{{formFields[' + index + '].displaylabel}}" displayfield="{{formFields[' + index + '].displayfield}}"';
                 } else {
                     template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
                 }
@@ -577,7 +582,7 @@ WM.module('wm.widgets.live')
 
             /*Returns chips template */
             function getChipsTemplate(fieldDef, index) {
-                var additionalFields = getDataSetFields(fieldDef, index);
+                var additionalFields = getDataSetFields(fieldDef, index) + ' dataoptions="formFields[' + index + '].dataoptions" ';
                 return getDefaultTemplate('chips', fieldDef, index, '', '', 'Type here...', additionalFields);
             }
 
@@ -2004,12 +2009,12 @@ WM.module('wm.widgets.live')
                 }
                 displayField        = datafield === 'All Fields' ? undefined : datafield;
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
-                if (widget === 'autocomplete' || widget === 'typeahead') {
+                if (isSearchWidgetType(widget)) {
                     columnDef.dataoptions  = {'relatedField': relatedField};
                     columnDef.dataset      = parentScope.binddataset;
                     displayField           = displayField || columnDef._primaryKey;
                     columnDef.searchkey    = columnDef.searchkey || displayField;
-                    columnDef.displaylabel = columnDef.displaylabel || displayField;
+                    columnDef.displaylabel = columnDef.displayfield = (columnDef.displaylabel || displayField);
                 } else {
                     boundVariable.getRelatedTableData(relatedField, {'pagesize': columnDef.limit}, function (response) {
                         columnDef.dataset       = response;
@@ -2022,10 +2027,10 @@ WM.module('wm.widgets.live')
 
             //Set the data field properties on dataset widgets
             function setDataFields(formField, widget, dataOptions) {
-                if (formField[widget] === 'typeahead' || formField[widget] === 'autocomplete') { //For search widget, set search key and display label
+                if (isSearchWidgetType(formField[widget])) { //For search widget, set search key and display label
                     formField.datafield    = dataOptions.aliasColumn || LIVE_CONSTANTS.LABEL_KEY;
                     formField.searchkey    = dataOptions.distinctField || LIVE_CONSTANTS.LABEL_KEY;
-                    formField.displaylabel = dataOptions.aliasColumn || LIVE_CONSTANTS.LABEL_VALUE;
+                    formField.displaylabel = formField.displayfield = (dataOptions.aliasColumn || LIVE_CONSTANTS.LABEL_VALUE);
                 } else {
                     formField.datafield    = LIVE_CONSTANTS.LABEL_KEY;
                     formField.displayfield = LIVE_CONSTANTS.LABEL_VALUE;
@@ -2090,7 +2095,7 @@ WM.module('wm.widgets.live')
                     return;
                 }
                 //For autocomplete widget, widget will fetch the data. Set properties on the widget itself. Other widgets, fetch the data.
-                if (formField[widget] === 'autocomplete' && _.includes(scope.binddataset, 'bind:Variables.')) {
+                if (isSearchWidgetType(formField[widget]) && _.includes(scope.binddataset, 'bind:Variables.')) {
                     formField.dataoptions = getDistinctFieldProperties(variable, formField);
                     setDataFields(formField, widget, formField.dataoptions);
                     formField.dataset     = scope.binddataset;
@@ -2362,7 +2367,7 @@ WM.module('wm.widgets.live')
                     }
                     fieldColumn = filterKey;
 
-                    if (filterWidget === 'autocomplete') {
+                    if (isSearchWidgetType(filterWidget)) {
                         filterField.dataoptions.filterFields = filterFields;
                     } else {
                         variable.getDistinctDataByFields({

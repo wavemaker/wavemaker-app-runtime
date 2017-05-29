@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
-                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" searchkey="{{displayfield}}" allowonlyselect="true" displaylabel="{{displayexpression ? displayexpression : displayfield}}" displayimagesrc="{{displayimagesrc}}" datafield="All Fields" placeholder="{{placeholder}}" on-select="addItem($event, selectedValue, $scope)" on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)"></wm-search>' +
+                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" searchkey="{{searchkey || displayfield}}" allowonlyselect="true" displaylabel="{{displayexpression || displayfield || displaylabel}}" displayimagesrc="{{displayimagesrc}}" datafield="All Fields" placeholder="{{placeholder}}" on-select="addItem($event, selectedValue, $scope)" on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions"></wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
             '</ul>'
@@ -426,7 +426,8 @@ WM.module('wm.widgets.form')
             return {
                 'restrict': 'E',
                 'scope'   : {
-                    'scopedataset': '=?'
+                    'scopedataset': '=?',
+                    'dataoptions': '=?'
                 },
                 'replace' : true,
                 'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/chips.html'),
