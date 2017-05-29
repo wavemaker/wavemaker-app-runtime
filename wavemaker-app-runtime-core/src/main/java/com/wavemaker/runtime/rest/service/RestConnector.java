@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -41,6 +42,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -109,7 +111,7 @@ public class RestConnector {
                 .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
                 .build();
 
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient) {
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
             @Override
             protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
                 return httpClientContext;
@@ -120,13 +122,15 @@ public class RestConnector {
                 return requestConfig;
             }
         };
-
+        clientHttpRequestFactory.setReadTimeout((int) TimeUnit.MINUTES.toMillis(6));// 6 mins, something more than lb time out  
+        clientHttpRequestFactory.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(30));
+        clientHttpRequestFactory.setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(30));
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
         WMRestTemplate wmRestTemplate = new WMRestTemplate();
-        wmRestTemplate.setRequestFactory(factory);
+        wmRestTemplate.setRequestFactory(clientHttpRequestFactory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;
         com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
@@ -171,7 +175,7 @@ public class RestConnector {
 
         boolean isEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
         CredentialsProvider credentialsProvider = null;
-        if (isEnabled == true) {
+        if (isEnabled) {
             credentialsProvider = new BasicCredentialsProvider();
             String hostName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
             String port = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
