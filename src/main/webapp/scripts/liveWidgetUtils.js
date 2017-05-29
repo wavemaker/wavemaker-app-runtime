@@ -673,8 +673,16 @@ WM.module('wm.widgets.live')
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
                 widgetType  = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType  = widgetType.toLowerCase();
+
+                validAttr = 'ngform[\'' + fieldDef.name + '_formWidget\'].$invalid';
+                // check for invalid class in autocomplete when $invalid is not set.
+                if (widgetType === 'autocomplete') {
+                    validAttr += ' || ngform[\'' + fieldDef.name + '_formWidget\'].$$element.hasClass(\'ng-invalid\')';
+                    validAttr = '(' + validAttr + ')';
+                }
+
                 if (fieldDef.displayname) { //Add label field, only if displayname is given
-                    displayLabel = '<label ng-style="{width: captionsize}" class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ngform[\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
+                    displayLabel = '<label ng-style="{width: captionsize}" class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ' + validAttr + ' &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
                 } else {
                     controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12';
                 }
@@ -749,12 +757,7 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                validAttr = 'ngform[\'' + fieldDef.name + '_formWidget\'].$invalid';
-                // check for invalid class in autocomplete when $invalid is not set.
-                if (widgetType === 'autocomplete') {
-                    validAttr += ' || ngform[\'' + fieldDef.name + '_formWidget\'].$$element.hasClass(\'ng-invalid\')';
-                    validAttr = '(' + validAttr + ')';
-                }
+
                 template = template + '<p ng-if="!(' + validAttr + ' && ngform[\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode" class="help-block">{{formFields[' + index + '].hint}}</p>';
                 template = template + '<p ng-if="' + validAttr + ' &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></div>';
