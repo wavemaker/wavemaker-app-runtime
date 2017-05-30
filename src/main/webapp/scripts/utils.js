@@ -1900,9 +1900,8 @@ WM.module('wm.utils', [])
         // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
         function updateTmplAttrs($root, parentDataSet, name) {
 
-            var _parentDataSet          = parentDataSet.replace('bind:', ''),
-                regex                   = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g'),
-                isCurrentItemWidgetsSet = false,
+            var _parentDataSet = parentDataSet.replace('bind:', ''),
+                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g'),
                 currentItemRegEx,
                 currentItemWidgetsRegEx;
 
@@ -1929,10 +1928,6 @@ WM.module('wm.utils', [])
                             value = value.replace(currentItemRegEx, 'item');
                         }
                         if (currentItemWidgetsRegEx && currentItemWidgetsRegEx.test(value)) {
-                            if (!isCurrentItemWidgetsSet) {
-                                $root.attr('has-currentitem-widgets', true);
-                                isCurrentItemWidgetsSet = true;
-                            }
                             value = value.replace(currentItemWidgetsRegEx, 'currentItemWidgets');
                         }
 
