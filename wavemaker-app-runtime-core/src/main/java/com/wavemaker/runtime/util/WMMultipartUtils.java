@@ -36,8 +36,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Optional;
 import com.wavemaker.commons.InvalidInputException;
@@ -186,6 +189,29 @@ public class WMMultipartUtils {
         return instance;
     }
 
+    public static UriComponentsBuilder buildBlobUriComponentsBuilder(
+            HttpServletRequest request, String... identifierProperties) {
+        final UriComponentsBuilder builder = ServletUriComponentsBuilder.fromRequest(request);
+
+        StringBuilder pathBuilder = new StringBuilder();
+
+        if (identifierProperties.length == 1) {
+            pathBuilder.append("/")
+                    .append("{")
+                    .append(identifierProperties[0])
+                    .append("}");
+        } else if (identifierProperties.length > 1) {
+            pathBuilder.append("/composite-id");
+            for (final String property : identifierProperties) {
+                builder.queryParam(property, "{" + property + "}");
+            }
+        }
+        pathBuilder.append("/content/{_fieldName_}");
+
+        builder.path(pathBuilder.toString());
+        return builder;
+    }
+
     public static byte[] toByteArray(MultipartFile file) {
         try {
             return file.getBytes();
@@ -273,7 +299,7 @@ public class WMMultipartUtils {
             downloadResponse.setContents(is);
             downloadResponse.setInline(!download);
 
-            downloadResponse.setContentType(request.getContentType());
+            downloadResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             downloadResponse.setFileName(filename);
 
             final Optional<MagicMatch> magicMatchOptional = getMagicType(is);
