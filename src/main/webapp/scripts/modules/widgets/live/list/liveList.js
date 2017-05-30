@@ -547,6 +547,10 @@ WM.module('wm.widgets.live')
                         }
                     });
                 } else {
+                    //set reorder props to empty on pagination.
+                    if ($is.enablereorder) {
+                        $is.reorderProps = {};
+                    }
                     _s.fieldDefs = data;
                 }
 
@@ -1324,12 +1328,20 @@ WM.module('wm.widgets.live')
                             oldIndex,
                             draggedItem,
                             $dragEl,
+                            minIndex,
+                            maxIndex,
                             data;
 
                         data        = $is.$liScope.fieldDefs;
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
+
+                        minIndex    = _.min([newIndex, oldIndex]);
+                        maxIndex    = _.max([newIndex, oldIndex]);
+                        $is.reorderProps.minIndex = _.min([minIndex, $is.reorderProps.minIndex]);
+                        $is.reorderProps.maxIndex = _.max([maxIndex, $is.reorderProps.maxIndex]);
+
                         draggedItem = _.pullAt(data, oldIndex)[0];
                         data.splice(newIndex, 0, draggedItem);
                         // cancel the sort even. as the data model is changed Angular will render the list.
@@ -1425,6 +1437,13 @@ WM.module('wm.widgets.live')
                 __s.currentItemWidgets = wid;
             }
 
+            function getReorderedItems($is) {
+                var dataSet  = $is.$liScope.fieldDefs,
+                    minIndex = $is.reorderProps.minIndex,
+                    maxIndex = $is.reorderProps.maxIndex;
+                return _.slice(dataSet, minIndex, maxIndex + 1);
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
@@ -1491,6 +1510,8 @@ WM.module('wm.widgets.live')
                     };
 
                     if (!$is.groupby && $is.enablereorder) {
+                        $is.reorderProps = {};
+                        $is.getReorderedItems = getReorderedItems.bind(undefined, $is);
                         configureDnD($el, $is);
                     }
 
