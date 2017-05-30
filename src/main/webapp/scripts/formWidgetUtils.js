@@ -142,6 +142,11 @@ WM.module('wm.widgets.form')
                     model = model.split(',');
                 }
 
+                // reset isChecked flag for displayOptions.
+                _.forEach(scope.displayOptions, function (dataObj) {
+                    dataObj.isChecked = false;
+                });
+
                 if (scope.datafield === ALLFIELDS && !scope.usekeys) {
                     if (WM.isArray(model)) {
                         _modelProxy = [];
@@ -162,6 +167,16 @@ WM.module('wm.widgets.form')
                     scope.modelProxy = _modelProxy;
                 }
                 setCheckedAndDisplayValues(scope, _modelProxy);
+
+                /* In studioMode, create CheckedValues for checkboxset and radioset when groupFields is true.
+                 * checkedValues is a object with key as dataField value and value is boolean which represents isChecked value.
+                 */
+                if (scope.groupFields) {
+                    scope.checkedValues = {};
+                    _.forEach(scope.displayOptions, function (obj) {
+                        scope.checkedValues[obj.key] = obj.isChecked;
+                    });
+                }
             }
 
             /**
@@ -184,6 +199,11 @@ WM.module('wm.widgets.form')
 
                 if (!dataSet) {
                     scope.dataKeys = [];
+                    return;
+                }
+                // return all the keys from the displayOptions.
+                if (scope.displayOptions) {
+                    scope.dataKeys = _.map(scope.displayOptions, 'key');
                     return;
                 }
 
@@ -380,6 +400,13 @@ WM.module('wm.widgets.form')
                 }
                 return groupedKeys;
             }
+
+            // This function returns the displayvalue from displayOptions based on the key.
+            function getDisplayFieldFromDataKey(displayOptions, key) {
+                var dataObj = _.find(displayOptions, {'key': key});
+                return dataObj && dataObj.value;
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#getRadiosetCheckboxsetTemplate
@@ -427,18 +454,18 @@ WM.module('wm.widgets.form')
                         }
 
                         _.forEach(groupedKeys[key].keys, function (dataKey) {
+                            // title contains the displayvalue from displayOptions.
+                            if (scope.displayOptions) {
+                                dataKey.title = getDisplayFieldFromDataKey(scope.displayOptions, dataKey.key);
+                            }
                             dataKey.title    = WM.isString(dataKey.title) ? dataKey.title.trim() : dataKey.title;
                             //needed to parse the key if the bound dataset is having the key with '\'.
                             var parsedKey = _.includes(dataKey.key, '\\') ? _.replace(dataKey.key, '\\', '\\\\') : dataKey.key;
 
-                            if (_.includes(scope.datavalue, parsedKey)) {
-                                dataKey.isChecked = true;
-                            }
-
                             template = template +
-                                '<li class="' + liClass + ' {{itemclass}}" ng-class="{\'active\':' + dataKey.isChecked + '}">' +
+                                '<li class="' + liClass + ' {{itemclass}}" ng-class="{\'active\': checkedValues[\'' + parsedKey + '\']}">' +
                                 '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
-                                '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" ng-checked="' + dataKey.isChecked + '"/>' +
+                                '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" ng-checked="checkedValues[\'' + parsedKey + '\']"/>' +
                                 '<span class="caption">' + dataKey.title + '</span>' +
                                 '</label>' +
                                 '</li>';

@@ -38,6 +38,8 @@ WM.module('wm.widgets.form')
                 } else {
                     scope._model_.push(checkboxOption.key);
                 }
+            } else if (WM.isDefined(scope.selectedvalues)) {
+                scope._model_ = Utils.convertToArray(scope.selectedvalues);
             }
         }
 
@@ -113,8 +115,7 @@ WM.module('wm.widgets.form')
             },
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    iScope.widgetProps           = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
-                    iScope.orderedKeys           = [];
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
@@ -162,6 +163,10 @@ WM.module('wm.widgets.form')
                                 dataObj.isChecked = false;
                             });
 
+                            if (scope.groupFields && scope.checkedValues) {
+                                scope.checkedValues = {};
+                            }
+
                             var checkedOption,
                                 inputElements = element.find('input:checked');
                             scope._model_ = [];
@@ -175,6 +180,11 @@ WM.module('wm.widgets.form')
                                 });
 
                                 checkedDisplayOption.isChecked = true;
+
+                                // set the checkedValue for selected option's key to true.
+                                if (scope.groupFields && scope.checkedValues) {
+                                    scope.checkedValues[checkedDisplayOption.key] = true;
+                                }
 
                                 assignModelValue(scope, checkedDisplayOption);
                             });
