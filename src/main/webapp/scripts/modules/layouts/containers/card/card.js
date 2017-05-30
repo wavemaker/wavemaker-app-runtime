@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
                         '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                     '</div>' +
                 '</div>' +
-                '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'height\':imageheight}">' +
+                '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'max-height\':imageheight}">' +
                     '<wm-picture class="card-image" picturesource="{{picturesource}}"></wm-picture>' +
                 '</div>' +
                 '<div ng-transclude="content" apply-styles="inner-shell"></div>' +
