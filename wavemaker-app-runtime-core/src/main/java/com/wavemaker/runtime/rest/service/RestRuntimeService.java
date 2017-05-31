@@ -62,21 +62,26 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest) throws IOException {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
         List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
+        String context = httpServletRequest.getRequestURI();
         for (HttpRequestDataProcessor httpRequestDataProcessor : httpRequestDataProcessors) {
+            logger.debug("Executing the httpRequestDataProcessor {} on the context {}", httpRequestDataProcessor, context);
             httpRequestDataProcessor.process(httpRequestDataProcessorContext);
         }
-
-
+        return executeRestCall(serviceId, operationId, httpRequestData, httpServletRequest, context);
+    }
+    
+    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData, 
+                                               HttpServletRequest httpServletRequest, String context) throws IOException {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
         for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
+            logger.debug("Executing the httpRequestProcessor {} on the context {}", httpRequestProcessor, context);
             httpRequestProcessor.process(httpRequestProcessorContext);
         }
 
@@ -89,11 +94,12 @@ public class RestRuntimeService {
         HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
         List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
         for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
+            logger.debug("Executing the httpResponseProcessor {} on the context {}", httpResponseProcessor, context);
             httpResponseProcessor.process(httpResponseProcessorContext);
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Rest service response details for the endpoint {} is {}", httpRequestDetails.getEndpointAddress(), httpResponseDetails.toString());
+            logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
         }
         return httpResponseDetails;
     }
@@ -103,7 +109,7 @@ public class RestRuntimeService {
         try {
             httpRequestData = new RequestDataBuilder().getRequestData(httpServletRequest);
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e);
+            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e); 
         }
         return httpRequestData;
     }

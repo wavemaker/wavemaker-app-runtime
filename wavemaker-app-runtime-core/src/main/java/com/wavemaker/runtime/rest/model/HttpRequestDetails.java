@@ -28,6 +28,7 @@ import com.wavemaker.commons.json.deserializer.StringifiedByteArrayDeSerializer;
 import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
 
 /**
+ * Class used to represent the details of the http request which can be invoked
  * @author Uday Shankar
  */
 public class HttpRequestDetails {

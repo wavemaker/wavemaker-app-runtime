@@ -48,7 +48,6 @@ public class XWMPrefixDataProcessor implements HttpRequestDataProcessor {
     }
 
     private void processXWMHeaders(HttpRequestData httpRequestData) {
-        HttpHeaders httpHeaders = httpRequestData.getHttpHeaders();
         MultiValueMap<String, String> headers = httpRequestData.getHttpHeaders();
         Iterator<Map.Entry<String, List<String>>> iterator = headers.entrySet().iterator();
         MultiValueMap<String, String> newHeaders = new LinkedMultiValueMap<>();

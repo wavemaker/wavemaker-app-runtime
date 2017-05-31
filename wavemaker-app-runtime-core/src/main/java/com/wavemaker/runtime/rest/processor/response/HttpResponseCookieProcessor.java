@@ -44,13 +44,16 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor i
         }
     }
 
-
     @Override
     public void doProcess(HttpResponseProcessorContext httpResponseProcessorContext) {
+        HttpServletRequest httpServletRequest = httpResponseProcessorContext.getHttpServletRequest();
+        if (httpServletRequest == null) {
+            return;
+        }
         HttpResponseDetails httpResponseDetails = httpResponseProcessorContext.getHttpResponseDetails();
         if(updateCookiePath) {
             List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
-            String cookiePath = getCookiePath(httpResponseProcessorContext.getHttpServletRequest());
+            String cookiePath = getCookiePath(httpServletRequest);
             if (StringUtils.isNotBlank(cookiePath) && CollectionUtils.isNotEmpty(cookies)) {
                 for (HttpCookie httpCookie : cookies) {
                     httpCookie.setPath(cookiePath);//Updates path
