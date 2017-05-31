@@ -59,8 +59,9 @@ wm.plugins.database.services.DatabaseService = [
     "WebService",
     "$window",
     "$q",
+    "SWAGGER_CONSTANTS",
 
-    function ($rootScope, BaseService, BaseServiceManager, CONSTANTS, Utils, WebService, $window, $q) {
+    function ($rootScope, BaseService, BaseServiceManager, CONSTANTS, Utils, WebService, $window, $q, SWAGGER_CONSTANTS) {
         'use strict';
 
         var initiateAction = function (action, params, successCallback, failureCallback, noproxy) {
@@ -120,7 +121,7 @@ wm.plugins.database.services.DatabaseService = [
                         'content-Type'      : 'multipart/form-data',
                         'headers'           : headers
                     };
-                    requestData.append('wm_httpRequestDetails', new Blob([JSON.stringify(httpDetails)], {
+                    requestData.append(SWAGGER_CONSTANTS.WM_HTTP_JSON, new Blob([JSON.stringify(httpDetails)], {
                         type: 'application/json'
                     }));
                     connectionParams = {

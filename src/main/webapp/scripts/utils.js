@@ -2696,6 +2696,18 @@ WM.module('wm.utils', [])
             return _.isString(str) && REGEX.JSON_DATE_FORMAT.test(str);
         }
 
+        /**
+         * Returns Files, from the formName and fieldName provided.
+         *
+         * @param formName
+         * @param fieldName
+         * @param isList
+         */
+        function getFiles(formName, fieldName, isList) {
+            var files = _.get(document.forms, [formName , fieldName, 'files']);
+            return isList ? _.map(files, _.identity) : files && files[0];
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2838,4 +2850,5 @@ WM.module('wm.utils', [])
         this.isJSONDate                 = isJSONDate;
         this.isXsrfEnabled              = isXsrfEnabled;
         this.addXsrfCookieHeader        = addXsrfCookieHeader;
+        this.getFiles                   = getFiles;
     }]);

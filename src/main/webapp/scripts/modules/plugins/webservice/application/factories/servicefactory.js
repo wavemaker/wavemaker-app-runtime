@@ -14,8 +14,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
     "Utils",
     "VARIABLE_CONSTANTS",
     "WS_CONSTANTS",
+    "SWAGGER_CONSTANTS",
 
-    function (WebService, wmToaster, $rootScope, Utils, VARIABLE_CONSTANTS, WS_CONSTANTS) {
+    function (WebService, wmToaster, $rootScope, Utils, VARIABLE_CONSTANTS, WS_CONSTANTS, SWAGGER_CONSTANTS) {
         "use strict";
 
         /*Array to hold service objects*/
@@ -222,17 +223,35 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
             //Return params from swagger for post/put query types
             getRawParams = function (operationObj, definitions) {
-              var refValue = _.get(operationObj, ['parameters', 0, 'schema', '$ref']),
-                  refKey   = _.last(_.split(refValue, '/')),
-                  defObj   = definitions[refKey],
-                  operationList = [];
-              _.forEach(defObj.properties, function (value, key) {
-                  value.name              = key;
-                  value[parameterTypeKey] = VARIABLE_CONSTANTS.BODY_FIELD;
-                  value.required          = _.includes(defObj.required, key);
-                  operationList.push(value);
-              });
-              return operationList;
+                var refValue,
+                    refKey,
+                    defObj,
+                    operationList = [];
+                //Handle multipart/form-data request of query/procedure
+                if (_.includes(operationObj.consumes,WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA)) {
+                    _.forEach(operationObj.parameters, function (param) {
+                        if (param.name === SWAGGER_CONSTANTS.WM_DATA_JSON) {
+                            refValue = _.get(param, ['x-WM-SCHEMA', '$ref']);
+                        } else {
+                            operationList.push(param);
+                        }
+                    });
+                } else {
+                    refValue = _.get(operationObj, ['parameters', 0, 'schema', '$ref']);
+                }
+                refKey   = _.last(_.split(refValue, '/'));
+                defObj   = definitions[refKey];
+                _.forEach(defObj.properties, function (value, key) {
+                    //Ignore readOnly params
+                    if (value.readOnly) {
+                        return;
+                    }
+                    value.name              = key;
+                    value[parameterTypeKey] = VARIABLE_CONSTANTS.BODY_FIELD;
+                    value.required          = _.includes(defObj.required, key);
+                    operationList.push(value);
+                });
+                return operationList;
             },
 
             processOperations = function (serviceObj, operations, swagger) {
@@ -322,6 +341,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         returnFormat : returnFormat,
                         controller   : operation.tags && operation.tags[0].replace(/Controller$/, ''),
                         operationId  : operation.operationId,
+                        consumes     : operation.consumes,
                         deprecated   : operation.deprecated
                     };
                     serviceObj.operations.push(operationObject);
@@ -339,7 +359,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             isList = param[IS_LIST_KEY];
 
                             /* special cases for MultiPart type params */
-                            if (_.lowerCase(param[parameterTypeKey]) === "formdata") {
+                            if (_.toLower(param[parameterTypeKey]) === "formdata") {
                                 if (param.type === "ref") {
                                     typeRef = param['x-WM-FULLY_QUALIFIED_TYPE'];
                                 } else if (param.type === 'array') {
@@ -582,6 +602,10 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 service.sampleResponse = response;
             },
 
+            getType = function (param) {
+                return param.type === 'array' ? param.items.type : param.type;
+            },
+
             getPrefabTypes = function (prefabName, success) {
                 if (prefabDataTypes[prefabName]) {
                     Utils.triggerFn(success, prefabDataTypes[prefabName]);
@@ -738,6 +762,18 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param {object} having service output
              */
             getPrefabTypes: getPrefabTypes,
+            /**
+             * @ngdoc function
+             * @name wm.webservice.$ServiceFactory#getType
+             * @methodOf wm.webservice.$ServiceFactory
+             * @function
+             *
+             * @description
+             * gets the data types of a param
+             *
+             * @param {object} param object
+             */
+            getType: getType,
             isBodyTypeQueryProcedure: isBodyTypeQueryProcedure
         };
     }

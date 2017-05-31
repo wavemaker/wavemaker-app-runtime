@@ -309,6 +309,7 @@ WM.module('wm.widgets.live')
                     'list'       : ['select', 'radioset', 'checkboxset', 'switch', 'autocomplete', 'chips'],
                     'clob'       : ['text', 'textarea', 'richtext'],
                     'blob'       : ['upload'],
+                    'file'       : ['upload'],
                     'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'toggle', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'rating', 'datetime', 'autocomplete', 'chips', 'colorpicker']
                 };
                 return fieldTypeWidgetTypeMap;
@@ -557,7 +558,12 @@ WM.module('wm.widgets.live')
                     template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" ng-show="formFields[' + index + '].href"><i class="wi wi-file"></i></a>';
                 }
                 template = template + '<input wm-valid-file class="app-blob-upload" data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key + \'_formWidget\'}}" ng-required="{{formFields[' + index + '].required}}" ' +
-                    'ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"' + eventTl + '/>';
+                    'ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"' + eventTl;
+                //Add multiple flag
+                if (fieldDef.multiple) {
+                    template += ' multiple ';
+                }
+                template += '/>';
                 return template;
             }
 

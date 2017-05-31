@@ -24,8 +24,9 @@ wm.variables.services.$servicevariable = ['Variables',
     'WS_CONSTANTS',
     '$timeout',
     '$base64',
+    'SWAGGER_CONSTANTS',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS) {
         "use strict";
 
         var requestQueue = {},
@@ -163,7 +164,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 paramValue;
             _.forEach(params, function (param) {
                 paramValue = _.get(inputData, param.name);
-                if (WM.isDefined(paramValue) && (paramValue !== '')) {
+                if (WM.isDefined(paramValue) && (paramValue !== '') && !param.readOnly) {
                     paramValue = Utils.isDateTimeType(param.type) ? Utils.formatDate(paramValue, param.type) : paramValue;
                     //Construct ',' separated string if param is not array type but value is an array
                     if (WM.isArray(paramValue) && _.toLower(Utils.extractType(param.type)) === 'string') {
@@ -195,6 +196,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 bodyInfo,
                 headers = {},
                 requestBody,
+                nonFileTypeParams = {},
                 url,
                 requiredParamMissing = [],
                 target,
@@ -207,7 +209,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 formData,
                 isProxyCall,
                 isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable),
-                variableData,
+                paramValueInfo,
                 params;
 
             function getFormDataObj() {
@@ -230,6 +232,17 @@ wm.variables.services.$servicevariable = ['Variables',
 
             /* loop through all the parameters */
             _.forEach(operationInfo.parameters, function (param) {
+                //Set params based on current workspace
+                function setParamsOfChildNode() {
+                    if (inputFields) {
+                        paramValueInfo =  inputFields;
+                        params = _.get(operationInfo, ['definitions', param.type]);
+                    } else {
+                        //For Api Designer
+                        paramValueInfo =  paramValue || {};
+                        params = param.children;
+                    }
+                }
                 var paramValue = param.sampleValue;
 
                 if (((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQueryProcedure) && _.isEmpty(requiredParamMissing)) {
@@ -275,15 +288,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     case 'BODY':
                         //For post/put query methods wrap the input
                         if (isBodyTypeQueryProcedure) {
-                            if (inputFields) {
-                                variableData =  inputFields;
-                                params = _.get(operationInfo, ['definitions', param.type]);
-                            } else {
-                                //This is for Api Designer
-                                variableData =  paramValue || {};
-                                params = param.children;
-                            }
-                            bodyInfo = processRequestBody(variableData, params);
+                            setParamsOfChildNode();
+                            bodyInfo = processRequestBody(paramValueInfo, params);
                             requestBody = bodyInfo.requestBody;
                             requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
                         } else {
@@ -291,7 +297,15 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                         break;
                     case 'FORMDATA':
-                        requestBody = Utils.getFormData(getFormDataObj(), param, paramValue);
+                        if (isBodyTypeQueryProcedure && param.name === SWAGGER_CONSTANTS.WM_DATA_JSON) {
+                            setParamsOfChildNode();
+                            //Process query/procedure formData non-file params params
+                            bodyInfo = processRequestBody(paramValueInfo, params);
+                            requestBody = Utils.getFormData(getFormDataObj(), param, bodyInfo.requestBody);
+                            requiredParamMissing = _.concat(requiredParamMissing, bodyInfo.missingParams);
+                        } else {
+                            requestBody = Utils.getFormData(getFormDataObj(), param, paramValue);
+                        }
                         break;
                     }
                 } else if (param.required) {
@@ -313,7 +327,7 @@ wm.variables.services.$servicevariable = ['Variables',
             }
 
             // Setting appropriate content-Type for request accepting request body like POST, PUT, etc
-            if (!_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
+            if (!_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, _.toUpper(method))) {
                 /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
                 if (operationInfo.consumes && (operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA)) {
                     headers['Content-Type'] = undefined;
@@ -448,6 +462,10 @@ wm.variables.services.$servicevariable = ['Variables',
             var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo);
             if (methodInfo.parameters) {
                 methodInfo.parameters.forEach(function (param) {
+                    //Ignore readOnly params in case of formData file params will be duplicated
+                    if (param.readOnly) {
+                        return;
+                    }
                     param.sampleValue = inputFields[param.name];
                     /* supporting pagination for query service variable */
                     if (VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {

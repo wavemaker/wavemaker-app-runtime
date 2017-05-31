@@ -32,7 +32,8 @@ wm.variables.services.$liveVariable = [
     "wmToaster",
     "ServiceFactory",
     "$timeout",
-    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, ServiceFactory, $timeout) {
+    "SWAGGER_CONSTANTS",
+    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, ServiceFactory, $timeout, SWAGGER_CONSTANTS) {
         "use strict";
 
         /*Set a flag based on whether the project is deployed or not.
@@ -970,7 +971,7 @@ wm.variables.services.$liveVariable = [
                         rowObject[colName] = colValue !== null ? '' : null;
                     }
                 });
-                formData.append('wm_data_json', new Blob([JSON.stringify(rowObject)], {
+                formData.append(SWAGGER_CONSTANTS.WM_DATA_JSON, new Blob([JSON.stringify(rowObject)], {
                     type: 'application/json'
                 }));
                 return formData;

@@ -33,6 +33,12 @@ wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
     SECURITY_SERVICE_TYPE: "SecurityServiceType"
 });
 
+/*Defining custom swagger properties for WM internal use*/
+wm.modules.wmCommon.constant('SWAGGER_CONSTANTS', {
+    WM_DATA_JSON: "wm_data_json",
+    WM_HTTP_JSON: "wm_httpRequestDetails"
+});
+
 
 
 /* Defining service urls for file services for run mode */
