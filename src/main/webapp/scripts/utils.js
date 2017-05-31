@@ -2038,7 +2038,7 @@ WM.module('wm.utils', [])
                 WS_CONSTANTS    = getService('WS_CONSTANTS');
 
             /* look for existing iframe. If exists, remove it first */
-            iFrameElement = $(IFRAME_NAME);
+            iFrameElement = $('#' + IFRAME_NAME);
             if (iFrameElement.length) {
                 iFrameElement.first().remove();
             }
@@ -2079,7 +2079,11 @@ WM.module('wm.utils', [])
             }, 100);
         }
 
-        function downloadFilefromResponse(response, headerFn) {
+        function triggerOnTimeout(success) {
+            $timeout(function () { triggerFn(success); }, 500);
+        }
+
+        function downloadFilefromResponse(response, headerFn, success, error) {
             // check for a filename
             var filename = '',
                 filenameRegex,
@@ -2103,7 +2107,11 @@ WM.module('wm.utils', [])
 
             if (typeof window.navigator.msSaveBlob !== 'undefined') {
                 // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                window.navigator.msSaveBlob(blob, filename);
+                if (window.navigator.msSaveBlob(blob, filename)) {
+                    triggerOnTimeout(success);
+                } else {
+                    triggerFn(error);
+                }
             } else {
                 URL         = window.URL || window.webkitURL;
                 downloadUrl = URL.createObjectURL(blob);
@@ -2123,12 +2131,15 @@ WM.module('wm.utils', [])
                             }
                             url = undefined; // release reference before dispatching
                         };
+                        reader.onload = triggerOnTimeout(success);
+                        reader.onerror = error;
                         reader.readAsDataURL(blob);
                     } else {
                         a.href = downloadUrl;
                         a.download = filename;
                         document.body.appendChild(a);
                         a.click();
+                        triggerOnTimeout(success);
                     }
                 } else {
                     popup = window.open(downloadUrl, '_blank');
@@ -2137,7 +2148,7 @@ WM.module('wm.utils', [])
                     }
                 }
 
-                setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+                $timeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
             }
         }
 
@@ -2170,7 +2181,7 @@ WM.module('wm.utils', [])
             return config;
         }
 
-        function downloadThroughAnchor(config) {
+        function downloadThroughAnchor(config, success, error) {
             var url     = config.url,
                 method  = config.method,
                 data    = config.dataParams || config.data,
@@ -2191,9 +2202,10 @@ WM.module('wm.utils', [])
                 'responseType': 'arraybuffer'
             }, function (response, config) {
                 setTimeout(function () {
-                    downloadFilefromResponse(response, config.headers);
+                    downloadFilefromResponse(response, config.headers, success, error);
                 }, 900);
             }, function (err) {
+                triggerFn(error);
                 console.log('error', err);
             });
         }
@@ -2227,13 +2239,15 @@ WM.module('wm.utils', [])
          * @param fileName name for the downloaded file via cordova file transfer in device
          * @param exportFormat downloaded file format
          */
-        function simulateFileDownload(requestParams, fileName, exportFormat) {
+        function simulateFileDownload(requestParams, fileName, exportFormat, success, error) {
+            /*success and error callbacks are executed incase of downloadThroughAnchor
+            Due to technical limitation cannot be executed incase of iframe*/
             if (CONSTANTS.hasCordova) {
                 $rootScope.$emit('device-file-download', requestParams, getModifiedFileName(fileName, exportFormat));
             } else if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
-                downloadThroughAnchor(requestParams);
+                downloadThroughAnchor(requestParams, success, error);
             } else {
-                downloadThroughIframe(requestParams);
+                downloadThroughIframe(requestParams, success, error);
             }
         }
 

@@ -548,7 +548,11 @@ wm.variables.services.$servicevariable = ['Variables',
 
             /* if the service produces octet/stream, replicate file download through form submit */
             if (WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
-                Utils.simulateFileDownload(params, variable.dataBinding.file || variable.name, variable.dataBinding.exportType);
+                Utils.simulateFileDownload(params, variable.dataBinding.file || variable.name, variable.dataBinding.exportType, function () {
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable);
+                }, function () {
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable);
+                });
                 variableActive[variable.activeScope.$id][variable.name] = false;
                 return;
             }
