@@ -160,8 +160,7 @@ WM.module('wm.widgets.form')
                                 iScope._reset = false;
                                 return;
                             }
-                            //assignModelValue(iScope);
-                            FormWidgetUtils.updatedCheckedValues(iScope);
+                            FormWidgetUtils.updatedCheckedValues(iScope, true);
                         }, false);
 
                         if (attrs.scopedataset) {

@@ -17,9 +17,7 @@ WM.module('wm.widgets.form')
 
         function (WidgetUtilService, Utils, Variables, $servicevariable, $rootScope, $filter) {
             'use strict';
-            var ALLFIELDS   = 'All Fields',
-                CHECKBOXSET = 'wm-checkboxset',
-                RADIOSET    = 'wm-radioset';
+            var ALLFIELDS   = 'All Fields';
 
             /**
              * @ngdoc function
@@ -98,11 +96,10 @@ WM.module('wm.widgets.form')
              * @param _modelProxy model value
              */
             function setCheckedAndDisplayValues(scope, _modelProxy) {
-                var multipleValues = (scope._widgettype === CHECKBOXSET || (scope._widgettype === 'wm-select' && scope.multiple)),
-                    selectedOption;
-                scope.displayValue = multipleValues ? [] : '';
+                var selectedOption;
 
                 if (WM.isArray(_modelProxy)) {
+                    scope.displayValue = [];
                     _.forEach(_modelProxy, function (val) {
                         selectedOption = _.find(scope.displayOptions, function (obj) {
                             return obj.key == val;
@@ -134,28 +131,34 @@ WM.module('wm.widgets.form')
              *
              * @param {object} scope isolate scope of the widget
              */
-            function updatedCheckedValues(scope) {
+            function updatedCheckedValues(scope, isModelProxyRequired) {
                 var model = scope._model_,
                     _modelProxy,
-                    selectedOption;
-                if (scope._widgettype === CHECKBOXSET && WM.isString(model) && model !== '') {
-                    model = model.split(',');
-                }
+                    selectedOption,
+                    filterField;
 
                 // reset isChecked flag for displayOptions.
                 _.forEach(scope.displayOptions, function (dataObj) {
                     dataObj.isChecked = false;
                 });
 
-                if (scope.datafield === ALLFIELDS && !scope.usekeys) {
+                if (scope.datafield === ALLFIELDS && scope.displayOptions && !scope.usekeys) {
+                    // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
+                    filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
                     if (WM.isArray(model)) {
                         _modelProxy = [];
                         _.forEach(model, function (modelVal) {
-                            selectedOption = _.find(scope.displayOptions, {'dataObject': modelVal});
-                            _modelProxy.push(selectedOption.key);
+                            selectedOption = _.find(scope.displayOptions, function (obj) {
+                                return obj[filterField] == modelVal;
+                            });
+                            if (selectedOption) {
+                                _modelProxy.push(selectedOption.key);
+                            }
                         });
                     } else {
-                        selectedOption = _.find(scope.displayOptions, {'dataObject': model});
+                        selectedOption = _.find(scope.displayOptions, function (obj) {
+                            return obj[filterField] == model;
+                        });
                         if (selectedOption) {
                             _modelProxy = selectedOption.key;
                         }
@@ -163,7 +166,7 @@ WM.module('wm.widgets.form')
                 } else {
                     _modelProxy = model;
                 }
-                if (scope._widgettype === 'wm-select') {
+                if (isModelProxyRequired) {
                     scope.modelProxy = _modelProxy;
                 }
                 setCheckedAndDisplayValues(scope, _modelProxy);
@@ -231,7 +234,6 @@ WM.module('wm.widgets.form')
                     /*getting the dataKeys for creating the option texts*/
                     scope.dataKeys = getKeys();
                 }
-                updatedCheckedValues(scope);
             }
 
             /**
@@ -370,6 +372,11 @@ WM.module('wm.widgets.form')
                 }
 
                 scope.displayOptions = _.uniqBy(dataset, 'key');
+
+                // Omit all the options whose datafield (key) is null or undefined.
+                _.remove(scope.displayOptions, function (option) {
+                    return WM.isUndefined(option.key) || _.isNull(option.key);
+                });
                 updatedCheckedValues(scope);
             }
 

@@ -29,7 +29,7 @@ WM.module('wm.widgets.form')
         function assignModelValue(scope, radioOption) {
             if (radioOption) {
                 if (scope.datafield === 'All Fields') {
-                    if (scope.usekeys) {
+                    if (scope.usekeys || !radioOption.dataObject) {
                         scope._model_ = radioOption.key;
                     } else {
                         scope._model_ = radioOption.dataObject;
@@ -81,8 +81,8 @@ WM.module('wm.widgets.form')
                 }
                 break;
             case 'selectedvalue':
-                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
                 assignModelValue(scope);
+                FormWidgetUtils.updatedCheckedValues(scope);
                 break;
             case 'disabled':
                 element.find('input[type="radio"]').attr('disabled', newVal);
@@ -110,6 +110,7 @@ WM.module('wm.widgets.form')
             'link': {
                 'pre': function (iScope, $el, attrs) {
                     iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.displayValue = '';
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
@@ -162,7 +163,9 @@ WM.module('wm.widgets.form')
                             }
 
                             // set the isChecked flag for selected radioset value.
-                            checkedDisplayOption.isChecked = true;
+                            if (checkedDisplayOption) {
+                                checkedDisplayOption.isChecked = true;
+                            }
 
                             // set the checkedValue for selected option's key to true.
                             if (scope.groupFields && scope.checkedValues) {

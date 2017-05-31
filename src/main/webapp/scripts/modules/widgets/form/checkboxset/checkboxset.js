@@ -30,7 +30,7 @@ WM.module('wm.widgets.form')
         function assignModelValue(scope, checkboxOption) {
             if (checkboxOption) {
                 if (scope.datafield === 'All Fields') {
-                    if (scope.usekeys) {
+                    if (scope.usekeys || !checkboxOption.dataObject) {
                         scope._model_.push(checkboxOption.key);
                     } else {
                         scope._model_.push(checkboxOption.dataObject);
@@ -90,8 +90,8 @@ WM.module('wm.widgets.form')
                 }
                 break;
             case 'selectedvalues':
-                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
                 assignModelValue(scope);
+                FormWidgetUtils.updatedCheckedValues(scope);
                 break;
             case 'disabled':
                 element.find('input[type="checkbox"]').attr('disabled', newVal);
@@ -116,6 +116,7 @@ WM.module('wm.widgets.form')
             'link': {
                 'pre': function (iScope, $el, attrs) {
                     iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.displayValue = [];
                 },
                 'post': function (scope, element, attrs) {
                     scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
