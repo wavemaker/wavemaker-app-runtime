@@ -18,7 +18,9 @@ WM.module('wm.widgets.live')
                 'formlayout'      : true,
                 'formtype'        : true,
                 'defaultmode'     : true,
-                'captionalign'    : true
+                'captionalign'    : true,
+                'captionposition' : true,
+                'captionwidth'    : true
             },
             /*check if the field is of column type time or widget type time*/
             isTimeType = function (field) {
@@ -60,7 +62,7 @@ WM.module('wm.widgets.live')
                                 '</div>' +
                         '</form>';
 
-                defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass]" ng-submit="formSave($event);" apply-styles="shell">' +
+                defaultTemplate = '<form data-identifier="liveform" init-widget role="form" class="app-liveform panel app-panel liveform-inline" ng-class="[captionAlignClass]" ng-submit="formSave($event);" apply-styles="shell" captionposition="{{captionposition}}">' +
                                     '<div ng-show="isLayoutDialog" class="text-left"><i class="wi wi-gear app-dialogmode-icon"></i><span class="app-dialogmode-text">Live form in dialog mode</span></div>' +
                                     '<div class="panel-heading" ng-show="!isLayoutDialog && (title || subheading || iconclass || showButtons(\'header\'))">' +
                                         '<h3 class="panel-title">' +
@@ -879,6 +881,7 @@ WM.module('wm.widgets.live')
                                 tempVarName,
                                 gridObj,
                                 variableObj,
+                                layoutConfig,
                                 elScope = element.scope();
 
                             switch (key) {
@@ -1015,6 +1018,12 @@ WM.module('wm.widgets.live')
                                 break;
                             case 'captionalign':
                                 scope.captionAlignClass = 'align-' + newVal;
+                                break;
+                            case 'captionposition':
+                            case 'captionwidth':
+                                layoutConfig = LiveWidgetUtils.getFieldLayoutConfig(scope.captionwidth, scope.captionposition);
+                                scope._captionClass = layoutConfig.captionCls;
+                                scope._widgetClass  = layoutConfig.widgetCls;
                                 break;
                             }
                         }
@@ -1315,7 +1324,7 @@ WM.module('wm.widgets.live')
                             }
                         }
 
-                        template = LiveWidgetUtils.getTemplate(columnDef, index, parentScope.captionposition || parentEle.closest('.app-form').isolateScope().captionposition, element);
+                        template = LiveWidgetUtils.getTemplate(columnDef, index, element);
                         //Remove only live-field so that overlay won't get overrided
                         element.find('.live-field').remove();
                         element.append(template);

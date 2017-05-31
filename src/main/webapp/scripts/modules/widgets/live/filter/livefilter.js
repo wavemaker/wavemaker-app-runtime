@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget apply-styles="shell">' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget apply-styles="shell" captionposition="{{captionposition}}">' +
                     '<div class="panel-heading" ng-show="title || subheading || iconclass || showButtons(\'header\')">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -50,7 +50,9 @@ WM.module('wm.widgets.live')
                 notifyFor = {
                     'dataset'        : true,
                     'pagesize'       : CONSTANTS.isStudioMode,
-                    'captionalign'   : true
+                    'captionalign'   : true,
+                    'captionposition': true,
+                    'captionwidth'   : true
                 };
 
             return {
@@ -497,6 +499,7 @@ WM.module('wm.widgets.live')
 
                             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                             function propertyChangeHandler(key, newVal, oldVal) {
+                                var layoutConfig;
                                 switch (key) {
                                 case "dataset":
                                     //On dataset expressionchange, call the live filter and update variable on scope
@@ -566,6 +569,12 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'captionalign':
                                     element.removeClass('align-' + oldVal).addClass('align-' + newVal);
+                                    break;
+                                case 'captionposition':
+                                case 'captionwidth':
+                                    layoutConfig = LiveWidgetUtils.getFieldLayoutConfig(scope.captionwidth, scope.captionposition);
+                                    scope._captionClass = layoutConfig.captionCls;
+                                    scope._widgetClass  = layoutConfig.widgetCls;
                                     break;
                                 }
                             }
@@ -753,7 +762,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        template = LiveWidgetUtils.getTemplate(columnsDef, index, parentIsolateScope.captionposition, element);
+                        template = LiveWidgetUtils.getTemplate(columnsDef, index, element);
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
 
