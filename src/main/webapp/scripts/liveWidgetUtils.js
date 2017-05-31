@@ -651,31 +651,17 @@ WM.module('wm.widgets.live')
              * @description
              * return template based on widgetType for liveFilter and liveForm.
              */
-            function getTemplate(fieldDef, index, captionPosition, $el) {
+            function getTemplate(fieldDef, index, $el) {
                 var template = '',
                     widgetType,
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
-                    labelLayout,
-                    controlLayout,
-                    displayLabel = '',
+                    controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12',
+                    displayLabel,
                     validAttr;
 
-                captionPosition = captionPosition || 'top';
                 //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
                     fieldDef.placeholder = fieldDef.placeholder || '';
-                }
-
-                if (captionPosition === 'top') {
-                    if (($rs.selectedViewPort && $rs.selectedViewPort.os === 'android') || !$rs.isMobileApplicationType || Utils.isAndroid()) { //Is android or not a mobile application
-                        labelLayout = controlLayout = 'col-xs-12';
-                    } else if ($rs.isMobileApplicationType) { //Is a mobile application and not android
-                        labelLayout   = 'col-xs-4';
-                        controlLayout = 'col-xs-8';
-                    }
-                } else {
-                    labelLayout   = $rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3';
-                    controlLayout = $rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9';
                 }
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
                 widgetType  = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
@@ -688,16 +674,14 @@ WM.module('wm.widgets.live')
                     validAttr = '(' + validAttr + ')';
                 }
 
-                if (fieldDef.displayname) { //Add label field, only if displayname is given
-                    displayLabel = '<label ng-style="{width: captionsize}" class="app-label control-label formfield-label ' + labelLayout + '" title="{{formFields[' + index + '].displayname}}" ng-class="{\'text-danger\': ' + validAttr + ' &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}">{{formFields[' + index + '].displayname}}</label>';
-                } else {
-                    controlLayout = $rs.isMobileApplicationType ? 'col-xs-12' : 'col-sm-12';
-                }
                 //If displayname is bound, set to empty value. This is to prevent bind: showing up in label
                 fieldDef.displayname = (CONSTANTS.isRunMode && _.startsWith(fieldDef.displayname, 'bind:')) ? '' : fieldDef.displayname;
+
+                displayLabel = '<label ng-if="formFields[' + index + '].displayname" ng-style="{width: captionsize}" class="app-label control-label formfield-label" title="{{formFields[' + index + '].displayname}}" ng-class="[_captionClass , {\'text-danger\': ' + validAttr + ' &&  ngform[\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode, required: isUpdateMode && formFields[' + index + '].required}]">{{formFields[' + index + '].displayname}}</label>';
+
                 template    = template +
                     '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
-                    '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
+                    '<div class="{{formFields[' + index + '].class}}" ng-class="formFields[' + index + '].displayname ? _widgetClass : \'' + controlLayout + '\'">' +
                     '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 
                 switch (widgetType) {
@@ -2474,6 +2458,51 @@ WM.module('wm.widgets.live')
                 return false;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getFieldLayoutConfig
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns caption and widget bootstrap classes for the field
+             *
+             * @param {string} captionWidth width given for the caption
+             * @param {string} captionPosition position for the form field
+             */
+            function getFieldLayoutConfig(captionWidth, captionPosition) {
+                var captionCls = '',
+                    widgetCls = '';
+
+                captionPosition = captionPosition || 'top';
+
+                if (captionPosition === 'top') {
+                    if (($rs.selectedViewPort && $rs.selectedViewPort.os === 'android') || !$rs.isMobileApplicationType || Utils.isAndroid()) { //Is android or not a mobile application
+                        captionCls = widgetCls = 'col-xs-12';
+                    } else if ($rs.isMobileApplicationType) { //Is a mobile application and not android
+                        captionCls   = 'col-xs-4';
+                        widgetCls    = 'col-xs-8';
+                    }
+                } else if (captionWidth) {
+                    // handling itemsperrow containing string of classes
+                    _.forEach(_.split(captionWidth, ' '), function (cls) {
+                        var keys = _.split(cls, '-'),
+                            tier = keys[0],
+                            captionWidth,
+                            widgetWidth;
+                        captionWidth = parseInt(keys[1], 10);
+                        widgetWidth  = 12 - captionWidth;
+                        widgetWidth  = widgetWidth <= 0 ? 12 : widgetWidth;
+                        captionCls += ' ' + 'col-' + tier + '-' + captionWidth;
+                        widgetCls  += ' ' + 'col-' + tier + '-' + widgetWidth;
+                    });
+                }
+                return {
+                    'captionCls' : captionCls,
+                    'widgetCls'  : widgetCls
+                }
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2520,6 +2549,7 @@ WM.module('wm.widgets.live')
             this.getDataTableFilterWidget   = getDataTableFilterWidget;
             this.setFormValidationType      = setFormValidationType;
             this.validateFieldsOnSubmit     = validateFieldsOnSubmit;
+            this.getFieldLayoutConfig       = getFieldLayoutConfig;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {

@@ -31,15 +31,16 @@ WM.module('wm.widgets.base', [])
                 'name': 'Mobile',
                 'value': 'xs'
             }, {
-                'name': 'Tab Portrait',
+                'name': 'Tablet Portrait',
                 'value': 'sm'
             }, {
-                'name': 'Laptop\\Tab Landscape',
+                'name': 'Laptop\\Tablet Landscape',
                 'value': 'md'
             }, {
                 'name': 'Large Screen',
                 'value': 'lg'
             }],
+            columnWidths   = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
             daysOptions    = Utils.getDaysOptions(),
             nameRegex      = '^[a-zA-Z_][A-Za-z0-9_]+$',
             numberRegex    = '(^$|[0-9]+$)',
@@ -1166,11 +1167,11 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     'wm.layouts.leftpanel': {
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"},
+                        "columnwidth": {"type": "list", "options": columnWidths, "value": "2"},
                         "animation" : {"type": "list", "options": ["slide-in", "slide-over"], "value" : "slide-in"}
                     },
                     'wm.layouts.rightpanel': {
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"}
+                        "columnwidth": {"type": "list", "options": columnWidths, "value": "2"}
                     },
                     'wm.layouts.content': {
                         "height": {"type": "string", "pattern": dimensionRegex}
@@ -1321,7 +1322,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundposition": {"type": "string", "hint": "top, left", "show": false},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
+                        "columnwidth": {"type": "list", "options": columnWidths},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'add-column-right'}]},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["visible-xs-block", "visible-sm-block", "visible-md-block", "visible-lg-block", "hidden-xs", "hidden-sm", "hidden-md", "hidden-lg", "bordered", "bordered-left", "bordered-right", "bordered-top", "bordered-bottom"]}
                     },
@@ -1338,10 +1339,10 @@ WM.module('wm.widgets.base', [])
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'add-column'}]}
                     },
                     'wm.layouts.column': {
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+                        "columnwidth": {"type": "list", "options": columnWidths}
                     },
                     'wm.layouts.pagecontent': {
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
+                        "columnwidth": {"type": "list", "options": columnWidths},
                         "padding": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.row': {
@@ -1365,7 +1366,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "widget": "string", "bindable": "in-bound"},
-                        "captionsize": {"type": "string", "showindesigner": true},
+                        "captionsize": {"type": "string", "show": false},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "formdata": {"type": "object", "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
@@ -1377,6 +1378,7 @@ WM.module('wm.widgets.base', [])
                         "metadata": {"type": "array, object",  "bindable": "in-bound", "widget": "string", "show": false},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-12 sm-3 md-3 lg-3", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths},
 
                         "onResult": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1395,6 +1397,9 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"},
                         "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
                     },
+                    'wm.layouts.form.mobile': {
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
+                    },
                     'wm.layouts.login': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1408,9 +1413,10 @@ WM.module('wm.widgets.base', [])
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "formlayout": {"type": "switch", "options":  [{"label": "INLINE", "value": "inline"}, {"label": "PAGE", "value": "page"}], "value": "inline", "show" : false, "displayfield": "label", "datafield": "value"},
                         "autocomplete": {"type": "boolean", "value": false, "showindesigner": true},
-                        "captionsize": {"type": "string", "value": "", "showindesigner": true},
+                        "captionsize": {"type": "string", "value": "", "show": false},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons-align"},
                         "captionposition": {"type": "string", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-12 sm-3 md-3 lg-3", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1445,6 +1451,9 @@ WM.module('wm.widgets.base', [])
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
                         "margin": {"type": "string", "widget": "box-model"},
                         "formWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
+                    },
+                    'wm.layouts.liveform.mobile': {
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforesegmentchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1755,7 +1764,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
-                        "itemsperrow": {"type": "string", "widget": "device-config"},
+                        "itemsperrow": {"type": "string", "widget": "device-config", "widthHeader": "Items per row", "deviceHeader": "Device", "deviceSizes": ['1', '2', '3', '4', '6', '12']},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiselect"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1800,9 +1809,10 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
-                        "captionsize": {"type": "string", "value": "", "showindesigner": true},
+                        "captionsize": {"type": "string", "value": "", "show": false},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons-align"},
                         "captionposition": {"type": "string", "options": ["left", "right", "top"], "value": "left", "showindesigner": true, "widget": "icons-radio", "prefix": "position-"},
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-12 sm-3 md-3 lg-3", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
@@ -1824,6 +1834,9 @@ WM.module('wm.widgets.base', [])
                         "margin": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "filterWidgets": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "isWidgetMap": true}
+                    },
+                    'wm.livefilter.mobile': {
+                        "captionwidth": {"type": "string", "widget": "device-config", "value": "xs-4 sm-4 md-4 lg-4", "showindesigner": true, "widthHeader": "Column Width", "deviceHeader": "Device", "deviceSizes": columnWidths}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
@@ -2065,7 +2078,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
-                {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
+                {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "captionwidth", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "loadingicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},

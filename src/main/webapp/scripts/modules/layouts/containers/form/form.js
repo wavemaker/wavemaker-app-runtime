@@ -4,7 +4,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/form.html',
-                '<form role="form" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, formClassName]"' +
+                '<form role="form" init-widget class="panel app-panel app-form" captionposition="{{captionposition}} ng-class="[captionAlignClass, formClassName]"' +
                     ' autocomplete="autocomplete" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
@@ -41,7 +41,8 @@ WM.module('wm.layouts.containers')
                 'method'          : true,
                 'action'          : true,
                 'metadata'        : true,
-                'formdata'        : true
+                'formdata'        : true,
+                'captionwidth'    : true
             },
             submitBtnTemplate = '<wm-button class="form-submit" type="submit" caption="submit"></wm-button>';
         //Function to set the default values on the form fields
@@ -109,7 +110,7 @@ WM.module('wm.layouts.containers')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
-            var value, resetBtnTemplate, $gridLayout;
+            var value, resetBtnTemplate, $gridLayout, layoutConfig;
             switch (key) {
             case 'captionsize':
                 scope.elScope.captionsize = newVal;
@@ -118,7 +119,11 @@ WM.module('wm.layouts.containers')
                 scope.captionAlignClass = "align-" + newVal;
                 break;
             case 'captionposition':
-                scope.elScope.captionposition = newVal;
+            case 'captionwidth':
+                scope.elScope.captionposition = scope.captionposition;
+                layoutConfig = LiveWidgetUtils.getFieldLayoutConfig(scope.captionwidth, scope.elScope.captionposition);
+                scope.elScope._captionClass = layoutConfig.captionCls;
+                scope.elScope._widgetClass  = layoutConfig.widgetCls;
                 break;
             case 'novalidate':
                 //Set validation type based on the novalidate property
