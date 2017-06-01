@@ -28,18 +28,21 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
         Query query = getQuery(session);
 
         final Class<?> responseType = getReturnType();
-        final Sort sort = getPageable().getSort();
-        if (query instanceof SQLQuery) {
-            query = QueryHelper.createNewNativeQueryWithSorted(session, (SQLQuery) query,
-                    responseType, sort);
-        } else {
-            query = QueryHelper.createNewHqlQueryWithSorted(session, query, responseType, sort);
+        if (getPageable() != null) {
+            if (getPageable().getSort() != null) {
+                final Sort sort = getPageable().getSort();
+                if (query instanceof SQLQuery) {
+                    query = QueryHelper.createNewNativeQueryWithSorted(session, (SQLQuery) query,
+                            responseType, sort);
+                } else {
+                    query = QueryHelper.createNewHqlQueryWithSorted(session, query, responseType, sort);
+                }
+            }
+            query.setFirstResult(getPageable().getOffset());
+            query.setMaxResults(getPageable().getPageSize());
         }
         QueryHelper.setResultTransformer(query, responseType);
         QueryHelper.configureParameters(query, getParameters());
-
-        query.setFirstResult(getPageable().getOffset());
-        query.setMaxResults(getPageable().getPageSize());
 
         return new WMPageImpl<T>((List<T>) query.list(), getPageable(), findCount(session));
     }
