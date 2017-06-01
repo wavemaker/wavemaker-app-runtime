@@ -81,10 +81,13 @@ WM.module('wm.widgets.form')
                     constructCheckboxSet(scope, element, newVal);
                 }
                 break;
-            case 'displayfield':
             case 'datafield':
-            case 'usekeys':
             case 'orderby':
+                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+                scope.$root.$safeApply(scope);
+                break;
+            case 'displayfield':
+            case 'usekeys':
                 if (CONSTANTS.isRunMode || !isBoundToServiceVariable) {
                     constructCheckboxSet(scope, element, dataSet);
                 }
@@ -176,11 +179,7 @@ WM.module('wm.widgets.form')
                                 checkedOption = WM.element(this).val();
 
                                 // set isChecked flag for displayOptions.
-                                var checkedDisplayOption = _.find(scope.displayOptions, function (dataObj) {
-                                    return dataObj.key == checkedOption;
-                                });
-
-                                checkedDisplayOption.isChecked = true;
+                                var checkedDisplayOption = FormWidgetUtils.updateCheckedValue(checkedOption, scope.displayOptions);
 
                                 // set the checkedValue for selected option's key to true.
                                 if (scope.groupFields && scope.checkedValues) {

@@ -50,6 +50,23 @@ WM.module('wm.widgets.form')
                 /* return dataValue to be the default key */
                 return displayField;
             }
+
+            // This function finds the displayOption whose key is equal to the value and sets the isChecked flag for that displayOptions.
+            function updateCheckedValue(value, displayOptions) {
+                var checkedDisplayOption = _.find(displayOptions, function (dataObj) {
+                    // if key is boolean, then input value for radioset, checkboxset is always string i.e. "false / true" then convert key to string and compare.
+                    if (_.isBoolean(dataObj.key)) {
+                        return dataObj.key.toString() === value;
+                    }
+                    return dataObj.key == value;
+                });
+                // set the isChecked flag for selected radioset value.
+                if (checkedDisplayOption) {
+                    checkedDisplayOption.isChecked = true;
+                }
+                return checkedDisplayOption;
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#setPropertiesTextWidget
@@ -101,20 +118,14 @@ WM.module('wm.widgets.form')
                 if (WM.isArray(_modelProxy)) {
                     scope.displayValue = [];
                     _.forEach(_modelProxy, function (val) {
-                        selectedOption = _.find(scope.displayOptions, function (obj) {
-                            return obj.key == val;
-                        });
+                        selectedOption = updateCheckedValue(val, scope.displayOptions);
                         if (selectedOption) {
-                            selectedOption.isChecked = true;
                             scope.displayValue.push(selectedOption.value);
                         }
                     });
                 } else {
-                    selectedOption = _.find(scope.displayOptions, function (obj) {
-                        return obj.key == _modelProxy;
-                    });
+                    selectedOption = updateCheckedValue(_modelProxy, scope.displayOptions);
                     if (selectedOption) {
-                        selectedOption.isChecked = true;
                         scope.displayValue = selectedOption.value;
                     }
                 }
@@ -149,6 +160,9 @@ WM.module('wm.widgets.form')
                         _modelProxy = [];
                         _.forEach(model, function (modelVal) {
                             selectedOption = _.find(scope.displayOptions, function (obj) {
+                                if (filterField === 'dataObject') {
+                                    return _.isEqual(obj[filterField], modelVal);
+                                }
                                 return obj[filterField] == modelVal;
                             });
                             if (selectedOption) {
@@ -157,6 +171,9 @@ WM.module('wm.widgets.form')
                         });
                     } else {
                         selectedOption = _.find(scope.displayOptions, function (obj) {
+                            if (filterField === 'dataObject') {
+                                return _.isEqual(obj[filterField], model);
+                            }
                             return obj[filterField] == model;
                         });
                         if (selectedOption) {
@@ -760,6 +777,7 @@ WM.module('wm.widgets.form')
             this.setPropertiesTextWidget         = setPropertiesTextWidget;
             this.createDataKeys                  = createDataKeys;
             this.extractDisplayOptions           = extractDisplayOptions;
+            this.updateCheckedValue              = updateCheckedValue;
             this.setCheckedAndDisplayValues      = setCheckedAndDisplayValues;
             this.getRadiosetCheckboxsetTemplate  = getRadiosetCheckboxsetTemplate;
             this.getBoundVariableCategory        = getBoundVariableCategory;

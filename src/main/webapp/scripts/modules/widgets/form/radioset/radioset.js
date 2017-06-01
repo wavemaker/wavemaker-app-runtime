@@ -72,10 +72,13 @@ WM.module('wm.widgets.form')
                     constructRadioSet(scope, element, newVal);
                 }
                 break;
-            case 'displayfield':
             case 'datafield':
-            case 'usekeys':
             case 'orderby':
+                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+                scope.$root.$safeApply(scope);
+                break;
+            case 'displayfield':
+            case 'usekeys':
                 if (CONSTANTS.isRunMode || !isBoundToServiceVariable) {
                     constructRadioSet(scope, element, dataSet);
                 }
@@ -154,17 +157,10 @@ WM.module('wm.widgets.form')
                             /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption
                              from the dataKeys array*/
                                 radioOption = WM.element(this).find('input').val(),
-                                checkedDisplayOption = _.find(scope.displayOptions, function (dataObj) {
-                                    return dataObj.key == radioOption;
-                                });
+                                checkedDisplayOption = FormWidgetUtils.updateCheckedValue(radioOption, scope.displayOptions);
 
                             if (dataObj) {
                                 dataObj.isChecked = false;
-                            }
-
-                            // set the isChecked flag for selected radioset value.
-                            if (checkedDisplayOption) {
-                                checkedDisplayOption.isChecked = true;
                             }
 
                             // set the checkedValue for selected option's key to true.
