@@ -939,6 +939,7 @@ WM.module('wm.widgets.basic')
                             $is.page = 1;
                             if ($is.query) {
                                 $is.queryModel = $is.query = '';
+                                $is.datavalue  = '';
                                 triggerSearch($is, element.find('input[uib-typeahead]'));
                             }
                         };
