@@ -18,7 +18,7 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true); _onChange({$event: $event, $scope: this});" ng-keydown="executeKeyDownEvent($event, query)" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
-                    ' ng-class="{\'ng-invalid\' : (type === \'autocomplete\' && required && (!isDefined(_model_) || _model_ === \'\'))}"' +
+                    ' ng-class="{\'ng-invalid\' : (type === \'autocomplete\' && required && (!isDefined(_model_) || _model_ === \'\' || _model_ === null))}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
                     ' ng-disabled="disabled" ' +
@@ -30,7 +30,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-template-url="template/widget/form/searchlist.html"' +
                     ' typeahead-is-open="isOpen"' +
                     ' typeahead-min-length="minLength" focus-target>' +
-                '<input class="model-holder" ng-model="_model_" ng-required="required">' +
+                '<input class="model-holder" ng-model="_model_" ng-required="required" tabindex="-1">' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="wi wi-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
