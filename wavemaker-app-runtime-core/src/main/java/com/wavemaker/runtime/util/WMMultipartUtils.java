@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Optional;
 import com.wavemaker.commons.InvalidInputException;
@@ -187,29 +185,6 @@ public class WMMultipartUtils {
                     .getSimpleName() + " is not supported");
         }
         return instance;
-    }
-
-    public static UriComponentsBuilder buildBlobUriComponentsBuilder(
-            HttpServletRequest request, String... identifierProperties) {
-        final UriComponentsBuilder builder = ServletUriComponentsBuilder.fromRequest(request);
-
-        StringBuilder pathBuilder = new StringBuilder();
-
-        if (identifierProperties.length == 1) {
-            pathBuilder.append("/")
-                    .append("{")
-                    .append(identifierProperties[0])
-                    .append("}");
-        } else if (identifierProperties.length > 1) {
-            pathBuilder.append("/composite-id");
-            for (final String property : identifierProperties) {
-                builder.queryParam(property, "{" + property + "}");
-            }
-        }
-        pathBuilder.append("/content/{_fieldName_}");
-
-        builder.path(pathBuilder.toString());
-        return builder;
     }
 
     public static byte[] toByteArray(MultipartFile file) {
