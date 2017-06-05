@@ -1353,9 +1353,9 @@ WM.module('wm.widgets.live')
                         };
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: data, $changedItem: changedItem});
                         $dragEl.removeData('oldIndex');
-
                         // to persist the selected items after reorder.
                         $is.selecteditem = Utils.getClonedObject($is.selecteditem);
+                        $rs.$safeApply($is);
                     }
                 });
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
@@ -1549,7 +1549,7 @@ WM.module('wm.widgets.live')
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 } else {
-                    $is.widgetProps.enablereorder.show = !$rs.isMobileApplicationType;
+                    $is.widgetProps.enablereorder.show = $is.widgetProps.onReorder.show = !$rs.isMobileApplicationType;
                     $el.find('.app-listtemplate').addClass($liScope.itemclass + ' ' + $liScope.itemsPerRowClass);
                 }
 
