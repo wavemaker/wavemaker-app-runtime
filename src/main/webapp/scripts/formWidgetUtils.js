@@ -298,9 +298,9 @@ WM.module('wm.widgets.form')
                 }
                 data = [];
 
-                if (useKeys) {
-                    /*getting keys of the object*/
-                    objectKeys = WM.isObject(dataSet[0]) ? Object.keys(dataSet[0]) : [];
+                if (useKeys && WM.isObject(dataSet[0])) {
+                        /*getting keys of the object*/
+                    objectKeys = Object.keys(dataSet[0]);
                     /*iterating over object keys and creating checkboxset dataset*/
                     _.forEach(objectKeys, function (key) {
                         data.push({'key' : key, 'value' : key});
@@ -352,7 +352,8 @@ WM.module('wm.widgets.form')
                                 if (WM.isArray(dataSet)) {
                                     data.push({'key' : option, 'value' : option});
                                 } else {
-                                    data.push({'key' : index, 'value' : option});
+                                    // If dataset is object with key, value and useKeys set to true, only keys are to be returned.
+                                    data.push({'key' : index, 'value' : useKeys ? index : option});
                                 }
                             }
                         });

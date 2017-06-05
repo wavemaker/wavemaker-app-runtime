@@ -930,15 +930,16 @@ WM.module('wm.widgets.basic')
                         $is.closeSearch = function () {
                             $is.page = 1;
                             if (!WM.isDefined($is.datavalue)) {
-                                $is.queryModel = '';
+                                $is.queryModel = $is.query = '';
                             }
                             element.removeClass('full-screen');
                         };
                         //Clear the search and trigger the search with empty value
                         $is.clearSearch = function () {
                             $is.page = 1;
-                            if ($is.query) {
-                                $is.queryModel = $is.query = '';
+                            $is.clearText();
+                            if ($is.query || $is.queryModel) {
+                                $is.queryModel = '';
                                 $is.datavalue  = '';
                                 triggerSearch($is, element.find('input[uib-typeahead]'));
                             }
