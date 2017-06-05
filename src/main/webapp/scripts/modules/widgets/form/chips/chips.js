@@ -126,6 +126,7 @@ WM.module('wm.widgets.form')
                 var chips          = [],
                     value           = $s.value || $s.datavalue,
                     values;
+                displayField = $s.displayfield || $s.displayexpression || $s.binddisplayexpression;
                 //Avoiding resetting empty values
                 if (($s.binddataset || $s.scopedataset) && (!displayField && !$s.datavalue)) {
                     return;
@@ -351,7 +352,7 @@ WM.module('wm.widgets.form')
 
             //Add the newItem to the list
             function addItem($s, element, $event, newItem, searchScope) {
-                var newItemObject = _.find($s.chips, {'key' : searchScope.query}) || _.find($s.chips, {'value' : searchScope.query}) || searchScope.query || searchScope.query,
+                var newItemObject = _.find($s.chips, {'key' : searchScope.query}) || _.find($s.chips, {'value' : searchScope.query}) || searchScope.query,
                     allowAdd      = true;
                 //Don't add new chip if already reaches max size
                 if (checkMaxSize($s) || (!searchScope && !searchScope.query) || (!WM.isObject(newItem) && $s.allowonlyselect) || !newItemObject) {
@@ -362,7 +363,11 @@ WM.module('wm.widgets.form')
                     searchScope.query = '';
                     searchScope.reset();
                 });
-                newItemObject = $s.constructChip(_.get(newItemObject, 'key'), _.get(newItemObject, 'value'), _.get(newItemObject, 'wmImgSrc'));
+                if (WM.isObject(newItemObject)) {
+                    newItemObject = $s.constructChip(_.get(newItemObject, 'key'), _.get(newItemObject, 'value'), _.get(newItemObject, 'wmImgSrc'));
+                } else {
+                    newItemObject = $s.constructChip(newItemObject);
+                }
                 if (isDuplicate($s, newItemObject)) {
                     newItemObject.isDuplicate = true;
                 }
@@ -459,7 +464,6 @@ WM.module('wm.widgets.form')
                         }
                     },
                     'post': function ($s, $el, attrs) {
-                        displayField = $s.displayfield || $s.displayexpression || $s.binddisplayexpression;
                         init($s, attrs.widgetid);
 
                         if (!$s.isWidgetInsideCanvas) {
