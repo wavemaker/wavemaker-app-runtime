@@ -173,7 +173,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'CONSTANTS', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, wmToaster, Utils, Variables, ServiceFactory, $rootScope, CONSTANTS, FileUploadService, FileSelectorService, DeviceMediaService, $timeout) {
+    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'CONSTANTS', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', '$timeout', '$q', function (PropertiesFactory, $templateCache, WidgetUtilService, wmToaster, Utils, Variables, ServiceFactory, $rootScope, CONSTANTS, FileUploadService, FileSelectorService, DeviceMediaService, $timeout, $q) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events.successerror']),
             selectedUploadTypePath,
@@ -369,7 +369,9 @@ WM.module('wm.widgets.form')
 
             if (scope.fileTransfers.length) {
                 //show success toaster after all file transfers are successful
-                Promise.all(scope.fileTransfers).then(wmToaster.show('success', 'File Uploaded'));
+                $q.all(scope.fileTransfers).then(function () {
+                    wmToaster.show('success', 'File Uploaded');
+                });
             }
         }
 
