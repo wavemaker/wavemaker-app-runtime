@@ -6,7 +6,7 @@ package com.wavemaker.runtime.data.export;
  */
 public interface QueryExtractor {
 
-    boolean hasNext() throws Exception;
+    boolean next() throws Exception;
 
     boolean isFirstRow();
 

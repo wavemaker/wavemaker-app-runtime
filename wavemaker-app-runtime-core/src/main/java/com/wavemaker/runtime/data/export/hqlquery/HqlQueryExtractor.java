@@ -10,20 +10,25 @@ import com.wavemaker.runtime.data.export.QueryExtractor;
  */
 public class HqlQueryExtractor implements QueryExtractor {
 
-    public ScrollableResults results;
+    private ScrollableResults results;
+    private int currentIndex;
+
 
     public HqlQueryExtractor(final ScrollableResults results) {
         this.results = results;
     }
 
     @Override
-    public boolean hasNext() throws Exception {
-        return results.next();
+    public boolean next() throws Exception {
+        final boolean hasNext = results.next();
+        this.currentIndex++;
+        return hasNext;
     }
 
     @Override
     public boolean isFirstRow() {
-        return results.isFirst();
+        //since isFirst() or getRow() methods in org.hibernate.ScrollableResults are not supported in few DBs.
+        return currentIndex == 1;
     }
 
     @Override

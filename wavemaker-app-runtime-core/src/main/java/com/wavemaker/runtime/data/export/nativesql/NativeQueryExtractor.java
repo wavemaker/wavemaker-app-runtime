@@ -16,30 +16,25 @@ public class NativeQueryExtractor implements QueryExtractor {
 
     private ResultSet resultSet;
     private WMResultTransformer resultTransformer;
-    private int rowCount;
+    private int currentIndex;
 
     public NativeQueryExtractor(
             final ResultSet resultSet, final WMResultTransformer resultTransformer) {
         this.resultSet = resultSet;
         this.resultTransformer = resultTransformer;
-        this.rowCount = 0;
     }
 
     @Override
-    public boolean hasNext() throws Exception {
+    public boolean next() throws Exception {
         final boolean hasNext = resultSet.next();
-        this.rowCount++;
+        this.currentIndex++;
         return hasNext;
     }
 
     @Override
     public boolean isFirstRow() {
         //since isFirst() or getRow() methods in java.sql.ResultSet are not supported in few DBs.
-        boolean isFirstRow = false;
-        if (rowCount == 1) {
-            isFirstRow = true;
-        }
-        return isFirstRow;
+        return currentIndex == 1;
     }
 
     @Override
