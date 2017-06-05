@@ -171,7 +171,7 @@ WM.module('wm.widgets.basic')
                                     /* This is to make the "Variables" & "Widgets" available in the inline content
                                      * widgets it gets compiled with the popover isolate Scope
                                      * and "Variables", "Widgets", "item" won't be available in that scope. */
-                                    Utils.defineProps($is, $el);
+                                    Utils.defineProps($is, $el, {'item' : true, 'row' : true});
                                     $is._popoverOptions.customclass = 'popover_' + $is.$id + '_' + _.toLower($rs.activePageName);
                                     setStyleBlock($is);
 

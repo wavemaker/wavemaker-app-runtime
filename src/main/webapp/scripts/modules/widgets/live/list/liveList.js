@@ -1304,7 +1304,7 @@ WM.module('wm.widgets.live')
                 Object.defineProperty($is, 'selecteditem', {
                     configurable: true
                 });
-                Utils.defineProps($is, $el);
+                Utils.defineProps($is, $el, {'item' : true});
                 $el.removeAttr('title');
             }
 

@@ -2616,11 +2616,12 @@ WM.module('wm.utils', [])
             return true;
         }
 
-        function defineProps($is, $el) {
+        function defineProps($is, $el, config) {
             /*This is to make the "Variables" & "Widgets" available in the Data-navigator it gets compiled with the data table isolate Scope
              * and "Variables", "Widgets" will not be available in that scope.
              * element.scope() might refer to the controller scope/parent scope.*/
             var _scope = $el.scope(); // scope inherited from controller's scope
+            config =  config || {};
 
             Object.defineProperties($is, {
                 'Variables': {
@@ -2632,18 +2633,26 @@ WM.module('wm.utils', [])
                     'get': function () {
                         return _scope.Widgets;
                     }
-                },
-                'item': {
-                    'get': function () {
-                        return _scope.item;
-                    }
-                },
-                'row': {
-                    'get': function () {
-                        return _scope.row;
-                    }
                 }
             });
+            if (config.item) {
+                Object.defineProperties($is, {
+                    'item': {
+                        'get': function () {
+                            return _scope.item;
+                        }
+                    }
+                });
+            }
+            if (config.row) {
+                Object.defineProperties($is, {
+                    'row': {
+                        'get': function () {
+                            return _scope.row;
+                        }
+                    }
+                });
+            }
         }
 
         /**
