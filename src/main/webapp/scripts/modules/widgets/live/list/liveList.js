@@ -1353,9 +1353,9 @@ WM.module('wm.widgets.live')
                         };
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: data, $changedItem: changedItem});
                         $dragEl.removeData('oldIndex');
+                        $rs.$safeApply($is);
                         // to persist the selected items after reorder.
                         $is.selecteditem = Utils.getClonedObject($is.selecteditem);
-                        $rs.$safeApply($is);
                     }
                 });
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
