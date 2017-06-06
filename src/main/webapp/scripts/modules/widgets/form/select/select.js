@@ -99,6 +99,12 @@ WM.module('wm.widgets.form')
 
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
+            // modelProxy should not change when select is set to readonly.
+            if (scope.readonly) {
+                scope.modelProxy = scope._model_;
+                return;
+            }
+
             assignModelValue(scope);
             if (WM.isFunction(scope._onChange)) {
                 scope._onChange({$event: args.$event, $scope: args.$scope});
@@ -123,8 +129,10 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
             'link': {
                 'pre': function (iScope, $el, attrs) {
-                    iScope.widgetProps           = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
-                    iScope.orderedKeys           = [];
+                    iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    iScope.orderedKeys = [];
+                    // This flag is used in formWidgetUtils to assign modelProxy value for select widget.
+                    iScope._isModelProxyRequired = true;
                 },
                 'post': function (iScope, element, attrs) {
 
@@ -160,7 +168,7 @@ WM.module('wm.widgets.form')
                                 iScope._reset = false;
                                 return;
                             }
-                            FormWidgetUtils.updatedCheckedValues(iScope, true);
+                            FormWidgetUtils.updatedCheckedValues(iScope);
                         }, false);
 
                         if (attrs.scopedataset) {

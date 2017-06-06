@@ -142,7 +142,7 @@ WM.module('wm.widgets.form')
              *
              * @param {object} scope isolate scope of the widget
              */
-            function updatedCheckedValues(scope, isModelProxyRequired) {
+            function updatedCheckedValues(scope) {
                 var model = scope._model_,
                     _modelProxy,
                     selectedOption,
@@ -183,7 +183,7 @@ WM.module('wm.widgets.form')
                 } else {
                     _modelProxy = model;
                 }
-                if (isModelProxyRequired) {
+                if (scope._isModelProxyRequired) {
                     scope.modelProxy = _modelProxy;
                 }
                 setCheckedAndDisplayValues(scope, _modelProxy);
