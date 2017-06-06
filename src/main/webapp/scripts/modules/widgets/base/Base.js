@@ -1860,6 +1860,7 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "casesensitive": {"type": "boolean", "show": "false", "value": false},
+                        "showsearchicon": {"type": "boolean", "show": "false", "value": false},
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},

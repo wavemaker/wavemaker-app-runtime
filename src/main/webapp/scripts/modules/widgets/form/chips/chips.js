@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
-                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" searchkey="{{searchkey || displayfield}}" allowonlyselect="true" displaylabel="{{displayexpression || displayfield || displaylabel}}" displayimagesrc="{{displayimagesrc}}" datafield="All Fields" placeholder="{{placeholder}}" on-select="addItem($event, selectedValue, $scope)" on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions"></wm-search>' +
+                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" orderby="{{orderby}}" searchkey="{{searchkey || displayfield}}" allowonlyselect="true" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="All Fields" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false"></wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
             '</ul>'
@@ -293,7 +293,7 @@ WM.module('wm.widgets.form')
                     newItem,
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER && searchScope.query) {
-                    $s.addItem($event, '', searchScope);
+                    $s.addItem($event, searchScope);
                     stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
                     newItem = searchScope.query;
@@ -351,11 +351,11 @@ WM.module('wm.widgets.form')
             }
 
             //Add the newItem to the list
-            function addItem($s, element, $event, newItem, searchScope) {
+            function addItem($s, element, $event, searchScope) {
                 var newItemObject = _.find($s.chips, {'key' : searchScope.query}) || _.find($s.chips, {'value' : searchScope.query}) || searchScope.query,
                     allowAdd      = true;
                 //Don't add new chip if already reaches max size
-                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || (!WM.isObject(newItem) && $s.allowonlyselect) || !newItemObject) {
+                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || (!WM.isObject(newItemObject) && $s.allowonlyselect) || !newItemObject) {
                     return;
                 }
                 $rs.$safeApply(searchScope, function () {
@@ -381,7 +381,7 @@ WM.module('wm.widgets.form')
                 }
                 $s.selectedChips.push(newItemObject);
                 //Focus on to search widget
-                element.find('input').focus();
+                element.find('input.app-textbox').focus(100);
                 checkMaxSize($s);
                 //add chip
                 onModelUpdate($s, $event);

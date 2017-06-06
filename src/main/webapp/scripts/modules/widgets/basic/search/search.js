@@ -33,7 +33,7 @@ WM.module('wm.widgets.basic')
                 '<input class="model-holder" ng-model="_model_" ng-required="required" tabindex="-1">' +
                 '<span ng-show="_loadingItems" class="fa fa-circle-o-notch fa-spin form-control-feedback"></span>' +
                 '<span class="wi wi-close form-control-feedback clear-btn" ng-click="clearSearch()"></span>' +
-                '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
+                '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showsearchicon" >' +
                     '<form>' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
                             'ng-click="onTypeAheadSelect($event, $item, $model, $label)"></button>' +
@@ -367,10 +367,10 @@ WM.module('wm.widgets.basic')
             //Toggles search icon based on the type of search and dataset type
             function toggleSearchIcon($is, type) {
                 if (type === 'search') {
-                    $is.showSearchIcon = true;
+                    $is.showsearchicon = true;
                     $is.minLength      = 1;
                 } else {
-                    $is.showSearchIcon = false;
+                    $is.showsearchicon = false;
                     $is.minLength      = 0; //For autocomplete, set minlength as 0
                 }
             }
@@ -390,7 +390,7 @@ WM.module('wm.widgets.basic')
                 }
             }
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, element, key, newVal) {
+            function propertyChangeHandler($is, element, attrs, key, newVal) {
                 switch (key) {
                 case 'dataset':
                     // set the datatSet of the widget
@@ -404,7 +404,10 @@ WM.module('wm.widgets.basic')
                     }
                     break;
                 case 'type':
-                    toggleSearchIcon($is, newVal);
+                    //To avoid overridding check for that attribute
+                    if (!attrs.showsearchicon) {
+                        toggleSearchIcon($is, newVal);
+                    }
                     break;
                 case 'width':
                 case 'height':
@@ -831,7 +834,7 @@ WM.module('wm.widgets.basic')
                         $is.page       = 1;
                         $is.isLastPage = true;
                         // register the property change handler
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element), $is, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element, attrs), $is, notifyFor);
 
                         $is.isDefined = WM.isDefined;
 
@@ -889,7 +892,7 @@ WM.module('wm.widgets.basic')
                         $is._getItems = _getItems.bind(undefined, $is, element);
                         $is._getDisplayLabel = _getDisplayLabel.bind(undefined, $is);
 
-                        if (CONSTANTS.isRunMode) {
+                        if (!attrs.widgetid) {
                             // keyup event to enable/ disable close icon of the search input.
                             element.bind('keyup', onKeyUp.bind(undefined, $is, element));
 
