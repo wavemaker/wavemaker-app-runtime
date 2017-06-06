@@ -59,10 +59,10 @@ WM.module('wm.widgets.dialog')
             /* handles all types of events*/
             handleEvent(eventName, true, $scope.onCancel, eventParams);
         };
-        this._CloseButtonHandler = function (eventName) {
+        this._CloseButtonHandler = function (eventName, skipHideDialog) {
             eventName = eventName || '';
             /* handles all types of events*/
-            handleEvent(eventName, true,  $scope.onClose);
+            handleEvent(eventName, !skipHideDialog,  $scope.onClose);
         };
         this._OnOpenedHandler = function (eventName) {
             eventName = eventName || '';

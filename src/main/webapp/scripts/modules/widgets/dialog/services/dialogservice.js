@@ -178,6 +178,7 @@ WM.module('wm.widgets.dialog')
          * @param {string} dialogId id of the dialog to be closed
          */
         function hideDialog(dialogId) { /* to close the dialog, hideDialog MUST be used*/
+            var dialogIs;
 
             /* id must be provided to close the dialog*/
             if (!dialogId || ($uibModalInstances && !$uibModalInstances[dialogId])) {
@@ -185,6 +186,14 @@ WM.module('wm.widgets.dialog')
             }
             //remove the popovers in the page to avoid the overlap with dialog
             closePopover();
+
+            if (dialogId) {
+                dialogIs = WM.element('[name=' + dialogId + ']').length && WM.element('[name=' + dialogId + ']').isolateScope();
+
+                if (dialogIs && dialogIs._onCloseCallback) {
+                    dialogIs._onCloseCallback();
+                }
+            }
 
             $uibModalInstances[dialogId].close();
             // destroy the scope of the dialog

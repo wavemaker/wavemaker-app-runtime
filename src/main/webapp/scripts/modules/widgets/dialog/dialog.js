@@ -10,7 +10,7 @@ WM.module('wm.widgets.dialog')
             '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" >' +
                 '<div class="modal-content">' +
                     '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
-                        '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="Close">' +
+                        '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
                             '<span aria-hidden="true">&times;</span>' +
                         '</button>' +
                         '<h4 class="app-dialog-title modal-title">' +
@@ -204,78 +204,7 @@ WM.module('wm.widgets.dialog')
             "transclude": {
                 'footer': '?wmDialogactions'
             },
-            "controller": function ($scope, $element) {
-                this.dialogtype = $scope.dialogtype;
-                this.register   = function (name, ele) {
-                    this[name] =  ele.isolateScope();
-                };
-                /* handles all types of events for dialog*/
-                var handleEvent = function (eventName, hideDialog, callBack, callbackParams) {
-                    /* if the name is a function, execute the call back
-                     * if name is a dialog hide/show option, call the dialog hide show method accordingly
-                     * else invoke the service and finally close the current dialog*/
-                    if (eventName && eventName.indexOf("(") !== -1) {
-                        Utils.triggerFn(callBack, callbackParams);
-                    } else if (callBack) {
-                        // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
-                        if (CONSTANTS.isStudioMode) {
-                            if (WM.isFunction(callBack())) {
-                                Utils.triggerFn(callBack(), callbackParams);
-                            }
-                        } else {
-                            if (WM.isFunction(callBack)) {
-                                Utils.triggerFn(callBack, callbackParams);
-                            }
-                        }
-
-                    } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
-                        Utils.evalExp($scope, eventName);
-                    }
-                    if (hideDialog) {
-                        DialogService.hideDialog($scope.dialogid);
-                    }
-                };
-                this._OkButtonHandler = function (eventName) {
-                    var eventParams;
-                    /*If "okParams" is a JSON string, then parse it. Else, pass it as is.*/
-                    if ($scope.okParams && $scope.okParams.indexOf("{") > -1) {
-                        eventParams = Utils.getValidJSON($scope.okParams);
-                    } else {
-                        eventParams = $scope.okParams;
-                    }
-                    eventName = eventName || '';
-                    /* handles all types of events*/
-                    handleEvent(eventName, true, $scope.onOk, eventParams);
-                };
-                this._CancelButtonHandler = function (eventName) {
-                    var eventParams;
-                    /*If "cancelParams" is a JSON string, then parse it. Else, pass it as is.*/
-                    if ($scope.cancelParams && $scope.cancelParams.indexOf("{") > -1) {
-                        eventParams = Utils.getValidJSON($scope.cancelParams);
-                    } else {
-                        eventParams = $scope.cancelParams;
-                    }
-                    eventName = eventName || '';
-                    /* handles all types of events*/
-                    handleEvent(eventName, true, $scope.onCancel, eventParams);
-                };
-                this._CloseButtonHandler = function (eventName) {
-                    eventName = eventName || '';
-                    /* handles all types of events*/
-                    handleEvent(eventName, true,  $scope.onClose);
-                };
-                this._OnOpenedHandler = function (eventName) {
-                    eventName = eventName || '';
-                    /* handles all types of events*/
-                    handleEvent(eventName, false, $scope.onOpened);
-                };
-                this.onDialogOk = $scope.onOk;
-                this.onDialogCancel = $scope.onCancel;
-                this.onDialogClose = $scope.onClose;
-                /*making the onclose function available to transclusion scope of wmDialogContainer so that the header can access it */
-                $element.scope().onClose = $scope.onClose;
-                $element.scope().onOpened = $scope.onOpened;
-            },
+            "controller": 'DialogController',
             "scope": {
                 "dialogid": '@',
                 "onOk": '&',
@@ -295,7 +224,7 @@ WM.module('wm.widgets.dialog')
                             scope.__readyQueue.push(fn);
                         };
                         scope.hideDialog = function () {
-                            ctrl._CloseButtonHandler(attrs.onClose);
+                            scope.close();
                         };
                         scope.open  = Utils.openDialog.bind(undefined, scope.dialogid);
                         scope.close = DialogService.close.bind(undefined, scope.dialogid);
@@ -312,6 +241,8 @@ WM.module('wm.widgets.dialog')
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
+
+                        scope._onCloseCallback = ctrl._CloseButtonHandler.bind(undefined, attrs.onClose, true);
 
                         if (attrs.onOpened && ctrl && !scope.widgetid) {
                             if (CONSTANTS.isRunMode && scope.whenReady) {
@@ -393,10 +324,7 @@ WM.module('wm.widgets.dialog')
                         onOpenedEventName = parentEl.attr("on-opened");
 
                         scope.hideDialog = function () {
-                            if (dialogCtrl) {
-                                /*handles close button click*/
-                                dialogCtrl._CloseButtonHandler(onCloseEventName);
-                            }
+                            parentElScope.close();
                         };
 
                         if (onOpenedEventName && dialogCtrl && !scope.widgetid) {
