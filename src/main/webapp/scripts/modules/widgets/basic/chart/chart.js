@@ -278,6 +278,10 @@ WM.module('wm.widgets.basic')
             return yValues;
         }
 
+        //If the x-axis values are undefined, we return empty array else we return the values
+        function getValidData(values) {
+            return (values.length === 1 && values[0] === undefined) ? [] : values;
+        }
         //Returns the single data point based on the type of the data chart accepts
         function valueFinder(scope, dataObj, xKey, yKey, index, shape) {
             var xVal = getxAxisVal(scope, dataObj, xKey, index),
@@ -352,23 +356,31 @@ WM.module('wm.widgets.basic')
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 dataSet = scope.chartData,
                 yAxisKey,
-                shapes = [];
+                shapes = [],
+                values  = [];
 
             if (WM.isArray(dataSet)) {
                 if (ChartService.isPieType(scope.type)) {
                     yAxisKey = yAxisKeys[0];
                     datum = _.map(dataSet, function (dataObj, index) {
-                        return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey);
+                        if (!Utils.isEmptyObject(dataSet[index])) {
+                            return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey);
+                        }
                     });
+                    datum = getValidData(datum);
                 } else {
                     if (ChartService.isBubbleChart(scope.type)) {
                         shapes =  scope.shape === 'random' ? allShapes : scope.shape;
                     }
                     yAxisKeys.forEach(function (yAxisKey, series) {
-                        datum.push({
-                            values: _.map(dataSet, function (dataObj, index) {
+                        values =  _.map(dataSet, function (dataObj, index) {
+                            if (!Utils.isEmptyObject(dataSet[index])) {
                                 return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey, index, (WM.isArray(shapes) && shapes[series]) || scope.shape);
-                            }),
+                            }
+                        });
+                        values = getValidData(values);
+                        datum.push({
+                            values: values,
                             key: yAxisKey
                         });
                     });
