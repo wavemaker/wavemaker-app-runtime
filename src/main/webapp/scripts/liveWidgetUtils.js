@@ -448,7 +448,8 @@ WM.module('wm.widgets.live')
                     formEvents.push('onSubmit');
                 }
                 evtTypes          = _.pull(getEventTypes(), formEvents);
-                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxplaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
+                excludeProperties = formEvents.concat(['caption', 'type', 'show', 'placeholder', 'maxplaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'value',
+                    'key', 'field', 'pcDisplay', 'mobileDisplay', 'generator', 'isRelated', 'displayname', 'primaryKey', 'step', 'widget', 'validationmessage', 'permitted', 'dataoptions']);
                 fieldKeys         = _.pullAll(_.keys(fieldDef), excludeProperties);
                 _.forEach(fieldKeys, function (field) {
                     if (!fieldDef[field]) {
@@ -1073,7 +1074,8 @@ WM.module('wm.widgets.live')
                             defaultProp = 'datavalue';
                         }
                         if (widgetProps[defaultProp]) {
-                            widgetProps.defaultvalue      = WM.copy(widgetProps[defaultProp]);
+                            widgetProps.defaultvalue = WM.copy(widgetProps[defaultProp]);
+                            widgetProps.defaultvalue.bindable = 'in-bound';
                             widgetProps[defaultProp].show = false;
                         }
                     };

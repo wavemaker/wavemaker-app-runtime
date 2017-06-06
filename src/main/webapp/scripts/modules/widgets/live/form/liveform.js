@@ -639,7 +639,7 @@ WM.module('wm.widgets.live')
                                 dataObject[field.key] = undefined;
                             }
                         } else if (field.type === 'blob') {
-                            dataObject[field.key] = _.get(document.forms, [formName, field.key, 'files', 0]);//passing file
+                            dataObject[field.key] = _.get(document.forms, [formName, field.key + '_formWidget', 'files', 0]);//passing file
                         } else if (field.type === 'list') {
                             dataObject[field.key] = field.value || undefined;
                         } else {

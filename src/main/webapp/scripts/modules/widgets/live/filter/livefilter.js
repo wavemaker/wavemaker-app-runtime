@@ -712,10 +712,10 @@ WM.module('wm.widgets.live')
 
                         //Hide the maxplaceholder and maxdefaultvalue, if range is not selected
                         if (scope.widgetid) {
-                            scope.widgetProps.maxplaceholder.show = columnsDef.isRange;
-                            scope.widgetProps.maxdefaultvalue.show = columnsDef.isRange;
-                            scope.widgetProps.placeholder.displayKey = columnsDef.isRange ? 'LABEL_PROPERTY_MINPLACEHOLDER' : 'LABEL_PROPERTY_PLACEHOLDER';
-                            scope.widgetProps.defaultvalue.displayKey = columnsDef.isRange ? 'LABEL_PROPERTY_MINDEFAULTVALUE' : 'LABEL_PROPERTY_DEFAULTVALUE';
+                            _.set(scope.widgetProps.maxplaceholder, 'show', columnsDef.isRange);
+                            _.set(scope.widgetProps.maxdefaultvalue, 'show', columnsDef.isRange);
+                            _.set(scope.widgetProps.placeholder, 'displayKey', columnsDef.isRange ? 'LABEL_PROPERTY_MINPLACEHOLDER' : 'LABEL_PROPERTY_PLACEHOLDER');
+                            _.set(scope.widgetProps.defaultvalue, 'displayKey', columnsDef.isRange ? 'LABEL_PROPERTY_MINDEFAULTVALUE' : 'LABEL_PROPERTY_DEFAULTVALUE');
                         }
 
                         //This is used to call base set and get methods on widgets
