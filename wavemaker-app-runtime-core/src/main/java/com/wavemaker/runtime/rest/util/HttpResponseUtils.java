@@ -69,17 +69,11 @@ public class HttpResponseUtils {
                 .append(httpCookie.getValue())
                 .append("\"");
 
-        if(StringUtils.isNotBlank(httpCookie.getDomain())) {
-            result.append("; domain=").append(httpCookie.getDomain());
-        }
         if(StringUtils.isNotBlank(httpCookie.getPath())){
             result.append("; path=").append(httpCookie.getPath());
         }
         if(httpCookie.getDiscard()){
             result.append("; discard=").append(1);
-        }
-        if(httpCookie.getMaxAge() != -1){
-            result.append("; max-age=").append(httpCookie.getMaxAge());
         }
         if(httpCookie.getMaxAge() != -1){
             result.append("; max-age=").append(httpCookie.getMaxAge());

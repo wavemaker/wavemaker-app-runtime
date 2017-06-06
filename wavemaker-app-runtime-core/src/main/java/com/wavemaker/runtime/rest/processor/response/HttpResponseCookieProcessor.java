@@ -16,33 +16,28 @@
 package com.wavemaker.runtime.rest.processor.response;
 
 import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.rest.model.CookieStore;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.util.HttpResponseUtils;
 
 /**
  * @author Uday Shankar
  */
-public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor implements InitializingBean {
+public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
 
-    private boolean clearCookieHeader;
-    private boolean updateCookiePath;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (clearCookieHeader && updateCookiePath) {
-            throw new WMRuntimeException("Cannot have both clearCookieHeader and updateCookiePath set");
-        }
-    }
+    private PersistenceStrategy persistenceStrategy;
 
     @Override
     public void doProcess(HttpResponseProcessorContext httpResponseProcessorContext) {
@@ -51,18 +46,58 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor i
             return;
         }
         HttpResponseDetails httpResponseDetails = httpResponseProcessorContext.getHttpResponseDetails();
-        if(updateCookiePath) {
-            List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
-            String cookiePath = getCookiePath(httpServletRequest);
-            if (StringUtils.isNotBlank(cookiePath) && CollectionUtils.isNotEmpty(cookies)) {
-                for (HttpCookie httpCookie : cookies) {
-                    httpCookie.setPath(cookiePath);//Updates path
-                }
-                HttpResponseUtils.setCookies(httpResponseDetails, cookies);
-            }
+        List<HttpCookie> cookies = HttpResponseUtils.getCookies(httpResponseDetails);
+
+
+        switch (persistenceStrategy) {
+            case CLIENT:
+                updateCookiePath(httpServletRequest, httpResponseDetails, cookies);
+                break;
+            case USER_SESSION:
+                persistInUserSession(httpResponseProcessorContext, httpServletRequest, cookies);
+                HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
+                break;
+            case NONE:
+                HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
+                break;
+            default:
+                throw new WMRuntimeException("Unknown strategyType");
         }
-        if(clearCookieHeader){
-            HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
+    }
+
+
+    private void updateCookiePath(HttpServletRequest httpServletRequest, HttpResponseDetails httpResponseDetails, List<HttpCookie> cookies) {
+        String newCookiePath = getCookiePath(httpServletRequest);
+        if (StringUtils.isNotBlank(newCookiePath) && CollectionUtils.isNotEmpty(cookies)) {
+            for (HttpCookie httpCookie : cookies) {
+                httpCookie.setPath(newCookiePath);//Updates path
+            }
+            HttpResponseUtils.setCookies(httpResponseDetails, cookies);
+        }
+    }
+
+    private void persistInUserSession(HttpResponseProcessorContext httpResponseProcessorContext, HttpServletRequest httpServletRequest, List<HttpCookie> cookies) {
+        HttpSession httpSession = httpServletRequest.getSession(false);
+        if (httpSession != null) {
+            CookieStore cookieStore = (CookieStore) httpSession.getAttribute("wm.cookieStore");
+            if (cookieStore == null) {
+                synchronized (httpSession) {
+                    if (cookieStore == null) {
+                        cookieStore = new CookieStore();
+                        httpSession.setAttribute("wm.cookieStore", cookieStore);
+                    }
+                }
+            }
+            URL url = null;
+            try {
+                url = new URL(httpResponseProcessorContext.getHttpRequestDetails().getEndpointAddress());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+            String host = url.getHost();
+            for (HttpCookie httpCookie : cookies) {
+                cookieStore.addCookie(host, httpCookie);
+            }
         }
     }
 
@@ -82,19 +117,18 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor i
         return sb.toString();
     }
 
-    public boolean isClearCookieHeader() {
-        return clearCookieHeader;
+    public enum PersistenceStrategy {
+        CLIENT,
+        USER_SESSION,
+        NONE
     }
 
-    public void setClearCookieHeader(boolean clearCookieHeader) {
-        this.clearCookieHeader = clearCookieHeader;
+
+    public PersistenceStrategy getPersistenceStrategy() {
+        return persistenceStrategy;
     }
 
-    public boolean isUpdateCookiePath() {
-        return updateCookiePath;
-    }
-
-    public void setUpdateCookiePath(boolean updateCookiePath) {
-        this.updateCookiePath = updateCookiePath;
+    public void setPersistenceStrategy(PersistenceStrategy persistenceStrategy) {
+        this.persistenceStrategy = persistenceStrategy;
     }
 }
