@@ -153,7 +153,7 @@ WM.module('wm.widgets.form')
                     dataObj.isChecked = false;
                 });
 
-                if (scope.datafield === ALLFIELDS && scope.displayOptions && !scope.usekeys) {
+                if (scope.displayOptions && !scope.usekeys) {
                     // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
                     filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
                     if (WM.isArray(model)) {
