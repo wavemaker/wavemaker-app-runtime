@@ -42,12 +42,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.wavemaker.commons.proxy.AppProxyConstants;
+import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
@@ -173,17 +172,17 @@ public class RestConnector {
 
     private CredentialsProvider getCredentialProvider() {
 
-        boolean isEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
+        boolean isEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED));
         CredentialsProvider credentialsProvider = null;
         if (isEnabled) {
             credentialsProvider = new BasicCredentialsProvider();
-            String hostName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
-            String port = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
-            String userName = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
+            String hostName = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
+            String port = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PORT);
+            String userName = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME);
             if (userName == null) {
                 userName = "";
             }
-            String passWord = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
+            String passWord = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD);
             int proxyPort = 0;
             if (port != null && !("".equals(port))) {
                 proxyPort = Integer.valueOf(port);

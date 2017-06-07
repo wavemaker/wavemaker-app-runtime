@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.proxy.AppProxyConstants;
+import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.AppRuntimeProperties;
@@ -192,16 +192,16 @@ public class RestRuntimeService {
     }
 
     private void updateProxyDetails(HttpRequestDetails httpRequestDetails) {
-        boolean proxyEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_ENABLED));
+        boolean proxyEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED));
         if (proxyEnabled) {
-            String proxyHost = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_HOST);
-            String port  = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PORT);
+            String proxyHost = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
+            String port  = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PORT);
             int proxyPort=0;
             if(port!=null &&!( "".equals(port))){
                 proxyPort=Integer.valueOf(port);
             }
-            String proxyUsername = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_USERNAME);
-            String proxyPassword = AppRuntimeProperties.getProperty(AppProxyConstants.APP_PROXY_PASSWORD);
+            String proxyUsername = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME);
+            String proxyPassword = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD);
             httpRequestDetails.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
     }
