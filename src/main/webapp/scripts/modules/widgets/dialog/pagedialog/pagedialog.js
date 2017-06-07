@@ -129,6 +129,7 @@ WM.module('wm.widgets.dialog')
                         dialogCtrl._OkButtonHandler(attrs.onOk);
                     };
                 }
+                scope._onCloseCallback = dialogCtrl._CloseButtonHandler.bind(undefined, attrs.onClose, true);
                 // register the property change handler
                 if (scope.propertyManager) {
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
