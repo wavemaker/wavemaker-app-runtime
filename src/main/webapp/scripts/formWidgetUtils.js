@@ -124,6 +124,7 @@ WM.module('wm.widgets.form')
                         }
                     });
                 } else {
+                    scope.displayValue = undefined;
                     selectedOption = updateCheckedValue(_modelProxy, scope.displayOptions);
                     if (selectedOption) {
                         scope.displayValue = selectedOption.value;
@@ -170,6 +171,7 @@ WM.module('wm.widgets.form')
                             }
                         });
                     } else {
+                        _modelProxy = undefined;
                         selectedOption = _.find(scope.displayOptions, function (obj) {
                             if (filterField === 'dataObject') {
                                 return _.isEqual(obj[filterField], model);
