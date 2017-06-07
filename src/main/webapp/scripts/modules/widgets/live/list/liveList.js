@@ -66,8 +66,9 @@ WM.module('wm.widgets.live')
         '$filter',
         '$interpolate',
         '$parse',
+        'AppDefaults',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse, AppDefaults) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
@@ -399,16 +400,18 @@ WM.module('wm.widgets.live')
                     var groupByKey,
                         currMoment = moment(),
                         strMoment  = moment(str),
+                        dateFormat = $is.dateformat,
                         getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
-                            return '[' + filterDate(this.valueOf(), $is.dateformat, ROLLUP_PATTERNS.DAY) + ']';
+                            return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.DAY) + ']';
                         };
                     switch (rollUp) {
                     case TIME_ROLLUP_OPTIONS.HOUR:
+                        dateFormat = dateFormat || AppDefaults.get('timeFormat');
                         if (!strMoment.isValid()) { //If date is invalid, check if data is in forom of hh:mm a
                             strMoment = moment(new Date().toDateString() + ' ' + str);
                             if (strMoment.isValid()) {
                                 momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
-                                    return '[' + filterDate(this.valueOf(), $is.dateformat, ROLLUP_PATTERNS.HOUR) + ']';
+                                    return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.HOUR) + ']';
                                 };
                             }
                         }
@@ -417,15 +420,16 @@ WM.module('wm.widgets.live')
                         groupByKey = strMoment.calendar(currMoment);
                         break;
                     case TIME_ROLLUP_OPTIONS.WEEK:
-                        groupByKey = filterDate(strMoment.valueOf(), $is.dateformat, ROLLUP_PATTERNS.WEEK);
+                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.WEEK);
                         break;
                     case TIME_ROLLUP_OPTIONS.MONTH:
-                        groupByKey = filterDate(strMoment.valueOf(), $is.dateformat, ROLLUP_PATTERNS.MONTH);
+                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.MONTH);
                         break;
                     case TIME_ROLLUP_OPTIONS.YEAR:
                         groupByKey = strMoment.format(ROLLUP_PATTERNS.YEAR);
                         break;
                     case TIME_ROLLUP_OPTIONS.DAY:
+                        dateFormat = dateFormat || AppDefaults.get('dateFormat');
                         strMoment = strMoment.startOf('day'); //round off to current day
                         momentLocale._calendar.sameElse = getSameElseFormat;
                         groupByKey = strMoment.calendar(currMoment);

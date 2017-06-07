@@ -1188,7 +1188,7 @@ WM.module('wm.widgets.live')
                     widgetProps.validationmessage.show = widgetProps.required && widgetProps.required.show;
                 } else if (fieldType === 'wm-filter-field') {
                     widgetProps.maxplaceholder =  {'type': "string", 'bindable': "in-bound", "show": true};
-                    widgetProps.maxdefaultvalue =  Utils.getClonedObject(widgetProps.defaultvalue);
+                    widgetProps.maxdefaultvalue =  Utils.getClonedObject(widgetProps.defaultvalue) || {};
                 }
 
                 /*No support for scopedatavalue and scopedataset for fields yet*/
