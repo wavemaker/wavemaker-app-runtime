@@ -38,7 +38,6 @@ WM.module('wm.widgets.form')
 
             if (scope.multiple) {
                 scope._model_ = [];
-                scope.displayValue = [];
                 _.forEach(selectedValue, function (value) {
                     if (scope.datafield === ALLFIELDS) {
                         selectedOption = _.find(scope.displayOptions, {key : value});
@@ -50,10 +49,14 @@ WM.module('wm.widgets.form')
                     }
                 });
             } else {
-                if (scope.datafield === ALLFIELDS) {
+                if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
+                    scope._model_ = undefined;
+                } else if (scope.datafield === ALLFIELDS) {
                     selectedOption = _.find(scope.displayOptions, {key : selectedValue});
-                    scope._model_ = selectedOption.dataObject;
-                    scope.displayValue = selectedOption.value;
+                    if (selectedOption) {
+                        scope._model_ = selectedOption.dataObject;
+                        scope.displayValue = selectedOption.value;
+                    }
                 } else {
                     scope._model_ = selectedValue;
                     scope.displayValue = selectedValue;
