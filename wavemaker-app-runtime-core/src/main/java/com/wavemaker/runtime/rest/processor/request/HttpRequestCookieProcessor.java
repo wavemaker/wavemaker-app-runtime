@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.CookieStore;
-import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 
 /**
@@ -45,20 +44,14 @@ public class HttpRequestCookieProcessor extends AbstractHttpRequestProcessor {
         List<HttpCookie> httpCookieList = cookieStore.getHttpCookieList(host);
         if (httpCookieList != null) {
             String path = url.getPath();
-            String cookieValue = getCookieValue(httpCookieList, path, httpRequestProcessorContext);
-
-            HttpRequestDetails httpRequestDetails = httpRequestProcessorContext.getHttpRequestDetails();
-            HttpHeaders httpHeaders = httpRequestDetails.getHeaders();
-            httpHeaders.remove(COOKIE);
-            httpHeaders.add(COOKIE, cookieValue);
+            updateCookieValue(httpCookieList, path, httpRequestProcessorContext.getHttpRequestDetails());
         }
 
     }
 
-    private String getCookieValue(List<HttpCookie> httpCookieList, String path, HttpRequestProcessorContext httpRequestProcessorContext) {
+    private void updateCookieValue(List<HttpCookie> httpCookieList, String path, HttpRequestDetails httpRequestDetails) {
         StringBuilder sb = new StringBuilder();
-        HttpRequestData httpRequestData = httpRequestProcessorContext.getHttpRequestData();
-        HttpHeaders httpHeaders = httpRequestData.getHttpHeaders();
+        HttpHeaders httpHeaders = httpRequestDetails.getHeaders();
         List<String> cookies = httpHeaders.get(COOKIE);
         boolean first = true;
         if (cookies != null) {
@@ -75,7 +68,10 @@ public class HttpRequestCookieProcessor extends AbstractHttpRequestProcessor {
                 first = false;
             }
         }
-        return sb.toString();
+        String cookieValue = sb.toString();
+        httpHeaders.remove(COOKIE);
+        httpHeaders.add(COOKIE, cookieValue);
+
     }
 
     private void addCookie(StringBuilder sb, boolean first, String cookie) {
