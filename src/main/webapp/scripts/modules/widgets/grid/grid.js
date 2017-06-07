@@ -2488,7 +2488,7 @@ WM.module('wm.widgets.grid')
                 onBeforeFormRender: function (rowData, e, operation) {
                     //On Form render, update the filter on field values
                     _.forEach($is.fullFieldDefs, function(fieldDef) {
-                        $is.applyFilterOnField(fieldDef, rowData[fieldDef.field]);
+                        $is.applyFilterOnField(fieldDef, _.get(rowData, fieldDef.field));
                     });
                     return $is.onBeforeformrender({$event: e, $rowData: rowData, $operation: operation});
                 },

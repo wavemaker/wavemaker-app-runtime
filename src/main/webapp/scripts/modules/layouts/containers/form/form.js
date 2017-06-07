@@ -383,6 +383,7 @@ WM.module('wm.layouts.containers')
                     'post': function (scope, element, attrs) {
                         var handlers = [];
                         scope.statusMessage = undefined;
+                        scope.dataoutput = {};
                         scope.element = element;
 
                         /* register the property change handler */

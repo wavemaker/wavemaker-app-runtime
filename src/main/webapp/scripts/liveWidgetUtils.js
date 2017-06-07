@@ -1179,6 +1179,8 @@ WM.module('wm.widgets.live')
                         'extensions' : {'type': 'string', 'show': true},
                         'onTap'      : {'show': false}
                     });
+                } else if (widgetType === 'toggle') {
+                    widgetProps.caption.show = false;
                 }
 
                 setDefaultValueProps();

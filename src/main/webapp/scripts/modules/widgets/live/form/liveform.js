@@ -836,6 +836,7 @@ WM.module('wm.widgets.live')
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
                         scope.ngform = scope[scope.name];
+                        scope.dataoutput = {};
                         if (attrs.formlayout !== 'dialog') {
                             scope.formElement = element;
                         } else {
