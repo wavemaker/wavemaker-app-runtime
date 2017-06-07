@@ -18,7 +18,7 @@ WM.module('wm.widgets.form')
                     '</li>' +
                     '<li ng-if="!(readonly || saturate)">' +
                         '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" orderby="{{orderby}}" ' +
-                            'searchkey="{{searchkey || displayfield}}" allowonlyselect="true" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
+                            'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
                             'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false">' +
                         '</wm-search>' +
