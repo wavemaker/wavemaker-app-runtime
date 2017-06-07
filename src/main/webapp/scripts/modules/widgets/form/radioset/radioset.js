@@ -157,7 +157,14 @@ WM.module('wm.widgets.form')
                             /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption
                              from the dataKeys array*/
                                 radioOption = WM.element(this).find('input').val(),
-                                checkedDisplayOption = FormWidgetUtils.updateCheckedValue(radioOption, scope.displayOptions);
+                                checkedDisplayOption;
+
+                            // RadioOption should not be deselected when clicked again. Model and display value remains the same.
+                            if (dataObj && (radioOption == dataObj.key)) {
+                                return;
+                            }
+
+                            checkedDisplayOption = FormWidgetUtils.updateCheckedValue(radioOption, scope.displayOptions);
 
                             if (dataObj) {
                                 dataObj.isChecked = false;
