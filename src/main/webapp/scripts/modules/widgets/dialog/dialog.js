@@ -127,7 +127,7 @@ WM.module('wm.widgets.dialog')
                     "pre": function (scope, $el, attrs) {
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
-                        scope.hideDialog = function () {
+                        scope.close = function () {
                           DialogService.hideDialog(scope.dialogid);
                         };
                     },
