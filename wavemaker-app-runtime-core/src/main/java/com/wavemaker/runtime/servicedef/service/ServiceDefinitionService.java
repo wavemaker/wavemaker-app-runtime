@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 package com.wavemaker.runtime.servicedef.service;
+
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
+import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,23 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
-
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.runtime.prefab.core.Prefab;
-import com.wavemaker.runtime.prefab.core.PrefabManager;
-import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
  * @since 1/4/16
  */
 @Service
-public class ServiceDefinitionService implements ApplicationListener<ContextRefreshedEvent> {
+public class ServiceDefinitionService implements ApplicationListener<PrefabsLoadedEvent> {
 
     public static final String SERVICE_DEF_RESOURCE_POST_FIX = "-service-definitions.json";
     public static final String SERVICE_DEF_LOCATION_PATTERN = "/servicedefs/**" + SERVICE_DEF_RESOURCE_POST_FIX;
@@ -164,7 +164,7 @@ public class ServiceDefinitionService implements ApplicationListener<ContextRefr
     }
 
     @Override
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
+    public void onApplicationEvent(final PrefabsLoadedEvent event) {
         ExecutorService executor = null;
         try {
             executor = Executors.newFixedThreadPool(2);
