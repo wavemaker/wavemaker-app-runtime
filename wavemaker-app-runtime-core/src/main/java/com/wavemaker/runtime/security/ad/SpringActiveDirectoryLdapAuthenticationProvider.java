@@ -206,10 +206,10 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         // TODO. add DNS lookup based on domain
         final String bindUrl = url;
 
-        Hashtable<String,String> env = new Hashtable<String,String>();
+        Hashtable<String,String> env = new Hashtable<>();
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        String bindPrincipal = createBindPrincipal(username);
-        env.put(Context.SECURITY_PRINCIPAL, bindPrincipal);
+        String principal = createPrincipal(username);
+        env.put(Context.SECURITY_PRINCIPAL, principal);
         env.put(Context.PROVIDER_URL, bindUrl);
         env.put(Context.SECURITY_CREDENTIALS, password);
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -219,7 +219,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             return contextFactory.createContext(env);
         } catch (NamingException e) {
             if ((e instanceof AuthenticationException) || (e instanceof OperationNotSupportedException)) {
-                handleBindException(bindPrincipal, e);
+                handleBindException(principal, e);
                 throw badCredentials(e);
             } else {
                 throw LdapUtils.convertLdapException(e);
@@ -313,7 +313,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        final String bindPrincipal = createBindPrincipal(username);
+        String bindPrincipal = createPrincipal(username);
 
         String searchRoot = rootDn != null ? rootDn : searchRootFromPrincipal(bindPrincipal);
 
@@ -329,6 +329,10 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             // Search should never return multiple results if properly configured, so just rethrow
             throw incorrectResults;
         }
+    }
+
+    private String createPrincipal(String username) {
+        return StringUtils.hasText(domain) ? createBindPrincipal(username) : username;
     }
 
     private String searchRootFromPrincipal(String bindPrincipal) {
