@@ -42,10 +42,8 @@ WM.module('wm.widgets.form')
                     if (scope.datafield === ALLFIELDS) {
                         selectedOption = _.find(scope.displayOptions, {key : value});
                         scope._model_.push(selectedOption.dataObject);
-                        scope.displayValue.push(selectedOption.value);
                     } else {
                         scope._model_.push(value);
-                        scope.displayValue.push(value);
                     }
                 });
             } else {
@@ -55,11 +53,9 @@ WM.module('wm.widgets.form')
                     selectedOption = _.find(scope.displayOptions, {key : selectedValue});
                     if (selectedOption) {
                         scope._model_ = selectedOption.dataObject;
-                        scope.displayValue = selectedOption.value;
                     }
                 } else {
                     scope._model_ = selectedValue;
-                    scope.displayValue = selectedValue;
                 }
             }
         }

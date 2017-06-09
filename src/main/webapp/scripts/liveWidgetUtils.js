@@ -2458,7 +2458,10 @@ WM.module('wm.widgets.live')
                         // Safari does not form validations. this will ensure that error is shown for user
                         $invalidEle = $formEle.find(':not(form).ng-invalid:visible:first');
                         if ($invalidEle.length && ngForm[$invalidEle.attr('name')]) {
-                            $invalidEle.focus();
+                            // on save click in page layout liveform, focus of autocomplete widget opens full-screen search.
+                            if ($invalidEle.attr('type') !== 'autocomplete') {
+                                $invalidEle.focus();
+                            }
                             ngForm[$invalidEle.attr('name')].$setTouched();
                             return true;
                         }
