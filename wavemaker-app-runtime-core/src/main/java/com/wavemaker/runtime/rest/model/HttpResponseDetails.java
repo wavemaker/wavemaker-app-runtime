@@ -15,14 +15,11 @@
  */
 package com.wavemaker.runtime.rest.model;
 
-import java.util.Arrays;
+import java.io.InputStream;
 
 import org.springframework.http.HttpHeaders;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.wavemaker.commons.json.deserializer.StringifiedByteArrayDeSerializer;
-import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
@@ -30,32 +27,12 @@ import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
  */
 public class HttpResponseDetails {
 
-    @JsonSerialize(using = ByteArrayToStringSerializer.class)
-    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
-    private byte[] responseBody;
-
     private int statusCode;
 
     private HttpHeaders headers = new HttpHeaders();
 
-    public HttpResponseDetails() {
-    }
-
-    public HttpResponseDetails(HttpResponseDetails httpResponseDetails) {
-        if (httpResponseDetails.responseBody != null) {
-            this.responseBody = Arrays.copyOf(httpResponseDetails.responseBody, httpResponseDetails.responseBody.length);
-        }
-        this.statusCode = httpResponseDetails.statusCode;
-        this.headers.putAll(httpResponseDetails.headers);
-    }
-
-    public byte[] getResponseBody() {
-        return responseBody;
-    }
-
-    public void setResponseBody(byte[] responseBody) {
-        this.responseBody = responseBody;
-    }
+    @JsonIgnore
+    private InputStream body;
 
     public int getStatusCode() {
         return statusCode;
@@ -71,6 +48,14 @@ public class HttpResponseDetails {
 
     public void setHeaders(HttpHeaders headers) {
         this.headers = headers;
+    }
+
+    public InputStream getBody() {
+        return body;
+    }
+
+    public void setBody(InputStream body) {
+        this.body = body;
     }
 
     @Override

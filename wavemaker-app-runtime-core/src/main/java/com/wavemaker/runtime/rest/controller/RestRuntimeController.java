@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.rest.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.wavemaker.runtime.rest.model.HttpResponseDetails;
-import com.wavemaker.runtime.rest.service.RestRuntimeService;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
+import com.wavemaker.runtime.rest.service.RestRuntimeService;
 
 /**
  * @author Uday Shankar
@@ -67,17 +66,15 @@ public class RestRuntimeController {
         } catch (Throwable e) {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);
         }
+        httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
         Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
-
         for (String responseHeaderKey : responseHeaders.keySet()) {
             List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
             for (String responseHeaderValue : responseHeaderValueList) {
                 httpServletResponse.setHeader(responseHeaderKey, responseHeaderValue);
             }
         }
-        byte[] responseBody = httpResponseDetails.getResponseBody();
-        responseBody = (responseBody == null) ? "".getBytes() : responseBody;
-        httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
-        IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
+        
+        IOUtils.copy(httpResponseDetails.getBody(), httpServletResponse.getOutputStream(), true, false);
     }
 }

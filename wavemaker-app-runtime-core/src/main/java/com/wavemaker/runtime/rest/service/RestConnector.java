@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.rest.service;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -69,16 +70,9 @@ public class RestConnector {
         final HttpClientContext httpClientContext = HttpClientContext.create();
 
         logger.debug("Sending {} request to URL {}", httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
-        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails,
-                httpClientContext, byte[].class);
-
-        HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
-        httpResponseDetails.setResponseBody(responseEntity.getBody());
-        httpResponseDetails.setStatusCode(responseEntity.getStatusCode().value());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.putAll(responseEntity.getHeaders());
-        httpResponseDetails.setHeaders(httpHeaders);
-        return httpResponseDetails;
+        //TODO need to directly read the stream instead of storing in byte[], read https://jira.spring.io/browse/SPR-7357
+        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails, httpClientContext, byte[].class);
+        return getHttpResponseDetails(responseEntity);
     }
 
     public <T> ResponseEntity<T> invokeRestCall(HttpRequestDetails httpRequestDetails, Class<T> t) {
@@ -138,8 +132,7 @@ public class RestConnector {
         } else {
             requestEntity = new HttpEntity(httpHeaders);
         }
-        return wmRestTemplate
-                .exchange(endpointAddress, httpMethod, requestEntity, t);
+        return wmRestTemplate.exchange(endpointAddress, httpMethod, requestEntity, t);
     }
 
 
@@ -202,6 +195,17 @@ public class RestConnector {
         poolingHttpClientConnectionManager.setMaxTotal(MAX_TOTAL);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
         return poolingHttpClientConnectionManager;
+    }
+
+    private HttpResponseDetails getHttpResponseDetails(ResponseEntity<byte[]> responseEntity) {
+        HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+        httpResponseDetails.setStatusCode(responseEntity.getStatusCode().value());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.putAll(responseEntity.getHeaders());
+        httpResponseDetails.setHeaders(httpHeaders);
+        byte[] bytes = (responseEntity.getBody() != null) ? responseEntity.getBody() : new byte[0];
+        httpResponseDetails.setBody(new ByteArrayInputStream(bytes));
+        return httpResponseDetails;
     }
 
 
