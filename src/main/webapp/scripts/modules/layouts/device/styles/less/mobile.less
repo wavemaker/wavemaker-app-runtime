@@ -1,26 +1,17 @@
 @app-mobile-nav-height: 36pt;
 @app-mobile-nav-icon-size: 18pt;
-.mobile-left-panel(@left-panel-width){
+.mobile-left-panel(){
   display: block;
   height: 100%;
-  width: @left-panel-width !important;
   overflow: auto;
   transition: left 0.5s  ease-in-out;
   position: fixed;
   top: 0;
   &.slide-over {
     left: -100%;
-    z-index: 1050;
+    z-index: 101;
 
-    &.visible {
-      left: 0;
-    }
-  }
-
-  &.slide-in {
-    left: -@left-panel-width;
-
-    &.visible {
+    &.left-panel-expanded {
       left: 0;
     }
   }
@@ -38,37 +29,34 @@
     }
   }
 }
-.mobile-common(@left-panel-width){
+.device-common(@device : xs){
 /* Styles */
-  .wm-app {
+  &.wm-app {
     .app-page{
       left: 0;
       height: 100%;
       width: 100%;
-      &.left-panel-container:after {
-        background: rgba(0, 0, 0, 0.5);
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        content: "";
-        display: block;
-        z-index: 1049;
+      position: fixed;
+      &.slide-in-left-panel-container,
+      &.slide-over-left-panel-container{
+        &.left-panel-expanded-container:after {
+          background: rgba(0, 0, 0, 0.5);
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          content: "";
+          display: block;
+          z-index: 100;
+        }
       }
       &.slide-in-left-panel-container {
-        position: fixed;
-        overflow: visible;
+        overflow: auto;
         transition: left 0.5s  ease-in-out;
         /* Move all fixed position elements as well */
         .app-header:not(.app-mobile-navbar),
         .app-search {
           transition: left 0.5s  ease-in-out;
-        }
-        &.slide-left {
-          left: @left-panel-width;
-          .app-header:not(.app-mobile-navbar) {
-            left: @left-panel-width;
-          }
         }
       }
     }
@@ -80,10 +68,9 @@
       height: @app-mobile-nav-height !important;
       width: 100%;
       position: fixed;
-      z-index: 1049;
+      z-index: 100;
       display: table;
       top: 0;
-      left: 0;
       .app-header-menu {
         display: table-cell;
         width: 18pt;
@@ -163,6 +150,9 @@
         padding: 0;
       }
     }
+    .app-top-nav{
+      z-index: 1;
+    }
     /***setting back the behavior of bootstrap for mobile****/
     .app-grid-layout{
       height: auto !important;
@@ -201,8 +191,8 @@
       }
     }
 
-    .app-left-panel {
-      .mobile-left-panel(@left-panel-width)
+    .app-page .app-left-panel {
+      .mobile-left-panel()
     }
 
     .app-right-panel {
@@ -339,34 +329,108 @@
     }
   }
 }
-.tab-common(@left-panel-width) {
-  .mobile-common(@left-panel-width)
+.mobile-common(@device: xs) {
+  .device-common(@device);
+  .wm-app .app-page {
+    &.slide-in-left-panel-container {
+      width: 100%;
+      left: 0;
+      transition: left 0.5s ease-in-out;
+      &.left-panel-expanded-container {
+        .compute-left-position(@n:1) when (@n <= 12) {
+          &.left-panel-container-@{device}-@{n} {
+            left: (1 - @n / 12)*100%;
+          }
+          .compute-left-position(@n + 1);
+        }
+        .compute-left-position();
+      }
+    }
+    .app-left-panel.slide-in {
+      left: 0;
+      &.left-panel-collapsed {
+        .compute-left-position(@n:1) when (@n <= 12) {
+          &.col-@{device}-@{n} {
+            left: -(@n / 12)*100%;
+          }
+          .compute-left-position(@n + 1);
+        }
+        .compute-left-position();
+      }
+    }
+  }
+}
+.tab-common(@device: sm) {
+  .wm-mobile-app {
+    .device-common(@device);
+    &.wm-app {
+      .mobile-app-page.app-page {
+        &.container.slide-in-left-panel-container {
+          transition: margin-left 0.5s ease-in-out, width 0.5s ease-in-out;
+          &.left-panel-collapsed-container {
+            width: ~"calc(100% - 40pt)";
+            margin-left: 40pt;
+          }
+          &.left-panel-expanded-container {
+            .compute-left-position(@n:1) when (@n <= 12) {
+              &.left-panel-container-@{device}-@{n} {
+                width: (@n / 12)*100%;
+                margin-left: (1 - @n / 12)*100%;
+              }
+              .compute-left-position(@n + 1);
+            }
+            .compute-left-position();
+          }
+          &:after {
+            display: none;
+          }
+        }
+        .wm-mobile-app-left-panel.slide-in {
+          left: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          &.left-panel-collapsed .app-nav > .app-nav-item > .app-anchor {
+            > .app-icon {
+              font-size: 2em;
+            }
+            > .anchor-caption {
+              display: none;
+            }
+          }
+        }
+      }
+      .app-mobile-navbar{
+        position: relative;
+        z-index: 100;
+      }
+    }
+  }
 }
 
 /* Smartphones (portrait) ----------- */
 @media only screen
 and (min-device-width : 299px)
 and (max-device-width : 480px) {
-    .mobile-common(90%)
+    .mobile-common()
 }
 /* Small web screens(portrait) ----------- */
 @media only screen
 and (min-width : 299px)
 and (max-width : 480px) {
-    .mobile-common(90%)
+    .mobile-common()
 }
 
 /* Small web screens(landscape) ----------- */
 @media only screen
 and (min-device-width : 481px)
 and (max-device-width : 767px) {
-    .mobile-common(90%)
+    .mobile-common()
 }
 
 @media only screen
 and (min-width : 481px)
 and (max-width : 767px) {
-  .mobile-common(90%)
+  .mobile-common()
 }
 
 /* Smartphones (landscape) ----------- */
@@ -394,6 +458,7 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : landscape) {
 /* Styles */
+  .tab-common()
 }
 
 /* iPads (portrait) ----------- */
@@ -402,7 +467,7 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : portrait) {
 /* Styles */
-  .tab-common(33%)
+  .tab-common()
 }
 
 /* Desktops and laptops ----------- */
