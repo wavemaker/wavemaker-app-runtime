@@ -34,10 +34,6 @@ public class HttpResponseDetails {
     @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
     private byte[] responseBody;
 
-    @JsonSerialize(using = ByteArrayToStringSerializer.class)
-    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
-    private byte[] convertedResponse;
-
     private int statusCode;
 
     private HttpHeaders headers = new HttpHeaders();
@@ -49,9 +45,6 @@ public class HttpResponseDetails {
         if (httpResponseDetails.responseBody != null) {
             this.responseBody = Arrays.copyOf(httpResponseDetails.responseBody, httpResponseDetails.responseBody.length);
         }
-        if (httpResponseDetails.convertedResponse != null) {
-            this.convertedResponse = Arrays.copyOf(httpResponseDetails.convertedResponse, httpResponseDetails.convertedResponse.length);
-        }
         this.statusCode = httpResponseDetails.statusCode;
         this.headers.putAll(httpResponseDetails.headers);
     }
@@ -62,14 +55,6 @@ public class HttpResponseDetails {
 
     public void setResponseBody(byte[] responseBody) {
         this.responseBody = responseBody;
-    }
-
-    public byte[] getConvertedResponse() {
-        return convertedResponse;
-    }
-
-    public void setConvertedResponse(byte[] convertedResponse) {
-        this.convertedResponse = convertedResponse;
     }
 
     public int getStatusCode() {

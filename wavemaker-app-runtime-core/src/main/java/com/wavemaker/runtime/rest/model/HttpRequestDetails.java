@@ -23,9 +23,9 @@ import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.commons.json.deserializer.StringifiedByteArrayDeSerializer;
 import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
+import com.wavemaker.runtime.commons.model.Proxy;
 
 /**
  * Class used to represent the details of the http request which can be invoked
@@ -45,9 +45,7 @@ public class HttpRequestDetails {
     private HttpHeaders headers = new HttpHeaders();
 
     private Map<String, Object> queryParams;
-
-    private HttpResponseDetails sampleHttpResponseDetails;
-
+    
     private boolean redirectEnabled = true;
 
     private Proxy proxy;
@@ -61,9 +59,6 @@ public class HttpRequestDetails {
         this.requestBody = httpRequestDetails.requestBody;
         this.headers.putAll(httpRequestDetails.headers);
         this.queryParams = httpRequestDetails.queryParams;
-        if (httpRequestDetails.sampleHttpResponseDetails != null) {
-            this.sampleHttpResponseDetails = new HttpResponseDetails(httpRequestDetails.sampleHttpResponseDetails);
-        }
         this.redirectEnabled = httpRequestDetails.redirectEnabled;
         if (proxy != null) {
             this.proxy = new Proxy(httpRequestDetails.proxy);
@@ -126,14 +121,6 @@ public class HttpRequestDetails {
         this.requestBody = requestBody;
     }
 
-    public HttpResponseDetails getSampleHttpResponseDetails() {
-        return sampleHttpResponseDetails;
-    }
-
-    public void setSampleHttpResponseDetails(HttpResponseDetails sampleHttpResponseDetails) {
-        this.sampleHttpResponseDetails = sampleHttpResponseDetails;
-    }
-
     @Override
     public String toString() {
         return "HttpRequestDetails{" +
@@ -142,7 +129,6 @@ public class HttpRequestDetails {
                 ", requestBody=" + requestBody +
                 ", headers=" + headers +
                 ", queryParams=" + queryParams +
-                ", sampleHttpResponseDetails=" + sampleHttpResponseDetails +
                 ", redirectEnabled=" + redirectEnabled +
                 ", proxy=" + proxy +
                 '}';

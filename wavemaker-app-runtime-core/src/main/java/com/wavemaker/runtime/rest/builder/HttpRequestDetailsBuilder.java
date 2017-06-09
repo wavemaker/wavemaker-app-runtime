@@ -61,11 +61,6 @@ public class HttpRequestDetailsBuilder {
         return this;
     }
 
-    public HttpRequestDetailsBuilder setSampleRestResponse(final HttpResponseDetails sampleHttpResponseDetails) {
-        httpRequestDetails.setSampleHttpResponseDetails(sampleHttpResponseDetails);
-        return this;
-    }
-
     public HttpRequestDetailsBuilder setRequestBody(final Object requestBody) {
         this.requestBody = requestBody;
         return this;
