@@ -86,15 +86,12 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                                     },
                                     onOk: function () {
                                         initiateCallback('onOk', variable, scope, options.data);
-                                        DialogService.hideDialog(dialogId);
                                     },
                                     onCancel: function () {
                                         initiateCallback('onCancel', variable, scope, options.data);
-                                        DialogService.hideDialog(dialogId);
                                     },
                                     onClose: function () {
                                         initiateCallback('onClose', variable, scope, options.data);
-                                        DialogService.hideDialog(dialogId);
                                     }
                                 };
                             }
