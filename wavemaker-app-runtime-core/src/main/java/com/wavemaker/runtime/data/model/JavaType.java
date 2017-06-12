@@ -75,7 +75,12 @@ public enum JavaType {
     STRING(String.class.getName(), new StringTypeConverter()),
     TEXT(String.class.getName(), new StringTypeConverter()),
     CLOB(String.class.getName(), new StringTypeConverter()),
-    BLOB("byte[]", new BlobTypeConverter()),
+    BLOB("byte[]", new BlobTypeConverter()) {
+        @Override
+        public Class<?> getClassType() {
+            return byte[].class;
+        }
+    },
     DATE(Date.class.getName(), new DateTypeConverter()),
     TIME(Time.class.getName(), new TimeTypeConverter()),
     DATETIME(LocalDateTime.class.getName(), new DateTimeConverter()),
