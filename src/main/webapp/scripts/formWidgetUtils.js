@@ -54,11 +54,7 @@ WM.module('wm.widgets.form')
             // This function finds the displayOption whose key is equal to the value and sets the isChecked flag for that displayOptions.
             function updateCheckedValue(value, displayOptions) {
                 var checkedDisplayOption = _.find(displayOptions, function (dataObj) {
-                    // if key is boolean, then input value for radioset, checkboxset is always string i.e. "false / true" then convert key to string and compare.
-                    if (_.isBoolean(dataObj.key)) {
-                        return dataObj.key.toString() === value;
-                    }
-                    return dataObj.key == value;
+                    return _.toString(dataObj.key) === _.toString(value);
                 });
                 // set the isChecked flag for selected radioset value.
                 if (checkedDisplayOption) {
@@ -164,7 +160,7 @@ WM.module('wm.widgets.form')
                                 if (filterField === 'dataObject') {
                                     return _.isEqual(obj[filterField], modelVal);
                                 }
-                                return obj[filterField] == modelVal;
+                                return _.toString(obj[filterField]) === _.toString(modelVal);
                             });
                             if (selectedOption) {
                                 _modelProxy.push(selectedOption.key);
@@ -176,7 +172,7 @@ WM.module('wm.widgets.form')
                             if (filterField === 'dataObject') {
                                 return _.isEqual(obj[filterField], model);
                             }
-                            return obj[filterField] == model;
+                            return _.toString(obj[filterField]) === _.toString(model);
                         });
                         if (selectedOption) {
                             _modelProxy = selectedOption.key;
