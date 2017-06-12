@@ -370,11 +370,12 @@ Application
                                 $location.search('redirectTo', page);
                                 break;
                             case LOGIN_METHOD.SSO:
-                                //Parsing the page param from hash value
-                                var pageParam = $window.location.hash.replace(/#(\/)*/, '');
+                                // do not provide redirectTo page if fetching HOME page resulted 401
+                                // on app load, by default Home page is loaded
+                                page = getRedirectPage(config);
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
-                                ssoUrl = $rs.project.deployedUrl + SSO_URL + '?redirectPage=' +  encodeURIComponent(pageParam);
+                                ssoUrl = $rs.project.deployedUrl + SSO_URL + '?redirectPage=' +  encodeURIComponent(page);
                                 /*
                                  * remove iFrame when redirected to IdP login page.
                                  * this is being done as IDPs do not allow to get themselves loaded into iFrames.
