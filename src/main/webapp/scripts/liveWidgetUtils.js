@@ -998,6 +998,23 @@ WM.module('wm.widgets.live')
                     }
                 }
 
+                function compileField() {
+                    //On changing of a property in studio mode, generate the template again so that change is reflected
+                    template = getTemplate(parentScope.formFields[index], index, element);
+                    //Destroy the scopes of the widgtes inside the form field
+                    element.find('.ng-isolate-scope')
+                        .each(function () {
+                            var elIscope = WM.element(this).isolateScope();
+                            if (elIscope) {
+                                elIscope.$destroy();
+                            }
+                        });
+                    //Remove only live-field so that overlay won't get overrided
+                    element.find('.live-field').remove();
+                    element.append(template);
+                    $compile(element.contents())(parentScope);
+                }
+
                 if (formWidget && key !== 'show') {
                     formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
                 }
@@ -1007,7 +1024,7 @@ WM.module('wm.widgets.live')
                     if (scope.widgetid && isDataSetWidgets[attrs.widget]) {
                         if (WM.isDefined(newVal) && newVal !== null) {
                             if (newVal === '') {
-                                scope.$root.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
+                                $rs.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
                                 wdgtProperties.limit.show = true;
                             } else {
                                 wdgtProperties.limit.show = scope.widget === 'autocomplete';
@@ -1023,6 +1040,10 @@ WM.module('wm.widgets.live')
                         }
                         //Refresh the properties panel sub group show/false as limit property is updated
                         scope.$emit('wms:refresh-properties-panel');
+                        //For checkboxset and radioset, compile the field again to reflect the change in studio mode
+                        if (scope.widget === 'checkboxset' || scope.widget === 'radioset') {
+                            compileField();
+                        }
                     }
                     break;
                 case 'inputtype':

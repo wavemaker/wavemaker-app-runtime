@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
             '</ul>'
             );
     }])
-    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils) {
+    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', '$rootScope', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils, $rs) {
         'use strict';
         /*getting widget properties for the specific widget*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radioset', ['wm.base', 'wm.base.editors.dataseteditors']),
@@ -75,7 +75,7 @@ WM.module('wm.widgets.form')
             case 'datafield':
             case 'orderby':
                 FormWidgetUtils.extractDisplayOptions(dataSet, scope);
-                scope.$root.$safeApply(scope);
+                $rs.$safeApply(scope);
                 break;
             case 'displayfield':
             case 'usekeys':
@@ -179,7 +179,7 @@ WM.module('wm.widgets.form')
                             assignModelValue(scope, checkedDisplayOption);
 
                             Utils.triggerFn(scope._onChange, evt);
-                            scope.$root.$safeApply(scope);
+                            $rs.$safeApply(scope);
                         });
                     }
                 }
