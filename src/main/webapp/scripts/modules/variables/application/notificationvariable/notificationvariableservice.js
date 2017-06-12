@@ -38,7 +38,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 //callback function to execute on hide of the custom notification element
                 function customNotificationOnHide() {
                     if (variable.onHide) {
-                        initiateCallback('onHide', variable, scope, options.data);
+                        initiateCallback('onHide', variable, options.data);
                     }
                 }
                 if (operation === 'toast') {
@@ -85,13 +85,13 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                                         'onClose'         : variableName + "onClose"
                                     },
                                     onOk: function () {
-                                        initiateCallback('onOk', variable, scope, options.data);
+                                        initiateCallback('onOk', variable, options.data);
                                     },
                                     onCancel: function () {
-                                        initiateCallback('onCancel', variable, scope, options.data);
+                                        initiateCallback('onCancel', variable, options.data);
                                     },
                                     onClose: function () {
-                                        initiateCallback('onClose', variable, scope, options.data);
+                                        initiateCallback('onClose', variable, options.data);
                                     }
                                 };
                             }
