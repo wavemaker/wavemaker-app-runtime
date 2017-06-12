@@ -126,4 +126,15 @@
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
 
+    <bean class="com.wavemaker.runtime.data.spring.WMPropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>
+                    classpath:app.properties
+                </value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
 </beans>
