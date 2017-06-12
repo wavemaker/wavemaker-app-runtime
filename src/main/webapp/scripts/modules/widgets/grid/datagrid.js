@@ -537,7 +537,8 @@ $.widget('wm.datagrid', {
                     columnValue = '';
                 }
                 $htm.attr('title', columnValue);
-                $htm.html(columnValue);
+                //Add empty quote, to convert boolean false to 'false', so that value is rendered
+                $htm.html("" + columnValue);
             } else {
                 switch (colDef.field) {
                 case 'checkbox':
