@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                 '</ul>'
             );
     }])
-    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils) {
+    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', '$rootScope', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils, $rs) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.base.editors.dataseteditors']),
             notifyFor = {
@@ -84,7 +84,7 @@ WM.module('wm.widgets.form')
             case 'datafield':
             case 'orderby':
                 FormWidgetUtils.extractDisplayOptions(dataSet, scope);
-                scope.$root.$safeApply(scope);
+                $rs.$safeApply(scope);
                 break;
             case 'displayfield':
             case 'usekeys':
@@ -199,7 +199,7 @@ WM.module('wm.widgets.form')
                             }
 
                             Utils.triggerFn(scope._onChange, evt);
-                            scope.$root.$safeApply(scope);
+                            $rs.$safeApply(scope);
                         });
                     }
                 }
