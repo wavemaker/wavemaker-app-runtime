@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate4.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.exception.MultipleRecordsException;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -24,7 +25,14 @@ public abstract class AbstractQueryCallback<T> implements HibernateCallback<T> {
         QueryHelper.setResultTransformer(query, getReturnType());
 
         final List list = query.list();
-        return list.isEmpty() ? null : (T) list.get(0);
+
+        if (list.isEmpty()) {
+            return null;
+        } else if (list.size() == 1) {
+            return (T) list.get(0);
+        }
+
+        throw new MultipleRecordsException("More than one row exists. Expected: 1 but found: " + list.size());
     }
 
     protected abstract Query getQuery(final Session session);
