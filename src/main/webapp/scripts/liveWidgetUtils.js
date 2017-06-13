@@ -1060,6 +1060,10 @@ WM.module('wm.widgets.live')
                     element.find('label.formfield-label').attr('title', newVal).text(newVal);
                     setFormField();
                     break;
+                case 'maxplaceholder':
+                    //In case of range, add the placeholder to the second widget
+                    element.find('.form-control').last().attr('placeholder', newVal);
+                    break;
                 case 'disabled':
                 case 'readonly':
                 case 'required':
