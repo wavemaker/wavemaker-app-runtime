@@ -15,6 +15,8 @@
  */
 package com.wavemaker.runtime.data.dao.callbacks;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -106,8 +108,15 @@ public class NativeProcedureExecutor {
             if (param.getParameter().getParameterType().isInParam()) {
                 // not checking required flag in parameter since spring will handle this in deserialization.
                 if (param.getValue() != null) {
-                    statement.setObject(i + 1, param.getValue(),
-                            JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                    // XXX these are expected input types wrt JavaType. In future we may have to handle different types.
+                    if (param.getParameter().getType() == JavaType.BLOB) {
+                        statement.setBlob(i + 1, new ByteArrayInputStream((byte[]) param.getValue()));
+                    } else if (param.getParameter().getType() == JavaType.CLOB) {
+                        statement.setClob(i + 1, new StringReader((String) param.getValue()));
+                    } else {
+                        statement.setObject(i + 1, param.getValue(),
+                                JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
+                    }
                 } else {
                     statement.setNull(i + 1, JDBCUtils.getSqlTypeCode(param.getParameter().getType()));
                 }
