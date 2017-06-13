@@ -145,6 +145,11 @@ WM.module('wm.widgets.form')
                     selectedOption,
                     filterField;
 
+                // In studioMode, handle the model having comma separated string.
+                if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
+                    model = model.split(',');
+                }
+
                 // reset isChecked flag for displayOptions.
                 _.forEach(scope.displayOptions, function (dataObj) {
                     dataObj.isChecked = false;
