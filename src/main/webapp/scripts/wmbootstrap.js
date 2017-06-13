@@ -375,7 +375,7 @@ Application
                                 page = getRedirectPage(config);
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
-                                ssoUrl = $rs.project.deployedUrl + SSO_URL + '?redirectPage=' +  encodeURIComponent(page);
+                                ssoUrl = $rs.project.deployedUrl + SSO_URL + (_.isEmpty(page) ? '' : '?redirectPage=' +  encodeURIComponent(page));
                                 /*
                                  * remove iFrame when redirected to IdP login page.
                                  * this is being done as IDPs do not allow to get themselves loaded into iFrames.
