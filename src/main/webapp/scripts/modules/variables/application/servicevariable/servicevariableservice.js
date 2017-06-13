@@ -245,7 +245,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
                 var paramValue = param.sampleValue;
 
-                if (((WM.isDefined(paramValue) && paramValue !== '') || isBodyTypeQueryProcedure) && _.isEmpty(requiredParamMissing)) {
+                if ((WM.isDefined(paramValue) && paramValue !== '') || (isBodyTypeQueryProcedure && param.type !== 'file')) {
                     //Format dateTime params for dataService variables
                     if (variable.serviceType === 'DataService' && Utils.isDateTimeType(param.type)) {
                         paramValue = Utils.formatDate(paramValue, param.type);
