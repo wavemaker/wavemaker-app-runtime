@@ -189,7 +189,7 @@ public class WMMultipartUtils {
 
     public static byte[] toByteArray(MultipartFile file) {
         try {
-            return file.getBytes();
+            return file == null ? null : file.getBytes();
         } catch (IOException e) {
             throw new WMRuntimeException("Error while reading multi part file", e);
         }
