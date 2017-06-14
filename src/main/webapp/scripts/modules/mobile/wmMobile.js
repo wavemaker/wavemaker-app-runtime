@@ -17,8 +17,12 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             $rootScope.isMobileApplicationType = true;
 
             if (CONSTANTS.isRunMode) {
-                $rootScope.isTabletApplicationType =  (WM.element(window).width() >= MINIMUM_TAB_WIDTH);
-                $appEl.addClass('wm-mobile-app');
+                if (WM.element(window).width() >= MINIMUM_TAB_WIDTH) {
+                    $rootScope.isTabletApplicationType =  true;
+                    $appEl.addClass('wm-tablet-app');
+                } else {
+                    $appEl.addClass('wm-mobile-app');
+                }
             }
 
             function hideSpinner(id) {
