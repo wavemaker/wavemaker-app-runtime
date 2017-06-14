@@ -7,6 +7,9 @@
   transition: left 0.5s  ease-in-out;
   position: fixed;
   top: 0;
+  &.slide-in{
+    z-index: 0;
+  }
   &.slide-over {
     left: -100%;
     z-index: 101;
@@ -337,7 +340,7 @@
       left: 0;
       transition: left 0.5s ease-in-out;
       &.left-panel-expanded-container {
-        .compute-left-position(@n:1) when (@n <= 12) {
+        .compute-left-position(@n:0) when (@n <= 12) {
           &.left-panel-container-@{device}-@{n} {
             left: (1 - @n / 12)*100%;
           }
@@ -361,7 +364,7 @@
   }
 }
 .tab-common(@device: sm) {
-  .wm-mobile-app {
+  .wm-tablet-app {
     .device-common(@device);
     &.wm-app {
       .mobile-app-page.app-page {
@@ -372,7 +375,7 @@
             margin-left: 40pt;
           }
           &.left-panel-expanded-container {
-            .compute-left-position(@n:1) when (@n <= 12) {
+            .compute-left-position(@n:0) when (@n <= 12) {
               &.left-panel-container-@{device}-@{n} {
                 width: (@n / 12)*100%;
                 margin-left: (1 - @n / 12)*100%;
@@ -387,6 +390,7 @@
         }
         .wm-mobile-app-left-panel.slide-in {
           left: 0;
+          z-index: 0;
           white-space: nowrap;
           overflow: hidden;
           &.left-panel-collapsed .app-nav > .app-nav-item > .app-anchor {
@@ -458,7 +462,6 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : landscape) {
 /* Styles */
-  .tab-common()
 }
 
 /* iPads (portrait) ----------- */
@@ -467,6 +470,12 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : portrait) {
 /* Styles */
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 768px) {
+  /* Styles */
   .tab-common()
 }
 

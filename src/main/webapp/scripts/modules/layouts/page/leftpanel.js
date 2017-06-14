@@ -11,7 +11,7 @@ WM.module('wm.layouts.page')
                 '</aside>'
             );
     }])
-    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout, CONSTANTS, Utils) {
+    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout', 'CONSTANTS', 'Utils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout, CONSTANTS, Utils, $templateCache) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -99,18 +99,7 @@ WM.module('wm.layouts.page')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': function (tElement, tAttrs) {
-                var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
-                    template = WM.element(WidgetUtilService.getPreparedTemplate('template/layout/page/leftpanel.html', tElement, tAttrs));
-
-                if (!isWidgetInsideCanvas) {
-                    /*** fix for old projects ***/
-                    if (!tAttrs.columnwidth) {
-                        template.attr('columnwidth', '2');
-                    }
-                }
-                return template[0].outerHTML;
-            },
+            'template': $templateCache.get('template/layout/page/leftpanel.html'),
             'compile': function () {
                 return {
                     'pre': function (iScope) {
