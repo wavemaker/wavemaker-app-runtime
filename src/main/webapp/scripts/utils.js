@@ -1699,10 +1699,13 @@ WM.module('wm.utils', [])
          * @params: {typeRef} type reference
          */
         function extractType(typeRef) {
+            var type;
             if (!typeRef) {
                 return 'string';
             }
-            return typeRef && typeRef.substring(typeRef.lastIndexOf('.') + 1);
+            type = typeRef && _.toLower(typeRef.substring(typeRef.lastIndexOf('.') + 1));
+            type = type === 'localdatetime' ? 'datetime' : type;
+            return type;
         }
 
         /* returns true if the provided data type matches number type */
