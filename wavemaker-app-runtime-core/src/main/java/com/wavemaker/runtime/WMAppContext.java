@@ -21,11 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
+
 /**
- * This singleton class is to store any properties in the scope of the application context.
+ * This singleton class is to store any properties in the scope of the application context and its prefabs context.
  *
  * @author Seung Lee
  * @author Jeremy Grelle
@@ -41,6 +44,8 @@ public class WMAppContext {
     private boolean secured = false;
 
     private boolean initialized = false;
+    
+    private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
 
     private static WMAppContext instance;
 
@@ -76,13 +81,42 @@ public class WMAppContext {
     }
 
     public <T> T getSpringBean(String beanId) {
-        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
+        ApplicationContext applicationContext = detectCurrentApplicationContext();
         return (T) applicationContext.getBean(beanId);
     }
 
     public <T> T getSpringBean(Class<T> c) {
-        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
+        ApplicationContext applicationContext = detectCurrentApplicationContext();
         return applicationContext.getBean(c);
+    }
+
+    private ApplicationContext detectCurrentApplicationContext() {
+        PrefabThreadLocalContextManager prefabThreadLocalContextManager = getPrefabThreadLocalContextManager();
+        ApplicationContext applicationContext = getRootApplicationContext();
+        if (prefabThreadLocalContextManager != null) {
+            ApplicationContext context = prefabThreadLocalContextManager.getContext();
+            if (context != null) {
+                applicationContext = context;
+            }
+        }
+        return applicationContext;
+    }
+
+    private PrefabThreadLocalContextManager getPrefabThreadLocalContextManager() {
+        if (prefabThreadLocalContextManager == null) {//Locking not really needed
+            PrefabThreadLocalContextManager prefabThreadLocalContextManager = null;
+            try {
+                prefabThreadLocalContextManager = getRootApplicationContext().getBean(PrefabThreadLocalContextManager.class);
+            } catch (NoSuchBeanDefinitionException e) {
+                prefabThreadLocalContextManager = new PrefabThreadLocalContextManager();//To prevent this method being called every time
+            }
+            this.prefabThreadLocalContextManager = prefabThreadLocalContextManager;
+        }
+        return this.prefabThreadLocalContextManager;
+    }
+
+    private ApplicationContext getRootApplicationContext() {
+        return WebApplicationContextUtils.getWebApplicationContext(context);
     }
 
     public ServletContext getContext() {

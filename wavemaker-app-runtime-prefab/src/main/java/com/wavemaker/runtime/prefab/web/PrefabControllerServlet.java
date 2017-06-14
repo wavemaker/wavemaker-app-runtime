@@ -17,12 +17,15 @@ package com.wavemaker.runtime.prefab.web;
 
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -33,6 +36,7 @@ import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
 import com.wavemaker.runtime.prefab.util.PrefabConstants;
 
@@ -86,7 +90,15 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
 public class PrefabControllerServlet extends DispatcherServlet {
 
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
-    final ThreadLocal<ApplicationContext> activeContext = new ThreadLocal<ApplicationContext>();
+    
+    @Autowired
+    private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+                config.getServletContext());
+    }
 
     /**
      * Creates a new <code>PrefabControllerServlet</code>.
@@ -105,7 +117,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
             context = lookupContext(request);
             HttpServletRequest updatedRequest = request;
             if (context != null) {
-                activeContext.set(context);
+                prefabThreadLocalContextManager.setContext(context);
                 previous = Thread.currentThread().getContextClassLoader();
                 Thread.currentThread().setContextClassLoader(context.getClassLoader());
                 updatedRequest = new PrefabAwareHttpRequestWrapper(request, context.getId());
@@ -115,7 +127,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
             if(context != null) {
                 Thread.currentThread().setContextClassLoader(previous);
             }
-            activeContext.remove();
+            prefabThreadLocalContextManager.clearContext();
         }
     }
 
@@ -210,7 +222,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
      */
     @Override
     protected HandlerAdapter getHandlerAdapter(final Object handler) throws ServletException {
-        Map<String, HandlerAdapter> handlerAdapterMap = activeContext.get().getBeansOfType(HandlerAdapter.class);
+        Map<String, HandlerAdapter> handlerAdapterMap = prefabThreadLocalContextManager.getContext().getBeansOfType(HandlerAdapter.class);
         for (HandlerAdapter ha : handlerAdapterMap.values()) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Testing handler adapter [" + ha + "]");
