@@ -60,9 +60,10 @@ public class HttpResponseDetails {
 
     @Override
     public String toString() {
-        return "HttpResponseDetails{" +
-                ", statusCode=" + statusCode +
-                ", headers=" + headers +
-                '}';
+        final StringBuilder sb = new StringBuilder("HttpResponseDetails{");
+        sb.append("headers=").append(headers);
+        sb.append(", statusCode=").append(statusCode);
+        sb.append('}');
+        return sb.toString();
     }
 }

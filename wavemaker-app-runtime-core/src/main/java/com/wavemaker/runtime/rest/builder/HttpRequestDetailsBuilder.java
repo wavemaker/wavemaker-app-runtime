@@ -15,17 +15,15 @@
  */
 package com.wavemaker.runtime.rest.builder;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
-import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.model.Message;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
@@ -83,33 +81,28 @@ public class HttpRequestDetailsBuilder {
 
     public HttpRequestDetails build() {
         if(requestBody!=null) {
+            InputStream inputStream;
             if (requestBody instanceof byte[]) {
-                httpRequestDetails.setRequestBody((byte[]) requestBody);
+                inputStream = new ByteArrayInputStream((byte[]) requestBody);
             } else if (requestBody instanceof String) {
-                httpRequestDetails.setRequestBody(((String) requestBody).getBytes());
+                inputStream = new ByteArrayInputStream(((String) requestBody).getBytes());
             } else if (requestBody instanceof Map) {
                 String contentType = httpRequestDetails.getHeaders().getContentType().toString();
+                Message message;
                 if (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(contentType)) {
-                    setRequestBody(HttpRequestUtils.getFormMessage((Map) requestBody));
+                    message = HttpRequestUtils.getFormMessage((Map) requestBody);
+                } else if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(contentType)) {
+                    message = HttpRequestUtils.getMultipartMessage((Map) requestBody);
+                } else{
+                    throw new IllegalStateException();
                 }
-                if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(contentType)) {
-                    setRequestBody(HttpRequestUtils.getMultipartMessage((Map) requestBody));
-                }
+                inputStream = message.getInputStream();
             } else {
-                setRequestBody(HttpRequestUtils.getJsonMessage(requestBody));
+                Message message = HttpRequestUtils.getJsonMessage(requestBody);
+                inputStream = message.getInputStream();
             }
+            httpRequestDetails.setBody(inputStream);            
         }
         return httpRequestDetails;
-    }
-
-    private void setRequestBody(Message message){
-        InputStream inputStream = message.getInputStream();
-        try {
-            httpRequestDetails.setRequestBody(IOUtils.toByteArray(inputStream));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
     }
 }

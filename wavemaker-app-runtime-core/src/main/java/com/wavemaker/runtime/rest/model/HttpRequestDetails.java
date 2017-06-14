@@ -15,17 +15,11 @@
  */
 package com.wavemaker.runtime.rest.model;
 
-import java.util.Map;
+import java.io.InputStream;
 
 import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpHeaders;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.wavemaker.commons.json.deserializer.StringifiedByteArrayDeSerializer;
-import com.wavemaker.commons.json.serializer.ByteArrayToStringSerializer;
-import com.wavemaker.runtime.commons.model.Proxy;
 
 /**
  * Class used to represent the details of the http request which can be invoked
@@ -37,40 +31,14 @@ public class HttpRequestDetails {
     private String endpointAddress;
 
     private String method;
-
-    @JsonSerialize(using = ByteArrayToStringSerializer.class)
-    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
-    private byte[] requestBody;
+    
+    private InputStream body;
 
     private HttpHeaders headers = new HttpHeaders();
-
-    private Map<String, Object> queryParams;
     
     private boolean redirectEnabled = true;
 
-    private Proxy proxy;
-
     public HttpRequestDetails() {
-    }
-
-    public HttpRequestDetails(HttpRequestDetails httpRequestDetails) {
-        this.endpointAddress = httpRequestDetails.endpointAddress;
-        this.method = httpRequestDetails.method;
-        this.requestBody = httpRequestDetails.requestBody;
-        this.headers.putAll(httpRequestDetails.headers);
-        this.queryParams = httpRequestDetails.queryParams;
-        this.redirectEnabled = httpRequestDetails.redirectEnabled;
-        if (proxy != null) {
-            this.proxy = new Proxy(httpRequestDetails.proxy);
-        }
-    }
-
-    public Proxy getProxy() {
-        return proxy;
-    }
-
-    public void setProxy(Proxy proxy) {
-        this.proxy = proxy;
     }
 
     public boolean isRedirectEnabled() {
@@ -97,14 +65,6 @@ public class HttpRequestDetails {
         this.headers = headers;
     }
 
-    public Map<String, Object> getQueryParams() {
-        return queryParams;
-    }
-
-    public void setQueryParams(Map<String, Object> queryParams) {
-        this.queryParams = queryParams;
-    }
-
     public String getMethod() {
         return method;
     }
@@ -113,24 +73,22 @@ public class HttpRequestDetails {
         this.method = method;
     }
 
-    public byte[] getRequestBody() {
-        return requestBody;
+    public InputStream getBody() {
+        return body;
     }
 
-    public void setRequestBody(byte[] requestBody) {
-        this.requestBody = requestBody;
+    public void setBody(InputStream body) {
+        this.body = body;
     }
 
     @Override
     public String toString() {
-        return "HttpRequestDetails{" +
-                "endpointAddress='" + endpointAddress + '\'' +
-                ", method='" + method + '\'' +
-                ", requestBody=" + requestBody +
-                ", headers=" + headers +
-                ", queryParams=" + queryParams +
-                ", redirectEnabled=" + redirectEnabled +
-                ", proxy=" + proxy +
-                '}';
+        final StringBuilder sb = new StringBuilder("HttpRequestDetails{");
+        sb.append("endpointAddress='").append(endpointAddress).append('\'');
+        sb.append(", method='").append(method).append('\'');
+        sb.append(", headers=").append(headers);
+        sb.append(", redirectEnabled=").append(redirectEnabled);
+        sb.append('}');
+        return sb.toString();
     }
 }

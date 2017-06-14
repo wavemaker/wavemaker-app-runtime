@@ -22,13 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.prefab.context.PrefabWebApplicationContext;
-import com.wavemaker.runtime.prefab.web.PrefabAwareHttpRequestWrapper;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
 import com.wavemaker.runtime.rest.processor.data.XWMPrefixDataProcessor;
@@ -55,18 +51,14 @@ public class RestRuntimeServiceCacheHelper {
         return serviceIdVsSwaggerCache.get(serviceId);
     }
 
-    public List<HttpRequestDataProcessor> getHttpRequestDataProcessors() {
+    public List<HttpRequestDataProcessor> getHttpRequestDataProcessors(String serviceId) {
         List<HttpRequestDataProcessor> httpRequestDataProcessors = new ArrayList<>();
         httpRequestDataProcessors.add(new XWMPrefixDataProcessor());
         return httpRequestDataProcessors;
     }
 
-    public RestRuntimeConfig getAppRuntimeConfig(HttpServletRequest httpServletRequest,String serviceId){
-        if( httpServletRequest instanceof PrefabAwareHttpRequestWrapper) {
-            return (RestRuntimeConfig) ((PrefabWebApplicationContext) httpServletRequest.getAttribute("wm.request.prefabContext")).getBean(serviceId + "RestRuntimeConfig");
-        }else {
-            return WMAppContext.getInstance().getSpringBean(serviceId + "RestRuntimeConfig");
-        }
+    public RestRuntimeConfig getAppRuntimeConfig(String serviceId){
+        return WMAppContext.getInstance().getSpringBean(serviceId+"RestRuntimeConfig");
     }
 
 }

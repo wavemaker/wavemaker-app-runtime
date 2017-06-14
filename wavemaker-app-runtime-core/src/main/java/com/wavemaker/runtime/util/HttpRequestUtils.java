@@ -15,11 +15,14 @@
  */
 package com.wavemaker.runtime.util;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -87,22 +90,19 @@ public class HttpRequestUtils {
         httpOutputMessage.setHttpHeaders(new HttpHeaders());
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
         formHttpMessageConverter.setPartConverters(getPartConverters());
-        Message message;
         try {
             File file = File.createTempFile("requestBody",".tmp");
-            httpOutputMessage.setOutputStream(new FileOutputStream(file));
-            if (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(contentType)) {
-                formHttpMessageConverter.write(map, MediaType.APPLICATION_FORM_URLENCODED, httpOutputMessage);
-            } else if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(contentType)) {
-                formHttpMessageConverter.write(map, MediaType.MULTIPART_FORM_DATA, httpOutputMessage);
+            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))){
+                httpOutputMessage.setOutputStream(outputStream);
+                formHttpMessageConverter.write(map, MediaType.valueOf(contentType), httpOutputMessage);
             }
-            message = new Message();
+            Message message = new Message();
             message.setHttpHeaders(httpOutputMessage.getHttpHeaders());
             message.setInputStream(new DeleteTempFileOnCloseInputStream(file));
+            return message;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create message body", e);
         }
-        return message;
     }
 
     private static List<HttpMessageConverter<?>> getPartConverters(){

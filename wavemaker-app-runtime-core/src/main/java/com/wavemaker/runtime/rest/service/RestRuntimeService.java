@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.rest.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.WMUtils;
-import com.wavemaker.runtime.AppRuntimeProperties;
-import com.wavemaker.runtime.commons.model.Proxy;
 import com.wavemaker.runtime.rest.RequestDataBuilder;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
@@ -65,7 +63,7 @@ public class RestRuntimeService {
     public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest) throws IOException {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
-        List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors();
+        List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
         String context = httpServletRequest.getRequestURI();
         for (HttpRequestDataProcessor httpRequestDataProcessor : httpRequestDataProcessors) {
             logger.debug("Executing the httpRequestDataProcessor {} on the context {}", httpRequestDataProcessor, context);
@@ -78,7 +76,7 @@ public class RestRuntimeService {
                                                HttpServletRequest httpServletRequest, String context) throws IOException {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
-        RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(httpServletRequest,serviceId);
+        RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
         for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
             logger.debug("Executing the httpRequestProcessor {} on the context {}", httpRequestProcessor, context);
@@ -105,7 +103,7 @@ public class RestRuntimeService {
     }
 
     private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {
-        HttpRequestData httpRequestData = null;
+        HttpRequestData httpRequestData;
         try {
             httpRequestData = new RequestDataBuilder().getRequestData(httpServletRequest);
         } catch (Exception e) {
@@ -132,9 +130,10 @@ public class RestRuntimeService {
         httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(path, operation.getOperationId()).toUpperCase());
 
         httpRequestDetails.setHeaders(httpHeaders);
-        httpRequestDetails.setRequestBody(requestBody);
-
-        updateProxyDetails(httpRequestDetails);
+        if (requestBody != null) {
+            httpRequestDetails.setBody(new ByteArrayInputStream(requestBody));
+        }
+        
         updateAuthorizationInfo(operation, httpRequestData, httpRequestDetails);
         return httpRequestDetails;
     }
@@ -188,21 +187,6 @@ public class RestRuntimeService {
                 endpointAddressSb.append(queryParam).append("=").append(str);
                 first = false;
             }
-        }
-    }
-
-    private void updateProxyDetails(HttpRequestDetails httpRequestDetails) {
-        boolean proxyEnabled = Boolean.valueOf(AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_ENABLED));
-        if (proxyEnabled) {
-            String proxyHost = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_HOST);
-            String port  = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PORT);
-            int proxyPort=0;
-            if(port!=null &&!( "".equals(port))){
-                proxyPort=Integer.valueOf(port);
-            }
-            String proxyUsername = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_USERNAME);
-            String proxyPassword = AppRuntimeProperties.getProperty(AppPropertiesConstants.APP_PROXY_PASSWORD);
-            httpRequestDetails.setProxy(new Proxy(proxyHost, proxyPort, proxyUsername, proxyPassword));
         }
     }
 
