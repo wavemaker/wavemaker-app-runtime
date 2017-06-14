@@ -13,6 +13,9 @@ WM.module('wm.layouts.page')
                         var backButtonListenerDeregister,
                             $is = $ele.isolateScope();
                         $ele.addClass('wm-mobile-app-left-panel');
+                        if ($rs.isTabletApplicationType) {
+                            $ele.addClass('wm-tablet-app-left-panel');
+                        }
                         backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
                             if ($is.expanded) {
                                 $is.collapse();
