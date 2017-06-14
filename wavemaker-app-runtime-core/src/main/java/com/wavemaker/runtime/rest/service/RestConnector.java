@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,6 +38,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -60,11 +61,11 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 public class RestConnector {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
-
     private static CloseableHttpClient defaultHttpClient;
     private static final int MAX_TOTAL = 500;
     private static final int DEFAULT_MAX_PER_ROUTE = 50;
+
+    private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
 
     public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
@@ -86,18 +87,10 @@ public class RestConnector {
             final HttpRequestDetails httpRequestDetails, final HttpClientContext
             httpClientContext, Class<T> t) {
 
-        // equivalent to "http.protocol.handle-redirects", false
-
         HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
 
-        // Creating HttpClientBuilder and setting Request Config.
-
-
-        CloseableHttpClient httpClient = null;
-        String endpointAddress = null;
-        endpointAddress = httpRequestDetails.getEndpointAddress();
-
-        httpClient = getHttpClient();
+        CloseableHttpClient httpClient = getHttpClient();
+        String endpointAddress = httpRequestDetails.getEndpointAddress();
 
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
@@ -127,8 +120,8 @@ public class RestConnector {
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;
         com.wavemaker.commons.web.http.HttpMethod wmHttpMethod = com.wavemaker.commons.web.http.HttpMethod.valueOf(httpRequestDetails.getMethod());
-        if (wmHttpMethod.isRequestBodySupported()) {
-            requestEntity = new HttpEntity(httpRequestDetails.getRequestBody(), httpHeaders);
+        if (wmHttpMethod.isRequestBodySupported() && httpRequestDetails.getBody() != null) {
+            requestEntity = new HttpEntity(new InputStreamResource(httpRequestDetails.getBody()), httpHeaders);
         } else {
             requestEntity = new HttpEntity(httpHeaders);
         }
@@ -207,6 +200,4 @@ public class RestConnector {
         httpResponseDetails.setBody(new ByteArrayInputStream(bytes));
         return httpResponseDetails;
     }
-
-
 }
