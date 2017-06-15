@@ -766,9 +766,11 @@ html, body {
 .app-checkboxset, .app-radioset {
   overflow: auto;
   li {
+    label {
+      vertical-align: middle;
+    }
     input[type="checkbox"], input[type="radio"] {
       position: relative;
-      margin: 0;
       margin-right: .5em;
     }
   }
