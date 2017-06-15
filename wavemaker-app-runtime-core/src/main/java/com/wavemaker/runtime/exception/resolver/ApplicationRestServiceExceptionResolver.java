@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,6 +55,7 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.runtime.data.exception.BlobContentNotFoundException;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 
@@ -103,7 +103,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
 
         //WM Runtime Exceptions
-        else if (ex instanceof EntityNotFoundException) {
+        else if (ex instanceof EntityNotFoundException || ex instanceof BlobContentNotFoundException) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return handleWMExceptions((WMRuntimeException) ex, MessageResource.ENTITY_NOT_FOUND);
         } else if (ex instanceof InvalidInputException) {
