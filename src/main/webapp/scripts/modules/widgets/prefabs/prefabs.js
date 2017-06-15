@@ -8,56 +8,103 @@ WM.module('wm.prefabs')
  * @restrict E
  * @element ANY
  * @requires PrefabManager
- * @requires CONSTANTS
+ * @requires Utils
  * @requires $compile
  * @requires PropertiesFactory
  * @description
- * The 'wmPrefab' directive acts as a wrapper for the wm-prefab-internal directive.
- * wmPrefab will load the prefab config asynchronously and compiles the wm-prefab-internal directive.
+ * The 'wmPrefab' directive defines a prefab in editors. It is draggable over the canvas.
 */
-    .directive('wmPrefab', [
-        'PrefabManager',
-        'CONSTANTS',
-        '$compile',
-        function (PrefabManager, CONSTANTS, $compile) {
-            'use strict';
+    .factory('debugModePrefabResourceInterceptor',
+        [
+            function () {
+                'use strict';
 
-            // once the config is loaded, create wm-prefab-internal and compile it
-            function onConfigLoad($s, $el, tEl, tAttrs, config) {
-                var $prefabInternal = document.createElement('wm-prefab-internal'),
-                    $newScope       = $s.$new();
+                var configs = [],
+                    cache   = {},
+                    enableInterceptor;
 
-                _.forEach(tEl.context.attributes, function (tAttr) {
-                    $prefabInternal.setAttribute(tAttr.name, tAttr.value);
-                });
+                function getDevModePrefabUrl(requestUrl) {
 
-                $prefabInternal = WM.element($prefabInternal);
+                    var matchFound,
+                        redirectUrl,
+                        url;
 
-                $el.replaceWith($prefabInternal);
+                    url = cache[requestUrl];
+                    if (url) {
+                        return url;
+                    }
 
-                $newScope.__prefabConfig = config;
-                $compile($prefabInternal)($newScope);
-            }
+                    matchFound = _.some(configs, function (config) {
+                        var resourceMatch = config.resourceMatch,
+                            servicesMatch = config.servicesMatch,
+                            prefabName    = config.prefabName,
+                            _url,
+                            index;
 
-            function loadConfig($s, $el, tEl, tAttrs) {
-                PrefabManager.loadAppPrefabConfig(tAttrs.prefabname, onConfigLoad.bind(undefined, $s, $el, tEl, tAttrs));
-            }
+                        index = requestUrl.indexOf(resourceMatch);
 
-            return {
-                'restrict': 'E',
-                'compile': function (tEl, tAttrs) {
-                    return function ($s, $el) {
-                        if (CONSTANTS.isStudioMode && tAttrs.registrationRequired !== undefined) {
-                            PrefabManager.registerPrefab(tAttrs.prefabname, loadConfig.bind(undefined, $s, $el, tEl, tAttrs));
+                        if (index !== -1) {
+                            _url = requestUrl.substr(index + prefabName.length + 13);
                         } else {
-                            loadConfig($s, $el, tEl, tAttrs);
+                            index = requestUrl.indexOf(servicesMatch);
+                            if (index !== -1) {
+                                _url = requestUrl.substr(index + prefabName.length + 10);
+
+                                _url = '/services/' + _url;
+                            }
                         }
-                    };
+
+                        redirectUrl = config.prefabAppUrl + _url;
+                        return !!_url;
+                    });
+
+                    if (matchFound) {
+                        cache[requestUrl] = redirectUrl;
+                        return redirectUrl;
+                    }
                 }
-            };
-        }
-    ])
-    .directive('wmPrefabInternal', [
+
+                function requestInterceptor(config) {
+
+                    if (enableInterceptor) {
+                        var _url = getDevModePrefabUrl(config.url);
+
+                        if (_url) {
+                            config.url = _url;
+                        }
+                    }
+                    return config;
+                }
+
+                function registerConfig(pfName, url) {
+                    enableInterceptor = true;
+
+                    if (!url.endsWith('/')) {
+                        url = url + '/';
+                    }
+
+                    configs.push(
+                        {
+                            'prefabName'    : pfName,
+                            'prefabAppUrl'  : url,
+                            'resourceMatch' : 'app/prefabs/' + pfName + '/',
+                            'servicesMatch' : '/prefabs/' + pfName + '/'
+                        }
+                    );
+                }
+
+                return {
+                    'request' : requestInterceptor,
+                    'register': registerConfig
+                };
+            }
+        ])
+    /*.config(function ($httpProvider) {
+        'use strict';
+
+        $httpProvider.interceptors.push('debugModePrefabResourceInterceptor');
+    })*/
+    .directive('wmPrefab', [
         'PrefabManager',
         'Utils',
         '$compile',
@@ -69,8 +116,9 @@ WM.module('wm.prefabs')
         '$rootScope',
         'DialogService',
         'PrefabService',
+        'debugModePrefabResourceInterceptor',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
             'use strict';
 
             var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -247,20 +295,31 @@ WM.module('wm.prefabs')
                         'ng-style="{width:width, height:height, margin: margin, overflow: overflow}">' +
                     '</section>',
                 'link': {
-                    'pre': function ($is, $el) {
-                        var serverProps, $s;
-                        if (CONSTANTS.isStudioMode) {
-                            PrefabService.getAppPrefabServerProps({
-                                'projectID' : $rs.project.id,
-                                'prefabName': $is.prefabname
-                            }, function (response) {
-                                serverProps = response || {};
-                            });
+                    'pre': function ($is, $el, attrs) {
+                        /*
+                        if (attrs.debugurl) {
+                            debugModePrefabResourceInterceptor.register($is.prefabname, attrs.debugurl);
                         }
+                        */
 
-                        $s = $el.scope();
+                        var serverProps;
+                        function loadDependencies() {
+                            if (CONSTANTS.isStudioMode) {
+                                PrefabService.getAppPrefabServerProps({
+                                    'projectID' : $rs.project.id,
+                                    'prefabName': $is.prefabname
+                                }, function (response) {
+                                    serverProps = response || {};
+                                });
 
-                        onConfigLoad($is, serverProps, $s.__prefabConfig);
+                            }
+                            PrefabManager.loadAppPrefabConfig($is.prefabname, onConfigLoad.bind(undefined, $is, serverProps));
+                        }
+                        if (CONSTANTS.isStudioMode && attrs.registrationRequired !== undefined) {
+                            PrefabManager.registerPrefab($is.prefabname, loadDependencies);
+                        } else {
+                            loadDependencies();
+                        }
                     },
 
                     'post': function ($is, $el, attrs) {
@@ -357,7 +416,7 @@ WM.module('wm.prefabs')
                                 prefabEle     = ($is.widgetid ? versionMsgEle : '') + '<div class="full-width full-height">' + prefabContent + '</div>',
                                 $prefabEle    = WM.element(prefabEle);
 
-                            $is.showVersionMismatch = !!versionMsg;
+                            $is.showVersionMismatch = versionMsg ? true : false;
                             $el.append($prefabEle);
                             $compile($el.children())($is);
                             $timeout(onTemplateLoad);
