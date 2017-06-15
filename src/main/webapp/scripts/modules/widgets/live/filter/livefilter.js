@@ -556,7 +556,7 @@ WM.module('wm.widgets.live')
                                     if (CONSTANTS.isRunMode && !_.isEmpty(scope.formFields)) {
                                         //call method to update allowed values for select type filter fields
                                         _.forEach(scope.formFields, function (filterField) {
-                                            scope.applyFilterOnField(filterField, true);
+                                            scope.applyFilterOnField(filterField, undefined, true);
                                             //This creates filterFields as map with name of the field as key
                                             scope.filterFields[filterField.key] = filterField;
                                         });
