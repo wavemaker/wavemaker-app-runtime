@@ -21,6 +21,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpHeaders;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Class used to represent the details of the http request which can be invoked
  * @author Uday Shankar
@@ -32,6 +34,7 @@ public class HttpRequestDetails {
 
     private String method;
     
+    @JsonIgnore
     private InputStream body;
 
     private HttpHeaders headers = new HttpHeaders();
