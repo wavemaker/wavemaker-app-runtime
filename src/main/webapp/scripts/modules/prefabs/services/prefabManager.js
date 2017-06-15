@@ -127,9 +127,9 @@ WM.module('wm.prefabs')
                 return mergedPrefabsConfig;
             }
             /*
-             * Get the config.json of application prefab in synchronous way and trigger the callback with the response.
+             * Get the config.json of application prefab and trigger the callback with the response.
              */
-            function loadAppPrefabConfig(prefabName, callback) {
+            function loadAppPrefabConfig(prefabName, callback, sync) {
                 var configUrl,
                     config;
 
@@ -152,7 +152,7 @@ WM.module('wm.prefabs')
                         function () {
                             wmToaster.show('error', $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_TITLE, $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_DESC);
                         },
-                        true
+                        sync
                     );
                 }
             }
