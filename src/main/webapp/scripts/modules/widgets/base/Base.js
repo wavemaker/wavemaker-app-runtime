@@ -2055,11 +2055,11 @@ WM.module('wm.widgets.base', [])
 
         if (CONSTANTS.isStudioMode) {
             result.propertyGroups = [
-                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic", "iconClass":"wi wi-edit"},
-                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wi wi-palette"},
-                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wi wi-touch-app"},
-                {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wi wi-devices"},
-                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wi wi-shield"},
+                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic", "iconClass":"wms wms-properties"},
+                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wms wms-themes"},
+                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wms wms-hand-pointer"},
+                {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wms wms-devices"},
+                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wms wms-security"},
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},

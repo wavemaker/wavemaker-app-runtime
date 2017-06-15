@@ -82,6 +82,12 @@ module.exports = function (grunt) {
                         dest: '<%= config.application %>/styles/fonts'
                     },
                     {
+                        cwd: '<%= config.components %>/wmsicon/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/fonts'
+                    },
+                    {
                         cwd: '<%= config.components %>/bootstrap/css',
                         src: 'bootstrap.css.map',
                         expand: true,
