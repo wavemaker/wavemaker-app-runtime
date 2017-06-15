@@ -25,7 +25,10 @@ WM.module('wm.layouts.page')
                         } else {
                             iScope.widgetProps = widgetProps;
                             // this flag is used to change the layout of the mobile view accordingly
-                            element.scope().layout.footer = true;
+                            var $s = element.scope();
+                            if ($s.layout) {
+                                $s.layout.footer = true;
+                            }
                         }
                     },
 

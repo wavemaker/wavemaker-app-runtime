@@ -18,7 +18,7 @@ WM.module('wm.layouts.page')
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
-                'columnwidth': true
+                'columnwidth': CONSTANTS.isStudioMode
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -72,8 +72,8 @@ WM.module('wm.layouts.page')
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
 
-                        if (scope.columnwidth) {
-                            WM.element(element).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
+                        if (CONSTANTS.isRunMode && scope.columnwidth) {
+                            element.closest('[data-placeholder-id="_app_page_content_"]').addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
 
                         /* register the property change handler */

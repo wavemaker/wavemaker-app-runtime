@@ -76,7 +76,10 @@ WM.module('wm.layouts.containers')
                         itemField     = $is.itemlink     || 'link',
                         badgeField    = $is.itembadge    || 'badge',
                         childrenField = $is.itemchildren || 'children',
-                        actionField   = $is.itemaction || 'action';
+                        actionField   = $is.itemaction   || 'action',
+                        routeRegex;
+
+                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
 
@@ -93,17 +96,17 @@ WM.module('wm.layouts.containers')
                                 itemBadge    = node[badgeField],
                                 itemAction   = node[actionField],
                                 itemChildren = node[childrenField],
-                                $menu,
-                                routeRegex;
+                                $menu;
 
                             // menu widget expects data as an array.
                             // push the current object as an array into the internal array
                             $is._nodes.push(node[childrenField]);
-                            routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
                             //itemLink can be #/routeName or #routeName
                             if (itemLink && routeRegex.test(itemLink)) {
                                 $li.addClass('active');
                             }
+
+                            $li.attr('data-item-link', itemLink);
 
                             if (itemChildren && WM.isArray(itemChildren)) {
 
@@ -218,6 +221,11 @@ WM.module('wm.layouts.containers')
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
+                        $is.$on('$destroy', $rs.$on('page-transition-end', function () {
+                            $el.find('li.app-nav-item.active').removeClass('active');
+                            $el.find('li[data-item-link$="' + $routeParams.name + '"][data-item-link^="#"]').addClass('active');
+                        }));
 
                         if (!attrs.widgetid) {
                             if (attrs.scopedataset) {

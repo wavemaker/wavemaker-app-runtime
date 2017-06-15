@@ -50,8 +50,10 @@ WM.module('wm.layouts.page')
                 'restrict'  : 'E',
                 'replace'   : true,
                 'transclude': true,
-                'template'  : '<div data-role="pageContainer" class="app-page container" wmtransclude no-animate></div>',
-                'link'      :  {
+                'template'  :
+                    ((CONSTANTS.isStudioMode || $rs.isMobileApplicationType) ? '<div data-role="pageContainer" class="app-page container" wmtransclude no-animate></div>' :
+                        '<div data-role="pageContainer" class="app-content-row container" wmtransclude no-animate></div>'),
+                'link':  {
                     'pre': function ($s, $el, attrs) {
                         var pageName,
                             variableScope,
@@ -134,13 +136,16 @@ WM.module('wm.layouts.page')
                                         }
                                     }
                                     // update layout after the page is rendered
-                                    $s.layout.search       = $el.find('[data-role="page-header"] .app-search');
-                                    $s.layout.leftSection  = $el.find('[data-role="page-left-panel"]').length > 0;
-                                    $s.layout.rightSection = $el.find('[data-role="page-right-panel"]').length > 0;
+
+                                    var $pageEl = $el.closest('.app-page');
+
+                                    $s.layout.search       = $pageEl.find('[data-role="page-header"] .app-search');
+                                    $s.layout.leftSection  = $pageEl.find('[data-role="page-left-panel"]').length > 0;
+                                    $s.layout.rightSection = $pageEl.find('[data-role="page-right-panel"]').length > 0;
 
                                     // update the device after some delay
                                     $timeout(function () {
-                                        DeviceViewService.update($el, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
+                                        DeviceViewService.update($pageEl, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
                                         $rs.$$postDigest(function () {
                                             /* triggering the event post digest, so that any expression watches are computed before the same*/
                                             $rs._pageReady = true;

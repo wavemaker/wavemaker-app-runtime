@@ -99,6 +99,7 @@ WM.module("wm.layouts.device")
 
             WM.forEach(searchElements, function (ele) {
                 var searchEle = WM.element('<a class="app-header-action"><i class="wi wi-search"></i></a>');
+                WM.element(ele).prev().remove();
                 WM.element(ele).before(searchEle);
                 //Tap icon to show/hide search box
                 bindTapEvtHandler(searchEle, function () {
@@ -132,11 +133,12 @@ WM.module("wm.layouts.device")
                 bindContentEvents();
 
                 if (hasLeftNav) {
+                    var leftPanel = getLeftPanelScope();
+                    leftPanel && leftPanel.collapse();
                     bindLeftPanelEvents();
-               } else {
-                    //remove the icon
-                    element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).remove();
                 }
+
+                element.find(roleSelector(SWIPE_ELEM_CLASS_NAME))[hasLeftNav ? 'removeClass' : 'addClass']('ng-hide');
 
                 if (hasRightNav) {
                     bindRightPanelEvents();
