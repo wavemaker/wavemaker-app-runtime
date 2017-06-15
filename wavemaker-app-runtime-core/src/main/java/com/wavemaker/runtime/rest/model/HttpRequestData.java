@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.rest.model;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
@@ -32,7 +33,7 @@ public class HttpRequestData {
 
     private HttpHeaders httpHeaders = new HttpHeaders();
 
-    private byte[] requestBody;
+    private InputStream requestBody;
 
     public HttpHeaders getHttpHeaders() {
         return httpHeaders;
@@ -50,11 +51,11 @@ public class HttpRequestData {
         this.pathVariablesMap = pathVariablesMap;
     }
 
-    public byte[] getRequestBody() {
+    public InputStream getRequestBody() {
         return requestBody;
     }
 
-    public void setRequestBody(byte[] requestBody) {
+    public void setRequestBody(InputStream requestBody) {
         this.requestBody = requestBody;
     }
 

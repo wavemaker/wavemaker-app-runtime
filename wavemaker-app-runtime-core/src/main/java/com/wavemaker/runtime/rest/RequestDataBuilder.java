@@ -15,8 +15,8 @@
  */
 package com.wavemaker.runtime.rest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
@@ -24,15 +24,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.wavemaker.runtime.rest.model.HttpRequestData;
-import com.wavemaker.commons.util.IOUtils;
 
 /**
  * @author Uday Shankar
@@ -83,13 +80,7 @@ public class RequestDataBuilder {
         }
     }
 
-    private byte[] getRequestBody(HttpServletRequest httpServletRequest) throws IOException {
-        String method = httpServletRequest.getMethod();
-        if (!StringUtils.equals(method, HttpMethod.GET.name()) && !StringUtils.equals(method, HttpMethod.HEAD.name())) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            IOUtils.copy(httpServletRequest.getInputStream(), byteArrayOutputStream, true, true);
-            return byteArrayOutputStream.toByteArray();
-        }
-        return null;
+    private InputStream getRequestBody(HttpServletRequest httpServletRequest) throws IOException {
+        return httpServletRequest.getInputStream();
     }
 }

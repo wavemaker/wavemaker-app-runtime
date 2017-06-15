@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.rest.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -122,23 +121,20 @@ public class RestRuntimeService {
         HttpHeaders httpHeaders = new HttpHeaders();
         Map<String, Object> queryParameters = new HashMap();
         Map<String, String> pathParameters = new HashMap();
-        byte[] requestBody = httpRequestData.getRequestBody();
-        filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters, requestBody);
+        filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
         httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathValue, queryParameters, pathParameters));
         httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(path, operation.getOperationId()).toUpperCase());
 
         httpRequestDetails.setHeaders(httpHeaders);
-        if (requestBody != null) {
-            httpRequestDetails.setBody(new ByteArrayInputStream(requestBody));
-        }
+        httpRequestDetails.setBody(httpRequestData.getRequestBody());
         
         updateAuthorizationInfo(operation, httpRequestData, httpRequestDetails);
         return httpRequestDetails;
     }
 
-    private void filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters, byte[] requestBody) {
+    private void filterRequestData(HttpRequestData httpRequestData, Operation operation, HttpHeaders headers, Map<String, Object> queryParameters, Map<String, String> pathParameters) {
         for (Parameter parameter : operation.getParameters()) {
             String paramName = parameter.getName();
             String type = parameter.getIn().toUpperCase();
