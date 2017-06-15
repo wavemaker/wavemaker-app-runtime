@@ -2541,11 +2541,13 @@ WM.module('wm.utils', [])
          * @returns {*}
          */
         function getBlob(val, valContentType) {
-            var valConstructorType = _.toLower(_.get(val, 'constructor.name'));
-            if (valConstructorType === 'string' || valConstructorType === 'number') {
-                val = new Blob([val], {type: valContentType || 'text/plain'});
-            } else if (_.includes(['array', 'object'], valConstructorType) && getValidJSON(val)) {
+            if (val instanceof Blob) {
+                return val;
+            }
+            if (WM.isObject(val)) {
                 val = new Blob([WM.toJson(val)], {type: valContentType || 'application/json'});
+            } else {
+                val = new Blob([val], {type: valContentType || 'text/plain'});
             }
             return val;
         }
