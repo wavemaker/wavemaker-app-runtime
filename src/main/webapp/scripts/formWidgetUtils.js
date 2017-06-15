@@ -371,7 +371,7 @@ WM.module('wm.widgets.form')
              * @param dataset dataset from which data is parsed.
              * @param scope isolateScope of the widget.
              */
-            function extractDisplayOptions(dataset, scope) {
+            function extractDisplayOptions(dataset, scope, $el) {
                 var isBoundToLiveVariable;
 
                 scope.displayOptions = [];
@@ -382,7 +382,7 @@ WM.module('wm.widgets.form')
 
                 //Checking if widget is bound to service variable
                 if (scope.binddataset) {
-                    isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && getBoundVariableCategory(scope) === 'wm.LiveVariable';
+                    isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && getBoundVariableCategory(scope, scope.widgetid ? $rootScope.domScope : $el.scope()) === 'wm.LiveVariable';
                 }
 
                 // assign dataSet according to liveVariable or other variable
@@ -524,13 +524,14 @@ WM.module('wm.widgets.form')
              * function to get category of variable to which widget is bound to.
              *
              * @param {object} scope scope of the widget
+             * @param {object} $variableScope scope of the page where variable is available. For example, if widget is within the partial, then $variableScope will be the partialPage scope.
              *
              */
-            function getBoundVariableCategory(scope) {
+            function getBoundVariableCategory(scope, $variableScope) {
                 var variableName,
                     variableObj;
                 variableName = Utils.getVariableName(scope);
-                variableObj = variableName && Variables.getVariableByName(variableName);
+                variableObj = variableName && Variables.getVariableByName(variableName, $variableScope);
                 return variableObj && variableObj.category;
             }
 
