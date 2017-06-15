@@ -14,96 +14,6 @@ WM.module('wm.prefabs')
  * @description
  * The 'wmPrefab' directive defines a prefab in editors. It is draggable over the canvas.
 */
-    .factory('debugModePrefabResourceInterceptor',
-        [
-            function () {
-                'use strict';
-
-                var configs = [],
-                    cache   = {},
-                    enableInterceptor;
-
-                function getDevModePrefabUrl(requestUrl) {
-
-                    var matchFound,
-                        redirectUrl,
-                        url;
-
-                    url = cache[requestUrl];
-                    if (url) {
-                        return url;
-                    }
-
-                    matchFound = _.some(configs, function (config) {
-                        var resourceMatch = config.resourceMatch,
-                            servicesMatch = config.servicesMatch,
-                            prefabName    = config.prefabName,
-                            _url,
-                            index;
-
-                        index = requestUrl.indexOf(resourceMatch);
-
-                        if (index !== -1) {
-                            _url = requestUrl.substr(index + prefabName.length + 13);
-                        } else {
-                            index = requestUrl.indexOf(servicesMatch);
-                            if (index !== -1) {
-                                _url = requestUrl.substr(index + prefabName.length + 10);
-
-                                _url = '/services/' + _url;
-                            }
-                        }
-
-                        redirectUrl = config.prefabAppUrl + _url;
-                        return !!_url;
-                    });
-
-                    if (matchFound) {
-                        cache[requestUrl] = redirectUrl;
-                        return redirectUrl;
-                    }
-                }
-
-                function requestInterceptor(config) {
-
-                    if (enableInterceptor) {
-                        var _url = getDevModePrefabUrl(config.url);
-
-                        if (_url) {
-                            config.url = _url;
-                        }
-                    }
-                    return config;
-                }
-
-                function registerConfig(pfName, url) {
-                    enableInterceptor = true;
-
-                    if (!url.endsWith('/')) {
-                        url = url + '/';
-                    }
-
-                    configs.push(
-                        {
-                            'prefabName'    : pfName,
-                            'prefabAppUrl'  : url,
-                            'resourceMatch' : 'app/prefabs/' + pfName + '/',
-                            'servicesMatch' : '/prefabs/' + pfName + '/'
-                        }
-                    );
-                }
-
-                return {
-                    'request' : requestInterceptor,
-                    'register': registerConfig
-                };
-            }
-        ])
-    /*.config(function ($httpProvider) {
-        'use strict';
-
-        $httpProvider.interceptors.push('debugModePrefabResourceInterceptor');
-    })*/
     .directive('wmPrefab', [
         'PrefabManager',
         'Utils',
@@ -116,9 +26,8 @@ WM.module('wm.prefabs')
         '$rootScope',
         'DialogService',
         'PrefabService',
-        'debugModePrefabResourceInterceptor',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService) {
             'use strict';
 
             var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -296,12 +205,6 @@ WM.module('wm.prefabs')
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {
-                        /*
-                        if (attrs.debugurl) {
-                            debugModePrefabResourceInterceptor.register($is.prefabname, attrs.debugurl);
-                        }
-                        */
-
                         var serverProps;
                         function loadDependencies() {
                             if (CONSTANTS.isStudioMode) {
