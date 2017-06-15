@@ -65,8 +65,8 @@ WM.module('wm.widgets.form')
          * 1. comma separated string, which is captured in the options property of the scope
          * 2. application scope variable which is assigned to the dataSet attribute of the select widget from the studio.
          * 3. a wm-studio-variable which is bound to the widget's dataSet property.*/
-        function createSelectOptions(dataset, scope) {
-            FormWidgetUtils.extractDisplayOptions(dataset, scope);
+        function createSelectOptions(dataset, scope, element) {
+            FormWidgetUtils.extractDisplayOptions(dataset, scope, element);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
