@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
@@ -120,15 +121,17 @@ public class WMRuntimeUtils {
     }
 
     public static String getContextRelativePath(File file, HttpServletRequest request, String relativePath, boolean inline) {
-        final StringBuffer requestURL = request.getRequestURL();
-        final int index = requestURL.lastIndexOf("/");
+        StringBuilder sb = new StringBuilder(request.getRequestURL());
+        final int index = sb.lastIndexOf("/");
         if (index != -1) {
-            requestURL.delete(index, requestURL.length());
+            sb.delete(index, sb.length());
         }
-
-        String downloadFilePath = inline ? "/downloadFileAsInline" : "/downloadFile";
-        requestURL.append(downloadFilePath + "?file=" + file.getName() + "&relativePath=" + relativePath + "&returnName=" + file.getName());
-        return requestURL.toString();
+        sb.append(inline ? "/downloadFileAsInline" : "/downloadFile");
+        sb.append("?file=").append(file.getName());
+        if (StringUtils.isNotBlank(relativePath)) {
+            sb.append("&relativePath=").append(relativePath);
+        };
+        sb.append("&returnName=").append(file.getName());
+        return sb.toString();
     }
-
 }
