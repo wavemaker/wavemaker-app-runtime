@@ -85,9 +85,9 @@ WM.module('wm.widgets.basic')
                     element.removeClass('animated ' + scope.animation);
 
                     if (!scope.widgetid) {
-                        scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
-                            if (_.includes(variablesToTrack, variableName)) {
-                                spinnerStatusMap[variableName] = show;
+                        scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, boundVariable, show) {
+                            if (_.includes(variablesToTrack, boundVariable.name)) {
+                                spinnerStatusMap[boundVariable.name] = show;
                                 scope.show = _.some(spinnerStatusMap, function (val) {
                                     return val;
                                 });

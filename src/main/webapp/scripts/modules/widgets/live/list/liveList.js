@@ -1465,13 +1465,15 @@ WM.module('wm.widgets.live')
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
+                    variableName,
                     variable,
                     _onDestroy,
                     groupDataByUserDefinedFn,
                     $dataNavigator,
                     handlers = [];
 
-                variable = Utils.getVariableName($is);
+                variableName = Utils.getVariableName($is);
+                variable = getVariable($is, variableName);
                 $liScope = createChildScope($is, $el, attrs);
                 $is._items = [];
                 $is.$liScope = $liScope;
@@ -1555,8 +1557,8 @@ WM.module('wm.widgets.live')
                     $is.getWidgets = getWidgets.bind(undefined, $el);
 
                     $is.noDataFound = undefined === ($is.binddataset || $is.scopedataset);
-                    handlers.push($rs.$on('toggle-variable-state', function (event, variableName, active) {
-                        if (variable === variableName) {
+                    handlers.push($rs.$on('toggle-variable-state', function (event, boundVariable, active) {
+                        if (boundVariable.name === _.get(variable, 'name') && boundVariable.activeScope.$id === _.get(variable, 'activeScope.$id')) {
                             $is.variableInflight = active;
                         }
                     }));
