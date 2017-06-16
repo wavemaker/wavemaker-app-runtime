@@ -95,12 +95,12 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                             .then(function () {
                                 var clearData = variable.clearData === "true" || variable.clearData === true;
                                 DeviceVariableService.initiateCallback('onBefore', variable);
-                                $rootScope.$emit('toggle-variable-state', variable.name, true);
+                                $rootScope.$emit('toggle-variable-state', variable, true);
                                 LocalDBManager.pullData(clearData).then(success, error, function (progress) {
                                     variable.dataSet = progress;
                                     DeviceVariableService.initiateCallback('onProgress', variable, progress);
                                 }).finally(function () {
-                                    $rootScope.$emit('toggle-variable-state', variable.name, false);
+                                    $rootScope.$emit('toggle-variable-state', variable, false);
                                 });
                             });
                     } else {
@@ -131,9 +131,9 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
-                        $rootScope.$emit('toggle-variable-state', variable.name, true);
+                        $rootScope.$emit('toggle-variable-state', variable, true);
                         LocalDBManager.getLastPullInfo().then(success, error).finally(function () {
-                            $rootScope.$emit('toggle-variable-state', variable.name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         });
                     } else {
                         error(OFFLINE_PLUGIN_NOT_FOUND);
@@ -165,11 +165,11 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                             .then(function (changes) {
                                 if (changes.pendingToSync.total > 0) {
                                     DeviceVariableService.initiateCallback('onBefore', variable, changes);
-                                    $rootScope.$emit('toggle-variable-state', variable.name, true);
+                                    $rootScope.$emit('toggle-variable-state', variable, true);
                                     ChangeLogService.flush(function (stats) {
                                         var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
                                         variable.dataSet = addOldPropertiesForPushData(stats);
-                                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                                        $rootScope.$emit('toggle-variable-state', variable, false);
                                         DeviceVariableService.initiateCallback(eventName, variable, stats);
                                     }, function (stats) {
                                         variable.dataSet = addOldPropertiesForPushData(stats);
@@ -200,9 +200,9 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 requiredCordovaPlugins: [],
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
-                        $rootScope.$emit('toggle-variable-state', variable.name, true);
+                        $rootScope.$emit('toggle-variable-state', variable, true);
                         ChangeLogService.getLastPushInfo().then(success, error).finally(function () {
-                            $rootScope.$emit('toggle-variable-state', variable.name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         });
                     } else {
                         error(OFFLINE_PLUGIN_NOT_FOUND);

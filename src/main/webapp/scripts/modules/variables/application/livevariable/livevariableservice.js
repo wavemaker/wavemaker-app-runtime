@@ -729,7 +729,7 @@ wm.variables.services.$liveVariable = [
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
-                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                        $rootScope.$emit('toggle-variable-state', variable, false);
                         Utils.triggerFn(error);
                         return;
                     }
@@ -1010,7 +1010,7 @@ wm.variables.services.$liveVariable = [
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData, options);
-                        $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
+                        $rootScope.$emit('toggle-variable-state', variableDetails, false);
                         Utils.triggerFn(error);
                         return;
                     }
@@ -1242,42 +1242,42 @@ wm.variables.services.$liveVariable = [
             },
          /*Function to fetch records*/
             update = function (options, success, error) {
-                var name = this.name;
+                var variable = this;
                 options = options || {};
                 options.scope = this.activeScope;
 
                 if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, !options.skipToggleState);
+                    $rootScope.$emit('toggle-variable-state', variable, !options.skipToggleState);
                 }
                 methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
+                        $rootScope.$emit('toggle-variable-state', variable, false);
                     }
                     Utils.triggerFn(success, data, propertiesMap, pageOptions);
                 }, function (errMsg) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
+                        $rootScope.$emit('toggle-variable-state', variable, false);
                     }
                     Utils.triggerFn(error, errMsg);
                 });
             },
             insertRecord = function (options, success, error) {
-                var name = this.name;
+                var variable = this;
                 options = options || {};
                 options.scope = this.activeScope;
 
                 if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, true);
+                    $rootScope.$emit('toggle-variable-state', variable, true);
                 }
 
                 methods.insertRecord(this, options, function (response) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
+                        $rootScope.$emit('toggle-variable-state', variable, false);
                     }
                     Utils.triggerFn(success, response);
                 }, function (errMsg) {
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, false);
+                        $rootScope.$emit('toggle-variable-state', variable, false);
                     }
                     Utils.triggerFn(error, errMsg);
                 });
@@ -1747,22 +1747,22 @@ wm.variables.services.$liveVariable = [
                     methods.getAggregatedData(this, options, success, error);
                 },
                 updateRecord: function (options, success, error) {
-                    var name = this.name;
+                    var variable = this;
                     options = options || {};
                     options.scope = this.activeScope;
 
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
+                        $rootScope.$emit('toggle-variable-state', variable, true);
                     }
 
                     methods.updateRecord(this, options, function (response) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         }
                         Utils.triggerFn(success, response);
                     }, function (errMsg) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         }
                         Utils.triggerFn(error, errMsg);
                     });
@@ -1770,22 +1770,22 @@ wm.variables.services.$liveVariable = [
                 insertRecord: insertRecord,
                 createRecord: insertRecord,
                 deleteRecord: function (options, success, error) {
-                    var name = this.name;
+                    var variable = this;
                     options = options || {};
                     options.scope = this.activeScope;
 
                     if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
+                        $rootScope.$emit('toggle-variable-state', variable, true);
                     }
 
                     methods.deleteRecord(this, options, function (response) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         }
                         Utils.triggerFn(success, response);
                     }, function (errMsg) {
                         if (CONSTANTS.isRunMode) {
-                            $rootScope.$emit('toggle-variable-state', name, false);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
                         }
                         Utils.triggerFn(error, errMsg);
                     });

@@ -28,14 +28,27 @@ WM.module('wm.widgets.basic').
          * @param message contains the spinner related message
          * @param id contains the spinnerId
          */
-        function showContextSpinner(spinnerContext, message, id) {
-            var $element         = WM.element('[name="' + spinnerContext + '"]'),
+        function showContextSpinner(spinnerContext, message, id, variableScopeId) {
+            var $elements         = WM.element('[name="' + spinnerContext + '"]'),
                 spinnerTemplate  = '<wm-spinner name="' + spinnerContext + '-spinner" show="true"></wm-spinner>',
                 $spinnerEl       = WM.element('[name="' + spinnerContext + '-spinner"]'),
-                compiledEl;
+                compiledEl,
+                $element;
             //if the element is not found then just return do not append the spinner.
-            if (!$element.length) {
+            if (!$elements.length) {
                 return;
+            }
+            $element = $elements;
+            //If page has multiple containers with same partials, $elements will have multiple elements because of same widget name
+            //Find the exact element by comparing the parent scope id with variable scope id
+            if ($elements.length > 1) {
+                $elements.each(function () {
+                    var $el = WM.element(this);
+                    if (_.get($el.scope(), '$id') === variableScopeId) {
+                        $element = $el;
+                        return false;
+                    }
+                });
             }
             //if the spinner El already exists, add the new message to map and return id
             if (spinnerContextMap[spinnerContext] && $spinnerEl.length) {
@@ -89,12 +102,12 @@ WM.module('wm.widgets.basic').
              * @returns {string} spinnerContext, this .
              */
 
-            'show' : function (message, id, spinnerClass, spinnerContext) {
+            'show' : function (message, id, spinnerClass, spinnerContext, variableScopeId) {
                 var spinnerScope;
                 id      = id || ++spinnerId;
                 //if spinnerContext is passed, then append the spinner to the element(default method for variable calls).
                 if (spinnerContext && spinnerContext !== 'page') {
-                    return showContextSpinner(spinnerContext, message, id); //return after the compiled spinner is appended to the element reference
+                    return showContextSpinner(spinnerContext, message, id, variableScopeId); //return after the compiled spinner is appended to the element reference
                 }
                 //the below functionality can be used to create a spinner by sending spinner message to the function.
                 spinnerScope = getAppSpinnerScope();

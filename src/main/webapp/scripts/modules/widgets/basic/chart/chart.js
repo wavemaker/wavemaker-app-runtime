@@ -93,6 +93,20 @@ WM.module('wm.widgets.basic')
                 'sum'     : 'SUM'
             };
 
+        //Function to get the variable from the bind dataset
+        function getVariable(scope, element) {
+            var variableName,
+                elScope = element.scope();
+                //Set the variable name based on whether the widget is bound to a variable opr widget
+            if (scope.binddataset.indexOf('bind:Variables.') !== -1) {
+                variableName = scope.binddataset.replace('bind:Variables.', '');
+                variableName = variableName.substr(0, variableName.indexOf('.'));
+            } else {
+                variableName = scope.dataset.variableName;
+            }
+
+            return elScope.Variables ? elScope.Variables[variableName] : {};
+        }
         // Configuring the properties panel based on the type of the chart chosen
         function togglePropertiesByChartType(scope) {
             // Initially hiding all the properties
@@ -506,10 +520,8 @@ WM.module('wm.widgets.basic')
 
         //Function to get the aggregated data after applying the aggregation & group by or order by operations.
         function getAggregatedData(scope, element, callback) {
-            var variableName,
-                variable,
+            var variable,
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
-                elScope = element.scope(),
                 data = {},
                 sortExpr,
                 columns = [],
@@ -517,15 +529,7 @@ WM.module('wm.widgets.basic')
                 orderByColumns,
                 groupByFields = [];
 
-            //Set the variable name based on whether the widget is bound to a variable opr widget
-            if (scope.binddataset.indexOf('bind:Variables.') !== -1) {
-                variableName = scope.binddataset.replace('bind:Variables.', '');
-                variableName = variableName.substr(0, variableName.indexOf('.'));
-            } else {
-                variableName = scope.dataset.variableName;
-            }
-
-            variable = elScope.Variables && elScope.Variables[variableName];
+            variable = getVariable(scope, element);
             if (!variable) {
                 return;
             }
@@ -1108,26 +1112,18 @@ WM.module('wm.widgets.basic')
 
         // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-            var variableName,
-                variableObj,
-                elScope,
+            var variableObj,
                 styleObj = {};
             switch (key) {
             case 'dataset':
-                elScope = element.scope();
                 scope.errMsg = '';
-                //Set the variable name based on whether the widget is bound to a variable opr widget
-                if (scope.binddataset && scope.binddataset.indexOf('bind:Variables.') !== -1) {
-                    variableName = scope.binddataset.replace('bind:Variables.', '');
-                    variableName = variableName.substr(0, variableName.indexOf('.'));
-                }
                 //Resetting the flag to false when the binding was removed
                 if (!newVal && !scope.binddataset) {
                     scope.isVisuallyGrouped = false;
                     scope.axisoptions = null;
                 }
 
-                variableObj = elScope.Variables && elScope.Variables[variableName];
+                variableObj = getVariable(scope, element);
                 //setting the flag for the live variable in the scope for the checks
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable' && WM.isArray(newVal.data);
 
@@ -1280,7 +1276,7 @@ WM.module('wm.widgets.basic')
                     },
                     post: function (scope, element, attrs) {
                         var handlers = [],
-                            boundVariableName,
+                            variableObj,
                             showLabelsValue = scope.showlabels;
                         scope.getCutomizedOptions = getCutomizedOptions;
                         scope.onPropertyChange = setDefaultAxisOptions;
@@ -1352,12 +1348,11 @@ WM.module('wm.widgets.basic')
                         }
 
                         if (scope.binddataset && scope.binddataset.indexOf('bind:Variables.') !== -1) {
-                            boundVariableName = scope.binddataset.replace('bind:Variables.', '');
-                            boundVariableName = boundVariableName.split('.')[0];
-                            handlers.push($rootScope.$on('toggle-variable-state', function (event, variableName, active) {
+                            variableObj = getVariable(scope, element);
+                            handlers.push($rootScope.$on('toggle-variable-state', function (event, boundVariable, active) {
                                 //based on the active state and response toggling the 'loading data...' and 'no data found' messages
                                 //variable is active.so showing loading data message
-                                if (boundVariableName === variableName) {
+                                if (boundVariable.name === _.get(variableObj, 'name') && boundVariable.activeScope.$id === _.get(variableObj, 'activeScope.$id')) {
                                     scope.variableInflight = active;
                                     $rootScope.$safeApply(scope, function () {
                                         scope.isLoadInProgress = active;

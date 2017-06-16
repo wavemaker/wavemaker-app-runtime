@@ -511,7 +511,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (_.isObject(output)) {
                     inputFields = output;
                 }
-                $rootScope.$emit('toggle-variable-state', variable.name, !options.skipToggleState);
+                $rootScope.$emit('toggle-variable-state', variable, !options.skipToggleState);
                 variableActive[variable.activeScope.$id][variable.name] = true;
                 variable.canUpdate = false;
             }
@@ -765,17 +765,17 @@ wm.variables.services.$servicevariable = ['Variables',
             }, forceReload);
         }
         function update(options, success, error) {
-            var name = this.name;
+            var variable = this;
             options = options || {};
             options.scope = this.activeScope || options.scope;
             methods.getData(this, options, function (response) {
                 if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, false, response);
+                    $rootScope.$emit('toggle-variable-state', variable, false, response);
                 }
                 Utils.triggerFn(success, response);
             }, function (errMsg) {
                 if (CONSTANTS.isRunMode) {
-                    $rootScope.$emit('toggle-variable-state', name, false);
+                    $rootScope.$emit('toggle-variable-state', variable, false);
                 }
                 Utils.triggerFn(error, errMsg);
             });
