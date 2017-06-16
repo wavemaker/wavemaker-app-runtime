@@ -346,9 +346,10 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "reImportDB",
                     urlParams: {
-                        "projectID": params.projectID,
-                        "serviceId": params.serviceId,
-                        "retainDraft": params.retainDraft || false
+                        "projectID"     : params.projectID,
+                        "serviceId"     : params.serviceId,
+                        "retainDraft"   : params.retainDraft || false,
+                        "reInitialize"  : params.reInitialize || false
                     }
                 }, successCallback, failureCallback);
             },
