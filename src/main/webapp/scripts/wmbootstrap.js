@@ -339,7 +339,17 @@ Application
                         return page;
                     }
 
+                    //accepts query object like {a:1, b:2} and returns a=1&b=2 string
+                    function getQueryString(queryObject) {
+                        var params = [];
+                        _.forEach(queryObject, function (value, key) {
+                            params.push(key + '=' + value);
+                        });
+                        return _.join(params, '&');
+                    }
+
                     SecurityService.getConfig(function (config) {
+                        var pageParams;
                         loginConfig = config.loginConfig;
                         // if user found, 401 was thrown after session time
                         if (config.userInfo && config.userInfo.userName) {
@@ -388,9 +398,13 @@ Application
                                 // do not provide redirectTo page if fetching HOME page resulted 401
                                 // on app load, by default Home page is loaded
                                 page = getRedirectPage(config);
+                                page = page ? '?redirectPage=' + encodeURIComponent(page) : '';
+                                pageParams = getQueryString($location.search());
+                                pageParams = pageParams ? '?' + encodeURIComponent(pageParams) : '';
                                 //showing a redirecting message
                                 document.body.textContent = 'Redirecting to sso login...';
-                                ssoUrl = $rs.project.deployedUrl + SSO_URL + (_.isEmpty(page) ? '' : '?redirectPage=' +  encodeURIComponent(page));
+                                //appending redirect to page and page params
+                                ssoUrl = $rs.project.deployedUrl + SSO_URL + page + pageParams;
                                 /*
                                  * remove iFrame when redirected to IdP login page.
                                  * this is being done as IDPs do not allow to get themselves loaded into iFrames.
