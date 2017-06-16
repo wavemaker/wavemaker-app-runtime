@@ -1334,8 +1334,7 @@ WM.module('wm.widgets.live')
                             $dragEl,
                             minIndex,
                             maxIndex,
-                            data,
-                            selectedItems;
+                            data;
 
                         data        = $is.$liScope.fieldDefs;
                         $dragEl     = WM.element(this);
@@ -1359,11 +1358,19 @@ WM.module('wm.widgets.live')
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: data, $changedItem: changedItem});
                         $dragEl.removeData('oldIndex');
                         $rs.$safeApply($is);
-                        // to persist the selected items after reorder.
-                        selectedItems = Utils.getClonedObject($is._items);
-                        // livelist active class is updated in setter method.
-                        $is.selecteditem = selectedItems;
-                        $is._items = selectedItems;
+                        // deselect all the selected items on data change.
+                        $el.find('li.app-list-item.active').removeClass('active');
+                        $timeout(function () {
+                            // to persist the selected items after reorder.
+                            _.forEach($is._items, function (item) {
+                                var listItems = $el.find('li.app-list-item'),
+                                    itemIndex = getItemIndex(listItems, item),
+                                    $li       = WM.element(listItems[itemIndex]);
+                                if (!_.isEqual(itemIndex, -1)) {
+                                    $li.addClass('active');
+                                }
+                            });
+                        });
                     }
                 });
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
