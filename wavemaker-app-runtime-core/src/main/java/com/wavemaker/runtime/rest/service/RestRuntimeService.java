@@ -21,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.ResponseExtractor;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
@@ -42,6 +45,7 @@ import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessor;
 import com.wavemaker.runtime.rest.processor.request.HttpRequestProcessorContext;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessor;
 import com.wavemaker.runtime.rest.processor.response.HttpResponseProcessorContext;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
@@ -59,7 +63,7 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest) throws IOException {
+    public void executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
         List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
@@ -68,14 +72,14 @@ public class RestRuntimeService {
             logger.debug("Executing the httpRequestDataProcessor {} on the context {}", httpRequestDataProcessor, context);
             httpRequestDataProcessor.process(httpRequestDataProcessorContext);
         }
-        return executeRestCall(serviceId, operationId, httpRequestData, httpServletRequest, context);
+        executeRestCall(serviceId, operationId, httpRequestData, httpServletRequest, httpServletResponse, context);
     }
     
-    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData, 
-                                               HttpServletRequest httpServletRequest, String context) throws IOException {
-        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+    public void executeRestCall(String serviceId, String operationId, final HttpRequestData httpRequestData,
+                                               final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) throws IOException {
+        final HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
-        RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
+        final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();
         for (HttpRequestProcessor httpRequestProcessor : httpRequestProcessors) {
             logger.debug("Executing the httpRequestProcessor {} on the context {}", httpRequestProcessor, context);
@@ -86,19 +90,30 @@ public class RestRuntimeService {
             logger.debug("Rest service request details {}", httpRequestDetails.toString());
         }
 
-        HttpResponseDetails httpResponseDetails = invokeRestCall(httpRequestDetails);
+        new RestConnector().invokeRestCall(httpRequestDetails, new ResponseExtractor() {
+            @Override
+            public Object extractData(ClientHttpResponse response) throws IOException {
+                HttpResponseDetails httpResponseDetails = new HttpResponseDetails();
+                httpResponseDetails.setStatusCode(response.getRawStatusCode());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.putAll(response.getHeaders());
+                httpResponseDetails.setHeaders(httpHeaders);
+                httpResponseDetails.setBody(response.getBody());
 
-        HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
-        List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
-        for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
-            logger.debug("Executing the httpResponseProcessor {} on the context {}", httpResponseProcessor, context);
-            httpResponseProcessor.process(httpResponseProcessorContext);
-        }
+                HttpResponseProcessorContext httpResponseProcessorContext = new HttpResponseProcessorContext(httpServletRequest, httpResponseDetails, httpRequestDetails, httpRequestData);
+                List<HttpResponseProcessor> httpResponseProcessors = restRuntimeConfig.getHttpResponseProcessorList();
+                for (HttpResponseProcessor httpResponseProcessor : httpResponseProcessors) {
+                    logger.debug("Executing the httpResponseProcessor {} on the context {}", httpResponseProcessor, context);
+                    httpResponseProcessor.process(httpResponseProcessorContext);
+                }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
-        }
-        return httpResponseDetails;
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Rest service response details for the context {} is {}", context, httpResponseDetails.toString());
+                }
+                HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
+                return null;
+            }
+        });;
     }
 
     private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {
@@ -111,7 +126,7 @@ public class RestRuntimeService {
         return httpRequestData;
     }
 
-    private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) throws IOException {
+    private HttpRequestDetails constructHttpRequest(String serviceId, String operationId, HttpRequestData httpRequestData) {
         Swagger swagger = restRuntimeServiceCacheHelper.getSwaggerDoc(serviceId);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String pathValue = pathEntry.getKey();
