@@ -29,6 +29,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.wavemaker.commons.io.NoCloseInputStream;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 
 /**
@@ -81,6 +82,6 @@ public class RequestDataBuilder {
     }
 
     private InputStream getRequestBody(HttpServletRequest httpServletRequest) throws IOException {
-        return httpServletRequest.getInputStream();
+        return new NoCloseInputStream(httpServletRequest.getInputStream());
     }
 }
