@@ -2349,7 +2349,8 @@ WM.module('wm.widgets.live')
                     fieldName      = filterDef.field || filterDef.key,
                     formFields     = $scope.formFields || $scope.fullFieldDefs,
                     filterOnFields = _.filter(formFields, {'filterOn': fieldName});
-                newVal = newVal || (filterDef.isRange ? getRangeFieldValue(filterDef.minValue, filterDef.maxValue) : filterDef.value);
+
+                newVal = WM.isDefined(newVal) ? newVal : ((filterDef.isRange ? getRangeFieldValue(filterDef.minValue, filterDef.maxValue) : filterDef.value));
                 if (!variable || (isFirst && (_.isUndefined(newVal) || newVal === ''))) {
                     return;
                 }
