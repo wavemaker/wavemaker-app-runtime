@@ -58,7 +58,7 @@ WM.module('wm.widgets.basic')
                             }
                         }
 
-                        transcludeContent($el, slotContent);
+                        transcludeContent($el, slotContent.cloneNode(true));
                         break;
                     case 'iconclass':
                         /*showing icon when iconurl is not set*/
