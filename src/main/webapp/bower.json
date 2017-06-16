@@ -31,7 +31,7 @@
         "ng-cordova-oauth":"0.2.10",
         "angular-websocket": "v2.0.0",
         "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.5",
-        "wmsicon": "https://github.com/wavemaker/wmsicon.git#2b574c3baf57835af6bd4e245b3bc8f4fd034aa7",
+        "wmsicon": "https://github.com/wavemaker/wmsicon.git",
         "angular-ui-mask": "1.8.7"
     },
     "resolutions": {
