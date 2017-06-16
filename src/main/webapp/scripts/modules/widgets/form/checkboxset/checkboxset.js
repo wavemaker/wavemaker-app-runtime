@@ -48,7 +48,7 @@ WM.module('wm.widgets.form')
                 compiledTemplate,
                 $headerEle;
 
-            FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+            FormWidgetUtils.extractDisplayOptions(dataSet, scope, element);
 
             template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
             compiledTemplate = $compile(template)(scope);
@@ -83,7 +83,7 @@ WM.module('wm.widgets.form')
                 break;
             case 'datafield':
             case 'orderby':
-                FormWidgetUtils.extractDisplayOptions(dataSet, scope);
+                FormWidgetUtils.extractDisplayOptions(dataSet, scope, element);
                 $rs.$safeApply(scope);
                 break;
             case 'displayfield':
