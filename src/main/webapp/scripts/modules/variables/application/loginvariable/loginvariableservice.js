@@ -80,9 +80,9 @@ wm.variables.services.LoginVariableService = ['Variables',
                     Utils.triggerFn(error);
                     return;
                 }
-                $rootScope.$emit('toggle-variable-state', variable.name, true);
+                $rootScope.$emit('toggle-variable-state', variable, true);
                 variable.promise = SecurityService.appLogin(params, function (response) {
-                    $rootScope.$emit('toggle-variable-state', variable.name, false);
+                    $rootScope.$emit('toggle-variable-state', variable, false);
                     var redirectUrl = response && response.url ? response.url : 'index.html',
                         appManager = Utils.getService("AppManager"),
                         lastLoggedinUser = SecurityService.getLastLoggedInUser();
@@ -144,7 +144,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                             $rootScope._noRedirect = undefined;
                         });
                 }, function (errorMsg) {
-                    $rootScope.$emit('toggle-variable-state', variable.name, false);
+                    $rootScope.$emit('toggle-variable-state', variable, false);
                     errorMsg = errorMsg || "Invalid credentials.";
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {

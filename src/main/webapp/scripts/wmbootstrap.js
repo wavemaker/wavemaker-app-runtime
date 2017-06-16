@@ -1050,11 +1050,10 @@ Application
                 });
 
                 // This is used to show and hide the spinner when variable is in-flight
-                $rs.$on('toggle-variable-state', function (event, variableName, active) {
-                    var variable = Variables.getVariableByName(variableName);
-                    if (variable && !_.isEmpty(_.trim(variable.spinnerContext))) {
+                $rs.$on('toggle-variable-state', function (event, variable, active) {
+                    if (!_.isEmpty(_.trim(variable.spinnerContext))) {
                         if (active) {
-                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage, variable._id, variable.spinnerclass, variable.spinnerContext);
+                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage, variable._id + variable.activeScope.$id, variable.spinnerclass, variable.spinnerContext, variable.activeScope.$id);
                         } else {
                             wmSpinner.hide(variable._spinnerId);
                         }

@@ -758,10 +758,10 @@ WM.module('wm.widgets.grid')
                                 $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
                             }
                         }));
-                        handlers.push($rs.$on('toggle-variable-state', function (event, boundVariableName, active) {
+                        handlers.push($rs.$on('toggle-variable-state', function (event, boundVariable, active) {
                             //based on the active state and response toggling the 'loading data...' and 'no data found' messages.
                             if ($is.isBoundToLiveVariable || $is.isBoundToServiceVariable || $is.isBoundToFilter) {
-                                if (boundVariableName === $is.variableName) {
+                                if (boundVariable.name === _.get($is.variable, 'name') && boundVariable.activeScope.$id === _.get($is.variable, 'activeScope.$id')) {
                                     $is.variableInflight = active;
                                     if (active) {
                                         $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
