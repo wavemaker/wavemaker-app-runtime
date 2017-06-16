@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate4.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.MultipleRecordsException;
 
 /**
@@ -27,8 +28,10 @@ public abstract class AbstractQueryCallback<T> implements HibernateCallback<T> {
         final List list = query.list();
 
         if (list.isEmpty()) {
-            return null;
-        } else if (list.size() == 1) {
+            throw new EntityNotFoundException("No row exists");
+        }
+
+        if (list.size() == 1) {
             return (T) list.get(0);
         }
 
