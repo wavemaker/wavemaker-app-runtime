@@ -354,11 +354,15 @@ WM.module('wm.widgets.advanced')
                         }
                         //this function selects the default date given for the calendar
                         function selectDate() {
+                            var start, end;
                             if (WM.isObject($is.datavalue)) {
-                                _calElement.fullCalendar('select', $is.datavalue.start, $is.datavalue.end);
+                                start = $is.datavalue.start;
+                                end   = $is.datavalue.end;
                             } else {
-                                _calElement.fullCalendar('select', moment($is.datavalue));
+                                start = moment($is.datavalue);
+                                end   = moment($is.datavalue).add(1, 'day').startOf('day');
                             }
+                            _calElement.fullCalendar('select', start, end);
                         }
                         //this function takes the calendar view to the default date given for the calendar
                         function gotoDate() {
@@ -424,10 +428,15 @@ WM.module('wm.widgets.advanced')
                             });
                             return filteredDates;
                         }
+                        //sends the date and time selected without the timezone affecting the selected value
+                        function getUTCDateTime(dateObj) {
+                            dateObj = WM.isObject(dateObj) ? dateObj : moment(dateObj);
+                            return new Date(dateObj.format('YYYY-MM-DD HH:mm:ss'));
+                        }
                         function onSelectProxy(start, end, jsEvent, view) {
-                            $is.selecteddates = {start: start.valueOf(), end: end.valueOf()};
+                            $is.selecteddates = {'start': getUTCDateTime(start), 'end': getUTCDateTime(end)};
                             $is.selecteddata  = setSelectedData(start, end);
-                            $is.onSelect({$start: start.valueOf(), $end: end.valueOf(), $view: view, $data: $is.selecteddata});
+                            $is.onSelect({'$start': start.valueOf(), '$end': end.valueOf(), '$view': view, '$data': $is.selecteddata});
                         }
                         function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
                             $is.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
