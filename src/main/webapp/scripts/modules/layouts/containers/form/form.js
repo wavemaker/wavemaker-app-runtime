@@ -199,10 +199,11 @@ WM.module('wm.layouts.containers')
         function resetForm($s, element) {
             resetFormFields(element);
             resetFormState($s);
-            if ($s.formFields) {
-                _.forEach($s.formFields, function (dataValue) {
-                    if (dataValue.type === 'blob') {
-                        WM.element(element).find('[name=' + dataValue.key + ']').val('');
+            if ($s.elScope.formFields) {
+                _.forEach($s.elScope.formFields, function (dataValue) {
+                    //IE 11 does not reset input type files by default. So, reset the input type file manually
+                    if (_.includes(['blob', 'file'], dataValue.type)) {
+                        WM.element(element).find('[name="' + dataValue.key + '_formWidget"]').val('');
                         dataValue.href  = '';
                         dataValue.value = null;
                     } else {

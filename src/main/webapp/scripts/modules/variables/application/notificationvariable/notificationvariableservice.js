@@ -12,7 +12,7 @@
  * The 'NotificationVariableService' provides methods to work with Notification variables
  */
 
-wm.variables.services.NotificationVariableService = function (BaseVariablePropertyFactory, DialogService, $rootScope, wmToaster, Variables) {
+wm.variables.services.NotificationVariableService = function (BaseVariablePropertyFactory, DialogService, $rootScope, wmToaster, Variables, VARIABLE_CONSTANTS) {
     "use strict";
 
     /* properties of a basic variable - should contain methods applicable on this particular object */
@@ -49,7 +49,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                         content = variable.dataBinding.page;
                     toasterOptions.position = positionClass;
                     //check the variable scope and call the callback functions accordingly
-                    if (variableOwner === 'Application') {
+                    if (variableOwner === VARIABLE_CONSTANTS.OWNER.APP) {
                         scope = $rootScope || {};
                     } else {
                         scope = options.scope || {};
@@ -64,12 +64,12 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     }
                 } else {
                 /* get the callback scope for the variable based on its owner */
-                    if (variableOwner === "Application") {
+                    if (variableOwner === VARIABLE_CONSTANTS.OWNER.APP) {
                         scope = $rootScope || {};
                     } else {
                         scope = options.scope.$$childTail || {};
                     }
-                    dialogId = (variableOwner === 'App' && WM.element('[name=' + commonPageDialogId + ']').length) ? commonPageDialogId : dialogId;
+                    dialogId = (variableOwner === VARIABLE_CONSTANTS.OWNER.APP && WM.element('[name=' + commonPageDialogId + ']').length) ? commonPageDialogId : dialogId;
                     DialogService.showDialog(dialogId, {
                         resolve: {
                             dialogParams: function () {

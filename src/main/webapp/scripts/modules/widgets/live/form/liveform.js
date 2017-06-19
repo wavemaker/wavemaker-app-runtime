@@ -467,7 +467,7 @@ WM.module('wm.widgets.live')
                 /*clear the file uploader widget for reset*/
                 function resetFileUploadWidget(dataValue, skipValueSet) {
                     var $formEle = getFormElement();
-                    $formEle.find('[name=' + dataValue.key + ']').val('');
+                    $formEle.find('[name="' + dataValue.key + '_formWidget"]').val('');
                     if (!skipValueSet) {
                         dataValue.href = '';
                         dataValue.value = null;
