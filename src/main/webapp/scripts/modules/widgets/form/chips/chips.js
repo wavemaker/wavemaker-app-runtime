@@ -16,8 +16,8 @@ WM.module('wm.widgets.form')
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
-                    '<li ng-if="!(readonly || saturate)">' +
-                        '<wm-search ng-if="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" orderby="{{orderby}}" ' +
+                    '<li ng-show="!(readonly || saturate)">' +
+                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" dataset="{{binddataset}}" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
                             'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false">' +
@@ -85,6 +85,50 @@ WM.module('wm.widgets.form')
                 };
             }
 
+            //takes dataObj as input evaluates the  values and returns chip object
+            function createChip($s, dataObj) {
+                var values = getEvaluatedValues($s, dataObj);
+                if (displayField) {
+                    return $s.constructChip(values.displayField, values.dataField, values.imageField);
+                }
+                return $s.constructChip(dataObj);
+            }
+
+            //resets the query model of search
+            function resetSearchModel(searchScope) {
+                if (searchScope) {
+                    $rs.$safeApply(searchScope, function () {
+                        //clear search value
+                        searchScope.datavalue = '';
+                        searchScope.queryModel = '';
+                    });
+                }
+            }
+
+            //tries to get the chip from existing dataset, if not exists adds to the chips and returns it
+            function getChip($s, ele) {
+                $s.notInDataSet = false;
+                var newItemObject,
+                    searchScope = $s.searchScope;
+                ele = ele || searchScope.query;
+                newItemObject = _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
+
+                //Add the selected item to chips if not present in current dataset
+                if (!newItemObject && searchScope) {
+                    $s.notInDataSet = true;
+                    if (WM.isObject(searchScope.queryModel)) {
+                        $s.chips.push(createChip($s, searchScope.queryModel));
+                        newItemObject = _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
+                    } else {
+                        newItemObject = $s.constructChip(ele);
+                        $s.chips.push(newItemObject);
+                    }
+                }
+                resetSearchModel(searchScope);
+                return newItemObject;
+
+            }
+
             //Update the selected chips
             function updateSelectedChips(chips, $s) {
                 //Ignore _model_ update when it triggered by within the widget
@@ -116,20 +160,20 @@ WM.module('wm.widgets.form')
                         value = parseFloat(ele, 10);
                         ele = isNaN(value) ? ele : value;
                         //find chip object from dataset to get value and img source
-                        chip =  _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
+                        chip = getChip($s, ele);
                         // ele also need to be send since in security chips, there will not be any dataset
                         $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
                     });
                 } else {
                     $s.selectedChips = chips;
                 }
+                resetSearchModel($s.searchScope);
             }
 
             //Create list of options for the search
             function createSelectOptions($s, dataset) {
                 var chips          = [],
-                    value           = $s.value || $s.datavalue,
-                    values;
+                    value           = $s.value || $s.datavalue;
                 displayField = $s.displayfield || $s.displayexpression || $s.binddisplayexpression;
                 //Avoiding resetting empty values
                 if (($s.binddataset || $s.scopedataset) && (!displayField && !$s.datavalue)) {
@@ -139,11 +183,7 @@ WM.module('wm.widgets.form')
                 $s.chips.length = 0;
                 if (WM.isArray(dataset) && dataset.length) {
                     chips = _.map(dataset, function (dataObj) {
-                        values = getEvaluatedValues($s, dataObj);
-                        if (displayField) {
-                            return $s.constructChip(values.displayField, values.dataField, values.imageField);
-                        }
-                        return $s.constructChip(dataObj);
+                        return createChip($s, dataObj);
                     });
                 }
                 $s.chips         = chips;
@@ -356,17 +396,17 @@ WM.module('wm.widgets.form')
 
             //Add the newItem to the list
             function addItem($s, element, $event, searchScope) {
-                var newItemObject = _.find($s.chips, {'key' : searchScope.query}) || _.find($s.chips, {'value' : searchScope.query}) || searchScope.query,
+                var newItemObject,
                     allowAdd      = true;
+
+                //Add the selected item to chips if not present in current dataset
+                newItemObject = getChip($s);
+
                 //Don't add new chip if already reaches max size
-                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || (!WM.isObject(newItemObject) && $s.allowonlyselect) || !newItemObject) {
+                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || ($s.notInDataSet && $s.allowonlyselect)) {
                     return;
                 }
-                $rs.$safeApply(searchScope, function () {
-                    //clear search value
-                    searchScope.query = '';
-                    searchScope.reset();
-                });
+
                 if (WM.isObject(newItemObject)) {
                     newItemObject = $s.constructChip(_.get(newItemObject, 'key'), _.get(newItemObject, 'value'), _.get(newItemObject, 'wmImgSrc'));
                 } else {
@@ -497,7 +537,7 @@ WM.module('wm.widgets.form')
                                 $s.createSelectOptions(data);
                             });
                         }
-
+                        $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
                         WidgetUtilService.postWidgetCreate($s, $el, attrs);
