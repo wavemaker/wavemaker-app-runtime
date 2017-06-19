@@ -1256,6 +1256,7 @@ WM.module('wm.widgets.grid')
                     imageEl;
                 rowScope.selectedItemData = rowScope.rowData = Utils.getClonedObject(row);
                 rowScope.row = row;
+                rowScope.variableType = $is.variableType;
                 rowScope.row.getProperty = function (field) {
                     return _.get(row, field);
                 };
