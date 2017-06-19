@@ -531,7 +531,13 @@ WM.module('wm.widgets.form')
                 var variableName,
                     variableObj;
                 variableName = Utils.getVariableName(scope);
-                variableObj = variableName && Variables.getVariableByName(variableName, $variableScope);
+
+                if ($variableScope && !_.isEmpty($variableScope.Variables)) {
+                    variableObj = $variableScope.Variables[variableName];
+                } else {
+                    // this is just a fallback and should never occur
+                    variableObj = variableName && Variables.getVariableByName(variableName);
+                }
                 return variableObj && variableObj.category;
             }
 
