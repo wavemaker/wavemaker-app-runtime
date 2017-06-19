@@ -1849,7 +1849,7 @@ WM.module('wm.widgets.live')
                 var props,
                     dataSetWidgetTypes = Utils.getDataSetWidgets();
 
-                if (dataSetWidgetTypes[formField[widget]] && !formField.isDataSetBound) {
+                if (dataSetWidgetTypes[formField[widget]] && (!formField.isDataSetBound || widget === 'filterwidget')) {
                     props = getDistinctFieldProperties(variable, formField);
                     variable.getDistinctDataByFields({
                         'fields'        : props.distinctField,
