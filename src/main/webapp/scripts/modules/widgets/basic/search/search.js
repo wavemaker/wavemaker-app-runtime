@@ -766,6 +766,7 @@ WM.module('wm.widgets.basic')
                     'onSubmit': '&',
                     'onSelect': '&',
                     'query': '=?',
+                    'queryModel': '=?',
                     'allowonlyselect': '=?',
                     'onKeydown': '&'
                 },
