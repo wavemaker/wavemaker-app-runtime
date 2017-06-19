@@ -383,8 +383,7 @@ WM.module('wm.widgets.form')
                 //Checking if widget is bound to service variable
                 if (scope.binddataset) {
                     isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') &&
-                                            ($el.scope().variableType === 'wm.LiveVariable' ||
-                                            getBoundVariableCategory(scope, scope.widgetid ? $rootScope.domScope : $el.scope()) === 'wm.LiveVariable');
+                                            getBoundVariableCategory(scope, scope.widgetid ? $rootScope.domScope : $el.scope()) === 'wm.LiveVariable';
                 }
 
                 // assign dataSet according to liveVariable or other variable
@@ -533,7 +532,13 @@ WM.module('wm.widgets.form')
                 var variableName,
                     variableObj;
                 variableName = Utils.getVariableName(scope);
-                variableObj = variableName && Variables.getVariableByName(variableName, $variableScope);
+
+                if ($variableScope && !_.isEmpty($variableScope.Variables)) {
+                    variableObj = $variableScope.Variables[variableName];
+                } else {
+                    // this is just a fallback and should never occur
+                    variableObj = variableName && Variables.getVariableByName(variableName);
+                }
                 return variableObj && variableObj.category;
             }
 
