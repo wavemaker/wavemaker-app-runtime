@@ -1320,7 +1320,7 @@ WM.module('wm.widgets.live')
                     'delay'       : 100,
                     'opacity'     : 0.8,
                     'helper'      : 'clone',
-                    'z-index'     : 100,
+                    'zIndex'      : 1050,
                     'tolerance'   : 'pointer',
                     'start'       : function (evt, ui) {
                         ui.placeholder.height(ui.item.height());
