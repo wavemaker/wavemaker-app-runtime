@@ -109,16 +109,24 @@ WM.module('wm.widgets.form')
             function getChip($s, ele) {
                 $s.notInDataSet = false;
                 var newItemObject,
-                    searchScope = $s.searchScope;
+                    searchScope = $s.searchScope,
+                    queryModel = _.get(searchScope, 'queryModel'),
+                    key,
+                    value,
+                    filterObj;
+
                 ele = ele || searchScope.query;
-                newItemObject = _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
+                key =  _.get(queryModel, $s.displayfield) || ele;
+                value = _.get(queryModel, $s.datafield) || ele;
+                filterObj =  {'key' : key, 'value' : value};
+                newItemObject = _.find($s.chips, filterObj);
 
                 //Add the selected item to chips if not present in current dataset
                 if (!newItemObject && searchScope) {
                     $s.notInDataSet = true;
-                    if (WM.isObject(searchScope.queryModel)) {
-                        $s.chips.push(createChip($s, searchScope.queryModel));
-                        newItemObject = _.find($s.chips, {'key' : ele}) || _.find($s.chips, {'value' : ele});
+                    if (WM.isObject(queryModel)) {
+                        $s.chips.push(createChip($s, queryModel));
+                        newItemObject = _.find($s.chips, filterObj);
                     } else {
                         newItemObject = $s.constructChip(ele);
                         $s.chips.push(newItemObject);
@@ -404,6 +412,7 @@ WM.module('wm.widgets.form')
 
                 //Don't add new chip if already reaches max size
                 if (checkMaxSize($s) || (!searchScope && !searchScope.query) || ($s.notInDataSet && $s.allowonlyselect)) {
+                    element.find('input.app-textbox').focus(100);
                     return;
                 }
 
