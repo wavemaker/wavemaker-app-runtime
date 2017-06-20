@@ -1528,7 +1528,7 @@ wm.variables.services.Variables = [
                     switch (inFlightBehavior) {
                     case 'executeLast':
                         requestObj = requestQueue[variable.name].pop();
-                        triggerError(requestQueue);
+                        triggerError(requestQueue[variable.name]);
                         handler(requestObj.variable, requestObj.options, requestObj.success, requestObj.error);
                         requestQueue[variable.name] = null;
                         break;
@@ -1537,7 +1537,7 @@ wm.variables.services.Variables = [
                         handler(requestObj.variable, requestObj.options, requestObj.success, requestObj.error);
                         break;
                     default:
-                        triggerError(requestQueue);
+                        triggerError(requestQueue[variable.name]);
                         requestQueue[variable.name] = null;
                         break;
                     }
