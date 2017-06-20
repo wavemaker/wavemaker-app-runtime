@@ -1305,7 +1305,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "deferload": {"type": "boolean", "value": false, "show": false},
-                        "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]},
+                        "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'wms wms-add-row'}]},
                         "columns": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"]},
                         "backgroundcolor": {"type": "string", "widget": "color", "show": false},
                         "backgroundgradient": {"type": "string", "show": false},
@@ -1333,7 +1333,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "columnwidth": {"type": "list", "options": columnWidths},
-                        "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'add-column-right'}]},
+                        "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'wms wms-add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'wms wms-add-column-right'}]},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["visible-xs-block", "visible-sm-block", "visible-md-block", "visible-lg-block", "hidden-xs", "hidden-sm", "hidden-md", "hidden-lg", "bordered", "bordered-left", "bordered-right", "bordered-top", "bordered-bottom"]}
                     },
                     'wm.layouts.gridrow': {
@@ -1346,7 +1346,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundcolor": {"type": "string", "widget": "color", "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
-                        "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'add-column'}]}
+                        "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'wms wms-add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'wms wms-add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'wms wms-add-column'}]}
                     },
                     'wm.layouts.column': {
                         "columnwidth": {"type": "list", "options": columnWidths}
@@ -2056,8 +2056,8 @@ WM.module('wm.widgets.base', [])
         if (CONSTANTS.isStudioMode) {
             result.propertyGroups = [
                 {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic", "iconClass":"wms wms-properties"},
-                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wms wms-themes"},
-                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wms wms-hand-pointer"},
+                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style", "iconClass":"wms wms-styles"},
+                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wms wms-events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wms wms-devices"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wms wms-security"},
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
