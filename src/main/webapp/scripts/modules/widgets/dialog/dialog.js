@@ -19,7 +19,7 @@ WM.module('wm.widgets.dialog')
                             '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading">{{subheading}}</span>' +
                         '</h4>' +
                         '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
-                            '<i title="{{actiontitle}}" class="wm-icon24 help"></i>' +
+                            '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
                             '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
                         '</div>' +
                     '</div>' +
