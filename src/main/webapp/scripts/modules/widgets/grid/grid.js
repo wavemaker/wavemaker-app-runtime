@@ -711,7 +711,8 @@ WM.module('wm.widgets.grid')
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
                          * the "dataNavigatorWatched" value is reset.*/
                         handlers.push($is.$watch('binddataset', function (newVal, oldVal) {
-                            var innerDataSetRegEx = /dataSet(\[\$i\])?\./; //Anything which matches dataSet. or dataSet[$i]
+                            var innerDataSetRegEx = /dataSet(\[\$i\])?\./, //Anything which matches dataSet. or dataSet[$i]
+                                typeUtils;
                             if (newVal !== oldVal) {
                                 $is.dataNavigatorWatched = false;
                                 if ($is.dataNavigator) {
@@ -753,8 +754,14 @@ WM.module('wm.widgets.grid')
                             }
                             //Set grid columns on binddataset change if grid is bound to service variable
                             if (CONSTANTS.isStudioMode && ($is.isBoundToServiceVariable || $is.isBoundToWebSocketVariable)) {
-                                var TypeUtils = Utils.getService('TypeUtils');
-                                $is.createGridColumns(TypeUtils.getFieldsForExpr($is.binddataset, {'getFieldInfo': true, 'filter' : 'terminal'}));
+                                //If columns are to be created, call the create grid columns method
+                                if ($is.newcolumns) {
+                                    typeUtils = Utils.getService('TypeUtils');
+                                    $is.createGridColumns(typeUtils.getFieldsForExpr($is.binddataset, {
+                                        'getFieldInfo': true,
+                                        'filter': 'terminal'
+                                    }));
+                                }
                                 $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
                             }
                         }));
