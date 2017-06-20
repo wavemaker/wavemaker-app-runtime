@@ -1190,6 +1190,9 @@ WM.module('wm.widgets.grid')
                     }, function (error) {
                         $is.toggleMessage(true, 'error', error);
                     });
+                } else {
+                    //Fall back to default client side sort
+                    handleOperation(sortObj, e, 'sort')
                 }
             }
             /*Function to handle both sort and search operations if bound to service/static variable*/
