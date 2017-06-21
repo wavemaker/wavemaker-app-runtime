@@ -34,7 +34,8 @@ WM.module('wm.widgets.form')
         'FormWidgetUtils',
         'LiveWidgetUtils',
         '$rootScope',
-        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs) {
+        '$timeout',
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs, $timeout) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -107,27 +108,40 @@ WM.module('wm.widgets.form')
 
             //tries to get the chip from existing dataset, if not exists adds to the chips and returns it
             function getChip($s, ele) {
-                $s.notInDataSet = false;
+                if (_.isEmpty($s.chips)) {
+                    return;
+                }
                 var newItemObject,
                     searchScope = $s.searchScope,
                     queryModel = _.get(searchScope, 'queryModel'),
                     key,
                     value,
-                    filterObj;
+                    filterObj = {},
+                    values = queryModel ? getEvaluatedValues($s, queryModel) : {},
+                    imgSrc;
 
                 ele = ele || searchScope.query;
-                key =  _.get(queryModel, $s.displayfield) || ele;
-                value = _.get(queryModel, $s.datafield) || ele;
-                filterObj =  {'key' : key, 'value' : value};
+                key =  _.get(values, 'displayField') || ele;
+                imgSrc =  _.get(values, 'imageField');
+                value = ($s.datafield !== 'All Fields' && _.get(values, 'dataField')) || ele;
+                if (key) {
+                    filterObj.key = key;
+                }
+                if (value) {
+                    filterObj.value = value;
+                }
+                if (imgSrc) {
+                    filterObj.wmImgSrc = imgSrc;
+                }
+
                 newItemObject = _.find($s.chips, filterObj);
 
                 //Add the selected item to chips if not present in current dataset
                 if (!newItemObject && searchScope) {
-                    $s.notInDataSet = true;
                     if (WM.isObject(queryModel)) {
                         $s.chips.push(createChip($s, queryModel));
                         newItemObject = _.find($s.chips, filterObj);
-                    } else {
+                    } else if (!$s.allowonlyselect) {
                         newItemObject = $s.constructChip(ele);
                         $s.chips.push(newItemObject);
                     }
@@ -175,7 +189,9 @@ WM.module('wm.widgets.form')
                 } else {
                     $s.selectedChips = chips;
                 }
-                resetSearchModel($s.searchScope);
+                $timeout(function () {
+                    resetSearchModel($s.searchScope);
+                }, 50);
             }
 
             //Create list of options for the search
@@ -411,7 +427,7 @@ WM.module('wm.widgets.form')
                 newItemObject = getChip($s);
 
                 //Don't add new chip if already reaches max size
-                if (checkMaxSize($s) || (!searchScope && !searchScope.query) || ($s.notInDataSet && $s.allowonlyselect)) {
+                if (checkMaxSize($s) || (!searchScope && !searchScope.query) ||  !newItemObject) {
                     element.find('input.app-textbox').focus(100);
                     return;
                 }
