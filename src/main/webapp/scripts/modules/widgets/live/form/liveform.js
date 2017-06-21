@@ -565,7 +565,7 @@ WM.module('wm.widgets.live')
                     var defaultValue = fieldObj.defaultvalue,
                         fileType;
                     /*Set the default value only if it exists.*/
-                    if (defaultValue && defaultValue !== 'null') {
+                    if (WM.isDefined(defaultValue) && defaultValue !== null && defaultValue !== '' && defaultValue !== 'null') {
                         fieldObj.value = LiveWidgetUtils.getDefaultValue(defaultValue, fieldObj.type, fieldObj.widget);
                     } else {
                         fieldObj.value = undefined;
