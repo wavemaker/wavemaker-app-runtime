@@ -35,16 +35,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -270,6 +261,8 @@ public class WMObjectMapper extends ObjectMapper {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // we are handling self references using @JsonIgnoreProperties
             configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+            setConfig(getSerializationConfig().withView(Object.class));
+
 
             Hibernate4Module hibernate4Module = new Hibernate4Module();
             hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
