@@ -54,6 +54,8 @@ WM.module('wm.widgets.form')
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
 
+            assignModelValue(scope);
+
             if (CONSTANTS.isStudioMode && scope.groupFields) {
                 $headerEle = element.closest('.property-value').find('.fixed-header');
                 FormWidgetUtils.setFixedHeader(element, $headerEle);

@@ -48,7 +48,7 @@ WM.module('wm.widgets.form')
                 });
             } else {
                 if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
-                    scope._model_ = undefined;
+                    scope._model_ = selectedValue;
                 } else if (scope.datafield === ALLFIELDS) {
                     selectedOption = _.find(scope.displayOptions, {key : selectedValue});
                     if (selectedOption) {
@@ -98,6 +98,8 @@ WM.module('wm.widgets.form')
 
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
+            scope._isModelProxyChanged = true;
+
             // modelProxy should not change when select is set to readonly.
             if (scope.readonly) {
                 scope.modelProxy = scope._model_;
@@ -167,7 +169,9 @@ WM.module('wm.widgets.form')
                                 iScope._reset = false;
                                 return;
                             }
-                            FormWidgetUtils.updatedCheckedValues(iScope);
+
+                            FormWidgetUtils.updatedCheckedValues(iScope, iScope._isModelProxyChanged);
+                            iScope._isModelProxyChanged = false;
                         }, false);
 
                         if (attrs.scopedataset) {
