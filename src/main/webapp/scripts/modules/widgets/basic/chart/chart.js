@@ -98,11 +98,11 @@ WM.module('wm.widgets.basic')
             var variableName,
                 elScope = element.scope();
                 //Set the variable name based on whether the widget is bound to a variable opr widget
-            if (scope.binddataset.indexOf('bind:Variables.') !== -1) {
+            if (_.includes(scope.binddataset, 'bind:Variables.')) {
                 variableName = scope.binddataset.replace('bind:Variables.', '');
                 variableName = variableName.substr(0, variableName.indexOf('.'));
             } else {
-                variableName = scope.dataset.variableName;
+                variableName = _.get(scope.dataset, 'variableName');
             }
 
             return elScope.Variables ? elScope.Variables[variableName] : {};
