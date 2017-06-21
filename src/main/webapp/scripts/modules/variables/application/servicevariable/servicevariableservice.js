@@ -954,6 +954,17 @@ wm.variables.services.$servicevariable = ['Variables',
         BaseVariablePropertyFactory.register('wm.ServiceVariable', serviceVariableObj, ['wm.Variable'], methods);
 
         return {
+            getServiceModel           : function (params) {
+                var model = {},
+                    variable = params.variable || {},
+                    prefabName = _.get(variable, '_prefabName');
+                if (prefabName) {
+                    prefabDataTypes[prefabName] = params.types;
+                }
+                prepareServiceModel(params.typeRef, model, null, variable);
+
+                return model;
+            },
             getServiceOperationInfo   : getServiceOperationInfo,
             getOperationId            : getOperationId,
             constructRestRequestParams: constructRestRequestParams
