@@ -551,7 +551,7 @@ WM.module('wm.widgets.base', [])
                         "selectionmode": {"type": "list", "widget": "select-by-object", "value": "none", "options": [{"label": "None", "value": "none"}, {"label": "Single", "value": "single"}, {"label": "Multiple", "value": "multiple"}]},
                         "selecteddates": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('selecteddates')"},
                         "currentview": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('currentview')"},
-                        "selecteddata": {"type": "array, object", "isList": true, "show": false, "bindable": "out-bound", "getTypeFrom": "expr.getPropertyType('selecteddata')" },
+                        "selecteddata": {"type": "array, object", "isList": true, "show": false, "bindable": "out-bound", "getTypeFrom": "dataset" },
                         "calendartype": {"type": "list", "options": ["basic", "agenda", "list"], "value": "basic"},
                         "eventstart": {"type": "list", "value": "start", "options": [""], "datasetfilter" : "terminals"},
                         "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals"},

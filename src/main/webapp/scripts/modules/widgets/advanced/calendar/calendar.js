@@ -362,7 +362,10 @@ WM.module('wm.widgets.advanced')
                                 start = moment($is.datavalue);
                                 end   = moment($is.datavalue).add(1, 'day').startOf('day');
                             }
-                            _calElement.fullCalendar('select', start, end);
+                            _calElement.fullCalendar('gotoDate', start); //after selecting the date go to the date.
+                            $is.$root.$evalAsync(function () {
+                                _calElement.fullCalendar('select', start, end);
+                            });
                         }
                         //this function takes the calendar view to the default date given for the calendar
                         function gotoDate() {
