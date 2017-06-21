@@ -321,6 +321,10 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            // onkeydown reset the default query
+            function onKeyDown($is) {
+                $is.defaultQuery = false;
+            }
             // onkeyup show the close icon.
             function onKeyUp($is, element, event) {
                 var $navbarElScope,
@@ -896,6 +900,7 @@ WM.module('wm.widgets.basic')
                         if (!attrs.widgetid) {
                             // keyup event to enable/ disable close icon of the search input.
                             element.bind('keyup', onKeyUp.bind(undefined, $is, element));
+                            element.bind('keydown', onKeyDown.bind(undefined, $is));
 
                             if (element.hasClass('app-mobile-search')) {
                                 element.find('input').focus();
