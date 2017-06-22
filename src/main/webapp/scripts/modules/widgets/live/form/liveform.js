@@ -1228,6 +1228,10 @@ WM.module('wm.widgets.live')
                             'regexp' : attrs.regexp || ".*"
                         });
                         columnDefProps.validationmessage = (CONSTANTS.isRunMode && _.startsWith(attrs.validationmessage, 'bind:')) ? '' :  attrs.validationmessage;
+
+                        //Get viewmodewidget from attributes. If not present, get the default view mode widget based on the widget type
+                        columnDefProps.viewmodewidget = attrs.viewmodewidget || LiveWidgetUtils.getDefaultViewModeWidget(columnDefProps.widget);
+
                         scope.FieldDef.prototype.$is = parentScope;
                         WM.extend(columnDef, columnDefProps);
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
