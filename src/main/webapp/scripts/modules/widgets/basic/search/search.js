@@ -670,7 +670,7 @@ WM.module('wm.widgets.basic')
                     isBoundToVariable     = Utils.stringStartsWith(tAttrs.dataset, 'bind:Variables.');
 
                 // in case dataSet is bound to variable, add delay of 500ms before the typeahead query kicked-off
-                if ((isBoundToVariable && inputTpl) || tAttrs.type === 'autocomplete') {
+                if ((isBoundToVariable && inputTpl) || tAttrs.type === 'autocomplete' || tAttrs.hasOwnProperty('addDelay')) {
                     inputTpl.attr('typeahead-wait-ms', CONSTANTS.DELAY.SEARCH_WAIT);
                 }
                 //For mobile view, append the typeahead dropdown to element itself.
