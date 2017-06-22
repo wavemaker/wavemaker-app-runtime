@@ -108,7 +108,7 @@ WM.module('wm.widgets.form')
 
             //tries to get the chip from existing dataset, if not exists adds to the chips and returns it
             function getChip($s, ele) {
-                if (_.isEmpty($s.chips)) {
+                if ($s.binddataset && _.isEmpty($s.chips)) {
                     return;
                 }
                 var newItemObject,
@@ -183,8 +183,10 @@ WM.module('wm.widgets.form')
                         ele = isNaN(value) ? ele : value;
                         //find chip object from dataset to get value and img source
                         chip = getChip($s, ele);
-                        // ele also need to be send since in security chips, there will not be any dataset
-                        $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
+                        if (chip) {
+                            // ele also need to be send since in security chips, there will not be any dataset
+                            $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
+                        }
                     });
                 } else {
                     $s.selectedChips = chips;
@@ -299,6 +301,7 @@ WM.module('wm.widgets.form')
                 var key    = Utils.getActionFromKey($event);
                 if (key === KEYS.ENTER || key === KEYS.TAB) {
                     updateChip($s, $event, chip);
+                    $el.focus(100);
                     if (key === KEYS.TAB) {
                         chip.active = false;
                         $el.find('input').focus();
