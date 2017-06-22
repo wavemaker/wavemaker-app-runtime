@@ -62,7 +62,7 @@ public class RestConnector {
 
 
     private static CloseableHttpClient defaultHttpClient;
-    private static final int MAX_TOTAL = 500;
+    private static final int MAX_TOTAL = 100;
     private static final int DEFAULT_MAX_PER_ROUTE = 50;
 
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
@@ -95,6 +95,9 @@ public class RestConnector {
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
                 .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                .setSocketTimeout((int) TimeUnit.MINUTES.toMillis(6))// 6 mins, something more than lb time out  
+                .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(30))
+                .setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(5))
                 .build();
 
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient) {
@@ -108,9 +111,6 @@ public class RestConnector {
                 return requestConfig;
             }
         };
-        clientHttpRequestFactory.setReadTimeout((int) TimeUnit.MINUTES.toMillis(6));// 6 mins, something more than lb time out  
-        clientHttpRequestFactory.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(30));
-        clientHttpRequestFactory.setConnectionRequestTimeout((int) TimeUnit.SECONDS.toMillis(30));
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
