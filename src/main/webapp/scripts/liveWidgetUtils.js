@@ -42,6 +42,10 @@ WM.module('wm.widgets.live')
                     'EMPTY'       : 'empty',
                     'NULLOREMPTY' : 'nullorempty',
                     'EQUALS'      : 'exact'
+                },
+                VIEW_MODE_OPTIONS = {
+                    'DEFAULT'   : 'default',
+                    'LABEL'     : 'label'
                 };
 
             //Returns true if widget is autocomplete or chips
@@ -506,10 +510,11 @@ WM.module('wm.widgets.live')
                 return template;
             }
             /*Returns the default template*/
-            function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
+            function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields) {
                 var template = '',
                     widgetName = 'wm-' + widgetType,
-                    updateModeCondition = isCustomWidget ? '' : (widgetType === 'richtexteditor' ? 'show = "{{isUpdateMode}}"' : 'ng-if="isUpdateMode"'),
+                    //If view mode widget is default, show the widget in view mode. So, don't add show/hide condition for update/view mode
+                    updateModeCondition = fieldDef.viewmodewidget === VIEW_MODE_OPTIONS.DEFAULT ? '' : (widgetType === 'richtexteditor' ? 'show = "{{isUpdateMode}}"' : 'ng-if="isUpdateMode"'),
                     allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '',
                     readonly = (widgetType !== 'richtexteditor' || fieldDef.readonly ? 'readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' : '');
                 additionalFields = additionalFields || '';
@@ -630,7 +635,7 @@ WM.module('wm.widgets.live')
 
             function getRatingTemplate(fieldDef, index) {
                 var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ' + getDataSetFields(fieldDef, index);
-                return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
+                return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields);
             }
 
             function getSwitchTemplate(fieldDef, index, $el) {
@@ -689,7 +694,7 @@ WM.module('wm.widgets.live')
                 template    = template +
                     '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
                     '<div class="{{formFields[' + index + '].class}}" ng-class="formFields[' + index + '].displayname ? _widgetClass : \'' + controlLayout + '\'">' +
-                    '<label class="form-control-static app-label" ng-show="!isUpdateMode">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
+                    '<label class="form-control-static app-label" ng-show="!isUpdateMode && formFields[' + index + '].viewmodewidget !== \'' + VIEW_MODE_OPTIONS.DEFAULT + '\'">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
 
                 switch (widgetType) {
                 case 'number':
@@ -2542,6 +2547,24 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.getDefaultViewModeWidget
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns the default value for view mode widget in live form
+             *
+             * @param {widget} widget form field widget
+             */
+            function getDefaultViewModeWidget(widget) {
+                if (_.includes(['checkbox', 'toggle', 'rating', 'upload'], widget)) {
+                    return VIEW_MODE_OPTIONS.DEFAULT;
+                }
+                return VIEW_MODE_OPTIONS.LABEL;
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -2589,6 +2612,7 @@ WM.module('wm.widgets.live')
             this.setFormValidationType      = setFormValidationType;
             this.validateFieldsOnSubmit     = validateFieldsOnSubmit;
             this.getFieldLayoutConfig       = getFieldLayoutConfig;
+            this.getDefaultViewModeWidget   = getDefaultViewModeWidget;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
