@@ -26,7 +26,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', '$timeout', 'LiveWidgetUtils', "wmToaster", "FormWidgetUtils", function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, $timeout, LiveWidgetUtils, wmToaster, FormWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.base.events.touch', 'wm.layouts.panel.defaults']),
             notifyFor = {
@@ -387,11 +387,11 @@ WM.module('wm.layouts.containers')
                         }
                     },
                     'post': function (scope, element, attrs) {
-                        var handlers = [];
+                        var handlers = [],
+                            boundTo = FormWidgetUtils.getBoundVariableCategory(scope, element.scope());
                         scope.statusMessage = undefined;
                         scope.dataoutput = {};
                         scope.element = element;
-
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
@@ -401,6 +401,11 @@ WM.module('wm.layouts.containers')
                             scope.reset = resetForm.bind(undefined, scope, element);
                             scope.submit = submitForm.bind(undefined, scope, element);
                         } else {
+                            if (boundTo !== 'wm.Variable') {
+                                scope.widgetProps.enctype.options.push('');
+                                scope.widgetProps.enctype.disabled = true;
+                                scope.enctype = '';
+                            }
                             //event emitted on building new markup from canvasDom
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup) {
                                 //as multiple form directives will be listening to the event, apply field-definitions only for current form
