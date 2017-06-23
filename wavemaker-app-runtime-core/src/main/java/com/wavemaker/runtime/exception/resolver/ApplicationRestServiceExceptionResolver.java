@@ -117,9 +117,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof HibernateQueryException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleHibernateQueryException((HibernateQueryException) ex);
-        } else if (ex instanceof HibernateJdbcException) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleHibernateJdbcException((HibernateJdbcException) ex);
         } else {
             logger.error("Unknown error for url {}", request.getRequestURI(), ex);
             return handleException(ex, response);
