@@ -1917,7 +1917,11 @@ If the height and width are not specified the video takes the height of the post
     }
   }
   > .panel-heading {
-    .panel-actions {
+    > .panel-actions {
+      &.panel-actions {
+        position: relative;
+        top: 0;
+      }
       .app-menu.dropdown {
         .btn.app-button .caret {
           display: inline-block;
@@ -2581,19 +2585,16 @@ If the height and width are not specified the video takes the height of the post
   }
   .app-accordion-panel {
     position: relative;
-    .panel-heading {
-      position: relative;
-      cursor: pointer;
-    }
     .panel-collapse {
       position: relative;
     }
     .panel-body {
       position: relative;
     }
-    .panel-heading {
+    > .panel-heading {
       width: 100%;
       position: relative;
+      cursor: pointer;
       .panel-title {
         > a {
           text-decoration: none;
@@ -2602,7 +2603,7 @@ If the height and width are not specified the video takes the height of the post
           margin-right: 0.5em;
         }
       }
-      .panel-actions {
+      > .panel-actions {
         float: right;
         right: 0.25em;
         top: 0.9em;
