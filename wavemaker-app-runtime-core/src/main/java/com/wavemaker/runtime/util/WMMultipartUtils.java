@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLConnection;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
@@ -264,24 +265,32 @@ public class WMMultipartUtils {
             HttpServletRequest request, InputStream is, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
         try {
+            downloadResponse.setContents(is);
+            downloadResponse.setInline(!download);
+
+            String contentType = null;
             String filename = request.getParameter("filename");
+            String extension = "";
+
+            final Optional<MagicMatch> magicMatchOptional = getMagicType(is);
+            if (magicMatchOptional.isPresent()) {
+                contentType = magicMatchOptional.get().getMimeType();
+                extension = "." + magicMatchOptional.get().getExtension();
+            } else if (StringUtils.isNotBlank(filename)) {
+                contentType = URLConnection.guessContentTypeFromName(filename);
+            }
 
             if (StringUtils.isBlank(filename)) {
                 filename = RandomStringUtils.randomAlphanumeric(FILE_NAME_LENGTH);
             }
 
-
-            downloadResponse.setContents(is);
-            downloadResponse.setInline(!download);
-
-            downloadResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            downloadResponse.setFileName(filename);
-
-            final Optional<MagicMatch> magicMatchOptional = getMagicType(is);
-            if (magicMatchOptional.isPresent()) {
-                downloadResponse.setContentType(magicMatchOptional.get().getMimeType());
-                downloadResponse.setFileName(filename + "." + magicMatchOptional.get().getExtension());
+            if (StringUtils.isBlank(contentType)) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             }
+
+            downloadResponse.setContentType(contentType);
+            downloadResponse.setFileName(filename + extension);
+
         } catch (IOException | MagicException e) {
             throw new WMRuntimeException("Failed to prepare response.", e);
         }
@@ -338,7 +347,11 @@ public class WMMultipartUtils {
             is.mark(READ_LIMIT_FOR_CONTENT_TYPE);
             is.read(bytes);
             is.reset();
-            result = Optional.of(getMagicMatch(bytes));
+            try {
+                result = Optional.of(getMagicMatch(bytes));
+            } catch (MagicException e) {
+                // ignore
+            }
         }
         return result;
     }
