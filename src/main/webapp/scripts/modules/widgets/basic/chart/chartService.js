@@ -4,7 +4,8 @@
 WM.module('wm.widgets.basic')
     .service('ChartService', [
         'Utils',
-        function (Utils) {
+        '$timeout',
+        function (Utils, $timeout) {
             'use strict';
             var chartTypes = ['Column', 'Line', 'Area', 'Cumulative Line', 'Bar', 'Pie', 'Donut', 'Bubble'],
                 allShapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down'],
@@ -774,6 +775,14 @@ WM.module('wm.widgets.basic')
                 scope.message = propertyValueMap.nodatamessage || 'No data found';
                 //setting the no data message
                 chart.noData(scope.message);
+
+                if (isLineTypeChart(scope.type) && scope.highlightpoints) {
+                    chart.dispatch.on('stateChange', function () {
+                        $timeout(function () {
+                            postPlotChartProcess(scope);
+                        }, 100);
+                    });
+                }
 
                 return chart;
             }
