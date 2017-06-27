@@ -160,6 +160,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 if (col.targetEntity && entity[col.sourceFieldName]) {
                     row[col.name] = entity[col.sourceFieldName][col.targetFieldName];
                 }
+                if (!col.primaryKey && (_.isUndefined(row[col.name]) || _.isNull(row[col.name])) && col.sqlType === 'number') {
+                    row[col.name] = 0;
+                }
             });
             return row;
         }
