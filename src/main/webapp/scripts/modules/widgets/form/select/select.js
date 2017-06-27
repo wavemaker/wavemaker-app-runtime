@@ -67,6 +67,12 @@ WM.module('wm.widgets.form')
          * 3. a wm-studio-variable which is bound to the widget's dataSet property.*/
         function createSelectOptions(dataset, scope, element) {
             FormWidgetUtils.extractDisplayOptions(dataset, scope, element);
+
+            // Update model when displayOptions are available.
+            if ((WM.isDefined(scope.datavalue) || scope.binddatavalue) && scope.displayOptions.length) {
+                FormWidgetUtils.updatedCheckedValues(scope);
+                assignModelValue(scope);
+            }
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
