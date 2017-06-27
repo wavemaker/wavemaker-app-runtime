@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.hibernate.HibernateException;
@@ -43,7 +44,8 @@ public class JavaTypeUtils {
     public static boolean isKnownType(Class<?> type) {
         type = ClassUtils.primitiveToWrapper(type);
         final String typeName = type.getCanonicalName();
-        return (classNameVsJavaTypeMap.containsKey(typeName));
+        //Since, java.util.Date is obtained from hql meta data.
+        return (classNameVsJavaTypeMap.containsKey(typeName) || Date.class.getCanonicalName().equals(typeName));
     }
 
     public static boolean isNotCollectionType(final Class<?> typeClass) {
