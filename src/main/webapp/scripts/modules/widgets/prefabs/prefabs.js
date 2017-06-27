@@ -90,29 +90,37 @@ WM.module('wm.prefabs')
                     prefabEvents,
                     widgetProps = {},
                     userDefinedProps,
-                    methodsMap = {};
+                    methodsMap = {},
+                    layoutProps,
+                    behaviorProps;
 
                 if (CONSTANTS.isStudioMode) {
                     prefabProperties = [];
                     prefabEvents     = [];
 
+                    layoutProps = ['width', 'height'];
+                    behaviorProps = ['show', 'animation'];
+
                     propertiesGroup.subGroups.splice(1, 0, {
                         'boundPrefabName': $is.prefabname,
                         'name'           : $is.prefabname + '_' + 'properties',
                         'parent'         : 'properties',
-                        'properties'     : prefabProperties
+                        'properties'     : prefabProperties,
+                        'filteredProps'  : prefabProperties
                     }, {
                         'boundPrefabName': $is.prefabname,
                         'name'           : $is.prefabname + '_' + 'layout',
                         'displayKey'     : 'LABEL_PROPERTYGROUP_LAYOUT',
                         'parent'         : 'properties',
-                        'properties'     : ['width', 'height']
+                        'properties'     : layoutProps,
+                        'filteredProps'  : layoutProps
                     }, {
                         'boundPrefabName': $is.prefabname,
                         'name'           : $is.prefabname + '_' + 'behavior',
                         'displayKey'     : 'LABEL_PROPERTYGROUP_BEHAVIOR',
                         'parent'         : 'properties',
-                        'properties'     : ['show', 'animation']
+                        'properties'     : behaviorProps,
+                        'filteredProps'  : behaviorProps
                     });
 
                     eventsGroup.subGroups.push({
