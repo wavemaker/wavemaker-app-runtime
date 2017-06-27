@@ -2182,20 +2182,23 @@ $.widget('wm.datagrid', {
             break;
         case 'select':
             if (field.isLiveVariable) {
-                template += ' scopedataset="fullFieldDefs[' + field.index + '].filterdataset"';
+                template += ' scopedataset="fullFieldDefs[' + field.index + '].__filterdataset" orderby="' + fieldName + ':asc"';
+            } else if (field._isFilterDataSetBound) {
+                template += ' dataset="' + field.filterdataset + '" datafield="' + field.filterdatafield + '" displayfield="' + field.filterdisplayfield + '"';
             } else {
-                template += ' dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" displayfield="' + fieldName + '"';
+                template += ' dataset="' + this.options.getBindDataSet() + '" datafield="' + fieldName + '" displayfield="' + fieldName + '" orderby="' + fieldName + ':asc"';
             }
-            template += ' orderby="' + fieldName + ':asc"';
             break;
         case 'autocomplete':
             if (field.isLiveVariable) {
                 filterOptions = field.filterdataoptions;
-                template += ' dataoptions="fullFieldDefs[' + field.index + '].filterdataoptions" datafield="' + filterOptions.aliasColumn + '" searchkey="' + filterOptions.distinctField + '" displaylabel="' + filterOptions.aliasColumn + '"';
+                template += ' dataset="' + this.options.getBindDataSet() + '" dataoptions="fullFieldDefs[' + field.index + '].filterdataoptions" datafield="' + filterOptions.aliasColumn + '" searchkey="' + filterOptions.distinctField + '" displaylabel="' + filterOptions.aliasColumn + '"';
+            } else if (field._isFilterDataSetBound) {
+                template += ' dataset="' + field.filterdataset + '"  datafield="' + field.filterdatafield + '" searchkey="' + field.filtersearchkey + '" displaylabel="' + field.filterdisplaylabel + '" ';
             } else {
-                template += ' datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" orderby="' + fieldName + ':asc"';
+                template += ' dataset="' + this.options.getBindDataSet() + '"  datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" orderby="' + fieldName + ':asc"';
             }
-            template += ' dataset="' + this.options.getBindDataSet() + '" type="autocomplete" on-submit="onRowFilterChange()"';
+            template += ' type="autocomplete" on-submit="onRowFilterChange()"';
             break;
         case 'time':
             template += ' timepattern="' + timeFormat + '" ';

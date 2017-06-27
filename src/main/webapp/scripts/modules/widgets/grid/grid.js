@@ -2696,6 +2696,11 @@ WM.module('wm.widgets.grid')
             'template': '<div></div>',
             'replace': true,
             'compile': function (tElement) {
+
+                var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
+                    'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue',
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey'];
+
                 return {
                     'pre': function (scope, element, attrs) {
                         //Get the form widget scope in edit mode
@@ -2765,7 +2770,7 @@ WM.module('wm.widgets.grid')
                             fieldDefProps = {
                                 'field': attrs.binding
                             },
-                            skipWatchProps = ['dataset', 'defaultvalue', 'disabled', 'readonly'];
+                            skipWatchProps = ['dataset', 'defaultvalue', 'disabled', 'readonly', 'filterdataset'];
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(parentScope, expression, function (newVal) {
                                 newVal = WM.isDefined(newVal) ? newVal : '';
@@ -2788,38 +2793,22 @@ WM.module('wm.widgets.grid')
                             'textColor'         : textColor,
                             'type'              : attrs.type || 'string',
                             'primaryKey'        : attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
-                            'generator'         : attrs.generator,
-                            'widgetType'        : attrs.widgetType,
                             'style'             : styleDef,
                             'class'             : attrs.colClass,
                             'ngclass'           : attrs.colNgClass,
-                            'datepattern'       : attrs.datepattern,
                             'formatpattern'     : attrs.formatpattern === 'toNumber' ? 'numberToString' : attrs.formatpattern,
-                            'currencypattern'   : attrs.currencypattern,
-                            'fractionsize'      : attrs.fractionsize,
-                            'suffix'            : attrs.suffix,
-                            'prefix'            : attrs.prefix,
-                            'accessroles'       : attrs.accessroles,
-                            'dataset'           : attrs.dataset,
-                            'datafield'         : attrs.datafield,
-                            'placeholder'       : attrs.placeholder,
                             'disabled'          : !attrs.disabled ? false : (attrs.disabled === 'true' || attrs.disabled),
                             'required'          : !attrs.required ? false : (attrs.required === 'true' || attrs.required),
-                            'displaylabel'      : attrs.displaylabel,
-                            'searchkey'         : attrs.searchkey,
-                            'displayfield'      : attrs.displayfield,
                             'sortable'          : attrs.sortable !== 'false',
                             'searchable'        : (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
-                            'rowactionsposition': attrs.rowactionsposition,
                             'limit'             : attrs.limit ? +attrs.limit : undefined,
-                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string'),
-                            'filterplaceholder' : attrs.filterplaceholder,
-                            'relatedEntityName' : attrs.relatedEntityName,
-                            'checkedvalue'      : attrs.checkedvalue,
-                            'uncheckedvalue'    : attrs.uncheckedvalue,
-                            'filterOn'          : attrs.filterOn
+                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string')
                         };
+
+                        _.forEach(columnProperties, function (key) {
+                            columnDefProps[key] = attrs[key];
+                        });
                         columnDefProps.defaultvalue   = LiveWidgetUtils.getDefaultValue(attrs.defaultvalue, columnDefProps.type, columnDefProps.editWidgetType);
                         columnDefProps.editWidgetType = attrs.editWidgetType || LiveWidgetUtils.getEditModeWidget(columnDefProps);
                         events = _.filter(_.keys(attrs), function (key) {return _.startsWith(key, 'on'); });
@@ -2911,7 +2900,9 @@ WM.module('wm.widgets.grid')
                         //Fetch the filter options for select widget when filtermode is row
                         if (CONSTANTS.isRunMode && parentScope.filtermode === 'multicolumn' && isDataSetWidgets[columnDef.filterwidget]) {
                             variable = parentScope.gridElement.scope().Variables[Utils.getVariableName(parentScope)];
-                            if (variable && variable.category === 'wm.LiveVariable') {
+                            if (attrs.filterdataset) {
+                                columnDef._isFilterDataSetBound = true;
+                            } else if (variable && variable.category === 'wm.LiveVariable') {
                                 columnDef.isLiveVariable = true;
                                 if (columnDef.relatedEntityName) {
                                     columnDef.isRelated   = true;
@@ -2922,7 +2913,7 @@ WM.module('wm.widgets.grid')
                                     columnDef.filterdataoptions = LiveWidgetUtils.getDistinctFieldProperties(variable, columnDef);
                                 } else {
                                     LiveWidgetUtils.getDistinctValues(columnDef, 'filterwidget', variable, function (field, data, aliascolumn) {
-                                        field.filterdataset = _.pull(_.map(data.content, aliascolumn), null);
+                                        field.__filterdataset = _.pull(_.map(data.content, aliascolumn), null);
                                     });
                                 }
                             }
