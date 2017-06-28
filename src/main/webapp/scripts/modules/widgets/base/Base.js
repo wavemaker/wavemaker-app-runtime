@@ -2219,11 +2219,14 @@ WM.module('wm.widgets.base', [])
             } else if ($rs.isMobileApplicationType) {
                 _.assign(widgetProps, properties[widget + '.mobile']);
             }
-            _.forEach(unSupportedProperties, function (key) {
-                if (widgetProps[key]) {
-                    delete widgetProps[key];
-                }
-            });
+            if (widgetProps) {
+                _.forEach(unSupportedProperties, function (key) {
+                    if (widgetProps[key]) {
+                        delete widgetProps[key];
+                    }
+                });
+            }
+
             /* Inject show and disabled fields into each property object */
             if (CONSTANTS.isStudioMode) {
                 _.keys(widgetProps)
