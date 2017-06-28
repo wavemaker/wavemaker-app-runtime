@@ -1110,59 +1110,65 @@ WM.module('wm.widgets.basic')
             }
         }
 
-        // Define the property change handler. This function will be triggered when there is a change in the widget property
-        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-            var variableObj,
-                styleObj = {};
-            switch (key) {
-            case 'dataset':
-                scope.errMsg = '';
-                //Resetting the flag to false when the binding was removed
-                if (!newVal && !scope.binddataset) {
-                    scope.isVisuallyGrouped = false;
-                    scope.axisoptions = null;
-                }
+        //update property panel options and plot the chart
+        function handleDataSet(scope, newVal, element) {
+            var variableObj;
+            scope.errMsg = '';
+            //Resetting the flag to false when the binding was removed
+            if (!newVal && !scope.binddataset) {
+                scope.isVisuallyGrouped = false;
+                scope.axisoptions = null;
+            }
 
                 variableObj = getVariable(scope, element);
                 //setting the flag for the live variable in the scope for the checks
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable' && WM.isArray(newVal.data);
 
-                //If binded to a live variable feed options to the aggregation and group by
-                if (scope.isLiveVariable && CONSTANTS.isStudioMode) {
-                    //Updating the numeric and non primary columns when dataset is changed
-                    setNumericandNonPrimaryColumns(scope);
+            //If binded to a live variable feed options to the aggregation and group by
+            if (scope.isLiveVariable && CONSTANTS.isStudioMode) {
+                //Updating the numeric and non primary columns when dataset is changed
+                setNumericandNonPrimaryColumns(scope);
+            }
+
+            //liveVariables contain data in 'data' property' of the variable
+            scope.chartData = scope.isLiveVariable ? newVal && (newVal.data || '') : (newVal && newVal.dataValue === '' && _.keys(newVal).length === 1) ? '' : newVal;
+
+            //if the data returned is an object make it an array of object
+            if (!WM.isArray(scope.chartData) && WM.isObject(scope.chartData)) {
+                scope.chartData = [scope.chartData];
+            }
+
+            // perform studio mode actions
+            if (CONSTANTS.isStudioMode) {
+                /*Explicitly calling "updatePropertyPanelOptions" since charts rely on properties map to find the non primary key columns and data type of the columns.
+                 Properties map is getting set after updatePropertyPanelOptions is being called.
+                 Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
+                 */
+                WidgetUtilService.updatePropertyPanelOptions(scope);
+                //hiding the aggregation,group by and order by upon binding to the service variable
+                ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
+                if (!scope.binddataset) {
+                    resetProperties(scope);
                 }
-                scope.isServiceVariable = variableObj && (variableObj.category === 'wm.ServiceVariable' || variableObj.category === 'wm.WebSocketVariable');
+            }
 
-                //liveVariables contain data in 'data' property' of the variable
-                scope.chartData = scope.isLiveVariable ? newVal && (newVal.data || '') : (newVal && newVal.dataValue === '' && _.keys(newVal).length === 1) ? '' : newVal;
+            if (newVal && newVal.filterFields) {
+                scope.filterFields = newVal.filterFields;
+            }
 
-                //if the data returned is an object make it an array of object
-                if (!WM.isArray(scope.chartData) && WM.isObject(scope.chartData)) {
-                    scope.chartData = [scope.chartData];
-                }
+            // plotchart for only valid data and only after bound variable returns data
+            if (scope.chartData && !scope.variableInflight) {
+                scope._plotChartProxy();
+            }
+        }
 
-                // perform studio mode actions
-                if (CONSTANTS.isStudioMode) {
-                    /*Explicitly calling "updatePropertyPanelOptions" since charts rely on properties map to find the non primary key columns and data type of the columns.
-                     Properties map is getting set after updatePropertyPanelOptions is being called.
-                     Need non primary key columns for group by and numeric columns for aggregation column and data type for automatic column selection.
-                     */
-                    WidgetUtilService.updatePropertyPanelOptions(scope);
-                    //hiding the aggregation,group by and order by upon binding to the service variable
-                    ChartService.hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
-                    if (!scope.binddataset) {
-                        resetProperties(scope);
-                    }
-                }
-
-                if (newVal && newVal.filterFields) {
-                    scope.filterFields = newVal.filterFields;
-                }
-
-                // plotchart for only valid data and only after bound variable returns data
-                if (scope.chartData && !scope.variableInflight) {
-                    scope._plotChartProxy();
+        // Define the property change handler. This function will be triggered when there is a change in the widget property
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+            var styleObj = {};
+            switch (key) {
+            case 'dataset':
+                if (!(scope.isServiceVariable && CONSTANTS.isStudioMode)) {
+                    handleDataSet(scope, newVal, element);
                 }
                 break;
             case 'type':
@@ -1360,6 +1366,15 @@ WM.module('wm.widgets.basic')
                                 }
                             }));
                         }
+
+                        //In case of Studio mode, service variable don't have dataset, so triggering it on binddataset change
+                        handlers.push(scope.$watch('binddataset', function () {
+                            variableObj = getVariable(scope, element);
+                            scope.isServiceVariable = variableObj && (variableObj.category === 'wm.ServiceVariable' || variableObj.category === 'wm.WebSocketVariable');
+                            if (scope.isServiceVariable && CONSTANTS.isStudioMode) {
+                                handleDataSet(scope, scope.dataset, element);
+                            }
+                        }));
 
                         scope.$on('$destroy', onDestroy);
                         element.on('$destroy', onDestroy);
