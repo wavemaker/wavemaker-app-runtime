@@ -1,4 +1,4 @@
-/*global wm, WM, _, window, document, cordova*/
+/*global wm, WM, _, window, document, cordova, FileReader*/
 /*jslint sub: true */
 /**
  * @ngdoc service
@@ -356,6 +356,11 @@ wm.modules.wmCommon.services.DeviceFileService = [
         };
 
         if (window.cordova && window.cordova.file) {
+            /**
+             * Default READ_CHUNK_SIZE is 256 Kb. But with that setting readJson method is failing. This is an issue
+             * with cordova file plugin. So, increasing it to 512 Kb to read large database schema files (>256 Kb).
+             */
+            FileReader.READ_CHUNK_SIZE = 512 * 1024;
             initializationDone = DeviceService.waitForInitialization('DeviceFileService');
             init().finally(initializationDone);
         }
