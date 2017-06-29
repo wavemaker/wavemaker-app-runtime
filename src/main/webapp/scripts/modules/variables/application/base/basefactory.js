@@ -48,8 +48,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "type": {"hide": true, "required": false},
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": true},
-                    "service": {"type": "list", "required": true, "widgettype": "typeahead"},
-                    "operation": {"type": "list", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'},
+                    "service": {"type": "list", "required": true, "widgettype": "typeahead", "editonly": true, "isprimary": true},
+                    "operation": {"type": "list", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', "isprimary": true, "hide": true},
                     "operationType": {"type": "string", "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false},
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": true},
@@ -74,8 +74,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "editJson": {"hide": true},
                     "transformationRequired": {"hide": true},
                     "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
-                    "liveSource": {"type": "list", "required": true, "widgettype": "typeahead"},
-                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead"},
+                    "liveSource": {"type": "list", "required": true, "widgettype": "typeahead", "editonly": true, "isprimary": true},
+                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead", "isprimary": true},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"type": "number", "value": 10},
                     "ignoreCase": {"type": "boolean", "value": true},
@@ -112,7 +112,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "required": true, "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
+                    "operation": {"type": "list", "required": true, "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage", "isprimary": true},
                     "dataBinding": {"type": "string", "value": [], "hide": true},
                     "pageTransitions": {"type": "list", "widgettype": "typeahead", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true},
                     "dataSet": {"hide": true, "value": []}
@@ -120,7 +120,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "required": true, "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
+                    "operation": {"type": "list", "required": true, "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert", "isprimary": true}, //"prompt", "warnOnce" to be added
                     "onCancel": {"type": 'event', "options": variableEventOptions, "disabled": true, "hide": true},
                     "onClose": {"type": 'event', "options": variableEventOptions},
                     "onOk": {"type": 'event', "options": variableEventOptions},
@@ -141,8 +141,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
                     "dataBinding": {"type": "object", "value": [], "hide": true},
-                    "service": {"type": "list", "options": [], "required": true},
-                    "operation": {"type": "list", "hide": true, "options": [], "required": true},
+                    "service": {"type": "list", "options": [], "required": true, "isprimary": true},
+                    "operation": {"type": "list", "hide": true, "options": [], "required": true, "isprimary": true},
                     "autoUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "widgettype": "typeahead", "hide": true},
@@ -163,8 +163,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "type": {"hide": true},
                     "operation": {"hide": true},
                     "operationId": {"hide": true},
-                    "startUpdate": {"type": "boolean", "widgettype": "boolean", "displayName": "Connect on page load", "value": true},
-                    "dataUpdateStrategy": {"type": "string", "widgettype": "list", "options": {"refresh": "Refresh dataSet", "append": "Add as last record in dataSet", "prepend": "Add as first record in dataSet"}, "value": "refresh", "displayName": "On New Data"},
+                    "startUpdate": {"type": "boolean", "widgettype": "boolean", "value": true},
+                    "dataUpdateStrategy": {"type": "string", "widgettype": "list", "options": {"refresh": "Refresh dataSet", "append": "Add as last record in dataSet", "prepend": "Add as first record in dataSet"}, "value": "refresh"},
                     "dataLimit": {"type": "number", "value": 20},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
 
@@ -310,6 +310,19 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             return variableMap[variableType].methods[method](variable, options, successCallBack, errorCallBack);
         }
 
+        function getPropertiesByServiceType(serviceType) {
+            var props = {
+                "database": {
+                    "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
+                    "target": {"displayName": "Target", "type": "string", "required": true, "widgettype": "radioset", "options": {"table": "table", "query": "query", "procedure": "procedure"}}
+                },
+                "web": {
+                    "service": {"displayName": "Select Service", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
+                }
+            };
+            return props[serviceType] || props;
+        }
+
         return {
             /**
              * @ngdoc method
@@ -376,7 +389,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
              * @param {string} variableType Type/category of the variable.
              * @param {string} variableName Name of the variable.
              */
-            invoke: invoke
+            invoke: invoke,
+            getPropertiesByServiceType: getPropertiesByServiceType
         };
     }
 ];

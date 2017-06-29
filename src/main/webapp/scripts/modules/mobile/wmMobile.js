@@ -94,7 +94,8 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 'collectionType': 'data',
                 'category': 'wm.DeviceVariable',
                 'defaultName': 'deviceVariable',
-                'newVariableKey': 'New DeviceVariable'
+                'newVariableKey': 'New DeviceVariable',
+                'serviceTypes': ['device']
             });
             /* Add additional event options.*/
             WIDGET_CONSTANTS.EVENTS_OPTIONS.push('New DeviceVariable');

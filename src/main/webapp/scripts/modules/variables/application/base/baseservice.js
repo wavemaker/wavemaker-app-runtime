@@ -54,69 +54,89 @@ wm.variables.services.Variables = [
             startUpdateQueue = {},
             lazySartUpdateQueue = {},
             internalBoundNodeMap = {},
+            serviceToCategoryMap = {
+                "database": ['wm.LiveVariable', 'wm.ServiceVariable'],
+                "web": ['wm.ServiceVariable', 'wm.WebSocketVariable'],
+                "java": ['wm.ServiceVariable'],
+                "custom": ['wm.Variable'],
+                "navigation": ['wm.NavigationVariable'],
+                "notification": ['wm.NotificationVariable'],
+                "login": ['wm.LoginVariable'],
+                "logout": ['wm.LogoutVariable'],
+                "timer": ['wm.TimerVariable']
+            },
             variableConfig = {
                 "wm.LiveVariable": {
                     "collectionType" : "data",
+                    "serviceTypes" : ["database"],
                     "category"       : "wm.LiveVariable",
-                    "defaultName"    : "liveVariable",
+                    "defaultName"    : "databaseVariable",
                     "spinnerInFlight": true,
-                    "newVariableKey": "New LiveVariable"
+                    "newVariableKey": "New Database Variable"
                 },
                 "wm.ServiceVariable" : {
                     "collectionType" : "data",
+                    "serviceTypes" : ["database", "web", "java"],
                     "category"       : "wm.ServiceVariable",
                     "defaultName"    : "serviceVariable",
                     "spinnerInFlight": true,
-                    "newVariableKey": "New ServiceVariable"
+                    "newVariableKey": "New WebService Variable"
                 },
                 "wm.WebSocketVariable": {
                     "collectionType": "data",
+                    "serviceTypes" : ["web"],
                     "category"      : "wm.WebSocketVariable",
                     "defaultName"   : "webSocketVariable",
                     "methods"       : ['open', 'send', 'close'],
-                    "newVariableKey": "New WebSocketVariable"
-                },
-                "wm.NavigationVariable": {
-                    "collectionType": "call",
-                    "category"      : "wm.NavigationVariable",
-                    "defaultName"   : "navigationVariable",
-                    "newVariableKey": "New NavigationVariable"
-                },
-                "wm.NotificationVariable": {
-                    "collectionType": "call",
-                    "category"      : "wm.NotificationVariable",
-                    "defaultName"   : "notificationVariable",
-                    "newVariableKey": "New NotificationVariable"
+                    "newVariableKey": "New WebService Variable"
                 },
                 "wm.Variable": {
                     "collectionType": "data",
+                    "serviceTypes" : ["custom"],
                     "category"      : "wm.Variable",
                     "defaultName"   : "staticVariable",
                     "hideInEvents"  : true
                 },
+                "wm.NavigationVariable": {
+                    "collectionType": "action",
+                    "serviceTypes": ["navigation"],
+                    "category"      : "wm.NavigationVariable",
+                    "defaultName"   : "navigationAction",
+                    "newVariableKey": "New NavigationVariable"
+                },
                 "wm.LoginVariable": {
-                    "collectionType" : "data",
+                    "collectionType" : "action",
+                    "serviceTypes": ["login"],
                     "category"       : "wm.LoginVariable",
-                    "defaultName"    : "loginVariable",
+                    "defaultName"    : "loginAction",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
                     "newVariableKey": "New LoginVariable",
                     "hideInEvents"  : true
                 },
                 "wm.LogoutVariable": {
-                    "collectionType" : "data",
+                    "collectionType" : "action",
+                    "serviceTypes": ["logout"],
                     "category"       : "wm.LogoutVariable",
-                    "defaultName"    : "logoutVariable",
+                    "defaultName"    : "logoutAction",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
                     "newVariableKey": "New LogoutVariable",
                     "hideInEvents"  : true
                 },
                 "wm.TimerVariable": {
-                    "collectionType": "data",
+                    "collectionType": "action",
+                    "serviceTypes": ["timer"],
                     "category"      : "wm.TimerVariable",
-                    "defaultName"   : "timerVariable",
+                    "defaultName"   : "timerAction",
                     "newVariableKey": "New TimerVariable"
+                },
+                "wm.NotificationVariable": {
+                    "collectionType": "action",
+                    "serviceTypes": ["notification"],
+                    "category"      : "wm.NotificationVariable",
+                    "defaultName"   : "notificationAction",
+                    "newVariableKey": "New NotificationVariable"
                 }
             },
 
@@ -849,7 +869,7 @@ wm.variables.services.Variables = [
                 });
             },
 
-        /* function to update variable values in $rootScope */
+            /* function to update variable values in $rootScope */
             updateVariableValues = function (activePageName, isUpdatePageVariables) {
 
                 /*If the flag to update only page level variables is set, then do not trigger the update function for app-level variables*/
@@ -864,7 +884,7 @@ wm.variables.services.Variables = [
                 }
             },
 
-        /* function to set page variables for a specified page*/
+            /* function to set page variables for a specified page*/
             setPageVariables = function (pageName, pageVariables) {
                 /* check for existence */
                 self.variableCollection = self.variableCollection || {};
@@ -910,7 +930,7 @@ wm.variables.services.Variables = [
                 }
             },
 
-        /* function to set page variables for a specified page*/
+            /* function to set page variables for a specified page*/
             setAppVariables = function (appVariables) {
                 /* check for existence */
                 self.variableCollection = self.variableCollection || {};
@@ -1187,7 +1207,65 @@ wm.variables.services.Variables = [
                 return getVariableByName(name) && getVariableByName(name).category;
             },
 
-           /* function to return variable category list to populate in filter dropdowns */
+            getCategoriesByServiceType = function (serviceType) {
+                return serviceToCategoryMap[serviceType];
+            },
+
+            getServiceTypesByCategory = function (category) {
+                return variableConfig[category].serviceTypes;
+            },
+
+            getVariableServiceType = function (variableObject) {
+                var category = variableObject.category,
+                    serviceType = getServiceTypesByCategory(category);
+                if (serviceType.length === 1) {
+                    serviceType = serviceType[0];
+                } else {
+                    switch (category) {
+                    case 'wm.LiveVariable':
+                        serviceType = 'database';
+                        break;
+                    case 'wm.ServiceVariable':
+                        if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA) {
+                            serviceType = 'database';
+                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
+                            serviceType = 'java';
+                        } else {
+                            serviceType = 'web';
+                        }
+                        break;
+                    default:
+                        serviceType = serviceType[0];
+                    }
+                }
+                return serviceType;
+            },
+
+            getServiceTypesByCollectionType = function (collectionType) {
+                var serviceTypes = [],
+                    isPrefabProject = $rootScope.isPrefabTemplate,
+                    filteredVariables = [];
+
+                if (!isPrefabProject) {
+                    _.forEach(variableConfig, function (variable) {
+                        if (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType) {
+                            filteredVariables.push(variable);
+                        }
+                    });
+                } else {
+                    _.forEach(variableConfig, function (variable) {
+                        if (!variable.appOnly && (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType)) {
+                            filteredVariables.push(variable);
+                        }
+                    });
+                }
+                _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
+                    serviceTypes = _.union(serviceTypes, variable.serviceTypes)
+                });
+                return serviceTypes;
+            },
+
+            /* function to return variable category list to populate in filter dropdowns */
             getVariableCategoryList = function (collectionType, getKeysList) {
                 var categoryList = {},
                     isPrefabProject = $rootScope.isPrefabTemplate,
@@ -1217,7 +1295,7 @@ wm.variables.services.Variables = [
                 return categoryList;
             },
 
-           /* function to check if variable with specified name exists in the collection*/
+            /* function to check if variable with specified name exists in the collection*/
             isExists = function (variableName, caseSensitive, unsavedVariableName) {
                 var variables = self.variableCollection,
                     arrOfVariables;
@@ -1271,7 +1349,7 @@ wm.variables.services.Variables = [
                 }
             },
 
-           /* function to create default non-conflicting name for a variable */
+            /* function to create default non-conflicting name for a variable */
             generateUniqueName = function (category, name, overWrite, unsavedVariableName) {
                 var defaultName,
                     nameIteratorKey = category;
@@ -1319,7 +1397,7 @@ wm.variables.services.Variables = [
                 return retVal;
             },
 
-        /*function to retrieve service and live variables from the collection, other than the variable name provided.*/
+            /*function to retrieve service and live variables from the collection, other than the variable name provided.*/
             retrieveEventCallbackVariables = function (variableName, context) {
                 var variableArray = [],
                     methods,
@@ -1382,7 +1460,7 @@ wm.variables.services.Variables = [
                 });
                 return variables;
             },
-        /*function to create a variable*/
+            /*function to create a variable*/
             create = function (type, options, name, overWrite) {
                 /* type sanity checking */
                 type = type || "wm.Variable";
@@ -1402,7 +1480,7 @@ wm.variables.services.Variables = [
                 WM.extend(variableObj, BaseVariablePropertyFactory.getProperties(type), {name: defaultName}, options);
                 return variableObj;
             },
-        /*function to store a variable to the collection*/
+            /*function to store a variable to the collection*/
             store = function (owner, name, variableObj, isUpdate, fetchData) {
                 /* sanity checking */
                 if (!variableObj) {
@@ -1599,7 +1677,7 @@ wm.variables.services.Variables = [
                 return false;
             },
 
-        /*function to filter the variable collection based on the object map provided*/
+            /*function to filter the variable collection based on the object map provided*/
             filterByVariableKeys = function (variableParams, searchAllContexts) {
                 var variables = self.variableCollection,
                     currentVariable,
@@ -1811,10 +1889,10 @@ wm.variables.services.Variables = [
             });
             //Extend the event_options with variable types
             _.forEach(variableConfig, function (variable) {
-                if (!variable.hideInEvents) {
+                if (!variable.hideInEvents && !_.includes(WIDGET_CONSTANTS.EVENTS_OPTIONS, variable.newVariableKey)) {
                     WIDGET_CONSTANTS.EVENTS_OPTIONS.push(variable.newVariableKey);
                 }
-            })
+            });
         }
 
         returnObject = {
@@ -2099,6 +2177,39 @@ wm.variables.services.Variables = [
              * return {object} variable categories list
              */
             'getVariableCategoryList': getVariableCategoryList,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#getServiceTypesByCollectionType
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Returns the variable category list supported
+             * @param {string} collectionType grouping of the variable categories (data, call)
+             * return {object} variable categories list
+             */
+            'getServiceTypesByCollectionType': getServiceTypesByCollectionType,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#getCategoriesByServiceType
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Returns the variable category list supported
+             * @param {string} collectionType grouping of the variable categories (data, call)
+             * return {object} variable categories list
+             */
+            'getCategoriesByServiceType': getCategoriesByServiceType,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#getServiceTypesByCategory
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Returns the variable category list supported
+             * @param {string} collectionType grouping of the variable categories (data, call)
+             * return {object} variable categories list
+             */
+            'getVariableServiceType': getVariableServiceType,
 
             /**
              * @ngdoc method
@@ -2480,6 +2591,10 @@ wm.variables.services.Variables = [
                 variableConfig[config.category] = config;
                 variableCategoryToNameMap[config.category] = config.defaultName;
                 self.variableNameIterator[config.category] = 1;
+                _.forEach(config.serviceTypes, function (serviceType) {
+                    serviceToCategoryMap[serviceType] = serviceToCategoryMap[serviceType] || [];
+                    serviceToCategoryMap[serviceType].push(config.category);
+                });
             },
 
             isSpinnerType : function(category) {
