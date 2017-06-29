@@ -588,7 +588,7 @@ WM.module('wm.widgets.live')
                                 if (scope.$id === scopeId) {
                                     var markupObj  = WM.element('<div>' + markup + '</div>'),
                                         fieldsObj  = markupObj.find('> :not(wm-filter-action)'),
-                                        actionsObj = markupObj.find('wm-filter-action');
+                                        actionsObj = markupObj.find('> wm-filter-action');
 
                                     scope.filterConstructed = fromDesigner;
                                     scope.variableName = variableName;
@@ -824,10 +824,10 @@ WM.module('wm.widgets.live')
 
                         $livefilter = element.closest('[data-identifier="livefilter"]');
                         if (_.includes(buttonDef.position, 'header')) {
-                            $livefilter.find('.panel-heading .basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
+                            $livefilter.find('> .panel-heading .basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         }
                         if (_.includes(buttonDef.position, 'footer')) {
-                            $livefilter.find('.panel-footer.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
+                            $livefilter.find('> .panel-footer.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         }
                         $compile(element.contents())(scope.parentIsolateScope);
                         //Removing the default template for the directive
