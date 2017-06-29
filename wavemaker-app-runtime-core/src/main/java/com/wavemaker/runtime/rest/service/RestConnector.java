@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.rest.service;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +48,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.ResponseExtractor;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
 import com.wavemaker.commons.util.SSLUtils;
@@ -67,30 +69,32 @@ public class RestConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(RestConnector.class);
 
+    public void invokeRestCall(HttpRequestDetails httpRequestDetails, ResponseExtractor responseExtractor) {
+        final HttpClientContext httpClientContext = HttpClientContext.create();
+        getResponseEntity(httpRequestDetails, httpClientContext, null, responseExtractor);
+    }
+
     public HttpResponseDetails invokeRestCall(HttpRequestDetails httpRequestDetails) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
-
-        logger.debug("Sending {} request to URL {}", httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
-        //TODO need to directly read the stream instead of storing in byte[], read https://jira.spring.io/browse/SPR-7357
-        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails, httpClientContext, byte[].class);
+        ResponseEntity<byte[]> responseEntity = getResponseEntity(httpRequestDetails, httpClientContext, byte[].class, null);
         return getHttpResponseDetails(responseEntity);
     }
 
     public <T> ResponseEntity<T> invokeRestCall(HttpRequestDetails httpRequestDetails, Class<T> t) {
-
-        logger.debug("Sending {} request to URL {}", httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
         final HttpClientContext httpClientContext = HttpClientContext.create();
-        return getResponseEntity(httpRequestDetails, httpClientContext, t);
+        return getResponseEntity(httpRequestDetails, httpClientContext, t, null);
     }
 
     private <T> ResponseEntity<T> getResponseEntity(
             final HttpRequestDetails httpRequestDetails, final HttpClientContext
-            httpClientContext, Class<T> t) {
+            httpClientContext, Class<T> t, final ResponseExtractor responseExtractor) {
 
+        String endpointAddress = httpRequestDetails.getEndpointAddress();
         HttpMethod httpMethod = HttpMethod.valueOf(httpRequestDetails.getMethod());
+        logger.debug("Sending {} request to URL {}", httpMethod, endpointAddress);
 
         CloseableHttpClient httpClient = getHttpClient();
-        String endpointAddress = httpRequestDetails.getEndpointAddress();
+        
 
         final RequestConfig requestConfig = RequestConfig.custom()
                 .setRedirectsEnabled(httpRequestDetails.isRedirectEnabled())
@@ -115,7 +119,11 @@ public class RestConnector {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
-        WMRestTemplate wmRestTemplate = new WMRestTemplate();
+        WMRestTemplate wmRestTemplate = new WMRestTemplate() {
+            protected <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
+                return (responseExtractor != null) ? responseExtractor : super.responseEntityExtractor(responseType);
+            }
+        };
         wmRestTemplate.setRequestFactory(clientHttpRequestFactory);
         wmRestTemplate.setErrorHandler(getExceptionHandler());
         HttpEntity requestEntity;

@@ -15,10 +15,6 @@
  */
 package com.wavemaker.runtime.rest.controller;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
-import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.service.RestRuntimeService;
 
 /**
@@ -54,27 +48,10 @@ public class RestRuntimeController {
             throw new WMRuntimeException("operationId is empty");
         }
 
-        executeRestCall(serviceId, operationId, httpServletRequest, httpServletResponse);
-    }
-
-    private void executeRestCall(String serviceId, String operationId,
-                                 HttpServletRequest httpServletRequest,
-                                 HttpServletResponse httpServletResponse) throws IOException {
-        HttpResponseDetails httpResponseDetails;
         try {
-            httpResponseDetails = restRuntimeService.executeRestCall(serviceId, operationId, httpServletRequest);
+            restRuntimeService.executeRestCall(serviceId, operationId, httpServletRequest, httpServletResponse);
         } catch (Throwable e) {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);
         }
-        httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
-        Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
-        for (String responseHeaderKey : responseHeaders.keySet()) {
-            List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
-            for (String responseHeaderValue : responseHeaderValueList) {
-                httpServletResponse.setHeader(responseHeaderKey, responseHeaderValue);
-            }
-        }
-        
-        IOUtils.copy(httpResponseDetails.getBody(), httpServletResponse.getOutputStream(), true, false);
     }
 }

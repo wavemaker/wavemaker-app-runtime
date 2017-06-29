@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.runtime.WMAppContext;
@@ -37,13 +38,15 @@ public class RestRuntimeServiceCacheHelper {
 
     private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<String, Swagger>();
 
-    public Swagger getSwaggerDoc(String serviceId) throws IOException {
+    public Swagger getSwaggerDoc(String serviceId) {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {
             InputStream stream = null;
             try {
                 stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
                 Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
                 serviceIdVsSwaggerCache.put(serviceId, swaggerDoc);
+            } catch (IOException e) {
+                throw new WMRuntimeException("Failed to read the swagger for the service " + serviceId, e);
             } finally {
                 IOUtils.closeSilently(stream);
             }

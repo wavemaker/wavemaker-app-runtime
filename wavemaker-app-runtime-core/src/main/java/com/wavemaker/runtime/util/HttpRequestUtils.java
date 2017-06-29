@@ -19,13 +19,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -36,8 +39,10 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
+import com.wavemaker.runtime.rest.model.HttpResponseDetails;
 import com.wavemaker.runtime.rest.model.Message;
 
 /**
@@ -45,7 +50,6 @@ import com.wavemaker.runtime.rest.model.Message;
  */
 public class HttpRequestUtils {
     private HttpRequestUtils() {
-
     }
 
     public static boolean isAjaxRequest(HttpServletRequest request) {
@@ -59,6 +63,26 @@ public class HttpRequestUtils {
         String serviceHostUrl = requestURL.substring(0, requestURL.lastIndexOf(contextPath));
         String serviceUrl = serviceHostUrl + contextPath;
         return serviceUrl;
+    }
+    
+    public static void writeResponse(HttpResponseDetails httpResponseDetails, HttpServletResponse httpServletResponse) throws IOException {
+        httpServletResponse.setStatus(httpResponseDetails.getStatusCode());
+        Map<String, List<String>> responseHeaders = httpResponseDetails.getHeaders();
+        for (String responseHeaderKey : responseHeaders.keySet()) {
+            List<String> responseHeaderValueList = responseHeaders.get(responseHeaderKey);
+            for (String responseHeaderValue : responseHeaderValueList) {
+                httpServletResponse.setHeader(responseHeaderKey, responseHeaderValue);
+            }
+        }
+        InputStream inputStream = httpResponseDetails.getBody();
+        if (inputStream != null) {
+            try {
+                OutputStream outputStream = httpServletResponse.getOutputStream();
+                IOUtils.copy(inputStream, outputStream);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
     }
 
     public static Message getFormMessage(Map<String, Object> map) {
