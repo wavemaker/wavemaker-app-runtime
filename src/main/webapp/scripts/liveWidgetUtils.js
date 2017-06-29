@@ -2456,6 +2456,21 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            //Function to find out the first invalid element in form
+            function findInvalidElement($formEle, ngForm) {
+                var $ele    = $formEle.find('.ng-invalid:visible:first'),
+                    formObj = ngForm;
+                //If element is form, find out the first invalid element in this form
+                if ($ele.is('form')) {
+                    formObj = ngForm && ngForm[$ele.attr('name')];
+                    return findInvalidElement($ele, formObj);
+                }
+                return {
+                    'ngForm' : formObj,
+                    '$ele'   : $ele
+                };
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.validateFieldsOnSubmit
@@ -2470,7 +2485,10 @@ WM.module('wm.widgets.live')
              * @param {object} $formEle form element
              */
             function validateFieldsOnSubmit($scope, ngForm, $formEle) {
-                var $invalidEle;
+                var $invalidEle,
+                    eleForm,
+                    $invalidForm,
+                    ngEle;
                 //Disable the form submit if form is in invalid state. For delete operation, do not check the validation.
                 if ($scope.operationType !== 'delete' && ($scope.validationtype === 'html' || $scope.validationtype === 'default') && ngForm && ngForm.$invalid) {
                     //For blob type required fields, even if file is present, required error is shown.
@@ -2487,13 +2505,18 @@ WM.module('wm.widgets.live')
                         }
                         //Find the first invalid untoched element and set it to touched.
                         // Safari does not form validations. this will ensure that error is shown for user
-                        $invalidEle = $formEle.find(':not(form).ng-invalid:visible:first');
-                        if ($invalidEle.length && ngForm[$invalidEle.attr('name')]) {
+                        eleForm      = findInvalidElement($formEle, ngForm);
+                        $invalidForm = eleForm.ngForm;
+                        $invalidEle  = eleForm.$ele;
+                        if ($invalidEle.length) {
                             // on save click in page layout liveform, focus of autocomplete widget opens full-screen search.
                             if ($invalidEle.attr('type') !== 'autocomplete') {
                                 $invalidEle.focus();
                             }
-                            ngForm[$invalidEle.attr('name')].$setTouched();
+                            ngEle = $invalidForm && $invalidForm[$invalidEle.attr('name')];
+                            if (ngEle && ngEle.$setTouched) {
+                                ngEle.$setTouched();
+                            }
                             return true;
                         }
                     }
