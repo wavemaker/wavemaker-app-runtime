@@ -15,10 +15,7 @@
  */
 package com.wavemaker.runtime.file.manager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -50,8 +47,16 @@ public class FileServiceManager {
         File outputFile = createUniqueFile(file.getOriginalFilename(), relativeUploadDirectory);
 
                 /* Write the file to the filesystem */
-        FileOutputStream fos = new FileOutputStream(outputFile);
-        IOUtils.copy(file.getInputStream(), fos, true, true);
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            inputStream = file.getInputStream();
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+            IOUtils.copy(inputStream, outputStream);
+        } finally {
+            IOUtils.closeSilently(inputStream);
+            IOUtils.closeSilently(outputStream);
+        }
 
         return outputFile;
     }
@@ -75,8 +80,16 @@ public class FileServiceManager {
         File outputFile = new File(relativeUploadDirectory, targetFilename);
 
         /* Write the file to the filesystem */
-        FileOutputStream fos = new FileOutputStream(outputFile);
-        IOUtils.copy(file.getInputStream(), fos, true, true);
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            inputStream = file.getInputStream();
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+            IOUtils.copy(inputStream, outputStream);
+        } finally {
+            IOUtils.closeSilently(inputStream);
+            IOUtils.closeSilently(outputStream);
+        }
 
 
         return outputFile;

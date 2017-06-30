@@ -50,9 +50,15 @@ public class PrefabWebContentServlet extends HttpServlet {
         if (contentType != null) {
             response.setContentType(contentType);
         }
-        InputStream inputStream = getServletContext().getResourceAsStream(prefabResourceUpdatedPath);
-        ServletOutputStream outputStream = response.getOutputStream();
-        IOUtils.copy(inputStream, outputStream, true, false);
+
+        InputStream inputStream = null;
+        try {
+            inputStream = getServletContext().getResourceAsStream(prefabResourceUpdatedPath);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copy(inputStream, outputStream);
+        } finally {
+            IOUtils.closeSilently(inputStream);
+        }
     }
 
 
