@@ -1039,25 +1039,25 @@ WM.module('wm.widgets.live')
                         if (scope.widgetid) {
                             /* event emitted on building new markup from canvasDom */
                             handlers.push($rootScope.$on('compile-live-form-fields', function (event, scopeId, markup, fromDesigner) {
-
-                                if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
-                                    if (scope.formlayout === 'page') {
-                                        // recompile the pageTemplate.
-                                        element.html(pageTemplate);
-                                        scope.buttonArray = undefined;
-                                        $compile(element.contents())(scope);
-                                        element.addClass('app-device-liveform');
-                                    } else {
-                                        // recompile the default template
-                                        element.html(defaultTemplate);
-                                        element.find('.basic-btn-grp').empty();
-                                        $compile(element.contents())(scope);
-                                        element.removeClass('app-device-liveform').addClass('app-liveform');
-                                    }
-                                }
-
                                 /* as multiple form directives will be listening to the event, apply field-definitions only for current form */
                                 if (scope.$id === scopeId) {
+
+                                    if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
+                                        if (scope.formlayout === 'page') {
+                                            // recompile the pageTemplate.
+                                            element.html(pageTemplate);
+                                            scope.buttonArray = undefined;
+                                            $compile(element.contents())(scope);
+                                            element.addClass('app-device-liveform');
+                                        } else {
+                                            // recompile the default template
+                                            element.html(defaultTemplate);
+                                            element.find('.basic-btn-grp').empty();
+                                            $compile(element.contents())(scope);
+                                            element.removeClass('app-device-liveform').addClass('app-liveform');
+                                        }
+                                    }
+
                                     scope.formFields = undefined;
                                     scope.buttonArray = undefined;
                                     element.find('.form-elements').empty();
@@ -1068,7 +1068,7 @@ WM.module('wm.widgets.live')
                                         scope.formConstructed = true;
                                         var markupObj = WM.element('<div>' + markup + '</div>'),
                                             fieldsObj = markupObj.find('> :not(wm-form-action)'), // select nodes other than form-actions
-                                            actionsObj = markupObj.find('wm-form-action'); // select form-action nodes
+                                            actionsObj = markupObj.find('> wm-form-action'); // select form-action nodes
 
                                         /* if layout grid template found, simulate canvas dom addition of the elements */
                                         if (fieldsObj) {
@@ -1442,14 +1442,14 @@ WM.module('wm.widgets.live')
                             scope.buttonArray[index].action = buttonDef.action;
                         } else {
                             if (parentScope.isLayoutDialog) {
-                                $liveForm.find('.basic-btn-grp').append($compile(template)(parentScope));
+                                $liveForm.find('>.basic-btn-grp').append($compile(template)(parentScope));
                             } else {
                                 /*append the buttons template to element with class basic-btn-grp*/
                                 if (_.includes(buttonDef.position, 'header')) {
-                                    $liveForm.find('.panel-heading .basic-btn-grp').append($compile(template)(parentScope));
+                                    $liveForm.find('>.panel-heading .basic-btn-grp').append($compile(template)(parentScope));
                                 }
                                 if (_.includes(buttonDef.position, 'footer')) {
-                                    $liveForm.find('.panel-footer.basic-btn-grp').append($compile(template)(parentScope));
+                                    $liveForm.find('>.panel-footer.basic-btn-grp').append($compile(template)(parentScope));
                                 }
                             }
                         }

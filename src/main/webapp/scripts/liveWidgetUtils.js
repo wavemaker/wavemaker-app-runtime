@@ -16,8 +16,9 @@ WM.module('wm.widgets.live')
         'CONSTANTS',
         'WidgetUtilService',
         'Variables',
+        '$timeout',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
@@ -2511,7 +2512,9 @@ WM.module('wm.widgets.live')
                         if ($invalidEle.length) {
                             // on save click in page layout liveform, focus of autocomplete widget opens full-screen search.
                             if ($invalidEle.attr('type') !== 'autocomplete') {
-                                $invalidEle.focus();
+                                $timeout(function () {
+                                    $invalidEle.focus();
+                                }, undefined, false);
                             }
                             ngEle = $invalidForm && $invalidForm[$invalidEle.attr('name')];
                             if (ngEle && ngEle.$setTouched) {
