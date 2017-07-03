@@ -649,7 +649,7 @@ WM.module('wm.widgets.live')
                     if (!isPreviousData) {
                         element = getFormElement();
                         //Set the values of the widgets inside the live form (other than form fields) in form data
-                        LiveWidgetUtils.setFormWidgetsValues(element, dataObject);
+                        LiveWidgetUtils.setFormWidgetsValues($scope, element, dataObject);
                         $scope.dataoutput = dataObject;
                     }
                     return dataObject;

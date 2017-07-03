@@ -1912,7 +1912,8 @@ WM.module('wm.widgets.live')
              * @param {object} dataObject current column/ group config
              *
              */
-            function setFormWidgetsValues($el, dataObject) {
+            function setFormWidgetsValues($s, $el, dataObject) {
+                var parentScope;
                 if (!$el) {
                     return;
                 }
@@ -1931,16 +1932,41 @@ WM.module('wm.widgets.live')
                 });
                 //Form fields wont't contain grid widgets get those using attribute and add to form data
                 $el.find('[data-identifier="grid"]').each(function () {
-                    var fieldTarget,
-                        formWidget = WM.element(this).isolateScope();
-                    fieldTarget = _.split(formWidget.key || formWidget.name, '.');
-                    if (fieldTarget.length === 1) {
-                        dataObject[fieldTarget[0]] = formWidget.datavalue || formWidget.dataset;
-                    } else {
-                        dataObject[fieldTarget[0]] = dataObject[fieldTarget[0]] || {};
-                        dataObject[fieldTarget[0]][fieldTarget[1]] = formWidget.datavalue || formWidget.dataset;
-                    }
+                    var formWidget = WM.element(this).isolateScope();
+                    _.set(dataObject, formWidget.key || formWidget.name, formWidget.datavalue || formWidget.dataset);
                 });
+
+                if ($s._widgettype !== 'wm-liveform') {
+                    $s.dataoutput = dataObject;
+                    return;
+                }
+
+                //Form fields wont't contain form widgets get those using attribute and add to form data
+                $el.find('[data-identifier="liveform"]')
+                    .filter(function () { //Check for the first level inner form
+                        return WM.element(this).parent().closest('[data-identifier="liveform"]').attr('name') === $s.name;
+                    })
+                    .each(function () {
+                        var $formEle   = WM.element(this),
+                            formWidget = $formEle.isolateScope(),
+                            formKey    = $formEle.attr('key') || formWidget.name,
+                            dataOutput;
+                        //If is list is true, push the new data object, else assign the form data
+                        if ($formEle.attr('is-list') === 'true') {
+                            dataOutput = _.isArray(_.get(dataObject, formKey)) ? _.get(dataObject, formKey) : [];
+                            _.set(dataObject, formKey, dataOutput.concat(formWidget.dataoutput));
+                        } else {
+                            _.set(dataObject, formKey, formWidget.dataoutput);
+                        }
+                    });
+
+                $s.dataoutput = dataObject;
+
+                //If parent form is present, update the dataoutput of the parent form
+                parentScope = $el.parent().closest('[data-identifier="liveform"]').isolateScope();
+                if (parentScope) {
+                    parentScope.constructDataObject();
+                }
             }
 
             /**
