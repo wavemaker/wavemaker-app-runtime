@@ -304,7 +304,7 @@ WM.module('wm.layouts.containers')
             resetFormState(scope);
             //Set the values of the widgets inside the form (other than form fields) in form data
             formData = scope.constructDataObject();
-            LiveWidgetUtils.setFormWidgetsValues(element, formData);
+            LiveWidgetUtils.setFormWidgetsValues(scope, element, formData);
             params = {$event: event, $scope: scope, $formData: formData};
             //If on before submit is there execute it and return here if result is false
             if (scope.onBeforesubmit && scope.onBeforesubmit(params) === false) {
