@@ -65,8 +65,9 @@ wm.modules.wmCommon.services.DeviceFileService = [
         function createFolderIfNotExists(parent, folders, fileTypeLocationMap) {
             var childPromises = [];
             _.forEach(folders, function (folder) {
-                var folderPath = parent + folder.name + '/';
+                var folderPath;
                 folder.name = folder.name.replace('{APP_NAME}', APP_NAME);
+                folderPath = parent + folder.name + '/';
                 if (folder.fileType && !fileTypeLocationMap[folder.fileType]) {
                     fileTypeLocationMap[folder.fileType] = folderPath;
                 }
