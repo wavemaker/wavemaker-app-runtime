@@ -978,6 +978,14 @@ WM.module('wm.widgets.live')
                 return scope.formWidget;
             }
 
+            //function to update datafield, display field in the property panel
+            function updatePropertyPanelOptions(scope) {
+                WidgetUtilService.updatePropertyPanelOptions(scope);
+                if (scope.widget === 'autocomplete') {
+                    FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
+                }
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#fieldPropertyChangeHandler
@@ -1028,6 +1036,9 @@ WM.module('wm.widgets.live')
                 case 'dataset':
                     /*if studio-mode, then update the displayField & dataField in property panel for dataset widgets*/
                     if (scope.widgetid && isDataSetWidgets[attrs.widget]) {
+
+                        updatePropertyPanelOptions(scope);
+
                         if (WM.isDefined(newVal) && newVal !== null) {
                             if (newVal === '') {
                                 $rs.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
@@ -1035,10 +1046,7 @@ WM.module('wm.widgets.live')
                             } else {
                                 wdgtProperties.limit.show = scope.widget === 'autocomplete';
                             }
-                            WidgetUtilService.updatePropertyPanelOptions(scope);
-                            if (scope.widget === 'autocomplete') {
-                                FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
-                            }
+
                             element.removeAttr('data-evaluated-dataset');
                         } else {
                             //Show limit if dataset is not bound
@@ -1078,8 +1086,12 @@ WM.module('wm.widgets.live')
                     setFormField();
                     break;
                 case 'active':
-                    if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
-                        FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
+                    if (scope.widgetid && newVal) {
+                        if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
+                            FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
+                        } else if (isDataSetWidgets[scope.widget]) {
+                            updatePropertyPanelOptions(scope);
+                        }
                     }
                     break;
                 }
