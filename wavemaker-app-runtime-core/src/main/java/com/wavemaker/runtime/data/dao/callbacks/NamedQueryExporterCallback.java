@@ -20,12 +20,12 @@ import java.sql.ResultSet;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
@@ -64,11 +64,11 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
     public ByteArrayOutputStream doInHibernate(final Session session) throws HibernateException {
         QueryExtractor queryExtractor;
         Query namedQuery = session.getNamedQuery(queryName);
-        final boolean isNative = namedQuery instanceof SQLQuery;
+        final boolean isNative = namedQuery instanceof NativeQuery;
         final Sort sort = pageable.getSort();
         if (isNative) {
             namedQuery = QueryHelper
-                    .createNewNativeQueryWithSorted(session, (SQLQuery) namedQuery, responseType, sort);
+                    .createNewNativeQueryWithSorted(session, (NativeQuery) namedQuery, responseType, sort);
             setQueryProps(namedQuery);
             WMResultTransformer resultTransformer = Transformers.aliasToMappedClass(responseType);
             final ResultSet resultSet = DataSourceExporterUtil.constructResultSet(namedQuery.scroll());

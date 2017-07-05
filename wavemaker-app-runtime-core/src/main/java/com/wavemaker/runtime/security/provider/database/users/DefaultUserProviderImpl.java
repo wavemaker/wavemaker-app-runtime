@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Session;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -81,7 +81,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             final List list = session.createQuery(usersByUsernameQuery).setParameter(USERNAME, username).list();
             return getWmUser(list);
         } else {
-            final List list = session.createSQLQuery(usersByUsernameQuery).setParameter(USERNAME, username).list();
+            final List list = session.createNativeQuery(usersByUsernameQuery).setParameter(USERNAME, username).list();
             return getWmUser(list);
         }
     }

@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
@@ -273,9 +273,9 @@ public class WMObjectMapper extends ObjectMapper {
             setConfig(getSerializationConfig().withView(Object.class));
 
 
-            Hibernate4Module hibernate4Module = new Hibernate4Module();
-            hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-            registerModule(hibernate4Module);
+            Hibernate5Module hibernate5Module = new Hibernate5Module();
+            hibernate5Module.disable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
+            registerModule(hibernate5Module);
 
             SimpleModule module = new SimpleModule("WMDefaultSerializer");
             module.addSerializer(byte[].class, new NoOpByteArraySerializer());

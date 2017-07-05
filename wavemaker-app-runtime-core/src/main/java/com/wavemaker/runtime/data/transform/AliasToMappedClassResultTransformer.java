@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -34,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
-import com.google.common.base.Optional;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.annotations.ColumnAlias;
@@ -185,7 +185,7 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     }
 
     private Optional<String> findResultSetColumnName(AccessibleObject member) {
-        Optional<String> rsColumn = Optional.absent();
+        Optional<String> rsColumn = Optional.empty();
         final ColumnAlias annotation = member.getAnnotation(ColumnAlias.class);
         if (annotation != null) {
             rsColumn = Optional.of(annotation.value());

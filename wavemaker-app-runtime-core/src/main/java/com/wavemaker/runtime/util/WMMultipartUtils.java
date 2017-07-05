@@ -25,6 +25,7 @@ import java.net.URLConnection;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.google.common.base.Optional;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.WMAppContext;
@@ -342,7 +342,7 @@ public class WMMultipartUtils {
     }
 
     private static Optional<MagicMatch> getMagicType(final InputStream is) throws IOException, MagicException {
-        Optional<MagicMatch> result = Optional.absent();
+        Optional<MagicMatch> result = Optional.empty();
         if (is.markSupported()) {
             byte[] bytes = new byte[READ_LIMIT_FOR_CONTENT_TYPE];
             is.mark(READ_LIMIT_FOR_CONTENT_TYPE);

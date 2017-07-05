@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.OracleTypesHelper;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.NativeQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +64,10 @@ public class LegacyNativeProcedureExecutor {
             conn = ((SessionImpl) session).connection();
             List<Integer> cursorPosition = new ArrayList<>();
 
-            SQLQuery sqlProcedure = session.createSQLQuery(procedureStr);
-            String[] namedParams = sqlProcedure.getNamedParameters();
-            final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr, namedParams);
+            NativeQuery sqlProcedure = session.createNativeQuery(procedureStr);
+            Set<String> namedParams = sqlProcedure.getParameterMetadata().getNamedParameterNames();
+            final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr,
+                    namedParams);
             LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
             CallableStatement callableStatement = conn.prepareCall(jdbcComplianceProcedure);
 

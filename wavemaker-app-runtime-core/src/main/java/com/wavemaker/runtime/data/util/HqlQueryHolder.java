@@ -2,7 +2,7 @@ package com.wavemaker.runtime.data.util;
 
 import java.util.Map;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

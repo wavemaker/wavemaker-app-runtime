@@ -2,17 +2,17 @@ package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
-import com.google.common.base.Optional;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 
@@ -31,8 +31,8 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
         if (getPageable() != null) {
             if (getPageable().getSort() != null) {
                 final Sort sort = getPageable().getSort();
-                if (query instanceof SQLQuery) {
-                    query = QueryHelper.createNewNativeQueryWithSorted(session, (SQLQuery) query,
+                if (query instanceof NativeQuery) {
+                    query = QueryHelper.createNewNativeQueryWithSorted(session, (NativeQuery) query,
                             responseType, sort);
                 } else {
                     query = QueryHelper.createNewHqlQueryWithSorted(session, query, responseType, sort);

@@ -17,6 +17,7 @@ package com.wavemaker.runtime.security;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -28,7 +29,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfToken;
 
-import com.google.common.base.Optional;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
@@ -72,9 +72,9 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         CSRFConfig csrfConfig = WMAppContext.getInstance().getSpringBean(CSRFConfig.class);
         if (csrfConfig != null && csrfConfig.isEnforceCsrfSecurity()) {
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-            return Optional.fromNullable(csrfToken);
+            return Optional.ofNullable(csrfToken);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {

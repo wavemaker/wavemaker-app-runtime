@@ -1,13 +1,12 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
-
-import com.google.common.base.Optional;
 
 import static com.wavemaker.runtime.data.dao.util.QueryHelper.createQuery;
 
@@ -51,7 +50,7 @@ public class RuntimePaginatedCallback extends AbstractPaginatedQueryCallback<Map
     @Override
     protected Optional<Query> getCountQuery(final Session session) {
         if (StringUtils.isBlank(countQuery)) {
-            return Optional.absent();
+            return Optional.empty();
         } else {
             return Optional.of(createQuery(session, isNative, countQuery));
         }

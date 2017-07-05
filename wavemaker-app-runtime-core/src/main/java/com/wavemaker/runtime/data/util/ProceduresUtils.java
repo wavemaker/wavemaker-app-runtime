@@ -15,7 +15,9 @@
  */
 package com.wavemaker.runtime.data.util;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,11 +43,11 @@ public class ProceduresUtils {
     }
 
     public static String jdbcComplianceProcedure(String procedureStr, List<ProcedureParameter> params) {
-        String[] names = new String[params.size()];
+        Set<String> names = new HashSet<>();
 
         for (int i = 0; i < params.size(); i++) {
             final ProcedureParameter param = params.get(i);
-            names[i] = param.getName();
+            names.add(param.getName());
         }
 
         return jdbcComplianceProcedure(procedureStr, names);
@@ -60,7 +62,7 @@ public class ProceduresUtils {
      * @param namedParams list of the named procedure parameters
      * @return jdbc compliance procedure.
      */
-    public static String jdbcComplianceProcedure(final String procedureStr, final String[] namedParams) {
+    public static String jdbcComplianceProcedure(final String procedureStr, final Set<String> namedParams) {
         String targetProcedureString = procedureStr;
         for (String namedParam : namedParams) {
             String procedurePattern = PROCEDURE_PARAM_PATTERN.replace(PARAM, namedParam);

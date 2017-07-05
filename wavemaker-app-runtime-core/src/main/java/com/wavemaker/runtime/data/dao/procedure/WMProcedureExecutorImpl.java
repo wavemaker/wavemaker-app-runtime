@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.WMRuntimeException;

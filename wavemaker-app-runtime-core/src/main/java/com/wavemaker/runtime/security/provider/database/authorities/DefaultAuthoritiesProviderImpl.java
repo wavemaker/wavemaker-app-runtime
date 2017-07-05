@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Session;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
@@ -111,7 +111,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     }
 
     private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(Session session, String authoritiesByUsernameQuery, String username) {
-        final List list = session.createSQLQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
+        final List list = session.createNativeQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 

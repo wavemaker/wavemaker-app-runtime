@@ -16,15 +16,15 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.MappingException;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 
-import com.google.common.base.Optional;
 import com.wavemaker.runtime.data.model.PageableQueryInfo;
 
 /**
@@ -48,7 +48,7 @@ public class PaginatedNamedQueryCallback<T> extends AbstractPaginatedQueryCallba
 
     @Override
     protected Optional<Query> getCountQuery(final Session session) {
-        Optional<Query> optionalQuery = Optional.absent();
+        Optional<Query> optionalQuery = Optional.empty();
 
         try {
             final Query countQuery = session.getNamedQuery(queryInfo.getQueryName() + "__count");

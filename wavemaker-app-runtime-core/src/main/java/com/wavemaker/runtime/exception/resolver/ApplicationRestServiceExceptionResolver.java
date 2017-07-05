@@ -15,8 +15,6 @@
  */
 package com.wavemaker.runtime.exception.resolver;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,21 +27,17 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.exception.SQLGrammarException;
-import org.hibernate.validator.method.MethodConstraintViolation;
-import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.orm.hibernate4.HibernateJdbcException;
-import org.springframework.orm.hibernate4.HibernateQueryException;
+import org.springframework.orm.hibernate5.HibernateJdbcException;
+import org.springframework.orm.hibernate5.HibernateQueryException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
@@ -82,8 +76,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof HttpRequestMethodNotSupportedException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleHttpRequestMethodNotSupportedException((HttpRequestMethodNotSupportedException) ex);
-        } else if (ex instanceof MethodConstraintViolationException) {
-            return handleMethodConstraintViolationException((MethodConstraintViolationException) ex, response);
         } else if (ex instanceof HttpMessageNotReadableException) {
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else if (ex instanceof ConstraintViolationException) {
@@ -167,40 +159,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else {
             return getModelAndView(Collections.EMPTY_LIST);
         }
-    }
-
-    private ModelAndView handleMethodConstraintViolationException(
-            MethodConstraintViolationException ex,
-            HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        List<ErrorResponse> errorResponseList = new ArrayList();
-        Set<MethodConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
-        if (constraintViolations != null) {
-            for (MethodConstraintViolation<?> methodConstraintViolation : constraintViolations) {
-                if (methodConstraintViolation.getKind().equals(MethodConstraintViolation.Kind.PARAMETER)) {
-                    Integer parameterIndex = methodConstraintViolation.getParameterIndex();
-                    String paramName = getParameterName(methodConstraintViolation, parameterIndex);
-                    paramName = (paramName != null) ? paramName : methodConstraintViolation.getParameterName();
-                    errorResponseList.add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, paramName,
-                            methodConstraintViolation.getMessage()));
-                }
-            }
-        }
-        return getModelAndView(errorResponseList);
-    }
-
-    private String getParameterName(MethodConstraintViolation<?> methodConstraintViolation, Integer parameterIndex) {
-        Method method = methodConstraintViolation.getMethod();
-        Annotation[] annotations = method.getParameterAnnotations()[parameterIndex];
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof RequestParam) {
-                return ((RequestParam) annotation).value();
-            }
-            if (annotation instanceof PathVariable) {
-                return ((PathVariable) annotation).value();
-            }
-        }
-        return null;
     }
 
     private ModelAndView handleRuntimeException(RuntimeException ex) {

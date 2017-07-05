@@ -24,19 +24,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateCallback;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
@@ -134,12 +134,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Page<Object>>() {
             @Override
             public Page<Object> doInHibernate(final Session session) throws HibernateException {
-                SQLQuery sqlQuery;
+                NativeQuery nativeQuery;
                 Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
-                sqlQuery = createNativeQuery(queryString, _pageable.getSort(), params);
-                sqlQuery.setFirstResult(_pageable.getOffset());
-                sqlQuery.setMaxResults(_pageable.getPageSize());
-                return new WMPageImpl(sqlQuery.list(), _pageable, count);
+                nativeQuery = createNativeQuery(queryString, _pageable.getSort(), params);
+                nativeQuery.setFirstResult(_pageable.getOffset());
+                nativeQuery.setMaxResults(_pageable.getPageSize());
+                return new WMPageImpl(nativeQuery.list(), _pageable, count);
 
             }
         });
@@ -222,7 +222,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     /**
      * create native order by query from the given queryString & sort criteria...
      */
-    public SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
+    public NativeQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
         String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true, getDialect());
         return QueryHelper.createNativeQuery(orderedQuery, params, template.getSessionFactory().getCurrentSession());
     }
@@ -272,7 +272,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     private Dialect getDialect() {
-        return ((SessionFactoryImplementor) template.getSessionFactory()).getDialect();
+        return ((SessionFactoryImplementor) template.getSessionFactory()).getJdbcServices().getDialect();
     }
 
     private Pageable getValidPageable(final Pageable pageable) {

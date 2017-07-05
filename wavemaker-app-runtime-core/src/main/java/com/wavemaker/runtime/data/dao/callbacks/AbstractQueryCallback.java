@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.hibernate.query.Query;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;

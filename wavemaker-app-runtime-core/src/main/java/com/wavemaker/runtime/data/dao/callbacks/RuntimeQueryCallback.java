@@ -2,8 +2,8 @@ package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.util.Map;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -28,7 +28,7 @@ public class RuntimeQueryCallback extends AbstractQueryCallback<Map<String, Obje
 
     @Override
     protected Query getQuery(final Session session) {
-        return isNative ? session.createSQLQuery(query) : session.createQuery(query);
+        return isNative ? session.createNativeQuery(query) : session.createQuery(query);
     }
 
     @Override

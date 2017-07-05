@@ -17,8 +17,8 @@ package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.util.Map;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import com.wavemaker.runtime.data.model.QueryInfo;
 
