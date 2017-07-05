@@ -452,15 +452,12 @@ $.widget('wm.datagrid', {
             ctId            = row.$$pk + '-' + colId,
             isCellCompiled  = false,
             formatPattern   = colDef.formatpattern,
-            datePattern     = colDef.datepattern;
+            datePattern     = colDef.datepattern,
+            isRowCompiled   = !!this.options.rowNgClass;
 
         $htm = $('<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"></td>');
 
         columnValue = _.get(row, colDef.field) ;
-
-        if (ngClass) {
-            isCellCompiled = true;
-        }
 
         if (!formatPattern) {
             if (colDef.type === 'date' && this.options.dateFormat) {
@@ -522,10 +519,7 @@ $.widget('wm.datagrid', {
         }
 
         if (colExpression) {
-            if (!isCellCompiled) {
-                $htm.attr('data-compiled-template', ctId);
-                isCellCompiled = true;
-            }
+            isCellCompiled = true;
             $htm.html(colExpression);
         } else {
             if (colDef.type !== 'custom') {
@@ -564,13 +558,13 @@ $.widget('wm.datagrid', {
         }
 
         if (ngClass) {
-            $htm.attr({
-                'data-ng-class': ngClass,
-                'data-compiled-template': ctId
-            });
+            $htm.attr('data-ng-class', ngClass);
+            isCellCompiled = true;
         }
 
-        if (isCellCompiled) {
+        //If cell needs to be compiled and row is not compiled, call the compile function
+        if (isCellCompiled && !isRowCompiled) {
+            $htm.attr('data-compiled-template', ctId);
             this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate($htm, row, colDef, true) || '';
         }
         return $htm;

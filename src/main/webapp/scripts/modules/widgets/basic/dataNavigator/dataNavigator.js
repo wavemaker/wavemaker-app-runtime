@@ -377,7 +377,10 @@ WM.module("wm.widgets.basic")
                                 /*Invoke the "onPageDataReady" function.*/
                                 $scope.onPageDataReady(event, data, callback);
                             }, function (error) {
-                                wmToaster.show("error", "ERROR", "Unable to get data of page -" + $scope.dn.currentPage + ":" + error);
+                                //If error is undefined, do not show any message as this may be discarded request
+                                if (error) {
+                                    wmToaster.show("error", "ERROR", "Unable to get data of page -" + $scope.dn.currentPage + ":" + error);
+                                }
                             });
                         } else if (Utils.isPageable($scope.dataset)) {
                             /*Invoke the function to get the data corresponding to the specific page.*/

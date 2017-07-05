@@ -1004,17 +1004,18 @@ WM.module('wm.widgets.live')
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
                 var template       = '',
                     wdgtProperties = scope.widgetProps, //Find out the form widget inside the form field
-                    formWidget     = getFormFieldWidget(scope, element);
+                    formWidget     = getFormFieldWidget(scope, element),
+                    fieldDef       = parentScope.formFields[index];
 
                 function setFormField() {
                     if (CONSTANTS.isRunMode) {
-                        parentScope.formFields[index][key] = newVal;
+                        fieldDef[key] = newVal;
                     }
                 }
 
                 function compileField() {
                     //On changing of a property in studio mode, generate the template again so that change is reflected
-                    template = getTemplate(parentScope.formFields[index], index, element);
+                    template = getTemplate(fieldDef, index, element);
                     //Destroy the scopes of the widgtes inside the form field
                     element.find('.ng-isolate-scope')
                         .each(function () {
@@ -1029,7 +1030,8 @@ WM.module('wm.widgets.live')
                     $compile(element.contents())(parentScope);
                 }
 
-                if (formWidget && key !== 'show') {
+                //For show and required, expression is bound. So, no need to apply on inner widget
+                if (formWidget && (key !== 'show' && key !== 'readonly')) {
                     formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
                 }
                 switch (key) {
@@ -1042,6 +1044,7 @@ WM.module('wm.widgets.live')
                         if (WM.isDefined(newVal) && newVal !== null) {
                             if (newVal === '') {
                                 $rs.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
+                                fieldDef.datafield = fieldDef.searchkey = fieldDef.displaylabel = fieldDef.displayfield = fieldDef.displayexpression = undefined;
                                 wdgtProperties.limit.show = true;
                             } else {
                                 wdgtProperties.limit.show = scope.widget === 'autocomplete';
@@ -2433,7 +2436,7 @@ WM.module('wm.widgets.live')
                     }
                     fieldColumn = filterKey;
 
-                    if (isSearchWidgetType(filterWidget)) {
+                    if (isSearchWidgetType(filterWidget) && filterField.dataoptions) {
                         filterField.dataoptions.filterFields = filterFields;
                     } else {
                         variable.getDistinctDataByFields({
