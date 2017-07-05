@@ -2610,7 +2610,7 @@ WM.module('wm.utils', [])
             var paramType = _.toLower(extractType(_.get(param, 'items.type') || param.type)),
                 paramContentType = CONSTANTS.isStudioMode ? param['x-WM-CONTENT_TYPE'] : param.contentType;
             if (isFileUploadSupported()) {
-                if ((paramType === 'string') && (paramContentType === 'string' || !paramContentType)) {
+                if ((paramType !== 'file') && (paramContentType === 'string' || !paramContentType)) {
                     if (WM.isObject(paramValue)) {
                         paramValue = JSON.stringify(paramValue);
                     }
