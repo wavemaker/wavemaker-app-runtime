@@ -891,7 +891,8 @@ WM.module('wm.widgets.grid')
                         },
                         'property': 'deleterow'
                     }
-                };
+                },
+                isDataSetWidgets = Utils.getDataSetWidgets();
             /* Check whether it is non-empty row. */
             function isEmptyRecord(record) {
                 var properties = Object.keys(record),
@@ -2157,15 +2158,53 @@ WM.module('wm.widgets.grid')
                     }
                 });
             }
+
+            //Function to get the updated values when filter on field is changed for multicolumn filter
+            function getFilterOnFieldValues(filterDef) {
+                var variable       = $is.Variables[$is.variableName],
+                    fieldName      = filterDef.field,
+                    formFields     = $is.fullFieldDefs,
+                    filterOnFields = _.filter(formFields, {'filteronfilter': fieldName}),
+                    newVal         = _.get($is.rowFilter, [fieldName, 'value']);
+
+                if (!variable) {
+                    return;
+                }
+                //Loop over the fields for which the current field is filter on field
+                _.forEach(filterOnFields, function (filterField) {
+                    var filterOn     = filterField.filteronfilter,
+                        filterKey    = filterField.field,
+                        filterFields = {},
+                        filterWidget = filterField.filterwidget;
+
+                    if (!isDataSetWidgets[filterWidget] || filterOn === filterKey || filterField._isFilterDataSetBound || !filterField._isLiveVariable) {
+                        return;
+                    }
+
+                    filterFields[filterOn] = (WM.isDefined(newVal) && newVal !== '' && newVal !== null) ? {'value' : newVal} : {};
+
+                    if (filterWidget === 'autocomplete' && filterField.filterdataoptions) {
+                        filterField.filterdataoptions.filterFields = filterFields;
+                    } else {
+                        variable.getDistinctDataByFields({
+                            'fields'         : filterKey,
+                            'filterFields'   : filterFields
+                        }, function (data) {
+                            filterField.__filterdataset = _.pull(_.map(data.content, filterKey), null);
+                        });
+                    }
+                });
+            }
             //Function to be executed on any row filter change
-            function onRowFilterChange(fieldName, type) {
-                var searchObj = [];
+            function onRowFilterChange(fieldName) {
+                var searchObj = [],
+                    field     = _.find($is.fullFieldDefs, {'field': fieldName});
                 //Convert row filters to a search object and call search handler
                 _.forEach($is.rowFilter, function (value, key) {
                     if ((WM.isDefined(value.value) && value.value !== '') || _.includes($is.emptyMatchModes, value.matchMode)) {
-                        if (key === fieldName) {
-                            value.type      = value.type || type;
-                            value.matchMode = value.matchMode || _.get($is.matchModeTypesMap[type], 0);
+                        if (field && key === field.field) {
+                            value.type      = value.type || field.type;
+                            value.matchMode = value.matchMode || _.get($is.matchModeTypesMap[value.type], 0);
                         }
                         searchObj.push({
                             'field'     : key,
@@ -2176,6 +2215,11 @@ WM.module('wm.widgets.grid')
                     }
                 });
                 $is.gridOptions.searchHandler(searchObj, undefined, 'search');
+
+                //If field is passed, update any filter on field values if present
+                if (field) {
+                    getFilterOnFieldValues(field);
+                }
             }
             //Function to be executed on filter condition change
             function onFilterConditionSelect(field, condition) {
@@ -2197,10 +2241,10 @@ WM.module('wm.widgets.grid')
                 }
             }
             //Function to be executed on clearing a row filter
-            function clearRowFilter(field) {
-                if ($is.rowFilter && $is.rowFilter[field]) {
-                    $is.rowFilter[field].value = undefined;
-                    $is.onRowFilterChange();
+            function clearRowFilter(fieldName) {
+                if ($is.rowFilter && $is.rowFilter[fieldName]) {
+                    $is.rowFilter[fieldName].value = undefined;
+                    $is.onRowFilterChange(fieldName);
                 }
             }
             //Show clear icon if value exists
@@ -2699,7 +2743,7 @@ WM.module('wm.widgets.grid')
 
                 var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
                     'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue',
-                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey'];
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern'];
 
                 return {
                     'pre': function (scope, element, attrs) {
@@ -2903,7 +2947,7 @@ WM.module('wm.widgets.grid')
                             if (attrs.filterdataset) {
                                 columnDef._isFilterDataSetBound = true;
                             } else if (variable && variable.category === 'wm.LiveVariable') {
-                                columnDef.isLiveVariable = true;
+                                columnDef._isLiveVariable = true;
                                 if (columnDef.relatedEntityName) {
                                     columnDef.isRelated   = true;
                                     columnDef.lookupType  = columnDef.relatedEntityName;

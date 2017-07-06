@@ -597,7 +597,8 @@ $.widget('wm.datagrid', {
             disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned' && !colDef.relatedEntityName) ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
-            properties    = disabledTl + dataFieldName + eventTemplate + required,
+            datePattern   = colDef.editdatepattern ? ((colDef.editWidgetType === 'time' ? 'timepattern' : 'datepattern') + '="' + colDef.editdatepattern + '" ') : '',
+            properties    = disabledTl + dataFieldName + eventTemplate + required + datePattern,
             index         = colDef.index,
             limit         = colDef.limit ? ' limit="' + colDef.limit + '" ' : '',
             //If dataset is bound, set the dataset. Else, set the scopedataset.
@@ -2169,13 +2170,13 @@ $.widget('wm.datagrid', {
             filterOptions;
         widget = widget === 'number' ? 'text' : widget;
         widget = widget === 'autocomplete' ? 'search' : widget;
-        template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange(\'' + fieldName + '\',\'' + field.type + '\')" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
+        template =  '<wm-' + widget + widgetName + ' placeholder="' + placeholder + '" scopedatavalue="rowFilter[\'' + fieldName + '\'].value" on-change="onRowFilterChange(\'' + fieldName + '\')" disabled="{{emptyMatchModes.indexOf(rowFilter[\'' + fieldName + '\'].matchMode) > -1}}"';
         switch (field.filterwidget) {
         case 'number':
             template += ' type="number" ';
             break;
         case 'select':
-            if (field.isLiveVariable) {
+            if (field._isLiveVariable) {
                 template += ' scopedataset="fullFieldDefs[' + field.index + '].__filterdataset" orderby="' + fieldName + ':asc"';
             } else if (field._isFilterDataSetBound) {
                 template += ' dataset="' + field.filterdataset + '" datafield="' + field.filterdatafield + '" displayfield="' + field.filterdisplayfield + '"';
@@ -2184,7 +2185,7 @@ $.widget('wm.datagrid', {
             }
             break;
         case 'autocomplete':
-            if (field.isLiveVariable) {
+            if (field._isLiveVariable) {
                 filterOptions = field.filterdataoptions;
                 template += ' dataset="' + this.options.getBindDataSet() + '" dataoptions="fullFieldDefs[' + field.index + '].filterdataoptions" datafield="' + filterOptions.aliasColumn + '" searchkey="' + filterOptions.distinctField + '" displaylabel="' + filterOptions.aliasColumn + '"';
             } else if (field._isFilterDataSetBound) {
@@ -2192,7 +2193,7 @@ $.widget('wm.datagrid', {
             } else {
                 template += ' dataset="' + this.options.getBindDataSet() + '"  datafield="' + fieldName + '" searchkey="' + fieldName + '" displaylabel="' + fieldName + '" orderby="' + fieldName + ':asc"';
             }
-            template += ' type="autocomplete" on-submit="onRowFilterChange()"';
+            template += ' type="autocomplete" on-submit="onRowFilterChange(\'' + fieldName + '\')"';
             break;
         case 'time':
             template += ' timepattern="' + timeFormat + '" ';
