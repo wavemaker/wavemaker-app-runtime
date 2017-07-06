@@ -406,8 +406,8 @@ WM.module('wm.widgets.live')
                     $scope._onChangeField = function ($event, $is, newVal, oldVal) {
                         var index = $is.$element.closest('[data-role="filter-field"]').isolateScope().index;
                         $scope.applyFilterOnField($scope.formFields[index]);
-                        //If old and new val are undefined/null/empty do not trigger the filter
-                        if ($scope.autoupdate && !(!newVal && !oldVal)) {
+                        //Filter only if newVal is defined
+                        if ($scope.autoupdate && WM.isDefined(newVal)) {
                             $scope.filter();
                         }
                     };
