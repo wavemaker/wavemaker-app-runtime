@@ -49,7 +49,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
         Optional<CsrfToken> csrfTokenOptional = getCsrfToken(request);
-        addCsrfCookie(csrfTokenOptional, response);
+        addCsrfCookie(csrfTokenOptional, request, response);
         if (HttpRequestUtils.isAjaxRequest(request)) {
             request.setCharacterEncoding(CommonConstants.UTF8);
             response.setContentType(TEXT_PLAIN_CHARSET_UTF_8);
@@ -73,11 +73,15 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         return Optional.absent();
     }
 
-    private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletResponse response) {
+    private void addCsrfCookie(Optional<CsrfToken> csrfTokenOptional, HttpServletRequest request, HttpServletResponse response) {
         if (csrfTokenOptional.isPresent()) {
             CsrfToken csrfToken = csrfTokenOptional.get();
             Cookie cookie = new Cookie(SecurityConfigConstants.WM_CSRF_TOKEN_COOKIE, csrfToken.getToken());
-            cookie.setPath("/");
+            String contextPath = request.getContextPath();
+            if (StringUtils.isBlank(contextPath)) {
+                contextPath = "/";
+            }
+            cookie.setPath(contextPath);
             response.addCookie(cookie);
         }
     }
