@@ -57,7 +57,8 @@ var Application =
             'angular-gestures',
             'ngSanitize',
             'angular-websocket',
-            'ngAnimate'
+            'ngAnimate',
+            'wm.studio.PreviewWindow'
         ]);
 
 Application
@@ -264,8 +265,9 @@ Application
             '$http',
             'DeviceService',
             '$cookies',
+            'PREVIEW_CONSTANTS',
 
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies) {
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies, PREVIEW_CONSTANTS) {
                 'use strict';
 
                 var prevRoute,
@@ -276,7 +278,8 @@ Application
                     appVariablesLoaded = false,
                     SSO_URL            = '/services/security/ssologin',
                     landingPageName    = '',
-                    pageReqQueue       = {};
+                    pageReqQueue       = {},
+                    PREVIEW_WINDOW_NAME = PREVIEW_CONSTANTS.WINDOW_NAME;
 
                 function defaultPageLoadSuccessHandler(pageName, response, isPartial) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
@@ -408,9 +411,12 @@ Application
                                 /*
                                  * remove iFrame when redirected to IdP login page.
                                  * this is being done as IDPs do not allow to get themselves loaded into iFrames.
+                                 * remove-toolbar has been assigned with a window name WM_PREVIEW_WINDOW, check if the iframe is our toolbar related and
+                                 * safely change the location of the parent toolbar with current url.
                                  */
-                                if ($window.self !== $window.top) {
-                                    $window.parent.location.href = ssoUrl;
+                                if ($window.self !== $window.top && $window.parent.name === PREVIEW_WINDOW_NAME) {
+                                    $window.parent.location.href = $window.self.location.href;
+                                    $window.parent.name = '';
                                 } else {
                                     $window.location.href = ssoUrl;
                                 }
