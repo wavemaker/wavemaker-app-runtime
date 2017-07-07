@@ -21,6 +21,10 @@
 *************************************** Mobile layouts *********************************
 *********************************************************************************/
 .app-page.mobile-app-page {
+  //IE: hide clear button in search box
+  input[type="search"]::-ms-clear {
+    display: none;
+  }
   .app-content {
     display: block;
     height: 100%;
