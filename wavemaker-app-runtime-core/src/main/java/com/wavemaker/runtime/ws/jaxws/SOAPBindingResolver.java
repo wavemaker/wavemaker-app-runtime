@@ -51,10 +51,10 @@ public class SOAPBindingResolver {
             }
 
             int connectionTimeout = bindingProperties.getConnectionTimeout();
-            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, Integer.valueOf(connectionTimeout));
+            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, connectionTimeout);
 
             int requestTimeout = bindingProperties.getRequestTimeout();
-            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, Integer.valueOf(requestTimeout));
+            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, requestTimeout);
 
             String soapActionURI = bindingProperties.getSoapActionURI();
             if (soapActionURI != null) {

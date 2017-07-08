@@ -272,8 +272,8 @@ public class SecurityService {
                     Iterator<Map.Entry<String, RoleConfig>> roleEntryIterator = roleMap.entrySet().iterator();
                     while (roleEntryIterator.hasNext() && landingPage == null) {
                         Map.Entry<String, RoleConfig> roleEntry = roleEntryIterator.next();
-                        for (int i = 0; i < userRoles.length; i++) {
-                            if (userRoles[i].equals(roleEntry.getKey())) {
+                        for (String userRole : userRoles) {
+                            if (userRole.equals(roleEntry.getKey())) {
                                 landingPage = roleEntry.getValue().getLandingPage();
                                 break;
                             }

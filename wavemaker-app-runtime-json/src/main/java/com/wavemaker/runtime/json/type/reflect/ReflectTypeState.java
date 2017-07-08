@@ -49,9 +49,7 @@ public class ReflectTypeState implements TypeState {
                 TypeDefinition td = ReflectTypeUtils.getTypeDefinition(ClassUtils.forName(typeName, typeName.getClass().getClassLoader()), this, false);
                 addType(td);
                 return td;
-            } catch (ClassNotFoundException e) {
-                throw new WMRuntimeException(e);
-            } catch (LinkageError e) {
+            } catch (ClassNotFoundException | LinkageError e) {
                 throw new WMRuntimeException(e);
             }
         }

@@ -328,11 +328,7 @@ public final class JSONMarshaller {
                     Object value;
                     try {
                         value = PropertyUtils.getProperty(obj, name);
-                    } catch (IllegalArgumentException e) {
-                        throw new WMRuntimeException(MessageResource.ERROR_GETTING_PROPERTY, e, name, obj, obj.getClass().getName());
-                    } catch (IllegalAccessException e) {
-                        throw new WMRuntimeException(MessageResource.ERROR_GETTING_PROPERTY, e, name, obj, obj.getClass().getName());
-                    } catch (InvocationTargetException e) {
+                    } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
                         throw new WMRuntimeException(MessageResource.ERROR_GETTING_PROPERTY, e, name, obj, obj.getClass().getName());
                     } catch (NoSuchMethodException e) {
                         logger.warn(MessageResource.JSON_NO_GETTER_IN_TYPE.getMessage(name, obj, obj.getClass().getName()));

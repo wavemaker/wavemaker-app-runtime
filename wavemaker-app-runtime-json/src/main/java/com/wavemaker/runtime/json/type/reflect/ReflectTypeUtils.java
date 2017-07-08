@@ -367,9 +367,7 @@ public class ReflectTypeUtils {
             Class<?> klass;
             try {
                 klass = ClassUtils.forName(gat.toString(), gat.getClass().getClassLoader());
-            } catch (ClassNotFoundException e) {
-                klass = null;
-            } catch (LinkageError e) {
+            } catch (ClassNotFoundException | LinkageError e) {
                 klass = null;
             }
             if (klass == null && gat.getGenericComponentType() instanceof Class) {

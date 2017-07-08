@@ -110,13 +110,7 @@ public class AlternateJSONTransformer {
             } else {
                 throw new WMRuntimeException(MessageResource.JSON_UNKNOWN_OBJECT_TYPE, obj, obj.getClass(), fieldDefinition);
             }
-        } catch (InstantiationException e) {
-            throw new WMRuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new WMRuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new WMRuntimeException(e);
-        } catch (NoSuchMethodException e) {
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new WMRuntimeException(e);
         }
 

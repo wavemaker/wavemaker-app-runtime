@@ -105,7 +105,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             long loginTime = System.currentTimeMillis();
             boolean isEnabled = enabled == 1 ? true : false;
             return new WMUser(userId, userName, password, userName, tenantId,
-                    Boolean.valueOf(isEnabled), true, true,
+                    isEnabled, true, true,
                     true, AuthorityUtils.NO_AUTHORITIES, loginTime);
         }
         return null;

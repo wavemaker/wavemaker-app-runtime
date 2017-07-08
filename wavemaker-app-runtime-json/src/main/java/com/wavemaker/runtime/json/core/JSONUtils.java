@@ -49,7 +49,7 @@ public abstract class JSONUtils {
 
     public static String quote(String string) {
 
-        StringBuffer ret = new StringBuffer(string.length() + 2);
+        StringBuilder ret = new StringBuilder(string.length() + 2);
         ret.append('\"');
         for (char character : string.toCharArray()) {
             switch (character) {

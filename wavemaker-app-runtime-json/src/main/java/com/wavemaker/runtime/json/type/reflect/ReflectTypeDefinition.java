@@ -61,9 +61,7 @@ public abstract class ReflectTypeDefinition implements TypeDefinition {
 
         try {
             return this.getKlass().newInstance();
-        } catch (InstantiationException e) {
-            throw new WMRuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new WMRuntimeException(e);
         }
     }

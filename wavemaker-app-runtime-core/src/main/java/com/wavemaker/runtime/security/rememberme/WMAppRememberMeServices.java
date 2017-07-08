@@ -74,7 +74,7 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
         long tokenExpiryTime;
 
         try {
-            tokenExpiryTime = new Long(cookieTokens[1]).longValue();
+            tokenExpiryTime = new Long(cookieTokens[1]);
         } catch (NumberFormatException nfe) {
             throw new InvalidCookieException("Cookie token[1] did not contain a valid number (contained '" +
                     cookieTokens[1] + "')");

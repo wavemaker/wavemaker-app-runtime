@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -110,7 +111,7 @@ public class RESTService {
         }
 
         Object postData = "";
-        if (method != null && method.equals(Constants.HTTP_METHOD_POST)) {
+        if (Objects.equals(method, Constants.HTTP_METHOD_POST)) {
             this.httpRequestMethod = HTTPRequestMethod.POST;
             if (urlParams.size() == 1) {
                 for (Object o : urlParams.values()) {
@@ -131,15 +132,13 @@ public class RESTService {
         try {
             return HTTPBindingSupport.getResponseObject(this.serviceQName, this.serviceQName, endpointAddress, this.httpRequestMethod, contentType,
                 postData, responseType, this.bindingProperties, partnerName, headerParams);
-        } catch (WebServiceException e) {
-            throw new WebServiceInvocationException(e);
-        } catch (MalformedURLException e) {
+        } catch (WebServiceException | MalformedURLException e) {
             throw new WebServiceInvocationException(e);
         }
     }
 
     private String createFormData(Map<String, Object> urlParams) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         Set<Entry<String, Object>> entries = urlParams.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             sb.append(entry.getKey());

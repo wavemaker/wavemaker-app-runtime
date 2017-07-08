@@ -82,9 +82,7 @@ public class JasperReportHelper {
             ReportExporter reportExporter = reportExportType.getReportExporter();
             reportExporter.exportToFile(jasperPrint, tempFile);
             return new DeleteTempFileOnCloseInputStream(tempFile);
-        } catch (JRException e) {
-            throw new WMRuntimeException(e);
-        } catch (IOException e) {
+        } catch (JRException | IOException e) {
             throw new WMRuntimeException(e);
         }
     }

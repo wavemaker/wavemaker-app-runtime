@@ -100,16 +100,9 @@ public class ServerUtils {
                         try {
                             Method nameMethod = paramNameClass.getMethod("name");
                             paramName = (String) nameMethod.invoke(ann);
-                        } catch (SecurityException e) {
-                            throw new WMRuntimeException(e);
-                        } catch (NoSuchMethodException e) {
-                            throw new WMRuntimeException(e);
-                        } catch (IllegalAccessException e) {
-                            throw new WMRuntimeException(e);
-                        } catch (InvocationTargetException e) {
+                        } catch (SecurityException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
                             throw new WMRuntimeException(e);
                         }
-
                         break;
                     }
                 }

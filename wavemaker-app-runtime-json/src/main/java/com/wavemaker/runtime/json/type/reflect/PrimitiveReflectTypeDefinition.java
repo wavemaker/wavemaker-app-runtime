@@ -54,9 +54,7 @@ public class PrimitiveReflectTypeDefinition extends ReflectTypeDefinition implem
         if (Class.class.isAssignableFrom(klass)) {
             try {
                 ret = ClassUtils.forName(obj.toString(), obj.getClass().getClassLoader());
-            } catch (ClassNotFoundException e) {
-                throw new WMRuntimeException(e);
-            } catch (LinkageError e) {
+            } catch (ClassNotFoundException | LinkageError e) {
                 throw new WMRuntimeException(e);
             }
         } else if (ClassUtils.isAssignable(klass, obj.getClass())) {
@@ -117,17 +115,7 @@ public class PrimitiveReflectTypeDefinition extends ReflectTypeDefinition implem
             try {
                 c = klass.getConstructor(String.class);
                 ret = c.newInstance(obj.toString());
-            } catch (SecurityException e) {
-                throw new WMRuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new WMRuntimeException(e);
-            } catch (IllegalArgumentException e) {
-                throw new WMRuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new WMRuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new WMRuntimeException(e);
-            } catch (InvocationTargetException e) {
+            } catch (SecurityException | InvocationTargetException | IllegalAccessException | InstantiationException | IllegalArgumentException | NoSuchMethodException e) {
                 throw new WMRuntimeException(e);
             }
         }

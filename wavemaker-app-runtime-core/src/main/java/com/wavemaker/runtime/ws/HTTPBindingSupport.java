@@ -51,13 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
-
-
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.commons.util.JAXBUtils;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import net.sf.json.xml.XMLSerializer;
@@ -105,9 +102,7 @@ public class HTTPBindingSupport {
             }
             is = new BufferedInputStream(IOUtils.toInputStream(responseString, CommonConstants.UTF8));
             bytes = IOUtils.toByteArray(is);
-        } catch (IOException e) {
-            throw new WebServiceException(e);
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             throw new WebServiceException(e);
         } finally {
             try {
@@ -134,9 +129,7 @@ public class HTTPBindingSupport {
                 Object object = JAXBUtils.unMarshall(JAXBContext.newInstance(responseType), is);
                 return responseType.cast(object);
             }
-        } catch (IOException e) {
-            throw new WebServiceException(e);
-        } catch (JAXBException e) {
+        } catch (IOException | JAXBException e) {
             throw new WebServiceException(e);
         }
     }
@@ -157,8 +150,7 @@ public class HTTPBindingSupport {
         ByteArrayInputStream is = null;
         if (msg != null) {
             try {
-                StringBuffer sb = new StringBuffer(msg);
-                is = new ByteArrayInputStream(sb.toString().getBytes(CommonConstants.UTF8));
+                is = new ByteArrayInputStream(msg.getBytes(CommonConstants.UTF8));
             } catch (UnsupportedEncodingException e) {
                 throw new WebServiceException(e);
             }
@@ -212,10 +204,10 @@ public class HTTPBindingSupport {
             }
 
             int connectionTimeout = bindingProperties.getConnectionTimeout();
-            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, Integer.valueOf(connectionTimeout));
+            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, connectionTimeout);
 
             int requestTimeout = bindingProperties.getRequestTimeout();
-            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, Integer.valueOf(requestTimeout));
+            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, requestTimeout);
 
             Map<String, List<String>> httpHeaders = bindingProperties.getHttpHeaders();
             if (httpHeaders != null && !httpHeaders.isEmpty()) {

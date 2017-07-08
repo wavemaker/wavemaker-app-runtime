@@ -17,9 +17,8 @@ package com.wavemaker.runtime.security.filter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -190,13 +189,9 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
     private String getQueryParamValue(final HttpServletRequest request, final String param) throws URISyntaxException {
         Map parameterMap = request.getParameterMap();
-        Set<Map.Entry> entrySet = parameterMap.entrySet();
-        Iterator<Map.Entry> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String[]> entry = iterator.next();
-            if (param.equals(entry.getKey())) {
-                return entry.getValue()[0];
-            }
+        String[] values = (String[]) parameterMap.get(param);
+        if (values != null) {
+            return values[0];
         }
         return null;
     }

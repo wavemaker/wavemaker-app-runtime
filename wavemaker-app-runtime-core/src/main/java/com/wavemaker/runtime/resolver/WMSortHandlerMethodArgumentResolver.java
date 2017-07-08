@@ -61,8 +61,7 @@ public class WMSortHandlerMethodArgumentResolver extends SortHandlerMethodArgume
             }
             String[] elements = part.split(delimiter);
 
-            for (int i = 0; i < elements.length; i++) {
-                String keyValue = elements[i];
+            for (String keyValue : elements) {
                 if (!StringUtils.hasText(keyValue)) {
                     continue;
                 }
