@@ -219,9 +219,9 @@ public class JsonPerformanceTest extends WMTestCase {
 
     private Map<String, LocalActor> getLocalResultObject() {
 
-        Map<String, LocalActor> res = new HashMap<String, LocalActor>();
+        Map<String, LocalActor> res = new HashMap<>();
         LocalActor a = new LocalActor("first", "last");
-        Set<LocalFilmActor> filmActors = new HashSet<LocalFilmActor>();
+        Set<LocalFilmActor> filmActors = new HashSet<>();
 
         res.put("result", a);
         a.setFilmActors(filmActors);
@@ -242,11 +242,11 @@ public class JsonPerformanceTest extends WMTestCase {
 
     private Map<String, Actor> getResultObject() {
 
-        Map<String, Actor> res = new HashMap<String, Actor>();
+        Map<String, Actor> res = new HashMap<>();
         Actor a = new Actor();
         a.setFirstName("first");
         a.setLastName("last");
-        Set<FilmActor> filmActors = new HashSet<FilmActor>();
+        Set<FilmActor> filmActors = new HashSet<>();
 
         res.put("result", a);
         a.setFilmActors(filmActors);

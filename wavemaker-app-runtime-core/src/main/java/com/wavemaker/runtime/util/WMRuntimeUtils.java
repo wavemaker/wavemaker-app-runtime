@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Source;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -75,7 +74,7 @@ public class WMRuntimeUtils {
         messageConverters.add(new ByteArrayHttpMessageConverter());
         messageConverters.add(new StringHttpMessageConverter(Charset.forName(CommonConstants.UTF8)));
         messageConverters.add(new ResourceHttpMessageConverter());
-        messageConverters.add(new SourceHttpMessageConverter<Source>());
+        messageConverters.add(new SourceHttpMessageConverter<>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
         messageConverters.add(new FormHttpMessageConverter());
         if (romePresent) {

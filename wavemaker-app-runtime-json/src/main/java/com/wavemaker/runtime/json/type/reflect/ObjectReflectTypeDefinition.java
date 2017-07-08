@@ -28,7 +28,7 @@ public class ObjectReflectTypeDefinition extends ReflectTypeDefinition implement
     /**
      * Map of all fields; this should be entered by the natural order of the fields.
      */
-    private LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
+    private LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<>();
 
     @Override
     public LinkedHashMap<String, FieldDefinition> getFields() {

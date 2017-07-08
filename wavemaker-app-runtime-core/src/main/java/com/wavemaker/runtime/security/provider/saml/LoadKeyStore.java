@@ -15,7 +15,13 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -42,11 +48,11 @@ import org.opensaml.xml.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.commons.model.security.saml.MetadataSource;
-import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 
 /**
  * Created by ArjunSahasranam on 28/11/16.

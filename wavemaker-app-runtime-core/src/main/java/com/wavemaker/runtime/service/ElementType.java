@@ -55,18 +55,18 @@ public class ElementType implements Cloneable {
 
     private String subType;
 
-    private List<OperationEnumeration> require = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> require = new ArrayList<>();
 
-    private List<OperationEnumeration> noChange = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> noChange = new ArrayList<>();
 
-    private List<OperationEnumeration> exclude = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> exclude = new ArrayList<>();
 
     /**
      * The service this type is in (if null, assumed to be the current service).
      */
     private String service;
 
-    private List<ElementType> properties = new ArrayList<ElementType>();
+    private List<ElementType> properties = new ArrayList<>();
 
     // - only used by dataservice services - needs to be generalized and
     // refactored so individual services can set this on types
@@ -109,7 +109,7 @@ public class ElementType implements Cloneable {
 
         pds = PropertyUtils.getPropertyDescriptors(javaType);
 
-        List<ElementType> elements = new ArrayList<ElementType>(pds.length);
+        List<ElementType> elements = new ArrayList<>(pds.length);
         for (PropertyDescriptor pd : pds) {
             if (pd.getName().equals("class")) {
                 continue;
@@ -327,7 +327,7 @@ public class ElementType implements Cloneable {
         }
 
         if (isList()) {
-            List<ListTypeDefinition> listType = new ArrayList<ListTypeDefinition>();
+            List<ListTypeDefinition> listType = new ArrayList<>();
             ListReflectTypeDefinition lrtd = new ListReflectTypeDefinition();
             lrtd.setKlass(List.class);
             lrtd.setTypeName(List.class.getName());

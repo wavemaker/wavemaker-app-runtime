@@ -35,16 +35,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.wavemaker.commons.model.security.CSRFConfig;
+import com.wavemaker.commons.model.security.LoginConfig;
+import com.wavemaker.commons.model.security.RoleConfig;
+import com.wavemaker.commons.model.security.RolesConfig;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
-import com.wavemaker.commons.model.security.CSRFConfig;
-import com.wavemaker.commons.model.security.LoginConfig;
-import com.wavemaker.commons.model.security.RoleConfig;
-import com.wavemaker.commons.model.security.RolesConfig;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -228,7 +228,7 @@ public class SecurityService {
             return new String[0];
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        List<String> roleNames = new ArrayList<String>();
+        List<String> roleNames = new ArrayList<>();
         for (GrantedAuthority authority : authorities) {
             String roleName = authority.getAuthority();
             String realRoleName = null;

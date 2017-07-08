@@ -19,7 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wavemaker.runtime.data.annotations.*;
+import com.wavemaker.runtime.data.annotations.Encrypted;
+import com.wavemaker.runtime.data.annotations.ServerDefinedProperty;
 import com.wavemaker.runtime.data.replacers.providers.AppEnvironmentDefinedPropertyProvider;
 import com.wavemaker.runtime.data.replacers.providers.EncryptedValueProviderBuilder;
 import com.wavemaker.runtime.data.replacers.providers.ServerDefinedPropertyProvider;

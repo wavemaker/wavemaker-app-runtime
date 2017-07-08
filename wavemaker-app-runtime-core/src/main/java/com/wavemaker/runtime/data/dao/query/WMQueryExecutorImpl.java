@@ -198,7 +198,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
 
                 List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
                 if (customQueryParams != null && !customQueryParams.isEmpty())
@@ -246,7 +246,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     private Object validateAndPrepareObject(CustomQueryParam customQueryParam) {
-        List<Object> objectList = new ArrayList<Object>();
+        List<Object> objectList = new ArrayList<>();
         if (customQueryParam.getParamValue() instanceof List) {
             List<Object> listParams = (List) customQueryParam.getParamValue();
             for (Object listParam : listParams) {

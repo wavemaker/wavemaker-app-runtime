@@ -39,7 +39,7 @@ public class EntityValueReplacerBuilder {
                 (Scope.values().length);
 
         for (final Scope phase : Scope.values()) {
-            overriderMultiValueMap.put(phase, new ArrayList<FieldValueReplacer>());
+            overriderMultiValueMap.put(phase, new ArrayList<>());
         }
 
         final Map<Field, PropertyDescriptor> fieldDescriptorMap = buildDescriptorMap(type);

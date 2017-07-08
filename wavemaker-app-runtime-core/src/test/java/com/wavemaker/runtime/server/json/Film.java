@@ -49,7 +49,7 @@ public class Film {
 
     private Date lastUpdate;
 
-    private Set<FilmActor> filmActors = new HashSet<FilmActor>(0);
+    private Set<FilmActor> filmActors = new HashSet<>(0);
 
     public Film() {
     }

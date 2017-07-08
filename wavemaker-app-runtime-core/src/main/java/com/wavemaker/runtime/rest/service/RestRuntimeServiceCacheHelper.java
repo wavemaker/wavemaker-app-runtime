@@ -36,7 +36,7 @@ import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
  */
 public class RestRuntimeServiceCacheHelper {
 
-    private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<String, Swagger>();
+    private Map<String, Swagger> serviceIdVsSwaggerCache = new WeakHashMap<>();
 
     public Swagger getSwaggerDoc(String serviceId) {
         if (!serviceIdVsSwaggerCache.containsKey(serviceId)) {

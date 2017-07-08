@@ -53,7 +53,7 @@ public class JSONState {
     /**
      * Properties which are required. These will be allowed in cycles from JSONMarshaller.
      */
-    private List<String> requiredProperties = new ArrayList<String>();
+    private List<String> requiredProperties = new ArrayList<>();
 
     /**
      * Number of levels to trim off of requiredProperties in JSONMarshaller. For instance, if trimStackLevel was set to
@@ -70,7 +70,7 @@ public class JSONState {
     /**
      * A list of setters called in JSON -> Object conversions, in beanutils property format.
      */
-    private List<String> settersCalled = new ArrayList<String>();
+    private List<String> settersCalled = new ArrayList<>();
 
     /**
      * The CycleHandler; defaults to CycleHandler.NULL.
@@ -80,7 +80,7 @@ public class JSONState {
     /**
      * A list of properties to be excluded from serialization or deserialization.
      */
-    private List<String> excludes = new ArrayList<String>();
+    private List<String> excludes = new ArrayList<>();
 
     /**
      * Property filter.

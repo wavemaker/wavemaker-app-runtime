@@ -102,7 +102,7 @@ public class Utils {
      * @return
      */
     public static URL[] convertToURLS(File configDir, File[] files) {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         for (File file : files) {
             try {
                 urls.add(file.toURI().toURL());
@@ -125,6 +125,6 @@ public class Utils {
      * @return {@link java.util.concurrent.ConcurrentMap}
      */
     public static <K, V> Map<K, V> newConcurrentMap() {
-        return new ConcurrentHashMap<K, V>();
+        return new ConcurrentHashMap<>();
     }
 }

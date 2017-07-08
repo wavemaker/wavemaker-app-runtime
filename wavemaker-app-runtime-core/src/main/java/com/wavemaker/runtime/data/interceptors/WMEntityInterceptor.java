@@ -23,10 +23,10 @@ import java.util.Map;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.replacers.EntityValueReplacer;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;
-import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>

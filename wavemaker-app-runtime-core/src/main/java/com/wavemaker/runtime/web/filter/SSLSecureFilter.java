@@ -31,10 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.commons.model.security.SSLConfig;
 import com.wavemaker.commons.pattern.URLPattern;
 import com.wavemaker.commons.util.CoreFilterUtil;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
 
 /**

@@ -29,8 +29,8 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 
 import com.wavemaker.runtime.json.JSON;
-import com.wavemaker.runtime.json.JSONObject;
 import com.wavemaker.runtime.json.JSONArray;
+import com.wavemaker.runtime.json.JSONObject;
 
 /**
  * JSON grammar. Language spec from <http://www.ietf.org/rfc/rfc4627.txt>.

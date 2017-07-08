@@ -39,7 +39,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;

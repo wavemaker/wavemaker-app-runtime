@@ -30,7 +30,7 @@ import com.wavemaker.runtime.json.type.TypeState;
  */
 public class ReflectTypeState implements TypeState {
 
-    private final Map<String, TypeDefinition> knownTypes = new HashMap<String, TypeDefinition>();
+    private final Map<String, TypeDefinition> knownTypes = new HashMap<>();
 
     private final PropertyUtilsBean propertyUtilsBean = new WMPropertyUtilsBean();
 

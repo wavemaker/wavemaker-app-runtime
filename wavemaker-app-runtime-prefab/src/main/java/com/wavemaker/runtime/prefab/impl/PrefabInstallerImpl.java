@@ -30,12 +30,12 @@ import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.classloader.WMUrlClassLoader;
 import com.wavemaker.commons.util.IOUtils;
-import com.wavemaker.runtime.prefab.core.PrefabInstaller;
-import com.wavemaker.runtime.prefab.core.PrefabRegistry;
-import com.wavemaker.runtime.prefab.event.PrefabEvent;
 import com.wavemaker.runtime.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabInstaller;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.core.PrefabRegistry;
+import com.wavemaker.runtime.prefab.event.PrefabEvent;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
 

@@ -15,6 +15,9 @@
  */
 package com.wavemaker.runtime.web.filter;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -22,8 +25,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URLEncoder;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;

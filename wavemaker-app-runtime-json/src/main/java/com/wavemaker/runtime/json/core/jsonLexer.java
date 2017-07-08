@@ -17,10 +17,6 @@
 
 package com.wavemaker.runtime.json.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import org.antlr.runtime.BaseRecognizer;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonToken;

@@ -29,7 +29,7 @@ public class CustomQuery {
 
     private boolean nativeSql = false;
 
-    private List<CustomQueryParam> queryParams = new ArrayList<CustomQueryParam>();
+    private List<CustomQueryParam> queryParams = new ArrayList<>();
 
     public CustomQuery() {
 		super();

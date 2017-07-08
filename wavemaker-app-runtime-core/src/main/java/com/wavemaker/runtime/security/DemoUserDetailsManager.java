@@ -15,10 +15,8 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

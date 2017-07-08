@@ -16,19 +16,18 @@
 package com.wavemaker.runtime.security.xss.sanitizer;
 
 import java.io.InputStream;
+
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang3.StringUtils;
 import org.owasp.validator.html.AntiSamy;
 import org.owasp.validator.html.CleanResults;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.WMAppContext;
 
 /**
  * Created by kishorer on 6/7/16.

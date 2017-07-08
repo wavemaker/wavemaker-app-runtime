@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.provider.saml;
 
 import java.io.IOException;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -29,9 +30,9 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 25/11/16.

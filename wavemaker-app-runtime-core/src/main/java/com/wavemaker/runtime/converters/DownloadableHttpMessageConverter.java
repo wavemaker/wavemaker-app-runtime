@@ -15,10 +15,9 @@
  */
 package com.wavemaker.runtime.converters;
 
-import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.runtime.file.model.Downloadable;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpInputMessage;
@@ -28,8 +27,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.runtime.file.model.DownloadResponse;
+import com.wavemaker.runtime.file.model.Downloadable;
 
 /**
  * @Author: sowmyad

@@ -18,8 +18,6 @@ package com.wavemaker.runtime.prefab.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.springframework.http.HttpRequest;
-
 /**
  * @author Uday Shankar
  */

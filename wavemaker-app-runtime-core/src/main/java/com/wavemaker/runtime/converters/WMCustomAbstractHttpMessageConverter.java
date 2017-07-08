@@ -15,9 +15,10 @@
  */
 package com.wavemaker.runtime.converters;
 
+import java.io.IOException;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
-import java.io.IOException;
 
 /**
  * @Author: Uday

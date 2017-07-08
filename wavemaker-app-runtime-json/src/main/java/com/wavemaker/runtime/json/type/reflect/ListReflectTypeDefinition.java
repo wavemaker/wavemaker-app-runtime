@@ -43,13 +43,13 @@ public class ListReflectTypeDefinition extends ReflectTypeDefinition implements 
 
         if (getKlass().isInterface()) {
             if (getKlass().equals(List.class)) {
-                return new ArrayList<Object>(length);
+                return new ArrayList<>(length);
             } else if (getKlass().equals(Set.class)) {
-                return new HashSet<Object>(length);
+                return new HashSet<>(length);
             } else if (getKlass().equals(SortedSet.class)) {
-                return new TreeSet<Object>();
+                return new TreeSet<>();
             } else if (getKlass().equals(Collection.class)) {
-                return new ArrayList<Object>(length);
+                return new ArrayList<>(length);
             } else {
                 throw new WMRuntimeException(MessageResource.JSON_FAILEDINSTANCE_COLLECTION, getKlass());
             }

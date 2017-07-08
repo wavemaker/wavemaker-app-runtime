@@ -29,13 +29,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.stereotype.Service;
 
+import com.wavemaker.runtime.prefab.config.PrefabsConfig;
+import com.wavemaker.runtime.prefab.core.PrefabFactory;
 import com.wavemaker.runtime.prefab.core.PrefabLoader;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.event.PrefabEvent;
-import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
-import com.wavemaker.runtime.prefab.config.PrefabsConfig;
-import com.wavemaker.runtime.prefab.core.PrefabFactory;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
+import com.wavemaker.runtime.prefab.event.PrefabsUnloadedEvent;
 import com.wavemaker.runtime.prefab.util.PrefabConstants;
 import com.wavemaker.runtime.prefab.util.PrefabUtils;
 import com.wavemaker.runtime.prefab.util.Utils;

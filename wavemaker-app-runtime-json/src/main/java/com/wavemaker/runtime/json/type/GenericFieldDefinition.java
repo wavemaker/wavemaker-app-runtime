@@ -54,11 +54,11 @@ public class GenericFieldDefinition implements FieldDefinition {
 
     private String name;
 
-    private List<OperationEnumeration> require = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> require = new ArrayList<>();
 
-    private List<OperationEnumeration> noChange = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> noChange = new ArrayList<>();
 
-    private List<OperationEnumeration> exclude = new ArrayList<OperationEnumeration>();
+    private List<OperationEnumeration> exclude = new ArrayList<>();
 
     @Override
     public List<ListTypeDefinition> getArrayTypes() {

@@ -16,20 +16,25 @@
 package com.wavemaker.runtime.security;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.wavemaker.runtime.WMObjectMapper;
-import com.wavemaker.commons.core.web.rest.ErrorResponse;
-import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
+import com.wavemaker.commons.core.web.rest.ErrorResponse;
+import com.wavemaker.commons.core.web.rest.ErrorResponses;
+import com.wavemaker.runtime.WMObjectMapper;
+
 import static com.wavemaker.runtime.security.SecurityConstants.APPLICATION_JSON;
+import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
 
 /**
  * @author Uday Shankar

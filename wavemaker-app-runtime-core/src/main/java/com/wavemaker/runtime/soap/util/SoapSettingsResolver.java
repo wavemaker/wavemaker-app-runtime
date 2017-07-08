@@ -15,17 +15,19 @@
  */
 package com.wavemaker.runtime.soap.util;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.MessageContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.wavemaker.runtime.soap.SoapServiceSettings;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Frankie Fu
@@ -58,11 +60,11 @@ public class SoapSettingsResolver {
             if (httpHeaders != null && !httpHeaders.isEmpty()) {
                 Map<String, List<String>> reqHeaders = (Map<String, List<String>>) requestContext.get(MessageContext.HTTP_REQUEST_HEADERS);
                 if (reqHeaders == null) {
-                    reqHeaders = new HashMap<String, List<String>>();
+                    reqHeaders = new HashMap<>();
                     requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, reqHeaders);
                 }
                 for (Entry<String, String> entry : httpHeaders.entrySet()) {
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     list.add(entry.getValue());
 
                     reqHeaders.put(entry.getKey(), list);

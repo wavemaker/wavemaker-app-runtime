@@ -15,9 +15,10 @@
  */
 package com.wavemaker.runtime.security.provider.saml.util;
 
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
-import com.wavemaker.commons.util.SSLUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -25,9 +26,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.SSLUtils;
 
 /**
  * Created by arjuns on 15/12/16.

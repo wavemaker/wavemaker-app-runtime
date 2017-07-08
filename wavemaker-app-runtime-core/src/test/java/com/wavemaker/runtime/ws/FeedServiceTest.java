@@ -16,15 +16,15 @@
 package com.wavemaker.runtime.ws;
 
 
-import com.wavemaker.commons.util.WMTestUtils;
-import com.wavemaker.runtime.feed.model.Feed;
-import com.wavemaker.runtime.feed.service.FeedService;
-import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.runtime.json.JSONMarshaller;
 import org.testng.Assert;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
+import com.wavemaker.runtime.feed.model.Feed;
+import com.wavemaker.runtime.feed.service.FeedService;
+import com.wavemaker.runtime.json.JSONMarshaller;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * @author Frankie Fu

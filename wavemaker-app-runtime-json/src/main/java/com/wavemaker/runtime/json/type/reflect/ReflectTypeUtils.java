@@ -36,11 +36,11 @@ import org.springframework.util.ClassUtils;
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.json.type.ListTypeDefinition;
 import com.wavemaker.runtime.json.JSON;
 import com.wavemaker.runtime.json.core.JSONUtils;
 import com.wavemaker.runtime.json.type.FieldDefinition;
 import com.wavemaker.runtime.json.type.GenericFieldDefinition;
+import com.wavemaker.runtime.json.type.ListTypeDefinition;
 import com.wavemaker.runtime.json.type.TypeDefinition;
 import com.wavemaker.runtime.json.type.TypeState;
 
@@ -206,7 +206,7 @@ public class ReflectTypeUtils {
 
                 PropertyUtilsBean pub = ((ReflectTypeState) typeState).getPropertyUtilsBean();
                 PropertyDescriptor[] pds = pub.getPropertyDescriptors(klass);
-                otret.setFields(new LinkedHashMap<String, FieldDefinition>(pds.length));
+                otret.setFields(new LinkedHashMap<>(pds.length));
 
                 for (PropertyDescriptor pd : pds) {
                     if (pd.getName().equals("class")) {
@@ -293,7 +293,7 @@ public class ReflectTypeUtils {
                     logger.debug(MessageResource.JSON_TYPE_NOGENERICS.getMessage(returnTypeClass));
                 }
 
-                ret.setArrayTypes(new ArrayList<ListTypeDefinition>(1));
+                ret.setArrayTypes(new ArrayList<>(1));
                 ret.getArrayTypes().add(getListTypeDefinition(returnTypeClass, typeState, strict));
             } else if (ClassUtils.isPrimitiveOrWrapper(returnTypeClass)) {
                 TypeDefinition td = getTypeDefinition(returnTypeClass, typeState, strict);
@@ -358,8 +358,8 @@ public class ReflectTypeUtils {
                 temp.v2.add(0, getListTypeDefinition(pt.getRawType(), typeState, strict));
                 return temp;
             } else {
-                return new Tuple.Two<TypeDefinition, List<ListTypeDefinition>>(getTypeDefinition(pt, typeState, strict),
-                    new ArrayList<ListTypeDefinition>());
+                return new Tuple.Two<>(getTypeDefinition(pt, typeState, strict),
+                        new ArrayList<>());
             }
         } else if (type instanceof GenericArrayType) {
             GenericArrayType gat = (GenericArrayType) type;
@@ -389,8 +389,8 @@ public class ReflectTypeUtils {
 
             return temp;
         } else if (type instanceof Class) {
-            return new Tuple.Two<TypeDefinition, List<ListTypeDefinition>>(getTypeDefinition(type, typeState, strict),
-                new ArrayList<ListTypeDefinition>());
+            return new Tuple.Two<>(getTypeDefinition(type, typeState, strict),
+                    new ArrayList<>());
         } else {
             throw new WMRuntimeException(MessageResource.JSON_TYPE_UNKNOWNPARAMTYPE, type, type != null ? type.getClass() : null);
         }

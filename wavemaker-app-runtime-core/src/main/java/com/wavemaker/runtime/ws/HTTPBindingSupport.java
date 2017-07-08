@@ -221,7 +221,7 @@ public class HTTPBindingSupport {
             if (httpHeaders != null && !httpHeaders.isEmpty()) {
                 reqHeaders = (Map<String, List<String>>) requestContext.get(MessageContext.HTTP_REQUEST_HEADERS);
                 if (reqHeaders == null) {
-                    reqHeaders = new HashMap<String, List<String>>();
+                    reqHeaders = new HashMap<>();
                     requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, reqHeaders);
                 }
                 for (Entry<String, List<String>> entry : httpHeaders.entrySet()) {
@@ -233,11 +233,11 @@ public class HTTPBindingSupport {
         // Parameters to pass in http header
         if (headerParams != null && headerParams.size() > 0) {
             if (null == reqHeaders) {
-                reqHeaders = new HashMap<String, List<String>>();
+                reqHeaders = new HashMap<>();
             }
             Set<Entry<String, Object>> entries = headerParams.entrySet();
             for (Map.Entry<String, Object> entry : entries) {
-                List<String> valList = new ArrayList<String>();
+                List<String> valList = new ArrayList<>();
                 valList.add((String) entry.getValue());
                 reqHeaders.put(entry.getKey(), valList);
                 requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, reqHeaders);

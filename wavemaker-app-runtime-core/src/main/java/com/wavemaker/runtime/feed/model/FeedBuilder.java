@@ -35,7 +35,7 @@ public class FeedBuilder {
         feed.setEncoding(syndFeed.getEncoding());
 
 
-        List<Entry> entryList = new ArrayList<Entry>();
+        List<Entry> entryList = new ArrayList<>();
         List<SyndEntry> syndEntryList = syndFeed.getEntries();
         if(syndEntryList != null) {
             for (SyndEntry syndEntry : syndEntryList) {

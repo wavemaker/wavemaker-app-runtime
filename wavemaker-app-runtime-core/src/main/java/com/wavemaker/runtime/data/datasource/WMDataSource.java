@@ -15,14 +15,15 @@
  */
 package com.wavemaker.runtime.data.datasource;
 
-import com.wavemaker.commons.WMRuntimeException;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jndi.JndiTemplate;
 
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by kishorer on 11/12/15.

@@ -37,12 +37,12 @@ public class MapReflectTypeDefinition extends ReflectTypeDefinition implements M
     public Object newInstance(Object... args) {
 
         if (getKlass() == null) {
-            return new HashMap<Object, Object>();
+            return new HashMap<>();
         } else if (getKlass().isInterface()) {
             if (getKlass().isAssignableFrom(HashMap.class)) {
-                return new HashMap<Object, Object>();
+                return new HashMap<>();
             } else if (getKlass().isAssignableFrom(SortedMap.class)) {
-                return new TreeMap<Object, Object>();
+                return new TreeMap<>();
             } else {
                 throw new WMRuntimeException(MessageResource.JSON_FAILEDINSTANCE_MAP, getKlass());
             }

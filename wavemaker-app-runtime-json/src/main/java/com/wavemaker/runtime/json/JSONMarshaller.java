@@ -37,15 +37,15 @@ import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.EntryComparator;
 import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.json.type.converters.WriteObjectConverter;
-import com.wavemaker.runtime.json.type.reflect.ObjectReflectTypeDefinition;
-import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.json.type.FieldDefinition;
 import com.wavemaker.runtime.json.type.GenericFieldDefinition;
 import com.wavemaker.runtime.json.type.MapTypeDefinition;
 import com.wavemaker.runtime.json.type.ObjectTypeDefinition;
 import com.wavemaker.runtime.json.type.PrimitiveTypeDefinition;
 import com.wavemaker.runtime.json.type.TypeState;
+import com.wavemaker.runtime.json.type.converters.WriteObjectConverter;
+import com.wavemaker.runtime.json.type.reflect.ObjectReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
 
 /**
  * @author Matt Small
@@ -172,7 +172,7 @@ public final class JSONMarshaller {
 
         TypeState typeState = jsonState.getTypeState();
 
-        doMarshal(writer, obj, obj, jsonState, sort, true, new Stack<Object>(), new Stack<String>(), rootFieldDefinition, 0, typeState, prettyPrint,
+        doMarshal(writer, obj, obj, jsonState, sort, true, new Stack<>(), new Stack<>(), rootFieldDefinition, 0, typeState, prettyPrint,
             0, LoggerFactory.getLogger(JSONMarshaller.class));
     }
 
@@ -300,7 +300,7 @@ public final class JSONMarshaller {
         if (obj instanceof Map || fieldDefinition.getTypeDefinition() instanceof MapTypeDefinition) {
             Set<Entry<?, ?>> entries = null;
             if (sort) {
-                Set<Entry<?, ?>> entriesTemp = new TreeSet<Entry<?, ?>>(new EntryComparator());
+                Set<Entry<?, ?>> entriesTemp = new TreeSet<>(new EntryComparator());
                 entriesTemp.addAll(((Map<?, ?>) obj).entrySet());
                 entries = entriesTemp;
             }

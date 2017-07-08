@@ -15,9 +15,9 @@
  */
 package com.wavemaker.runtime.security;
 
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 /**
  * @author Uday Shankar

@@ -44,7 +44,7 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
         QueryHelper.setResultTransformer(query, responseType);
         QueryHelper.configureParameters(query, getParameters());
 
-        return new WMPageImpl<T>((List<T>) query.list(), getPageable(), findCount(session));
+        return new WMPageImpl<>((List<T>) query.list(), getPageable(), findCount(session));
     }
 
     private Long findCount(final Session session) {

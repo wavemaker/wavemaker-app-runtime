@@ -369,7 +369,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
 
     public static void assertQualifiersFor(Class<?>[] parameterTypes, Annotation[][] annotations) {
 
-        Set<String> values = new HashSet<String>();
+        Set<String> values = new HashSet<>();
 
         for (int i = 0; i < annotations.length; i++) {
 

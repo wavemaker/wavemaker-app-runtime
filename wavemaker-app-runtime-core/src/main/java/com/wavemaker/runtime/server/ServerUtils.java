@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.server;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -24,16 +23,19 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.paranamer.AdaptiveParanamer;
-import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
-import com.wavemaker.runtime.service.annotations.ExposeToClient;
-import com.wavemaker.runtime.service.annotations.HideFromClient;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.ClassUtils;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.paranamer.AdaptiveParanamer;
+import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
+import com.wavemaker.commons.util.ClassUtils;
+import com.wavemaker.runtime.service.annotations.ExposeToClient;
+import com.wavemaker.runtime.service.annotations.HideFromClient;
 
 /**
  * Utility methods for the server components.
@@ -74,7 +76,7 @@ public class ServerUtils {
     public static List<String> getParameterNames(Method method) {
 
         int numParams = method.getParameterTypes().length;
-        List<String> ret = new ArrayList<String>(numParams);
+        List<String> ret = new ArrayList<>(numParams);
         Annotation[][] paramAnnotations = method.getParameterAnnotations();
         Class<?> paramNameClass = ClassLoaderUtils.loadClass(ParamName.class.getName(), method.getDeclaringClass().getClassLoader());
 
@@ -139,7 +141,7 @@ public class ServerUtils {
     public static List<Method> getClientExposedMethods(Class<?> klass) {
 
         List<Method> allMethods = ClassUtils.getPublicMethods(klass);
-        List<Method> ret = new ArrayList<Method>(allMethods.size());
+        List<Method> ret = new ArrayList<>(allMethods.size());
         ClassLoader cl = klass.getClassLoader();
 
         Class<Annotation> hideFromClient = (Class<Annotation>) ClassLoaderUtils.loadClass(HideFromClient.class.getCanonicalName(), cl);

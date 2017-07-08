@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -193,7 +194,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             logger.debug("'memberOf' attribute values: {}",Arrays.asList(groups));
         }
 
-        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(groups.length);
+        ArrayList<GrantedAuthority> authorities = new ArrayList<>(groups.length);
 
         for (String group : groups) {
             authorities.add(new SimpleGrantedAuthority(new DistinguishedName(group).removeLast().getValue()));

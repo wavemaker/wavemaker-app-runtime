@@ -18,9 +18,7 @@ package com.wavemaker.runtime.service;
 import java.util.Arrays;
 import java.util.List;
 
-import com.wavemaker.commons.util.WMTestUtils;
 import org.springframework.util.ClassUtils;
-
 
 import com.wavemaker.commons.util.SpringUtils;
 import com.wavemaker.runtime.json.type.FieldDefinition;
@@ -28,7 +26,11 @@ import com.wavemaker.runtime.json.type.ObjectTypeDefinition;
 import com.wavemaker.runtime.json.type.OperationEnumeration;
 import com.wavemaker.runtime.json.type.TypeDefinition;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 /**
  * @author Matt Small

@@ -20,8 +20,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.Calendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.SecurityService;
 

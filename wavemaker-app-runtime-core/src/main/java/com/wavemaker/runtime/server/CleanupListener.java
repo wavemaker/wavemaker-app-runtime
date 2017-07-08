@@ -58,11 +58,11 @@ import com.sun.jndi.ldap.LdapPoolManager;
 import com.sun.naming.internal.ResourceManager;
 import com.sun.org.apache.xml.internal.resolver.Catalog;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.commons.util.WMUtils;
+import com.wavemaker.runtime.WMAppContext;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -195,7 +195,7 @@ public class CleanupListener implements ServletContextListener {
 
     private void deRegisterOracleDiagnosabilityMBean(String nameValue) throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final Hashtable<String, String> keys = new Hashtable<String, String>();
+        final Hashtable<String, String> keys = new Hashtable<>();
         keys.put("type", "diagnosability");
         keys.put("name", nameValue);
         mbs.unregisterMBean(new ObjectName("com.oracle.jdbc", keys));

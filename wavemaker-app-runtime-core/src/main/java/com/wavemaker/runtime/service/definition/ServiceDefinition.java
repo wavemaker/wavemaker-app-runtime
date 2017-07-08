@@ -17,8 +17,8 @@ package com.wavemaker.runtime.service.definition;
 
 import java.util.List;
 
-import com.wavemaker.runtime.service.ServiceType;
 import com.wavemaker.runtime.json.type.TypeDefinition;
+import com.wavemaker.runtime.service.ServiceType;
 
 /**
  * Represents a service definition.

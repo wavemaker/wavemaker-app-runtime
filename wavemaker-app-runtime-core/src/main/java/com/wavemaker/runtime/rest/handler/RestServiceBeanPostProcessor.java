@@ -36,9 +36,9 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.controller.RestRuntimeController;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
-import com.wavemaker.commons.WMRuntimeException;
 
 /**
  * Created by ArjunSahasranam on 6/10/15.

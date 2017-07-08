@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wavemaker.commons.CommonConstants;
 import com.wavemaker.runtime.feed.model.Feed;
 import com.wavemaker.runtime.feed.service.FeedService;
-import com.wavemaker.commons.CommonConstants;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**

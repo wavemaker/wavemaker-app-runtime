@@ -66,7 +66,7 @@ public class SOAPBindingResolver {
             if (httpHeaders != null && !httpHeaders.isEmpty()) {
                 Map<String, List<String>> reqHeaders = (Map<String, List<String>>) requestContext.get(MessageContext.HTTP_REQUEST_HEADERS);
                 if (reqHeaders == null) {
-                    reqHeaders = new HashMap<String, List<String>>();
+                    reqHeaders = new HashMap<>();
                     requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, reqHeaders);
                 }
                 for (Entry<String, List<String>> entry : httpHeaders.entrySet()) {
@@ -82,7 +82,7 @@ public class SOAPBindingResolver {
     }
 
     public static void setHeaders(WSBindingProvider service, Object... headers) {
-        List<Object> soapHeaders = new ArrayList<Object>();
+        List<Object> soapHeaders = new ArrayList<>();
         for (Object header : headers) {
             if (header != null) {
                 soapHeaders.add(header);

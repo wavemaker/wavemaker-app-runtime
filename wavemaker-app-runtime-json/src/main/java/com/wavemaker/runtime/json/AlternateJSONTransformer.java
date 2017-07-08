@@ -30,12 +30,12 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.json.type.FieldDefinition;
 import com.wavemaker.runtime.json.type.ListTypeDefinition;
+import com.wavemaker.runtime.json.type.MapTypeDefinition;
 import com.wavemaker.runtime.json.type.ObjectTypeDefinition;
+import com.wavemaker.runtime.json.type.PrimitiveTypeDefinition;
 import com.wavemaker.runtime.json.type.TypeState;
 import com.wavemaker.runtime.json.type.converters.ReadObjectConverter;
 import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
-import com.wavemaker.runtime.json.type.MapTypeDefinition;
-import com.wavemaker.runtime.json.type.PrimitiveTypeDefinition;
 
 /**
  * Alternate JSONObject -&gt; Object transformers.
@@ -57,12 +57,12 @@ public class AlternateJSONTransformer {
         TypeState typeState = jsonState.getTypeState();
         FieldDefinition fieldDefinition = ReflectTypeUtils.getFieldDefinition(klass, typeState, false, null);
 
-        return toObjectInternal(jsonState, obj, obj, fieldDefinition, typeState, 0, new Stack<String>());
+        return toObjectInternal(jsonState, obj, obj, fieldDefinition, typeState, 0, new Stack<>());
     }
 
     public static Object toObject(JSONState jsonState, Object obj, FieldDefinition fieldDefinition) {
 
-        return toObjectInternal(jsonState, obj, obj, fieldDefinition, jsonState.getTypeState(), 0, new Stack<String>());
+        return toObjectInternal(jsonState, obj, obj, fieldDefinition, jsonState.getTypeState(), 0, new Stack<>());
     }
 
     /**

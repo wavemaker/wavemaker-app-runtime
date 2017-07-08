@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security.csrf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

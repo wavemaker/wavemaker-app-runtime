@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.security.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wavemaker.commons.model.security.LoginConfig;
 
 /**

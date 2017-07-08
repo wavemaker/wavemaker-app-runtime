@@ -37,7 +37,11 @@ import com.wavemaker.runtime.security.csrf.SecurityConfigConstants;
 import com.wavemaker.runtime.security.model.LoginSuccessResponse;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
-import static com.wavemaker.runtime.security.SecurityConstants.*;
+import static com.wavemaker.runtime.security.SecurityConstants.CACHE_CONTROL;
+import static com.wavemaker.runtime.security.SecurityConstants.EXPIRES;
+import static com.wavemaker.runtime.security.SecurityConstants.NO_CACHE;
+import static com.wavemaker.runtime.security.SecurityConstants.PRAGMA;
+import static com.wavemaker.runtime.security.SecurityConstants.TEXT_PLAIN_CHARSET_UTF_8;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 

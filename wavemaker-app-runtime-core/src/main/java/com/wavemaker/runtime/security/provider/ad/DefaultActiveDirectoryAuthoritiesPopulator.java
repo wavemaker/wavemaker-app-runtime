@@ -54,7 +54,7 @@ public class DefaultActiveDirectoryAuthoritiesPopulator implements ActiveDirecto
             logger.debug("'{}' attribute values: {}" , groupRoleAttribute,  Arrays.asList(groups));
         }
 
-        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(groups.length);
+        ArrayList<GrantedAuthority> authorities = new ArrayList<>(groups.length);
 
         for (String group : groups) {
             authorities.add(new SimpleGrantedAuthority("ROLE_"+new DistinguishedName(group).removeLast().getValue()));

@@ -30,7 +30,7 @@ public class CustomProcedure {
 	@NotEmpty
     private String procedureStr = null;
 
-    private List<CustomProcedureParam> procedureParams = new ArrayList<CustomProcedureParam>();
+    private List<CustomProcedureParam> procedureParams = new ArrayList<>();
 
     public CustomProcedure() {
 		super();

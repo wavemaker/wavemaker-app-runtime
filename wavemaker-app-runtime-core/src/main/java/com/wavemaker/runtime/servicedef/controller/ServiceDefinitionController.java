@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wavemaker.runtime.servicedef.service.ServiceDefinitionService;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.runtime.servicedef.service.ServiceDefinitionService;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>

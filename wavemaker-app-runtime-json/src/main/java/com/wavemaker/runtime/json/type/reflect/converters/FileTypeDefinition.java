@@ -21,11 +21,11 @@ import java.io.Writer;
 
 import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.json.type.converters.WriteObjectConverter;
-import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.json.JSONMarshaller;
 import com.wavemaker.runtime.json.type.converters.ReadObjectConverter;
+import com.wavemaker.runtime.json.type.converters.WriteObjectConverter;
 import com.wavemaker.runtime.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.runtime.json.type.reflect.ReflectTypeUtils;
 
 /**
  * TypeDefinition for {@link File} objects. This includes type conversion, and will serialize File objects to and from

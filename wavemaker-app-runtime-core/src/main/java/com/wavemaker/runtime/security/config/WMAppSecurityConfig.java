@@ -15,10 +15,10 @@
  */
 package com.wavemaker.runtime.security.config;
 
-import com.wavemaker.commons.model.security.RolesConfig;
 import com.wavemaker.commons.model.security.CSRFConfig;
 import com.wavemaker.commons.model.security.LoginConfig;
 import com.wavemaker.commons.model.security.RememberMeConfig;
+import com.wavemaker.commons.model.security.RolesConfig;
 import com.wavemaker.commons.model.security.SSLConfig;
 import com.wavemaker.commons.model.security.TokenAuthConfig;
 import com.wavemaker.commons.model.security.XSSConfig;

@@ -15,13 +15,6 @@
  */
 package com.wavemaker.runtime.servicedef.service;
 
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.runtime.prefab.core.Prefab;
-import com.wavemaker.runtime.prefab.core.PrefabManager;
-import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
-import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,6 +29,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
+
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.runtime.prefab.core.Prefab;
+import com.wavemaker.runtime.prefab.core.PrefabManager;
+import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
+import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -119,7 +119,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
 
     private synchronized void loadPrefabServiceDefs(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache) {
         if (prefabServiceDefinitionsCache.get(prefab.getName()) == null) {
-            prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<String, ServiceDefinition>());
+            prefabServiceDefinitionsCache.put(prefab.getName(), new HashMap<>());
         }
 
         Resource[] resources = getServiceDefResources(true);

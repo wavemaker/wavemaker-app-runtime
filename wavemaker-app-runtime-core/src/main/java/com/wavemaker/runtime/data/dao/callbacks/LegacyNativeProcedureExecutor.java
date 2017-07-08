@@ -61,7 +61,7 @@ public class LegacyNativeProcedureExecutor {
         Connection conn = null;
         try {
             conn = ((SessionImpl) session).connection();
-            List<Integer> cursorPosition = new ArrayList<Integer>();
+            List<Integer> cursorPosition = new ArrayList<>();
 
             SQLQuery sqlProcedure = session.createSQLQuery(procedureStr);
             String[] namedParams = sqlProcedure.getNamedParameters();
@@ -69,7 +69,7 @@ public class LegacyNativeProcedureExecutor {
             LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
             CallableStatement callableStatement = conn.prepareCall(jdbcComplianceProcedure);
 
-            List<Integer> outParams = new ArrayList<Integer>();
+            List<Integer> outParams = new ArrayList<>();
             for (int position = 0; position < customParams.size(); position++) {
                 CustomProcedureParam procedureParam = customParams.get(position);
                 if (procedureParam.getProcedureParamType().isOutParam()) {
@@ -95,7 +95,7 @@ public class LegacyNativeProcedureExecutor {
             LOGGER.info("Executing Procedure {}", procedureStr);
             boolean resultType = callableStatement.execute();
 
-            List responseWrapper = new ArrayList<Object>();
+            List responseWrapper = new ArrayList<>();
             /* if of type result set */
             if (resultType) {
                 return processResultSet(callableStatement.getResultSet());
@@ -105,7 +105,7 @@ public class LegacyNativeProcedureExecutor {
             }
 
 
-            Map<String, Object> outData = new LinkedHashMap<String, Object>();
+            Map<String, Object> outData = new LinkedHashMap<>();
             for (Integer outParam : outParams) {
                 outData.put(customParams.get(outParam - 1).getParamName(), callableStatement.getObject(outParam));
             }
@@ -162,12 +162,12 @@ public class LegacyNativeProcedureExecutor {
 
     private static List<Object> processResultSet(Object resultSet) {
         ResultSet rset = (ResultSet) resultSet;
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
 
         // Dump the cursor
         try {
             while (rset.next()) {
-                Map<String, Object> rowData = new LinkedHashMap<String, Object>();
+                Map<String, Object> rowData = new LinkedHashMap<>();
                 int colCount = rset.getMetaData().getColumnCount();
                 for (int i = 1; i <= colCount; i++) {
                     rowData.put(rset.getMetaData().getColumnName(i), rset.getObject(i));

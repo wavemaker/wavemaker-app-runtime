@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.security.provider.cas;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,9 +27,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
-import com.wavemaker.runtime.util.HttpRequestUtils;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.wrapper.StringWrapper;
+import com.wavemaker.runtime.util.HttpRequestUtils;
 
 /**
  * Created by ArjunSahasranam on 1/6/16.
