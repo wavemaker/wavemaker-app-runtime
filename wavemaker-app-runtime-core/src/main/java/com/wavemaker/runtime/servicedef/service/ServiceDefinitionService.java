@@ -104,12 +104,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                 if (prefabServiceDefinitionsCache == null) {
                     final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
                     for (final Prefab prefab : prefabManager.getPrefabs()) {
-                        runInPrefabClassLoader(prefab, new Runnable() {
-                            @Override
-                            public void run() {
-                                loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache);
-                            }
-                        });
+                        runInPrefabClassLoader(prefab, () -> loadPrefabServiceDefs(prefab, prefabServiceDefinitionsCache));
                     }
                     this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
                 }
@@ -175,18 +170,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadServiceDefinitions(ExecutorService executor) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                loadServiceDefinitions();
-            }
-        });
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                loadPrefabsServiceDefinitions();
-            }
-        });
+        executor.execute(() -> loadServiceDefinitions());
+        executor.execute(() -> loadPrefabsServiceDefinitions());
     }
 
 }

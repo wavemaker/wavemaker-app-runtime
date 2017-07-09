@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -60,12 +59,9 @@ public class JasperReportHelper {
 
     public JasperReport compileReport(final String reportName) {
         try {
-            return jasperReportCache.get(reportName, new Callable<JasperReport>() {
-                @Override
-                public JasperReport call() throws Exception {
-                    InputStream inputStream = loadReportTemplateXml(reportName);
-                    return compileReport(inputStream);
-                }
+            return jasperReportCache.get(reportName, () -> {
+                InputStream inputStream = loadReportTemplateXml(reportName);
+                return compileReport(inputStream);
             });
         } catch (ExecutionException e) {
             throw new WMRuntimeException(e);
