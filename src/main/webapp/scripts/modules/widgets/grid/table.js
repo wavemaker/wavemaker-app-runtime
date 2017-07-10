@@ -1100,7 +1100,7 @@ WM.module('wm.widgets.table')
                         serviceData = transformData(serviceData);
                     }
                     //Apply filter and sort, if data is refreshed through Refresh data method
-                    if (!$is.shownavigation && $is.isClientSearch) {
+                    if (!$is.shownavigation && $is._isClientSearch) {
                         data = Utils.getClonedObject(serviceData);
                         data = getSearchResult(data, $is.filterInfo);
                         data = getSortResult(data, $is.sortInfo);
@@ -1164,8 +1164,9 @@ WM.module('wm.widgets.table')
                     'page'         : page || 1
                 }, success, error);
             }
-            function refreshServiceVariable(success, error) {
-                $is.variable.invoke({}, success, error);
+            function refreshServiceVariable(options, success, error) {
+                options = options || {};
+                $is.variable.invoke(options, success, error);
             }
             function refreshLiveFilter() {
                 var sortInfo     = $is.sortInfo,
@@ -1198,7 +1199,16 @@ WM.module('wm.widgets.table')
                     }, function (error) {
                         $is.toggleMessage(true, 'error', error);
                     });
-                } else {
+                } else if ($is.isBoundToServiceVariable) {
+                    refreshServiceVariable({
+                        'page'      : 1,
+                        'orderBy'   : $is.sortInfo && $is.sortInfo.direction ? ($is.sortInfo.field + ' ' + $is.sortInfo.direction) : ''
+                    }, function () {
+                        $is.onSort({$event: e, $data: $is.serverData});
+                    }, function (error) {
+                        $is.toggleMessage(true, 'error', error);
+                    })
+                }  else {
                     //Fall back to default client side sort
                     handleOperation(sortObj, e, 'sort')
                 }
@@ -1207,7 +1217,6 @@ WM.module('wm.widgets.table')
             function handleOperation(searchSortObj, e, type) {
                 var data;
                 data = $is.shownavigation ? Utils.getClonedObject($is.__fullData) : Utils.getClonedObject($is.dataset);
-                $is.isClientSearch = true;
                 if (type === 'search') {
                     $is.filterInfo = searchSortObj;
                 } else {
@@ -1688,23 +1697,31 @@ WM.module('wm.widgets.table')
                 return true;
             }
             function setSortSearchHandlers(isPageable) {
+                $is._isClientSearch = false;
+                $is._isPageSearch   = false;
+
                 if ($is.isBoundToVariable && $is.variable) {
                     if ($is.isBoundToLiveVariable) {
                         $is.setDataGridOption('searchHandler', searchGrid);
                         $is.setDataGridOption('sortHandler', sortHandler);
                         setImageProperties($is.variable);
                     } else if ($is.isBoundToQueryServiceVariable) {
+                        $is._isPageSearch = true;
                         $is.setDataGridOption('searchHandler', defaultSearchHandler);
                         $is.setDataGridOption('sortHandler', sortHandler);
                     } else if ($is.isBoundToProcedureServiceVariable) {
+                        $is._isClientSearch = true;
                         $is.setDataGridOption('searchHandler', handleOperation);
                         $is.setDataGridOption('sortHandler', handleOperation);
                     } else {
                         /*Calling the specific search and sort handlers*/
-                        $is.setDataGridOption('searchHandler', handleOperation);
                         if (isPageable) {
+                            $is._isPageSearch = true;
+                            $is.setDataGridOption('searchHandler', defaultSearchHandler);
                             $is.setDataGridOption('sortHandler', sortHandler);
                         } else {
+                            $is._isClientSearch = true;
+                            $is.setDataGridOption('searchHandler', handleOperation);
                             $is.setDataGridOption('sortHandler', handleOperation);
                         }
                     }
@@ -1713,6 +1730,7 @@ WM.module('wm.widgets.table')
                     $is.setDataGridOption('sortHandler', sortHandler);
                     setImageProperties($is.variable);
                 } else if ($is.isBoundToSelectedItem) {
+                    $is._isClientSearch = true;
                     $is.setDataGridOption('searchHandler', handleOperation);
                     $is.setDataGridOption('sortHandler', handleOperation);
                 } else if ($is.binddataset.indexOf('bind:Widgets') === -1) {
@@ -1769,6 +1787,11 @@ WM.module('wm.widgets.table')
                     newVal = newVal.content;
                     isPageable = true;
                 }
+
+                if ($is.binddataset) {
+                    setSortSearchHandlers(isPageable);
+                }
+
                 //If value is empty or in studio mode, dont enable the navigation
                 if (CONSTANTS.isRunMode && newVal && _.get(newVal, 'dataValue') !== '' && !_.isEmpty(newVal)) {
                     if ($is.shownavigation && !$is.dataNavigatorWatched) {
@@ -1814,7 +1837,6 @@ WM.module('wm.widgets.table')
                             }
                         }
                     }
-                    setSortSearchHandlers(isPageable);
                 }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
                     if (newVal === '' || (newVal && newVal.dataValue === '')) {
@@ -2312,8 +2334,8 @@ WM.module('wm.widgets.table')
                     $is.__fullData = newVal;
                 }
                 checkFiltersApplied(variableSort);
-                if ($is.isClientSearch) {
-                    data = Utils.getClonedObject(newVal);
+                if ($is._isClientSearch) {
+                    data = Utils.getClonedObject($is.__fullData);
                     if (WM.isObject(data) && !WM.isArray(data)) {
                         data = [data];
                     }
@@ -2458,7 +2480,7 @@ WM.module('wm.widgets.table')
                         $is.onDatarender({$isolateScope: $is, $data: $is.gridData});
                     }
                     //On render, apply the filters set for query service variable
-                    if (CONSTANTS.isRunMode && $is.isBoundToQueryServiceVariable && $is.filterInfo) {
+                    if (CONSTANTS.isRunMode && $is._isPageSearch && $is.filterInfo) {
                         defaultSearchHandler($is.filterInfo);
                     }
                 },
