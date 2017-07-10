@@ -6,51 +6,12 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd
-                http://www.springframework.org/schema/mvc
-                http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+                http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="config.xml"/>
     <import resource="servicetypes.xml"/>
-
-    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"
-                           conversion-service="applicationConversionService">
-        <mvc:message-converters>
-            <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
-            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
-                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
-                <property name="writeAcceptCharset" value="false"/>
-            </bean>
-            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-                <property name="objectMapper">
-                    <bean class="com.wavemaker.runtime.WMAppObjectMapper"/>
-                </property>
-            </bean>
-        </mvc:message-converters>
-        <mvc:argument-resolvers>
-            <bean id="appDefaultPageableHandlerMethodArgumentResolver"
-                  class="com.wavemaker.runtime.resolver.ServiceBasedPageableHandlerMethodArgumentResolver">
-                <property name="pageParameterName" value="page"/>
-                <property name="sizeParameterName" value="size"/>
-                <property name="oneIndexedParameters" value="true"/>
-                <property name="maxPageSize" value="1000"/>
-                <property name="fallbackPageable">
-                    <bean class="org.springframework.data.domain.PageRequest">
-                        <constructor-arg value="0"/>
-                        <constructor-arg value="20"/>
-                    </bean>
-                </property>
-            </bean>
-        </mvc:argument-resolvers>
-        <mvc:path-matching suffix-pattern="false" trailing-slash="false"/>
-    </mvc:annotation-driven>
-
-    <mvc:interceptors>
-        <bean id="annotationInterceptor" class="com.wavemaker.runtime.web.interceptor.WMAppRequestInterceptor"/>
-    </mvc:interceptors>
+    <import resource="springapp-mvc.xml"/>
 
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
@@ -119,6 +80,8 @@
     <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
+
+    <bean id="corsBeanPostProcessor" class="com.wavemaker.runtime.cors.CorsBeanPostProcessor"/>
 
     <bean id="httpsConnection" class="com.wavemaker.commons.util.InitializeHttpsURLConnection" lazy-init="false"/>
 

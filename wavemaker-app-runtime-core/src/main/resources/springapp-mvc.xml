@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"
+                           conversion-service="applicationConversionService">
+        <mvc:message-converters>
+            <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
+                <property name="writeAcceptCharset" value="false"/>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.wavemaker.runtime.WMAppObjectMapper"/>
+                </property>
+            </bean>
+        </mvc:message-converters>
+        <mvc:argument-resolvers>
+            <bean id="appDefaultPageableHandlerMethodArgumentResolver"
+                  class="com.wavemaker.runtime.resolver.ServiceBasedPageableHandlerMethodArgumentResolver">
+                <property name="pageParameterName" value="page"/>
+                <property name="sizeParameterName" value="size"/>
+                <property name="oneIndexedParameters" value="true"/>
+                <property name="maxPageSize" value="1000"/>
+                <property name="fallbackPageable">
+                    <bean class="org.springframework.data.domain.PageRequest">
+                        <constructor-arg value="0"/>
+                        <constructor-arg value="20"/>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:argument-resolvers>
+        <mvc:path-matching suffix-pattern="false" trailing-slash="false"/>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <bean id="annotationInterceptor" class="com.wavemaker.runtime.web.interceptor.WMAppRequestInterceptor"/>
+    </mvc:interceptors>
+
+</beans>
