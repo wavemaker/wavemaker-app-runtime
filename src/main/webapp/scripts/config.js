@@ -28,7 +28,7 @@ WM.module('wm.layouts.device', []);
 WM.module('wm.widgets.basic', ['toaster']);
 WM.module('wm.widgets.form', ['ui.mask']);
 WM.module('wm.widgets.dialog', ['ui.bootstrap.modal']);
-WM.module('wm.widgets.grid', []);
+WM.module('wm.widgets.table', []);
 WM.module('wm.widgets.live', []);
 WM.module('wm.widgets.advanced', ['ui.calendar']);
 WM.module('wm.prefabs', ['wm.widgets.base']);
@@ -41,7 +41,7 @@ WM.module('wm.widgets', [
     'wm.widgets.basic',
     'wm.widgets.form',
     'wm.widgets.dialog',
-    'wm.widgets.grid',
+    'wm.widgets.table',
     'wm.widgets.live',
     'wm.widgets.advanced'
 ]);

@@ -6,7 +6,7 @@
 
 'use strict';
 
-$.widget('wm.datagrid', {
+$.widget('wm.datatable', {
     options: {
         data: [],
         statusMsg: '',
@@ -350,7 +350,7 @@ $.widget('wm.datagrid', {
     /* Returns the seachbox template. */
     _getSearchTemplate: function () {
         var htm,
-            sel = '<select name="wm-datagrid" data-element="dgFilterValue" ' +
+            sel = '<select name="wm-datatable" data-element="dgFilterValue" ' +
                 'class="form-control app-select">' +
                 '<option value="" selected>Select Field</option>',
             searchLabel = (this.Utils.isDefined(this.options.searchLabel) &&

@@ -1946,7 +1946,7 @@ WM.module('wm.widgets.live')
                     }
                 });
                 //Form fields wont't contain grid widgets get those using attribute and add to form data
-                $el.find('[data-identifier="grid"]').each(function () {
+                $el.find('[data-identifier="table"]').each(function () {
                     var formWidget = WM.element(this).isolateScope();
                     _.set(dataObject, formWidget.key || formWidget.name, formWidget.datavalue || formWidget.dataset);
                 });

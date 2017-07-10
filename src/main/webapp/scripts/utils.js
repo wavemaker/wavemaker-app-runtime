@@ -1623,7 +1623,7 @@ WM.module('wm.utils', [])
              * StudioMode: remove the ngController directive
              */
             if (CONSTANTS.isRunMode) {
-                root.html(content).find('wm-livelist, wm-login, wm-template')
+                root.html(content).find('wm-list, wm-login, wm-template')
                     .each(function () {
                         var widget = WM.element(this),
                             wrapper,
@@ -2350,10 +2350,10 @@ WM.module('wm.utils', [])
                     "wm-colorpicker",
                     "wm-slider",
                     "wm-fileupload",
-                    "wm-grid",
+                    "wm-table",
                     "wm-livefilter",
-                    "wm-livelist",
-                    "wm-datanavigator",
+                    "wm-list",
+                    "wm-pagination",
                     "wm-html",
                     "wm-prefab",
                     "wm-richtexteditor",
@@ -2395,9 +2395,9 @@ WM.module('wm.utils', [])
                     "wm-checkboxset",
                     "wm-radioset",
                     "wm-calendar",
-                    "wm-grid",
+                    "wm-table",
                     "wm-livefilter",
-                    "wm-livelist",
+                    "wm-list",
                     "wm-tree",
                     "wm-liveform",
                     "wm-chart",

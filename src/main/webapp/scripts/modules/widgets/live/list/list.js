@@ -1,5 +1,5 @@
 /*global WM, window, _, document, Hammer, moment*/
-/*Directive for liveList */
+/*Directive for List */
 
 WM.module('wm.widgets.live')
     .run(['$templateCache', function ($tc) {
@@ -29,7 +29,7 @@ WM.module('wm.widgets.live')
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
-                        '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                        '<wm-pagination showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +
                         '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified {{paginationclass}}">{{ondemandmessage}}</a>' +
                     '</div>' +
                 '</div>'
@@ -50,7 +50,7 @@ WM.module('wm.widgets.live')
             };
         }
     ])
-    .directive('wmLivelist', [
+    .directive('wmList', [
         'WidgetUtilService',
         'PropertiesFactory',
         '$templateCache',
@@ -71,7 +71,7 @@ WM.module('wm.widgets.live')
         function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse, AppDefaults) {
             'use strict';
 
-            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
+            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.list', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
                 notifyFor = {
@@ -210,7 +210,7 @@ WM.module('wm.widgets.live')
                     }
                 }
                 // emit event to modify the liveList template
-                $rs.$emit('livelist-template-modified', {
+                $rs.$emit('list-template-modified', {
                     'widgetName' : $is.name,
                     'bindDataset': $is.binddataset,
                     'fields'     : columns,
@@ -235,7 +235,7 @@ WM.module('wm.widgets.live')
             }
 
             function _fetchNextOnScroll($is, $el) {
-                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
+                var $dataNavigator = $el.find('> .panel-footer > [data-identifier="pagination"]'),
                     navigator      = $dataNavigator.isolateScope();
 
                 $rs.$evalAsync(function () {
@@ -341,7 +341,7 @@ WM.module('wm.widgets.live')
             //Sets dataNavigator class on change of paginationclass
             function setNavigationClass($is, $el, nv) {
                 $timeout(function () {
-                    var $dataNavigatorEl = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
+                    var $dataNavigatorEl = $el.find('> .panel-footer > [data-identifier="pagination"]'),
                         dataNavigatorScope;
                     if ($is.navigation && $dataNavigatorEl.length) {
                         dataNavigatorScope                 = $dataNavigatorEl.isolateScope();
@@ -682,7 +682,7 @@ WM.module('wm.widgets.live')
                     Utils.triggerFn($is._watchers.dataset);
                     $is.dataNavigator = undefined;
                     $timeout(function () {
-                        $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]');
+                        $dataNavigator = $el.find('> .panel-footer > [data-identifier="pagination"]');
                         dataNavigator = $dataNavigator.isolateScope();
                         $is.dataNavigator = dataNavigator;
                         dataNavigator.pagingOptions = {
@@ -1485,7 +1485,7 @@ WM.module('wm.widgets.live')
 
                     if ($is.navigation !== 'None') {
                         $timeout(function () {
-                            $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]');
+                            $dataNavigator = $el.find('> .panel-footer > [data-identifier="pagination"]');
                             $is.dataNavigator = $dataNavigator.isolateScope();
                         });
                     }
@@ -1662,11 +1662,11 @@ WM.module('wm.widgets.live')
 
 /**
  * @ngdoc directive
- * @name wm.widgets.live.directive:wmLivelist
+ * @name wm.widgets.live.directive:wmlist
  * @restrict E
  *
  * @description
- * The `wmLivelist` directive defines a Live list widget. <br>
+ * The `wmlist` directive defines a Live list widget. <br>
  *
  * @requires PropertiesFactory
  * @requires $templateCache
@@ -1723,7 +1723,7 @@ WM.module('wm.widgets.live')
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
                <div>Selected Element: {{selectedItem}}</div>
-               <wm-livelist
+               <wm-list
                    name="{{caption}}"
                    width="{{width}}"
                    height="{{height}}"
@@ -1733,7 +1733,7 @@ WM.module('wm.widgets.live')
                     <wm-listtemplate layout="inline">
                         <wm-button class="btn btn-primary" caption="{{item}}"></wm-button>
                     </wm-listtemplate>
-               </wm-livelist><br>
+               </wm-list><br>
                 <wm-composite>
                     <wm-label caption="caption:"></wm-label>
                     <wm-text scopedatavalue="caption"></wm-text>

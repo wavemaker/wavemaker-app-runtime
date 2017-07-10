@@ -4,8 +4,8 @@
 WM.module("wm.widgets.basic")
     .run(["$templateCache", function ($templateCache) {
         "use strict";
-        $templateCache.put("template/widget/datanavigator.html",
-            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" init-widget apply-styles>' +
+        $templateCache.put("template/widget/pagination.html",
+            '<nav data-identifier="pagination" class="app-datanavigator clearfix" init-widget apply-styles>' +
                 '<ul class="pagination advanced {{navigationClass}}" ng-if="navcontrols === \'Classic\'">' +
                     '<li ng-class="{\'disabled\':isDisableFirst}"><a title="{{$root.appLocale.LABEL_FIRST}}" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
                     '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="{{$root.appLocale.LABEL_PREVIOUS}}" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
@@ -24,9 +24,9 @@ WM.module("wm.widgets.basic")
                 '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>{{$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
-    }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS, $timeout) {
+    }]).directive('wmPagination', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'wmToaster', 'CONSTANTS', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rootScope, wmToaster, CONSTANTS, $timeout) {
         "use strict";
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.navigation']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.pagination', ['wm.base', 'wm.base.navigation']),
             notifyFor = {
                 'dataset'        : true,
                 'navigation'     : true,
@@ -72,7 +72,7 @@ WM.module("wm.widgets.basic")
                     scope.show = newVal ? newVal.dataValue !== '' : false;
                 }
                 //For grid, data watch is set on navigator. So, update the grid full data of grid on dataset change.
-                if (parentScope._widgettype === 'wm-grid') {
+                if (parentScope._widgettype === 'wm-table') {
                     data = parentScope.onDataNavigatorDataSetChange(newVal);
                 } else {
                     data = newVal;
@@ -488,7 +488,7 @@ WM.module("wm.widgets.basic")
                     $scope.goToPage(event, callback);
                 };
             },
-            'template': $templateCache.get("template/widget/datanavigator.html"),
+            'template': $templateCache.get("template/widget/pagination.html"),
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -514,11 +514,11 @@ WM.module("wm.widgets.basic")
 
 /**
  * @ngdoc directive
- * @name wm.widgets.basic.directive:wmDatanavigator
+ * @name wm.widgets.basic.directive:wmPagination
  * @restrict E
  *
  * @description
- * The `wmDatanavigator` directive defines a data navigator that is used for pagination. <br>
+ * The `wmPagination` directive defines a data navigator that is used for pagination. <br>
  *
  *
  * @requires PropertiesFactory

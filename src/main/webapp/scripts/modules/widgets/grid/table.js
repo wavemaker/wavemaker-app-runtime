@@ -1,15 +1,15 @@
-/*global WM, wmGrid, confirm, window, wm, _, $, moment*/
+/*global WM, wmTable, confirm, window, wm, _, $, moment*/
 /*jslint sub: true */
 /*jslint todo: true */
 
 /**
  * @ngdoc directive
- * @name wm.widgets.grid.directive:wmGrid
+ * @name wm.widgets.table.directive:wmTable
  * @restrict E
  *
  * @description
- * The `wmGrid` is the data grid used to display data in a tabular manner.<br>
- * `wmGrid` can be bound to variables and display the data associated with them.
+ * The `wmTable` is the data grid used to display data in a tabular manner.<br>
+ * `wmTable` can be bound to variables and display the data associated with them.
  *
  * @scope
  *
@@ -89,7 +89,7 @@
    <example module="wmCore">
        <file name="index.html">
            <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
-               <wm-grid  name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-grid>
+               <wm-table  name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-table>
            </div>
        </file>
        <file name="script.js">
@@ -99,11 +99,11 @@
        </file>
  </example>
  */
-WM.module('wm.widgets.grid')
-    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rs, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
+WM.module('wm.widgets.table')
+    .directive('wmTable', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', '$document', 'AppDefaults', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rs, $timeout, Utils, LiveWidgetUtils, $document, AppDefaults) {
         'use strict';
         var gridColumnCount,
-            widgetProps           = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
+            widgetProps           = PropertiesFactory.getPropertiesOf('wm.table', ['wm.base', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
             gridColumnMarkup      = '',
             notifyFor             = {
                 'width'              : true,
@@ -246,7 +246,7 @@ WM.module('wm.widgets.grid')
             'template'   : function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
-                return '<div data-identifier="grid" init-widget class="app-grid app-panel panel" apply-styles="shell">' +
+                return '<div data-identifier="table" init-widget class="app-grid app-panel panel" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass || exportOptions.length || _actions.header.length">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
@@ -264,7 +264,7 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || _actions.footer.length">' +
                         '<div class="app-datagrid-paginator" ng-show="(isStudioMode || dataNavigator.dataSize) && show && shownavigation">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                            '<wm-pagination show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
                             '<wm-button ng-repeat="btn in _actions.footer track by $index" caption="{{btn.displayName}}" show="bind:btn.show" class="{{btn.class}}" ng-class="{\'btn-sm\': spacing === \'condensed\', \'disabled-new\': btn.key === \'addNewRow\' && (isGridEditMode || isLoading)}" iconclass="{{btn.iconclass}}"' +
@@ -307,7 +307,7 @@ WM.module('wm.widgets.grid')
 
                 /*set the raw gridColumnMarkup to the grid attribute*/
                 tAttr.gridColumnMarkup = gridColumnMarkup;
-                gridColumnCount = (gridColumnMarkup.match(/<wm-grid-column/g) || []).length;
+                gridColumnCount = (gridColumnMarkup.match(/<wm-table-column/g) || []).length;
                 /* in run mode there is separate controller for grid widget but not in studio mode, to prevent errors in studio mode create and empty function
                  * with particular controller name */
                 if (CONSTANTS.isStudioMode) {
@@ -432,7 +432,7 @@ WM.module('wm.widgets.grid')
                         //Will be called after setting grid column property.
                         function _redraw(forceRender) {
                             if (forceRender) {
-                                $is.datagridElement.datagrid($is.gridOptions);
+                                $is.datagridElement.datatable($is.gridOptions);
                             } else {
                                 $timeout(function () {
                                     $is.callDataGridMethod('setColGroupWidths');
@@ -762,7 +762,7 @@ WM.module('wm.widgets.grid')
                                         'filter': 'terminal'
                                     }));
                                 }
-                                $is.datagridElement.datagrid('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
+                                $is.datagridElement.datatable('setStatus', 'error', $rs.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
                             }
                         }));
                         handlers.push($rs.$on('toggle-variable-state', function (event, boundVariable, active) {
@@ -799,7 +799,7 @@ WM.module('wm.widgets.grid')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, $is, notifyFor);
                         defineSelectedItemProp($is);
                         $timeout(function () {
-                            $is.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
+                            $is.dataNavigator = element.find('[data-identifier="pagination"]').isolateScope();
                             WidgetUtilService.postWidgetCreate($is, element, attrs);
 
                             if (!$is.widgetid && attrs.scopedataset) {
@@ -853,7 +853,7 @@ WM.module('wm.widgets.grid')
                         $is.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
                         $is.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         $is.gridOptions.name           = $is.name || $is.$id;
-                        $is.datagridElement.datagrid($is.gridOptions);
+                        $is.datagridElement.datatable($is.gridOptions);
                         $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
 
                         $is.$on('$destroy', onDestroy);
@@ -1999,13 +1999,13 @@ WM.module('wm.widgets.grid')
                 $is.setDataGridOption('colDefs', Utils.getClonedObject($is.fieldDefs));
             }
             function setDataGridOption(optionName, newVal, forceSet) {
-                if (!$is.datagridElement.datagrid('instance')) {
+                if (!$is.datagridElement.datatable('instance')) {
                     return;
                 }
                 var option = {};
                 if (WM.isDefined(newVal) && (!WM.equals(newVal, $is.gridOptions[optionName]) || forceSet)) {
                     option[optionName] = newVal;
-                    $is.datagridElement.datagrid('option', option);
+                    $is.datagridElement.datatable('option', option);
                     $is.gridOptions[optionName] = newVal;
                 }
             }
@@ -2325,10 +2325,10 @@ WM.module('wm.widgets.grid')
             }
             //Function to call the jqeury datagrid method
             function callDataGridMethod() {
-                if (!$is.datagridElement.datagrid('instance')) {
+                if (!$is.datagridElement.datatable('instance')) {
                     return; //If datagrid is not initiliazed or destroyed, return here
                 }
-                return $is.datagridElement.datagrid.apply($is.datagridElement, arguments);
+                return $is.datagridElement.datatable.apply($is.datagridElement, arguments);
             }
             //Function to hide the edited row
             function hideEditRow() {
@@ -2608,12 +2608,12 @@ WM.module('wm.widgets.grid')
         }])
 /**
  * @ngdoc directive
- * @name wm.widgets.grid.directive:wmGridColumnGroup
+ * @name wm.widgets.table.directive:wmTableColumnGroup
  * @restrict E
  *
  * @description
- * The `wmGridColumnColumn` serves the purpose of providing column group definitions to the parent `wmGrid` directive.
- * `wmGridColumnColumn` is internally used by `wmGrid`.
+ * The `wmTableColumnColumn` serves the purpose of providing column group definitions to the parent `wmTable` directive.
+ * `wmTableColumnColumn` is internally used by `wmTable`.
  *
  * @requires LiveWidgetUtils
  *
@@ -2622,7 +2622,7 @@ WM.module('wm.widgets.grid')
  * @param {string=} name
  *                  Sets the name of the column
  */
-    .directive('wmGridColumnGroup', ['LiveWidgetUtils', 'CONSTANTS', 'BindingManager', 'Utils', function (LiveWidgetUtils, CONSTANTS, BindingManager, Utils) {
+    .directive('wmTableColumnGroup', ['LiveWidgetUtils', 'CONSTANTS', 'BindingManager', 'Utils', function (LiveWidgetUtils, CONSTANTS, BindingManager, Utils) {
         'use strict';
 
         return {
@@ -2677,12 +2677,12 @@ WM.module('wm.widgets.grid')
 
 /**
  * @ngdoc directive
- * @name wm.widgets.grid.directive:wmGridColumn
+ * @name wm.widgets.table.directive:wmTableColumn
  * @restrict E
  *
  * @description
- * The `wmGridColumn` serves the purpose of providing column definitions to the parent `wmGrid` directive.
- * `wmGridColumn` is internally used by `wmGrid`.
+ * The `wmTableColumn` serves the purpose of providing column definitions to the parent `wmTable` directive.
+ * `wmTableColumn` is internally used by `wmTable`.
  *
  * @requires $parse
  * @requires Utils
@@ -2703,22 +2703,22 @@ WM.module('wm.widgets.grid')
  *                  Sets the alignment of the text in all the rows of the column.
  * @param {string=} binding
  *                  Sets the binding for the column.<br>
- *                  The value provided will be evaluated in the 'dataset' or 'scopedataset' of the parent 'wmGrid' and the data will be displayed in the column.
+ *                  The value provided will be evaluated in the 'dataset' or 'scopedataset' of the parent 'wmTable' and the data will be displayed in the column.
  *
  * @example
   <example module="wmCore">
       <file name="index.html">
           <div data-ng-controller="Ctrl" class="wm-app">
-              <wm-grid dataset="bind:Variables.gridVariable.dataSet">
-                  <wm-grid-column binding="deptid" caption="deptid" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="budget" caption="budget" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="location" caption="location" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="q1" caption="q1" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="q2" caption="q2" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="q3" caption="q3" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="name" caption="name" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-                  <wm-grid-column binding="deptcode" caption="deptcode" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
-              </wm-grid>
+              <wm-table dataset="bind:Variables.gridVariable.dataSet">
+                  <wm-table-column binding="deptid" caption="deptid" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="budget" caption="budget" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="location" caption="location" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="q1" caption="q1" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="q2" caption="q2" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="q3" caption="q3" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="name" caption="name" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+                  <wm-table-column binding="deptcode" caption="deptcode" pcdisplay="true" mobiledisplay="true"></wm-table-column>
+              </wm-table>
           </div>
       </file>
       <file name="script.js">
@@ -2731,7 +2731,7 @@ WM.module('wm.widgets.grid')
       </file>
   </example>
  */
-    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', 'LiveWidgetUtils', function ($parse, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
+    .directive('wmTableColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', 'LiveWidgetUtils', function ($parse, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
         var isDataSetWidgets = Utils.getDataSetWidgets();
         return {
@@ -2967,7 +2967,7 @@ WM.module('wm.widgets.grid')
             }
         };
     }])
-    .directive('wmGridAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
+    .directive('wmTableAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
         'use strict';
         return {
             'restrict': 'E',
@@ -2988,7 +2988,7 @@ WM.module('wm.widgets.grid')
                         if (CONSTANTS.isRunMode) {
                             parentIsolateScope = scope;
                         } else {
-                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="grid"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="table"]').isolateScope() || scope.$parent : scope.$parent;
                         }
                         parentIsolateScope.actions = parentIsolateScope.actions || [];
                         parentIsolateScope.actions.push(buttonDef);
@@ -2999,7 +2999,7 @@ WM.module('wm.widgets.grid')
             }
         };
     }])
-    .directive('wmGridRowAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
+    .directive('wmTableRowAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
         'use strict';
         return {
             'restrict': 'E',
@@ -3017,7 +3017,7 @@ WM.module('wm.widgets.grid')
                         if (CONSTANTS.isRunMode) {
                             parentIsolateScope = scope;
                         } else {
-                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="grid"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="table"]').isolateScope() || scope.$parent : scope.$parent;
                         }
                         parentIsolateScope.rowActions = parentIsolateScope.rowActions || [];
                         parentIsolateScope.rowActions.push(buttonDef);

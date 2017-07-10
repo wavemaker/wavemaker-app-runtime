@@ -102,12 +102,12 @@ WM.module('wm.widgets.live')
                             scope.primaryKey = null;
                             scope.fullFieldDefs = [];
                             scope.fieldDefs = [];
-                            scope.grid = element.find('[data-identifier=grid]').isolateScope();
+                            scope.grid = element.find('[data-identifier="table"]').isolateScope();
                             scope.gridform = element.find('[data-identifier=liveform]').isolateScope();
                             scope.isLayoutDialog = false;
                             /*Add watchers or listeners only if the grid or form are present in the element*/
                             if (scope.grid && scope.gridform) {
-                                scope.grid.datagridElement.datagrid('option', liveGridOptions);
+                                scope.grid.datagridElement.datatable('option', liveGridOptions);
                                 scope.grid.parentgrid = true;
                                 scope.grid.isGridPartOfLiveGrid = true;
                                 scope.grid.newcolumns = scope.newcolumns;
@@ -240,7 +240,7 @@ WM.module('wm.widgets.live')
                                 }));
                             } else if (scope.grid) {
                                 //If form is not present along with the grid, disable the actions on grid
-                                scope.grid.datagridElement.datagrid('option', {
+                                scope.grid.datagridElement.datatable('option', {
                                     'beforeRowUpdate'    : function () {
                                         showErrorMessage();
                                     },
