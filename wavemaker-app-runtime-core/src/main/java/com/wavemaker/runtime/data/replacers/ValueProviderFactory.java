@@ -21,7 +21,7 @@ import java.util.Map;
 
 import com.wavemaker.runtime.data.annotations.Encrypted;
 import com.wavemaker.runtime.data.annotations.ServerDefinedProperty;
-import com.wavemaker.runtime.data.replacers.providers.AppEnvironmentDefinedPropertyProvider;
+import com.wavemaker.runtime.data.replacers.providers.VariableDefinedPropertyProvider;
 import com.wavemaker.runtime.data.replacers.providers.EncryptedValueProviderBuilder;
 import com.wavemaker.runtime.data.replacers.providers.ServerDefinedPropertyProvider;
 
@@ -40,7 +40,7 @@ public class ValueProviderFactory {
         annotationValueProviderBuilderMap.put(ServerDefinedProperty.class, new ServerDefinedPropertyProvider
                 .SystemVariableProviderBuilder());
         annotationValueProviderBuilderMap.put(com.wavemaker.runtime.data.annotations.ValueProvider.class,
-                new AppEnvironmentDefinedPropertyProvider.AppEnvironmentProviderBuilder());
+                new VariableDefinedPropertyProvider.VariableDefinedPropertyProviderBuilder());
     }
 
 

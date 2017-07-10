@@ -18,13 +18,18 @@ import com.wavemaker.runtime.data.replacers.ValueType;
  * @since 6/7/17
  */
 
-public class AppEnvironmentDefinedPropertyProvider implements ValueProvider {
+public class VariableDefinedPropertyProvider implements ValueProvider {
+
+    private final ValueType valueType;
 
     private final String key;
+
     private final Class<?> fieldType;
+
     private final Set<Scope> scopes;
 
-    public AppEnvironmentDefinedPropertyProvider(final String key, final Class<?> fieldType, final Set<Scope> scopes) {
+    public VariableDefinedPropertyProvider(final ValueType valueType, final String key, final Class<?> fieldType, final Set<Scope> scopes) {
+        this.valueType = valueType;
         this.key = key;
         this.fieldType = fieldType;
         this.scopes = scopes;
@@ -32,7 +37,7 @@ public class AppEnvironmentDefinedPropertyProvider implements ValueProvider {
 
     @Override
     public Object getValue(ListenerContext context) {
-        return ValueType.APP_ENVIRONMENT.getValue(key,fieldType);
+        return valueType.getValue(key,fieldType);
     }
 
     @Override
@@ -40,12 +45,12 @@ public class AppEnvironmentDefinedPropertyProvider implements ValueProvider {
         return scopes;
     }
 
-    public static class AppEnvironmentProviderBuilder implements ValueProviderBuilder {
+    public static class VariableDefinedPropertyProviderBuilder implements ValueProviderBuilder {
 
         @Override
         public ValueProvider build(Field field, Map<Field, PropertyDescriptor> fieldDescriptorMap, Annotation annotation) {
             com.wavemaker.runtime.data.annotations.ValueProvider provider = (com.wavemaker.runtime.data.annotations.ValueProvider)annotation;
-            return new AppEnvironmentDefinedPropertyProvider(provider.key(), field.getType(),
+            return new VariableDefinedPropertyProvider(provider.type(), provider.key(), field.getType(),
                     Sets.newHashSet(provider.scopes()));
         }
 
