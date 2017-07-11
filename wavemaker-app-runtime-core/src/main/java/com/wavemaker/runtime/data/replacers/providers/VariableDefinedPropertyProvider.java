@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.wavemaker.runtime.data.annotations.WMValueInject;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;
 import com.wavemaker.runtime.data.replacers.ValueProvider;
@@ -49,8 +50,8 @@ public class VariableDefinedPropertyProvider implements ValueProvider {
 
         @Override
         public ValueProvider build(Field field, Map<Field, PropertyDescriptor> fieldDescriptorMap, Annotation annotation) {
-            com.wavemaker.runtime.data.annotations.ValueProvider provider = (com.wavemaker.runtime.data.annotations.ValueProvider)annotation;
-            return new VariableDefinedPropertyProvider(provider.type(), provider.key(), field.getType(),
+            WMValueInject provider = (WMValueInject) annotation;
+            return new VariableDefinedPropertyProvider(provider.type(), provider.name(), field.getType(),
                     Sets.newHashSet(provider.scopes()));
         }
 

@@ -13,15 +13,14 @@ import com.wavemaker.runtime.data.replacers.ValueType;
  * @author Ravali Koppaka
  * @since 6/7/17
  */
-
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ValueProvider  {
+public @interface WMValueInject {
 
     ValueType type();
 
-    String key();
+    String name();
 
     Scope[] scopes();
 }
