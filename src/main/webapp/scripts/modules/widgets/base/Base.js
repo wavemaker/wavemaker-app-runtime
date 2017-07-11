@@ -1421,7 +1421,7 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "formlayout": {"type": "switch", "options":  [{"label": "INLINE", "value": "inline"}, {"label": "PAGE", "value": "page"}], "value": "inline", "show" : false, "displayfield": "label", "datafield": "value"},
+                        "formlayout": {"type": "toggle", "options":  {"onLabel": "INLINE", "onValue": "inline", "offLabel": "PAGE", "offValue": "page"}, "value": "inline", "show" : false},
                         "autocomplete": {"type": "boolean", "value": false, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "show": false},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons-align"},
@@ -1437,7 +1437,7 @@ WM.module('wm.widgets.base', [])
                         "validationtype": {"type": "select-by-object", "options": [{"label": "Default", "value": "default"}, {"label": "HTML", "value": "html"}, {"label": "No Validations", "value": "none"}], "value": "default", "displayfield": "label", "datafield": "value", "showindesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false},
-                        "defaultmode": {"type": "switch", "options": [{"label": "READ ONLY", "value": "View"}, {"label": "EDITABLE", "value": "Edit"}], "value": "View", "showindesigner": true, "displayfield": "label", "datafield": "value"},
+                        "defaultmode": {"type": "toggle", "options": {"onLabel": "READ ONLY", "onValue": "View", "offLabel": "EDITABLE", "offValue": "Edit"}, "value": "View", "showindesigner": true},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "messagelayout": {"type": "list", "options": ["Inline", "Toaster"], "value": "Toaster", "showindesigner": true},
                         "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-bound", "showindesigner": true},
