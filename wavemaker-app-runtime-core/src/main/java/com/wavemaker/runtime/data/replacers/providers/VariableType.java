@@ -29,6 +29,7 @@ import com.wavemaker.runtime.system.SystemDefinedPropertiesBean;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 23/6/16
  */
+@Deprecated
 public enum VariableType {
     PROMPT {
         @Override

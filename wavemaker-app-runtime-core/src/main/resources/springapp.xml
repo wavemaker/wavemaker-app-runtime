@@ -100,4 +100,9 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
+    <bean id="serverVariableValueProvider" class="com.wavemaker.runtime.system.ServerVariableValueProvider"/>
+
+    <bean id="appEnvironmentVariableValueProvider"
+          class="com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider"/>
+
 </beans>

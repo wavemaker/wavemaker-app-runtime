@@ -21,5 +21,5 @@ package com.wavemaker.runtime.system;
  */
 public interface SystemUnit {
 
-    public <T> T getValue();
+    <T> T getValue();
 }

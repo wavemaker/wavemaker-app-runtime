@@ -1,6 +1,8 @@
 package com.wavemaker.runtime.data.replacers;
 
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider;
+import com.wavemaker.runtime.system.ServerVariableValueProvider;
 
 /**
  * @author Ravali Koppaka
@@ -11,32 +13,26 @@ public enum ValueType {
 
     PROMPT {
         @Override
-        public Object getValue(String key, Class<?> fieldType) {
+        public <T> T getValue(String key, Class<T> fieldType) {
             return null;
-        }
-    },
-    SYSTEM {
-        @Override
-        public Object getValue(String key, Class<?> fieldType) {
-            VariableType type = VariableType.valueOf(key);
-            return type.getValue(fieldType);
         }
     },
     SERVER {
         @Override
-        public Object getValue(String key, Class<?> fieldType) {
-            VariableType type = VariableType.valueOf(key);
-            return type.getValue(fieldType);
+        public <T> T getValue(String key, Class<T> fieldType) {
+            final ServerVariableValueProvider provider = WMAppContext.getInstance()
+                    .getSpringBean(ServerVariableValueProvider.class);
+            return provider.getValue(key, fieldType);
         }
     },
     APP_ENVIRONMENT {
-        //TODO read values from app.properties
         @Override
-        public Object getValue(String key, Class<?> fieldType) {
-            return "app-environment";
+        public <T> T getValue(String key, Class<T> fieldType) {
+            final AppEnvironmentVariableValueProvider provider = WMAppContext.getInstance()
+                    .getSpringBean(AppEnvironmentVariableValueProvider.class);
+            return provider.getValue(key, fieldType);
         }
     };
 
-    //TODO for SYSTEM and SERVER values should not be read from VariableType
-    public abstract Object getValue(String key, final Class<?> fieldType);
+    public abstract <T> T getValue(String key, final Class<T> fieldType);
 }

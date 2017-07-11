@@ -32,6 +32,7 @@ import com.wavemaker.runtime.data.replacers.ValueProviderBuilder;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 23/6/16
  */
+@Deprecated
 public class ServerDefinedPropertyProvider implements ValueProvider {
 
     private final Set<Scope> scopes;
@@ -55,6 +56,7 @@ public class ServerDefinedPropertyProvider implements ValueProvider {
         return scopes;
     }
 
+    @Deprecated
     public static class SystemVariableProviderBuilder implements ValueProviderBuilder {
 
         @Override
