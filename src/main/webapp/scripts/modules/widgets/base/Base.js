@@ -1477,7 +1477,7 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex}
                     },
-                    'wm.grid': {
+                    'wm.table': {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1761,7 +1761,7 @@ WM.module('wm.widgets.base', [])
                         "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
                     },
-                    "wm.livelist": {
+                    "wm.list": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
@@ -1959,7 +1959,7 @@ WM.module('wm.widgets.base', [])
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-bound", "show": false}
                     },
-                    "wm.datanavigator": {
+                    "wm.pagination": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false", "getTypeFrom": "dataset"},
@@ -2088,7 +2088,7 @@ WM.module('wm.widgets.base', [])
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
-                {"name": "datagrid", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
+                {"name": "datatable", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "captionwidth", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "loadingicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition", "image", "imagewidth"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "xscolumnwidth", "taborder"], "parent": "properties"},
@@ -3100,7 +3100,7 @@ WM.module('wm.widgets.base', [])
                         optionCategoryName = 'Field';
 
                     // default options for live list
-                    if (scope.widgettype === 'wm-livelist') {
+                    if (scope.widgettype === 'wm-list') {
                         defaultOptions = [{"name": "Javascript", "category": "Script"}];
                         if (_.includes(scope[prop], '(')) {
                             defaultOptions.push({

@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
             function updateLiveListTemplate($is) {
                 $timeout(function () {
                     /* emit event to modify the liveList template*/
-                    $rootScope.$emit('livelist-template-modified', {
+                    $rootScope.$emit('list-template-modified', {
                         'widgetName'        : $is.name,
                         'bindDataset'       : null,
                         'fields'            : null,
@@ -89,7 +89,7 @@ WM.module('wm.layouts.containers')
             } else {
                 WM.extend(directiveDefn, {
                     'terminal': true,
-                    'require' : '^wmLivelist',
+                    'require' : '^wmList',
                     'link'    : {
                         'pre' : runMode_preLinkFn
                     }

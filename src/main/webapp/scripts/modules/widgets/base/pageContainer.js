@@ -76,7 +76,7 @@ WM.module('wm.widgets.base')
                 } else {
                     partialMarkup = partialMarkup + '<div class="content-overlay"></div>';
                     partialMarkup = WM.element(partialMarkup);
-                    partialMarkup.find('wm-livelist, wm-login').removeAttr('data-ng-controller');
+                    partialMarkup.find('wm-list, wm-login').removeAttr('data-ng-controller');
                 }
 
                 /*get the element scope*/
