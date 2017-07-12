@@ -112,7 +112,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "required": true, "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage", "isprimary": true},
+                    "operation": {"type": "list", "required": true, "options": {"goToPreviousPage": "Previous Page", "gotoPage": "Page", "gotoTab": "Tab", "gotoAccordion": "Accordion"}, "value": "gotoPage", "isprimary": true},
                     "dataBinding": {"type": "string", "value": [], "hide": true},
                     "pageTransitions": {"type": "list", "widgettype": "typeahead", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true},
                     "dataSet": {"hide": true, "value": []}
