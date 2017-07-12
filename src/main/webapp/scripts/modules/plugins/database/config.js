@@ -691,9 +691,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         }
     },
     "COLUMN_VALUE_TYPES": {
-        "user-defined"      : "User Defined",
-        "server-defined"    : "Server Defined",
-        "database-defined"  : "Database Defined"
+        "user-defined"              : "User Defined",
+        "server-defined"            : "Server Defined",
+        "database-defined"          : "Database Defined",
+        "app-environment-defined"   : "App Environment Defined"
     },
     "COLUMN_VALUE_OPERATIONS": {
         "BOTH"  : "Insert and Update",
