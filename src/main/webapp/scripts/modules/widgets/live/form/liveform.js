@@ -493,7 +493,7 @@ WM.module('wm.widgets.live')
                                 resetFileUploadWidget(formField, true);
                                 formField.href = $scope.getBlobURL(prevDataValues, formField.key, formField.value);
                             }
-                            if (!formField.value && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
+                            if (WM.isUndefined(formField.value) && formField.widget === 'autocomplete') { //Empty the query in case of autocomplete widget
                                 formEle.find('div[name=' + formField.name + '] input').val('');
                             }
                             $scope.applyFilterOnField(formField);

@@ -194,7 +194,7 @@ WM.module('wm.widgets.basic')
                     }
                     // type conversion required here. hence `==` is used instead of `===`
                     itemValue = _.get(item, $is.datafield);
-                    return itemValue && itemValue == $is._proxyModel;
+                    return WM.isDefined(itemValue) && itemValue == $is._proxyModel;
                 });
 
                 if (!$is.queryModel) {
