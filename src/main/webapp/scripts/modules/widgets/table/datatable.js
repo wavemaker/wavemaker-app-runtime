@@ -2487,9 +2487,9 @@ $.widget('wm.datatable', {
             state            = this.dataStatus.state;
         this.dataStatusContainer.find('.message').text(this.dataStatus.message);
         if (state === 'loading') {
-            loadingIndicator.show();
+            loadingIndicator.removeClass('ng-hide');
         } else {
-            loadingIndicator.hide();
+            loadingIndicator.addClass('ng-hide');
         }
         if (state === 'ready') {
             this.dataStatusContainer.hide();

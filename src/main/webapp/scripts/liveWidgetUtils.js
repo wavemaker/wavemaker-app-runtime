@@ -974,6 +974,11 @@ WM.module('wm.widgets.live')
                 if (!scope.formWidget) {
                     $formWidgetEl  = element.find('[name="' + scope.name + '_formWidget"]'); //Find out the form widget inside the form field
                     scope.formWidget = $formWidgetEl.length ? $formWidgetEl.isolateScope() : undefined;
+
+                    //Remove the formWidget on scope, if widget is destroyed
+                    scope.formWidget && scope.formWidget.$on('$destroy', function () {
+                        scope.formWidget = undefined;
+                    });
                 }
                 return scope.formWidget;
             }
