@@ -36,6 +36,8 @@ public class QueryParameter {
 
     @NotNull
     private VariableType variableType;
+    private String variableName;
+
     private Object testValue;
 
     private boolean required = true;
@@ -74,6 +76,15 @@ public class QueryParameter {
 
     public void setVariableType(final VariableType variableType) {
         this.variableType = variableType;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public QueryParameter setVariableName(final String variableName) {
+        this.variableName = variableName;
+        return this;
     }
 
     public Object getTestValue() {

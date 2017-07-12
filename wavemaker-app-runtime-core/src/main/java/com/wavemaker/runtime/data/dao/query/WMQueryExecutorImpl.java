@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.NativeQuery;
@@ -92,13 +90,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public int executeNamedQueryForUpdate(final String queryName, final Map<String, Object> params) {
 
-        return template.execute(new HibernateCallback<Integer>() {
-            @Override
-            public Integer doInHibernate(final Session session) throws HibernateException {
-                Query namedQuery = session.getNamedQuery(queryName);
-                QueryHelper.configureParameters(session, queryName, namedQuery, params);
-                return namedQuery.executeUpdate();
-            }
+        return template.execute(session -> {
+            Query namedQuery = session.getNamedQuery(queryName);
+            QueryHelper.configureParameters(session, queryName, namedQuery, params);
+            return namedQuery.executeUpdate();
         });
 
     }
@@ -118,45 +113,35 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public int executeRuntimeQueryForUpdate(final RuntimeQuery runtimeQuery) {
-        return template.execute(new HibernateCallback<Integer>() {
-            @Override
-            public Integer doInHibernate(final Session session) throws HibernateException {
-                return QueryHelper.createQuery(runtimeQuery, QueryHelper.prepareQueryParameters(runtimeQuery), session)
-                        .executeUpdate();
-            }
-
-        });
+        return template.execute(session -> QueryHelper
+                .createQuery(runtimeQuery, QueryHelper.prepareQueryParameters(runtimeQuery), session)
+                .executeUpdate());
     }
 
     protected Page<Object> executeNativeQuery(
             final String queryString, final Map<String, Object> params, final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
-        return template.execute(new HibernateCallback<Page<Object>>() {
-            @Override
-            public Page<Object> doInHibernate(final Session session) throws HibernateException {
-                NativeQuery nativeQuery;
-                Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
-                nativeQuery = createNativeQuery(queryString, _pageable.getSort(), params);
-                nativeQuery.setFirstResult(_pageable.getOffset());
-                nativeQuery.setMaxResults(_pageable.getPageSize());
-                return new WMPageImpl(nativeQuery.list(), _pageable, count);
+        return template.execute((HibernateCallback<Page<Object>>) session -> {
+            NativeQuery nativeQuery;
+            Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
+            nativeQuery = createNativeQuery(queryString, _pageable.getSort(), params);
+            nativeQuery.setFirstResult(_pageable.getOffset());
+            nativeQuery.setMaxResults(_pageable.getPageSize());
+            return new WMPageImpl(nativeQuery.list(), _pageable, count);
 
-            }
         });
     }
 
     protected Page<Object> executeHQLQuery(
             final String queryString, final Map<String, Object> params, final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
-        return template.execute(new HibernateCallback<Page<Object>>() {
-            public Page<Object> doInHibernate(Session session) throws HibernateException {
-                Query hqlQuery = QueryHelper.createHQLQuery(queryString, params, session);
-                Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
-                hqlQuery.setFirstResult(_pageable.getOffset());
-                hqlQuery.setMaxResults(_pageable.getPageSize());
-                return new WMPageImpl(hqlQuery.list(), _pageable, count);
+        return template.execute((HibernateCallback<Page<Object>>) session -> {
+            Query hqlQuery = QueryHelper.createHQLQuery(queryString, params, session);
+            Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
+            hqlQuery.setFirstResult(_pageable.getOffset());
+            hqlQuery.setMaxResults(_pageable.getPageSize());
+            return new WMPageImpl(hqlQuery.list(), _pageable, count);
 
-            }
         });
     }
 
@@ -171,10 +156,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public Downloadable exportNamedQueryData(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,Class<?> responseType,
+            final String queryName, final Map<String, Object> params, final ExportType exportType,
+            Class<?> responseType,
             final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
-        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType, responseType, _pageable);
+        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType,
+                responseType, _pageable);
         ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
         InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
         return new DownloadResponse(is, exportType.getContentType(), queryName + exportType.getExtension());
@@ -195,26 +182,23 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
 
-        return template.execute(new HibernateCallback<Integer>() {
-            @Override
-            public Integer doInHibernate(final Session session) throws HibernateException {
-                Map<String, Object> params = new HashMap<>();
+        return template.execute(session -> {
+            Map<String, Object> params = new HashMap<>();
 
-                List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-                if (customQueryParams != null && !customQueryParams.isEmpty())
-                    for (CustomQueryParam customQueryParam : customQueryParams) {
-                        Object paramValue = validateAndPrepareObject(customQueryParam);
-                        params.put(customQueryParam.getParamName(), paramValue);
-                    }
-
-                Query query = null;
-                if (customQuery.isNativeSql()) {
-                    query = QueryHelper.createNativeQuery(customQuery.getQueryStr(), params, session);
-                } else {
-                    query = QueryHelper.createHQLQuery(customQuery.getQueryStr(), params, session);
+            List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
+            if (customQueryParams != null && !customQueryParams.isEmpty())
+                for (CustomQueryParam customQueryParam : customQueryParams) {
+                    Object paramValue = validateAndPrepareObject(customQueryParam);
+                    params.put(customQueryParam.getParamName(), paramValue);
                 }
-                return query.executeUpdate();
+
+            Query query;
+            if (customQuery.isNativeSql()) {
+                query = QueryHelper.createNativeQuery(customQuery.getQueryStr(), params, session);
+            } else {
+                query = QueryHelper.createHQLQuery(customQuery.getQueryStr(), params, session);
             }
+            return query.executeUpdate();
         });
 
     }

@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -34,9 +33,9 @@ import org.hibernate.type.BasicType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
@@ -79,10 +78,10 @@ public class QueryHelper {
     }
 
     private static void configureNamedParameter(Query query, Map<String, Object> params, String namedParameter) {
-        final VariableType variableType = VariableType.fromQueryParameter(namedParameter);
-        if (variableType.isSystemVariable()) {
+        final Tuple.Two<VariableType, String> two = VariableType.fromVariableName(namedParameter);
+        if (two.v1.isVariable()) {
             // XXX meta data needed
-            query.setParameter(namedParameter, variableType.getValue(null));
+            query.setParameter(namedParameter, two.v1.getValue(two.v2));
         } else {
             Object val = params.get(namedParameter);
             if (val != null && val instanceof List) {
@@ -97,10 +96,10 @@ public class QueryHelper {
             Session session, String queryName, Query query, Map<String, Object> params,
             String namedParameter) {
 
-        final VariableType variableType = VariableType.fromQueryParameter(namedParameter);
-        if (variableType.isSystemVariable()) {
+        final Tuple.Two<VariableType, String> two = VariableType.fromVariableName(namedParameter);
+        if (two.v1.isVariable()) {
             // XXX meta data needed
-            query.setParameter(namedParameter, variableType.getValue(null));
+            query.setParameter(namedParameter, two.v1.getValue(two.v2));
         } else {
             Object val = params.get(namedParameter);
             if (val != null && val instanceof List) {
@@ -197,12 +196,7 @@ public class QueryHelper {
                 return maxCount();
             }
 
-            return template.execute(new HibernateCallback<Long>() {
-                @Override
-                public Long doInHibernate(Session session) throws HibernateException {
-                    return executeCountQuery(session, isNative, strQuery, params);
-                }
-            });
+            return template.execute(session -> executeCountQuery(session, isNative, strQuery, params));
         } catch (Exception ex) {
             LOGGER.error("Count query operation failed", ex);
             return maxCount();

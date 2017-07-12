@@ -35,8 +35,8 @@ public class RuntimeParameter implements ResolvableParam {
 
     @Override
     public Object getValue() {
-        final Object value = parameter.getVariableType().isSystemVariable() ?
-                parameter.getVariableType().getValue(parameter.getType().getClassType()) :
+        final Object value = parameter.getVariableType().isVariable() ?
+                parameter.getVariableType().getValue(parameter.getVariableName()) :
                 params.get(parameter.getName());
 
         return parameter.getType().toDbValue(value);

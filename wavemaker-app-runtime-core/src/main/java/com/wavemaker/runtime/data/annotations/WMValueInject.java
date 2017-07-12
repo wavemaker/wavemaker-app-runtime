@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.wavemaker.runtime.data.replacers.Scope;
-import com.wavemaker.runtime.data.replacers.ValueType;
+import com.wavemaker.runtime.data.replacers.providers.VariableType;
 
 /**
  * @author Ravali Koppaka
@@ -18,7 +18,7 @@ import com.wavemaker.runtime.data.replacers.ValueType;
 @Documented
 public @interface WMValueInject {
 
-    ValueType type();
+    VariableType type();
 
     String name();
 

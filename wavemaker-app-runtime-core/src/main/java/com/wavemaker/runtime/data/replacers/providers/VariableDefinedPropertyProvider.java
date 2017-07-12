@@ -12,7 +12,6 @@ import com.wavemaker.runtime.data.replacers.ListenerContext;
 import com.wavemaker.runtime.data.replacers.Scope;
 import com.wavemaker.runtime.data.replacers.ValueProvider;
 import com.wavemaker.runtime.data.replacers.ValueProviderBuilder;
-import com.wavemaker.runtime.data.replacers.ValueType;
 
 /**
  * @author Ravali Koppaka
@@ -21,25 +20,25 @@ import com.wavemaker.runtime.data.replacers.ValueType;
 
 public class VariableDefinedPropertyProvider implements ValueProvider {
 
-    private final ValueType valueType;
+    private final VariableType type;
 
-    private final String variableName;
+    private final String name;
 
     private final Class<?> fieldType;
 
     private final Set<Scope> scopes;
 
     public VariableDefinedPropertyProvider(
-            final ValueType valueType, final String variableName, final Class<?> fieldType, final Set<Scope> scopes) {
-        this.valueType = valueType;
-        this.variableName = variableName;
+            final VariableType type, final String name, final Class<?> fieldType, final Set<Scope> scopes) {
+        this.type = type;
+        this.name = name;
         this.fieldType = fieldType;
         this.scopes = scopes;
     }
 
     @Override
     public Object getValue(ListenerContext context) {
-        return valueType.getValue(variableName, fieldType);
+        return type.getValue(name, fieldType);
     }
 
     @Override

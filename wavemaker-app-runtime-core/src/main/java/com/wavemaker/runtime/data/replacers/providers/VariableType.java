@@ -15,105 +15,116 @@
  */
 package com.wavemaker.runtime.data.replacers.providers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ClassUtils;
-import org.joda.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
 
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.system.SystemDefinedPropertiesBean;
+import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.util.JavaTypeUtils;
+import com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider;
+import com.wavemaker.runtime.system.ServerVariableValueProvider;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 23/6/16
  */
-@Deprecated
 public enum VariableType {
     PROMPT {
         @Override
-        public Object getValue(final Class<?> fieldType) {
+        public boolean isVariable() {
+            return false;
+        }
+
+        @Override
+        protected String getPrefix() {
             return null;
         }
 
         @Override
-        public String toQueryParam() {
-            return "";
+        public Object getValue(String variableName) {
+            return null;
+        }
+    },
+    SERVER {
+        @Override
+        protected String getPrefix() {
+            return "SYSTEM_CURRENT";
         }
 
         @Override
-        public boolean isSystemVariable() {
-            return false;
+        public Object getValue(String variableName) {
+            final ServerVariableValueProvider provider = WMAppContext.getInstance()
+                    .getSpringBean(ServerVariableValueProvider.class);
+            return provider.getValue(variableName);
         }
     },
-    USER_ID {
+    APP_ENVIRONMENT {
         @Override
-        public Object getValue(final Class<?> fieldType) {
-            Object id = SystemDefinedPropertiesBean.getInstance().getCurrentUserId();
+        protected String getPrefix() {
+            return "APP_ENVIRONMENT";
+        }
 
-            if (fieldType != null && !String.class.equals(fieldType)) {
-                try {
-                    final Class<?> wrapper = ClassUtils.primitiveToWrapper(fieldType);
-                    id = wrapper.getMethod("valueOf", String.class).invoke(null, id);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new WMRuntimeException("Error while assigning value from Server defined property", e);
-                }
-            }
-
-            return id;
-        }
-    },
-    USER_NAME {
         @Override
-        public Object getValue(final Class<?> fieldType) {
-            return SystemDefinedPropertiesBean.getInstance().getCurrentUserName();
-        }
-    },
-    DATE {
-        @Override
-        public Object getValue(final Class<?> fieldType) {
-            return SystemDefinedPropertiesBean.getInstance().getCurrentDate();
-        }
-    },
-    TIME {
-        @Override
-        public Object getValue(final Class<?> fieldType) {
-            return SystemDefinedPropertiesBean.getInstance().getCurrentTime();
-        }
-    },
-    DATE_TIME {
-        @Override
-        public Object getValue(final Class<?> fieldType) {
-            return new LocalDateTime();
+        public Object getValue(String variableName) {
+            final AppEnvironmentVariableValueProvider provider = WMAppContext.getInstance()
+                    .getSpringBean(AppEnvironmentVariableValueProvider.class);
+            return provider.getValue(variableName);
         }
     };
 
-    private static final String SYSTEM_VARIABLE_PREFIX = "_SYSTEM_CURRENT_";
 
-    private static final Map<String, VariableType> queryParamVsVariableType = new HashMap<>();
+    private static final Pattern variablePattern;
+    private static final Map<String, VariableType> prefixVsType;
 
     static {
-        for (final VariableType variableType : VariableType.values()) {
-            queryParamVsVariableType.put(variableType.toQueryParam(), variableType);
-        }
+        final String typePrefixes = Arrays.stream(VariableType.values())
+                .map(VariableType::getPrefix)
+                .filter(StringUtils::isNotBlank)
+                .reduce((r, e) -> r + "|" + e)
+                .get();
+        variablePattern = Pattern.compile("_(" + typePrefixes + ")_(.+)");
+
+        prefixVsType = Arrays.stream(VariableType.values())
+                .filter(variableType -> StringUtils.isNotBlank(variableType.getPrefix()))
+                .collect(Collectors.toMap(VariableType::getPrefix, variableType -> variableType));
     }
 
-    public String toQueryParam() {
-        return SYSTEM_VARIABLE_PREFIX + name();
-    }
+    private static final int PREFIX_GROUP = 1;
+    private static final int VARIABLE_NAME_GROUP = 2;
 
-    public boolean isSystemVariable() {
+    public boolean isVariable() {
         return true;
     }
 
-    public abstract Object getValue(final Class<?> fieldType);
-
-    public static VariableType fromQueryParameter(String name) {
-        if (queryParamVsVariableType.containsKey(name)) {
-            return queryParamVsVariableType.get(name);
-        } else {
-            return PROMPT;
-        }
+    public String toQueryParam(String name) {
+        return "_" + getPrefix() + "_" + name;
     }
+
+    public static Tuple.Two<VariableType, String> fromVariableName(String name) {
+        VariableType type = VariableType.PROMPT;
+        String variableName = name;
+
+        final Matcher matcher = variablePattern.matcher(name);
+        if (matcher.find()) {
+            type = prefixVsType.get(matcher.group(PREFIX_GROUP));
+            variableName = matcher.group(VARIABLE_NAME_GROUP);
+        }
+
+        return new Tuple.Two<>(type, variableName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getValue(String variableName, Class<T> requiredType) {
+        return (T) JavaTypeUtils.convert(requiredType.getCanonicalName(), getValue(variableName));
+    }
+
+
+    protected abstract String getPrefix();
+
+    public abstract Object getValue(String variableName);
 }
