@@ -60,6 +60,10 @@
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
+    <bean id="appRuntimeService" class="com.wavemaker.runtime.service.AppRuntimeServiceImpl"/>
+
+    <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
+
     <bean id="queryDesignService" class="com.wavemaker.runtime.service.QueryDesignServiceImpl"/>
 
     <bean id="procedureDesignService" class="com.wavemaker.runtime.service.ProcedureDesignServiceImpl"/>
