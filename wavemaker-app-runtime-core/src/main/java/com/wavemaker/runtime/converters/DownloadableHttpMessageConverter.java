@@ -18,6 +18,8 @@ package com.wavemaker.runtime.converters;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpInputMessage;
@@ -52,24 +54,29 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
 
     @Override
     protected void writeInternal(Downloadable downloadable, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+        ServletServerHttpResponse servletServerHttpResponse = (ServletServerHttpResponse) outputMessage;
+        HttpServletResponse httpServletResponse = servletServerHttpResponse.getServletResponse();
+        writeMessage(downloadable, httpServletResponse);
+    }
 
-        ServletServerHttpResponse servletServerHttpResponse = (ServletServerHttpResponse)outputMessage;
-        InputStream contents = downloadable.getContents();
+    public void writeMessage(Downloadable downloadable, HttpServletResponse httpServletResponse) throws IOException {
+        InputStream contents = null;
         try {
+            contents = downloadable.getContents();
             if (contents != null) {
                 String fileName = downloadable.getFileName();
                 String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable.getContentType() : new Tika().detect(fileName);
                 if (downloadable.isInline()) {
-                    servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
+                    httpServletResponse.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
                 } else {
-                    servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+                    httpServletResponse.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
                 }
-                servletServerHttpResponse.getServletResponse().setContentType(contentType);
+                httpServletResponse.setContentType(contentType);
                 if (downloadable.getContentLength() != null) {
-                    servletServerHttpResponse.getServletResponse().setContentLength(downloadable.getContentLength());
+                    httpServletResponse.setContentLength(downloadable.getContentLength());
                 }
 
-                IOUtils.copy(contents, servletServerHttpResponse.getServletResponse().getOutputStream());
+                IOUtils.copy(contents, httpServletResponse.getOutputStream());
             }
         } finally {
             IOUtils.closeSilently(contents);
