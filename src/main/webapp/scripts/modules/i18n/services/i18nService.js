@@ -18,8 +18,9 @@ WM.module('i18n')
         '$locale',
         'CONSTANTS',
         '$q',
+        'BaseService',
 
-        function ($rs, Utils, $http, $locale, CONSTANTS, $q) {
+        function ($rs, Utils, $http, $locale, CONSTANTS, $q, BaseService) {
             'use strict';
 
             var _supportedLocale      = [],
@@ -338,12 +339,25 @@ WM.module('i18n')
             function loadAppLocaleBundle(content) {
                 var path = _appLocaleRootPath + _selectedLocale + '.json';
                 // load the localeBundle
-                return $http
-                    .get(path)
-                    .then(function (response) {
-                        // extend the $rs.locale object with the response json
-                        WM.extend($rs[localeKey], response.data, content);
-                    });
+                if (CONSTANTS.isStudioMode) {
+                    return $http
+                        .get(path)
+                        .then(function (response) {
+                            // extend the $rs.locale object with the response json
+                            WM.extend($rs[localeKey], response.data, content);
+                        });
+                }
+                return BaseService
+                        .execute({
+                            target: 'i18nService',
+                            action: 'getLocale',
+                            urlParams: {
+                                locale: _selectedLocale
+                            }
+                            }, function (response) {
+                                //extend the $rs.locale object with the response json
+                                WM.extend($rs[localeKey], response, content);
+                            });
             }
 
             // Loads the angular ngLocale resource of the selected locale.
