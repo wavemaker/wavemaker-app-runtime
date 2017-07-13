@@ -1552,7 +1552,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "number", "value": "0"}
 
                     },
-                    'wm.livegrid': {
+                    'wm.livetable': {
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}
                     },
                     'wm.fileupload': {

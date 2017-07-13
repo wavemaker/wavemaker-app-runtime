@@ -46,7 +46,7 @@ WM.module('wm.widgets.live')
                 "onBeforeservicecall": "&",
                 "onResult": "&"
             },
-            require: '?^wmLivegrid',
+            require: '?^wmLivetable',
             template: function (template, attrs) {
                 /*render the template with mobile-navbar if formlayout is page*/
 

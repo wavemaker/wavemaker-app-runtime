@@ -4,12 +4,12 @@ WM.module('wm.widgets.live')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
 
-        $templateCache.put("template/widget/livegrid/livegrid.html",
+        $templateCache.put("template/widget/livetable/livetable.html",
                 '<div class="app-livegrid" init-widget title="{{hint}}" apply-styles="container">' +
                     '<div wmtransclude></div>' +
                 '</div>'
             );
-    }]).directive('wmLivegrid', ['PropertiesFactory',
+    }]).directive('wmLivetable', ['PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
         'DialogService',
@@ -22,7 +22,7 @@ WM.module('wm.widgets.live')
 
         function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, wmToaster, $rs, LiveWidgetUtils) {
             "use strict";
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livegrid', ['wm.base']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livetable', ['wm.base']),
                 gridMarkup = '',
                 notifyFor = {
                     'formlayout': true
@@ -74,7 +74,7 @@ WM.module('wm.widgets.live')
                 },
                 template: function (element) {
                     gridMarkup = element.html();
-                    return $templateCache.get('template/widget/livegrid/livegrid.html');
+                    return $templateCache.get('template/widget/livetable/livetable.html');
                 },
                 compile: function (tElement, tAttr) {
                     tAttr.gridColumnMarkup = gridMarkup;
@@ -280,12 +280,12 @@ WM.module('wm.widgets.live')
 
 /**
  * @ngdoc directive
- * @name wm.widgets.live.directive:wmLivegrid
+ * @name wm.widgets.live.directive:wmLivetable
  * @restrict E
  *
  * @description
- * The `wmLiveGrid` is the Combination of grid and grid form. Using Livegrid user can insert,update,delete the data in database
- * `wmLiveGrid` can be bound to variables and display the data associated with them.
+ * The `wmLivetable` is the Combination of grid and grid form. Using Livetable user can insert,update,delete the data in database
+ * `wmLivetable` can be bound to variables and display the data associated with them.
  *
  * @scope
  *
@@ -335,8 +335,8 @@ WM.module('wm.widgets.live')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-livegrid dataset="gridVariable" gridsearch="true">
- *               </wm-livegrid>
+ *               <wm-livetable dataset="gridVariable" gridsearch="true">
+ *               </wm-livetable>
  *           </div>
  *       </file>
  *       <file name="script.js">
