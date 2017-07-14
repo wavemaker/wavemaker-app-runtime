@@ -109,4 +109,33 @@
     <bean id="appEnvironmentVariableValueProvider"
           class="com.wavemaker.runtime.system.AppEnvironmentVariableValueProvider"/>
 
+    <bean id="messageSource" class="com.wavemaker.commons.i18n.MultipleReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath*:**/**wmapp-messages</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="messageSourceResourceBundleLocator" class="org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator">
+        <constructor-arg ref="messageSource"/>
+    </bean>
+
+    <bean id="resourceBundleMessageInterpolator" class="org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator">
+        <constructor-arg ref="messageSourceResourceBundleLocator"/>
+    </bean>
+
+    <bean id="localeContextMessageInterpolator" class="org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator">
+        <constructor-arg ref="resourceBundleMessageInterpolator"/>
+    </bean>
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="validationMessageSource" ref="messageSource"/>
+        <!--property name="messageInterpolator" ref="localeContextMessageInterpolator"/-->
+    </bean>
+
+    <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+        <property name="validator" ref="validator"/>
+    </bean>
+
 </beans>
