@@ -43,7 +43,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                 case 'gotoPage':
                     try {
                         NavigationService.goToPage(pageName, {
-                            transition  : variable.pageTransitions,
+                            transition  : variable.pageTransitions === 'none' ? '' : variable.pageTransitions,
                             $event      : options.$event,
                             urlParams   : urlParams
                         });

@@ -207,7 +207,7 @@ Application
                     newPage = $compile(template)(pageScope);
                     oldPage = $element.children().last();
                     $element.append(newPage);
-                    if ($route.current.transition) {
+                    if (!_.isEmpty($route.current.transition)) {
                         $route.current.transitionCompleted = false;
                         $$animateQueue.enabled(newPage, true);
                         $$animateQueue.enabled(oldPage, true);
