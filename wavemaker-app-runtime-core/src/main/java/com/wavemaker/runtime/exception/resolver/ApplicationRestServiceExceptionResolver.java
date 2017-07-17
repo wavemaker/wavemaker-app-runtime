@@ -22,11 +22,15 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.exception.SQLGrammarException;
+import org.hibernate.validator.internal.engine.path.NodeImpl;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -68,19 +72,29 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
+
+        // Validator Errors/ Invalid data validated at controller level
         if (ex instanceof MethodArgumentTypeMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex);
         } else if (ex instanceof MethodArgumentNotValidException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleMethodArgumentNotValidException((MethodArgumentNotValidException) ex, response);
         } else if (ex instanceof HttpRequestMethodNotSupportedException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleHttpRequestMethodNotSupportedException((HttpRequestMethodNotSupportedException) ex);
         } else if (ex instanceof HttpMessageNotReadableException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleRuntimeException((ConstraintViolationException) ex);
+            return handleMethodConstraintViolationException((ConstraintViolationException) ex, response);
+        }
+
+        //Hibernate jdbc exceptions
+        else if (ex instanceof org.hibernate.exception.ConstraintViolationException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleRuntimeException((RuntimeException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleRuntimeException((DataIntegrityViolationException) ex);
@@ -93,6 +107,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof QueryParameterMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((QueryParameterMismatchException) ex);
+        } else if (ex instanceof HibernateQueryException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleHibernateQueryException((HibernateQueryException) ex);
         }
 
         //WM Runtime Exceptions
@@ -105,39 +122,56 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof WMRuntimeException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleWMExceptions((WMRuntimeException) ex, null, null);
-        } else if (ex instanceof HttpMessageNotReadableException) {
-            return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
-        } else if (ex instanceof HibernateQueryException) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleHibernateQueryException((HibernateQueryException) ex);
-        } else {
+        }
+        // Any other exception
+        else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleException(ex, response);
         }
     }
 
-    private ModelAndView handleHttpRequestMethodNotSupportedException(
-            final HttpRequestMethodNotSupportedException ex) {
+    private ModelAndView handleMethodConstraintViolationException(ConstraintViolationException ex, HttpServletResponse response) {
+        List<ErrorResponse> errorResponseList = new ArrayList();
+        Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+        if (constraintViolations != null) {
+            for (ConstraintViolation<?> constraintViolation : constraintViolations) {
+                String paramName = "";
+                Path propertyPath = constraintViolation.getPropertyPath();
+                if (propertyPath != null && propertyPath instanceof PathImpl) {
+                    PathImpl pathImpl = (PathImpl) propertyPath;
+                    NodeImpl leafNode = pathImpl.getLeafNode();
+                    if (leafNode != null) {
+                        paramName = leafNode.getName();
+                    }
+                }
+                errorResponseList.add(getErrorResponse(MessageResource.INVALID_FIELD_VALUE, paramName,
+                        constraintViolation.getMessage()));
+            }
+        }
+        return getModelAndView(errorResponseList);
+    }
+
+    private ModelAndView handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, ex.getMessage()));
     }
 
-    private ModelAndView handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException ex) {
+    private ModelAndView handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         return getModelAndView(
                 getErrorResponse(MessageResource.INVALID_INPUT, "The input for " + ex.getName() + " is invalid."));
     }
 
-    private ModelAndView handleHibernateJdbcException(final HibernateJdbcException ex) {
+    private ModelAndView handleHibernateJdbcException(HibernateJdbcException ex) {
         // Not using the root cause for now.
         return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, INPUT_INVALID_MESSAGE));
     }
 
-    private ModelAndView handleHibernateQueryException(final HibernateQueryException ex) {
+    private ModelAndView handleHibernateQueryException(HibernateQueryException ex) {
         // Not using the root cause for now.
         return getModelAndView(getErrorResponse(MessageResource.INVALID_INPUT, INPUT_INVALID_MESSAGE));
     }
 
     private ModelAndView handleMethodArgumentNotValidException(
             MethodArgumentNotValidException methodArgumentNotValidException, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
         if (allErrors != null) {
@@ -174,7 +208,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
         ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
         return getModelAndView(errorResponse);
@@ -197,7 +230,6 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     private ModelAndView handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex,
             HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         Throwable exCause = ex.getCause();
         ErrorResponse errorResponse = null;
         if (exCause != null) {
