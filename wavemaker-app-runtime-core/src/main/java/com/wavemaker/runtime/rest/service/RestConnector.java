@@ -46,11 +46,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
 
 import com.wavemaker.commons.proxy.AppPropertiesConstants;
+import com.wavemaker.commons.rest.error.WMDefaultResponseErrorHandler;
 import com.wavemaker.commons.util.SSLUtils;
 import com.wavemaker.runtime.AppRuntimeProperties;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
@@ -137,7 +137,7 @@ public class RestConnector {
     }
 
 
-    class WMRestServicesErrorHandler extends DefaultResponseErrorHandler {
+    class WMRestServicesErrorHandler extends WMDefaultResponseErrorHandler {
 
         @Override
         protected boolean hasError(HttpStatus statusCode) {
