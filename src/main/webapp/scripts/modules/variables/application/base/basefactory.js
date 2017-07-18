@@ -75,7 +75,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "transformationRequired": {"hide": true},
                     "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
                     "liveSource": {"type": "list", "required": true, "widgettype": "typeahead", "editonly": true, "isprimary": true},
-                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead", "isprimary": true},
+                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead", "isprimary": true, "editonly": true},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"type": "number", "value": 10},
                     "ignoreCase": {"type": "boolean", "value": true},
