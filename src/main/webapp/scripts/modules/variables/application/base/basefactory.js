@@ -73,9 +73,9 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "service": {"hide": true, "required": false},
                     "editJson": {"hide": true},
                     "transformationRequired": {"hide": true},
-                    "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
-                    "liveSource": {"type": "list", "required": true, "widgettype": "typeahead", "editonly": true, "isprimary": true},
-                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead", "isprimary": true, "editonly": true},
+                    "liveSource": {"type": "list", "required": true, "widgettype": "typeahead", "isprimary": true},
+                    "type": {"hide": false, "options": {}, value: "", "required": true, "widgettype": "typeahead", "isprimary": true},
+                    "operation": {"isprimary": true, "hide": false, "options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"type": "number", "value": 10},
                     "ignoreCase": {"type": "boolean", "value": true},
@@ -311,14 +311,16 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         }
 
         function getPropertiesByServiceType(serviceType) {
-            var props = {
-                "database": {
-                    "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
-                    "target": {"displayName": "Target", "type": "string", "required": true, "widgettype": "radioset", "options": {"table": "table", "query": "query", "procedure": "procedure"}}
-                },
-                "web": {
-                    "service": {"displayName": "Select Service", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
-                }
+            var props = {};
+            props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE] = {
+                "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
+                "target": {"displayName": "Target", "type": "string", "required": false, "hide": "true", "widgettype": "radioset", "options": {"table": "table", "query": "query", "procedure": "procedure"}},
+                "table": {"displayName": "Table", "type": "string", "required": true, "widgettype": "typeahead", "hide": true},
+                "operation": {"displayName": "Operation", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', "hide": true}
+            };
+            props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = {
+                "apitype": {"displayName": "Select API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
+                "service": {"hide": true, "displayName": "Select Service", "type": "string", "required": false, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
             };
             return props[serviceType] || props;
         }

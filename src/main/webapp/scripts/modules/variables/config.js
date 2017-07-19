@@ -57,6 +57,17 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     PAGINATION_PARAMS: ["page", "size", "sort"],
     DEFAULT_VAR: {
         "NOTIFICATION": "appNotification"
+    },
+    VARIABLE_SERVICE_TYPES: {
+        'WEB': 'web',
+        'DATABASE': 'database',
+        'DEVICE': 'device',
+        'CUSTOM': 'custom',
+        'LOGIN': 'login',
+        'LOGOUT': 'logout',
+        'NAVIGATION': 'navigation',
+        'NOTIFICATION': 'notification',
+        'TIMER': 'timer'
     }
 });
 

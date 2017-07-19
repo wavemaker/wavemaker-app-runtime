@@ -54,21 +54,11 @@ wm.variables.services.Variables = [
             startUpdateQueue = {},
             lazySartUpdateQueue = {},
             internalBoundNodeMap = {},
-            serviceToCategoryMap = {
-                "database": ['wm.LiveVariable', 'wm.ServiceVariable'],
-                "web": ['wm.ServiceVariable', 'wm.WebSocketVariable'],
-                "java": ['wm.ServiceVariable'],
-                "custom": ['wm.Variable'],
-                "navigation": ['wm.NavigationVariable'],
-                "notification": ['wm.NotificationVariable'],
-                "login": ['wm.LoginVariable'],
-                "logout": ['wm.LogoutVariable'],
-                "timer": ['wm.TimerVariable']
-            },
+            serviceToCategoryMap = {},
             variableConfig = {
                 "wm.LiveVariable": {
                     "collectionType" : "data",
-                    "serviceTypes" : ["database"],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE],
                     "category"       : "wm.LiveVariable",
                     "defaultName"    : "databaseVariable",
                     "spinnerInFlight": true,
@@ -76,7 +66,7 @@ wm.variables.services.Variables = [
                 },
                 "wm.ServiceVariable" : {
                     "collectionType" : "data",
-                    "serviceTypes" : ["database", "web", "java"],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB],
                     "category"       : "wm.ServiceVariable",
                     "defaultName"    : "serviceVariable",
                     "spinnerInFlight": true,
@@ -84,7 +74,7 @@ wm.variables.services.Variables = [
                 },
                 "wm.WebSocketVariable": {
                     "collectionType": "data",
-                    "serviceTypes" : ["web"],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB],
                     "category"      : "wm.WebSocketVariable",
                     "defaultName"   : "webSocketVariable",
                     "methods"       : ['open', 'send', 'close'],
@@ -92,21 +82,21 @@ wm.variables.services.Variables = [
                 },
                 "wm.Variable": {
                     "collectionType": "data",
-                    "serviceTypes" : ["custom"],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.CUSTOM],
                     "category"      : "wm.Variable",
                     "defaultName"   : "staticVariable",
                     "hideInEvents"  : true
                 },
                 "wm.NavigationVariable": {
                     "collectionType": "action",
-                    "serviceTypes": ["navigation"],
+                    "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NAVIGATION],
                     "category"      : "wm.NavigationVariable",
                     "defaultName"   : "navigationAction",
                     "newVariableKey": "New NavigationVariable"
                 },
                 "wm.LoginVariable": {
                     "collectionType" : "action",
-                    "serviceTypes": ["login"],
+                    "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.LOGIN],
                     "category"       : "wm.LoginVariable",
                     "defaultName"    : "loginAction",
                     "appOnly"        : true,
@@ -116,7 +106,7 @@ wm.variables.services.Variables = [
                 },
                 "wm.LogoutVariable": {
                     "collectionType" : "action",
-                    "serviceTypes": ["logout"],
+                    "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.LOGOUT],
                     "category"       : "wm.LogoutVariable",
                     "defaultName"    : "logoutAction",
                     "appOnly"        : true,
@@ -126,14 +116,14 @@ wm.variables.services.Variables = [
                 },
                 "wm.TimerVariable": {
                     "collectionType": "action",
-                    "serviceTypes": ["timer"],
+                    "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.TIMER],
                     "category"      : "wm.TimerVariable",
                     "defaultName"   : "timerAction",
                     "newVariableKey": "New TimerVariable"
                 },
                 "wm.NotificationVariable": {
                     "collectionType": "action",
-                    "serviceTypes": ["notification"],
+                    "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NOTIFICATION],
                     "category"      : "wm.NotificationVariable",
                     "defaultName"   : "notificationAction",
                     "newVariableKey": "New NotificationVariable"
@@ -170,6 +160,17 @@ wm.variables.services.Variables = [
                 _.forEach(variableConfig, function (variable) {
                     variableCategoryToNameMap[variable.category] = variable.defaultName;
                 });
+            },
+            initServiceToCategoryMap = function () {
+                // TODO[VIBHU]: To be intialized from variableConfig, remove hard coding
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE] = ['wm.LiveVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = ['wm.ServiceVariable', 'wm.WebSocketVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.CUSTOM] = ['wm.Variable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NAVIGATION] = ['wm.NavigationVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NOTIFICATION] = ['wm.NotificationVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.LOGIN] = ['wm.LoginVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.LOGOUT] = ['wm.LogoutVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.TIMER] = ['wm.TimerVariable'];
             },
 
         /*Function to set the variable name iterator with the specified value*/
@@ -1223,16 +1224,17 @@ wm.variables.services.Variables = [
                 } else {
                     switch (category) {
                     case 'wm.LiveVariable':
-                        serviceType = 'database';
+                        serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE;
                         break;
                     case 'wm.ServiceVariable':
-                        if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA) {
-                            serviceType = 'database';
-                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
-                            serviceType = 'java';
-                        } else {
-                            serviceType = 'web';
-                        }
+                        serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB;
+//                        if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA) {
+//                            serviceType = 'database';
+//                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
+//                            serviceType = 'java';
+//                        } else {
+//                            serviceType = 'web';
+//                        }
                         break;
                     default:
                         serviceType = serviceType[0];
@@ -1825,6 +1827,7 @@ wm.variables.services.Variables = [
             };
         }
 
+        initServiceToCategoryMap();
         initVariableNameMap();
 
         /*Initialize the variable name iterator to the default value.*/
