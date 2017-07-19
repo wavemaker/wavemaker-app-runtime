@@ -1299,6 +1299,10 @@ wm.variables.services.$liveVariable = [
             methods = {
                 /*Function to get the primary key of the specified variable.*/
                 getPrimaryKey: function (variable) {
+                    if (!variable.propertiesMap) {
+                        return [];
+                    }
+
                     if (variable.propertiesMap.primaryFields) {
                         return variable.propertiesMap.primaryFields;
                     }
