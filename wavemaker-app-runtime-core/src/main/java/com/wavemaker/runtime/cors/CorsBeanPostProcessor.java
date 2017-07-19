@@ -24,8 +24,6 @@ import com.wavemaker.commons.model.security.PathEntry;
  */
 public class CorsBeanPostProcessor implements BeanPostProcessor {
 
-    private static final String DEFAULT_PATH = "/**";
-    private static final String DEFAULT_ALLOWED_ORIGINS = "*";
     private static final String DEFAULT_ALLOWED_METHODS = "GET,HEAD,POST";
     private static final String DEFAULT_ALLOWED_HEADERS = "*";
     private static final String DEFAULT_EXPOSED_HEADERS = "";
@@ -76,7 +74,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
         for (PathEntry pathEntry : pathEntriesList) {
             String path = pathEntry.getPath();
             if (StringUtils.isBlank(path)) {
-                path = DEFAULT_PATH;
+                throw new WMRuntimeException("Path  cannot be empty for corsPathEntry "+pathEntry.getName());
             }
             CorsConfiguration corsConfiguration = buildCorsConfigurationObject(pathEntry, maxAge);
             configurationMap.put(path, corsConfiguration);
@@ -93,7 +91,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
 
         String allowedOrigins = pathEntry.getAllowedOrigins();
         if (StringUtils.isBlank(allowedOrigins)) {
-            allowedOrigins = DEFAULT_ALLOWED_ORIGINS;
+            throw new WMRuntimeException("AllowedOrigins cannot be empty for corsPathEntry "+pathEntry.getName());
         }
         corsConfiguration.setMaxAge(maxAge);
         corsConfiguration.setAllowedOrigins(toList(allowedOrigins));
