@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.commons.util.HttpRequestUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * Created by kishore on 24/3/17.
@@ -55,9 +55,9 @@ public class PrefabWebContentServlet extends HttpServlet {
         try {
             inputStream = getServletContext().getResourceAsStream(prefabResourceUpdatedPath);
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copy(inputStream, outputStream);
+            WMIOUtils.copy(inputStream, outputStream);
         } finally {
-            IOUtils.closeSilently(inputStream);
+            WMIOUtils.closeSilently(inputStream);
         }
     }
 

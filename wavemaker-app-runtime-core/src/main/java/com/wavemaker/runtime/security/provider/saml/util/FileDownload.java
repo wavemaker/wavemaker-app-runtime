@@ -27,8 +27,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.commons.util.SSLUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * Created by arjuns on 15/12/16.
@@ -60,7 +60,7 @@ public class FileDownload {
         } catch (IOException e) {
             throw new WMRuntimeException("Failed to download file from url " + url, e);
         } finally {
-            IOUtils.closeSilently(closeableHttpClient);
+            WMIOUtils.closeSilently(closeableHttpClient);
         }
         return downloadedFile;
     }

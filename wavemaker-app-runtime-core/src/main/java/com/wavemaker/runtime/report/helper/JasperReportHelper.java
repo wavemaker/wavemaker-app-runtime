@@ -27,7 +27,7 @@ import com.google.common.cache.CacheBuilder;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.report.export.ReportExporter;
 import com.wavemaker.runtime.report.model.ReportContext;
 import com.wavemaker.runtime.report.model.ReportExportType;
@@ -95,7 +95,7 @@ public class JasperReportHelper {
         } catch (JRException e) {
             throw new WMRuntimeException(e);
         } finally {
-            IOUtils.closeSilently(xmlInputStream);
+            WMIOUtils.closeSilently(xmlInputStream);
         }
     }
 

@@ -13,7 +13,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.StreamUtils;
 
 import com.wavemaker.commons.rest.WmFileSystemResource;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * Created by srujant on 14/2/17.
@@ -49,7 +49,7 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
         try {
             StreamUtils.copy(in, outputMessage.getBody());
         } finally {
-            IOUtils.closeSilently(in);
+            WMIOUtils.closeSilently(in);
         }
     }
 

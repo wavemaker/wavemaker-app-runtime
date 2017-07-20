@@ -30,7 +30,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpResponse;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
@@ -76,10 +76,10 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
                     httpServletResponse.setContentLength(downloadable.getContentLength());
                 }
 
-                IOUtils.copy(contents, httpServletResponse.getOutputStream());
+                WMIOUtils.copy(contents, httpServletResponse.getOutputStream());
             }
         } finally {
-            IOUtils.closeSilently(contents);
+            WMIOUtils.closeSilently(contents);
         }
     }
 }

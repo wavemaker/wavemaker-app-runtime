@@ -26,7 +26,7 @@ import org.owasp.validator.html.PolicyException;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 
 /**
@@ -68,7 +68,7 @@ public class XSSWhiteListSanitizer implements XSSSanitizer {
         } catch (PolicyException e) {
             throw new WMRuntimeException(e);
         } finally {
-            IOUtils.closeSilently(resourceStream);
+            WMIOUtils.closeSilently(resourceStream);
         }
     }
 }

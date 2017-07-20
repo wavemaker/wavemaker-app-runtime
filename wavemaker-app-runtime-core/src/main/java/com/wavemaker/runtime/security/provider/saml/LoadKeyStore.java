@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.saml.MetadataSource;
-import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.security.provider.saml.util.FileDownload;
 
 /**
@@ -120,7 +120,7 @@ public class LoadKeyStore {
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
             throw new WMRuntimeException("Error creating keystore", e);
         } finally {
-            IOUtils.closeSilently(keyStoreIS);
+            WMIOUtils.closeSilently(keyStoreIS);
         }
         return keystore;
     }
@@ -196,7 +196,7 @@ public class LoadKeyStore {
         } catch (CertificateException | KeyStoreException | IOException e) {
             throw new WMRuntimeException("Error importing certificate to keystore", e);
         } finally {
-            IOUtils.closeSilently(certIn);
+            WMIOUtils.closeSilently(certIn);
         }
         return true;
     }
@@ -210,7 +210,7 @@ public class LoadKeyStore {
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new WMRuntimeException("Error saving keystore", e);
         } finally {
-            IOUtils.closeSilently(stream);
+            WMIOUtils.closeSilently(stream);
         }
     }
 

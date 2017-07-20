@@ -30,7 +30,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.data.dao.callbacks.LegacyNativeProcedureExecutor;
 import com.wavemaker.runtime.data.dao.callbacks.NativeProcedureExecutor;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
@@ -97,7 +97,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to map the procedures mapping file", e);
         } finally {
-            IOUtils.closeSilently(resourceStream);
+            WMIOUtils.closeSilently(resourceStream);
         }
     }
 

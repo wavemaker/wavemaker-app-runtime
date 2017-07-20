@@ -28,7 +28,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -43,7 +43,7 @@ public class ServiceDefinitionHelper {
             throw new WMRuntimeException("Attempt to build service definition from null input stream");
         }
         logger.debug("Building service definitions from InputStream");
-        final String serviceDefJson = IOUtils.toString(inputStream);
+        final String serviceDefJson = WMIOUtils.toString(inputStream);
         return buildServiceDef(serviceDefJson);
     }
 

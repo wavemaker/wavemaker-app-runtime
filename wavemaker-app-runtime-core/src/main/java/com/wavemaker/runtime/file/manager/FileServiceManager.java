@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 
 @Service
@@ -58,10 +58,10 @@ public class FileServiceManager {
         try {
             inputStream = file.getInputStream();
             outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            IOUtils.copy(inputStream, outputStream);
+            WMIOUtils.copy(inputStream, outputStream);
         } finally {
-            IOUtils.closeSilently(inputStream);
-            IOUtils.closeSilently(outputStream);
+            WMIOUtils.closeSilently(inputStream);
+            WMIOUtils.closeSilently(outputStream);
         }
 
         return outputFile;
@@ -91,10 +91,10 @@ public class FileServiceManager {
         try {
             inputStream = file.getInputStream();
             outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            IOUtils.copy(inputStream, outputStream);
+            WMIOUtils.copy(inputStream, outputStream);
         } finally {
-            IOUtils.closeSilently(inputStream);
-            IOUtils.closeSilently(outputStream);
+            WMIOUtils.closeSilently(inputStream);
+            WMIOUtils.closeSilently(outputStream);
         }
 
 

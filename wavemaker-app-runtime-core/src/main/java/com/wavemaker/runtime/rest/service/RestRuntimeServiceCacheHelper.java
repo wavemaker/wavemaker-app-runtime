@@ -24,7 +24,7 @@ import java.util.WeakHashMap;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.rest.processor.RestRuntimeConfig;
 import com.wavemaker.runtime.rest.processor.data.HttpRequestDataProcessor;
@@ -48,7 +48,7 @@ public class RestRuntimeServiceCacheHelper {
             } catch (IOException e) {
                 throw new WMRuntimeException("Failed to read the swagger for the service " + serviceId, e);
             } finally {
-                IOUtils.closeSilently(stream);
+                WMIOUtils.closeSilently(stream);
             }
         }
         return serviceIdVsSwaggerCache.get(serviceId);

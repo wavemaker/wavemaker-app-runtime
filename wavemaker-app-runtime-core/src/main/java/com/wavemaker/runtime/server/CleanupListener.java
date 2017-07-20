@@ -60,7 +60,7 @@ import com.sun.org.apache.xml.internal.resolver.Catalog;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
 import com.wavemaker.runtime.WMAppContext;
 
@@ -404,8 +404,8 @@ public class CleanupListener implements ServletContextListener {
                         if (runnable != null && runnable instanceof Connection) {
                             logger.info("Interrupting LDAP connection thread");
                             Connection conn = (Connection) runnable;
-                            IOUtils.closeSilently(conn.inStream);
-                            IOUtils.closeSilently(conn.outStream);
+                            WMIOUtils.closeSilently(conn.inStream);
+                            WMIOUtils.closeSilently(conn.outStream);
                             Field parent = Connection.class.getDeclaredField("parent");
                             parent.setAccessible(true);
                             LdapClient ldapClient = (LdapClient) parent.get(conn);

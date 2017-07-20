@@ -18,8 +18,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
 import com.wavemaker.commons.util.PropertiesFileUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
@@ -84,11 +84,11 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         try {
             inputStream = getLocaleResourceStream(locale);
             outputStream = response.getOutputStream();
-            IOUtils.copy(inputStream, outputStream);
+            WMIOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             throw new WMRuntimeException(e);
         } finally {
-            IOUtils.closeSilently(inputStream);
+            WMIOUtils.closeSilently(inputStream);
         }
     }
 
@@ -100,11 +100,11 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
         try {
             inputStream = getPreferLocaleResourceStream(request.getLocales());
             outputStream = response.getOutputStream();
-            IOUtils.copy(inputStream, outputStream);
+            WMIOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             throw new WMRuntimeException(e);
         } finally {
-            IOUtils.closeSilently(inputStream);
+            WMIOUtils.closeSilently(inputStream);
         }
     }
 

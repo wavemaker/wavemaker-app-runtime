@@ -11,7 +11,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 
 /**
  * Created by srujant on 16/5/17.
@@ -29,7 +29,7 @@ public class DateHttpMessageConverter extends WMCustomAbstractHttpMessageConvert
 
     @Override
     protected Date readInternal(Class<? extends Date> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        String date = IOUtils.toString(inputMessage.getBody());
+        String date = WMIOUtils.toString(inputMessage.getBody());
         Date dateObj;
         if (clazz.equals(java.sql.Date.class)) {
             dateObj = WMSqlDateDeSerializer.getDate(date);

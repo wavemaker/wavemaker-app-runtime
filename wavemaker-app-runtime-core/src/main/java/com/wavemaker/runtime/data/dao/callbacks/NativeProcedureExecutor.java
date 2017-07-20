@@ -31,7 +31,7 @@ import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
 
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
@@ -59,7 +59,7 @@ public class NativeProcedureExecutor {
         } catch (SQLException e) {
             throw new WMRuntimeException("Error while executing Procedure", e);
         } finally {
-            IOUtils.closeSilently(connection);
+            WMIOUtils.closeSilently(connection);
         }
     }
 

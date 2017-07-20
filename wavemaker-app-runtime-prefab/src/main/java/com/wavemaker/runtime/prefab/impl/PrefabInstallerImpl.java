@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.classloader.WMUrlClassLoader;
-import com.wavemaker.commons.util.IOUtils;
+import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabInstaller;
@@ -152,7 +152,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
             // closing class loader
             for (Prefab prefab : prefabManager.getPrefabs()) {
                 WMUrlClassLoader wmUrlClassLoader = (WMUrlClassLoader) prefab.getClassLoader();
-                IOUtils.closeByLogging(wmUrlClassLoader);
+                WMIOUtils.closeByLogging(wmUrlClassLoader);
                 prefab.setClassLoader(null);
             }
             prefabManager.deleteAllPrefabs();
