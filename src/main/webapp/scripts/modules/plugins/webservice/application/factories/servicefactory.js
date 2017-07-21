@@ -34,6 +34,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             IS_LIST_KEY = 'x-WM-IS_LIST',
             UNIQUE_ITEMS_KEY = 'uniqueItems',
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
+            FULLY_QUALIFIED_TYPE_KEY = 'x-WM-FULLY_QUALIFIED_TYPE',
             parameterTypeKey = 'in',
             AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
             prefabDataTypes = {},
@@ -182,30 +183,28 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var type;
                 if (responseObject.type) {
                     /*In case of primitive type*/
-                    if (primitiveDataTypes.indexOf(responseObject.type) !== -1) {
+                    if (responseObject.type !== 'array') {
                         return responseObject.type;
                     }
-                    if (responseObject.type === 'array') {
-                        /*In case of list type*/
-                        if (responseObject[IS_LIST_KEY]) {
-                            if (responseObject.items.type) {
-                                type = responseObject.items.type;
-                            } else {
-                                if (responseObject.items.$ref) {
-                                    type = getFullyQualifiedName(responseObject.items.$ref, definitions);
-                                }
-                            }
+                    /*In case of list type*/
+                    if (responseObject[IS_LIST_KEY]) {
+                        if (responseObject.items.type) {
+                            type = responseObject.items.type;
                         } else {
-                            if (responseObject.items.type) {
-                                type = responseObject.items.type;
-                            } else {
-                                if (responseObject.items.$ref) {
-                                    type = getFullyQualifiedName(responseObject.items.$ref, definitions);
-                                }
+                            if (responseObject.items.$ref) {
+                                type = getFullyQualifiedName(responseObject.items.$ref, definitions);
                             }
                         }
-                        return type;
+                    } else {
+                        if (responseObject.items.type) {
+                            type = responseObject.items.type;
+                        } else {
+                            if (responseObject.items.$ref) {
+                                type = getFullyQualifiedName(responseObject.items.$ref, definitions);
+                            }
+                        }
                     }
+                    return type;
                 } else {
                     /*In case of object type*/
                     return getFullyQualifiedName(responseObject.$ref, definitions);
@@ -360,7 +359,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                             /* special cases for MultiPart type params */
                             if (_.toLower(param[parameterTypeKey]) === "formdata") {
-                                if (param.type === "ref") {
+                                if (param.type === "ref" || param[FULLY_QUALIFIED_TYPE_KEY]) {
                                     typeRef = param['x-WM-FULLY_QUALIFIED_TYPE'];
                                 } else if (param.type === 'array') {
                                     isList = true;
