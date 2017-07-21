@@ -60,6 +60,8 @@
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
+    <bean id="oAuthIntegrationController" class="com.wavemaker.runtime.oauth.OAuthRuntimeIntegrationController"/>
+
     <bean id="appRuntimeService" class="com.wavemaker.runtime.service.AppRuntimeServiceImpl"/>
 
     <bean id="appFileSystem" class="com.wavemaker.runtime.app.AppFileSystem"/>
@@ -80,12 +82,15 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
+    <bean id="oAuthServiceManager" class="com.wavemaker.runtime.oauth.service.OAuthRuntimeServiceManager"/>
     <bean id="reportServiceManager" class="com.wavemaker.runtime.report.manager.ReportServiceManagerImpl"/>
     <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
     <bean id="corsBeanPostProcessor" class="com.wavemaker.runtime.cors.CorsBeanPostProcessor"/>
+
+    <bean id="oAuthServiceBeanPostProcessor" class="com.wavemaker.runtime.oauth.OAuthServiceBeanPostProcessor"/>
 
     <bean id="httpsConnection" class="com.wavemaker.commons.util.InitializeHttpsURLConnection" lazy-init="false"/>
 

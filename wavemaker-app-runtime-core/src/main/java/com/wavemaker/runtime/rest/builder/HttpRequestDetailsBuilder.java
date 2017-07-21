@@ -44,6 +44,10 @@ public class HttpRequestDetailsBuilder {
         return new HttpRequestDetailsBuilder(new HttpRequestDetails());
     }
 
+    public static HttpRequestDetailsBuilder create(String endPointAddress) {
+        return create().setEndpointAddress(endPointAddress);
+    }
+
     public HttpRequestDetailsBuilder setRedirectEnabled(final boolean redirectEnabled) {
         httpRequestDetails.setRedirectEnabled(redirectEnabled);
         return this;
