@@ -87,7 +87,7 @@ wm.variables.services.$liveVariable = [
                     if (data) {
                         _.forEach(blobCols, function (col) {
                             var compositeKeysData = {};
-                            if (data[col] === null) {
+                            if (data[col] === null || !_.isEmpty(_.trim(data[col]))) {
                                 return;
                             }
                             if (variable.isCompositeKey(primaryKeys)) {
@@ -957,6 +957,7 @@ wm.variables.services.$liveVariable = [
             //Prepare formData for blob columns
             prepareFormData = function (variableDetails, rowObject) {
                 var formData = new FormData();
+                formData.rowData = _.clone(rowObject);
                 _.forEach(rowObject, function (colValue, colName) {
                     if (getFieldType(colName, variableDetails) === 'blob') {
                         if (WM.isObject(colValue)) {
