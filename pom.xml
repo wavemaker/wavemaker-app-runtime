@@ -7,7 +7,7 @@
 
     <groupId>com.wavemaker.runtime</groupId>
     <artifactId>wavemaker-app-runtime</artifactId>
-    <version>9.0</version>
+    <version>9.0.0</version>
 
     <packaging>pom</packaging>
 
@@ -26,7 +26,7 @@
         <spring.security.version>4.1.2.RELEASE</spring.security.version>
         <spring.ldap.version>2.1.0.RELEASE</spring.ldap.version>
         <spring.data.commons.version>1.9.3.RELEASE</spring.data.commons.version>
-        <spring.data.jpa.version>1.9.0.RELEASE</spring.data.jpa.version>
+        <spring.data.jpa.version>1.9.0.0.RELEASE</spring.data.jpa.version>
         <spring.retry.version>1.1.1.RELEASE</spring.retry.version>
         <spring.social.version>1.1.4.RELEASE</spring.social.version>
 
@@ -194,7 +194,7 @@
                 <plugin>
                     <groupId>com.mycila.maven-license-plugin</groupId>
                     <artifactId>maven-license-plugin</artifactId>
-                    <version>1.9.0</version>
+                    <version>1.9.0.0</version>
                     <configuration>
                         <header>${license.header.file}</header>
                         <strictCheck>true</strictCheck>
