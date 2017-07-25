@@ -698,5 +698,14 @@ module.exports = function (grunt) {
         'copy'
     ]);
 
+    /*grunt task for development no bower*/
+    grunt.registerTask('build-dev', [
+        'clean',
+        'less',
+        'concat',
+        'concat:wm-loader',
+        'copy'
+    ]);
+
     grunt.registerTask('unitTest', ['build', 'karma:unit']);
 };
