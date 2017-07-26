@@ -1,22 +1,26 @@
-/*global wm, WM, FileTransfer, cordova, _*/
+/*global window, wm, WM, FileTransfer, cordova, _*/
 /*jslint sub: true */
 /**
  * @ngdoc service
  * @name wm.plugins.offline.services.$OfflineFileUploadService
  * @description
- * wm.plugins.offline.services.$OfflineFileUploadService will store all uploaded files to $APP_DIR/files/uploads
+ * wm.plugins.offline.services.$kOfflineFileUploadService will store all uploaded files to $APP_DIR/files/uploads
  * directory and participates in the ChangeLogService flush. All local paths in the entities will be resolved the
  * remote path during flush.
  *
  */
-wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeLogService', '$q', '$log',
-    function ($cordovaFile, ChangeLogService, $q, $log) {
+wm.plugins.offline.services.OfflineFileUploadService = [
+    '$cordovaFile',
+    'ChangeLogService',
+    '$q',
+    'DeviceFileService',
+    function ($cordovaFile,
+              ChangeLogService,
+              $q,
+              DeviceFileService) {
         'use strict';
-        var storeKey  = 'offlineFileUpload',
-            fileStore = {},
-            uploadDir,
+        var uploadDir,
             initialized = false;
-
         /**
          * @ngdoc
          * @name wm.plugins.offline.services.$OfflineFileUploadService#init
@@ -41,11 +45,21 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
 
         /**
          * @ngdoc
+         * @name wm.plugins.offline.services.$OfflineFileUploadService#getUploadDirectory
+         * @methodOf wm.plugins.offline.services.$OfflineFileUploadService
+         * @description
+         * Returns the path of upload directory
+         */
+        this.getUploadDirectory = function () {
+            return uploadDir;
+        };
+
+        /**
+         * @ngdoc
          * @name wm.plugins.offline.services.$OfflineFileUploadService#uploadToServer
          * @methodOf wm.plugins.offline.services.$OfflineFileUploadService
          * @description
-         * Uploads local file to the server. A mapping will be created between local path and remote path.
-         * This will be used during ChangeLogService flush to resolve local paths in entities.
+         * Uploads local file to the server directly.
          * @param {object} params upload params
          * @param {function=} onSuccess callback on successful upload
          * @param {function=} onFail callback on upload failure
@@ -53,10 +67,10 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
         this.uploadToServer = function (params, onSuccess, onFail) {
             var ft = new FileTransfer();
             ft.upload(params.file, params.serverUrl, function (evt) {
-                var response = JSON.parse(evt.response)[0];
-                fileStore[params.file]             = response.path;
-                fileStore[params.file + '?inline'] = response.inlinePath;
-                onSuccess(evt);
+                onSuccess(JSON.parse(evt.response)[0]);
+                if (params.deleteOnUpload) {
+                    DeviceFileService.removeFile(params.file);
+                }
             }, onFail, params.ftOptions);
         };
 
@@ -65,8 +79,8 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
          * @name wm.plugins.offline.services.$OfflineFileUploadService#upload
          * @methodOf wm.plugins.offline.services.$OfflineFileUploadService
          * @description
-         * copies the local file to the 'uploads' directory. Actual upload to server happens during
-         * ChangeLogService flush.
+         * copies the local file to the 'uploads' directory and adds an entry to offline change log so that file gets
+         * actually uploaded in the next flush.
          * @param {string} localPath path of the file to upload
          * @param {string} serverUrl url of server to which the file has to be uploaded
          * @param {object} ftOptions file transfer options
@@ -76,14 +90,15 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
                 i = localPath.lastIndexOf('/'),
                 soureDir = localPath.substring(0, i),
                 soureFile = localPath.substring(i + 1),
-                destFile = Date.now().toString();
+                destFile = DeviceFileService.appendToFileName(soureFile);
             $cordovaFile.copyFile(soureDir, soureFile, uploadDir, destFile)
                 .then(function () {
                     var filePath = uploadDir + '/' + destFile;
                     ChangeLogService.add('OfflineFileUploadService', 'uploadToServer', {
                         'file'     : filePath,
                         'serverUrl': serverUrl,
-                        'ftOptions': ftOptions
+                        'ftOptions': ftOptions,
+                        'deleteOnUpload' : true
                     });
                     defer.resolve({
                         'fileName'  : soureFile,
@@ -95,26 +110,4 @@ wm.plugins.offline.services.OfflineFileUploadService = ['$cordovaFile', 'ChangeL
                 }, defer.reject.bind());
             return defer.promise;
         };
-
-        ChangeLogService.registerCallback({
-            'preFlush' : function (flushContext) {
-                fileStore = flushContext.get(storeKey);
-            },
-            /**
-             * Replaces all local paths with the remote path using mappings created during 'uploadToServer'.
-             */
-            'preCall': function (change) {
-                if (change.service === 'DatabaseService') {
-                    change.params.data = _.mapValues(change.params.data, function (v) {
-                        var remoteUrl = fileStore[v];
-                        if (remoteUrl) {
-                            $log.debug('swapped file path from %s -> %s', v, remoteUrl);
-                            return remoteUrl;
-                        }
-                        return v;
-                    });
-                }
-            }
-        });
-
     }];

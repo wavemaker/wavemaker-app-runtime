@@ -1,4 +1,4 @@
-/*global wm, WM, _*/
+/*global wm, WM, _, FormData, Blob, FileReader, Uint8Array*/
 /*jslint sub: true, unparam:true*/
 /**
  * @ngdoc service
@@ -6,7 +6,7 @@
  * @description
  * Using ChangeLogService, one can register for an invocation to push a change during flush.
  *
- * Registration requires 3  p`arams.
+ * Registration requires 3  params.
  *   1) Service (This should be available through $injector)
  *   2) Method to invoke.
  *   3) An object that needs to be passed the method during invocation.
@@ -72,11 +72,18 @@ wm.plugins.offline.services.ChangeLogService = [
                     }, d.reject);
                 } catch (e) {
                     d.reject(e);
+                    $log.error(e.message);
                 }
             } else {
                 d.resolve();
             }
             return d.promise;
+        }
+
+        //Transform params to Map
+        function transformParamsToMap(change) {
+            var cbs = _.map(callbacks, "transformParamsToMap");
+            return executeDeferChain(cbs, [change]);
         }
 
         //Invokes PreCall callbacks
@@ -85,15 +92,26 @@ wm.plugins.offline.services.ChangeLogService = [
             return executeDeferChain(cbs, [change]);
         }
 
+        //Transform params from Map to original form
+        function transformParamsFromMap(change) {
+            var cbs = _.map(callbacks, "transformParamsFromMap");
+            return executeDeferChain(cbs, [change]);
+        }
+
         //Trigger the call
         function invokeService(change) {
             var defer = $q.defer(),
                 service = getService(change.service),
-                operation = service[change.operation];
+                operation = service[change.operation],
+                transformedParams = _.cloneDeep(change.params);
             if (change.hasError === 0) {
-                operation(change.params, function () {
-                    defer.resolve.apply(defer, arguments);
-                }, function () {
+                transformParamsFromMap(change).then(function () {
+                    return operation(change.params, function () {
+                        change.params = transformedParams;
+                        defer.resolve.apply(defer, arguments);
+                    });
+                }).catch(function () {
+                    change.params = transformedParams;
                     defer.reject.apply(defer, arguments);
                 });
             } else {
@@ -287,11 +305,15 @@ wm.plugins.offline.services.ChangeLogService = [
             change = {
                 'service': service,
                 'operation': operation,
-                'params': JSON.stringify(params),
+                'params': params,
                 'hasError' : 0
             };
-            getStore().add(change);
-            return executeDeferChain(_.map(callbacks, "onAddCall"), [change]);
+            return transformParamsToMap(change).then(function () {
+                return executeDeferChain(_.map(callbacks, "onAddCall"), [change]);
+            }).then(function () {
+                change.params = JSON.stringify(change.params);
+                return getStore().add(change);
+            });
         };
 
         /**
@@ -302,12 +324,15 @@ wm.plugins.offline.services.ChangeLogService = [
          * Register callbacks for the following events.
          *
          * @param {object} callback
-         *            {'onAddCall': function(change) {},
-         *              'preFlush': function() {},
-         *              'postFlush': function() {},
+         *            {
+         *              'transformParamsToMap' : function(change) {},
+         *              'onAddCall': function(change) {},
+         *              'preFlush': function() {flushContext},
          *              'preCall': function(change) {},
+         *              'transformParamsFromMap' : function(change) {},
          *              'postCallError': function(change, response) {},
-         *              'postCallSuccess': function(change, response) {}
+         *              'postCallSuccess': function(change, response) {},
+         *              'postFlush': function(stats, flushContext) {}
          *            };
          */
         this.registerCallback = function (callback) {
@@ -501,6 +526,7 @@ wm.plugins.offline.run([
                     dataModelName = change.params.dataModelName;
                     switch (change.operation) {
                     case 'insertTableData':
+                    case 'insertMultiPartTableData':
                         store = LocalDBManager.getStore(dataModelName, entityName);
                         exchangeIds(dataModelName, entityName, change.params.data);
                         if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
@@ -513,6 +539,7 @@ wm.plugins.offline.run([
                         }
                         break;
                     case 'updateTableData':
+                    case 'updateMultiPartTableData':
                         exchangeId(dataModelName, entityName, change.params);
                         exchangeIds(dataModelName, entityName, change.params.data);
                         break;
@@ -526,7 +553,7 @@ wm.plugins.offline.run([
             'postCallSuccess': function (change, response) {
                 var entityName, primaryKeyName, dataModelName, entityStore;
                 if (change && change.service === 'DatabaseService'
-                        && change.operation === 'insertTableData'
+                        && (change.operation === 'insertTableData' || change.operation === 'insertMultiPartTableData')
                         && transactionLocalId) {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
@@ -542,7 +569,7 @@ wm.plugins.offline.run([
             'postCallError' : function (change) {
                 var entityStore, entityName, dataModelName;
                 if (change && change.service === 'DatabaseService'
-                        && change.operation === 'insertTableData'
+                        && (change.operation === 'insertTableData' || change.operation === 'insertMultiPartTableData')
                         && transactionLocalId) {
                     entityName = change.params.entityName;
                     dataModelName = change.params.dataModelName;
@@ -627,7 +654,9 @@ wm.plugins.offline.run([
                     dataModelName = change.params.dataModelName;
                     switch (change.operation) {
                     case 'insertTableData':
+                    case 'insertMultiPartTableData':
                     case 'updateTableData':
+                    case 'updateMultiPartTableData':
                         blockCall(change, dataModelName, entityName, change.params.data);
                         break;
                     case 'deleteTableData':
@@ -646,6 +675,194 @@ wm.plugins.offline.run([
                     id = change.dataLocalId || change.params.data[entityStore.primaryKeyName];
                     if (!(_.isUndefined(id) || _.isNull(id))) {
                         recordError(dataModelName, entityName, id);
+                    }
+                }
+            }
+        });
+    }]);
+/**
+ * Handle file uploads
+ */
+wm.plugins.offline.run([
+    "$q",
+    "$log",
+    "ChangeLogService",
+    "OfflineFileUploadService",
+    function ($q,
+              $log,
+              ChangeLogService,
+              OfflineFileUploadService) {
+        'use strict';
+        var fileStore = {},
+            storeKey  = 'offlineFileUpload';
+        ChangeLogService.registerCallback({
+            'preFlush' : function (flushContext) {
+                fileStore = flushContext.get(storeKey);
+            },
+            /**
+             * Replaces all local paths with the remote path using mappings created during 'uploadToServer'.
+             */
+            'preCall': function (change) {
+                if (change.service === 'DatabaseService') {
+                    change.params.data = _.mapValues(change.params.data, function (v) {
+                        var remoteUrl = fileStore[v];
+                        if (remoteUrl) {
+                            $log.debug('swapped file path from %s -> %s', v, remoteUrl);
+                            return remoteUrl;
+                        }
+                        return v;
+                    });
+                }
+            },
+            'postCallSuccess' : function (change, response) {
+                if (change.service === 'OfflineFileUploadService'
+                        && change.operation === 'uploadToServer') {
+                    /*
+                     * A mapping will be created between local path and remote path.
+                     * This will be used to resolve local paths in entities.
+                     */
+                    fileStore[change.params.file]             = response[0].path;
+                    fileStore[change.params.file + '?inline'] = response[0].inlinePath;
+                }
+            }
+        });
+    }]);
+
+/**
+ * Handles multipart requests
+ */
+wm.plugins.offline.run([
+    "$cordovaFile",
+    "$q",
+    "ChangeLogService",
+    "DeviceFileService",
+    "LocalDBManager",
+    "OfflineFileUploadService",
+    "SWAGGER_CONSTANTS",
+    "Utils",
+    function ($cordovaFile,
+              $q,
+              ChangeLogService,
+              DeviceFileService,
+              LocalDBManager,
+              OfflineFileUploadService,
+              SWAGGER_CONSTANTS,
+              Utils) {
+        'use strict';
+
+        function saveBlobToFile(blob) {
+            var fileName = DeviceFileService.appendToFileName(blob.name),
+                uploadDir = OfflineFileUploadService.getUploadDirectory();
+            return $cordovaFile.writeFile(uploadDir, fileName, blob).then(function () {
+                return {
+                    'name' : blob.name,
+                    'type' : blob.type,
+                    'lastModified' : blob.lastModified,
+                    'lastModifiedDate' : blob.lastModifiedDate,
+                    'size' : blob.size,
+                    'wmLocalPath' : uploadDir + '/' + fileName
+                };
+            });
+        }
+
+        /**
+         * Converts form data object to map for storing request in local database..
+         */
+        function convertFormDataToMap(formData, store) {
+            var blobcolumns = _.filter(store.schema.columns, {
+                    'sqlType' : 'blob'
+                }),
+                map = {},
+                promises = [];
+            if (formData && typeof formData.append === 'function' && formData.rowData) {
+                _.forEach(formData.rowData, function (fieldData, fieldName) {
+                    if (fieldData && _.find(blobcolumns, {'fieldName' : fieldName})) {
+                        promises.push(saveBlobToFile(fieldData).then(function (localFile) {
+                            map[fieldName] = localFile;
+                        }));
+                    } else {
+                        map[fieldName] = fieldData;
+                    }
+                });
+            }
+            return $q.all(promises).then(function () {
+                return !formData || map;
+            });
+        }
+        /**
+         * Converts map object back to form data.
+         */
+        function convertMapToFormData(map, store) {
+            var formData = new FormData(),
+                blobColumns = _.filter(store.schema.columns, {
+                    'sqlType' : 'blob'
+                }),
+                promises = [];
+            _.forEach(blobColumns, function (column) {
+                var value = map[column.fieldName];
+                if (value) {
+                    promises.push(Utils.convertToBlob(value.wmLocalPath)
+                        .then(function (result) {
+                            formData.append(column.fieldName, result.blob, value.name);
+                        }));
+                    map[column.fieldName] = '';
+                }
+            });
+            formData.append(SWAGGER_CONSTANTS.WM_DATA_JSON, new Blob([JSON.stringify(map)], {
+                type: 'application/json'
+            }));
+            return $q.all(promises).then(function () { return formData; });
+        }
+        // Registers for offline change log events.
+        ChangeLogService.registerCallback({
+            'transformParamsToMap' : function (change) {
+                var store;
+                if (change && change.service === 'DatabaseService') {
+                    switch (change.operation) {
+                    case 'insertMultiPartTableData':
+                    case 'updateMultiPartTableData':
+                        store = LocalDBManager.getStore(change.params.dataModelName, change.params.entityName);
+                        return convertFormDataToMap(change.params.data, store).then(function (map) {
+                            map[store.primaryKeyName] = change.params.data[store.primaryKeyName];
+                            change.params.data = map;
+                            /**
+                             * As save method called with FormData object, empty row is inserted.
+                             * Since FormData is converted to map, update the record details now.
+                             */
+                            store.save(_.mapValues(map, function (v) {
+                                return (_.isObject(v) && v.wmLocalPath) || v;
+                            }));
+                            return map;
+                        });
+                    }
+                }
+            },
+            'transformParamsFromMap' : function (change) {
+                var store;
+                if (change && change.service === 'DatabaseService') {
+                    switch (change.operation) {
+                    case 'insertMultiPartTableData':
+                    case 'updateMultiPartTableData':
+                        store = LocalDBManager.getStore(change.params.dataModelName, change.params.entityName);
+                        //construct Form data
+                        return convertMapToFormData(change.params.data, store).then(function (formData) {
+                            change.params.data = formData;
+                        });
+                    }
+                }
+            },
+            'postCallSuccess' : function (change) {
+                if (change && change.service === 'DatabaseService') {
+                    switch (change.operation) {
+                    case 'insertMultiPartTableData':
+                    case 'updateMultiPartTableData':
+                        //clean up files
+                        _.forEach(change.params.data, function (v) {
+                            if (_.isObject(v) && v.wmLocalPath) {
+                                DeviceFileService.removeFile(v.wmLocalPath);
+                            }
+                        });
+                        break;
                     }
                 }
             }

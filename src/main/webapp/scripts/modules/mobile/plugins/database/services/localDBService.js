@@ -4,7 +4,10 @@
  * @ngdoc service
  * @name wm.plugins.database.services.$LocalDBService
  * @description
- * The 'wm.plugins.database.services.$LocalDBService' provides API  to interact with LocalDatabase.
+ * The 'wm.plugins.database.services.$LocalDBService' provides API  to interact with LocalDatabase. This service will
+ * override DatabaseService in such a way that all method calls goes through this service. In online, these
+ * overridden call invocations reach to the original DatabaseService methods. In offline, these call invocations are
+ * handled by LocalDBService.
  */
 wm.plugins.database.services.LocalDBService = [
     '$cordovaNetwork',
@@ -21,7 +24,13 @@ wm.plugins.database.services.LocalDBService = [
                 'name' : 'insertTableData',
                 'update' : true
             }, {
+                'name' : 'insertMultiPartTableData',
+                'update' : true
+            }, {
                 'name' : 'updateTableData',
+                'update' : true
+            }, {
+                'name' : 'updateMultiPartTableData',
                 'update' : true
             }, {
                 'name' : 'deleteTableData',
@@ -68,7 +77,7 @@ wm.plugins.database.services.LocalDBService = [
                         };
                         self.updateTableData(updateParams, WM.noop, WM.noop, false);
                     });
-                } else if (operation.name !== 'insertTableData') {
+                } else if (operation.name !== 'insertTableData' && operation.name !== 'insertMultiPartTableData') {
                     self[operation.name](params, WM.noop, WM.noop);
                 }
                 Utils.triggerFn(successCallback, response);
@@ -145,14 +154,30 @@ wm.plugins.database.services.LocalDBService = [
 
         /**
          * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#insertMultiPartTableData
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         * @description
+         * Method to insert multi part data into the specified table. This modification will be added to offline change log.
+         *
+         * @param {object} params
+         *                 Object containing name of the project & table data to be inserted.
+         * @param {function=} successCallback
+         *                    Callback function to be triggered on success.
+         * @param {function=} failureCallback
+         *                    Callback function to be triggered on failure.
+         */
+        this.insertMultiPartTableData = this.insertTableData;
+
+        /**
+         * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBService#updateTableData
          * @methodOf wm.plugins.database.services.$LocalDBService
          *
          * @description
-         * Method to update data in the specified table.
+         * Method to update data in the specified table. This modification will be added to offline change log.
          *
          * @param {object} params
-         *                 Object containing name of the project & table data to be inserted.
+         *                 Object containing name of the project & table data to be updated.
          * @param {function=} successCallback
          *                    Callback function to be triggered on success.
          * @param {function=} failureCallback
@@ -168,11 +193,29 @@ wm.plugins.database.services.LocalDBService = [
 
         /**
          * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBService#updateMultiPartTableData
+         * @methodOf wm.plugins.database.services.$LocalDBService
+         *
+         * @description
+         * Method to update multi part data in the specified table. This modification will be added to offline change log.
+         *
+         * @param {object} params
+         *                 Object containing name of the project & table data to be updated.
+         * @param {function=} successCallback
+         *                    Callback function to be triggered on success.
+         * @param {function=} failureCallback
+         *                    Callback function to be triggered on failure.
+         */
+
+        this.updateMultiPartTableData = this.updateTableData;
+
+        /**
+         * @ngdoc method
          * @name wm.plugins.database.services.$LocalDBService#deleteTableData
          * @methodOf wm.plugins.database.services.$LocalDBService
          *
          * @description
-         * Method to delete data in the specified table.
+         * Method to delete data in the specified table. This modification will be added to offline change log.
          *
          * @param {object} params
          *                 Object containing name of the project & table data to be inserted.
@@ -183,7 +226,7 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.deleteTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
-                store.delete(params.id).then(successCallback);
+                store.delete(params[store.primaryKeyField]).then(successCallback);
             }).catch(failureCallback);
         };
 

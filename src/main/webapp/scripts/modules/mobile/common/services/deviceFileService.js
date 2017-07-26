@@ -356,6 +356,47 @@ wm.modules.wmCommon.services.DeviceFileService = [
             return d;
         };
 
+        /**
+         * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceFileService#appendToFileName
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileService
+         * @description
+         * Appends the given str to the filename at before the file extension,
+         * For example:
+         *  appendToFileName("globe.jpg", "_123_") results in "globe_123_.jpg"
+         *
+         * @param {string} fileName  default value is 'noname'.
+         * @param {string} str  string to be appended. default value is timestamp.
+         * @returns {object} returns promise.
+         */
+        this.appendToFileName = function (fileName, str) {
+            var splits;
+            str = str || '_' + _.now();
+            fileName = fileName || 'noname';
+            splits = fileName.split('.');
+            if (splits.length > 1) {
+                splits[splits.length - 2] = splits[splits.length - 2] + str;
+                return splits.join('.');
+            }
+            return fileName + str;
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceFileService#removeFile
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileService
+         * @description
+         * removes the file at the specified location.
+         *
+         * @param {string} filePath absolute path of file
+         */
+        this.removeFile = function (filePath) {
+            var i = filePath.lastIndexOf('/'),
+                dir = filePath.substring(0, i),
+                file = filePath.substring(i + 1);
+            return $cordovaFile.removeFile(dir, file);
+        };
+
         if (window.cordova && window.cordova.file) {
             /**
              * Default READ_CHUNK_SIZE is 256 Kb. But with that setting readJson method is failing. This is an issue
