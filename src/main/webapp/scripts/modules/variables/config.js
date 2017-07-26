@@ -59,15 +59,29 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
         "NOTIFICATION": "appNotification"
     },
     VARIABLE_SERVICE_TYPES: {
-        'WEB': 'web',
         'DATABASE': 'database',
-        'DEVICE': 'device',
+        'WEB': 'web',
+        'JAVA': 'java',
+        'DATABASE_API': 'databaseapi',
         'CUSTOM': 'custom',
+        'DEVICE': 'device',
         'LOGIN': 'login',
         'LOGOUT': 'logout',
         'NAVIGATION': 'navigation',
         'NOTIFICATION': 'notification',
         'TIMER': 'timer'
+    },
+    VARIABLE_TO_SERVICE_TYPE_MAP: {
+        'databaseapi': 'DataService',
+        'java': 'JavaService'
+    },
+    SERVICE_TYPE_GROUP: {
+        'database': 'database',
+        'databaseapi': 'api',
+        'web': 'api',
+        'java': 'api',
+        "custom": "other",
+        "device": "other"
     }
 });
 

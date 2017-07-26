@@ -319,8 +319,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "operation": {"displayName": "Operation", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', "hide": true}
             };
             props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = {
-                "apitype": {"displayName": "Select API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
-                "service": {"hide": true, "displayName": "Select Service", "type": "string", "required": false, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
+                "apitype": {"hide": true, "displayName": "Select API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
+                "service": {"displayName": "Select Service", "type": "string", "required": false, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
             };
             return props[serviceType] || props;
         }

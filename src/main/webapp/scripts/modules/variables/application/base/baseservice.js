@@ -66,7 +66,7 @@ wm.variables.services.Variables = [
                 },
                 "wm.ServiceVariable" : {
                     "collectionType" : "data",
-                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA],
                     "category"       : "wm.ServiceVariable",
                     "defaultName"    : "serviceVariable",
                     "spinnerInFlight": true,
@@ -162,9 +162,11 @@ wm.variables.services.Variables = [
                 });
             },
             initServiceToCategoryMap = function () {
-                // TODO[VIBHU]: To be intialized from variableConfig, remove hard coding
+                // TODO[VIBHU]: To be initialized from variableConfig, remove hard coding
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE] = ['wm.LiveVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API] = ['wm.ServiceVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = ['wm.ServiceVariable', 'wm.WebSocketVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA] = ['wm.ServiceVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.CUSTOM] = ['wm.Variable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NAVIGATION] = ['wm.NavigationVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NOTIFICATION] = ['wm.NotificationVariable'];
@@ -1227,14 +1229,13 @@ wm.variables.services.Variables = [
                         serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE;
                         break;
                     case 'wm.ServiceVariable':
-                        serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB;
-//                        if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA) {
-//                            serviceType = 'database';
-//                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
-//                            serviceType = 'java';
-//                        } else {
-//                            serviceType = 'web';
-//                        }
+                        if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_DATA) {
+                            serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API;
+                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
+                            serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA;
+                        } else {
+                            serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB;
+                        }
                         break;
                     default:
                         serviceType = serviceType[0];
@@ -1262,7 +1263,7 @@ wm.variables.services.Variables = [
                     });
                 }
                 _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
-                    serviceTypes = _.union(serviceTypes, variable.serviceTypes)
+                    serviceTypes = _.union(serviceTypes, variable.serviceTypes);
                 });
                 return serviceTypes;
             },
