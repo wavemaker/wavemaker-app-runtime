@@ -1012,7 +1012,8 @@ Application
                  */
                 $rs.$on('$routeChangeSuccess', function (evt, $cRoute, $pRoute) {
                     var pageName = $cRoute.params.name,
-                        $page;
+                        $page,
+                        $others;
 
                     if ($rs._appNavEvt) {
                         $rs._appNavEvt.widgetName = WM.element($rs._appNavEvt.target).closest('[init-widget]').attr('name');
@@ -1030,7 +1031,9 @@ Application
                         if ($page.is('wm-page') && !$rs.isMobileApplicationType) {
                             compilePageFragments($page);
 
+                            $others = $page.find('> :not(wm-content)');
                             $page.html($page.find('> wm-content > wm-page-content'));
+                            $page.append($others);
                         }
 
                         $cRoute.locals.$template = $page;
