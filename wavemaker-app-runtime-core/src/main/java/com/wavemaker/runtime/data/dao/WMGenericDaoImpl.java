@@ -26,13 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
@@ -43,6 +40,8 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.callbacks.RuntimePaginatedCallback;
+import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.export.DataExporter;
@@ -102,16 +101,13 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @SuppressWarnings("unchecked")
     public Entity findByUniqueKey(final Map<String, Object> fieldValueMap) {
-        return getTemplate().execute(new HibernateCallback<Entity>() {
-            @Override
-            public Entity doInHibernate(final Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                for (final Map.Entry<String, Object> entry : fieldValueMap.entrySet()) {
-                    criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
-                }
-                final List list = criteria.list();
-                return list.isEmpty() ? null : (Entity) list.get(0);
+        return getTemplate().execute(session -> {
+            Criteria criteria = session.createCriteria(entityClass);
+            for (final Map.Entry<String, Object> entry : fieldValueMap.entrySet()) {
+                criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
             }
+            final List list = criteria.list();
+            return list.isEmpty() ? null : (Entity) list.get(0);
         });
     }
 
@@ -124,13 +120,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
         this.sortValidator.validate(pageable);
-        return getTemplate().execute(new HibernateCallback<Page>() {
-            @Override
-            public Page doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
-                criteria.add(Restrictions.eq(key, value));
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
-            }
+        return getTemplate().execute(session -> {
+            Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
+            criteria.add(Restrictions.eq(key, value));
+            return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
         });
     }
 
@@ -138,24 +131,21 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
         this.sortValidator.validate(pageable);
         validateQueryFilters(queryFilters);
-        return getTemplate().execute(new HibernateCallback<Page>() {
-            @Override
-            public Page doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                Set<String> aliases = new HashSet<>();
-                if (ArrayUtils.isNotEmpty(queryFilters)) {
-                    for (QueryFilter queryFilter : queryFilters) {
-                        final String attributeName = queryFilter.getAttributeName();
+        return getTemplate().execute((HibernateCallback<Page>) session -> {
+            Criteria criteria = session.createCriteria(entityClass);
+            Set<String> aliases = new HashSet<>();
+            if (ArrayUtils.isNotEmpty(queryFilters)) {
+                for (QueryFilter queryFilter : queryFilters) {
+                    final String attributeName = queryFilter.getAttributeName();
 
-                        // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
-                        CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName, aliases);
+                    // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
+                    CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName, aliases);
 
-                        Criterion criterion = CriteriaUtils.createCriterion(queryFilter);
-                        criteria.add(criterion);
-                    }
+                    Criterion criterion = CriteriaUtils.createCriterion(queryFilter);
+                    criteria.add(criterion);
                 }
-                return CriteriaUtils.executeAndGetPageableData(criteria, pageable, aliases);
             }
+            return CriteriaUtils.executeAndGetPageableData(criteria, pageable, aliases);
         });
     }
 
@@ -163,38 +153,29 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
         this.sortValidator.validate(pageable);
-        return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
-            @Override
-            public Page<Entity> doInHibernate(Session session) throws HibernateException {
-                final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
-                        .createHQLQuery(entityClass.getName(), query, pageable, session);
-                return HQLQueryUtils
-                        .executeHQLQuery(queryInfo.v1, queryInfo.v2, pageable, getTemplate());
-            }
+        return getTemplate().execute(session -> {
+            final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
+                    .createHQLQuery(entityClass.getName(), query, pageable, session);
+            return HQLQueryUtils
+                    .executeHQLQuery(queryInfo.v1, queryInfo.v2, pageable, getTemplate());
         });
     }
 
     @Override
     public long count() {
-        return getTemplate().execute(new HibernateCallback<Long>() {
-            @Override
-            public Long doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(entityClass);
-                return CriteriaUtils.getRowCount(criteria);
-            }
+        return getTemplate().execute(session -> {
+            Criteria criteria = session.createCriteria(entityClass);
+            return CriteriaUtils.getRowCount(criteria);
         });
     }
 
     @Override
     public long count(final String query) {
-        return getTemplate().execute(new HibernateCallback<Long>() {
-            @Override
-            public Long doInHibernate(Session session) throws HibernateException {
-                Tuple.Two<Query, Map<String, Object>> queryInfo =
-                        HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
-                return QueryHelper
-                        .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
-            }
+        return getTemplate().execute(session -> {
+            Tuple.Two<Query, Map<String, Object>> queryInfo =
+                    HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
+            return QueryHelper
+                    .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
         });
     }
 
@@ -209,23 +190,20 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
         return getTemplate()
                 .execute(new RuntimePaginatedCallback(queryInfo.getQuery(), countQuery, queryInfo.getParameters(),
-                        pageable));
+                        new HqlParameterTypeResolver(), pageable));
     }
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
         this.sortValidator.validate(pageable);
         ByteArrayOutputStream reportOutputStream = getTemplate()
-                .execute(new HibernateCallback<ByteArrayOutputStream>() {
-                    @Override
-                    public ByteArrayOutputStream doInHibernate(Session session) throws HibernateException {
-                        final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
-                                .createHQLQuery(entityClass.getName(), query, pageable, session);
+                .execute(session -> {
+                    final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
+                            .createHQLQuery(entityClass.getName(), query, pageable, session);
 
-                        QueryHelper.configureParameters(queryInfo.v1, queryInfo.v2);
-                        QueryExtractor queryExtractor = new HqlQueryExtractor(queryInfo.v1.scroll());
-                        return DataExporter.export(queryExtractor, exportType);
-                    }
+                    ParametersConfigurator.configure(queryInfo.v1, queryInfo.v2);
+                    QueryExtractor queryExtractor = new HqlQueryExtractor(queryInfo.v1.scroll());
+                    return DataExporter.export(queryExtractor, exportType);
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
         return new DownloadResponse(is, exportType.getContentType(),

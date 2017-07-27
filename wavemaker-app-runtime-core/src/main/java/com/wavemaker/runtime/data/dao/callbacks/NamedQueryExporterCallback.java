@@ -27,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
@@ -83,7 +84,7 @@ public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOu
     }
 
     private void setQueryProps(final Query namedQuery) {
-        QueryHelper.configureParameters(namedQuery, params);
+        ParametersConfigurator.configure(namedQuery, params);
         namedQuery.setFirstResult(pageable.getOffset());
         namedQuery.setMaxResults(pageable.getPageSize());
     }

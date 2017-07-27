@@ -64,11 +64,11 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     private HibernateTemplate template;
-    private SessionBackedParameterResolver parameterResolver;
+    private SessionBackedParameterResolver parameterResolvers;
 
     @PostConstruct
     private void init() {
-        parameterResolver =
+        parameterResolvers =
                 new SessionBackedParameterResolver((SessionFactoryImplementor) template.getSessionFactory());
     }
 
@@ -81,7 +81,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public <T> T executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Class<T> returnType) {
-        NamedQueryCallback<T> callback = new NamedQueryCallback<>(new QueryInfo<>(queryName, params, returnType));
+        NamedQueryCallback<T> callback = new NamedQueryCallback<>(new QueryInfo<>(queryName, params,
+                parameterResolvers.getResolver(queryName), returnType));
         return template.execute(callback);
     }
 
@@ -92,7 +93,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         final Pageable _pageable = getValidPageable(pageable);
 
         PaginatedNamedQueryCallback<T> callback = new PaginatedNamedQueryCallback<>(
-                new PageableQueryInfo<>(queryName, params, returnType, _pageable));
+                new PageableQueryInfo<>(queryName, params, parameterResolvers.getResolver(queryName), returnType,
+                        _pageable));
 
         return template.execute(callback);
     }
@@ -102,7 +104,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
         return template.execute(session -> {
             Query namedQuery = session.getNamedQuery(queryName);
-            ParametersConfigurator.configureParameters(namedQuery, parameterResolver.getResolver(queryName), params);
+            ParametersConfigurator.configure(namedQuery, params, parameterResolvers.getResolver(queryName));
             return namedQuery.executeUpdate();
         });
 
@@ -196,11 +198,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             Map<String, Object> params = new HashMap<>();
 
             List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-            if (customQueryParams != null && !customQueryParams.isEmpty())
+            if (customQueryParams != null && !customQueryParams.isEmpty()) {
                 for (CustomQueryParam customQueryParam : customQueryParams) {
                     Object paramValue = validateAndPrepareObject(customQueryParam);
                     params.put(customQueryParam.getParamName(), paramValue);
                 }
+            }
 
             Query query;
             if (customQuery.isNativeSql()) {

@@ -5,6 +5,8 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/3/17
@@ -13,16 +15,23 @@ public class RuntimeQueryCallback extends AbstractQueryCallback<Map<String, Obje
 
     private String query;
     private Map<String, Object> parameters;
+    private final ParameterTypeResolver resolver;
     private boolean isNative;
 
-    public RuntimeQueryCallback(final String query, final Map<String, Object> parameters) {
+    public RuntimeQueryCallback(
+            final String query, final Map<String, Object> parameters,
+            final ParameterTypeResolver resolver) {
         this.query = query;
         this.parameters = parameters;
+        this.resolver = resolver;
     }
 
-    public RuntimeQueryCallback(final String query, final Map<String, Object> parameters, final boolean isNative) {
+    public RuntimeQueryCallback(
+            final String query, final Map<String, Object> parameters,
+            final ParameterTypeResolver resolver, final boolean isNative) {
         this.query = query;
         this.parameters = parameters;
+        this.resolver = resolver;
         this.isNative = isNative;
     }
 
@@ -34,6 +43,11 @@ public class RuntimeQueryCallback extends AbstractQueryCallback<Map<String, Obje
     @Override
     protected Map<String, Object> getParameters() {
         return parameters;
+    }
+
+    @Override
+    protected ParameterTypeResolver getParameterTypeResolver() {
+        return resolver;
     }
 
     @Override

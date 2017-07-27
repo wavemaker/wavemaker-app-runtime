@@ -8,6 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
+
 import static com.wavemaker.runtime.data.dao.util.QueryHelper.createQuery;
 
 /**
@@ -19,25 +21,29 @@ public class RuntimePaginatedCallback extends AbstractPaginatedQueryCallback<Map
     private String query;
     private String countQuery;
     private Map<String, Object> parameters;
+    private final ParameterTypeResolver resolver;
     private Pageable pageable;
 
     private boolean isNative;
 
     public RuntimePaginatedCallback(
             final String query, final String countQuery, final Map<String, Object> parameters,
-            final Pageable pageable) {
+            final ParameterTypeResolver resolver, final Pageable pageable) {
         this.query = query;
         this.countQuery = countQuery;
         this.parameters = parameters;
+        this.resolver = resolver;
         this.pageable = pageable;
     }
 
     public RuntimePaginatedCallback(
             final String query, final String countQuery, final Map<String, Object> parameters,
-            final Pageable pageable, final boolean isNative) {
+            final ParameterTypeResolver resolver, final Pageable pageable,
+            final boolean isNative) {
         this.query = query;
         this.countQuery = countQuery;
         this.parameters = parameters;
+        this.resolver = resolver;
         this.pageable = pageable;
         this.isNative = isNative;
     }
@@ -59,6 +65,11 @@ public class RuntimePaginatedCallback extends AbstractPaginatedQueryCallback<Map
     @Override
     protected Map<String, Object> getParameters() {
         return parameters;
+    }
+
+    @Override
+    protected ParameterTypeResolver getParameterTypeResolver() {
+        return resolver;
     }
 
     @Override

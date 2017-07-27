@@ -20,6 +20,7 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
 import com.wavemaker.runtime.data.model.QueryInfo;
 
 /**
@@ -49,4 +50,8 @@ public class NamedQueryCallback<T> extends AbstractQueryCallback<T> {
         return queryInfo.getReturnClass();
     }
 
+    @Override
+    protected ParameterTypeResolver getParameterTypeResolver() {
+        return queryInfo.getResolver();
+    }
 }

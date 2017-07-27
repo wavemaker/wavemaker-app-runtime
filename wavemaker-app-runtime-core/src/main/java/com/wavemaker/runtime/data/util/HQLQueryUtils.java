@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.type.AbstractStandardBasicType;
@@ -35,6 +34,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.data.type.WMPersistentLocalDateTime;
 import com.wavemaker.commons.util.Tuple;
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
@@ -74,16 +74,14 @@ public class HQLQueryUtils {
             final Query hqlQuery, final Map<String, Object> params, final Pageable pageable,
             final HibernateTemplate template) {
 
-        return template.execute(new HibernateCallback<Page<Object>>() {
-            public Page<Object> doInHibernate(Session session) throws HibernateException {
-                QueryHelper.setResultTransformer(hqlQuery, Object.class);
-                QueryHelper.configureParameters(hqlQuery, params);
-                if (pageable != null) {
-                    Long count = QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), params, false, template);
-                    return new WMPageImpl(hqlQuery.list(), pageable, count);
-                }
-                return new WMPageImpl(hqlQuery.list());
+        return template.execute((HibernateCallback<Page<Object>>) session -> {
+            QueryHelper.setResultTransformer(hqlQuery, Object.class);
+            ParametersConfigurator.configure(hqlQuery, params);
+            if (pageable != null) {
+                Long count = QueryHelper.getQueryResultCount(hqlQuery.getQueryString(), params, false, template);
+                return new WMPageImpl(hqlQuery.list(), pageable, count);
             }
+            return new WMPageImpl(hqlQuery.list());
         });
     }
 
