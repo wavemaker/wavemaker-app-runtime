@@ -282,7 +282,7 @@ WM.module('wm.layouts.page')
                 path: getTemplatePath(templateName),
                 projectID : $rootScope.project.id
             }, function (response) {
-                pageContent = Utils.parseCombinedPageContent(response, templateName);
+                pageContent = Utils.parseCombinedPageContent(response, templateName, true);
                 compileTemplate(scope, element, pageContent.html);
             }, function () {
                 element.html(ERROR_CONTENT);

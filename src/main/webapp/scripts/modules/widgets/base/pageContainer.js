@@ -163,6 +163,7 @@ WM.module('wm.widgets.base')
                 function onPageFetchSuccess(content) {
                     /*get individual file contents like - html/js/css */
                     loadedPartials[newVal] = content;
+
                     listPartials.push(newVal);
 
                     /* to compile the partial page*/
@@ -237,7 +238,7 @@ WM.module('wm.widgets.base')
                                 path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.html' : page + 'page.min.html',
                                 projectID : $rootScope.project.id
                             }, function (pageContent) {
-                                onPageFetchSuccess(Utils.parseCombinedPageContent(pageContent, newVal));
+                                onPageFetchSuccess(Utils.parseCombinedPageContent(pageContent, newVal, true));
                             }, onPageFetchError);
                         } else {
                             var AppManager = Utils.getService('AppManager');

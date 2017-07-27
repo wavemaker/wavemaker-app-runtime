@@ -492,7 +492,7 @@ Application
                     });
                 }
 
-                function loadPage(pageName, isPartial) {
+                function loadPage(pageName, isPartial, prevPage) {
                     var deferred = $q.defer(),
                         content;
 
@@ -500,9 +500,20 @@ Application
                     pageName = pageName.split('.').shift();
                     content  = cache.get(pageName);
 
+                    // remove old page styles
+                    if (prevPage) {
+                        WM.element('head').find('style[id="' + prevPage + '.css"]').remove();
+                    }
+
+
                     if (!content) {
-                        _load(pageName, deferred.resolve, deferred.reject, isPartial);
+                        _load(pageName, function (_resp) {
+                            WM.element('head').append(_resp.css);
+                            deferred.resolve(_resp);
+                        }, deferred.reject, isPartial);
                     } else {
+                        // remove page specific styles
+                        WM.element('head').append(content.css);
                         Variables.setPageVariables(pageName, content.variables || {});
                         deferred.resolve(content);
                     }
@@ -848,9 +859,10 @@ Application
                                 'AppManager',
                                 '$route',
                                 '$rootScope',
-                                function (AppManager, $route, $rs) {
+                                '$routeParams',
+                                function (AppManager, $route, $rs, $routeParams) {
                                     var pageName = $route.current.params.name;
-                                    return AppManager.loadPage(pageName)
+                                    return AppManager.loadPage(pageName, undefined, $routeParams.name)
                                         .then(function () {
                                             $rs.activePageName = pageName;
                                         });
@@ -1031,7 +1043,7 @@ Application
                         if ($page.is('wm-page') && !$rs.isMobileApplicationType) {
                             compilePageFragments($page);
 
-                            $others = $page.find('> :not(wm-content)');
+                            $others = $page.find('> :not(wm-header, wm-top-nav, wm-content, wm-footer)');
                             $page.html($page.find('> wm-content > wm-page-content'));
                             $page.append($others);
                         }

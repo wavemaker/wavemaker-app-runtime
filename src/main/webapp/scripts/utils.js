@@ -1669,11 +1669,12 @@ WM.module('wm.utils', [])
         }
 
         /* to generate all individual contents from the combined version(min.html) of the page */
-        function parseCombinedPageContent(pageContent, pageName) {
+        function parseCombinedPageContent(pageContent, pageName, applyStylesIfNotExists) {
             /*creating a parent for the content & converting to dom-like element, to process the content*/
             var pageDom = WM.element('<div>' + pageContent + '</div>'),
                 htmlEle = pageDom.find('script[id="' + pageName + '.html' + '"]'),
-                variableContext = '_' + pageName + 'Page_Variables_';
+                variableContext = '_' + pageName + 'Page_Variables_',
+                $styles;
 
             htmlEle.remove();
             /* remove the previously loaded styles in studio-mode*/
@@ -1681,15 +1682,26 @@ WM.module('wm.utils', [])
             if (CONSTANTS.isStudioMode) {
                 WM.element('script[id="' + pageName + '.css' + '"]').remove();
             }
+
+            $styles = pageDom.find('style');
+
             try {
                 /*load the styles & scripts*/
-                WM.element('head').append(pageDom.find('style, script'));
+                if (applyStylesIfNotExists) {
+                    if (!WM.element(document.head).find('style[id="' + pageName + '.css"]').length) {
+                        // apply the styles related to template
+                        WM.element(document.head).append($styles);
+                    }
+                }
+
+                WM.element(document.head).append(pageDom.find('script'));
             } catch (e) {
                 console.log(e.message);
             }
             return {
                 html: htmlEle.html() || '',
-                variables: window[variableContext] || {}
+                variables: window[variableContext] || {},
+                css: $styles
             };
         }
 
