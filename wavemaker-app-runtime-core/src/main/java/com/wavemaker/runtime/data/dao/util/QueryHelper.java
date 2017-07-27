@@ -16,12 +16,10 @@
 package com.wavemaker.runtime.data.dao.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -29,29 +27,26 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
-import org.hibernate.type.BasicType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameterType;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
-import com.wavemaker.runtime.data.replacers.providers.VariableType;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
 import com.wavemaker.runtime.data.util.HQLQueryUtils;
 
 public class QueryHelper {
 
-    public static final String EMPTY_SPACE = " ";
-    public static final String ORDER_PROPERTY_SEPARATOR = ",";
-    public static final String BACK_TICK = "`";
+    private static final String EMPTY_SPACE = " ";
+    private static final String ORDER_PROPERTY_SEPARATOR = ",";
+    private static final String BACK_TICK = "`";
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
     private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) wmTempTable";
@@ -60,81 +55,6 @@ public class QueryHelper {
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
-
-    public static void configureParameters(Query query, Map<String, Object> params) {
-        Set<String> namedParameters = query.getParameterMetadata().getNamedParameterNames();
-        for (String namedParameter : namedParameters) {
-            configureNamedParameter(query, params, namedParameter);
-        }
-    }
-
-    public static void configureParameters(
-            final Session session, final String queryName, final Query query, final Map<String, Object> params) {
-        Set<String> namedParameters = query.getParameterMetadata().getNamedParameterNames();
-        for (String namedParameter : namedParameters) {
-            configureNamedParameter(session, queryName, query, params, namedParameter);
-        }
-
-    }
-
-    private static void configureNamedParameter(Query query, Map<String, Object> params, String namedParameter) {
-        final Tuple.Two<VariableType, String> two = VariableType.fromVariableName(namedParameter);
-        if (two.v1.isVariable()) {
-            // XXX meta data needed
-            query.setParameter(namedParameter, two.v1.getValue(two.v2));
-        } else {
-            Object val = params.get(namedParameter);
-            if (val != null && val instanceof List) {
-                query.setParameterList(namedParameter, (List) val);
-            } else {
-                query.setParameter(namedParameter, val);
-            }
-        }
-    }
-
-    private static void configureNamedParameter(
-            Session session, String queryName, Query query, Map<String, Object> params,
-            String namedParameter) {
-
-        final Tuple.Two<VariableType, String> two = VariableType.fromVariableName(namedParameter);
-        if (two.v1.isVariable()) {
-            // XXX meta data needed
-            query.setParameter(namedParameter, two.v1.getValue(two.v2));
-        } else {
-            Object val = params.get(namedParameter);
-            if (val != null && val instanceof List) {
-                query.setParameterList(namedParameter, (List) val);
-            } else {
-                if (val == null) {
-                    Map paramTypes = Collections.emptyMap();
-                    if (session.getSessionFactory() instanceof SessionFactoryImplementor) {
-                        final SessionFactoryImplementor factory = (SessionFactoryImplementor) session
-                                .getSessionFactory();
-
-                        if (factory.getNamedQueryRepository().getNamedQueryDefinition(queryName) != null) {
-                            paramTypes = factory.getNamedQueryRepository().getNamedQueryDefinition((queryName))
-                                    .getParameterTypes();
-                        } else {
-                            paramTypes = factory.getNamedQueryRepository().getNamedSQLQueryDefinition(queryName)
-                                    .getParameterTypes();
-                        }
-                    }
-                    if (paramTypes.containsKey(namedParameter)) {
-                        final BasicType type = session.getTypeHelper().basic((String) paramTypes.get(namedParameter));
-                        if (type != null) {
-                            query.setParameter(namedParameter, val, type);
-                        } else {
-                            query.setParameter(namedParameter, val);
-                        }
-                    } else {
-                        query.setParameter(namedParameter, val);
-                    }
-                } else {
-                    query.setParameter(namedParameter, val);
-                }
-            }
-        }
-    }
 
     public static String arrangeForSort(String queryStr, Sort sort, boolean isNative, Dialect dialect) {
         if (isNative && sort != null) {
@@ -157,7 +77,7 @@ public class QueryHelper {
         return queryStr;
     }
 
-    public static String quoteWithBackTick(final String str) {
+    private static String quoteWithBackTick(final String str) {
         if (!StringUtils.isNotBlank(str)) {
             return str;
         }
@@ -205,11 +125,10 @@ public class QueryHelper {
 
     public static Long executeCountQuery(
             final Session session, final boolean isNative, final String strQuery, final Map<String, Object> params) {
-        Query query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
-        configureParameters(query, params);
+        Query<Integer> query = isNative ? session.createNativeQuery(strQuery) : session.createQuery(strQuery);
+        ParametersConfigurator.configure(query, params);
         Object result = query.uniqueResult();
-        long countVal = result == null ? 0 : ((Number) result).longValue();
-        return countVal;
+        return result == null ? 0 : ((Number) result).longValue();
     }
 
     public static String getCountQuery(String query, boolean isNative) {
@@ -308,20 +227,20 @@ public class QueryHelper {
     public static NativeQuery createNativeQuery(String queryString, Map<String, Object> params, final Session session) {
         NativeQuery sqlQuery = session.createNativeQuery(queryString);
         QueryHelper.setResultTransformer(sqlQuery, Map.class);
-        QueryHelper.configureParameters(sqlQuery, params);
+        ParametersConfigurator.configure(sqlQuery, params);
         return sqlQuery;
     }
 
     public static Query createHQLQuery(String queryString, Map<String, Object> params, final Session session) {
         Query hqlQuery = session.createQuery(queryString);
         QueryHelper.setResultTransformer(hqlQuery, Map.class);
-        QueryHelper.configureParameters(hqlQuery, params);
+        ParametersConfigurator.configure(hqlQuery, params);
         return hqlQuery;
     }
 
-    public static Query createNewNativeQueryWithSorted(
-            Session session, NativeQuery query, Class<?> responseType, Sort sort) {
-        NativeQuery newQuery = query;
+    public static <T> Query<T> createNewNativeQueryWithSorted(
+            Session session, NativeQuery<T> query, Class<T> responseType, Sort sort) {
+        NativeQuery<T> newQuery = query;
         if (sort != null) {
             final String arrangeForSortQuery = QueryHelper
                     .arrangeForSort(query.getQueryString(), convertToNativeSort(responseType, sort), true,

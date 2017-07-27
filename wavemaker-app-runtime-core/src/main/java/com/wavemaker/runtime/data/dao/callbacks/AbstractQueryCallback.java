@@ -8,6 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.MultipleRecordsException;
@@ -22,7 +24,7 @@ public abstract class AbstractQueryCallback<T> implements HibernateCallback<T> {
     @SuppressWarnings("unchecked")
     public T doInHibernate(final Session session) throws HibernateException {
         final Query query = getQuery(session);
-        QueryHelper.configureParameters(query, getParameters());
+        ParametersConfigurator.configure(query, getParameters(), getParameterTypeResolver());
         QueryHelper.setResultTransformer(query, getReturnType());
 
         final List list = query.list();
@@ -41,6 +43,8 @@ public abstract class AbstractQueryCallback<T> implements HibernateCallback<T> {
     protected abstract Query getQuery(final Session session);
 
     protected abstract Map<String, Object> getParameters();
+
+    protected abstract ParameterTypeResolver getParameterTypeResolver();
 
     protected abstract Class<?> getReturnType();
 }

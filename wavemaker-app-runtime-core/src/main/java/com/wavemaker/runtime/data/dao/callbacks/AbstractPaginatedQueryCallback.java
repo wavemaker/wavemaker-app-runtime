@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 
@@ -23,9 +24,8 @@ import com.wavemaker.runtime.data.spring.WMPageImpl;
 public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCallback<Page<T>> {
 
     @Override
-    @SuppressWarnings("unchecked")
     public Page<T> doInHibernate(final Session session) throws HibernateException {
-        Query query = getQuery(session);
+        Query<T> query = getQuery(session);
 
         final Class<?> responseType = getReturnType();
         if (getPageable() != null) {
@@ -42,9 +42,9 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
             query.setMaxResults(getPageable().getPageSize());
         }
         QueryHelper.setResultTransformer(query, responseType);
-        QueryHelper.configureParameters(query, getParameters());
+        ParametersConfigurator.configure(query, getParameters(), getParameterTypeResolver());
 
-        return new WMPageImpl<>((List<T>) query.list(), getPageable(), findCount(session));
+        return new WMPageImpl<>(query.list(), getPageable(), findCount(session));
     }
 
     private Long findCount(final Session session) {
@@ -54,7 +54,8 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
         if (optionalQuery.isPresent()) {
             final Query query = optionalQuery.get();
 
-            QueryHelper.configureParameters(query, getParameters());
+            ParametersConfigurator.configure(query, getParameters(), getParameterTypeResolver());
+
 
             final Object result = query.uniqueResult();
             count = (result == null) ? 0 : ((Number) result).longValue();
@@ -63,11 +64,13 @@ public abstract class AbstractPaginatedQueryCallback<T> implements HibernateCall
         return count;
     }
 
-    protected abstract Query getQuery(final Session session);
+    protected abstract Query<T> getQuery(final Session session);
 
     protected abstract Optional<Query> getCountQuery(final Session session);
 
     protected abstract Map<String, Object> getParameters();
+
+    protected abstract ParameterTypeResolver getParameterTypeResolver();
 
     protected abstract Pageable getPageable();
 

@@ -5,10 +5,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.Session;
+import org.hibernate.TypeHelper;
 import org.hibernate.type.Type;
-import org.hibernate.type.TypeResolver;
 
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
+import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -18,15 +20,18 @@ public class RuntimeParameterTypeResolver implements ParameterTypeResolver {
 
     private final Map<String, Type> typesMap;
 
-    public RuntimeParameterTypeResolver(List<QueryParameter> parameters, TypeResolver resolver) {
+    public RuntimeParameterTypeResolver(List<QueryParameter> parameters, TypeHelper typeHelper) {
         typesMap = parameters.stream()
                 .collect(Collectors.toMap(QueryParameter::getName,
-                        queryParameter -> resolver.heuristicType(queryParameter.getType().getClassName())));
+                        queryParameter -> typeHelper.heuristicType(queryParameter.getType().getClassName())));
     }
-
 
     @Override
     public Optional<Type> resolveType(final String name) {
         return Optional.ofNullable(typesMap.get(name));
+    }
+
+    public static RuntimeParameterTypeResolver from(Session session, RuntimeQuery query) {
+        return new RuntimeParameterTypeResolver(query.getParameters(), session.getSessionFactory().getTypeHelper());
     }
 }

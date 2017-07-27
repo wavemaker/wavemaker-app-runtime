@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 
+import com.wavemaker.runtime.data.dao.query.types.ParameterTypeResolver;
 import com.wavemaker.runtime.data.model.PageableQueryInfo;
 
 /**
@@ -64,6 +65,11 @@ public class PaginatedNamedQueryCallback<T> extends AbstractPaginatedQueryCallba
     @Override
     protected Map<String, Object> getParameters() {
         return queryInfo.getParams();
+    }
+
+    @Override
+    protected ParameterTypeResolver getParameterTypeResolver() {
+        return queryInfo.getResolver();
     }
 
     @Override
