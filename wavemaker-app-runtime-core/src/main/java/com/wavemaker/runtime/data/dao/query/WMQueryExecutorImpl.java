@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -42,6 +43,8 @@ import com.wavemaker.commons.util.TypeConversionUtils;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryCallback;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
 import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
+import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver;
+import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
@@ -61,6 +64,13 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     private HibernateTemplate template;
+    private SessionBackedParameterResolver parameterResolver;
+
+    @PostConstruct
+    private void init() {
+        parameterResolver =
+                new SessionBackedParameterResolver((SessionFactoryImplementor) template.getSessionFactory());
+    }
 
     @Override
     public Page<Object> executeNamedQuery(
@@ -92,7 +102,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
         return template.execute(session -> {
             Query namedQuery = session.getNamedQuery(queryName);
-            QueryHelper.configureParameters(session, queryName, namedQuery, params);
+            ParametersConfigurator.configureParameters(namedQuery, parameterResolver.getResolver(queryName), params);
             return namedQuery.executeUpdate();
         });
 
