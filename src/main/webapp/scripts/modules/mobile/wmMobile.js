@@ -100,7 +100,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             /* Add additional event options.*/
             WIDGET_CONSTANTS.EVENTS_OPTIONS.push('New DeviceVariable');
             /* Add segment navigation option */
-            BaseVariablePropertyFactory.addNavigationOption('gotoSegment', 'gotoSegment');
+            BaseVariablePropertyFactory.addNavigationOption('gotoSegment', 'Segment');
             //Register the Mobile variable.
             BaseVariablePropertyFactory.register('wm.DeviceVariable',
                 {'invoke': DeviceVariableService.invoke},
