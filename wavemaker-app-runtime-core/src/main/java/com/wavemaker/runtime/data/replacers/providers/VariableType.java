@@ -21,8 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
@@ -41,21 +39,11 @@ public enum VariableType {
         }
 
         @Override
-        protected String getPrefix() {
-            return null;
-        }
-
-        @Override
         public Object getValue(String variableName) {
             return null;
         }
     },
     SERVER {
-        @Override
-        protected String getPrefix() {
-            return "SYSTEM_CURRENT";
-        }
-
         @Override
         public Object getValue(String variableName) {
             final ServerVariableValueProvider provider = WMAppContext.getInstance()
@@ -64,11 +52,6 @@ public enum VariableType {
         }
     },
     APP_ENVIRONMENT {
-        @Override
-        protected String getPrefix() {
-            return "APP_ENVIRONMENT";
-        }
-
         @Override
         public Object getValue(String variableName) {
             final AppEnvironmentVariableValueProvider provider = WMAppContext.getInstance()
@@ -83,15 +66,15 @@ public enum VariableType {
 
     static {
         final String typePrefixes = Arrays.stream(VariableType.values())
-                .map(VariableType::getPrefix)
-                .filter(StringUtils::isNotBlank)
+                .filter(VariableType::isVariable)
+                .map(VariableType::name)
                 .reduce((r, e) -> r + "|" + e)
                 .get();
-        variablePattern = Pattern.compile("_(" + typePrefixes + ")_(.+)");
+        variablePattern = Pattern.compile("(" + typePrefixes + ")__(.+)@.+");
 
         prefixVsType = Arrays.stream(VariableType.values())
-                .filter(variableType -> StringUtils.isNotBlank(variableType.getPrefix()))
-                .collect(Collectors.toMap(VariableType::getPrefix, variableType -> variableType));
+                .filter(VariableType::isVariable)
+                .collect(Collectors.toMap(VariableType::name, variableType -> variableType));
     }
 
     private static final int PREFIX_GROUP = 1;
@@ -101,8 +84,8 @@ public enum VariableType {
         return true;
     }
 
-    public String toQueryParam(String name) {
-        return "_" + getPrefix() + "_" + name;
+    public String toQueryParam(String variableName, String parameterName) {
+        return name() + "__" + variableName + "@" + parameterName;
     }
 
     public static Tuple.Two<VariableType, String> fromVariableName(String name) {
@@ -122,9 +105,6 @@ public enum VariableType {
     public <T> T getValue(String variableName, Class<T> requiredType) {
         return (T) JavaTypeUtils.convert(requiredType.getCanonicalName(), getValue(variableName));
     }
-
-
-    protected abstract String getPrefix();
 
     public abstract Object getValue(String variableName);
 }
