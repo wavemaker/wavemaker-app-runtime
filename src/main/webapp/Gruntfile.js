@@ -511,6 +511,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/config.js',
                         '<%= config.scripts %>/utils.js',
                         '<%= config.scripts %>/appDefaults.js',
+                        '<%= config.scripts %>/previewConstants.js',
                         '<%= config.scripts %>/formatUtils.js',
                         '<%= config.scripts %>/liveWidgetUtils.js',
                         '<%= config.scripts %>/formWidgetUtils.js',
