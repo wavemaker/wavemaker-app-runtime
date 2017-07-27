@@ -322,6 +322,12 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "apitype": {"hide": true, "displayName": "Select API Type", "type": "string", "required": true, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name', modelPropertyName: 'object'},
                 "service": {"displayName": "Select Service", "type": "string", "required": false, "widgettype": "typeahead", groupBy: 'type', 'propertyName': 'name'}
             };
+            props[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API] = {
+                "liveSource": {"displayName": "Select Database", "type": "string", "required": true, "widgettype": "typeahead"},
+                "target": {"displayName": "API Type", "type": "string", "required": true, "hide": "true", "widgettype": "radioset", "options": {"table": "Table APIs", "query": "Query APIs", "procedure": "Procedure APIs"}},
+                "table": {"displayName": "Select Table", "type": "string", "required": true, "widgettype": "typeahead", "hide": true},
+                "operation": {"displayName": "Select API", "type": "string", "required": true, "widgettype": "typeahead", "hide": true}
+            };
             return props[serviceType] || props;
         }
 

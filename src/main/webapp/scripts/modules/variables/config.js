@@ -62,6 +62,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
         'DATABASE': 'database',
         'WEB': 'web',
         'JAVA': 'java',
+        'SECURITY': 'security',
         'DATABASE_API': 'databaseapi',
         'CUSTOM': 'custom',
         'DEVICE': 'device',
@@ -73,13 +74,15 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     },
     VARIABLE_TO_SERVICE_TYPE_MAP: {
         'databaseapi': 'DataService',
-        'java': 'JavaService'
+        'java': 'JavaService',
+        'security': 'SecurityServiceType'
     },
     SERVICE_TYPE_GROUP: {
         'database': 'database',
         'databaseapi': 'api',
         'web': 'api',
         'java': 'api',
+        'security': 'api',
         "custom": "other",
         "device": "other"
     }

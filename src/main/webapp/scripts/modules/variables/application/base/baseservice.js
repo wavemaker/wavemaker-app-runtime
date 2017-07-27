@@ -66,7 +66,7 @@ wm.variables.services.Variables = [
                 },
                 "wm.ServiceVariable" : {
                     "collectionType" : "data",
-                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA],
+                    "serviceTypes" : [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA, VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.SECURITY],
                     "category"       : "wm.ServiceVariable",
                     "defaultName"    : "serviceVariable",
                     "spinnerInFlight": true,
@@ -167,6 +167,7 @@ wm.variables.services.Variables = [
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API] = ['wm.ServiceVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB] = ['wm.ServiceVariable', 'wm.WebSocketVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA] = ['wm.ServiceVariable'];
+                serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.SECURITY] = ['wm.ServiceVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.CUSTOM] = ['wm.Variable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NAVIGATION] = ['wm.NavigationVariable'];
                 serviceToCategoryMap[VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NOTIFICATION] = ['wm.NotificationVariable'];
@@ -1233,6 +1234,8 @@ wm.variables.services.Variables = [
                             serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.DATABASE_API;
                         } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA) {
                             serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.JAVA;
+                        } else if (variableObject.serviceType === VARIABLE_CONSTANTS.SERVICE_TYPE_SECURITY) {
+                            serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.SECURITY;
                         } else {
                             serviceType = VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.WEB;
                         }
