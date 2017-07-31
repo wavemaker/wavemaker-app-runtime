@@ -214,6 +214,14 @@ WM.module('wm.utils', [])
             return string.substr(0, index) + character + string.substr(index + character.length);
         }
 
+        /*Replace multiple patterns at once in a string*/
+        function replaceAll(string, regExArray, replaceArray) {
+            _.forEach(regExArray, function (value, index) {
+                string = _.replace(string, value, replaceArray[index]);
+            });
+            return string;
+        }
+
         /*Replace '.' with space and capitalize the next letter*/
         function periodSeparate(name) {
             var dotIndex;
@@ -2740,6 +2748,7 @@ WM.module('wm.utils', [])
         this.firstCaps                  = firstCaps;
         this.periodSeparate             = periodSeparate;
         this.spaceSeparate              = spaceSeparate;
+        this.replaceAll                 = replaceAll;
         this.prettifyLabel              = prettifyLabel;
         this.prettifyLabels             = prettifyLabels;
         this.getVariableName            = getVariableName;
