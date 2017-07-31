@@ -41,7 +41,7 @@
         </property>
     </bean>
 
-    <bean id="wmRequestCleanupFilter" class="com.wavemaker.runtime.web.filter.WMRequestCleanupFilter"/>
+    <bean id="wmRequestFilter" class="com.wavemaker.runtime.web.filter.WMRequestFilter"/>
 
     <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
 

@@ -22,9 +22,12 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -36,17 +39,23 @@ import com.wavemaker.commons.classloader.ClassLoaderUtils;
 /**
  * Created by akritim on 3/23/2015.
  */
-@Component("wmRequestCleanupFilter")
-public class WMRequestCleanupFilter extends GenericFilterBean {
+@Component("wmRequestFilter")
+public class WMRequestFilter extends GenericFilterBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(WMRequestCleanupFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(WMRequestFilter.class);
+
+    private static ThreadLocal<HttpRequestResponseHolder> httpRequestResponseHolderThreadLocal = new ThreadLocal<>();
 
     // Filter and finally clear any cache/thread local objects created by this request on completion
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+            httpRequestResponseHolderThreadLocal.set(new HttpRequestResponseHolder(httpServletRequest, httpServletResponse));
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
+            httpRequestResponseHolderThreadLocal.remove();
             this.clearThreadLocalActivityCorrelator();
             this.clearThreadLocalServiceInterceptorFactory();
             this.clearThreadLocalToStringBean();
@@ -121,14 +130,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
                 klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }
             if (klass != null) {
-               Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
-               activityIdTlsField.setAccessible(true);
-               ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
-               if (threadLocal != null) {
-                   logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
-                   threadLocal.remove();
-               }
-           }
+                Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
+                activityIdTlsField.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
+                if (threadLocal != null) {
+                    logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
+                    threadLocal.remove();
+                }
+            }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ActivityCorrelator Thread Local value", e);
         }
@@ -153,5 +162,21 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
         } catch (Throwable e) {
             logger.warn("Failed to cleanup AbstractClassGenerator Thread Local value", e);
         }
+    }
+
+    public static HttpServletRequest getCurrentThreadHttpServletRequest() {
+        HttpRequestResponseHolder httpRequestResponseHolder = httpRequestResponseHolderThreadLocal.get();
+        if (httpRequestResponseHolder != null) {
+            return httpRequestResponseHolder.getRequest();
+        }
+        return null;
+    }
+
+    public static HttpServletResponse getCurrentThreadHttpServletResponse() {
+        HttpRequestResponseHolder httpRequestResponseHolder = httpRequestResponseHolderThreadLocal.get();
+        if (httpRequestResponseHolder != null) {
+            return httpRequestResponseHolder.getResponse();
+        }
+        return null;
     }
 }

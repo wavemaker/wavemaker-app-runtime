@@ -24,6 +24,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import com.wavemaker.runtime.web.filter.WMRequestFilter;
+
 /**
  * @author Uday Shankar
  */
@@ -37,25 +39,19 @@ public class WMCustomAuthenticationProvider implements AuthenticationProvider {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
 			String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
 			String password = (String) usernamePasswordAuthenticationToken.getCredentials();
+			HttpServletRequest httpServletRequest = WMRequestFilter.getCurrentThreadHttpServletRequest();
 			Object details = usernamePasswordAuthenticationToken.getDetails();
-			if (WMWebAuthenticationDetails.class.isAssignableFrom(details.getClass())) {
-				WMWebAuthenticationDetails wmWebAuthenticationDetails = (WMWebAuthenticationDetails) details;
-				HttpServletRequest httpServletRequest = wmWebAuthenticationDetails.getHttpServletRequest();
-				wmWebAuthenticationDetails.clearLoginRequestDetails();// TODO use a better way to clear request from authentication object
-				AuthRequestContext authRequestContext = new AuthRequestContext(username, password, httpServletRequest);
-				try {
-					WMUser wmUser = wmCustomAuthenticationManager.authenticate(authRequestContext);
-					if (wmUser == null) {
-						throw new BadCredentialsException("Invalid credentials");
-					}
-					return new UsernamePasswordAuthenticationToken(wmUser, null, wmUser.getAuthorities());
-				} catch (AuthenticationException e) {
-					throw e;
-				} catch (Exception e) {
-					throw new AuthenticationServiceException("Error while authenticating user", e);
+			AuthRequestContext authRequestContext = new AuthRequestContext(username, password, httpServletRequest);
+			try {
+				WMUser wmUser = wmCustomAuthenticationManager.authenticate(authRequestContext);
+				if (wmUser == null) {
+					throw new BadCredentialsException("Invalid credentials");
 				}
-			} else {
-				return null;
+				return new UsernamePasswordAuthenticationToken(wmUser, null, wmUser.getAuthorities());
+			} catch (AuthenticationException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new AuthenticationServiceException("Error while authenticating user", e);
 			}
 		} else {
 			throw new IllegalArgumentException("Authentication type of class [" + authentication.getClass() + "] is not supported by this class");
