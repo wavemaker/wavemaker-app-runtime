@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2017 WaveMaker, Inc.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,9 +74,9 @@ public class RestRuntimeService {
         }
         executeRestCall(serviceId, operationId, httpRequestData, httpServletRequest, httpServletResponse, context);
     }
-    
+
     public void executeRestCall(String serviceId, String operationId, final HttpRequestData httpRequestData,
-                                               final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) throws IOException {
+                                final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) throws IOException {
         final HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
@@ -113,7 +113,8 @@ public class RestRuntimeService {
                 HttpRequestUtils.writeResponse(httpResponseDetails, httpServletResponse);
                 return null;
             }
-        });;
+        });
+        ;
     }
 
     private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {
@@ -121,7 +122,7 @@ public class RestRuntimeService {
         try {
             httpRequestData = new RequestDataBuilder().getRequestData(httpServletRequest);
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e); 
+            throw new WMRuntimeException("Failed to construct HttpRequestData for the request", e);
         }
         return httpRequestData;
     }
@@ -144,7 +145,7 @@ public class RestRuntimeService {
 
         httpRequestDetails.setHeaders(httpHeaders);
         httpRequestDetails.setBody(httpRequestData.getRequestBody());
-        
+
         updateAuthorizationInfo(operation, httpRequestData, httpRequestDetails);
         return httpRequestDetails;
     }
@@ -207,13 +208,12 @@ public class RestRuntimeService {
         if (securityMap != null) {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
-                    if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                        String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
-                        if (authorizationHeaderValue == null) {
-                            throw new WMRuntimeException("Authorization details are not specified in the request headers");
-                        }
-                        httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
+                    //can change logic by security definition type, right now oauth and basic auth use Authorization header
+                    String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
+                    if (authorizationHeaderValue == null) {
+                        throw new WMRuntimeException("Authorization details are not specified in the request headers");
                     }
+                    httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
                 }
             }
         }

@@ -15,16 +15,14 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.http.entity.ContentType;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.io.ClassPathFile;
-import com.wavemaker.commons.oauth.OAuthProviderConfig;
 import com.wavemaker.commons.oauth.OAuthHelper;
+import com.wavemaker.commons.oauth.OAuthProviderConfig;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
