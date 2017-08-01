@@ -202,7 +202,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 target,
                 pathParamRex,
                 invokeParams,
-                authType = AUTH_TYPE_NONE,
+                authDetails = null,
                 uname,
                 pswd,
                 method,
@@ -274,7 +274,9 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                         if (uname && pswd) {
                             headers[AUTH_HDR_KEY] = "Basic " + $base64.encode(uname + ':' + pswd);
-                            authType = AUTH_TYPE_BASIC;
+                            authDetails = {
+                                'type': AUTH_TYPE_BASIC
+                            };
                         }
                         break;
                     case 'PATH':
@@ -375,7 +377,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 "method": method,
                 "headers": headers,
                 "dataParams": requestBody,
-                "authType": authType,
+                "authDetails": authDetails,
                 "isDirectCall": !isProxyCall,
                 "isExtURL": variable.serviceType === SERVICE_TYPE_REST
             };
