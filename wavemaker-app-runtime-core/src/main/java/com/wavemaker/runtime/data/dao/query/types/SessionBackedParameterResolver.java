@@ -40,12 +40,14 @@ public class SessionBackedParameterResolver {
 
             final Map<String, String> parameterTypes = definition.getParameterTypes();
 
-            parameterTypes.forEach((paramName, paramType) -> {
-                final Type type = factory.getTypeResolver().heuristicType(paramType);
-                if (type != null) {
-                    typesMap.put(paramName, type);
-                }
-            });
+            if (parameterTypes != null) {
+                parameterTypes.forEach((paramName, paramType) -> {
+                    final Type type = factory.getTypeResolver().heuristicType(paramType);
+                    if (type != null) {
+                        typesMap.put(paramName, type);
+                    }
+                });
+            }
 
             return parameterName -> Optional.ofNullable(typesMap.get(parameterName));
         });
