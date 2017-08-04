@@ -395,7 +395,7 @@ WM.module('wm.widgets.basic')
                         values = getValidData(values);
                         datum.push({
                             values: values,
-                            key: yAxisKey
+                            key: Utils.prettifyLabels(yAxisKey)
                         });
                     });
                 }
