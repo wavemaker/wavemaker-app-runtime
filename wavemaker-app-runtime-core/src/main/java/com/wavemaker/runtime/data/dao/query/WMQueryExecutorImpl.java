@@ -18,41 +18,30 @@ package com.wavemaker.runtime.data.dao.query;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
-import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.query.NativeQuery;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.commons.MessageResource;
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.TypeConversionUtils;
-import com.wavemaker.runtime.data.dao.callbacks.NamedQueryCallback;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
-import com.wavemaker.runtime.data.dao.callbacks.PaginatedNamedQueryCallback;
+import com.wavemaker.runtime.data.dao.callbacks.PaginatedQueryCallback;
+import com.wavemaker.runtime.data.dao.callbacks.QueryCallback;
+import com.wavemaker.runtime.data.dao.callbacks.UpdateQueryCallback;
+import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
+import com.wavemaker.runtime.data.dao.query.providers.RuntimeParametersProvider;
+import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
+import com.wavemaker.runtime.data.dao.query.providers.SessionBackedQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver;
-import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.dao.util.CustomQueryAdapter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
-import com.wavemaker.runtime.data.model.CustomQueryParam;
-import com.wavemaker.runtime.data.model.PageableQueryInfo;
-import com.wavemaker.runtime.data.model.QueryInfo;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
@@ -81,9 +70,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public <T> T executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Class<T> returnType) {
-        NamedQueryCallback<T> callback = new NamedQueryCallback<>(new QueryInfo<>(queryName, params,
-                parameterResolvers.getResolver(queryName), returnType));
-        return template.execute(callback);
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
+        return template.execute(new QueryCallback<>(queryProvider,
+                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))));
     }
 
     @Override
@@ -91,70 +80,35 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             final String queryName, final Map<String, Object> params, final Class<T> returnType,
             final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
 
-        PaginatedNamedQueryCallback<T> callback = new PaginatedNamedQueryCallback<>(
-                new PageableQueryInfo<>(queryName, params, parameterResolvers.getResolver(queryName), returnType,
-                        _pageable));
-
-        return template.execute(callback);
+        return template.execute(new PaginatedQueryCallback<>(queryProvider,
+                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName)), _pageable));
     }
 
     @Override
     public int executeNamedQueryForUpdate(final String queryName, final Map<String, Object> params) {
+        SessionBackedQueryProvider<Integer> queryProvider = new SessionBackedQueryProvider<>(queryName, Integer.class);
 
-        return template.execute(session -> {
-            Query namedQuery = session.getNamedQuery(queryName);
-            ParametersConfigurator.configure(namedQuery, params, parameterResolvers.getResolver(queryName));
-            return namedQuery.executeUpdate();
-        });
+        return template.execute(new UpdateQueryCallback(queryProvider,
+                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))));
 
     }
 
     @Override
     public Page<Object> executeRuntimeQuery(final RuntimeQuery query, final Pageable pageable) {
-        final Map<String, Object> prepareParameters = QueryHelper.prepareQueryParameters(query);
-        Page<Object> result;
-        if (query.isNativeSql()) {
-            result = executeNativeQuery(query.getQueryString(), prepareParameters, pageable);
-        } else {
-            result = executeHQLQuery(query.getQueryString(), prepareParameters, pageable);
-        }
+        final RuntimeQueryProvider<Object> queryProvider = RuntimeQueryProvider.from(query, Object.class);
+        final RuntimeParametersProvider parametersProvider = new RuntimeParametersProvider(query);
 
-        return result;
+        return template.execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
     }
 
     @Override
-    public int executeRuntimeQueryForUpdate(final RuntimeQuery runtimeQuery) {
-        return template.execute(session -> QueryHelper
-                .createQuery(runtimeQuery, QueryHelper.prepareQueryParameters(runtimeQuery), session)
-                .executeUpdate());
-    }
+    public int executeRuntimeQueryForUpdate(final RuntimeQuery query) {
+        final RuntimeQueryProvider<Integer> queryProvider = RuntimeQueryProvider.from(query, Integer.class);
+        final RuntimeParametersProvider parametersProvider = new RuntimeParametersProvider(query);
 
-    protected Page<Object> executeNativeQuery(
-            final String queryString, final Map<String, Object> params, final Pageable pageable) {
-        final Pageable _pageable = getValidPageable(pageable);
-        return template.execute((HibernateCallback<Page<Object>>) session -> {
-            NativeQuery nativeQuery;
-            Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
-            nativeQuery = createNativeQuery(queryString, _pageable.getSort(), params);
-            nativeQuery.setFirstResult(_pageable.getOffset());
-            nativeQuery.setMaxResults(_pageable.getPageSize());
-            return new WMPageImpl(nativeQuery.list(), _pageable, count);
-
-        });
-    }
-
-    protected Page<Object> executeHQLQuery(
-            final String queryString, final Map<String, Object> params, final Pageable pageable) {
-        final Pageable _pageable = getValidPageable(pageable);
-        return template.execute((HibernateCallback<Page<Object>>) session -> {
-            Query hqlQuery = QueryHelper.createHQLQuery(queryString, params, session);
-            Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
-            hqlQuery.setFirstResult(_pageable.getOffset());
-            hqlQuery.setMaxResults(_pageable.getPageSize());
-            return new WMPageImpl(hqlQuery.list(), _pageable, count);
-
-        });
+        return template.execute(new UpdateQueryCallback(queryProvider, parametersProvider));
     }
 
     public HibernateTemplate getTemplate() {
@@ -167,109 +121,34 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     @Override
-    public Downloadable exportNamedQueryData(
+    public <T> Downloadable exportNamedQueryData(
             final String queryName, final Map<String, Object> params, final ExportType exportType,
-            Class<?> responseType,
+            Class<T> responseType,
             final Pageable pageable) {
         final Pageable _pageable = getValidPageable(pageable);
-        NamedQueryExporterCallback callback = new NamedQueryExporterCallback(queryName, params, exportType,
-                responseType, _pageable);
+
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, responseType);
+        AppRuntimeParameterProvider parameterProvider = new AppRuntimeParameterProvider(params, parameterResolvers
+                .getResolver(queryName));
+
+        NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
+                _pageable, exportType, responseType);
         ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
+
         InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
         return new DownloadResponse(is, exportType.getContentType(), queryName + exportType.getExtension());
     }
 
     @Override
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
-        Map<String, Object> params = new HashMap<>();
-        prepareParams(params, customQuery);
-
-        if (customQuery.isNativeSql()) {
-            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
-        } else {
-            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
-        }
+        final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
+        return executeRuntimeQuery(runtimeQuery, pageable);
     }
 
     @Override
     public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
-
-        return template.execute(session -> {
-            Map<String, Object> params = new HashMap<>();
-
-            List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-            if (customQueryParams != null && !customQueryParams.isEmpty()) {
-                for (CustomQueryParam customQueryParam : customQueryParams) {
-                    Object paramValue = validateAndPrepareObject(customQueryParam);
-                    params.put(customQueryParam.getParamName(), paramValue);
-                }
-            }
-
-            Query query;
-            if (customQuery.isNativeSql()) {
-                query = QueryHelper.createNativeQuery(customQuery.getQueryStr(), params, session);
-            } else {
-                query = QueryHelper.createHQLQuery(customQuery.getQueryStr(), params, session);
-            }
-            return query.executeUpdate();
-        });
-
-    }
-
-    /**
-     * create native order by query from the given queryString & sort criteria...
-     */
-    public NativeQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
-        String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true, getDialect());
-        return QueryHelper.createNativeQuery(orderedQuery, params, template.getSessionFactory().getCurrentSession());
-    }
-
-    private void prepareParams(Map<String, Object> params, CustomQuery customQuery) {
-        List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-        if (customQueryParams != null && !customQueryParams.isEmpty()) {
-            for (CustomQueryParam customQueryParam : customQueryParams) {
-                Object paramValue = customQueryParam.getParamValue();
-                if (customQueryParam.isList()) {
-                    if (!(paramValue instanceof List)) {
-                        throw new WMRuntimeException(customQueryParam.getParamName() + " should have list value ");
-                    }
-                    params.put(customQueryParam.getParamName(), validateAndPrepareObject(customQueryParam));
-                    continue;
-                }
-                paramValue = validateObject(customQueryParam.getParamType(), customQueryParam.getParamValue());
-                params.put(customQueryParam.getParamName(), paramValue);
-            }
-        }
-    }
-
-    private Object validateAndPrepareObject(CustomQueryParam customQueryParam) {
-        List<Object> objectList = new ArrayList<>();
-        if (customQueryParam.getParamValue() instanceof List) {
-            List<Object> listParams = (List) customQueryParam.getParamValue();
-            for (Object listParam : listParams) {
-                objectList.add(validateObject(customQueryParam.getParamType(), listParam));
-            }
-        } else {
-            objectList.add(validateObject(customQueryParam.getParamType(), customQueryParam.getParamValue()));
-        }
-        return objectList;
-    }
-
-    private Object validateObject(String paramType, Object paramValue) {
-        try {
-            Class loader = Class.forName(paramType);
-            paramValue = TypeConversionUtils.fromString(loader, paramValue.toString(), false);
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error("Failed to Convert param value for query", ex);
-            throw new WMRuntimeException(MessageResource.QUERY_CONV_FAILURE, ex);
-        } catch (ClassNotFoundException ex) {
-            throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, paramType);
-        }
-        return paramValue;
-    }
-
-    private Dialect getDialect() {
-        return ((SessionFactoryImplementor) template.getSessionFactory()).getJdbcServices().getDialect();
+        final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
+        return executeRuntimeQueryForUpdate(runtimeQuery);
     }
 
     private Pageable getValidPageable(final Pageable pageable) {

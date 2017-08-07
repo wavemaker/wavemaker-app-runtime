@@ -17,18 +17,16 @@ package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.ResultSet;
-import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.dao.query.providers.PaginatedQueryProvider;
+import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
@@ -36,57 +34,45 @@ import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
 import com.wavemaker.runtime.data.export.nativesql.NativeQueryExtractor;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
 import com.wavemaker.runtime.data.transform.Transformers;
-import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 16/11/16
  */
-public class NamedQueryExporterCallback implements HibernateCallback<ByteArrayOutputStream> {
+public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArrayOutputStream> {
 
-    private String queryName;
-    private Map<String, Object> params;
-    private Pageable pageable;
-    private ExportType exportType;
-    private Class<?> responseType;
+    private final PaginatedQueryProvider<R> queryProvider;
+    private final ParametersProvider parametersProvider;
+    private final Pageable pageable;
+
+    private final ExportType exportType;
+    private final Class<R> responseType;
 
     public NamedQueryExporterCallback(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,
-            Class<?> responseType,
-            final Pageable pageable) {
-        this.queryName = queryName;
-        this.params = params;
+            final PaginatedQueryProvider<R> queryProvider,
+            final ParametersProvider parametersProvider, final Pageable pageable,
+            final ExportType exportType,
+            final Class<R> responseType) {
+        this.queryProvider = queryProvider;
+        this.parametersProvider = parametersProvider;
+        this.pageable = pageable;
         this.exportType = exportType;
         this.responseType = responseType;
-        this.pageable = pageable;
     }
+
 
     @Override
     public ByteArrayOutputStream doInHibernate(final Session session) throws HibernateException {
         QueryExtractor queryExtractor;
-        Query namedQuery = session.getNamedQuery(queryName);
+        Query namedQuery = queryProvider.getQuery(session, pageable, parametersProvider);
         final boolean isNative = namedQuery instanceof NativeQuery;
-        final Sort sort = pageable.getSort();
         if (isNative) {
-            namedQuery = QueryHelper
-                    .createNewNativeQueryWithSorted(session, (NativeQuery) namedQuery, responseType, sort);
-            setQueryProps(namedQuery);
-            WMResultTransformer resultTransformer = Transformers.aliasToMappedClass(responseType);
             final ResultSet resultSet = DataSourceExporterUtil.constructResultSet(namedQuery.scroll());
-            queryExtractor = new NativeQueryExtractor(resultSet, resultTransformer);
+            queryExtractor = new NativeQueryExtractor(resultSet, Transformers.aliasToMappedClass(responseType));
         } else {
-            namedQuery = QueryHelper.createNewHqlQueryWithSorted(session, namedQuery, responseType, sort);
-            QueryHelper.setResultTransformer(namedQuery, responseType);
-            setQueryProps(namedQuery);
             queryExtractor = new HqlQueryExtractor(namedQuery.scroll());
         }
         return DataExporter.export(queryExtractor, exportType);
-    }
-
-    private void setQueryProps(final Query namedQuery) {
-        ParametersConfigurator.configure(namedQuery, params);
-        namedQuery.setFirstResult(pageable.getOffset());
-        namedQuery.setMaxResults(pageable.getPageSize());
     }
 }
 

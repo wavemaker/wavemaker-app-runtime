@@ -39,7 +39,10 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.data.dao.callbacks.RuntimePaginatedCallback;
+import com.wavemaker.runtime.data.dao.callbacks.PaginatedQueryCallback;
+import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
+import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
+import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
@@ -180,6 +183,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
         this.sortValidator.validate(pageable);
@@ -188,9 +192,18 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
         final WMQueryInfo queryInfo = builder.build();
         String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
-        return getTemplate()
-                .execute(new RuntimePaginatedCallback(queryInfo.getQuery(), countQuery, queryInfo.getParameters(),
-                        new HqlParameterTypeResolver(), pageable));
+
+        final RuntimeQueryProvider<Map> queryProvider = RuntimeQueryProvider.newBuilder(Map.class)
+                .withQueryString(queryInfo.getQuery())
+                .withCountQueryString(countQuery)
+                .build();
+        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo.getParameters(),
+                new HqlParameterTypeResolver());
+
+        final Page result = getTemplate()
+                .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
+        return (Page<Map<String, Object>>) result;
+
     }
 
     @Override

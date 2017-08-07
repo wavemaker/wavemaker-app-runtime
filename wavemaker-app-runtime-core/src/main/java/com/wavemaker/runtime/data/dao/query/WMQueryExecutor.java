@@ -46,6 +46,7 @@ public interface WMQueryExecutor {
     @Deprecated
     int executeCustomQueryForUpdate(CustomQuery customQuery);
 
-    Downloadable exportNamedQueryData(String queryName, Map<String, Object> params, ExportType exportType,
-                                      Class<?> responseType, Pageable pageable);
+    <T> Downloadable exportNamedQueryData(
+            String queryName, Map<String, Object> params, ExportType exportType,
+            Class<T> responseType, Pageable pageable);
 }

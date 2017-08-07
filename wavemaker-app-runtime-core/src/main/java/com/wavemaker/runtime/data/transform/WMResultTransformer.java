@@ -30,4 +30,6 @@ public interface WMResultTransformer extends ResultTransformer {
     String aliasToFieldName(String columnName);
 
     String aliasFromFieldName(String fieldName);
+
+    boolean containsField(String fieldName);
 }

@@ -2,6 +2,7 @@ package com.wavemaker.runtime.data.util;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.hibernate.HibernateException;
@@ -21,7 +22,9 @@ public class JavaTypeUtils {
     static {
         for (final JavaType javaType : JavaType.values()) {
             classNameVsJavaTypeMap.add(javaType.getClassName(), javaType);
+            classNameVsJavaTypeMap.add(javaType.getPrimitiveClassName(), javaType);
         }
+        classNameVsJavaTypeMap.add(Date.class.getCanonicalName(), JavaType.DATE);
     }
 
     public static Object convert(String toClass, Object value) {
@@ -39,6 +42,10 @@ public class JavaTypeUtils {
         }
 
         return convertedValue;
+    }
+
+    public static Optional<JavaType> fromClassName(String className) {
+        return Optional.ofNullable(classNameVsJavaTypeMap.getFirst(className));
     }
 
     public static boolean isKnownType(Class<?> type) {

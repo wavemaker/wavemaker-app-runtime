@@ -65,6 +65,11 @@ public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetRes
     }
 
     @Override
+    public boolean containsField(final String fieldName) {
+        return true;
+    }
+
+    @Override
     public boolean isTransformedValueATupleElement(String[] aliases, int tupleLength) {
         return false;
     }

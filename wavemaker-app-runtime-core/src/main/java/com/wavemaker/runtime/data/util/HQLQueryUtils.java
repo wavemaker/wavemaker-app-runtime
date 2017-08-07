@@ -17,7 +17,6 @@ package com.wavemaker.runtime.data.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import org.hibernate.type.AbstractStandardBasicType;
 import org.hibernate.type.CustomType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -50,7 +48,6 @@ public class HQLQueryUtils {
 
     private static final String FROM = " from ";
     private static final String WHERE = " where ";
-    private static final String ORDER_BY = " order by ";
 
     private static final List<QueryInterceptor> interceptors = Arrays.asList(
             new LegacyQueryFilterInterceptor(),
@@ -124,21 +121,6 @@ public class HQLQueryUtils {
         return properties;
     }
 
-    public static String buildOrderByClause(Sort sort) {
-        StringBuilder orderBy = new StringBuilder(ORDER_BY);
-        Iterator<Sort.Order> orderItr = sort.iterator();
-        while (orderItr.hasNext()) {
-            Sort.Order order = orderItr.next();
-            orderBy.append(" ")
-                    .append(order.getProperty())
-                    .append(" ")
-                    .append(order.getDirection());
-            if (orderItr.hasNext()) {
-                orderBy.append(",");
-            }
-        }
-        return orderBy.toString();
-    }
 
     private static WMQueryInfo buildHQL(String entityClass, String query, Pageable pageable) {
         WMQueryInfo queryInfo = new WMQueryInfo(query);
@@ -152,7 +134,7 @@ public class HQLQueryUtils {
             queryFilter = WHERE + queryInfo.getQuery();
         }
         if (isSortAppliedOnPageable(pageable)) {
-            orderBy = buildOrderByClause(pageable.getSort());
+            orderBy = QueryHelper.buildOrderByClause(pageable.getSort(), property -> property);
         }
 
         queryInfo.setQuery(FROM + entityClass + queryFilter + orderBy);

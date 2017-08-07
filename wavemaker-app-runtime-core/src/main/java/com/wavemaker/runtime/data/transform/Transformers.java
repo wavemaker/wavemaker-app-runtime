@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,9 @@ package com.wavemaker.runtime.data.transform;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.ClassUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -53,5 +56,12 @@ public class Transformers {
         return TransformersHolder.INSTANCE.get(type);
     }
 
+    public static Optional<WMResultTransformer> aliasToMappedClassOptional(Class<?> type) {
+        if (ClassUtils.isPrimitiveOrWrapper(type) || Number.class.isAssignableFrom(type)) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(aliasToMappedClass(type));
+        }
+    }
 
 }

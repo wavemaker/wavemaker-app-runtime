@@ -110,13 +110,12 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
 
     @Override
     public String aliasFromFieldName(final String fieldName) {
-        String alias = fieldName;
+        return fieldVsAliasMap.getOrDefault(fieldName, fieldName);
+    }
 
-        if (fieldVsAliasMap.containsKey(alias)) {
-            alias = fieldVsAliasMap.get(alias);
-        }
-
-        return alias;
+    @Override
+    public boolean containsField(final String fieldName) {
+        return fieldVsAliasMap.containsKey(fieldName);
     }
 
     private void applyValue(

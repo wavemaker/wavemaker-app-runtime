@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,6 +43,14 @@ public class QueryParameter {
     private boolean required = true;
 
     public QueryParameter() {
+    }
+
+    public QueryParameter(final String name, final JavaType type, final boolean list, final Object testValue) {
+        this.name = name;
+        this.type = type;
+        this.list = list;
+        this.testValue = testValue;
+        this.variableType = VariableType.PROMPT;
     }
 
     public QueryParameter(final QueryParameter other) {
