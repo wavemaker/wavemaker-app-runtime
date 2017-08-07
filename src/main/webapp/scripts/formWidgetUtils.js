@@ -495,7 +495,7 @@ WM.module('wm.widgets.form')
                     _.forEach(_.keys(groupedKeys), function (key) {
                         if (key !== 'all') {
                             template = template +
-                                '<li class="' + liClass + ' group-header" title="' + key + '" data-fixed-header="true"><i class="wi wi-arrow-drop-down group-icon"></i><span class="group-title">' + key + '</span></li>';
+                                '<li class="' + liClass + ' group-header" title="' + key + '" data-fixed-header="true"><i class="wms wms-arrow-drop-down group-icon"></i><span class="group-title">' + key + '</span></li>';
                         }
 
                         _.forEach(groupedKeys[key].keys, function (dataKey) {
