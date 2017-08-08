@@ -117,7 +117,7 @@ WM.module('wm.utils', [])
                 'wm.NotificationVariable': 'notification-variable',
                 'wm.TimerVariable'       : 'time',
                 'wm.DeviceVariable'      : 'device-variable',
-                'wm.WebSocketVariable'   : 'web-socket-variable'
+                'wm.WebSocketVariable'   : 'websocket-variable'
             },
             dataSetWidgets = {
                 'select'       : true,
