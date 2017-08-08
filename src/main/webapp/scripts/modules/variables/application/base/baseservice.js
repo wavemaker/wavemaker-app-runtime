@@ -62,7 +62,7 @@ wm.variables.services.Variables = [
                     "category"       : "wm.LiveVariable",
                     "defaultName"    : "databaseVariable",
                     "spinnerInFlight": true,
-                    "newVariableKey": "New Database Variable"
+                    "newVariableKey": "New Variable"
                 },
                 "wm.ServiceVariable" : {
                     "collectionType" : "data",
@@ -70,7 +70,7 @@ wm.variables.services.Variables = [
                     "category"       : "wm.ServiceVariable",
                     "defaultName"    : "serviceVariable",
                     "spinnerInFlight": true,
-                    "newVariableKey": "New WebService Variable"
+                    "newVariableKey": "New Variable"
                 },
                 "wm.WebSocketVariable": {
                     "collectionType": "data",
@@ -78,7 +78,7 @@ wm.variables.services.Variables = [
                     "category"      : "wm.WebSocketVariable",
                     "defaultName"   : "webSocketVariable",
                     "methods"       : ['open', 'send', 'close'],
-                    "newVariableKey": "New WebService Variable"
+                    "newVariableKey": "New Variable"
                 },
                 "wm.Variable": {
                     "collectionType": "data",
@@ -92,7 +92,7 @@ wm.variables.services.Variables = [
                     "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NAVIGATION],
                     "category"      : "wm.NavigationVariable",
                     "defaultName"   : "navigationAction",
-                    "newVariableKey": "New NavigationVariable"
+                    "newVariableKey": "New Action"
                 },
                 "wm.LoginVariable": {
                     "collectionType" : "action",
@@ -101,7 +101,7 @@ wm.variables.services.Variables = [
                     "defaultName"    : "loginAction",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
-                    "newVariableKey": "New LoginVariable",
+                    "newVariableKey": "New Action",
                     "hideInEvents"  : true
                 },
                 "wm.LogoutVariable": {
@@ -111,7 +111,7 @@ wm.variables.services.Variables = [
                     "defaultName"    : "logoutAction",
                     "appOnly"        : true,
                     "spinnerInFlight": true,
-                    "newVariableKey": "New LogoutVariable",
+                    "newVariableKey": "New Action",
                     "hideInEvents"  : true
                 },
                 "wm.TimerVariable": {
@@ -119,14 +119,14 @@ wm.variables.services.Variables = [
                     "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.TIMER],
                     "category"      : "wm.TimerVariable",
                     "defaultName"   : "timerAction",
-                    "newVariableKey": "New TimerVariable"
+                    "newVariableKey": "New Action"
                 },
                 "wm.NotificationVariable": {
                     "collectionType": "action",
                     "serviceTypes": [VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.NOTIFICATION],
                     "category"      : "wm.NotificationVariable",
                     "defaultName"   : "notificationAction",
-                    "newVariableKey": "New NotificationVariable"
+                    "newVariableKey": "New Action"
                 }
             },
 
@@ -2598,7 +2598,7 @@ wm.variables.services.Variables = [
                 });
             },
 
-            isSpinnerType : function(category) {
+            isSpinnerType : function (category) {
                 return variableConfig[category].spinnerInFlight;
             },
             getVariableConfig: function () {
