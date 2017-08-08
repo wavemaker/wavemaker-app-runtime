@@ -1265,7 +1265,7 @@ wm.variables.services.Variables = [
                         }
                     });
                 }
-                _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
+                _.forEach(filteredVariables, function (variable) {
                     serviceTypes = _.union(serviceTypes, variable.serviceTypes);
                 });
                 return serviceTypes;
@@ -1290,7 +1290,7 @@ wm.variables.services.Variables = [
                         }
                     });
                 }
-                _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
+                _.forEach(filteredVariables, function (variable) {
                     categoryList[variable.category] = variable.category;
                 });
 
