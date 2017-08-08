@@ -48,7 +48,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.util.ReflectionUtils;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -101,7 +100,7 @@ public class CleanupListener implements ServletContextListener {
             typeFactoryClearTypeCache();
             resourceManagerClearPropertiesCache();
             clearReaderArrCatalogManager();
-            clearCacheSourceAbstractClassGenerator();
+            //clearCacheSourceAbstractClassGenerator();
             clearThreadConnections();
             cleanupMBeanNotificationListeners();
             cleanupJULIReferences();
@@ -372,7 +371,7 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To clear cache from AbtractClassGenerator's Source
      */
-    private void clearCacheSourceAbstractClassGenerator() {
+    /*private void clearCacheSourceAbstractClassGenerator() {
         if (isSharedLib()) {
             try {
                 String className = "org.springframework.cglib.core.AbstractClassGenerator$Source";
@@ -389,7 +388,7 @@ public class CleanupListener implements ServletContextListener {
                 logger.warn("Failed to Clear Cache from Source", e);
             }
         }
-    }
+    }*/
 
     private void clearThreadConnections() {
         Set<Thread> threads = Thread.getAllStackTraces().keySet();
