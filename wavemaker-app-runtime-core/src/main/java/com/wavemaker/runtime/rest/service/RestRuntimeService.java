@@ -30,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseExtractor;
 
+import com.wavemaker.commons.UnAuthorizedResourceAccessException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.swaggerdoc.util.SwaggerDocUtil;
 import com.wavemaker.commons.util.WMUtils;
@@ -211,7 +212,7 @@ public class RestRuntimeService {
                     //can change logic by security definition type, right now oauth and basic auth use Authorization header
                     String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
                     if (authorizationHeaderValue == null) {
-                        throw new WMRuntimeException("Authorization details are not specified in the request headers");
+                        throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
                     }
                     httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
                 }

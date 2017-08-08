@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.MessageResource;
+import com.wavemaker.commons.UnAuthorizedResourceAccessException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.core.web.rest.ErrorResponse;
 import com.wavemaker.commons.core.web.rest.ErrorResponses;
@@ -119,6 +120,9 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof InvalidInputException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleWMExceptions((WMRuntimeException) ex, MessageResource.INVALID_INPUT, ex.getMessage());
+        } else if (ex instanceof UnAuthorizedResourceAccessException) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return handleWMExceptions((WMRuntimeException) ex, null, null);
         } else if (ex instanceof WMRuntimeException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleWMExceptions((WMRuntimeException) ex, null, null);
