@@ -138,9 +138,8 @@ WM.module('wm.widgets.form')
              * function to update the checked values, which selects/ de-selects the values in radioset/ checkboxset
              *
              * @param {object} scope isolate scope of the widget
-             * @param {boolean} isModelProxyUpdated if set to true, modelProxy is already updated via onChange method then need not set the modelProxy again.
              */
-            function updatedCheckedValues(scope, isModelProxyUpdated) {
+            function updatedCheckedValues(scope) {
                 var model = scope._model_,
                     _modelProxy,
                     selectedOption,
@@ -156,58 +155,41 @@ WM.module('wm.widgets.form')
                     dataObj.isChecked = false;
                 });
 
-                // If model is null, reset the modelProxy and displayValue.
-                if (_.isNull(model) || _.isUndefined(model)) {
-                    if (_.isArray(scope.modelProxy)) {
-                        scope.modelProxy.length = 0;
-                    } else {
-                        scope.modelProxy = undefined;
-                    }
-                    if (_.isArray(scope.displayValue)) {
-                        scope.displayValue.length = 0;
-                    } else {
-                        scope.displayValue = '';
-                    }
-                    return;
-                }
-
-                if (!isModelProxyUpdated) {
-                    if (scope.displayOptions && !scope.usekeys) {
-                        // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
-                        filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
-                        if (WM.isArray(model)) {
-                            _modelProxy = [];
-                            _.forEach(model, function (modelVal) {
-                                selectedOption = _.find(scope.displayOptions, function (obj) {
-                                    if (filterField === 'dataObject') {
-                                        return _.isEqual(obj[filterField], modelVal);
-                                    }
-                                    return _.toString(obj[filterField]) === _.toString(modelVal);
-                                });
-                                if (selectedOption) {
-                                    _modelProxy.push(selectedOption.key);
-                                }
-                            });
-                        } else {
-                            _modelProxy = undefined;
+                if (scope.displayOptions && !scope.usekeys) {
+                    // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
+                    filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
+                    if (WM.isArray(model)) {
+                        _modelProxy = [];
+                        _.forEach(model, function (modelVal) {
                             selectedOption = _.find(scope.displayOptions, function (obj) {
                                 if (filterField === 'dataObject') {
-                                    return _.isEqual(obj[filterField], model);
+                                    return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(modelVal)));
                                 }
-                                return _.toString(obj[filterField]) === _.toString(model);
+                                return _.toString(obj[filterField]) === _.toString(modelVal);
                             });
                             if (selectedOption) {
-                                _modelProxy = selectedOption.key;
+                                _modelProxy.push(selectedOption.key);
                             }
-                        }
+                        });
                     } else {
-                        _modelProxy = model;
+                        _modelProxy = undefined;
+                        selectedOption = _.find(scope.displayOptions, function (obj) {
+                            if (filterField === 'dataObject') {
+                                return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(model)));
+                            }
+                            return _.toString(obj[filterField]) === _.toString(model);
+                        });
+                        if (selectedOption) {
+                            _modelProxy = selectedOption.key;
+                        }
                     }
-                    if (scope._isModelProxyRequired) {
-                        scope.modelProxy = _modelProxy;
-                    }
+                } else {
+                    _modelProxy = model;
                 }
-                setCheckedAndDisplayValues(scope, WM.isDefined(_modelProxy) ? _modelProxy : scope.modelProxy);
+                if (scope._isModelProxyRequired) {
+                    scope.modelProxy = _modelProxy;
+                }
+                setCheckedAndDisplayValues(scope, _modelProxy);
 
                 /* In studioMode, create CheckedValues for checkboxset and radioset when groupFields is true.
                  * checkedValues is a object with key as dataField value and value is boolean which represents isChecked value.
@@ -416,6 +398,7 @@ WM.module('wm.widgets.form')
                 _.remove(scope.displayOptions, function (option) {
                     return WM.isUndefined(option.key) || _.isNull(option.key);
                 });
+                updatedCheckedValues(scope);
             }
 
             /**

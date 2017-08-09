@@ -54,12 +54,6 @@ WM.module('wm.widgets.form')
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
 
-            // Update model when displayOptions are available.
-            if ((WM.isDefined(scope.datavalue) || scope.binddatavalue) && scope.displayOptions.length) {
-                FormWidgetUtils.updatedCheckedValues(scope);
-                assignModelValue(scope);
-            }
-
             if (CONSTANTS.isStudioMode && scope.groupFields) {
                 $headerEle = element.closest('.property-value').find('.fixed-header');
                 FormWidgetUtils.setFixedHeader(element, $headerEle);

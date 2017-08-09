@@ -446,7 +446,7 @@ WM.module('wm.widgets.live')
                     $scope.toggleMessage(false);
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
-                        $scope.formFields = Utils.getClonedObject(prevformFields) || $scope.formFields;
+                        $scope.formFields = $scope.formFields || Utils.getClonedObject(prevformFields);
                     }
                     $scope.$emit("on-cancel");
                     $scope.isUpdateMode = false;

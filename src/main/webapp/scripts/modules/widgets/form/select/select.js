@@ -67,12 +67,6 @@ WM.module('wm.widgets.form')
          * 3. a wm-studio-variable which is bound to the widget's dataSet property.*/
         function createSelectOptions(dataset, scope, element) {
             FormWidgetUtils.extractDisplayOptions(dataset, scope, element);
-
-            // Update model when displayOptions are available.
-            if ((WM.isDefined(scope.datavalue) || scope.binddatavalue) && scope.displayOptions.length) {
-                FormWidgetUtils.updatedCheckedValues(scope);
-                assignModelValue(scope);
-            }
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -104,8 +98,6 @@ WM.module('wm.widgets.form')
 
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
-            scope._isModelProxyChanged = true;
-
             // modelProxy should not change when select is set to readonly.
             if (scope.readonly) {
                 scope.modelProxy = scope._model_;
@@ -175,9 +167,7 @@ WM.module('wm.widgets.form')
                                 iScope._reset = false;
                                 return;
                             }
-
-                            FormWidgetUtils.updatedCheckedValues(iScope, iScope._isModelProxyChanged);
-                            iScope._isModelProxyChanged = false;
+                            FormWidgetUtils.updatedCheckedValues(iScope);
                         }, false);
 
                         if (attrs.scopedataset) {

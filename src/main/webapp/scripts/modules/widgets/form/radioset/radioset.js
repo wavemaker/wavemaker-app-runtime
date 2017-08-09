@@ -48,12 +48,6 @@ WM.module('wm.widgets.form')
 
             FormWidgetUtils.extractDisplayOptions(dataSet, scope, element);
 
-            // Update model when displayOptions are available.
-            if ((WM.isDefined(scope.datavalue) || scope.binddatavalue) && scope.displayOptions.length) {
-                FormWidgetUtils.updatedCheckedValues(scope);
-                assignModelValue(scope);
-            }
-
             template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'radioset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
