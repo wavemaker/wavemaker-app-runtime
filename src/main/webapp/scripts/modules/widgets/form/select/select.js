@@ -98,9 +98,19 @@ WM.module('wm.widgets.form')
 
         /* proxy method for onChange event */
         function onChangeProxy(scope, args) {
+            var prevSelectedOption,
+                dataField = scope.datafield;
+
             // modelProxy should not change when select is set to readonly.
             if (scope.readonly) {
-                scope.modelProxy = scope._model_;
+                if (dataField && dataField !== ALLFIELDS) {
+                    scope.modelProxy = scope._model_;
+                } else {
+                    prevSelectedOption = _.find(scope.displayOptions, function (opt) {
+                        return _.isEqual(opt.dataObject, scope._model_);
+                    });
+                    scope.modelProxy = prevSelectedOption.key;
+                }
                 return;
             }
 
