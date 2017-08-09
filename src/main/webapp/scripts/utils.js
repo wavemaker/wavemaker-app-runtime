@@ -115,7 +115,7 @@ WM.module('wm.utils', [])
                 'wm.LogoutVariable'      : 'logout-variable',
                 'wm.NavigationVariable'  : 'navigation-variable',
                 'wm.NotificationVariable': 'notification-variable',
-                'wm.TimerVariable'       : 'time',
+                'wm.TimerVariable'       : 'timer-variable',
                 'wm.DeviceVariable'      : 'device-variable',
                 'wm.WebSocketVariable'   : 'websocket-variable'
             },
