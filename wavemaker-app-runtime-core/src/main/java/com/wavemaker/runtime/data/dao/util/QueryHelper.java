@@ -70,6 +70,16 @@ public class QueryHelper {
         return withOrderBy;
     }
 
+    public static String applySortingForHqlQuery(String queryString, Sort sort) {
+        String withOrderBy = queryString;
+
+        if (sort != null && sort.iterator().hasNext()) {
+            withOrderBy = queryString + ORDER_BY + buildOrderByClause(sort, property -> property);
+        }
+
+        return withOrderBy;
+    }
+
     public static String applySortingForHqlQuery(String queryString, Sort sort, WMResultTransformer transformer) {
         String withOrderBy = queryString;
 
@@ -80,7 +90,7 @@ public class QueryHelper {
         return withOrderBy;
     }
 
-    public static String buildOrderByClause(Sort sort, Function<String, String> fieldMapper) {
+    private static String buildOrderByClause(Sort sort, Function<String, String> fieldMapper) {
         StringBuilder orderBy = new StringBuilder();
         final Iterator<Sort.Order> iterator = sort.iterator();
         while (iterator.hasNext()) {

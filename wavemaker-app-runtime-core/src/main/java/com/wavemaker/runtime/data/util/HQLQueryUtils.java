@@ -122,27 +122,25 @@ public class HQLQueryUtils {
     }
 
 
-    private static WMQueryInfo buildHQL(String entityClass, String query, Pageable pageable) {
-        WMQueryInfo queryInfo = new WMQueryInfo(query);
+    private static WMQueryInfo buildHQL(String entityClass, String filter, Pageable pageable) {
+        WMQueryInfo queryInfo = new WMQueryInfo(filter);
 
         String queryFilter = StringUtils.EMPTY;
-        String orderBy = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(queryInfo.getQuery())) {
             for (final QueryInterceptor interceptor : interceptors) {
                 interceptor.intercept(queryInfo);
             }
             queryFilter = WHERE + queryInfo.getQuery();
         }
-        if (isSortAppliedOnPageable(pageable)) {
-            orderBy = QueryHelper.buildOrderByClause(pageable.getSort(), property -> property);
+
+        String queryString = FROM + entityClass + queryFilter;
+
+        if (pageable != null) {
+            queryString = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort());
         }
 
-        queryInfo.setQuery(FROM + entityClass + queryFilter + orderBy);
+        queryInfo.setQuery(queryString);
 
         return queryInfo;
-    }
-
-    public static boolean isSortAppliedOnPageable(Pageable pageable) {
-        return (pageable != null) && (pageable.getSort() != null);
     }
 }

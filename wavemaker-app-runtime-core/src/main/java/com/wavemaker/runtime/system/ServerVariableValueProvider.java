@@ -4,12 +4,12 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import com.wavemaker.runtime.security.SecurityService;
 
@@ -27,7 +27,7 @@ public class ServerVariableValueProvider implements VariableValueProvider {
     @Autowired
     public ServerVariableValueProvider(final SecurityService securityService) {
         this.securityService = securityService;
-        keyVsValueMap = new HashMap<>();
+        keyVsValueMap = new LinkedCaseInsensitiveMap<>();
 
         keyVsValueMap.put("date", (key) -> new Date(Calendar.getInstance().getTime().getTime()));
         keyVsValueMap.put("time", (key) -> new Time(Calendar.getInstance().getTime().getTime()));
@@ -41,7 +41,7 @@ public class ServerVariableValueProvider implements VariableValueProvider {
     @Override
     public Object getValue(final String variableName) {
         // XXX support for custom properties
-        if (keyVsValueMap.containsKey(variableName.toLowerCase())) {
+        if (keyVsValueMap.containsKey(variableName)) {
             return keyVsValueMap.get(variableName).valueFor(variableName);
         }
 
