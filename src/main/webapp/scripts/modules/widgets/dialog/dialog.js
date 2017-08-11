@@ -194,6 +194,7 @@ WM.module('wm.widgets.dialog')
                 scope.header[key] = newVal;
                 break;
             case "title":
+                element.removeAttr('title');
                 scope.header.caption = newVal;
                 break;
             }

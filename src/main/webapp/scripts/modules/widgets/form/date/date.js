@@ -12,9 +12,7 @@ WM.module('wm.widgets.form')
                     ' on-open-focus="true" ' +
                     ' is-open=isOpen' +
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
-                    ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
-                    ' ng-disabled="disabled" ' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-change="_onChange({$event: $event, $scope: this})"' +
                     ' ng-keyup="_onKeyUp($event)"' +
@@ -63,14 +61,18 @@ WM.module('wm.widgets.form')
                 CURRENT_DATE     = 'CURRENT_DATE';
 
             function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-                var currentDate = moment().valueOf();
+                var currentDate = moment().valueOf(),
+                    inputEl  = element.find('input'),
+                    buttonEl = element.find('button'),
+                    isDisabled;
+
                 switch (key) {
                 case 'readonly':
+                    inputEl.attr(key, newVal);
                 case 'disabled':
-                    // prevent the click events on decrement/increment buttons
-                    if (CONSTANTS.isRunMode) {
-                        element.css('pointer-events', (scope.readonly || scope.disabled) ? 'none' : 'all');
-                    }
+                    isDisabled = scope.readonly || scope.disabled;
+                    inputEl.attr('disabled', isDisabled);
+                    buttonEl.attr('disabled', isDisabled);
                     break;
                 case 'timestamp':
                     /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
