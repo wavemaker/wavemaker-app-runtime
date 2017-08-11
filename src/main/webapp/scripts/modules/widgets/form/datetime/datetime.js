@@ -103,16 +103,16 @@ WM.module('wm.widgets.form')
             function propertyChangeHandler($is, $el, key, nv) {
                 var inputEl  = $el.find('input'),
                     buttonEl = $el.find('button'),
-                    currentDateTime = moment().valueOf();
+                    currentDateTime = moment().valueOf(),
+                    isDisabled;
+
                 switch (key) {
                 case 'readonly':
-                case 'disabled':
                     inputEl.attr(key, nv);
-                    buttonEl.attr('disabled', nv);
-                    // prevent the click events on decrement/increment buttons
-                    if (CONSTANTS.isRunMode) {
-                        $el.css('pointer-events', ($is.readonly || $is.disabled) ? 'none' : 'all');
-                    }
+                case 'disabled':
+                    isDisabled = $is.readonly || $is.disabled;
+                    inputEl.attr('disabled', isDisabled);
+                    buttonEl.attr('disabled', isDisabled);
                     break;
                 case 'autofocus':
                     inputEl.first().attr(key, nv);
