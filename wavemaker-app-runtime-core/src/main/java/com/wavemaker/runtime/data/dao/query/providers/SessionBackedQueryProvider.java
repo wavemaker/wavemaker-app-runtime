@@ -46,7 +46,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
         }
 
         query.setFirstResult(pageable.getOffset())
-                .setFetchSize(pageable.getPageSize());
+                .setMaxResults(pageable.getPageSize());
 
         return query;
     }
