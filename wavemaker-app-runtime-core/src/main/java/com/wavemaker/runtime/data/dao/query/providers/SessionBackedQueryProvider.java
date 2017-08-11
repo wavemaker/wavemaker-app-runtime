@@ -3,7 +3,7 @@ package com.wavemaker.runtime.data.dao.query.providers;
 import javax.persistence.Entity;
 
 import org.hibernate.Session;
-import org.hibernate.engine.spi.SessionFactoryDelegatingImpl;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.query.Query;
 import org.hibernate.query.spi.NamedQueryRepository;
@@ -73,8 +73,8 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     @SuppressWarnings("unchecked")
     private Query<R> createSortedQuery(final Session session, final Sort sort, final WMResultTransformer transformer) {
         final Query<R> query;
-        final NamedQueryRepository repository = ((SessionFactoryDelegatingImpl) session
-                .getSessionFactory()).getNamedQueryRepository();
+        final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
+                .getNamedQueryRepository();
         if (repository.getNamedQueryDefinition(name) != null) {
             final String sortedQuery = QueryHelper
                     .applySortingForHqlQuery(repository.getNamedQueryDefinition(name).getQueryString(), sort,
@@ -89,7 +89,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
             final String sortedQuery = QueryHelper
                     .applySortingForNativeQuery(repository.getNamedSQLQueryDefinition(name).getQueryString(),
                             sort, transformer,
-                            ((SessionFactoryDelegatingImpl) session.getSessionFactory()).getDialect());
+                            ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
             query = session.createNativeQuery(sortedQuery).setResultTransformer(transformer);
         } else {
             throw ((SessionImplementor) session).getExceptionConverter()

@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao.util;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import com.wavemaker.runtime.data.replacers.providers.VariableType;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 21/7/17
  */
+// TODO Redundant class, remove
 public class ParametersConfigurator {
 
     public static <R> Query<R> configure(Query<R> query, Map<String, Object> parameters) {
@@ -27,10 +29,20 @@ public class ParametersConfigurator {
             final Object value = getValue(parameters, parameterName);
             final Optional<Type> typeOptional = resolver.resolveType(parameterName);
 
+            boolean listType = Collection.class.isInstance(value);
+
             if (typeOptional.isPresent()) {
-                query.setParameter(parameterName, value, typeOptional.get());
+                if (listType) {
+                    query.setParameterList(parameterName, (Collection) value, typeOptional.get());
+                } else {
+                    query.setParameter(parameterName, value, typeOptional.get());
+                }
             } else {
-                query.setParameter(parameterName, value);
+                if (listType) {
+                    query.setParameterList(parameterName, (Collection) value);
+                } else {
+                    query.setParameter(parameterName, value);
+                }
             }
         });
 

@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.hibernate.Session;
@@ -15,7 +16,6 @@ public interface ParametersProvider {
 
     /**
      * Returns the value for given parameter name.
-     *
      *
      * @param session
      * @param name parameter name.
@@ -44,10 +44,20 @@ public interface ParametersProvider {
             final Object value = getValue(session, parameterName);
             final Optional<Type> typeOptional = getType(session, parameterName);
 
+            boolean listType = Collection.class.isInstance(value);
+
             if (typeOptional.isPresent()) {
-                query.setParameter(parameterName, value, typeOptional.get());
+                if (listType) {
+                    query.setParameterList(parameterName, (Collection) value, typeOptional.get());
+                } else {
+                    query.setParameter(parameterName, value, typeOptional.get());
+                }
             } else {
-                query.setParameter(parameterName, value);
+                if (listType) {
+                    query.setParameterList(parameterName, (Collection) value);
+                } else {
+                    query.setParameter(parameterName, value);
+                }
             }
         });
 
