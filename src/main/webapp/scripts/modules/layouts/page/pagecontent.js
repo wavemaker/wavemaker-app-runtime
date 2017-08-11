@@ -71,9 +71,15 @@ WM.module('wm.layouts.page')
 
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
+                        var $target;
 
                         if (CONSTANTS.isRunMode && scope.columnwidth) {
-                            element.closest('[data-placeholder-id="_app_page_content_"]').addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
+                            if (window.__isMobileApp) {
+                                $target = element;
+                            } else {
+                                $target = WM.element('#wm-app-content main [data-placeholder-id="_app_page_content_"]');
+                            }
+                            $target.addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
 
                         /* register the property change handler */

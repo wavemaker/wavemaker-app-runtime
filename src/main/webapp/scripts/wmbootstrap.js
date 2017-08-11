@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var $appView = WM.element('#wm-app-content');
 
     if (WM.element(document.head).find('script[src$="wm-mobileloader.min.js"]').length) {
+        window.__isMobileApp = true;
         $appView.attr('wm-page-view', '');
     } else {
         $appView.html(
