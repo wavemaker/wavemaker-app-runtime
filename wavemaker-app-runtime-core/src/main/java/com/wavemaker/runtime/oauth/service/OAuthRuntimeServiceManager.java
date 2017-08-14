@@ -43,18 +43,17 @@ public class OAuthRuntimeServiceManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthRuntimeServiceManager.class);
 
-    public String getAuthorizationUrl(String providerId, String scope, HttpServletRequest httpServletRequest) {
+    public String getAuthorizationUrl(String providerId, HttpServletRequest httpServletRequest) {
         OAuthProviderConfig oAuthProviderConfig = getOAuthProviderConfig(providerId);
 
         String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
         String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
-
         String redirectUrl = getRedirectUrl(providerId, httpServletRequest, baseUrl, appPath);
         try {
             JSONObject stateObject = new JSONObject();
             stateObject.put("mode", "runtTime");
             stateObject.put("appPath", appPath);
-            return OAuthHelper.getAuthorizationUrl(oAuthProviderConfig, redirectUrl, scope, stateObject);
+            return OAuthHelper.getAuthorizationUrl(oAuthProviderConfig, redirectUrl, stateObject);
         } catch (JSONException e) {
             throw new InvalidInputException("Invalid input to jsonObject", e);
         }

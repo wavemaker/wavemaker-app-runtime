@@ -23,9 +23,8 @@ public class OAuthRuntimeIntegrationController {
 
 
     @RequestMapping(value = "authorizationUrl", method = RequestMethod.GET)
-    public String getAuthorizationUrl(@PathVariable("providerId") String providerId, @RequestParam(value = "scope") String scope, HttpServletRequest
-            httpServletRequest) {
-        return oAuthRuntimeServiceManager.getAuthorizationUrl(providerId, scope, httpServletRequest);
+    public String getAuthorizationUrl(@PathVariable("providerId") String providerId, HttpServletRequest httpServletRequest) {
+        return oAuthRuntimeServiceManager.getAuthorizationUrl(providerId, httpServletRequest);
     }
 
     @RequestMapping(value = "callback", method = RequestMethod.GET, produces = "text/html")
