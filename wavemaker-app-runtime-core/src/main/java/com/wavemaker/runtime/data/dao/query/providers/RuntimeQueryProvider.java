@@ -87,7 +87,6 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
         } else {
             hibernateQuery = session.createQuery(queryString);
         }
-
         Transformers.aliasToMappedClassOptional(returnType).ifPresent(hibernateQuery::setResultTransformer);
 
         return hibernateQuery;

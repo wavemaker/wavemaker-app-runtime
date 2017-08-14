@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,17 +30,20 @@ public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetRes
     public static final AliasToEntityLinkedHashMapTransformer INSTANCE = new AliasToEntityLinkedHashMapTransformer();
 
 
-    protected AliasToEntityLinkedHashMapTransformer() {
+    AliasToEntityLinkedHashMapTransformer() {
     }
 
     @Override
     public Object transformTuple(Object[] tuple, String[] aliases) {
-        Map result = new LinkedHashMap(tuple.length);
+        Map<String, Object> result = new LinkedHashMap<>(tuple.length);
         for (int i = 0; i < tuple.length; i++) {
-            String alias = aliases[i];
-            if (alias != null) {
-                result.put(alias, tuple[i]);
+            String alias = Integer.toString(i);
+            // fix for hibernate 5, aliases returning null for HQL if no alias specified in query.
+            if (aliases != null && aliases[i] != null) {
+                alias = aliases[i];
             }
+
+            result.put(alias, tuple[i]);
         }
         return result;
     }

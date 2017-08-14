@@ -97,18 +97,15 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     protected Object _runQuery(final String serviceId, final RuntimeQuery query, final Pageable pageable) {
         final Map<String, String> map = getStringTemplateMap(serviceId);
         final String queryExecutorBeanName = QUERY_EXECUTOR_BEAN_ST.substitute(map);
-        return executeInTransaction(serviceId, new TransactionCallback<Object>() {
-            @Override
-            public Object doInTransaction(TransactionStatus status) {
-                WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
-                Object response;
-                if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
-                    response = queryExecutor.executeRuntimeQueryForUpdate(query);
-                } else {
-                    response = queryExecutor.executeRuntimeQuery(query, pageable);
-                }
-                return response;
+        return executeInTransaction(serviceId, status -> {
+            WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
+            Object response;
+            if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
+                response = queryExecutor.executeRuntimeQueryForUpdate(query);
+            } else {
+                response = queryExecutor.executeRuntimeQuery(query, pageable);
             }
+            return response;
         });
     }
 
