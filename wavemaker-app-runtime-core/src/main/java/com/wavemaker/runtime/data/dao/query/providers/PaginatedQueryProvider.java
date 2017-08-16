@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.util.Optional;
+
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +27,17 @@ public interface PaginatedQueryProvider<R> {
      * @param session active hibernate session
      * @return count query.
      */
-    Query<Number> getCountQuery(Session session);
+    Optional<Query<Number>> getCountQuery(Session session);
 
     default Query<R> getQuery(Session session, Pageable pageable, ParametersProvider provider) {
         return provider.configure(session, getQuery(session, pageable));
     }
 
-    default Query<Number> getCountQuery(Session session, ParametersProvider provider) {
-        return provider.configure(session, getCountQuery(session));
+    default Optional<Query<Number>> getCountQuery(Session session, ParametersProvider provider) {
+        final Optional<Query<Number>> queryOptional = getCountQuery(session);
+
+        queryOptional.ifPresent(query -> provider.configure(session, query));
+
+        return queryOptional;
     }
 }

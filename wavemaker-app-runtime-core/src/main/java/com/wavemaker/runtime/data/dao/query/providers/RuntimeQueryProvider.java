@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -70,8 +72,12 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
     }
 
     @Override
-    public Query<Number> getCountQuery(final Session session) {
-        return createQuery(session, countQueryString, Number.class);
+    public Optional<Query<Number>> getCountQuery(final Session session) {
+        if (StringUtils.isNotBlank(countQueryString)) {
+            return Optional.of(createQuery(session, countQueryString, Number.class));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

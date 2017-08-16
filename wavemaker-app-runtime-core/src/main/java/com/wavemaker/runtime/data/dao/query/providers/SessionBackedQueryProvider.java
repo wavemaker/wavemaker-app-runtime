@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao.query.providers;
 
+import java.util.Optional;
 import javax.persistence.Entity;
 
 import org.hibernate.Session;
@@ -7,6 +8,8 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.query.Query;
 import org.hibernate.query.spi.NamedQueryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -19,6 +22,8 @@ import com.wavemaker.runtime.data.transform.WMResultTransformer;
  * @since 1/8/17
  */
 public class SessionBackedQueryProvider<R> implements QueryProvider<R>, PaginatedQueryProvider<R> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionBackedQueryProvider.class);
 
     private String name;
     private Class<R> responseType;
@@ -52,8 +57,16 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     }
 
     @Override
-    public Query<Number> getCountQuery(final Session session) {
-        return getAndConfigureQuery(session, name + "__count", Number.class);
+    public Optional<Query<Number>> getCountQuery(final Session session) {
+        Query<Number> query = null;
+
+        try {
+            query = getAndConfigureQuery(session, name + "__count", Number.class);
+        } catch (IllegalArgumentException e) {
+            LOGGER.debug("Count query not configured for query: {}, Reason: {}", name, e.getMessage());
+        }
+
+        return Optional.ofNullable(query);
     }
 
     @SuppressWarnings("unchecked")

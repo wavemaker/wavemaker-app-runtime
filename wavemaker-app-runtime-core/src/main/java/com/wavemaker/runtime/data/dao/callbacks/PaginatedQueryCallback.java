@@ -34,12 +34,18 @@ public class PaginatedQueryCallback<R> implements HibernateCallback<Page<R>> {
 
     @Override
     public Page<R> doInHibernate(final Session session) throws HibernateException {
-        final Query<Number> countQuery = queryProvider.getCountQuery(session, parametersProvider);
-        final Optional<Number> count = countQuery.uniqueResultOptional();
+        final Optional<Query<Number>> countQuery = queryProvider.getCountQuery(session, parametersProvider);
+        long count = Integer.MAX_VALUE;
+        if (countQuery.isPresent()) {
+            final Optional<Number> countOptional = countQuery.get().uniqueResultOptional();
+            if (countOptional.isPresent()) {
+                count = countOptional.get().longValue();
+            }
+        }
 
         final Query<R> selectQuery = queryProvider.getQuery(session, pageable, parametersProvider);
         final List<R> result = selectQuery.list();
 
-        return new PageImpl<>(result, pageable, count.map(Number::longValue).orElse(0L));
+        return new PageImpl<>(result, pageable, count);
     }
 }
