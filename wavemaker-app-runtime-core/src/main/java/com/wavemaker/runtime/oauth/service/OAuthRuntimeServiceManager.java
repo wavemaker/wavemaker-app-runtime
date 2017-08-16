@@ -1,12 +1,14 @@
 package com.wavemaker.runtime.oauth.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
@@ -25,6 +28,7 @@ import com.wavemaker.commons.oauth.OAuthHelper;
 import com.wavemaker.commons.oauth.OAuthProviderConfig;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -38,10 +42,23 @@ public class OAuthRuntimeServiceManager {
     private static RestConnector restConnector = new RestConnector();
     private static final String REDIRECT_URL = "/services/oauth/${providerId}/callback";
 
-
     private List<OAuthProviderConfig> oAuthProviderConfigList = new ArrayList<>();
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthRuntimeServiceManager.class);
+
+    @PostConstruct
+    public void init() {
+        InputStream oauthProvidersJsonFile = Thread.currentThread().getContextClassLoader().getResourceAsStream("oauth-providers.json");
+        if (oauthProvidersJsonFile != null) {
+            try {
+                this.oAuthProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuthProviderConfig>>() {});
+            } catch (IOException e) {
+                throw new WMRuntimeException(e);
+            }
+
+        }
+    }
+
 
     public String getAuthorizationUrl(String providerId, HttpServletRequest httpServletRequest) {
         OAuthProviderConfig oAuthProviderConfig = getOAuthProviderConfig(providerId);
