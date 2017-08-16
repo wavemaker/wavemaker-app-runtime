@@ -1216,7 +1216,7 @@ WM.module('wm.widgets.live')
                 }
                 widgetProps                   = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
                 widgetProps.displayname       =  {'type': "string", 'show': true, 'bindable': "in-bound"};
-                widgetProps.widget            = {'type': 'label', 'show': true};
+                widgetProps.widget            = {'type': 'label', 'show': true, 'class': "form-control-static"};
 
                 if (_.includes(textWidgets, widgetType)) {
                     /*In form and filter, type conflicts with data type. Change the type to input type.*/
