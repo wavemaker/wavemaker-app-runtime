@@ -5,7 +5,7 @@ WM.module('wm.layouts.page')
         'use strict';
         $templateCache.put('template/layout/page/pagecontent.html',
             window.__isOptimizedPageLoad ?
-                '<div init-widget class="app-ng-transclude" wmtransclude  apply-styles="container"></div>' :
+                '<div init-widget class="app-ng-transclude" wmtransclude apply-styles="container"></div>' :
                 '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
         );
         $templateCache.put('template/layout/page/pagecontent-loader.html',
@@ -73,17 +73,20 @@ WM.module('wm.layouts.page')
 
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
-                        var $target;
+                        var $target,
+                            toBeAddedCls;
 
                         if (CONSTANTS.isRunMode && scope.columnwidth) {
                             if (window.__isOptimizedPageLoad) {
-                                $target = element;
-                            } else {
                                 $target = WM.element('#wm-app-content main [data-placeholder-id="_app_page_content_"]');
                                 //remove md-*, sm-* cl
                                 $target.attr('class', '');
+                                toBeAddedCls = 'app-page-content app-content-column ';
+                            } else {
+                                $target = element;
                             }
-                            $target.addClass("app-page-content app-content-column" ).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
+                            toBeAddedCls += 'col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth;
+                            $target.addClass(toBeAddedCls);
                         }
 
                         /* register the property change handler */
