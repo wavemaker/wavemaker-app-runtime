@@ -52,6 +52,7 @@ var Application =
             'wm.plugins.database',
             'wm.plugins.webServices',
             'wm.plugins.security',
+            'wm.plugins.oauth',
             'wm.widgets',
             'wm.layouts',
             'wm.mobile',

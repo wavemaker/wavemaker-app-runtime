@@ -25,8 +25,9 @@ wm.variables.services.$servicevariable = ['Variables',
     '$timeout',
     '$base64',
     'SWAGGER_CONSTANTS',
+    'oAuthProviderService',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS, oAuthProviderService) {
         "use strict";
 
         var requestQueue = {},
@@ -37,15 +38,19 @@ wm.variables.services.$servicevariable = ['Variables',
             REST_METHOD_NAME = "executeRestCall",
             REST_SUPPORTED_SERVICES = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES,
             SERVICE_TYPE_REST = VARIABLE_CONSTANTS.SERVICE_TYPE_REST,
-            AUTH_TYPE_BASIC = "BASIC",
-            AUTH_TYPE_NONE = "NONE",
+            AUTH_TYPE_BASIC = VARIABLE_CONSTANTS.REST_SERVICE.AUTH_TYPE_BASIC,
+            AUTH_TYPE_NONE = VARIABLE_CONSTANTS.REST_SERVICE.AUTH_TYPE_NONE,
+            SECURITY_DEFINITIONS_TYPE_OAUTH = VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2,
+            SECURITY_DEFINITIONS_TYPE_BASIC = VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC,
             supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function (method) { return method.toLowerCase(); }),
-            BASE_PATH_KEY = 'x-WM-BASE_PATH',
-            RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
+            BASE_PATH_KEY = VARIABLE_CONSTANTS.REST_SERVICE.BASE_PATH_KEY,
+            RELATIVE_PATH_KEY = VARIABLE_CONSTANTS.REST_SERVICE.RELATIVE_PATH_KEY,
+            OAUTH_PROVIDER_KEY = VARIABLE_CONSTANTS.REST_SERVICE.OAUTH_PROVIDER_KEY,
             CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
-            AUTH_HDR_KEY = "Authorization",
+            AUTH_HDR_KEY = VARIABLE_CONSTANTS.REST_SERVICE.AUTH_HDR_KEY,
             CONTROLLER_TYPE_QUERY = 'QueryExecution',
+            ERR_TYPE_NO_ACCESSTOKEN = 'missing_accesstoken',
             initiateCallback = Variables.initiateCallback,/*function to initiate the callback and obtain the data for the callback variable.*/
             processRequestQueue = Variables.processRequestQueue;
 
@@ -210,8 +215,9 @@ wm.variables.services.$servicevariable = ['Variables',
                 isProxyCall,
                 isBodyTypeQueryProcedure = ServiceFactory.isBodyTypeQueryProcedure(variable),
                 paramValueInfo,
-                params;
-
+                params,
+                securityDefnObj,
+                accessToken;
             function getFormDataObj() {
                 if (formData) {
                     return formData;
@@ -220,6 +226,21 @@ wm.variables.services.$servicevariable = ['Variables',
                 return formData;
             }
 
+            securityDefnObj = _.get(operationInfo.securityDefinitions, '0');
+
+            if (securityDefnObj && securityDefnObj.type === SECURITY_DEFINITIONS_TYPE_OAUTH) {
+                accessToken = sessionStorage.getItem(securityDefnObj[OAUTH_PROVIDER_KEY] + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
+                if (accessToken) {
+                    headers[AUTH_HDR_KEY] = 'Bearer ' + accessToken;
+                } else {
+                    return {
+                        'error': {
+                            'type' : ERR_TYPE_NO_ACCESSTOKEN
+                        },
+                        'securityDefnObj': securityDefnObj
+                    };
+                }
+            }
             operationInfo.proxySettings = operationInfo.proxySettings || {web: true, mobile: false};
             method                      = operationInfo.httpMethod || operationInfo.methodType;
             isProxyCall                 = (function () {
@@ -535,6 +556,11 @@ wm.variables.services.$servicevariable = ['Variables',
                     };
                 } else {
                     params = constructRestRequestParams(methodInfo, variable, inputFields);
+                }
+                if (params.error && params.error.type === ERR_TYPE_NO_ACCESSTOKEN) {
+                    oAuthProviderService.performAuthorization(undefined, params.securityDefnObj[OAUTH_PROVIDER_KEY], getDataInRun.bind(undefined, variable, options, success, error));
+                    processErrorResponse(variable, params.error.message, error, options.xheObj, true, true);
+                    return;
                 }
                 if (params.error && params.error.message) {
                     processErrorResponse(variable, params.error.message, error, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);

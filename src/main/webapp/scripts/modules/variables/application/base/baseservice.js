@@ -25,7 +25,8 @@ wm.variables.services.Variables = [
     "MetaDataFactory",
     "WIDGET_CONSTANTS",
     "$q",
-    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory, WIDGET_CONSTANTS, $q) {
+    "oAuthProviderService",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory, WIDGET_CONSTANTS, $q, oAuthProviderService) {
         "use strict";
 
         /**
@@ -1850,7 +1851,45 @@ wm.variables.services.Variables = [
                  * the event for first page is emitted after the second page and its variables are loaded
                  */
                 var pageScope = pageScopeMap[pageName],
-                    pageScopeId = pageScope.$id;
+                    pageScopeId = pageScope.$id,
+                    restOAuthQueue = {},
+                    oAuthVariableIndexes = [];
+
+                //executes the authorization procedure for the variable sin the restOAuthQueue
+                function performOAuth() {
+                    _.forEach(restOAuthQueue[pageScopeId], function(variables, provider) {
+                        oAuthProviderService.performAuthorization(undefined, provider, function() {
+                            _.forEach(variables, makeVariableCall);
+                        });
+                    });
+                }
+
+                //check the variables of the start update for rest type and oauth configured.
+                //Only push to rest queue if accesstoken doesn't exist in sessionStorage
+                _.forEach(startUpdateQueue[pageScopeId], function(variable, $index) {
+                    var securityDefn = {},
+                        provider;
+                    if (variable && variable.category === 'wm.ServiceVariable') {
+                        securityDefn = _.get(variable._wmServiceOperationInfo, 'securityDefinitions.0');
+                        if (securityDefn && securityDefn.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2) {
+                            provider = securityDefn[VARIABLE_CONSTANTS.REST_SERVICE.OAUTH_PROVIDER_KEY];
+                            if (sessionStorage.getItem(provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT)) {
+                                return;
+                            }
+                            restOAuthQueue[pageScopeId] = restOAuthQueue[pageScopeId] || {};
+                            restOAuthQueue[pageScopeId][provider] = restOAuthQueue[pageScopeId][provider] || [];
+                            restOAuthQueue[pageScopeId][provider].push(variable);
+                            oAuthVariableIndexes.push($index);
+                        }
+                    }
+                });
+
+                if (!_.isEmpty(restOAuthQueue)) {
+                    performOAuth();
+                }
+                //remove the variables of rest type and oauth configured
+                _.pullAt(startUpdateQueue[pageScopeId], oAuthVariableIndexes);
+
                 $q.all(_.map(startUpdateQueue[pageScopeId], makeVariableCall))
                     .finally(function () {
                         $rootScope.$emit('page-startupdate-variables-loaded', pageName);

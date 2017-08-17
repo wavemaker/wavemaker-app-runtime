@@ -58,6 +58,22 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     DEFAULT_VAR: {
         "NOTIFICATION": "appNotification"
     },
+    REST_SERVICE: {
+        'BASE_PATH_KEY': 'x-WM-BASE_PATH',
+        'RELATIVE_PATH_KEY': 'x-WM-RELATIVE_PATH',
+        'OAUTH_PROVIDER_KEY': 'x-WM-PROVIDER_ID',
+        'AUTH_HDR_KEY': 'Authorization',
+        'SECURITY_DEFN_BASIC': 'basic',
+        'SECURITY_DEFN_OAUTH2': 'oauth2',
+        'AUTH_TYPE_BASIC': 'BASIC',
+        'AUTH_TYPE_OAUTH': 'OAUTH',
+        'AUTH_TYPE_NONE': 'NONE',
+        'CONTENT_TYPE_KEY': 'x-WM-CONTENT_TYPE',
+        'ACCESSTOKEN_PLACEHOLDER': {
+            'LEFT': '',
+            'RIGHT': '.access_token'
+        }
+    },
     VARIABLE_SERVICE_TYPES: {
         'DATABASE': 'database',
         'WEB': 'web',
