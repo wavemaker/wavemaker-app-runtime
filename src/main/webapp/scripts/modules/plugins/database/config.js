@@ -367,6 +367,9 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DB2_DB_TYPE": "DB2",
     "MYSQL_CLOUD_HOST": "{WM_CLOUD_MYSQL_HOST}",
     "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud",
+    "DB_TYPE": {
+        "OTHER": 'Other'
+    },
     "LOGIN": {
         "SAAS_MYSQL_CLOUD": {
             "USERNAME": "{WM_CLOUD_MYSQL_USERNAME}",
