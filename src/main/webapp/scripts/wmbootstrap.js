@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var $appView = WM.element('#wm-app-content');
 
+    window.__isOptimizedPageLoad = true;
+
     if (WM.element(document.head).find('script[src$="wm-mobileloader.min.js"]').length) {
-        window.__isMobileApp = true;
+        window.__isOptimizedPageLoad = false;
         $appView.attr('wm-page-view', '');
     } else {
         $appView.html(
@@ -15,9 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<div data-placeholder-id="_app_header_" class="ng-hide"></div>' +
                 '<div data-placeholder-id="_app_topnav_" class="ng-hide"></div>' +
                 '<main data-role="page-content" class="app-content clearfix">' +
-                    '<div data-placeholder-id="_app_leftnav_" class="ng-hide"></div>' +
-                    '<div data-placeholder-id="_app_page_content_" wm-page-view class="full-height"></div>' +
-                    '<div data-placeholder-id="_app_rightnav_" class="ng-hide"></div>' +
+                    '<div class="row app-content-row clearfix">' +
+                        '<div data-placeholder-id="_app_leftnav_" class="ng-hide"></div>' +
+                        '<div data-placeholder-id="_app_page_content_" wm-page-view></div>' +
+                        '<div data-placeholder-id="_app_rightnav_" class="ng-hide"></div>' +
+                    '</div>' +
                 '</main>' +
                 '<div data-placeholder-id="_app_footer_" class="ng-hide"></div>' +
             '</div>'
@@ -961,6 +965,10 @@ Application
 
                 $appContainer = WM.element('#wm-app-content');
 
+                function getContentAttrOfFragment($node) {
+                    return $node[0].hasAttribute('content') ? $node.attr('content') : 'INLINE';
+                }
+
                 function getAppFragmentInfo($page, futureFragmentSelector, currentFragmentSelector) {
                     var info = {}, $temp, fragPlaceholderSelector;
 
@@ -970,14 +978,14 @@ Application
                     $temp = $page.find(futureFragmentSelector);
                     if ($temp.length) {
                         info.future = {};
-                        info.future.content  = $temp.attr('content');
+                        info.future.content  = getContentAttrOfFragment($temp);
                         info.future.template = $temp;
                     }
 
                     $temp = $appContainer.find(fragPlaceholderSelector);
                     if ($temp.length) {
                         info.current = {};
-                        info.current.content = $temp.attr('content');
+                        info.current.content = getContentAttrOfFragment($temp);
                     }
 
                     return info;
@@ -986,11 +994,13 @@ Application
                 function renderAppFragment(info) {
                     var fragSelector = '[data-placeholder-id="' + info.fragPlaceholderId + '"]',
                         $target = $appContainer.find(fragSelector),
-                        $template;
-                    if (!_.get(info, 'future.content')) {
+                        $template,
+                        _futureContent = _.get(info, 'future.content');
+
+                    if (!_futureContent && (_futureContent !== 'INLINE')) {
                         // remove the existing rendered content
                         $target.replaceWith('<div class="ng-hide" data-placeholder-id="' + info.fragPlaceholderId + '"></div>');
-                    } else if (_.get(info, 'current.content') !== _.get(info, 'future.content')) {
+                    } else if (_futureContent === 'INLINE' || (_.get(info, 'current.content') !== _futureContent)) {
                         $template = _.get(info, 'future.template');
                         $template.attr('data-placeholder-id', info.fragPlaceholderId);
                         $target.replaceWith($template);

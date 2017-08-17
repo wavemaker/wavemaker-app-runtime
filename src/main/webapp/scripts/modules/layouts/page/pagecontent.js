@@ -4,8 +4,10 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/pagecontent.html',
-            '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
-            );
+            window.__isOptimizedPageLoad ?
+                '<div init-widget class="app-ng-transclude" wmtransclude  apply-styles="container"></div>' :
+                '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
+        );
         $templateCache.put('template/layout/page/pagecontent-loader.html',
             '<div class="app-page-content-loader">' +
             '<div class="loader bg-primary"></div>' +
@@ -74,12 +76,14 @@ WM.module('wm.layouts.page')
                         var $target;
 
                         if (CONSTANTS.isRunMode && scope.columnwidth) {
-                            if (window.__isMobileApp) {
+                            if (window.__isOptimizedPageLoad) {
                                 $target = element;
                             } else {
                                 $target = WM.element('#wm-app-content main [data-placeholder-id="_app_page_content_"]');
+                                //remove md-*, sm-* cl
+                                $target.attr('class', '');
                             }
-                            $target.addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
+                            $target.addClass("app-page-content app-content-column" ).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
 
                         /* register the property change handler */

@@ -51,8 +51,9 @@ WM.module('wm.layouts.page')
                 'replace'   : true,
                 'transclude': true,
                 'template'  :
-                    ((CONSTANTS.isStudioMode || $rs.isMobileApplicationType) ? '<div data-role="pageContainer" class="app-page container" wmtransclude no-animate></div>' :
-                        '<div data-role="pageContainer" class="app-content-row container" wmtransclude no-animate></div>'),
+                    window.__isOptimizedPageLoad ?
+                        '<div data-role="pageContainer" class="container" wmtransclude no-animate></div>' :
+                        '<div data-role="pageContainer" class="app-page container" wmtransclude no-animate></div>',
                 'link':  {
                     'pre': function ($s, $el, attrs) {
                         var pageName,
