@@ -17,6 +17,8 @@ package com.wavemaker.runtime.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +36,7 @@ public class WMUser extends User implements WMUserDetails {
     private final int tenantId;
     private final String userId;
     private final long loginTime;
+    private Map<String, Object> customAttributes;
 
     private static GrantedAuthoritiesMapper authoritiesMapper = new SimpleAuthorityMapper();
 
@@ -56,6 +59,7 @@ public class WMUser extends User implements WMUserDetails {
         this.userLongName = userLongName;
         this.tenantId = tenantId;
         this.loginTime = loggedInAt;
+        this.customAttributes = new HashMap<>();
     }
 
     private static Collection<? extends  GrantedAuthority> getGrantedAuthorities(Collection<String> roles) {
@@ -84,5 +88,14 @@ public class WMUser extends User implements WMUserDetails {
     @Override
     public int getTenantId() {
         return this.tenantId;
+    }
+
+    @Override
+    public Map<String, Object> getCustomAttributes() {
+        return customAttributes;
+    }
+
+    public void addCustomAttribute(String name, Object value) {
+        customAttributes.put(name, value);
     }
 }

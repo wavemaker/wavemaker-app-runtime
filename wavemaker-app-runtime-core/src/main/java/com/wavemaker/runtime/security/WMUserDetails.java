@@ -15,6 +15,8 @@
  */
 package com.wavemaker.runtime.security;
 
+import java.util.Map;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -35,4 +37,6 @@ public interface WMUserDetails extends UserDetails {
     int getTenantId();
 
     long getLoginTime();
+    
+    Map<String, Object> getCustomAttributes(); 
 }
