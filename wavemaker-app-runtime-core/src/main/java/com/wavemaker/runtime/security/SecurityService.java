@@ -145,6 +145,17 @@ public class SecurityService {
     public boolean isAuthenticated() {
         return getAuthenticatedAuthentication() != null;
     }
+    
+    public Map<String, Object> getCustomAttributes() {
+        Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof WMUserDetails) {
+                WMUserDetails wmUserDetails = (WMUserDetails) authentication.getPrincipal();
+                return wmUserDetails.getCustomAttributes();
+            }
+        }
+        return null;
+    }
 
     private WMUserDetails getWMUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -166,18 +177,19 @@ public class SecurityService {
      */
     public WMCurrentUser getLoggedInUser() {
         WMCurrentUser wmCurrentUser = new WMCurrentUser();
-        if (isSecurityEnabled() && isAuthenticated()) {
-            wmCurrentUser.setAuthenticated(isAuthenticated());
-            wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
+        Boolean securityEnabled = isSecurityEnabled();
+        boolean authenticated = isAuthenticated();
+        wmCurrentUser.setSecurityEnabled(securityEnabled);
+        wmCurrentUser.setAuthenticated(authenticated);
+        if (securityEnabled && authenticated) {
             wmCurrentUser.setUserId(getUserId());
             wmCurrentUser.setUserName(getUserName());
-            wmCurrentUser.setTenantId(getTenantId());
             wmCurrentUser.setUserRoles(getUserRoles());
-            if (getWMUserDetails() != null) {
-                wmCurrentUser.setLoginTime(getWMUserDetails().getLoginTime());
+            WMUserDetails wmUserDetails = getWMUserDetails();
+            if (wmUserDetails != null) {
+                wmCurrentUser.setTenantId(wmUserDetails.getTenantId());
+                wmCurrentUser.setLoginTime(wmUserDetails.getLoginTime());
             }
-        } else {
-            wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
         }
         return wmCurrentUser;
     }
