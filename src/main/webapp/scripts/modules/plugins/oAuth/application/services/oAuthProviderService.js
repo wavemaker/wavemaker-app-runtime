@@ -1,4 +1,4 @@
-/*global WM, wm, _, window, sessionStorage, localStorage*/
+/*global WM, wm, _, window, sessionStorage, localStorage, setTimeout*/
 
 /**
  * @ngdoc service
@@ -171,13 +171,15 @@ wm.plugins.security.services.oAuthProviderService = [
      * @param callback
      */
     function checkForWindowExistence(oAuthWindow, provider, callback) {
-        if (oAuthWindow && oAuthWindow.window) {
-            setTimeout(checkForWindowExistence.bind(undefined, oAuthWindow, provider, callback), 3000);
-        } else if (oAuthWindow && !oAuthWindow.window && listeners[provider]) {
-            window.removeEventListener("message", listeners[provider]);
-            delete listeners[provider];
-            if (callback) {
-                callback('error');
+        if (oAuthWindow && listeners[provider]) {
+            if (oAuthWindow.window) {
+                setTimeout(checkForWindowExistence.bind(undefined, oAuthWindow, provider, callback), 3000);
+            } else {
+                window.removeEventListener("message", listeners[provider]);
+                delete listeners[provider];
+                if (callback) {
+                    callback('error');
+                }
             }
         }
     }
