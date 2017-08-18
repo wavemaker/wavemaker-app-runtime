@@ -4,10 +4,8 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/pagecontent.html',
-            window.__isOptimizedPageLoad ?
-                '<div init-widget class="app-ng-transclude" wmtransclude apply-styles="container"></div>' :
-                '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
-        );
+            '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
+            );
         $templateCache.put('template/layout/page/pagecontent-loader.html',
             '<div class="app-page-content-loader">' +
             '<div class="loader bg-primary"></div>' +
@@ -20,7 +18,7 @@ WM.module('wm.layouts.page')
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
-                'columnwidth': CONSTANTS.isStudioMode
+                'columnwidth': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -73,20 +71,9 @@ WM.module('wm.layouts.page')
 
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
-                        var $target,
-                            toBeAddedCls;
 
                         if (CONSTANTS.isRunMode && scope.columnwidth) {
-                            if (window.__isOptimizedPageLoad) {
-                                $target = WM.element('#wm-app-content main [data-placeholder-id="_app_page_content_"]');
-                                //remove md-*, sm-* cl
-                                $target.attr('class', '');
-                                toBeAddedCls = 'app-page-content app-content-column ';
-                            } else {
-                                $target = element;
-                            }
-                            toBeAddedCls += 'col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth;
-                            $target.addClass(toBeAddedCls);
+                            element.addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
 
                         /* register the property change handler */

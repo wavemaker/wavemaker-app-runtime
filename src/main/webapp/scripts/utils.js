@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', '$routeParams', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, $routeParams) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -2743,17 +2743,6 @@ WM.module('wm.utils', [])
             return isList ? _.map(files, _.identity) : files && files[0];
         }
 
-        /**
-         * Returns if the nav item is active or not
-         *
-         * @param fnName
-         */
-        function isActiveNavItem(fnName) {
-            var prefix = 'Variables.goToPage',
-                suffix = $routeParams.name + '.invoke()';
-            return (fnName === prefix + '_' + suffix) || (fnName === prefix + '-' + suffix);
-        }
-
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2898,5 +2887,4 @@ WM.module('wm.utils', [])
         this.isXsrfEnabled              = isXsrfEnabled;
         this.addXsrfCookieHeader        = addXsrfCookieHeader;
         this.getFiles                   = getFiles;
-        this.isActiveNavItem            = isActiveNavItem;
     }]);

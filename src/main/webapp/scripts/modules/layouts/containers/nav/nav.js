@@ -106,8 +106,6 @@ WM.module('wm.layouts.containers')
                                 $li.addClass('active');
                             }
 
-                            $li.attr('data-item-link', itemLink);
-
                             if (itemChildren && WM.isArray(itemChildren)) {
 
                                 $menu = WM.element('<wm-menu>');
@@ -223,20 +221,8 @@ WM.module('wm.layouts.containers')
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
                         $is.$on('$destroy', $rs.$on('page-transition-end', function () {
-                            var routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
-
                             $el.find('li.app-nav-item.active').removeClass('active');
-                            $el.find('li.app-nav-item a.active').removeClass('active');
-
-                            $el.find('li[data-item-link]').each(function () {
-                                var $li = WM.element(this),
-                                    itemLink = $li.attr('data-item-link');
-                                if (Utils.isActiveNavItem(itemLink) || routeRegex.test(itemLink)) {
-                                    $li.addClass('active');
-                                    $li.children().addClass('active');
-                                    return false;
-                                }
-                            });
+                            $el.find('li[data-item-link$="' + $routeParams.name + '"][data-item-link^="#"]').addClass('active');
                         }));
 
                         if (!attrs.widgetid) {
@@ -249,16 +235,10 @@ WM.module('wm.layouts.containers')
                             $el.on('click.on-select', '.app-anchor', function (e) {
                                 var $target    = WM.element(this),
                                     $li        = $target.closest('.app-nav-item'),
-                                    $lis,
                                     itemLink,
                                     itemAction;
-                                $lis =  $li.closest('ul.app-nav').children('li.app-nav-item');
-                                $lis.removeClass('active');
-                                $lis.children().removeClass('active');
-
+                                $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
                                 $li.addClass('active');
-                                $li.children().addClass('active');
-
                                 $rs.$safeApply($is, function () {
                                     $is.selecteditem = $li.data('node-data');
                                     Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});

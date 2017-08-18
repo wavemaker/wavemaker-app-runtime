@@ -27,11 +27,7 @@ WM.module('wm.layouts.page')
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
-                            var $s = element.scope();
-                            if ($s.layout) {
-                                $s.layout.header = true;
-                            }
-
+                            element.scope().layout.header = true;
                         }
                     },
                     'post': function (scope, element, attrs) {

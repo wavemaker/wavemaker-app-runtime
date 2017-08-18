@@ -24,6 +24,7 @@ WM.module('wm.widgets.base')
         'Utils',
         'CONSTANTS',
         '$parse',
+        '$routeParams',
         'BindingManager',
         '$compile',
         'AppDefaults',
@@ -31,7 +32,7 @@ WM.module('wm.widgets.base')
         /*Do not remove*/
         'DataFormatService',
 
-        function ($rs, WidgetUtilService, Utils, CONSTANTS, $parse, BindingManager, $compile, AppDefaults) {
+        function ($rs, WidgetUtilService, Utils, CONSTANTS, $parse, $routeParams, BindingManager, $compile, AppDefaults) {
             'use strict';
 
             var BOOLEAN_ATTRS = {},
@@ -115,6 +116,12 @@ WM.module('wm.widgets.base')
                 $rs._handleAppCustomEvent = handleAppCustomEvent;
             }
 
+            function isActiveNavItem(fnName) {
+                var prefix = 'Variables.goToPage',
+                    suffix = $routeParams.name + '.invoke()';
+                return (fnName === prefix + '_' + suffix) || (fnName === prefix + '-' + suffix);
+            }
+
             function overrideEventHandlers($is, $s, $el, attrs) {
 
                 var wp = $is.widgetProps;
@@ -141,11 +148,7 @@ WM.module('wm.widgets.base')
 
                                 var trimmedFnName = fnName.trim();
 
-                                if (isAnchor && $el.parent().hasClass('app-nav-item')) {
-                                    $el.parent().attr('data-item-link', trimmedFnName);
-                                }
-
-                                if (Utils.isActiveNavItem(trimmedFnName)) {
+                                if (isActiveNavItem(trimmedFnName)) {
                                     $el.addClass('active');
                                     if (isAnchor) {
                                         $parent = $el.parent();

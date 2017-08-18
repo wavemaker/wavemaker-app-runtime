@@ -24,10 +24,7 @@ WM.module('wm.layouts.page')
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
-                            var $s = element.scope();
-                            if ($s.layout) {
-                                $s.layout.navigationBar = true;
-                            }
+                            element.scope().layout.navigationBar = true;
                         }
                     },
                     'post': function (scope, element, attrs) {

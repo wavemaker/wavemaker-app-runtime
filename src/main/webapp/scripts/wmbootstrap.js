@@ -6,27 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var $appView = WM.element('#wm-app-content');
 
-    window.__isOptimizedPageLoad = true;
-
-    if (WM.element(document.head).find('script[src$="wm-mobileloader.min.js"]').length) {
-        window.__isOptimizedPageLoad = false;
-        $appView.attr('wm-page-view', '');
-    } else {
-        $appView.html(
-            '<div data-role="pageContainer" class="app-page container" no-animate>' +
-                '<div data-placeholder-id="_app_header_" class="ng-hide"></div>' +
-                '<div data-placeholder-id="_app_topnav_" class="ng-hide"></div>' +
-                '<main data-role="page-content" class="app-content clearfix">' +
-                    '<div class="row app-content-row clearfix">' +
-                        '<div data-placeholder-id="_app_leftnav_" class="ng-hide"></div>' +
-                        '<div data-placeholder-id="_app_page_content_" wm-page-view></div>' +
-                        '<div data-placeholder-id="_app_rightnav_" class="ng-hide"></div>' +
-                    '</div>' +
-                '</main>' +
-                '<div data-placeholder-id="_app_footer_" class="ng-hide"></div>' +
-            '</div>'
-        );
-    }
+    $appView.attr('wm-page-view', '');
 
     // add a node to the DOM to determine the mobile view
     WM.element('<i id="wm-mobile-display"></i>').appendTo('.wm-app');
@@ -895,7 +875,6 @@ Application
             'DeviceService',
             'AppDefaults',
             '$location',
-            '$compile',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -908,7 +887,7 @@ Application
             'TimerVariableService',
             '$websocketvariable',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults, $location, $compile) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory, DeviceService, AppDefaults, $location) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
@@ -917,8 +896,7 @@ Application
                     timeFormat,
                     dateTimeFormat,
                     locationQueryParams = $location.search(),
-                    stateParams = locationQueryParams.state,
-                    $appContainer;
+                    stateParams = locationQueryParams.state;
 
                 $rs.projectName             = appProperties.name;
 
@@ -964,70 +942,6 @@ Application
                     window.close();
                 }
 
-                $appContainer = WM.element('#wm-app-content');
-
-                function getContentAttrOfFragment($node) {
-                    return $node[0].hasAttribute('content') ? $node.attr('content') : 'INLINE';
-                }
-
-                function getAppFragmentInfo($page, futureFragmentSelector, currentFragmentSelector) {
-                    var info = {}, $temp, fragPlaceholderSelector;
-
-                    info.fragPlaceholderId = currentFragmentSelector;
-                    fragPlaceholderSelector = '[data-placeholder-id="' + currentFragmentSelector + '"]';
-
-                    $temp = $page.find(futureFragmentSelector);
-                    if ($temp.length) {
-                        info.future = {};
-                        info.future.content  = getContentAttrOfFragment($temp);
-                        info.future.template = $temp;
-                    }
-
-                    $temp = $appContainer.find(fragPlaceholderSelector);
-                    if ($temp.length) {
-                        info.current = {};
-                        info.current.content = getContentAttrOfFragment($temp);
-                    }
-
-                    return info;
-                }
-
-                function renderAppFragment(info) {
-                    var fragSelector = '[data-placeholder-id="' + info.fragPlaceholderId + '"]',
-                        $target = $appContainer.find(fragSelector),
-                        $template,
-                        _futureContent = _.get(info, 'future.content');
-
-                    if (!_futureContent && (_futureContent !== 'INLINE')) {
-                        // remove the existing rendered content
-                        $target.replaceWith('<div class="ng-hide" data-placeholder-id="' + info.fragPlaceholderId + '"></div>');
-                    } else if (_futureContent === 'INLINE' || (_.get(info, 'current.content') !== _futureContent)) {
-                        $template = _.get(info, 'future.template');
-                        $template.attr('data-placeholder-id', info.fragPlaceholderId);
-                        $target.replaceWith($template);
-                        $compile($template)($rs.$new());
-                    }
-                }
-
-
-                function compilePageFragments($page) {
-                    //header
-                    renderAppFragment(getAppFragmentInfo($page, '> wm-header', '_app_header_'));
-
-                    //topnav
-                    renderAppFragment(getAppFragmentInfo($page, '> wm-top-nav', '_app_topnav_'));
-
-                    //leftnav
-                    renderAppFragment(getAppFragmentInfo($page, '> wm-content > wm-left-panel', '_app_leftnav_'));
-
-                    //rightnav
-                    renderAppFragment(getAppFragmentInfo($page, '> wm-content > wm-right-panel', '_app_rightnav_'));
-
-                    //footer
-                    renderAppFragment(getAppFragmentInfo($page, '> wm-footer', '_app_footer_'));
-                }
-
-
                 /*
                  * Route Change Handler, for every page
                  * Page content is fetched here and provided to the template for rendering
@@ -1035,9 +949,7 @@ Application
                  * For Prefabs: localization resources are loaded
                  */
                 $rs.$on('$routeChangeSuccess', function (evt, $cRoute, $pRoute) {
-                    var pageName = $cRoute.params.name,
-                        $page,
-                        $others;
+                    var pageName = $cRoute.params.name;
 
                     if ($rs._appNavEvt) {
                         $rs._appNavEvt.widgetName = WM.element($rs._appNavEvt.target).closest('[init-widget]').attr('name');
@@ -1049,18 +961,7 @@ Application
 
                     if (pageName) {
                         pageName = pageName.split('.').shift();
-
-                        $page = AppManager.getPreparedPageContent(pageName);
-
-                        if ($page.is('wm-page') && !$rs.isMobileApplicationType) {
-                            compilePageFragments($page);
-
-                            $others = $page.find('> :not(wm-header, wm-top-nav, wm-content, wm-footer)');
-                            $page.html($page.find('> wm-content > wm-page-content'));
-                            $page.append($others);
-                        }
-
-                        $cRoute.locals.$template = $page;
+                        $cRoute.locals.$template = AppManager.getPreparedPageContent(pageName);
                     }
                 });
                 if (!$rs.isMobileApplicationType) {
