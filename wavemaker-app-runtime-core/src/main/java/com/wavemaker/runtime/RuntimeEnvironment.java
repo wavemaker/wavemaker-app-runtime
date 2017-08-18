@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,17 +22,24 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class RuntimeEnvironment {
 
-    private static final String WMAPP_ENVIRONMENT_KEY="wmapp.environment";
+    private static final String WMAPP_ENVIRONMENT_KEY = "wmapp.environment";
+    private static final String WM_STUDIO_URL = "wm.studioUrl";
 
     private static final String environment;
+    private static final String studioUrl;
 
     static {
         String property = System.getProperty(WMAPP_ENVIRONMENT_KEY);
-        property = (StringUtils.isNotBlank(property)) ? property : System.getenv(WMAPP_ENVIRONMENT_KEY);
-        environment = (StringUtils.isNotBlank(property)) ? property : "production";
+        property = StringUtils.isNotBlank(property) ? property : System.getenv(WMAPP_ENVIRONMENT_KEY);
+        environment = StringUtils.isNotBlank(property) ? property : "production";
+        studioUrl = System.getenv(WM_STUDIO_URL);
     }
 
     public static boolean isTestRunEnvironment() {
         return "testRun".equalsIgnoreCase(environment);
+    }
+
+    public static String getStudioUrl() {
+        return isTestRunEnvironment() ? studioUrl : null;
     }
 }

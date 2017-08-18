@@ -51,7 +51,8 @@ public class OAuthRuntimeServiceManager {
         InputStream oauthProvidersJsonFile = Thread.currentThread().getContextClassLoader().getResourceAsStream("oauth-providers.json");
         if (oauthProvidersJsonFile != null) {
             try {
-                this.oAuthProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuthProviderConfig>>() {});
+                this.oAuthProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuthProviderConfig>>() {
+                });
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
             }
@@ -78,14 +79,11 @@ public class OAuthRuntimeServiceManager {
 
     private String getRedirectUrl(String providerId, HttpServletRequest httpServletRequest, String baseUrl, String appPath) {
         String redirectUrl;
-        if (RuntimeEnvironment.isTestRunEnvironment()) {
-            String studioUrl = System.getProperty("wm.studioUrl");
-            if (StringUtils.isBlank(studioUrl)) {
-                studioUrl = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
-            }
+        String studioUrl = RuntimeEnvironment.getStudioUrl();
+        if (StringUtils.isNotBlank(studioUrl)) {
             redirectUrl = studioUrl + REDIRECT_URL;
         } else {
-            redirectUrl = new StringBuffer(appPath).append(REDIRECT_URL).toString();
+            redirectUrl = new StringBuilder(appPath).append(REDIRECT_URL).toString();
         }
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("providerId", providerId);
