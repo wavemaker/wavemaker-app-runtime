@@ -52,7 +52,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_WEBSOCKET: "WebSocketService",
     BODY_FIELD: "bodyField",
     REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService", "WebSocketService"],
-    WEB_SERVICE_VARIABLE_SERVICES: ["SoapService", "FeedService", "RestService", "WebSocketService", "SecurityServiceType"],
+    WEB_SERVICE_VARIABLE_SERVICES: ["SoapService", "FeedService", "RestService", "WebSocketService"],
     WEB_SERVICE_VARIABLE_WITH_NO_OPERATION: ["RestService", "WebSocketService"],
     PAGINATION_PARAMS: ["page", "size", "sort"],
     DEFAULT_VAR: {
