@@ -32,7 +32,9 @@ public class RuntimeEnvironment {
         String property = System.getProperty(WMAPP_ENVIRONMENT_KEY);
         property = StringUtils.isNotBlank(property) ? property : System.getenv(WMAPP_ENVIRONMENT_KEY);
         environment = StringUtils.isNotBlank(property) ? property : "production";
-        studioUrl = System.getenv(WM_STUDIO_URL);
+
+        String studioUrlValue = System.getProperty(WM_STUDIO_URL);
+        studioUrl = StringUtils.isNotBlank(studioUrlValue) ? studioUrlValue : System.getenv(WM_STUDIO_URL);
     }
 
     public static boolean isTestRunEnvironment() {
