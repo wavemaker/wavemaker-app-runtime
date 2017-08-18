@@ -35,6 +35,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             UNIQUE_ITEMS_KEY = 'uniqueItems',
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
             FULLY_QUALIFIED_TYPE_KEY = 'x-WM-FULLY_QUALIFIED_TYPE',
+            WM_SCHEMA = 'x-WM-SCHEMA',
             parameterTypeKey = 'in',
             AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
             prefabDataTypes = {},
@@ -359,7 +360,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                             /* special cases for MultiPart type params */
                             if (_.toLower(param[parameterTypeKey]) === "formdata") {
-                                if (param.type === "ref" || param[FULLY_QUALIFIED_TYPE_KEY]) {
+                                if (param.type === "string" && param[WM_SCHEMA]) {
+                                    typeRef = getReturnType(param[WM_SCHEMA], definitions);
+                                } else if (param.type === "ref") {
                                     typeRef = param['x-WM-FULLY_QUALIFIED_TYPE'];
                                 } else if (param.type === 'array') {
                                     isList = true;
