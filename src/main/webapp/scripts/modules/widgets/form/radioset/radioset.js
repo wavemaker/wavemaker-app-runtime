@@ -23,12 +23,13 @@ WM.module('wm.widgets.form')
                 'disabled'      : true,
                 'orderby'       : true,
                 'layout'        : true
-            };
+            },
+            ALLFIELDS = 'All Fields';
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
         function assignModelValue(scope, radioOption) {
             if (radioOption) {
-                if (scope.datafield === 'All Fields') {
+                if (scope.datafield === ALLFIELDS) {
                     if (scope.usekeys || !radioOption.dataObject) {
                         scope._model_ = radioOption.key;
                     } else {
@@ -37,8 +38,8 @@ WM.module('wm.widgets.form')
                 } else {
                     scope._model_ = radioOption.key;
                 }
-            } else if (WM.isDefined(scope.selectedvalue)) {
-                scope._model_ = scope.selectedvalue;
+            } else {
+                FormWidgetUtils.assignModelForSelected(scope);
             }
         }
 
@@ -83,8 +84,7 @@ WM.module('wm.widgets.form')
                 }
                 break;
             case 'selectedvalue':
-                assignModelValue(scope);
-                FormWidgetUtils.updatedCheckedValues(scope);
+                scope._model_ = newVal;
                 break;
             case 'disabled':
                 element.find('input[type="radio"]').attr('disabled', newVal);
@@ -122,6 +122,7 @@ WM.module('wm.widgets.form')
                     scope.reset = function () {
                         scope._model_ = '';
                     };
+                    scope.assignModelValue = assignModelValue;
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 

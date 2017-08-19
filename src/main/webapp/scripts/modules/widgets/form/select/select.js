@@ -33,30 +33,10 @@ WM.module('wm.widgets.form')
             ALLFIELDS = 'All Fields';
 
         function assignModelValue(scope) {
-            var selectedValue = scope.modelProxy,
-                selectedOption;
-
             if (scope.multiple) {
-                scope._model_ = [];
-                _.forEach(selectedValue, function (value) {
-                    if (scope.datafield === ALLFIELDS) {
-                        selectedOption = _.find(scope.displayOptions, {key : value});
-                        scope._model_.push(selectedOption.dataObject);
-                    } else {
-                        scope._model_.push(value);
-                    }
-                });
+                FormWidgetUtils.assignModelForMultiSelect(scope);
             } else {
-                if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
-                    scope._model_ = selectedValue;
-                } else if (scope.datafield === ALLFIELDS) {
-                    selectedOption = _.find(scope.displayOptions, {key : selectedValue});
-                    if (selectedOption) {
-                        scope._model_ = selectedOption.dataObject;
-                    }
-                } else {
-                    scope._model_ = selectedValue;
-                }
+                FormWidgetUtils.assignModelForSelected(scope);
             }
         }
 
@@ -154,6 +134,7 @@ WM.module('wm.widgets.form')
 
                     /*decorate onChange function*/
                     iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
+                    iScope.assignModelValue = assignModelValue;
 
                     /*Called from form reset when users clicks on form reset*/
                     iScope.reset = function () {

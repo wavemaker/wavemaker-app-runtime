@@ -24,12 +24,13 @@ WM.module('wm.widgets.form')
                 'disabled'      : true,
                 'orderby'       : true,
                 'layout'        : true
-            };
+            },
+            ALLFIELDS = 'All Fields';
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
         function assignModelValue(scope, checkboxOption) {
             if (checkboxOption) {
-                if (scope.datafield === 'All Fields') {
+                if (scope.datafield === ALLFIELDS) {
                     if (scope.usekeys || !checkboxOption.dataObject) {
                         scope._model_.push(checkboxOption.key);
                     } else {
@@ -38,8 +39,8 @@ WM.module('wm.widgets.form')
                 } else {
                     scope._model_.push(checkboxOption.key);
                 }
-            } else if (WM.isDefined(scope.selectedvalues)) {
-                scope._model_ = Utils.convertToArray(scope.selectedvalues);
+            } else {
+                FormWidgetUtils.assignModelForMultiSelect(scope);
             }
         }
 
@@ -93,8 +94,7 @@ WM.module('wm.widgets.form')
                 }
                 break;
             case 'selectedvalues':
-                assignModelValue(scope);
-                FormWidgetUtils.updatedCheckedValues(scope);
+                scope._model_ = newVal;
                 break;
             case 'disabled':
                 element.find('input[type="checkbox"]').attr('disabled', newVal);
@@ -131,6 +131,7 @@ WM.module('wm.widgets.form')
                     scope.reset = function () {
                         scope._model_ = [];
                     };
+                    scope.assignModelValue = assignModelValue;
 
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
 

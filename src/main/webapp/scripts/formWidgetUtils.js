@@ -129,6 +129,60 @@ WM.module('wm.widgets.form')
             }
 
             /**
+             * This function assigns the model value depending on modelProxy. Here model can be object or string.
+             * If datafield is ALLFIELDS, modelProxy is 0, then model will be retrieved from dataObject in displayOptions
+             * If datafield is other than ALLFIELDS, the modelProxy and model will be retrieved from key in displayOptions
+             * @param scope widgetScope
+             */
+            function assignModelForSelected(scope) {
+                var selectedOption,
+                    selectedValue = scope.modelProxy;
+
+                // ModelProxy is undefined, then update the _dataVal which can be used when latest dataset is obtained.
+                if (WM.isUndefined(selectedValue) && WM.isDefined(scope._model_)) {
+                    scope._dataVal = scope._model_;
+                    scope.datavalue = selectedValue;
+                    scope._model_ = selectedValue;
+                } else if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
+                    scope._model_ = selectedValue;
+                } else if (scope.datafield === ALLFIELDS) {
+                    selectedOption = _.find(scope.displayOptions, {key : selectedValue});
+                    if (selectedOption) {
+                        scope._model_ = selectedOption.dataObject;
+                    }
+                } else {
+                    scope._model_ = selectedValue;
+                }
+            }
+
+            /**
+             * This function iterates over the modelProxy and assigns the model value. Here model is array of values.
+             * If datafield is ALLFIELDS, modelProxy is 0, then model will be retrieved from dataObject in displayOptions
+             * If datafield is other than ALLFIELDS, the modelProxy and model will be retrieved from key in displayOptions
+             * @param scope widgetScope
+             */
+            function assignModelForMultiSelect(scope) {
+                var selectedOption,
+                    selectedCheckboxValue = scope.modelProxy;
+
+                // ModelProxy is undefined or [] , then update the _dataVal which can be used when latest dataset is obtained.
+                if (WM.isDefined(scope._model_) && (WM.isUndefined(selectedCheckboxValue) || (_.isArray(selectedCheckboxValue) && !selectedCheckboxValue.length))) {
+                    scope._dataVal = scope._model_;
+                    scope.datavalue = selectedCheckboxValue;
+                } else if (selectedCheckboxValue) {
+                    scope._model_ = [];
+                    _.forEach(selectedCheckboxValue, function (value) {
+                        if (scope.datafield === ALLFIELDS) {
+                            selectedOption = _.find(scope.displayOptions, {key : value});
+                            scope._model_.push(selectedOption.dataObject);
+                        } else {
+                            scope._model_.push(value);
+                        }
+                    });
+                }
+            }
+
+            /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#updatedCheckedValues
              * @methodOf wm.widgets.form.FormWidgetUtils
@@ -155,7 +209,22 @@ WM.module('wm.widgets.form')
                     dataObj.isChecked = false;
                 });
 
-                if (scope.displayOptions && !scope.usekeys) {
+                // If model is null, reset the modelProxy and displayValue.
+                if (_.isNull(model) || _.isUndefined(model)) {
+                    if (_.isArray(scope.modelProxy)) {
+                        scope.modelProxy.length = 0;
+                    } else {
+                        scope.modelProxy = undefined;
+                    }
+                    if (_.isArray(scope.displayValue)) {
+                        scope.displayValue.length = 0;
+                    } else {
+                        scope.displayValue = '';
+                    }
+                    return;
+                }
+
+                if (WM.isDefined(scope.displayOptions) && !scope.usekeys) {
                     // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
                     filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
                     if (WM.isArray(model)) {
@@ -186,9 +255,9 @@ WM.module('wm.widgets.form')
                 } else {
                     _modelProxy = model;
                 }
-                if (scope._isModelProxyRequired) {
-                    scope.modelProxy = _modelProxy;
-                }
+
+                scope.modelProxy = _modelProxy;
+
                 setCheckedAndDisplayValues(scope, _modelProxy);
 
                 /* In studioMode, create CheckedValues for checkboxset and radioset when groupFields is true.
@@ -398,7 +467,15 @@ WM.module('wm.widgets.form')
                 _.remove(scope.displayOptions, function (option) {
                     return WM.isUndefined(option.key) || _.isNull(option.key);
                 });
+
+                // Use _dataVal as model when the displayOptions are updated i.e. when latest dataset is retrieved
+                if (scope.displayOptions.length && WM.isDefined(scope._dataVal) && scope._model_ !== '' && (WM.isUndefined(scope._model_) || !scope._model_.length)) {
+                    scope._model_ = scope._dataVal;
+                }
+
                 updatedCheckedValues(scope);
+
+                scope.assignModelValue(scope);
             }
 
             /**
@@ -789,6 +866,8 @@ WM.module('wm.widgets.form')
             this.createDataKeys                  = createDataKeys;
             this.extractDisplayOptions           = extractDisplayOptions;
             this.updateCheckedValue              = updateCheckedValue;
+            this.assignModelForMultiSelect       = assignModelForMultiSelect;
+            this.assignModelForSelected          = assignModelForSelected;
             this.setCheckedAndDisplayValues      = setCheckedAndDisplayValues;
             this.getRadiosetCheckboxsetTemplate  = getRadiosetCheckboxsetTemplate;
             this.getBoundVariableCategory        = getBoundVariableCategory;
