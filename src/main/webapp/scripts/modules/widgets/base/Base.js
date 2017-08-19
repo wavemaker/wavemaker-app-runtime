@@ -1774,7 +1774,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
-                        "itemsperrow": {"type": "string", "widget": "device-config", "widthHeader": "Items per row", "deviceHeader": "Device", "deviceSizes": ['1', '2', '3', '4', '6', '12']},
+                        "itemsperrow": {"type": "string", "widget": "device-config", "widthHeader": "Items per row", "deviceHeader": "Device", "deviceSizes": ['1', '2', '3', '4', '6', '12'], "tableClass": "wm-table-dark"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiselect"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
