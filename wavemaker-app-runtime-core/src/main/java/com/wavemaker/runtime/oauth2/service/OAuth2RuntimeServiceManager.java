@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.oauth.service;
+package com.wavemaker.runtime.oauth2.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +24,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.oauth.OAuthHelper;
-import com.wavemaker.commons.oauth.OAuthProviderConfig;
+import com.wavemaker.commons.oauth2.OAuth2Helper;
+import com.wavemaker.commons.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -37,21 +37,21 @@ import com.wavemaker.runtime.rest.service.RestConnector;
 /**
  * Created by srujant on 18/7/17.
  */
-public class OAuthRuntimeServiceManager {
+public class OAuth2RuntimeServiceManager {
 
     private static RestConnector restConnector = new RestConnector();
-    private static final String REDIRECT_URL = "/services/oauth/${providerId}/callback";
+    private static final String REDIRECT_URL = "/services/oauth2/${providerId}/callback";
 
-    private List<OAuthProviderConfig> oAuthProviderConfigList = new ArrayList<>();
+    private List<OAuth2ProviderConfig> oAuth2ProviderConfigList = new ArrayList<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(OAuthRuntimeServiceManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2RuntimeServiceManager.class);
 
     @PostConstruct
     public void init() {
         InputStream oauthProvidersJsonFile = Thread.currentThread().getContextClassLoader().getResourceAsStream("oauth-providers.json");
         if (oauthProvidersJsonFile != null) {
             try {
-                this.oAuthProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuthProviderConfig>>() {
+                this.oAuth2ProviderConfigList = WMObjectMapper.getInstance().readValue(oauthProvidersJsonFile, new TypeReference<List<OAuth2ProviderConfig>>() {
                 });
             } catch (IOException e) {
                 throw new WMRuntimeException(e);
@@ -62,7 +62,7 @@ public class OAuthRuntimeServiceManager {
 
 
     public String getAuthorizationUrl(String providerId, HttpServletRequest httpServletRequest) {
-        OAuthProviderConfig oAuthProviderConfig = getOAuthProviderConfig(providerId);
+        OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
 
         String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
         String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
@@ -71,7 +71,7 @@ public class OAuthRuntimeServiceManager {
             JSONObject stateObject = new JSONObject();
             stateObject.put("mode", "runtTime");
             stateObject.put("appPath", appPath);
-            return OAuthHelper.getAuthorizationUrl(oAuthProviderConfig, redirectUrl, stateObject);
+            return OAuth2Helper.getAuthorizationUrl(oAuth2ProviderConfig, redirectUrl, stateObject);
         } catch (JSONException e) {
             throw new InvalidInputException("Invalid input to jsonObject", e);
         }
@@ -92,16 +92,16 @@ public class OAuthRuntimeServiceManager {
     }
 
     public String callBack(String providerId, String redirectUrl, String code, HttpServletRequest httpServletRequest) {
-        OAuthProviderConfig oAuthProviderConfig = getOAuthProviderConfig(providerId);
+        OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
             redirectUrl = new StringBuilder().append(httpServletRequest.getScheme()).append("://").append(httpServletRequest.getServerName())
                     .append(':').append(httpServletRequest.getServerPort()).append(httpServletRequest.getContextPath())
-                    .append("/services/oauth/").append(providerId).append("/callback").toString();
+                    .append("/services/oauth2/").append(providerId).append("/callback").toString();
         }
 
-        String requestBody = OAuthHelper.getAccessTokenApiRequestBody(oAuthProviderConfig, providerId, code, redirectUrl);
+        String requestBody = OAuth2Helper.getAccessTokenApiRequestBody(oAuth2ProviderConfig, providerId, code, redirectUrl);
 
-        HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.create(oAuthProviderConfig.getAccessTokenUrl())
+        HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.create(oAuth2ProviderConfig.getAccessTokenUrl())
                 .setMethod("POST")
                 .setContentType(ContentType.APPLICATION_FORM_URLENCODED.toString())
                 .setRequestBody(requestBody).build();
@@ -111,8 +111,8 @@ public class OAuthRuntimeServiceManager {
         try {
             if (httpResponseDetails.getStatusCode() == 200) {
                 String response = IOUtils.toString(httpResponseDetails.getBody());
-                String accessToken = OAuthHelper.extractAccessToken(response);
-                return OAuthHelper.getCallbackResponse(providerId, accessToken);
+                String accessToken = OAuth2Helper.extractAccessToken(response);
+                return OAuth2Helper.getCallbackResponse(providerId, accessToken);
             } else {
                 logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
                 throw new WMRuntimeException("Failed to fetch access token");
@@ -124,16 +124,16 @@ public class OAuthRuntimeServiceManager {
         }
     }
 
-    private OAuthProviderConfig getOAuthProviderConfig(String providerId) {
-        for (OAuthProviderConfig oAuthProviderConfig : oAuthProviderConfigList) {
-            if (Objects.equals(oAuthProviderConfig.getProviderId(), providerId)) {
-                return oAuthProviderConfig;
+    private OAuth2ProviderConfig getOAuthProviderConfig(String providerId) {
+        for (OAuth2ProviderConfig oAuth2ProviderConfig : oAuth2ProviderConfigList) {
+            if (Objects.equals(oAuth2ProviderConfig.getProviderId(), providerId)) {
+                return oAuth2ProviderConfig;
             }
         }
-        throw new ResourceNotFoundException("No OAuthProviderConfig found for given providerId - " + providerId);
+        throw new ResourceNotFoundException("No OAuth2ProviderConfig found for given providerId - " + providerId);
     }
 
-    public void addOAuthProviderConfig(OAuthProviderConfig oAuthProviderConfig) {
-        oAuthProviderConfigList.add(oAuthProviderConfig);
+    public void addOAuthProviderConfig(OAuth2ProviderConfig oAuth2ProviderConfig) {
+        oAuth2ProviderConfigList.add(oAuth2ProviderConfig);
     }
 }

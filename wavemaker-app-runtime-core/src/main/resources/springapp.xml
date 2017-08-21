@@ -60,7 +60,7 @@
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController"/>
 
-    <bean id="oAuthIntegrationController" class="com.wavemaker.runtime.oauth.OAuthRuntimeIntegrationController"/>
+    <bean id="oAuthIntegrationController" class="com.wavemaker.runtime.oauth2.OAuth2RuntimeIntegrationController"/>
 
     <bean id="appRuntimeService" class="com.wavemaker.runtime.service.AppRuntimeServiceImpl"/>
 
@@ -82,7 +82,7 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
-    <bean id="oAuthServiceManager" class="com.wavemaker.runtime.oauth.service.OAuthRuntimeServiceManager"/>
+    <bean id="oAuthServiceManager" class="com.wavemaker.runtime.oauth2.service.OAuth2RuntimeServiceManager"/>
     <bean id="reportServiceManager" class="com.wavemaker.runtime.report.manager.ReportServiceManagerImpl"/>
     <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
 
