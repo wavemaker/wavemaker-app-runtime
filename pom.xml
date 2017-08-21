@@ -55,11 +55,11 @@
         <hikaricp.version>2.6.3</hikaricp.version>
 
         <jsoup.version>1.8.3</jsoup.version>
-        <poi.version>3.10.1</poi.version>
-        <poi.ooxml.version>3.10.1</poi.ooxml.version>
+        <poi.version>3.16</poi.version>
+        <poi.ooxml.version>3.16</poi.ooxml.version>
         <quartz.version>2.2.3</quartz.version>
         <antisamy.version>1.4</antisamy.version>
-        <jasperreports.version>6.2.2</jasperreports.version>
+        <jasperreports.version>6.4.1</jasperreports.version>
         <xerces.version>2.10.0</xerces.version>
     </properties>
 
