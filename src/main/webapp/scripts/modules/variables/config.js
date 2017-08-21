@@ -66,7 +66,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
         'SECURITY_DEFN_BASIC': 'basic',
         'SECURITY_DEFN_OAUTH2': 'oauth2',
         'AUTH_TYPE_BASIC': 'BASIC',
-        'AUTH_TYPE_OAUTH': 'OAUTH',
+        'AUTH_TYPE_OAUTH': 'OAUTH2',
         'AUTH_TYPE_NONE': 'NONE',
         'CONTENT_TYPE_KEY': 'x-WM-CONTENT_TYPE',
         'ACCESSTOKEN_PLACEHOLDER': {

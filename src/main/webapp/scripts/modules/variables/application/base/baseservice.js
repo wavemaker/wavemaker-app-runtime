@@ -1873,7 +1873,7 @@ wm.variables.services.Variables = [
                         securityDefn = _.get(variable._wmServiceOperationInfo, 'securityDefinitions.0');
                         if (securityDefn && securityDefn.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2) {
                             provider = securityDefn[VARIABLE_CONSTANTS.REST_SERVICE.OAUTH_PROVIDER_KEY];
-                            if (sessionStorage.getItem(provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT)) {
+                            if (oAuthProviderService.getAccessToken(provider)) {
                                 return;
                             }
                             restOAuthQueue[pageScopeId] = restOAuthQueue[pageScopeId] || {};
