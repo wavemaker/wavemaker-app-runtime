@@ -207,7 +207,14 @@ wm.plugins.database.services.LocalDBService = [
          *                    Callback function to be triggered on failure.
          */
 
-        this.updateMultiPartTableData = this.updateTableData;
+        this.updateMultiPartTableData = function (params, successCallback, failureCallback) {
+            var data = (params.data && params.data.rowData) || params.data;
+            getStore(params).then(function (store) {
+                store.save(data).then(function () {
+                    successCallback(data);
+                });
+            }).catch(failureCallback);
+        };
 
         /**
          * @ngdoc method
@@ -226,7 +233,9 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.deleteTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
-                store.delete(params[store.primaryKeyField]).then(successCallback);
+                var pkField = store.primaryKeyField,
+                    id = params[pkField.fieldName] || params[pkField.name];
+                store.delete(id).then(successCallback);
             }).catch(failureCallback);
         };
 

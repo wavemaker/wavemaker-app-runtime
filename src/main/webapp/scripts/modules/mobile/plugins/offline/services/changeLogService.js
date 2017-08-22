@@ -823,7 +823,9 @@ wm.plugins.offline.run([
                     case 'updateMultiPartTableData':
                         store = LocalDBManager.getStore(change.params.dataModelName, change.params.entityName);
                         return convertFormDataToMap(change.params.data, store).then(function (map) {
-                            map[store.primaryKeyName] = change.params.data[store.primaryKeyName];
+                            if (change.operation === 'insertMultiPartTableData') {
+                                map[store.primaryKeyName] = change.params.data[store.primaryKeyName];
+                            }
                             change.params.data = map;
                             /**
                              * As save method called with FormData object, empty row is inserted.
