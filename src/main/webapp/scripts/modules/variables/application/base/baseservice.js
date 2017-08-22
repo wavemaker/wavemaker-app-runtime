@@ -1167,6 +1167,10 @@ wm.variables.services.Variables = [
                     }
                 }
 
+                if (!variables) {
+                    return;
+                }
+
                 /* return the variable against active page or app (In studio mode, this is the writable variable obejct */
                 return (variables[$rootScope.activePageName] && variables[$rootScope.activePageName][variableName]) || (variables[VARIABLE_CONSTANTS.OWNER.APP] && variables[VARIABLE_CONSTANTS.OWNER.APP][variableName]) || null;
             },
