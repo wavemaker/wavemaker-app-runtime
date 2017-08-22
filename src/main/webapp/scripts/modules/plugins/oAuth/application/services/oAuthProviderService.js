@@ -21,7 +21,11 @@ wm.plugins.security.services.oAuthProviderService = [
 
     var listeners = {},
         oAuthDialogInstance,
-        newWindowProps = 'width=400,height=600';
+        newWindowProps = 'width=400,height=600',
+        ACCESSTOKEN_PLACEHOLDERS = {
+            'STUDIO': 'WM_STUDIO_',
+            'RUN': 'WM_RUN_'
+        };
 
     //template related to oauth sign in dialog
     $tc.put('template/advanced/oauth.html',
@@ -129,6 +133,36 @@ wm.plugins.security.services.oAuthProviderService = [
     }
 
     /**
+     * This function sets the accessToken
+     * @param provider
+     * @param accesstoken
+     */
+    function setAccessToken(provider, accesstoken) {
+        var accessTokenKey;
+        if (CONSTANTS.isStudioMode) {
+            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.STUDIO + $rs.project.name + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+        } else {
+            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.RUN + $rs.project.id + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+        }
+        sessionStorage.setItem(accessTokenKey, accesstoken);
+    }
+
+    /**
+     * this function retrieves the accessToken based on the run/studiomode
+     * @param provider
+     * @returns {*}
+     */
+    function getAccessToken(provider) {
+        var accessTokenKey;
+        if (CONSTANTS.isStudioMode) {
+            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.STUDIO + $rs.project.name + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+        } else {
+            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.RUN + $rs.project.id + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+        }
+        return sessionStorage.getItem(accessTokenKey);
+    }
+
+    /**
      * this is a callback function to check if the authentication is done and invokes the successCallback
      * @param providerId
      * @param successCallback
@@ -143,7 +177,7 @@ wm.plugins.security.services.oAuthProviderService = [
         if (accessToken) {
             delete $rs.providersConfig[providerId];
             localStorage.removeItem(accessTokenKey);
-            sessionStorage.setItem(accessTokenKey, accessToken);
+            setAccessToken(providerId, accessToken);
             window.removeEventListener("message", listeners[providerId]);
             $timeout(function() {
                 delete listeners[providerId];
@@ -235,4 +269,5 @@ wm.plugins.security.services.oAuthProviderService = [
     this.addProvider = addProvider;
     this.getAuthorizationUrl = getAuthorizationUrl;
     this.performAuthorization = performAuthorization;
+    this.getAccessToken = getAccessToken;
 }];

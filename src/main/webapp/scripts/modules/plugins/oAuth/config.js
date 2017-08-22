@@ -13,7 +13,7 @@ wm.plugins.oauth.service(wm.plugins.oauth.services);
 wm.plugins.oauth.constant('OAUTH_URLS', {
     oauthConfiguration : {
         getAuthorizationUrl: {
-            url: "services/oauth/:providerId/authorizationUrl",
+            url: "services/oauth2/:providerId/authorizationUrl",
             method: "GET"
         }
     }

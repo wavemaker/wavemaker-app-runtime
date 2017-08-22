@@ -229,7 +229,7 @@ wm.variables.services.$servicevariable = ['Variables',
             securityDefnObj = _.get(operationInfo.securityDefinitions, '0');
 
             if (securityDefnObj && securityDefnObj.type === SECURITY_DEFINITIONS_TYPE_OAUTH) {
-                accessToken = sessionStorage.getItem(securityDefnObj[OAUTH_PROVIDER_KEY] + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
+                accessToken = oAuthProviderService.getAccessToken(securityDefnObj[OAUTH_PROVIDER_KEY]);
                 if (accessToken) {
                     headers[AUTH_HDR_KEY] = 'Bearer ' + accessToken;
                 } else {
