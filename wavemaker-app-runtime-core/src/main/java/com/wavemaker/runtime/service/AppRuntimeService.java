@@ -1,5 +1,7 @@
 package com.wavemaker.runtime.service;
 
+import java.io.InputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,4 +28,6 @@ public interface AppRuntimeService {
     void getLocaleMessages(HttpServletRequest request, HttpServletResponse response);
 
     void getLocaleMessages(String language, HttpServletResponse response);
+
+    InputStream getValidations(HttpServletResponse response);
 }

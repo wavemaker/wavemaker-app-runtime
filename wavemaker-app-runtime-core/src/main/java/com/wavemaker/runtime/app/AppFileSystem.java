@@ -9,7 +9,7 @@ import org.springframework.web.context.ServletContextAware;
 import com.wavemaker.commons.ResourceNotFoundException;
 
 /**
- *  Provides a virtual files system for accessing resources of the application.
+ * Provides a virtual files system for accessing resources of the application.
  *
  * @author Kishore Routhu on 21/6/17 3:12 PM.
  */

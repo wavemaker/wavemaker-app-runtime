@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,14 @@
  */
 package com.wavemaker.runtime.controller;
 
+import java.io.InputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -27,7 +30,9 @@ import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
+import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.service.AppRuntimeService;
+import com.wavemaker.runtime.service.AppRuntimeServiceImpl;
 
 /**
  * @author Sowmya
@@ -75,5 +80,12 @@ public class AppRuntimeController {
         appRuntimeService.getLocaleMessages(locale, response);
     }
 
+    @RequestMapping(value = "/application/validations", method = RequestMethod.GET)
+    public DownloadResponse getValidations(HttpServletResponse httpServletResponse) {
+        InputStream inputStream = appRuntimeService.getValidations(httpServletResponse);
+        DownloadResponse downloadResponse = new DownloadResponse(inputStream, MediaType.APPLICATION_JSON_VALUE, AppRuntimeServiceImpl.DB_VALIDATIONS_JSON_FILE);
+        downloadResponse.setInline(true);
+        return downloadResponse;
+    }
 }
 
