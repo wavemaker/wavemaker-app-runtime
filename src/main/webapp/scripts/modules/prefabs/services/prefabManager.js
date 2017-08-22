@@ -258,7 +258,7 @@ WM.module('wm.prefabs')
              * Configs are loaded in asynchronous way.
              * returns a promise
              */
-            function getAllStudioPrefabsConfig() {
+            function getAllStudioPrefabsConfig(appPrefabs, forceReload) {
 
                 var deferred = $q.defer(),
                     prefabNames = Object.keys(studioPrefabNamePropertiesMap),
@@ -281,7 +281,7 @@ WM.module('wm.prefabs')
 
                 prefabNames.forEach(function (prefabName) {
                     //if the prefab config exists in the project then just ignore the workspace
-                    if (appPrefabNamePropertiesMap[prefabName]) {
+                    if (appPrefabNamePropertiesMap[prefabName] && !forceReload) {
                         count -= 1;
                         return;
                     }
