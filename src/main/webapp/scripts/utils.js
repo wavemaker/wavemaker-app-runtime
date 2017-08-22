@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1277,22 +1277,6 @@ WM.module('wm.utils', [])
             return WM.element('[prefabname]').map(function () {return WM.element(this).attr('prefabname'); });
         }
 
-        function initializeAction(op, callback) {
-            var img = new Image();
-                //version = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.version) || '',
-                //revision = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.revision) || '';
-            img.onload = function () {
-                /* image loaded successfully. trigger the callback */
-                triggerFn(callback);
-            };
-            img.onerror = function () {
-                /* image failed to load. trigger the callback */
-                triggerFn(callback);
-            };
-
-           // img.src = 'http://wavemaker.com/img/blank.gif?op=' + op + '&v=' + version + '&r=' + revision + '&preventCache=' + String(Math.random(new Date().getTime())).replace(/\D/, '').substring(0, 8);
-        }
-
         function getNodeFromJson(tree, nodeId, parentNodeId) {
             var nodeUId,
                 parentNodeUId,
@@ -2464,6 +2448,64 @@ WM.module('wm.utils', [])
             DialogService.open(dialogId, dialogScope, params);
         }
 
+        /**
+         * This function executes the callback function and opens the dialog to download the file.
+         * Exports the zip, war file depending on exportType in options.
+         * @param cb Service that has to be invoked on export call. Ex: ProjectService.export or PageTemplateService.export
+         * @param options object containing projectId, exportType, dialogDetails
+         * @returns {*} promise
+         */
+        function exportHandler(cb, options) {
+            var defaultParams =  {
+                    projectId: options.params.projectId,
+                    targetName: options.params.projectName,
+                    exportType: options.params.exportType
+                },
+                exportOptions = options.defaultParams || defaultParams,
+                deferred = $q.defer();
+
+            $rootScope.isStudioDisabled = true;
+
+            cb(exportOptions)
+                .then(function (fileId) {
+                    var dialogParams = options.dialogDetails,
+                        fnName = '_downloadFile';
+
+                    // hide spinner
+                    $rootScope.isStudioDisabled = false;
+
+                    if (options.params.$s.blockProjectsList) {
+                        options.params.$s.blockProjectsList = false;
+                    }
+
+                    options.params.$s[fnName] = function () {
+                        window.location.href = 'services/projects/' + options.params.projectId + '/downloads/' + fileId;
+                        options.params.$s[fnName] = undefined;
+                    };
+
+                    DialogService.showConfirmDialog({
+                        'caption'    : dialogParams.caption,
+                        'controller' : 'WM.noop',
+                        'onOk'       : fnName,
+                        'content'    : dialogParams.content,
+                        'oktext'     : $rootScope.locale.LABEL_DOWNLOAD_NOW,
+                        'canceltext' : $rootScope.locale.LABEL_CANCEL,
+                        'backdrop'   : true,
+                        'scope'      : options.params.$s
+                    });
+                }, function (errMsg) {
+                    // hide spinner
+                    $rootScope.isStudioDisabled = false;
+
+                    if (options.params.$s.blockProjectsList) {
+                        options.params.$s.blockProjectsList = false;
+                    }
+                    wmToaster.show('error', $rootScope.locale[options.params.errorMsgKey], errMsg);
+                });
+
+            return deferred.promise;
+        }
+
         /* formats the data and returns the array of values.
          * If object is given as param, array of object is returned.
          * If commma separated string is given as param, array of strings is returned.
@@ -2816,7 +2858,6 @@ WM.module('wm.utils', [])
         this.browserStorage             = browserStorage;
         this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
         this.getLoadedPrefabNames       = getLoadedPrefabNames;
-        this.initializeAction           = initializeAction;
         this.addNodeToJson              = addNodeToJson;
         this.getNodeFromJson            = getNodeFromJson;
         this.removeJsonNodeChildren     = removeJsonNodeChildren;
@@ -2887,4 +2928,5 @@ WM.module('wm.utils', [])
         this.isXsrfEnabled              = isXsrfEnabled;
         this.addXsrfCookieHeader        = addXsrfCookieHeader;
         this.getFiles                   = getFiles;
+        this.exportHandler              = exportHandler;
     }]);
