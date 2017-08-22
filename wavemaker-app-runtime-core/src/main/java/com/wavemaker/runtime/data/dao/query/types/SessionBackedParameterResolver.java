@@ -6,8 +6,11 @@ import java.util.Optional;
 
 import org.hibernate.engine.spi.NamedQueryDefinition;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.TypeLocatorImpl;
 import org.hibernate.query.spi.NamedQueryRepository;
 import org.hibernate.type.Type;
+
+import com.wavemaker.runtime.data.util.HibernateUtils;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -41,11 +44,10 @@ public class SessionBackedParameterResolver {
             final Map<String, String> parameterTypes = definition.getParameterTypes();
 
             if (parameterTypes != null) {
+                final TypeLocatorImpl typeHelper = new TypeLocatorImpl(factory.getTypeResolver());
                 parameterTypes.forEach((paramName, paramType) -> {
-                    final Type type = factory.getTypeResolver().heuristicType(paramType);
-                    if (type != null) {
-                        typesMap.put(paramName, type);
-                    }
+                    final Optional<Type> typeOptional = HibernateUtils.findType(typeHelper, paramType);
+                    typeOptional.ifPresent(type -> typesMap.put(paramName, type));
                 });
             }
 
