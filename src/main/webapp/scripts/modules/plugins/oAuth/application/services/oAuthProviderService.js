@@ -206,7 +206,7 @@ wm.plugins.security.services.oAuthProviderService = [
      */
     function checkForWindowExistence(oAuthWindow, provider, callback) {
         if (oAuthWindow && listeners[provider]) {
-            if (oAuthWindow.window) {
+            if (!oAuthWindow.closed) { //.closed is supported across major browser vendors however for IE the user has to enable protected mode from security options
                 setTimeout(checkForWindowExistence.bind(undefined, oAuthWindow, provider, callback), 3000);
             } else {
                 window.removeEventListener("message", listeners[provider]);
