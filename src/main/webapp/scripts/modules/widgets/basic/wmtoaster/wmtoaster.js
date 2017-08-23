@@ -2,7 +2,7 @@
 /*jslint nomen: true*/
 
 WM.module('wm.widgets.basic')
-    .service('wmToaster', ['toaster', '$rootScope', '$compile', '$timeout', function (toaster, $rs, $compile, $timeout) {
+    .service('wmToaster', ['toaster', '$rootScope', '$compile', '$timeout', '$templateCache', function (toaster, $rs, $compile, $timeout, $tc) {
         'use strict';
         var _showToaster = function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
             /*pop the toaster only if either title or description are defined*/
@@ -23,22 +23,41 @@ WM.module('wm.widgets.basic')
             }
         },  classlist = [],
             idCount = 0,
-            idMapper = {};
+            idMapper = {},
+            toasterTemplates = {};
+
         $rs.toasterClasses = {};
-        //renders the custom notification call
-        function renderNotification(template, newClass, timeout, position, onclickHandler, onHideCallback, scope) {
+        /**
+         * renders the custom notification call
+         * @param templateUrl templateUrl for the custom notification via partial
+         * @param newClass class appended with custom-toaster class
+         * @param timeout timeout for the toaster
+         * @param position position property of where to display the toaster
+         * @param onclickHandler event handler callback
+         * @param onHideCallback event handler callback
+         */
+        function renderNotification(templateUrl, newClass, timeout, position, onclickHandler, onHideCallback) {
             $rs.toasterClasses[newClass] = 'custom-toaster ' + newClass;
             if (!_.includes(classlist, newClass)) {
                 idMapper[newClass] = ++idCount;
             }
-            var trustedHtml = $compile(template)(scope),
-                toastTemplate = '<toaster-container name = "' + newClass + '" toaster-options="{\'limit\': 1,\'time-out\': 2000, \'position-class\': \'' + position + '\', \'icon-classes\': toasterClasses, \'toaster-id\': ' + idMapper[newClass] + '}"></toaster-container>';
+            var toastTemplate = '<toaster-container name = "' + newClass + '" toaster-options="{\'limit\': 1,\'time-out\': 2000, \'position-class\': \'' + position + '\', \'icon-classes\': toasterClasses, \'toaster-id\': ' + idMapper[newClass] + '}"></toaster-container>';
             if (!_.includes(classlist, newClass)) {
                 WM.element('body').append($compile(toastTemplate)($rs));
                 classlist.push(newClass);
             }
             $timeout(function () {
-                toaster.pop({type: newClass, body: trustedHtml[0].outerHTML, onHideCallback: onHideCallback, toasterId: idMapper[newClass], timeout: timeout, bodyOutputType: 'trustedHtml', clickHandler: onclickHandler});
+                var toastObj = {
+                    'type': newClass,
+                    'body': "{template: '" + templateUrl + "'}",
+                    'timeout': timeout,
+                    'bodyOutputType': 'templateWithData',
+                    'clickHandler': onclickHandler,
+                    'toasterId': idMapper[newClass],
+                    'showCloseButton': false,
+                    'onHideCallback': onHideCallback
+                };
+                toaster.pop(toastObj);
             }, 350);
         }
 
@@ -140,6 +159,7 @@ WM.module('wm.widgets.basic')
              */
             hide: function (toasterObj) {
                 var toasterClass;
+                toaster.clear(undefined, toasterObj.toastId);
                 if (WM.isObject(toasterObj) && _.includes(toasterObj.type, 'custom-toaster ')) {
                     toasterClass = toasterObj.type.replace('custom-toaster ', '');
                     var toastClassIndex = classlist.indexOf(toasterClass);
@@ -150,7 +170,6 @@ WM.module('wm.widgets.basic')
                     WM.element('[name=' + toasterClass + ']').remove();
                     return;
                 }
-                WM.element('.toast').hide();
             },
 
             /**
@@ -170,7 +189,22 @@ WM.module('wm.widgets.basic')
              * @param {method} onHideCallback handles the method on hide of notification
              */
             createCustomNotification: function (content, className, timeout, position, onClickHandler, onHideCallback, pScope) {
-                renderNotification('<wm-container content="' + content + '"></wm-container>', className, timeout, position, onClickHandler, onHideCallback, pScope);
+                var templateUrl;
+                if (toasterTemplates[content]) {
+                    templateUrl = 'toasterTemplates/' + content;
+                    renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
+                } else {
+                    try { //might throw an error
+                        WM.element('[id=ng-app]').injector().get('AppManager').loadPartial(content).then(function(response) {
+                            toasterTemplates[content] = response.html;
+                            templateUrl = 'toasterTemplates/' + content;
+                            $tc.put(templateUrl, toasterTemplates[content]);
+                            renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
+                        });
+                    } catch (e) {
+                        //do nothing
+                    }
+                }
             }
         };
     }]);
