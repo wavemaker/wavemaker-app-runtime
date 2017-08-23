@@ -339,7 +339,7 @@ WM.module('i18n')
             function loadAppLocaleBundle(content) {
                 var path = _appLocaleRootPath + _selectedLocale + '.json';
                 // load the localeBundle
-                if (CONSTANTS.isStudioMode) {
+                if (CONSTANTS.isStudioMode || CONSTANTS.hasCordova) {
                     return $http
                         .get(path)
                         .then(function (response) {
