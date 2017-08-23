@@ -248,10 +248,7 @@ wm.plugins.security.services.oAuthProviderService = [
             return getAuthorizationUrl({
                 'providerId': providerId
             }).then(function(response) {
-                oAuthWindow = window.open(response, '_blank', newWindowProps);
-                if (oAuthWindow) {
-                    postGetAuthorizationURL(providerId, onSuccess, oAuthWindow);
-                } else if (!$rs.isStudioMode){
+                if (!$rs.isStudioMode){
                     $rs.providersConfig[providerId] = {
                         name: providerId,
                         url: response,
