@@ -58,7 +58,7 @@ WM.module('wm.widgets.live')
                             return;
                         }
                         DialogService._showAppConfirmDialog({
-                            'caption'   : 'Delete Record',
+                            'caption'   :  _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                             'iconClass' : 'wi wi-delete fa-lg',
                             'content'   : $scope.grid.confirmdelete,
                             'resolve'   : {

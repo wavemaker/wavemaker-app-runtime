@@ -2746,7 +2746,7 @@ WM.module('wm.widgets.live')
                         });
                     };
                 DialogService._showAppConfirmDialog({
-                    'caption'   : 'Delete Record',
+                    'caption'   :  _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'content'   : confirmMsg,
                     'iconClass' : 'wi wi-delete fa-lg',
                     'resolve'   : {

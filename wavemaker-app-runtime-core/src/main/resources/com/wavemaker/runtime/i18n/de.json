@@ -15,6 +15,7 @@
   "LABEL_CALENDAR_TODAY": "Heute",
   "LABEL_CALENDAR_WEEK": "Woche",
   "LABEL_CALENDAR_YEAR": "Jahr",
+  "LABEL_CANCEL": "Stornieren",
   "LABEL_CLOSE": "Schließen",
   "LABEL_COLLAPSE": "Zusammenbruch",
   "LABEL_CONTAINS": "Enthält",
@@ -41,11 +42,14 @@
   "LABEL_LESS_THAN": "Weniger als",
   "LABEL_NEXT": "Nächster",
   "LABEL_NO_VALUE": "Kein Wert",
+  "LABEL_OK": "Ok",
   "LABEL_PREVIOUS": "Bisherige",
   "LABEL_STARTS_WITH": "Beginnt mit",
   "LABEL_TOTAL_RECORDS": "Gesamtsätze",
+  "MESSAGE_DELETE_RECORD": "Datensatz löschen",
   "MESSAGE_LOADING": "Laden ...",
   "MESSAGE_NO_CHANGES": "Es wurden keine Änderungen festgestellt",
   "MESSAGE_NO_DATA": "Keine Daten gefunden",
-  "MESSAGE_PAGE_NOT_FOUND": "Die Seite, die Sie erreichen möchten, ist nicht verfügbar"
+  "MESSAGE_PAGE_NOT_FOUND": "Die Seite, die Sie erreichen möchten, ist nicht verfügbar",
+  "MESSAGE_SELECT_FIELD": "Feld auswählen"
 }

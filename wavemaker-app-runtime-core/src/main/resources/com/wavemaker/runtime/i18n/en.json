@@ -15,6 +15,7 @@
   "LABEL_CALENDAR_TODAY": "Today",
   "LABEL_CALENDAR_WEEK": "Week",
   "LABEL_CALENDAR_YEAR": "Year",
+  "LABEL_CANCEL": "Cancel",
   "LABEL_CLOSE": "Close",
   "LABEL_COLLAPSE": "Collapse",
   "LABEL_CONTAINS": "Contains",
@@ -41,11 +42,14 @@
   "LABEL_LESS_THAN_OR_EQUALS_TO": "Less than or equals to",
   "LABEL_NEXT": "Next",
   "LABEL_NO_VALUE": "No Value",
+  "LABEL_OK": "Ok",
   "LABEL_PREVIOUS": "Previous",
   "LABEL_STARTS_WITH": "Starts with",
   "LABEL_TOTAL_RECORDS": "Total records",
+  "MESSAGE_DELETE_RECORD": "Delete Record",
   "MESSAGE_LOADING": "Loading ...",
   "MESSAGE_NO_CHANGES": "No changes detected",
   "MESSAGE_NO_DATA": "No data found",
-  "MESSAGE_PAGE_NOT_FOUND": "The page you are trying to reach is not available"
+  "MESSAGE_PAGE_NOT_FOUND": "The page you are trying to reach is not available",
+  "MESSAGE_SELECT_FIELD": "Select Field"
 }

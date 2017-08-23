@@ -288,8 +288,8 @@ WM.module('wm.widgets.dialog')
                     'messageclass': params.contentClass || '',
                     'iconname': params.iconName || '',
                     'iconclass': params.iconClass || '',
-                    'oktext': params.oktext || $rootScope.locale ? $rootScope.locale["LABEL_OK"] : 'OK',
-                    'canceltext': params.canceltext || $rootScope.locale ? $rootScope.locale["LABEL_CANCEL"] : 'CANCEL'
+                    'oktext': params.oktext || ($rootScope.locale ? $rootScope.locale.LABEL_OK : 'OK'),
+                    'canceltext': params.canceltext || ($rootScope.locale ? $rootScope.locale.LABEL_CANCEL : 'CANCEL')
                 });
 
             if (params.onOk) {
@@ -418,6 +418,8 @@ WM.module('wm.widgets.dialog')
             params.dialogId   = '_app-confirm-dialog';
             params.onOk       = 'confirmDialogActionOk()';
             params.onCancel   = 'confirmDialogActionCancel()';
+            params.oktext     = _.get($rootScope.appLocale, 'LABEL_OK') || 'Ok';
+            params.canceltext = _.get($rootScope.appLocale, 'LABEL_CANCEL') || 'Cancel';
             showConfirmDialog(params);
         }
         /**

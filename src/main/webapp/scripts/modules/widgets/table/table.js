@@ -707,6 +707,7 @@ WM.module('wm.widgets.table')
                         handlers.push($rs.$on('locale-change', function () {
                             $is.appLocale     = $rs.appLocale;
                             $is.matchModeMsgs = getMatchModeMsgs();
+                            $is.callDataGridMethod('option', 'messages.selectField', $rs.appLocale.MESSAGE_SELECT_FIELD);
                         }));
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
                          * the "dataNavigatorWatched" value is reset.*/
@@ -853,6 +854,9 @@ WM.module('wm.widgets.table')
                         $is.gridOptions.timeFormat     = AppDefaults.get('timeFormat');
                         $is.gridOptions.dateTimeFormat = AppDefaults.get('dateTimeFormat');
                         $is.gridOptions.name           = $is.name || $is.$id;
+                        $is.gridOptions.messages       = {
+                            'selectField': $rs.appLocale.MESSAGE_SELECT_FIELD
+                        };
                         $is.datagridElement.datatable($is.gridOptions);
                         $is.callDataGridMethod('setStatus', 'loading', $is.loadingdatamsg);
 
@@ -1352,7 +1356,7 @@ WM.module('wm.widgets.table')
                     return;
                 }
                 DialogService._showAppConfirmDialog({
-                    'caption'   : 'Delete Record',
+                    'caption'   : _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'iconClass' : 'wi wi-delete fa-lg',
                     'content'   : $is.confirmdelete,
                     'resolve'   : {

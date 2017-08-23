@@ -48,6 +48,9 @@ $.widget('wm.datatable', {
             'error': 'An error occurred in loading the data.',
             'nodata': 'No data found.'
         },
+        messages: {
+            'selectField': 'Select Field'
+        },
         loadingicon: '',
         startRowIndex: 1,
         editmode: '',
@@ -352,7 +355,7 @@ $.widget('wm.datatable', {
         var htm,
             sel = '<select name="wm-datatable" data-element="dgFilterValue" ' +
                 'class="form-control app-select">' +
-                '<option value="" selected>Select Field</option>',
+                '<option value="" selected class="placeholder">' + this.options.messages.selectField + '</option>',
             searchLabel = (this.Utils.isDefined(this.options.searchLabel) &&
                 this.options.searchLabel.length) ? this.options.searchLabel : 'Search:';
         this.options.colDefs.forEach(function (colDef, index) {
@@ -1118,6 +1121,9 @@ $.widget('wm.datatable', {
             break;
         case 'spacing':
             this._toggleSpacingClasses(value);
+            break;
+        case 'messages':
+            this.gridSearch.find('option.placeholder').text(value && value.selectField);
             break;
         }
     },
