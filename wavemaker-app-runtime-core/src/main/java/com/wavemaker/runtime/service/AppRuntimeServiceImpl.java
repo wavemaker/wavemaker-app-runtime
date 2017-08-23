@@ -20,6 +20,7 @@ import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.PropertiesFileUtils;
 import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
@@ -35,7 +36,6 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String APP_PROPERTIES = ".wmproject.properties";
     private static final String RUNTIME_I18N_FILE_PATTERN = "/WEB-INF/i18n/${lang}.json";
-    public static final String DB_VALIDATIONS_JSON_FILE = "dbValidations.json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppRuntimeServiceImpl.class);
 
@@ -95,7 +95,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     @Override
     public InputStream getValidations(HttpServletResponse httpServletResponse) {
-        return appFileSystem.getWebappResource("WEB-INF/" + DB_VALIDATIONS_JSON_FILE);
+        return appFileSystem.getWebappResource("WEB-INF/" + DbValidationsConstants.DB_VALIDATIONS_JSON_FILE);
     }
 
 
