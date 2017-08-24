@@ -46,11 +46,11 @@ public class DataServiceConstants {
 
     public static final String WM_MY_SQL_CLOUD_PASSWORD_TOKEN = "{WM_CLOUD_MYSQL_PASSWORD}";
 
-    public static final String WM_MY_SQL_CLOUD_HOST = "localhost:3306";
+    public static final String WM_MY_SQL_CLOUD_HOST = System.getProperty("wm.mysqlCloudHost", "localhost:3306");
 
-    public static final String WM_MY_SQL_CLOUD_USER_NAME = "root";
+    public static final String WM_MY_SQL_CLOUD_USER_NAME = System.getProperty("wm.mysqlCloudUsername", "root");
 
-    public static final String WM_MY_SQL_CLOUD_PASSWORD = "cloudjee123";
+    public static final String WM_MY_SQL_CLOUD_PASSWORD = System.getProperty("wm.mysqlCloudPassword", "cloudjee123");
 
     public static final String QUERY_EXECUTION_CONTROLLER = "QueryExecutionController";
 
