@@ -99,7 +99,7 @@ public class OAuth2RuntimeServiceManager {
                     .append("/services/oauth2/").append(providerId).append("/callback").toString();
         }
 
-        String requestBody = OAuth2Helper.getAccessTokenApiRequestBody(oAuth2ProviderConfig, providerId, code, redirectUrl);
+        String requestBody = OAuth2Helper.getAccessTokenApiRequestBody(oAuth2ProviderConfig, code, redirectUrl);
 
         HttpRequestDetails httpRequestDetails = HttpRequestDetailsBuilder.create(oAuth2ProviderConfig.getAccessTokenUrl())
                 .setMethod("POST")
@@ -111,7 +111,7 @@ public class OAuth2RuntimeServiceManager {
         try {
             if (httpResponseDetails.getStatusCode() == 200) {
                 String response = IOUtils.toString(httpResponseDetails.getBody());
-                String accessToken = OAuth2Helper.extractAccessToken(response);
+                String accessToken = OAuth2Helper.extractAccessToken(httpResponseDetails.getHeaders().getContentType(), response);
                 return OAuth2Helper.getCallbackResponse(providerId, accessToken);
             } else {
                 logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
