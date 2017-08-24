@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
@@ -83,7 +84,7 @@ public class AppRuntimeController {
     @RequestMapping(value = "/application/validations", method = RequestMethod.GET)
     public DownloadResponse getValidations(HttpServletResponse httpServletResponse) {
         InputStream inputStream = appRuntimeService.getValidations(httpServletResponse);
-        DownloadResponse downloadResponse = new DownloadResponse(inputStream, MediaType.APPLICATION_JSON_VALUE, AppRuntimeServiceImpl.DB_VALIDATIONS_JSON_FILE);
+        DownloadResponse downloadResponse = new DownloadResponse(inputStream, MediaType.APPLICATION_JSON_VALUE, DbValidationsConstants.DB_VALIDATIONS_JSON_FILE);
         downloadResponse.setInline(true);
         return downloadResponse;
     }
