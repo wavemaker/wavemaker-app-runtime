@@ -2,7 +2,7 @@
 /*jslint nomen: true*/
 
 WM.module('wm.widgets.basic')
-    .service('wmToaster', ['toaster', '$rootScope', '$compile', '$timeout', '$templateCache', function (toaster, $rs, $compile, $timeout, $tc) {
+    .service('wmToaster', ['toaster', '$rootScope', '$compile', '$timeout', '$templateCache', 'CONSTANTS', function (toaster, $rs, $compile, $timeout, $tc, CONSTANTS) {
         'use strict';
         var _showToaster = function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
             /*pop the toaster only if either title or description are defined*/
@@ -159,6 +159,11 @@ WM.module('wm.widgets.basic')
              */
             hide: function (toasterObj) {
                 var toasterClass;
+                //in studio just ignore the toasterObj and hide all the toasters
+                if (CONSTANTS.isStudioMode) {
+                    WM.element('.toast').hide();
+                    return;
+                }
                 toaster.clear(undefined, toasterObj.toastId);
                 if (WM.isObject(toasterObj) && _.includes(toasterObj.type, 'custom-toaster ')) {
                     toasterClass = toasterObj.type.replace('custom-toaster ', '');
