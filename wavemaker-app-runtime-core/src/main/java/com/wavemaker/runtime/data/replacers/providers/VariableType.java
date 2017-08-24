@@ -70,7 +70,7 @@ public enum VariableType {
                 .map(VariableType::name)
                 .reduce((r, e) -> r + "|" + e)
                 .get();
-        variablePattern = Pattern.compile("(" + typePrefixes + ")__(.+)@.+");
+        variablePattern = Pattern.compile("(" + typePrefixes + ")__(.+)__.+");
 
         prefixVsType = Arrays.stream(VariableType.values())
                 .filter(VariableType::isVariable)
@@ -85,7 +85,7 @@ public enum VariableType {
     }
 
     public String toQueryParam(String variableName, String parameterName) {
-        return name() + "__" + variableName + "@" + parameterName;
+        return name() + "__" + variableName + "__" + parameterName;
     }
 
     public static Tuple.Two<VariableType, String> fromVariableName(String name) {

@@ -15,7 +15,7 @@ public class VariableTypeTest {
     @Test
     public void fromAppVariableName() throws Exception {
         final Tuple.Two<VariableType, String> result = VariableType
-                .fromVariableName("APP_ENVIRONMENT__myProperty@name");
+                .fromVariableName("APP_ENVIRONMENT__myProperty__name");
         assertEquals(VariableType.APP_ENVIRONMENT, result.v1);
         assertEquals("myProperty", result.v2);
     }
@@ -23,7 +23,7 @@ public class VariableTypeTest {
     @Test
     public void fromServerVariableName() throws Exception {
         final Tuple.Two<VariableType, String> result = VariableType
-                .fromVariableName("SERVER__time@name");
+                .fromVariableName("SERVER__time__name");
         assertEquals(VariableType.SERVER, result.v1);
         assertEquals("time", result.v2);
     }
