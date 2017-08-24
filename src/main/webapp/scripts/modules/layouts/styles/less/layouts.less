@@ -372,7 +372,7 @@ body {
           right: -15px;
           position: absolute;
           top: 9px;
-          z-index: 1000;
+          z-index: 99;
           border: 1px solid rgba(0, 0, 0, 0.1);
           border-bottom-width: 0;
           border-left-width: 0;
@@ -408,6 +408,15 @@ body {
       text-align: right;
       .app-button {
         margin-right: 8px;
+      }
+    }
+    &.left {
+      .app-wizard-actions-right {
+        text-align: left;
+      }
+
+      .app-wizard-skip {
+        right: 12px;
       }
     }
   }

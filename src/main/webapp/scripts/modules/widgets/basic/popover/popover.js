@@ -52,7 +52,9 @@ WM.module('wm.widgets.basic')
                             if (nv === 'inline') {
                                 $is.widgetProps.inlinecontent.show = true;
                                 $is.widgetProps.content.show = false;
+                                $is.widgetProps.onLoad.show  = false;
                             } else {
+                                $is.widgetProps.onLoad.show  = true;
                                 $is.widgetProps.content.show = true;
                                 $is.widgetProps.inlinecontent.show = false;
                             }
