@@ -60,10 +60,13 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     public Optional<Query<Number>> getCountQuery(final Session session) {
         Query<Number> query = null;
 
-        try {
-            query = getAndConfigureQuery(session, name + "__count", Number.class);
-        } catch (IllegalArgumentException e) {
-            LOGGER.debug("Count query not configured for query: {}, Reason: {}", name, e.getMessage());
+        final String countQueryName = this.name + "__count";
+        final NamedQueryRepository repository = ((SessionFactoryImplementor) session.getSessionFactory())
+                .getNamedQueryRepository();
+        if (queryExists(repository, countQueryName)) {
+            query = getAndConfigureQuery(session, countQueryName, Number.class);
+        } else {
+            LOGGER.debug("Count query not found for query:{}", name);
         }
 
         return Optional.ofNullable(query);
@@ -73,7 +76,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
     private <T> Query<T> getAndConfigureQuery(final Session session, String name, Class<T> type) {
         final Query<T> query;
 
-        if (isMappedType()) {
+        if (isMappedType(type)) {
             query = session.createNamedQuery(name, type);
         } else {
             query = session.createNamedQuery(name);
@@ -92,7 +95,7 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
             final String sortedQuery = QueryHelper
                     .applySortingForHqlQuery(repository.getNamedQueryDefinition(name).getQueryString(), sort,
                             transformer);
-            if (isMappedType()) {
+            if (isMappedType(responseType)) {
                 query = session.createQuery(sortedQuery, responseType);
             } else {
                 query = session.createQuery(sortedQuery).setResultTransformer(transformer);
@@ -111,7 +114,12 @@ public class SessionBackedQueryProvider<R> implements QueryProvider<R>, Paginate
         return query;
     }
 
-    private boolean isMappedType() {
-        return responseType.isAnnotationPresent(Entity.class);
+    private boolean queryExists(final NamedQueryRepository repository, final String countQueryName) {
+        return repository.getNamedQueryDefinition(countQueryName) != null || repository.getNamedSQLQueryDefinition
+                (countQueryName) != null;
+    }
+
+    private boolean isMappedType(Class<?> type) {
+        return type.isAnnotationPresent(Entity.class);
     }
 }
