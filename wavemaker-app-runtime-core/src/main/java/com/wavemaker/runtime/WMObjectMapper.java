@@ -35,19 +35,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
@@ -121,6 +113,16 @@ public class WMObjectMapper extends ObjectMapper {
     @Override
     public ObjectWriter writer() {
         return writeMapper.writer();
+    }
+
+    @Override
+    public ObjectWriter writerWithView(final Class<?> serializationView) {
+        return writeMapper.writerWithView(serializationView);
+    }
+
+    @Override
+    public ObjectWriter writer(final FilterProvider filterProvider) {
+        return writeMapper.writer(filterProvider);
     }
 
     public <T> T readValue(File src, Class<T> valueType)
