@@ -81,6 +81,8 @@ WM.module('wm.widgets.form')
             var prevSelectedOption,
                 dataField = scope.datafield;
 
+            scope._isChangedManually = true;
+
             // modelProxy should not change when select is set to readonly.
             if (scope.readonly) {
                 if (dataField && dataField !== ALLFIELDS) {
@@ -141,6 +143,7 @@ WM.module('wm.widgets.form')
                         //TODO implement custom reset logic here
                         iScope._reset  = true;
                         iScope._model_ = '';
+                        iScope._dataVal = undefined;
                     };
 
                     /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/

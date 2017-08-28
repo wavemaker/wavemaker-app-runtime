@@ -121,6 +121,7 @@ WM.module('wm.widgets.form')
                     // Called from form reset when users clicks on form reset
                     scope.reset = function () {
                         scope._model_ = '';
+                        scope._dataVal = undefined;
                     };
                     scope.assignModelValue = assignModelValue;
 
@@ -152,6 +153,9 @@ WM.module('wm.widgets.form')
                             if (scope.disabled || scope.readonly || _.includes(evt.target.classList, 'caption')) {
                                 return;
                             }
+
+                            scope._isChangedManually = true;
+
                             var dataObj = _.find(scope.displayOptions, {'isChecked': true}),
 
                             /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption

@@ -139,10 +139,12 @@ WM.module('wm.widgets.form')
                     selectedValue = scope.modelProxy;
 
                 // ModelProxy is undefined, then update the _dataVal which can be used when latest dataset is obtained.
-                if (WM.isUndefined(selectedValue) && WM.isDefined(scope._model_)) {
+                if (!scope._isChangedManually && WM.isUndefined(selectedValue) && WM.isDefined(scope._model_)) {
                     scope._dataVal = scope._model_;
                     scope.datavalue = selectedValue;
                     scope._model_ = selectedValue;
+
+                    scope._onChange({$scope: scope});
                 } else if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
                     scope._model_ = selectedValue;
                 } else if (scope.datafield === ALLFIELDS) {
@@ -152,6 +154,11 @@ WM.module('wm.widgets.form')
                     }
                 } else {
                     scope._model_ = selectedValue;
+                }
+
+                // clear _dataVal when model is defined.
+                if (WM.isDefined(scope._model_) && WM.isDefined(scope._dataVal)) {
+                    scope._dataVal = undefined;
                 }
             }
 
@@ -166,9 +173,11 @@ WM.module('wm.widgets.form')
                     selectedCheckboxValue = scope.modelProxy;
 
                 // ModelProxy is undefined or [] , then update the _dataVal which can be used when latest dataset is obtained.
-                if (WM.isDefined(scope._model_) && (WM.isUndefined(selectedCheckboxValue) || (_.isArray(selectedCheckboxValue) && !selectedCheckboxValue.length))) {
+                if (!scope._isChangedManually && WM.isDefined(scope._model_) && (WM.isUndefined(selectedCheckboxValue) || (_.isArray(selectedCheckboxValue) && !selectedCheckboxValue.length))) {
                     scope._dataVal = scope._model_;
                     scope.datavalue = selectedCheckboxValue;
+
+                    scope._onChange({$scope: scope});
                 } else if (selectedCheckboxValue) {
                     scope._model_ = [];
                     _.forEach(selectedCheckboxValue, function (value) {
@@ -179,6 +188,11 @@ WM.module('wm.widgets.form')
                             scope._model_.push(value);
                         }
                     });
+
+                    // clear _dataVal when model is defined.
+                    if (scope._model_.length && WM.isDefined(scope._dataVal)) {
+                        scope._dataVal = undefined;
+                    }
                 }
             }
 
