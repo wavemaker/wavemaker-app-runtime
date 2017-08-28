@@ -1124,7 +1124,7 @@ $.widget('wm.datatable', {
             this._toggleSpacingClasses(value);
             break;
         case 'messages':
-            this.gridSearch.find('option.placeholder').text(value && value.selectField);
+            this.gridSearch && this.gridSearch.find('option.placeholder').text(value && value.selectField);
             break;
         }
     },
