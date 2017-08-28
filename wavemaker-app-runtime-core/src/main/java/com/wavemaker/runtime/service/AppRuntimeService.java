@@ -2,7 +2,6 @@ package com.wavemaker.runtime.service;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.domain.Pageable;
@@ -24,10 +23,6 @@ public interface AppRuntimeService {
     DesignServiceResponse testRunProcedure(String serviceId, RuntimeProcedure procedure);
 
     Object executeQuery(String serviceId, RuntimeQuery query, Pageable pageable);
-
-    void getLocaleMessages(HttpServletRequest request, HttpServletResponse response);
-
-    void getLocaleMessages(String language, HttpServletResponse response);
 
     InputStream getValidations(HttpServletResponse response);
 }

@@ -17,13 +17,16 @@ package com.wavemaker.runtime.controller;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.validations.DbValidationsConstants;
@@ -33,7 +36,6 @@ import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.service.AppRuntimeService;
-import com.wavemaker.runtime.service.AppRuntimeServiceImpl;
 
 /**
  * @author Sowmya
@@ -69,16 +71,6 @@ public class AppRuntimeController {
     public Object executeQuery(
             @PathVariable("serviceId") String serviceId, @RequestBody RuntimeQuery query, Pageable pageable) {
         return appRuntimeService.executeQuery(serviceId, query, pageable);
-    }
-
-    @RequestMapping(value = "/application/i18n", method = RequestMethod.GET)
-    public void getLocaleMessages(HttpServletRequest request, HttpServletResponse response) {
-        appRuntimeService.getLocaleMessages(request, response);
-    }
-
-    @RequestMapping(value = "/application/i18n/{locale}", method = RequestMethod.GET)
-    public void getLocaleMessages(@PathVariable("locale") String locale, HttpServletResponse response) {
-        appRuntimeService.getLocaleMessages(locale, response);
     }
 
     @RequestMapping(value = "/application/validations", method = RequestMethod.GET)

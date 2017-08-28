@@ -1,13 +1,8 @@
 package com.wavemaker.runtime.service;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.Locale;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -16,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.wavemaker.commons.ResourceNotFoundException;
-import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.PropertiesFileUtils;
-import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
@@ -33,9 +25,7 @@ import com.wavemaker.runtime.util.MultipartQueryUtils;
 public class AppRuntimeServiceImpl implements AppRuntimeService {
 
     private String applicationType = null;
-    private static final String DEFAULT_LANGUAGE = "en";
     private static final String APP_PROPERTIES = ".wmproject.properties";
-    private static final String RUNTIME_I18N_FILE_PATTERN = "/WEB-INF/i18n/${lang}.json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppRuntimeServiceImpl.class);
 
@@ -79,67 +69,7 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     }
 
     @Override
-    public void getLocaleMessages(String locale, HttpServletResponse response) {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = getLocaleResourceStream(locale);
-            outputStream = response.getOutputStream();
-            WMIOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            throw new WMRuntimeException(e);
-        } finally {
-            WMIOUtils.closeSilently(inputStream);
-        }
-    }
-
-    @Override
     public InputStream getValidations(HttpServletResponse httpServletResponse) {
         return appFileSystem.getWebappResource("WEB-INF/" + DbValidationsConstants.DB_VALIDATIONS_JSON_FILE);
-    }
-
-
-    @Override
-    public void getLocaleMessages(HttpServletRequest request, HttpServletResponse response) {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = getPreferLocaleResourceStream(request.getLocales());
-            outputStream = response.getOutputStream();
-            WMIOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            throw new WMRuntimeException(e);
-        } finally {
-            WMIOUtils.closeSilently(inputStream);
-        }
-    }
-
-    private InputStream getPreferLocaleResourceStream(Enumeration locales) {
-
-        while (locales.hasMoreElements()) {
-            try {
-                Locale locale = (Locale) locales.nextElement();
-                return appFileSystem.getWebappResource(getLocaleResourcePath(locale.getLanguage()));
-            } catch (ResourceNotFoundException rnfe) {
-                //Ignore the exception as to find for another language in the order
-                LOGGER.debug(rnfe.getMessage());
-            }
-        }
-
-        return appFileSystem.getWebappResource(getLocaleResourcePath(DEFAULT_LANGUAGE));
-    }
-
-    private InputStream getLocaleResourceStream(String locale) {
-        try {
-            return appFileSystem.getWebappResource(getLocaleResourcePath(locale));
-        } catch (ResourceNotFoundException rnfe) {
-            //Ignore the exception as to find for another language in the order
-            LOGGER.debug(rnfe.getMessage());
-        }
-        return appFileSystem.getWebappResource(getLocaleResourcePath(DEFAULT_LANGUAGE));
-    }
-
-    private String getLocaleResourcePath(String locale) {
-        return RUNTIME_I18N_FILE_PATTERN.replace("${lang}", locale);
     }
 }
