@@ -130,6 +130,7 @@ WM.module('wm.widgets.form')
                     // Called from form reset when users clicks on form reset
                     scope.reset = function () {
                         scope._model_ = [];
+                        scope._dataVal = undefined;
                     };
                     scope.assignModelValue = assignModelValue;
 
@@ -162,6 +163,7 @@ WM.module('wm.widgets.form')
                             if (_.includes(evt.target.classList, 'caption')) {
                                 return;
                             }
+                            scope._isChangedManually = true;
 
                             // reset all the isChecked flags.
                             _.forEach(scope.displayOptions, function (dataObj) {
