@@ -1952,15 +1952,9 @@ If the height and width are not specified the video takes the height of the post
       right: 0;
       bottom: 0.8em;
     }
-    .cell-editing {
-      input, select, textarea {
-        border-color: transparent;
-      }
-    }
     .table-container {
       position: relative;
       overflow: hidden;
-      overflow-x: hidden;
       width: 100%;
       &.show-msg {
         pointer-events: none;
@@ -2085,6 +2079,27 @@ If the height and width are not specified the video takes the height of the post
       overflow: auto;
       width: 100%;
       height: 100%;
+    }
+    .app-datagrid-body {
+      > tr {
+        > td {
+          .row-action-button {
+            i {
+              padding: 5px 0;
+            }
+            &:focus {
+              opacity: .9;
+              color: #333;
+              background-color: rgba(168,168,168,.3) !important;
+            }
+          }
+        }
+        &:focus {
+          > td {
+            background-color: rgba(168,168,168,.3);
+          }
+        }
+      }
     }
   }
   .table {
