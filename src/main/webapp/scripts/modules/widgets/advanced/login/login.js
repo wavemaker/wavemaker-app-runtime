@@ -56,7 +56,7 @@ WM.module('wm.widgets.advanced')
                                     successFn = attrs.onSuccess || '',
                                     errorFn   = attrs.onError || '',
                                     submitFn  = attrs.onSubmit || '',
-                                    clickFn   = WM.element(this).isolateScope().onClick || '',
+                                    clickFn   = WM.element(this).isolateScope().onClick || WM.element(this).isolateScope().onTap || '',
                                     $userName = element.find('[name="usernametext"]'),
                                     $password = element.find('[name="passwordtext"]'),
                                     rememberMeElement,
