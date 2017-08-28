@@ -485,8 +485,10 @@ WM.module('i18n')
                 $http
                     .get(path)
                     .then(function (response) {
-                        // extend the $rs.locale object with the response json
-                        WM.extend($rs.appLocale, response.data);
+                        if (response && WM.isObject(response.data)) {
+                            //extend the component locale with the appLocale and reassign the appLocale
+                            $rs.appLocale = WM.extend(response.data, $rs.appLocale);
+                        }
                     });
             }
 
