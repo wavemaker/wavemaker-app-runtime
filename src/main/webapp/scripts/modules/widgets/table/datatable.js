@@ -54,6 +54,7 @@ $.widget('wm.datatable', {
         loadingicon: '',
         startRowIndex: 1,
         editmode: '',
+        actionsEnabled: {},
         searchHandler: WM.noop,
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
@@ -1440,6 +1441,10 @@ $.widget('wm.datatable', {
         });
         return isDataChanged;
     },
+    //Focus the active row
+    focusActiveRow: function () {
+        this.gridBody.find('tr.active').focus();
+    },
     disableActions: function (val) {
         var $deleteBtns = this.gridBody.find('.delete-row-button'),
             $editBtns   =  this.gridBody.find('.edit-row-button');
@@ -1471,9 +1476,12 @@ $.widget('wm.datatable', {
                 $firstEl = $($el).first().find('select');
             }
         }
-        //Focus the fiest element
+        //Focus and select the first element
         if ($firstEl.length) {
-            $firstEl.first().focus();
+            this.options.timeoutCall(function () {
+                $firstEl.first().focus();
+                $firstEl.first().select();
+            });
         }
     },
     removeNewRow: function ($row) {
@@ -1514,6 +1522,17 @@ $.widget('wm.datatable', {
             isValid,
             $requiredEls,
             advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
+
+        //On success of update or delete
+        function onSaveSuccess() {
+            if ($.isFunction(options.success)) {
+                options.success();
+            }
+            if (!advancedEdit || self.options.actionsEnabled.edit) {
+                self.focusActiveRow();
+            }
+        }
+
         if ($row.attr('data-removed') === 'true') {
             //Even after removing row, focus out is triggered and edit is called. In this case, return here
             return;
@@ -1664,7 +1683,7 @@ $.widget('wm.datatable', {
                                 return;
                             }
                         }
-                        this.options.onRowInsert(rowData, e, options.success);
+                        this.options.onRowInsert(rowData, e, onSaveSuccess);
                     } else {
                         if ($.isFunction(this.options.onBeforeRowUpdate)) {
                             isValid = this.options.onBeforeRowUpdate(rowData, e);
@@ -1672,7 +1691,7 @@ $.widget('wm.datatable', {
                                 return;
                             }
                         }
-                        this.options.afterRowUpdate(rowData, e, options.success);
+                        this.options.afterRowUpdate(rowData, e, onSaveSuccess);
                     }
                 } else {
                     this.cancelEdit($row);
@@ -1724,6 +1743,7 @@ $.widget('wm.datatable', {
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
+        this.focusActiveRow();
         this._setGridEditMode(false);
     },
     //Function to close the current editing row
@@ -1935,12 +1955,13 @@ $.widget('wm.datatable', {
     onKeyDown: function (event) {
         var $target   = $(event.target),
             $row      = $target.closest('tr'),
+            self      = this,
             quickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT,
             rowId,
             isNewRow;
         if (this.Utils.isDeleteKey(event)) { //Delete Key
-            //For input elements, dont delete the row
-            if ($target.is('input') || $target.hasClass('form-control')) {
+            //For input elements, dont delete the row. If delete button is not present, dont allowe deleting by keyboard shortcut
+            if (!this.options.actionsEnabled.delete || $target.is('input') || $target.hasClass('form-control')) {
                 return;
             }
             this.deleteRow(event);
@@ -1960,7 +1981,23 @@ $.widget('wm.datatable', {
             if (quickEdit && $target.hasClass('app-datagrid-row')) {
                 $row.trigger('click', [undefined, {action: 'edit'}]);
             } else {
-                $row.trigger('click');
+                //On click of enter while inside a widget in editing row, save the row
+                if ($row.hasClass('row-editing') && $target.attr('data-field-name')) {
+                    $target.blur(); //Blur the input, to update the model
+                    self.toggleEditRow(event, {
+                        'action'  : 'save',
+                        'success' : function (skipFocus, error) {
+                            //On error, focus the same field. Else, focus the row
+                            if (error) {
+                                $target.focus();
+                            } else {
+                                self.focusActiveRow();
+                            }
+                        }
+                    });
+                } else {
+                    $row.trigger('click');
+                }
             }
             //Stop the enter keypress from submitting any parent form. If target is button, event should not be stopped as this stops click event on button
             if (!$target.is('button')) {
@@ -2355,6 +2392,7 @@ $.widget('wm.datatable', {
     //Generates markup for row operations
     _getRowActionsTemplate: function () {
         var saveCancelTemplateAdded = false,
+            self = this,
             rowOperationsCol,
             actionsTemplate = '<span> ',
             saveCancelTemplate = '<button type="button" class="save row-action-button btn app-button btn-transparent save-edit-row-button hidden" title="Save"><i class="wi wi-done"></i></button> ' +
@@ -2379,8 +2417,10 @@ $.widget('wm.datatable', {
                 //Adding 'edit' class if at least one of the action is 'editRow()'
                 if (_.includes(def.action, 'editRow()')) {
                     clsAttr += ' edit edit-row-button ';
+                    self.options.actionsEnabled.edit = true;
                 } else if (_.includes(def.action, 'deleteRow()')) {
                     clsAttr += ' delete delete-row-button ';
+                    self.options.actionsEnabled.delete = true;
                 }
 
                 actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + generateBindExpr(def.title) + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + (def.tabindex ? (' tabindex="' + def.tabindex + '"') : '') + ngDisabled + '>'
@@ -2398,10 +2438,12 @@ $.widget('wm.datatable', {
             //Appending old template for old projects depending on grid level attributes
             rowOperationsCol = this._getRowActionsColumnDef() || {};
             if (_.includes(rowOperationsCol.operations, 'update')) {
+                self.options.actionsEnabled.edit = true;
                 actionsTemplate += '<button type="button" class="row-action-button btn app-button btn-transparent edit edit-row-button" title="Edit Row"><i class="wi wi-pencil"></i></button> ' +
                     saveCancelTemplate;
             }
             if (_.includes(rowOperationsCol.operations, 'delete')) {
+                self.options.actionsEnabled.delete = true;
                 actionsTemplate += '<button type="button" class="row-action-button btn app-button btn-transparent delete delete-row-button" title="Delete Record"><i class="wi wi-trash"></i></button> ';
             }
         }

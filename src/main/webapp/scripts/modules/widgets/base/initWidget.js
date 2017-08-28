@@ -41,7 +41,7 @@ WM.module('wm.widgets.base')
 
             if (CONSTANTS.isRunMode) {
                 //Append and compile the global application confirm dialog in run mode
-                $appConfirmDialog = WM.element('<wm-confirmdialog name="_app-confirm-dialog" keyboard="true"></wm-confirmdialog>');
+                $appConfirmDialog = WM.element('<wm-confirmdialog name="_app-confirm-dialog" keyboard="true" closable="true"></wm-confirmdialog>');
                 WM.element(document.body).append($appConfirmDialog);
                 $compile($appConfirmDialog)($rs);
             }

@@ -33,19 +33,32 @@ WM.module('wm.widgets.live')
 
             //On opening of the form, set the validation type on the form
             function setValidationType($is) {
-                $timeout(function () {
-                   LiveWidgetUtils.setFormValidationType($is.gridform);
-                });
+               LiveWidgetUtils.setFormValidationType($is.gridform);
             }
 
             //Function to apply the filter on field values, once the dialog is opened
             function applyFilterOnFields(scope) {
+                _.forEach(scope.gridform.formFields, function (field) {
+                    scope.gridform.applyFilterOnField(field);
+                });
+            }
+
+            //Focus the first input on load
+            function focusFirstInput($is) {
+                var $firstInput = WM.element('body').find('.app-liveform-dialog[dialogid="' + $is.gridform._dialogid + '"] .app-liveform [role="input"]:first');
+                $firstInput.focus();
+                $firstInput.select();
+            }
+
+            //On opening of the live form
+            function onLiveFormOpen($is) {
                 $timeout(function () {
-                    _.forEach(scope.gridform.formFields, function (field) {
-                        scope.gridform.applyFilterOnField(field);
-                    });
+                    applyFilterOnFields($is);
+                    setValidationType($is);
+                    focusFirstInput($is);
                 }, undefined, false);
             }
+
             return {
                 restrict: 'E',
                 replace: true,
@@ -160,8 +173,7 @@ WM.module('wm.widgets.live')
                                     scope.gridform.new();
                                     if (scope.isLayoutDialog) {
                                         DialogService.showDialog(scope.gridform._dialogid, { 'resolve': {}, 'scope' : scope.gridform });
-                                        applyFilterOnFields(scope);
-                                        setValidationType(scope);
+                                        onLiveFormOpen(scope);
                                     }
                                 }));
                                 /*On update row call the form update function*/
@@ -182,8 +194,7 @@ WM.module('wm.widgets.live')
                                             'resolve': {},
                                             'scope': scope.gridform
                                         });
-                                        applyFilterOnFields(scope);
-                                        setValidationType(scope);
+                                        onLiveFormOpen(scope);
                                     }
                                 }));
                                 /* watch the primaryKey field in grid form , as soon as it updated change the live grid primary key */
