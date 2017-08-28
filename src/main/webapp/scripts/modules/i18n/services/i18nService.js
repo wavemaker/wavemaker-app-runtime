@@ -339,15 +339,14 @@ WM.module('i18n')
             function loadAppLocaleBundle(content) {
                 var path = _appLocaleRootPath + _selectedLocale + '.json';
                 // load the localeBundle
-                if (CONSTANTS.isStudioMode || CONSTANTS.hasCordova) {
-                    return $http
-                        .get(path)
-                        .then(function (response) {
-                            // extend the $rs.locale object with the response json
-                            WM.extend($rs[localeKey], response.data, content);
-                        });
-                }
-                return BaseService
+                return $http
+                    .get(path)
+                    .then(function (response) {
+                        // extend the $rs.locale object with the response json
+                        WM.extend($rs[localeKey], response.data, content);
+                    });
+                //i18nService implementation can be ignored as of now
+                /*return BaseService
                         .execute({
                             target: 'i18nService',
                             action: 'getLocale',
@@ -357,7 +356,7 @@ WM.module('i18n')
                             }, function (response) {
                                 //extend the $rs.locale object with the response json
                                 WM.extend($rs[localeKey], response, content);
-                            });
+                            });*/
             }
 
             // Loads the angular ngLocale resource of the selected locale.
