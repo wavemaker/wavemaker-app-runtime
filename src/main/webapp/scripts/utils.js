@@ -2041,7 +2041,7 @@ WM.module('wm.utils', [])
          * @param variable: the variable that is called from user action
          * @param requestParams object consisting the info to construct the XHR request for the service
          */
-        function downloadThroughIframe(requestParams) {
+        function downloadThroughIframe(requestParams, success) {
             var iFrameElement,
                 formEl,
                 paramElement,
@@ -2093,6 +2093,7 @@ WM.module('wm.utils', [])
             $timeout(function () {
                 iFrameElement.contents().find('body').append(formEl);
                 formEl.submit();
+                triggerFn(success);
             }, 100);
         }
 

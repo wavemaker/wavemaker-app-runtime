@@ -596,8 +596,10 @@ wm.variables.services.$servicevariable = ['Variables',
             if (WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
                 Utils.simulateFileDownload(params, variable.dataBinding.file || variable.name, variable.dataBinding.exportType, function () {
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable);
+                    Utils.triggerFn(success);
                 }, function () {
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable);
+                    Utils.triggerFn(error);
                 });
                 variableActive[variable.activeScope.$id][variable.name] = false;
                 return;
