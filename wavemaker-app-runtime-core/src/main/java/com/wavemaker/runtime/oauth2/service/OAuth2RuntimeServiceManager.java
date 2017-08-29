@@ -26,6 +26,7 @@ import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.oauth2.OAuth2Helper;
 import com.wavemaker.commons.oauth2.OAuth2ProviderConfig;
+import com.wavemaker.commons.oauth2.extractors.AccessTokenRequestContext;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -111,7 +112,10 @@ public class OAuth2RuntimeServiceManager {
         try {
             if (httpResponseDetails.getStatusCode() == 200) {
                 String response = IOUtils.toString(httpResponseDetails.getBody());
-                String accessToken = OAuth2Helper.extractAccessToken(httpResponseDetails.getHeaders().getContentType(), response);
+                AccessTokenRequestContext accessTokenRequestContext = new AccessTokenRequestContext(httpResponseDetails.getHeaders().getContentType(),
+                        oAuth2ProviderConfig.getAccessTokenUrl(), response);
+
+                String accessToken = OAuth2Helper.extractAccessToken(accessTokenRequestContext);
                 return OAuth2Helper.getCallbackResponse(providerId, accessToken);
             } else {
                 logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
