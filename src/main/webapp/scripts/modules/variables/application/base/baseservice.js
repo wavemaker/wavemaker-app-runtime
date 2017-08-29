@@ -837,6 +837,26 @@ wm.variables.services.Variables = [
                     }
                 }
             },
+
+            isActionTypeVariable = function (variable) {
+                var serviceType = getVariableServiceType(variable),
+                    actionServiceTypes = getServiceTypesByCollectionType('action');
+                return _.includes(actionServiceTypes, serviceType);
+            },
+
+            defineActionsOnScope = function (scope) {
+                scope.Actions = {};
+                WM.forEach(scope.Variables, function (variable, name) {
+                    if (isActionTypeVariable(variable)) {
+                        Object.defineProperty(scope.Actions, name, {
+                            configurable: true,
+                            get: function () {
+                                return variable;
+                            }
+                        });
+                    }
+                });
+            },
             /*
              * Updates the variables in a context with their latest values
              * context refers to the namespace for the variables collection, like 'app'/page/partial/prefab
@@ -861,6 +881,7 @@ wm.variables.services.Variables = [
                         if (!scope.Variables.hasOwnProperty(name)) {
                             Object.defineProperty(scope.Variables, name, {
                                 configurable: true,
+                                enumerable: true,
                                 get: function () {
                                     return variable;
                                 }
@@ -872,6 +893,9 @@ wm.variables.services.Variables = [
                     //Trigger update on variable based on run/studio mode
                     updateVariableData(variable, name, context, scope);
                 });
+
+                // Expose the Actions in a separate namespace (Post 9.0)
+                defineActionsOnScope(scope);
             },
 
             /* function to update variable values in $rootScope */

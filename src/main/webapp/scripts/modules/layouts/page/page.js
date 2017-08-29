@@ -70,6 +70,7 @@ WM.module('wm.layouts.page')
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
 
                         if (CONSTANTS.isRunMode) {
+                            $s.Actions   = {};
                             $s.Variables = {};
                             $s.Widgets   = {};
                             $rs.pageParams = $s.pageParams = $location.search();
