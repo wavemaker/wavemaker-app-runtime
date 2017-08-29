@@ -556,7 +556,7 @@ WM.module('wm.widgets.base', [])
                         "eventstart": {"type": "list", "value": "start", "options": [""], "datasetfilter" : "terminals"},
                         "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals"},
                         "eventallday": {"type": "list", "value": "allday", "options": [""], "datasetfilter" : "terminals"},
-                        "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals"},
+                        "eventtitle": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals"},
                         "view": {"type": "list", "options": ["month", "week", "day"], "value": "month"},
                         "controls": {"type": "list", "options": "navigation, today, month, week, day", "value": "navigation, today, month, week, day", "widget": "select-all"},

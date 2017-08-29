@@ -157,15 +157,22 @@ WM.module('wm.widgets.advanced')
             }
 
             function constructCalendarDataset($is, eventSource) {
-                var properties = {title : $is.eventtitle,
-                    allday      : $is.eventallday,
-                    start       : $is.eventstart,
-                    end         : $is.eventend,
-                    className   : $is.eventclass
+                var properties = {
+                        title       : $is.eventtitle,
+                        allday      : $is.eventallday,
+                        start       : $is.eventstart,
+                        end         : $is.eventend,
+                        className   : $is.eventclass
                     };
+
                 _.forEach(eventSource, function (obj) {
                     _.mapKeys(properties, function (value, key) {
-                        var objVal = _.get(obj, value);
+                        var objVal;
+                        if (key === 'title') {
+                            objVal = WidgetUtilService.getEvaluatedData($is, obj, {expressionName: 'eventtitle'});
+                        } else {
+                            objVal = _.get(obj, value);
+                        }
                         if (!objVal) {
                             return;
                         }
@@ -390,7 +397,7 @@ WM.module('wm.widgets.advanced')
                         }
                         function viewRenderProxy(view) {
                             $is.currentview = {start: view.start.format(), end: view.end.subtract(1, 'days').format()};
-                            $timeout(function() {
+                            $timeout(function () {
                                 if ($is.calendartype === VIEW_TYPES.LIST) {
                                     $el.find('.fc-list-table').addClass('table');
                                 }
