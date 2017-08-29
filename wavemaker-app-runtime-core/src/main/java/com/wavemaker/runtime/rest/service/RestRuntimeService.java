@@ -51,6 +51,9 @@ import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
+import com.wavemaker.tools.apidocs.tools.core.model.auth.BasicAuthDefinition;
+import com.wavemaker.tools.apidocs.tools.core.model.auth.OAuth2Definition;
+import com.wavemaker.tools.apidocs.tools.core.model.auth.SecuritySchemeDefinition;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
 
 /**
@@ -141,13 +144,14 @@ public class RestRuntimeService {
         filterRequestData(httpRequestData, operation, httpHeaders, queryParameters, pathParameters);
 
         HttpRequestDetails httpRequestDetails = new HttpRequestDetails();
+
+        updateAuthorizationInfo(swagger.getSecurityDefinitions(), operation, queryParameters, httpHeaders, httpRequestData);
         httpRequestDetails.setEndpointAddress(getEndPointAddress(swagger, pathValue, queryParameters, pathParameters));
         httpRequestDetails.setMethod(SwaggerDocUtil.getOperationType(path, operation.getOperationId()).toUpperCase());
 
         httpRequestDetails.setHeaders(httpHeaders);
         httpRequestDetails.setBody(httpRequestData.getRequestBody());
 
-        updateAuthorizationInfo(operation, httpRequestData, httpRequestDetails);
         return httpRequestDetails;
     }
 
@@ -203,21 +207,39 @@ public class RestRuntimeService {
         }
     }
 
-    private void updateAuthorizationInfo(Operation operation, HttpRequestData httpRequestData, HttpRequestDetails httpRequestDetails) {
+    private void updateAuthorizationInfo(Map<String, SecuritySchemeDefinition> securitySchemeDefinitionMap, Operation operation, Map<String, Object> queryParameters, HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
         //check basic auth is there for operation
         List<Map<String, List<String>>> securityMap = operation.getSecurity();
         if (securityMap != null) {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
-                    //can change logic by security definition type, right now oauth and basic auth use Authorization header
-                    String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
-                    if (authorizationHeaderValue == null) {
-                        throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
+                    //TODO update the code to handle if multiple securityConfigurations are enabled for the api.
+                    SecuritySchemeDefinition securitySchemeDefinition = securitySchemeDefinitionMap.get(security.getKey());
+                    if (securitySchemeDefinition instanceof OAuth2Definition) {
+                        OAuth2Definition oAuth2Definition = (OAuth2Definition) securitySchemeDefinition;
+                        if (ParameterType.QUERY.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                            queryParameters.put(oAuth2Definition.getAccessTokenParamName(), httpRequestData.getQueryParametersMap().getFirst(oAuth2Definition
+                                    .getAccessTokenParamName()));
+                        }
+                        if (ParameterType.HEADER.name().equalsIgnoreCase(oAuth2Definition.getSendAccessTokenAs())) {
+                            sendAsAuthorizationHeader(httpHeaders, httpRequestData);
+                        }
+                    } else if (securitySchemeDefinition instanceof BasicAuthDefinition) {
+                        sendAsAuthorizationHeader(httpHeaders, httpRequestData);
                     }
-                    httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
+
                 }
             }
         }
+    }
+
+    private void sendAsAuthorizationHeader(HttpHeaders httpHeaders, HttpRequestData httpRequestData) {
+        String authorizationHeaderValue = httpRequestData.getHttpHeaders().getFirst(AUTHORIZATION);
+        if (authorizationHeaderValue == null) {
+            throw new UnAuthorizedResourceAccessException("Authorization details are not specified in the request headers");
+        }
+        httpHeaders.set(RestConstants.AUTHORIZATION, authorizationHeaderValue);
+
     }
 
     private Operation getOperation(Path path, String operationId) {
