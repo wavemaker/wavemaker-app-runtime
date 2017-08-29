@@ -904,6 +904,10 @@ $.widget('wm.datatable', {
             //For quick edit, do not remove the delete button
             if (alwaysNewRow || this.options.editmode !== this.CONSTANTS.QUICK_EDIT) {
                 $row.find('.delete-row-button').hide();
+                //Hide the edit button for always new row
+                if (alwaysNewRow) {
+                    $row.find('.edit-row-button').hide()
+                }
             }
             this._findAndReplaceCompiledTemplates();
 
@@ -2548,8 +2552,8 @@ $.widget('wm.datatable', {
         this._appendRowActions($htm);
         this.attachEventHandlers($htm);
         this.__setStatus();
-        //Add new row, if always show new row is present
-        if (this.options.showNewRow) {
+        //Add new row, if always show new row is present for quick edit
+        if ( this.options.editmode === this.CONSTANTS.QUICK_EDIT && this.options.showNewRow) {
             this.addNewRow(false, true);
         }
         this.setColGroupWidths();
