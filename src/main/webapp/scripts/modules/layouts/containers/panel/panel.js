@@ -22,13 +22,13 @@ WM.module('wm.layouts.containers')
                             '<span ng-if="badgevalue" class="app-badge label label-{{badgetype}}">{{badgevalue}}</span>' +
                             '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemaction="{{binditemaction || itemaction}}" userrole="{{binduserrole || userrole}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                             '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" ng-if="helptext" ng-click="toggleHelp()"></button>' +
-                            '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
+                            '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="_expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
                             '<button type="button" class="app-icon wi panel-action" ng-if="enablefullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" ng-class="fullscreen ? \'wi-fullscreen-exit\': \'wi-fullscreen\'" ng-click="toggleFullScreen($event);"></button>' +
                             '<button type="button" class="app-icon wi panel-action wi-close" title="{{::$root.appLocale.LABEL_CLOSE}}" ng-if="closable" ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
                         '</div>' +
                     '</h3>' +
                 '</div>' +
-                '<div class="panel-content" ng-show="expanded">' +
+                '<div class="panel-content" ng-show="_expanded">' +
                     '<div class="panel-body" ng-class="helpClass" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
                     '<aside class="panel-help-message" ng-class="helpClass"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" ng-bind-html="helptext"></div></aside>' +
                 '</div>' +
@@ -46,8 +46,9 @@ WM.module('wm.layouts.containers')
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps', 'wm.layouts.panel.defaults']),
                 notifyFor   = {
-                    'actions': true,
-                    'iconurl': true
+                    'actions' : true,
+                    'iconurl' : true,
+                    'expanded': true
                 };
 
             //Eval content height on toggle of full screen
@@ -79,6 +80,9 @@ WM.module('wm.layouts.containers')
                     break;
                 case 'iconurl':
                     scope.iconsrc = Utils.getImageUrl(newVal);
+                    break;
+                case 'expanded':
+                    scope._expanded = newVal;
                     break;
                 }
             }
@@ -123,7 +127,7 @@ WM.module('wm.layouts.containers')
                         },
                         'post': function ($is, $el, attrs, panelCtrl) {
                             if ($is.expanded === undefined) {
-                                $is.expanded = true;
+                                $is.expanded = $is._expanded = true;
                             }
                             /* Expand Collapse the panel */
                             $is.expandCollapsePanel = function ($event) {
@@ -146,9 +150,9 @@ WM.module('wm.layouts.containers')
                                     Utils.triggerFn($is.$lazyLoad);
 
                                     /* flip the active flag */
-                                    $is.expanded = !$is.expanded;
+                                    $is._expanded = !$is._expanded;
                                     if (panelCtrl.footer) {
-                                        panelCtrl.footer.isolateScope().expanded = $is.expanded;
+                                        panelCtrl.footer.isolateScope().expanded = $is._expanded;
                                     }
                                 }
                             };
