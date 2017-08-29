@@ -1519,34 +1519,32 @@ body.modal-open {
   }
 }
 .app-livelist {
-  .app-livelist-container {
-    &:focus {
-      outline: none;
+  li.app-list-item {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+    > .app-card {
+      height: 100%;
     }
-    li.app-list-item {
-      display: inline-block;
-      float: none;
-      vertical-align: top;
-      > .app-card {
+    &.active > .app-card {
+      border: 1px solid rgba(168,168,168,.9);
+    }
+    //Add overlay when disableitem is enabled
+    &.disable-item {
+      &:before {
+        content: '';
+        width: 100%;
         height: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 999;
       }
-      //Add overlay when disableitem is enabled
-      &.disable-item {
-        &:before {
-          content: '';
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          z-index: 999;
-        }
-      }
-      &:focus:not(.active):not(.disable-item) {
-        background-color: rgba(0,0,0,0.05);
-      }
+    }
+    &:focus:not(.active):not(.disable-item) {
+      background-color: rgba(0,0,0,0.05);
     }
   }
 
