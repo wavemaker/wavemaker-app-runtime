@@ -1486,6 +1486,7 @@ WM.module('wm.widgets.base', [])
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "web-service"},
                         "gridfirstrowselect": {"type": "boolean", "showindesigner": true},
                         "formposition": {"type": "select-by-object", "options": [{"label": "Top", "value": "top"}, {"label": "Bottom", "value": ""}], "value": "", "displayfield": "label", "datafield": "value", "showindesigner": true},
+                        "shownewrow": {"type": "boolean", "show": false, "value": true},
                         "confirmdelete": {"type": "string", "value": "Are you sure you want to delete this?", "bindable": "in-bound", "show": true, "showindesigner": true},
                         "deleterow": {"type": "boolean", "bindable": "in-bound", "show": false},
                         "updaterow": {"type": "boolean", "bindable": "in-bound", "show": false},

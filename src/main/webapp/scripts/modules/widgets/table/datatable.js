@@ -23,6 +23,7 @@ $.widget('wm.datatable', {
         height: '100%',
         showHeader: true,
         selectFirstRow: false,
+        showNewRow: true,
         showRowIndex: false,
         enableRowSelection: true,
         enableColumnSelection: false,
@@ -866,15 +867,25 @@ $.widget('wm.datatable', {
     },
 
     /* Inserts a new blank row in the table. */
-    addNewRow: function (skipFocus) {
+    addNewRow: function (skipFocus, alwaysNewRow) {
         var rowId = this.gridBody.find('tr:visible').length,
             rowData = {},
             $row,
-            $gridBody;
+            $gridBody,
+            $alwaysNewRow;
 
-        if ($.isFunction(this.options.beforeRowInsert)) {
+        if (!alwaysNewRow && $.isFunction(this.options.beforeRowInsert)) {
             this.options.beforeRowInsert();
         }
+
+        $gridBody       = this.gridElement.find('tbody.app-datagrid-body');
+        $alwaysNewRow    = $gridBody.find('tr.always-new-row');
+        //Focus the new row if already present
+        if ($alwaysNewRow.length) {
+            this.setFocusOnElement(undefined, $alwaysNewRow);
+            return;
+        }
+
         rowData.index = this.options.startRowIndex + rowId;
         rowData.$$pk = rowId;
         if (this.options.editmode !== this.CONSTANTS.FORM && this.options.editmode !== this.CONSTANTS.DIALOG) {
@@ -882,7 +893,6 @@ $.widget('wm.datatable', {
             if (!this.preparedData.length) {
                 this.setStatus('ready', this.dataStatus.ready);
             }
-            $gridBody = this.gridElement.find('tbody.app-datagrid-body');
             //Based on the form position, add new row at top or bottom
             if (this.options.formPosition === 'top') {
                 $gridBody.prepend($row);
@@ -892,11 +902,23 @@ $.widget('wm.datatable', {
             this._appendRowActions($row, true, rowData);
             this.attachEventHandlers($row);
             //For quick edit, do not remove the delete button
-            if (this.options.editmode !== this.CONSTANTS.QUICK_EDIT) {
+            if (alwaysNewRow || this.options.editmode !== this.CONSTANTS.QUICK_EDIT) {
                 $row.find('.delete-row-button').hide();
             }
             this._findAndReplaceCompiledTemplates();
-            $row.trigger('click', [undefined, {action: 'edit', operation: 'new', skipFocus: skipFocus}]);
+
+            //For always show new row, make the row editable with default values
+            if (alwaysNewRow) {
+                _.forEach(this.preparedHeaderData, function (colDef) {
+                    rowData[colDef.field] = colDef.defaultvalue;
+                });
+
+                $row.addClass('always-new-row').addClass('row-editing');
+                this.makeRowEditable($row, rowData, 'new');
+            } else {
+                $row.trigger('click', [undefined, {action: 'edit', operation: 'new', skipFocus: skipFocus}]);
+            }
+
             this.updateSelectAllCheckboxState();
             this.addOrRemoveScroll();
             this.setColGroupWidths();
@@ -921,7 +943,7 @@ $.widget('wm.datatable', {
         var self = this;
         /*Deselect all the previous selected rows in the table*/
         self.gridBody.find('tr.app-datagrid-row').each(function (index) {
-            if (self.preparedData[index].selected) {
+            if (self.preparedData[index] && self.preparedData[index].selected) {
                 $(this).trigger('click', [$(this), {skipSingleCheck: true}]);
             }
         });
@@ -1460,9 +1482,9 @@ $.widget('wm.datatable', {
     //Function to the first input element in a row
     setFocusOnElement: function (e, $el) {
         var $firstEl,
-            $target = $(e.target);
+            $target = e && $(e.target);
         //If focused directly on the cell, focus the input in the cell
-        if ($target.hasClass('app-datagrid-cell')) {
+        if ($target && $target.hasClass('app-datagrid-cell')) {
             $firstEl = $target.find('input');
         } else {
             if (!$el) {
@@ -1487,6 +1509,12 @@ $.widget('wm.datatable', {
     removeNewRow: function ($row) {
         this.disableActions(false);
         this._setGridEditMode(false);
+
+        //Don't remove the always new row
+        if ($row.hasClass('always-new-row')) {
+            return;
+        }
+
         $row.attr('data-removed', true);
         $row.remove();
         if (!this.preparedData.length) {
@@ -1496,8 +1524,50 @@ $.widget('wm.datatable', {
     },
     //Method to save a row which is in editable state
     saveRow: function (callBack) {
-        this.gridBody.find('tr.row-editing').each(function () {
+        this.gridBody.find('tr.row-editing:not(.always-new-row)').each(function () {
             $(this).trigger('click', [undefined, {action: 'save', skipSelect: true, noMsg: true, success: callBack}]);
+        });
+    },
+    //Method to make row editable with widgets
+    makeRowEditable: function ($row, rowData, operation) {
+        var self                = this,
+            $originalElements   = $row.find('td.app-datagrid-cell'),
+            rowId               = parseInt($row.attr('data-row-id'), 10),
+            $editableElements;
+
+        $originalElements.each(function () {
+            var $el      = $(this),
+                cellText = $el.text(),
+                id       = $el.attr('data-col-id'),
+                colDef   = self.preparedHeaderData[id],
+                value,
+                editableTemplate;
+            if (!colDef.readonly) {
+                value = _.get(rowData, colDef.field);
+                editableTemplate = self._getEditableTemplate($el, colDef, value, rowId, operation);
+                if (!(colDef.customExpression || colDef.formatpattern)) {
+                    $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
+                } else {
+                    if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
+                        $el.addClass('cell-editing editable-expression').data('originalValue', {'template': colDef.customExpression, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
+                    }
+                    $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
+                }
+                if (colDef.required) {
+                    $el.addClass('required-field form-group');
+                }
+            }
+        });
+
+        $editableElements = $row.find('td.cell-editing');
+        $editableElements.on('click', function (e) {
+            e.stopPropagation();
+        });
+        $editableElements.on('keydown', function (e) {
+            //To prevent up and down arrows, navigating to other rows in edit mode
+            if (e.which === 38 || e.which === 40) {
+                e.stopPropagation();
+            }
         });
     },
     /* Toggles the edit state of a row. */
@@ -1507,7 +1577,6 @@ $.widget('wm.datatable', {
             e.stopPropagation();
         }
         var $row = options.$row || $(e.target).closest('tr'),
-            $originalElements = $row.find('td.app-datagrid-cell'),
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
             $saveButton = $row.find('.save-edit-row-button'),
@@ -1524,9 +1593,9 @@ $.widget('wm.datatable', {
             advancedEdit = self.options.editmode === self.CONSTANTS.QUICK_EDIT;
 
         //On success of update or delete
-        function onSaveSuccess() {
+        function onSaveSuccess(skipFocus, error) {
             if ($.isFunction(options.success)) {
-                options.success();
+                options.success(skipFocus, error);
             }
             if (!advancedEdit || self.options.actionsEnabled.edit) {
                 self.focusActiveRow();
@@ -1545,7 +1614,7 @@ $.widget('wm.datatable', {
         e.data  = e.data  || {};
         action  = e.data.action || options.action;
         if (action === 'edit') {
-            if (advancedEdit && self.gridBody.find('tr.row-editing').length) {
+            if (advancedEdit && self.gridBody.find('tr.row-editing:not(.always-new-row)').length) {
                 //In case of advanced edit, save the previous row
                 self.saveRow(function (skipFocus, error) {
                     self.editSuccessHandler(skipFocus, error, e, $row, true);
@@ -1576,43 +1645,12 @@ $.widget('wm.datatable', {
             this._setGridEditMode(true);
             this.disableActions(true);
             $deleteButton.removeClass('disabled-action');
-            $originalElements.each(function () {
-                var $el      = $(this),
-                    cellText = $el.text(),
-                    id       = $el.attr('data-col-id'),
-                    colDef   = self.preparedHeaderData[id],
-                    value,
-                    editableTemplate;
-                if (!colDef.readonly) {
-                    value = _.get(rowData, colDef.field);
-                    editableTemplate = self._getEditableTemplate($el, colDef, value, rowId, options.operation);
-                    if (!(colDef.customExpression || colDef.formatpattern)) {
-                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
-                    } else {
-                        if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
-                            $el.addClass('cell-editing editable-expression').data('originalValue', {'template': colDef.customExpression, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
-                        }
-                        $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
-                    }
-                    if (colDef.required) {
-                        $el.addClass('required-field form-group');
-                    }
-                }
-            });
+            this.makeRowEditable($row, rowData, options.operation);
             // Show editable row.
             $editButton.addClass('hidden');
             $cancelButton.removeClass('hidden');
             $saveButton.removeClass('hidden');
             $editableElements = $row.find('td.cell-editing');
-            $editableElements.on('click', function (e) {
-                e.stopPropagation();
-            });
-            $editableElements.on('keydown', function (e) {
-                //To prevent up and down arrows, navigating to other rows in edit mode
-                if (e.which === 38 || e.which === 40) {
-                    e.stopPropagation();
-                }
-            });
             if (!options.skipFocus && $editableElements) {
                 self.setFocusOnElement(e, $editableElements);
             }
@@ -1743,7 +1781,6 @@ $.widget('wm.datatable', {
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
-        this.focusActiveRow();
         this._setGridEditMode(false);
     },
     //Function to close the current editing row
@@ -2028,7 +2065,7 @@ $.widget('wm.datatable', {
         //On success, make next row editable. If next row is not present, add new row
         rowID = +$row.attr('data-row-id');
         if (direction) {
-            rowID    = direction === 'down' ? ++rowID : --rowID;
+            rowID = direction === 'down' ? ++rowID : --rowID;
             $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
             if ($nextRow.length) {
                 $nextRow.focus();
@@ -2041,11 +2078,30 @@ $.widget('wm.datatable', {
             rowID++;
         }
         $nextRow = self.gridBody.find('tr[data-row-id="' + rowID + '"]');
-        if ($nextRow.length) {
+
+        //For always new row, dont trigger the edit action
+        if ($nextRow.hasClass('always-new-row')) {
+            if (self.options.formPosition !== 'top') {
+                self.addNewRow(skipFocus);
+            }
+        } else if ($nextRow.length) {
             $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus, skipSelect: self.options.multiselect}]);
         } else {
             self.addNewRow(skipFocus);
         }
+    },
+    //Method to check if the docus is on last column
+    isLastColumn: function ($target) {
+        var $cell = $target.closest('td.app-datagrid-cell');
+
+        if ($cell.is(':last-child')) {
+            return true;
+        }
+
+        if ($cell.hasClass('cell-editing')) {
+            return $cell.attr('data-col-id') === $cell.closest('tr.app-datagrid-row').find('.cell-editing').last().attr('data-col-id');
+        }
+        return false;
     },
     /* Attaches all event handlers for the table. */
     attachEventHandlers: function ($htm) {
@@ -2106,7 +2162,7 @@ $.widget('wm.datatable', {
                 var $target        = $(e.target),
                     $row           = $target.closest('tr'),
                     $relatedTarget = $(e.relatedTarget),
-                    invalidTargets = '.row-editing, .row-action-button, .app-datagrid-cell, .caption';
+                    invalidTargets = '.row-editing:not(".always-new-row"), .row-action-button, .app-datagrid-cell, .caption';
                 //Check if the focus out element is outside the grid or some special elements
                 function isInvalidTarget() {
                     if (!$relatedTarget.closest('.app-grid').length) {
@@ -2114,8 +2170,16 @@ $.widget('wm.datatable', {
                     }
                     return $relatedTarget.is(invalidTargets);
                 }
+
+                //If focus is on the same row, return here
+                if ($relatedTarget.is('tr')) {
+                    if ($relatedTarget.attr('data-row-id') === $row.attr('data-row-id')) {
+                        return;
+                    }
+                }
+
                 //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row.
-                if (!$target.closest('td.app-datagrid-cell').is(':last-child') || $row.hasClass('danger') || e.relatedTarget === null) {
+                if (!self.isLastColumn($target, $relatedTarget) || $row.hasClass('danger') || e.relatedTarget === null) {
                     return;
                 }
                 //If focusout is because of input element or row action or current row, dont save the row
@@ -2484,6 +2548,10 @@ $.widget('wm.datatable', {
         this._appendRowActions($htm);
         this.attachEventHandlers($htm);
         this.__setStatus();
+        //Add new row, if always show new row is present
+        if (this.options.showNewRow) {
+            this.addNewRow(false, true);
+        }
         this.setColGroupWidths();
         if ($.isFunction(this.options.onDataRender)) {
             this.options.onDataRender();

@@ -376,7 +376,8 @@ WM.module('wm.widgets.table')
                                 'filternullrecords'     : 'filterNullRecords',
                                 'enablesort'            : 'enableSort',
                                 'showheader'            : 'showHeader',
-                                'enablecolumnselection' : 'enableColumnSelection'
+                                'enablecolumnselection' : 'enableColumnSelection',
+                                'shownewrow'            : 'showNewRow'
                             },
                             handlers                 = [],
                             liveGrid                 = element.closest('.app-livegrid'),

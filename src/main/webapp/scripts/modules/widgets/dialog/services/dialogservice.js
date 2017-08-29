@@ -418,6 +418,7 @@ WM.module('wm.widgets.dialog')
             params.dialogId   = '_app-confirm-dialog';
             params.onOk       = 'confirmDialogActionOk()';
             params.onCancel   = 'confirmDialogActionCancel()';
+            params.onClose    = 'confirmDialogActionClose()';
             params.oktext     = _.get($rootScope.appLocale, 'LABEL_OK') || 'Ok';
             params.canceltext = _.get($rootScope.appLocale, 'LABEL_CANCEL') || 'Cancel';
             showConfirmDialog(params);
@@ -448,9 +449,13 @@ WM.module('wm.widgets.dialog')
             Utils.triggerFn(confirmActionOk);
             DialogService.close('_app-confirm-dialog');
         };
+
         $scope.confirmDialogActionCancel = function () {
             Utils.triggerFn(confirmActionCancel);
             DialogService.close('_app-confirm-dialog');
         };
-        $scope.onClose = $scope.confirmDialogActionCancel;
+
+        $scope.confirmDialogActionClose = function () {
+            Utils.triggerFn(confirmActionCancel);
+        };
     }]);
