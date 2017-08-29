@@ -706,7 +706,12 @@ WM.module('wm.widgets.basic')
                     var query = $is.query;
 
                     $is.datavalue = undefined;
-                    $is.queryModel = $is.query = query;
+                    if(!$is.required && type === 'autocomplete'){
+                        $is.queryModel = $is.query = undefined;
+                    }
+                    else {
+                        $is.queryModel = $is.query = query;
+                    }
                 }
                 $is.result = ($is.datafield === ALL_FIELDS || !$is.datafield) ? matches : _.map(matches, $is.datafield);
             }
