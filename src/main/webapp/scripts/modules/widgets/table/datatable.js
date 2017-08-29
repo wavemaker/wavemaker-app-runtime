@@ -2635,6 +2635,13 @@ $.widget('wm.datatable', {
     },
     //This method is used to show or hide data loading/ no data found overlay
     setStatus: function (state, message) {
+        var $newRow;
+        //If state is nodata and always new row is present, change state to ready
+        if (state === 'nodata') {
+            $newRow = this.gridElement && this.gridElement.find('tbody.app-datagrid-body tr.always-new-row');
+            state = ($newRow && $newRow.length) ? 'ready' : state;
+        }
+
         this.dataStatus.state   = state;
         this.options.setGridState(state);
         this.dataStatus.message = message || this.options.dataStates[state];
