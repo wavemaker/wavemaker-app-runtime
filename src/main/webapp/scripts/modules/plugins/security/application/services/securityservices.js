@@ -1463,6 +1463,19 @@ wm.plugins.security.services.SecurityService = [
                 });
 
                 return deferred.promise;
+            },
+            /**
+             * For web applications, security is handled in Backend Server. So, this function always return true
+             * for web applications. In case of Mobile hybrid apps, access is allowed only if,
+             * 1) page is public.
+             * 2) Security is disabled
+             * 3) Security is enabled and user is authenticated
+             *
+             * @param {string} pageName name of the page.
+             * @returns {Object} a promise
+             */
+            canAccess : function () {
+                return $q.resolve();
             }
         };
     }];
