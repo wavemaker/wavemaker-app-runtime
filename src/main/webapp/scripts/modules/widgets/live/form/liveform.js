@@ -1381,6 +1381,21 @@ WM.module('wm.widgets.live')
                         parentScope.formfields[columnDef.key] = columnDef;
                         //tabindex should be only on the input fields, remove tabindex on form field
                         element.removeAttr('tabindex');
+
+                        //Evaluate type for datavalue based on the dataset
+                        if (scope.widgetid) {
+                            scope.getDataValueType = function () {
+                                var propertyType,
+                                    bindDataSet = scope.binddataset,
+                                    TypeUtils = Utils.getService('TypeUtils');
+                                //If dataset is not bound, get it from liveform dataset
+                                if (!bindDataSet && _.get(parentScope, 'binddataset')) {
+                                    bindDataSet = _.get(parentScope, 'binddataset') + '.' + scope.key;
+                                }
+                                propertyType = TypeUtils.getTypeForExpression(bindDataSet, scope);
+                                return propertyType;
+                            };
+                        }
                     }
                 };
             }
