@@ -26,6 +26,7 @@ WM.module('wm.widgets.live')
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets(),
+                resetDataSetProps      = ['datafield', 'searchkey', 'displaylabel', 'displayfield', 'displayexpression'],
                 LIVE_CONSTANTS         = {
                     'EMPTY_KEY'     : 'EMPTY_NULL_FILTER',
                     'EMPTY_VALUE'   : $rs.appLocale.LABEL_NO_VALUE,
@@ -1011,7 +1012,8 @@ WM.module('wm.widgets.live')
                 var template       = '',
                     wdgtProperties = scope.widgetProps, //Find out the form widget inside the form field
                     formWidget     = getFormFieldWidget(scope, element),
-                    fieldDef       = parentScope.formFields[index];
+                    fieldDef       = parentScope.formFields[index],
+                    resetProps     = {};
 
                 function setFormField() {
                     if (CONSTANTS.isRunMode) {
@@ -1049,8 +1051,12 @@ WM.module('wm.widgets.live')
 
                         if (WM.isDefined(newVal) && newVal !== null) {
                             if (newVal === '') {
-                                $rs.$emit('set-markup-attr', scope.widgetid, {'datafield': '', 'searchkey': '', 'displaylabel': '', 'displayfield': '', 'displayexpression': ''});
-                                fieldDef.datafield = fieldDef.searchkey = fieldDef.displaylabel = fieldDef.displayfield = fieldDef.displayexpression = undefined;
+                                _.forEach(resetDataSetProps, function (prop) {
+                                    resetProps[prop]    = '';
+                                    fieldDef[prop]      = undefined;
+                                    scope[prop]         = undefined;
+                                });
+                                $rs.$emit('set-markup-attr', scope.widgetid, resetProps);
                                 wdgtProperties.limit.show = true;
                             } else {
                                 wdgtProperties.limit.show = scope.widget === 'autocomplete';
@@ -1230,6 +1236,10 @@ WM.module('wm.widgets.live')
                         widgetProps.type.show = false;
                     }
                     widgetProps.limit = {'type': 'number', 'show': true};
+
+                    if (fieldType === 'wm-form-field' && widgetProps.datavalue) {
+                        widgetProps.datavalue.getTypeFrom = 'expr:getDataValueType()';
+                    }
                 } else if (widgetType === 'upload') {
                     widgetProps = WM.extend(widgetProps, {
                         'readonly'   : {'type': 'boolean', 'bindable': 'in-bound', 'show': true},
