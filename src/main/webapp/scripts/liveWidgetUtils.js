@@ -50,6 +50,11 @@ WM.module('wm.widgets.live')
                     'LABEL'     : 'label'
                 };
 
+            //Returns true if the value is defined and is not empty or null
+            function isDefined (val) {
+                return WM.isDefined(val) && val !== '' && val !== null;
+            }
+
             //Returns true if widget is autocomplete or chips
             function isSearchWidgetType(widget) {
                 return _.includes(['autocomplete', 'typeahead', 'chips'], widget);
@@ -2362,11 +2367,11 @@ WM.module('wm.widgets.live')
             function getRangeMatchMode(minValue, maxValue) {
                 var matchMode;
                 //If two values exists, then it is between. Otherwise, greater or lesser
-                if (minValue && maxValue) {
+                if (isDefined(minValue) && isDefined(maxValue)) {
                     matchMode = MATCH_MODES.BETWEEN;
-                } else if (minValue) {
+                } else if (isDefined(minValue)) {
                     matchMode = MATCH_MODES.GREATER;
-                } else if (maxValue) {
+                } else if (isDefined(maxValue)) {
                     matchMode = MATCH_MODES.LESSER;
                 }
                 return matchMode;
@@ -2385,11 +2390,11 @@ WM.module('wm.widgets.live')
              */
             function getRangeFieldValue(minValue, maxValue) {
                 var fieldValue;
-                if (minValue && maxValue) {
+                if (isDefined(minValue) && isDefined(maxValue)) {
                     fieldValue = [minValue, maxValue];
-                } else if (minValue) {
+                } else if (isDefined(minValue)) {
                     fieldValue = minValue;
-                } else if (maxValue) {
+                } else if (isDefined(maxValue)) {
                     fieldValue = maxValue;
                 }
                 return fieldValue;
@@ -2434,7 +2439,7 @@ WM.module('wm.widgets.live')
                     if (filterDef && filterDef.isRelated) {
                         filterOn += '.' +  lookUpField;
                     }
-                    if (WM.isDefined(newVal) && newVal !== '' && newVal !== null) {
+                    if (isDefined(newVal)) {
                         if (filterDef.isRange) {
                             matchMode = getRangeMatchMode(filterDef.minValue, filterDef.maxValue);
                         } else if (getEnableEmptyFilter($scope.enableemptyfilter) && newVal === LIVE_CONSTANTS.EMPTY_KEY) {
