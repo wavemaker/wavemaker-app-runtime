@@ -215,7 +215,7 @@ WM.module('wm.widgets.form')
 
                 // In studioMode, handle the model having comma separated string.
                 if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
-                    model = model.split(',');
+                    model = _.map(model.split(','), _.trim);
                 }
 
                 // reset isChecked flag for displayOptions.
