@@ -155,4 +155,70 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 }
             });
         }
-    }]);
+    }]).run([
+        '$cordovaFile',
+        '$q',
+        'CONSTANTS',
+        'SecurityService',
+        function ($cordovaFile, $q, CONSTANTS, SecurityService) {
+            'use strict';
+            var publicPages,
+                initialized = false,
+                queue = [];
+
+            /**
+             * This method returns a promise that is resolved only if the user can access the page.
+             * Following is Mobile application page security policy. A page can be accessed if,
+             * 1) Public page info not available.
+             * 2) Page is public.
+             * 2) Security is disabled
+             * 3) Security is enabled and user is authenticated
+             *
+             * @param pageName name of the page
+             * @param defer -- optional
+             * @returns promise
+             */
+            function canAccess(pageName, defer) {
+                defer = defer || $q.defer();
+                if (!initialized) {
+                    queue.push({'pageName' : pageName, 'defer' : defer});
+                } else if (!publicPages || publicPages[pageName]) {
+                    defer.resolve();
+                } else {
+                    SecurityService.getConfig(function (config) {
+                        if (!config.securityEnabled || config.authenticated) {
+                            defer.resolve();
+                        } else {
+                            defer.reject();
+                        }
+                    }, defer.reject);
+                }
+                return defer.promise;
+            }
+
+            /**
+             * loads public pages from 'metadata/app/public-pages.info' and overrides canAccess method SecurityService
+             */
+            function init() {
+                var folderPath = cordova.file.applicationDirectory + 'www/metadata/app',
+                    fileName = 'public-pages.json';
+                $cordovaFile.readAsText(folderPath, fileName).then(function (text) {
+                    publicPages = {};
+                    _.forEach(JSON.parse(text), function (pageName) {
+                        publicPages[pageName] = true;
+                    });
+                }).finally(function () {
+                    initialized = true;
+                    _.forEach(queue, function (args) {
+                        canAccess(args.pageName, args.defer);
+                    });
+                    queue.length = 0;
+                });
+                // Override canAccess method
+                SecurityService.canAccess = canAccess;
+            }
+            if (CONSTANTS.hasCordova) {
+                init();
+            }
+        }
+    ]);

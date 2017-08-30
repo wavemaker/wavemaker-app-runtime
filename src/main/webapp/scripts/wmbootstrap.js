@@ -438,44 +438,49 @@ Application
                 }
 
                 function _load(pageName, onSuccess, onError, isPartial) {
+                    SecurityService.canAccess(pageName)
+                        .then(function () {
+                            //If the request to fetch a page info is in progress, do not trigger multiple calls.
+                            if (!WM.isDefined(pageReqQueue[pageName])) {
+                                pageReqQueue[pageName] = [];
+                            }
 
-                    //If the request to fetch a page info is in progress, do not trigger multiple calls.
-                    if (!WM.isDefined(pageReqQueue[pageName])) {
-                        pageReqQueue[pageName] = [];
-                    }
+                            // push the calls into a queue
+                            pageReqQueue[pageName].push({'success': onSuccess, 'error': onError});
 
-                    // push the calls into a queue
-                    pageReqQueue[pageName].push({'success': onSuccess, 'error': onError});
+                            if (pageReqQueue[pageName].length > 1) {
+                                return;
+                            }
 
-                    if (pageReqQueue[pageName].length > 1) {
-                        return;
-                    }
+                            BaseService.getHttpPromise({
+                                'method': 'GET',
+                                'url'   : Utils.preventCachingOf('pages/' + pageName + '/' + 'page.min.html')
+                            }).then(function (response) {
+                                defaultPageLoadSuccessHandler(pageName, response, isPartial);
 
-                    BaseService.getHttpPromise({
-                        'method': 'GET',
-                        'url'   : Utils.preventCachingOf('pages/' + pageName + '/' + 'page.min.html')
-                    }).then(function (response) {
-                        defaultPageLoadSuccessHandler(pageName, response, isPartial);
+                                // Execute the success handler for all the queued calls
+                                _.forEach(pageReqQueue[pageName], function (handler) {
+                                    Utils.triggerFn(handler.success, cache.get(pageName));
+                                });
+                                pageReqQueue[pageName].length = 0;
 
-                        // Execute the success handler for all the queued calls
-                        _.forEach(pageReqQueue[pageName], function (handler) {
-                            Utils.triggerFn(handler.success, cache.get(pageName));
+                            }, function (jqxhr) {
+                                if ($route.current.params.name === pageName && jqxhr.status === 404) {
+                                    WM.element('.app-spinner').addClass('ng-hide');
+                                    wmToaster.show('error', $rs.appLocale.MESSAGE_PAGE_NOT_FOUND || 'The page you are trying to reach is not available');
+                                }
+
+                                // Execute the error handler for all the queued calls
+                                _.forEach(pageReqQueue[pageName], function (handler) {
+                                    defaultPageLoadErrorHandler(pageName, handler.success, handler.error, jqxhr);
+                                });
+
+                                pageReqQueue[pageName].length = 0;
+                            });
+                        }, function () {
+                            hidePageSwitchSpinner();
+                            handleSessionTimeout(pageName, onSuccess, onError);
                         });
-                        pageReqQueue[pageName].length = 0;
-
-                    }, function (jqxhr) {
-                        if ($route.current.params.name === pageName && jqxhr.status === 404) {
-                            WM.element('.app-spinner').addClass('ng-hide');
-                            wmToaster.show('error', $rs.appLocale.MESSAGE_PAGE_NOT_FOUND || 'The page you are trying to reach is not available');
-                        }
-
-                        // Execute the error handler for all the queued calls
-                        _.forEach(pageReqQueue[pageName], function (handler) {
-                            defaultPageLoadErrorHandler(pageName, handler.success, handler.error, jqxhr);
-                        });
-
-                        pageReqQueue[pageName].length = 0;
-                    });
                 }
 
                 function loadPage(pageName, isPartial, prevPage) {
@@ -647,26 +652,13 @@ Application
                         SecurityService.getConfig(function (config) {
                             $rs.isSecurityEnabled   = config.securityEnabled;
                             $rs.isUserAuthenticated = config.authenticated;
-                            if (config.securityEnabled) {
-                                if (config.authenticated) {
-                                    page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
-                                    $rs.userRoles = config.userInfo.userRoles;
-                                    //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
-                                    if (Utils.isXsrfEnabled()) {
-                                        $http.defaults.xsrfCookieName = XSRF_COOKIE;
-                                        $http.defaults.xsrfHeaderName = config.csrfHeaderName;
-                                    }
-                                } else {
-                                    /*
-                                     * TEMPORARY[Vibhu]: For mobile app, if not authenticated, go to landing page
-                                     * Actual Implementation: Page permissions are not present in the mobile apk
-                                     * if it is persisted, the behavior will be same for mobile and web app
-                                     */
-                                    if (CONSTANTS.hasCordova) {
-                                        page = config.loginConfig.pageName;
-                                    } else {
-                                        page = config.homePage;
-                                    }
+                            if (config.securityEnabled && config.authenticated) {
+                                page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
+                                $rs.userRoles = config.userInfo.userRoles;
+                                //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
+                                if (Utils.isXsrfEnabled()) {
+                                    $http.defaults.xsrfCookieName = XSRF_COOKIE;
+                                    $http.defaults.xsrfHeaderName = config.csrfHeaderName;
                                 }
                             } else {
                                 page = config.homePage;
