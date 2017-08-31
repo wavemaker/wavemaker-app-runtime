@@ -563,6 +563,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     return;
                 }
                 if (params.error && params.error.message) {
+                    console.warn(params.error.message);
                     processErrorResponse(variable, params.error.message, error, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);
                     return;
                 }
