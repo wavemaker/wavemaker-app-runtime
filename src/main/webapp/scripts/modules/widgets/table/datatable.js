@@ -868,7 +868,7 @@ $.widget('wm.datatable', {
 
     /* Inserts a new blank row in the table. */
     addNewRow: function (skipFocus, alwaysNewRow) {
-        var rowId = this.gridBody.find('tr:visible').length,
+        var rowId = this.gridBody.find('tr:visible').length || 99999, //Dummy value if rows are not there
             rowData = {},
             $row,
             $gridBody,
@@ -1316,6 +1316,7 @@ $.widget('wm.datatable', {
             selected,
             self        = this,
             action      = options.action,
+            $target     = $(e.target),
             isQuickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT;
         function callRowSelectionEvents() {
             if (selected && $.isFunction(self.options.onRowSelect)) {
@@ -1325,7 +1326,10 @@ $.widget('wm.datatable', {
                 self.options.onRowDeselect(data, e);
             }
         }
-        if (action || (isQuickEdit && $(e.target).hasClass('app-datagrid-cell'))) {
+
+        $row = $row || $target.closest('tr');
+
+        if (action || (isQuickEdit && $target.hasClass('app-datagrid-cell') && !$row.hasClass('always-new-row'))) {
             //In case of advanced edit, Edit the row on click of a row
             options.action = options.action || 'edit';
             this.toggleEditRow(e, options);
@@ -1333,7 +1337,6 @@ $.widget('wm.datatable', {
                 return;
             }
         }
-        $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
         data = this.options.data[rowId];
