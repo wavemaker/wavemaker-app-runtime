@@ -482,7 +482,9 @@ wm.variables.services.$servicevariable = ['Variables',
 
         //Gets method info for given variable and input fields using options provided
         function getMethodInfo(variable, inputFields, options) {
-            var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo);
+            var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo),
+                securityDefnObj = _.get(methodInfo.securityDefinitions, '0'),
+                isOAuthTypeService = securityDefnObj.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2;
             if (methodInfo.parameters) {
                 methodInfo.parameters.forEach(function (param) {
                     //Ignore readOnly params in case of formData file params will be duplicated
@@ -499,6 +501,8 @@ wm.variables.services.$servicevariable = ['Variables',
                         } else if (param.name === "sort") {
                             param.sampleValue = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy) || param.sampleValue;
                         }
+                    } else if (param.name === "access_token" && isOAuthTypeService) {
+                        param.sampleValue = oAuthProviderService.getAccessToken(securityDefnObj[OAUTH_PROVIDER_KEY]);
                     }
                 });
             }
