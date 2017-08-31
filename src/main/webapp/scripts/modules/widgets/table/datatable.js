@@ -1574,6 +1574,10 @@ $.widget('wm.datatable', {
             }
         });
     },
+    _isNewRow: function ($row) {
+        var rowId = parseInt($row.attr('data-row-id'), 10);
+        return rowId >= this.preparedData.length || $row.hasClass('always-new-row');
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e, options) {
         options = options || {};
@@ -1664,7 +1668,7 @@ $.widget('wm.datatable', {
             }
         } else {
             $editableElements = $row.find('td.cell-editing');
-            isNewRow = rowId >= this.preparedData.length;
+            isNewRow = self._isNewRow($row);
             if (action === 'save') {
                 $requiredEls = $editableElements.find('.ng-invalid-required');
                 //If required fields are present and value is not filled, return here
@@ -1842,7 +1846,7 @@ $.widget('wm.datatable', {
         var $row = $(e.target).closest('tr'),
             rowId = $row.attr('data-row-id'),
             rowData = this.options.data[rowId],
-            isNewRow = rowId >= this.preparedData.length,
+            isNewRow = this._isNewRow($row),
             className,
             isActiveRow,
             self = this;
@@ -2010,7 +2014,7 @@ $.widget('wm.datatable', {
         }
         if (event.which === 27) { //Escape key
             rowId = parseInt($row.attr('data-row-id'), 10);
-            isNewRow = rowId >= this.preparedData.length;
+            isNewRow = this._isNewRow($row);
             //On Escape, cancel the row edit
             $row.trigger('click', [undefined, {action: 'cancel'}]);
             if (!isNewRow) {
