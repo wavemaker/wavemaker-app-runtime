@@ -37,13 +37,7 @@ public class AliasToEntityLinkedHashMapTransformer extends AliasedTupleSubsetRes
     public Object transformTuple(Object[] tuple, String[] aliases) {
         Map<String, Object> result = new LinkedHashMap<>(tuple.length);
         for (int i = 0; i < tuple.length; i++) {
-            String alias = Integer.toString(i);
-            // fix for hibernate 5, aliases returning null for HQL if no alias specified in query.
-            if (aliases != null && aliases[i] != null) {
-                alias = aliases[i];
-            }
-
-            result.put(alias, tuple[i]);
+            result.put(WMResultTransformer.getAlias(aliases, i), tuple[i]);
         }
         return result;
     }

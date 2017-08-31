@@ -43,6 +43,7 @@ import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 public class HQLQueryUtils {
 
@@ -90,9 +91,8 @@ public class HQLQueryUtils {
             final org.hibernate.type.Type type = returnTypes[i];
 
             ReturnProperty property = new ReturnProperty();
-            if (returnAliases != null && returnAliases.length >= i) {
-                property.setName(returnAliases[i]);
-            }
+
+            property.setName(WMResultTransformer.getAlias(returnAliases, i));
 
             FieldType fieldType = new FieldType();
             String typeRef = type.getName();
@@ -115,6 +115,14 @@ public class HQLQueryUtils {
 
             fieldType.setTypeRef(typeRef);
             property.setFieldType(fieldType);
+
+            if (i == 0 && (returnAliases == null || returnAliases.length == 1)) {
+                if (fieldType.getType() == ReferenceType.ENTITY) {
+                    // setting property name to for avoiding creating new model class
+                    // in case of query returning only entity.
+                    property.setName(null);
+                }
+            }
 
             properties.add(property);
         }

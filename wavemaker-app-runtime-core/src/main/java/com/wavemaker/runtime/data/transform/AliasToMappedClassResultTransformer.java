@@ -72,8 +72,8 @@ public class AliasToMappedClassResultTransformer extends AliasedTupleSubsetResul
     public Object transformTuple(final Object[] tuple, final String[] aliases) {
         try {
             Object object = resultClass.newInstance();
-            for (int i = 0; i < aliases.length; i++) {
-                applyValue(object, aliases[i], tuple[i]);
+            for (int i = 0; i < tuple.length; i++) {
+                applyValue(object, WMResultTransformer.getAlias(aliases, i), tuple[i]);
             }
             return object;
         } catch (InstantiationException | IllegalAccessException e) {

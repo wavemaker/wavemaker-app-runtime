@@ -75,12 +75,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
             if (query.isNativeSql()) {
                 meta = extractMetaFromResults(((Page<Object>) results).getContent());
             } else {
-                meta = executeInTransaction(serviceId, new TransactionCallback<List<ReturnProperty>>() {
-                    @Override
-                    public List<ReturnProperty> doInTransaction(final TransactionStatus status) {
-                        return extractMetaForHql(serviceId, query);
-                    }
-                });
+                meta = executeInTransaction(serviceId, status -> extractMetaForHql(serviceId, query));
             }
         }
         return new DesignServiceResponse(results, meta);
