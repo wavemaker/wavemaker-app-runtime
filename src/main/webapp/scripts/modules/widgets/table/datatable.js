@@ -865,7 +865,12 @@ $.widget('wm.datatable', {
         this.addOrRemoveScroll();
         this._setGridEditMode(false);
     },
-
+    //Populate row data with default data
+    setDefaultRowData: function (rowData) {
+        _.forEach(this.preparedHeaderData, function (colDef) {
+            rowData[colDef.field] = colDef.defaultvalue;
+        });
+    },
     /* Inserts a new blank row in the table. */
     addNewRow: function (skipFocus, alwaysNewRow) {
         var rowId = this.gridBody.find('tr:visible').length || 99999, //Dummy value if rows are not there
@@ -913,9 +918,7 @@ $.widget('wm.datatable', {
 
             //For always show new row, make the row editable with default values
             if (alwaysNewRow) {
-                _.forEach(this.preparedHeaderData, function (colDef) {
-                    rowData[colDef.field] = colDef.defaultvalue;
-                });
+                this.setDefaultRowData(rowData);
 
                 $row.addClass('always-new-row').addClass('row-editing');
                 this.makeRowEditable($row, rowData, 'new');
@@ -1496,7 +1499,10 @@ $.widget('wm.datatable', {
         } else {
             if (!$el) {
                 $el = $target.closest('tr').find('td.cell-editing');
+            } else if ($el.hasClass('app-datagrid-row')) {
+                $el = $el.find('td.cell-editing');
             }
+
             $firstEl = $($el).first().find('input');
             if (!$firstEl.length) {
                 $firstEl = $($el).first().find('textarea');
@@ -1642,9 +1648,7 @@ $.widget('wm.datatable', {
             }
             //For new operation, set the rowdata from the default values
             if (options.operation === 'new') {
-                _.forEach(self.preparedHeaderData, function (colDef) {
-                    rowData[colDef.field] = colDef.defaultvalue;
-                });
+                self.setDefaultRowData(rowData);
             }
             //Event for on before form render. User can update row data here.
             if ($.isFunction(this.options.onBeforeFormRender)) {
@@ -1799,7 +1803,7 @@ $.widget('wm.datatable', {
       var $row = this.gridBody.find('tr.row-editing');
       if ($row.length) {
           //If new row, remove the row. Else, cancel the row edit
-          if (parseInt($row.attr('data-row-id'), 10) >= this.preparedData.length) {
+          if (this._isNewRow($row)) {
               this.removeNewRow($row);
           } else {
               this.cancelEdit($row);
@@ -1999,13 +2003,30 @@ $.widget('wm.datatable', {
             $row.focus();
         }
     },
+    //Reset new row data
+    resetNewRow: function ($row) {
+        var rowData   = {},
+            self      = this;
+
+        self.setDefaultRowData(rowData);
+
+        //Set the default values for widgets in the row
+        $row.find('[data-field-name]').each(function () {
+            var $input = WM.element(this),
+                fieldName = $input.attr('data-field-name');
+            _.set($input.isolateScope(), 'datavalue', rowData[fieldName]);
+        });
+        //Remove ng touched classes
+        $row.find('.ng-touched').removeClass('ng-touched');
+        self.options.safeApply();
+        self.setFocusOnElement(undefined, $row);
+    },
     // Handles keydown event on row items.
     onKeyDown: function (event) {
         var $target   = $(event.target),
             $row      = $target.closest('tr'),
             self      = this,
             quickEdit = this.options.editmode === this.CONSTANTS.QUICK_EDIT,
-            rowId,
             isNewRow;
         if (this.Utils.isDeleteKey(event)) { //Delete Key
             //For input elements, dont delete the row. If delete button is not present, dont allowe deleting by keyboard shortcut
@@ -2016,10 +2037,15 @@ $.widget('wm.datatable', {
             return;
         }
         if (event.which === 27) { //Escape key
-            rowId = parseInt($row.attr('data-row-id'), 10);
             isNewRow = this._isNewRow($row);
             //On Escape, cancel the row edit
-            $row.trigger('click', [undefined, {action: 'cancel'}]);
+            if (isNewRow && $row.hasClass('always-new-row')) {
+                $target.blur();
+                self.resetNewRow($row);
+            } else {
+                $row.trigger('click', [undefined, {action: 'cancel'}]);
+            }
+
             if (!isNewRow) {
                 $row.focus();
             }
@@ -2030,7 +2056,7 @@ $.widget('wm.datatable', {
                 $row.trigger('click', [undefined, {action: 'edit'}]);
             } else {
                 //On click of enter while inside a widget in editing row, save the row
-                if ($row.hasClass('row-editing') && $target.attr('data-field-name')) {
+                if ($row.hasClass('row-editing') && $target.closest('[data-field-name]').length) {
                     $target.blur(); //Blur the input, to update the model
                     self.toggleEditRow(event, {
                         'action'  : 'save',

@@ -2633,6 +2633,9 @@ WM.module('wm.widgets.table')
                 sortHandler: handleOperation,
                 timeoutCall: function (fn) {
                     $timeout(fn, undefined, false);
+                },
+                safeApply: function () {
+                    $rs.$safeApply($is);
                 }
             };
         }])
