@@ -144,7 +144,9 @@ WM.module('wm.widgets.form')
                     scope.datavalue = selectedValue;
                     scope._model_ = selectedValue;
 
-                    scope._onChange({$scope: scope});
+                    if (scope._onChange) {
+                        scope._onChange({$scope: scope});
+                    }
                 } else if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
                     scope._model_ = selectedValue;
                 } else if (scope.datafield === ALLFIELDS) {
@@ -177,7 +179,9 @@ WM.module('wm.widgets.form')
                     scope._dataVal = scope._model_;
                     scope.datavalue = selectedCheckboxValue;
 
-                    scope._onChange({$scope: scope});
+                    if (scope._onChange) {
+                        scope._onChange({$scope: scope});
+                    }
                 } else if (selectedCheckboxValue) {
                     scope._model_ = [];
                     _.forEach(selectedCheckboxValue, function (value) {
