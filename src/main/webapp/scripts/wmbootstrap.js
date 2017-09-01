@@ -798,6 +798,7 @@ Application
                                      */
                                     if ($rs.isTemplateBundleType) {
                                         $rs.Variables = {};
+                                        $rs.Actions = {};
                                     }
                                     deferred.resolve();
                                 }
