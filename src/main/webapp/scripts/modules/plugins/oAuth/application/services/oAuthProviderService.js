@@ -1,4 +1,4 @@
-/*global WM, wm, _, window, sessionStorage, localStorage, setTimeout*/
+/*global WM, wm, _, window, sessionStorage, localStorage, setTimeout, moment*/
 
 /**
  * @ngdoc service
@@ -15,8 +15,9 @@ wm.plugins.security.services.oAuthProviderService = [
     "$uibModal",
     "$templateCache",
     "VARIABLE_CONSTANTS",
+    "Utils",
 
-    function (BaseService, $rs, $timeout, CONSTANTS, $uibModal, $tc, VARIABLE_CONSTANTS) {
+    function (BaseService, $rs, $timeout, CONSTANTS, $uibModal, $tc, VARIABLE_CONSTANTS, Utils) {
     'use strict';
 
     var listeners = {},
@@ -152,12 +153,15 @@ wm.plugins.security.services.oAuthProviderService = [
      * @param provider
      * @returns {*}
      */
-    function getAccessToken(provider) {
+    function getAccessToken(provider, checkLocalStorage) {
         var accessTokenKey;
         if (CONSTANTS.isStudioMode) {
             accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.STUDIO + $rs.project.name + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
         } else {
             accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.RUN + $rs.project.id + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+        }
+        if (checkLocalStorage) {
+            return localStorage.getItem(provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
         }
         return sessionStorage.getItem(accessTokenKey);
     }
@@ -230,30 +234,88 @@ wm.plugins.security.services.oAuthProviderService = [
     }
 
     /**
+     * This function performs the fake local storage update, so the IE gets the latest token instead of returning the cached localStorageValue
+     */
+    function performFakeLocalStorageUpdate() {
+        var dummy_key = 'dummy_key';
+        localStorage.setItem(dummy_key, dummy_key);
+        localStorage.removeItem(dummy_key);
+    }
+
+    /**
+     * this function keeps on checking the accesstoken in the LocalStorage and updates it accordingly
+     * @param providerId
+     * @param onSuccess
+     * @param onError
+     * @param startTime
+     * @param loginObj
+     */
+    function checkAccessTokenInWindow(providerId, onSuccess, onError, startTime, loginObj) {
+        performFakeLocalStorageUpdate();
+        var currentTime = moment.duration(moment().format('HH:mm'), 'HH:mm'),
+            timeDiff =  currentTime.subtract(startTime),
+            accessToken = getAccessToken(providerId, true);
+        if (accessToken) {
+            loginObj.accesstoken_retrieved = true;
+            setAccessToken(providerId, accessToken);
+            localStorage.removeItem(providerId + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
+            if (onSuccess) {
+                onSuccess();
+            }
+        } else if (timeDiff.minutes() > 1 && onSuccess && !loginObj.accesstoken_retrieved) {
+            onSuccess('error');
+        } else {
+            setTimeout(function() {
+                checkAccessTokenInWindow(providerId, onSuccess, onError, startTime, loginObj);
+            }, 3000);
+        }
+    }
+
+    /**
+     * this functions handles the logic related to the window operations in IE
+     * @param url
+     * @param providerId
+     * @param onSuccess
+     * @param onError
+     */
+    function handleLoginForIE(url, providerId, onSuccess, onError) {
+        var loginObj = {
+            'accesstoken_retrieved': false
+        };
+        window.open(url, '_blank', newWindowProps);
+        checkAccessTokenInWindow(providerId, onSuccess, onError, moment.duration(moment().format('HH:mm'), 'HH:mm'), loginObj);
+    }
+
+    /**
      * this function is used to perform the authorization by opening the window and having active listeners
      * @param url
      * @param providerId
      * @param onSuccess
      * @returns {*}
      */
-    function performAuthorization(url, providerId, onSuccess) {
+    function performAuthorization(url, providerId, onSuccess, onError) {
         var oAuthWindow;
         if (url) {
-            oAuthWindow = window.open(url, '_blank', newWindowProps);
-            if (oAuthWindow) {
+            if (Utils.isIE()) { //handling for IE
+                handleLoginForIE(url, providerId, onSuccess, onError);
+            } else {
+                oAuthWindow = window.open(url, '_blank', newWindowProps);
                 postGetAuthorizationURL(providerId, onSuccess, oAuthWindow);
             }
-        }
-        if (!url || (url && !oAuthWindow)) {
+        } else {
             return getAuthorizationUrl({
                 'providerId': providerId
             }).then(function(response) {
-                if (!$rs.isStudioMode){
+                if (!$rs.isStudioMode) {
                     $rs.providersConfig[providerId] = {
                         name: providerId,
                         url: response,
                         invoke: function () {
-                            postGetAuthorizationURL(providerId, onSuccess, window.open(response, '_blank', newWindowProps));
+                            if (Utils.isIE()) { //handling for IE
+                                handleLoginForIE(url, providerId, onSuccess, onError);
+                            } else {
+                                postGetAuthorizationURL(providerId, onSuccess, window.open(response, '_blank', newWindowProps));
+                            }
                         }
                     };
                 }
