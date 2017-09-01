@@ -86,24 +86,39 @@ wm.modules.wmCommon.services.DeviceFileCacheService = [
          * not found.
          */
         this.getLocalPath = function (url, downloadIfNotExists, isPersistent) {
-            var defer,
+            var defer = $q.defer(),
                 filePath = cacheIndex[url];
             if (cordova.file) {
-                defer = $q.defer();
-                DeviceFileService.isValidPath(filePath).catch(function () {
-                    delete cacheIndex[url];
-                    if (downloadIfNotExists) {
-                        download(url, isPersistent, defer);
-                    }
-                });
-                if (filePath) {
-                    return filePath;
-                }
-                if (!downloadIfNotExists) {
-                    return url;
-                }
-                return defer.promise;
+                DeviceFileService.isValidPath(filePath)
+                    .then(function () {
+                        defer.resolve(filePath);
+                    }, function () {
+                        delete cacheIndex[url];
+                        if (downloadIfNotExists) {
+                            download(url, isPersistent, defer);
+                        } else {
+                            defer.reject();
+                        }
+                    });
+            } else {
+                defer.reject('File Plugin is not available');
             }
+            return defer.promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceFileCacheService#addEntry
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileCacheService
+         * @description
+         * Adds a mapping entry of given url vs corresponding filepath to the cache.
+         *
+         * @param {string} url URL path
+         * @param {string} filepath location of file
+         */
+        this.addEntry = function (url, filepath) {
+            cacheIndex[url] = filepath;
+            writeCacheIndexToFile();
         };
 
         if (window.cordova && window.cordova.file) {
