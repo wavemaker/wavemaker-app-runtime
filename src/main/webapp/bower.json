@@ -36,7 +36,7 @@
     "resolutions": {
         "d3": "v3.5.17",
         "angular": "1.6.5",
-        "fullcalendar": "3.4.0"
+        "fullcalendar": "3.0.1"
     },
     "exportsOverride": {
         "jquery-ui": {
