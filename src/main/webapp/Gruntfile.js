@@ -643,6 +643,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/common/services/deviceService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceFileService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceFileCacheService.js',
+                        '<%= config.scripts %>/modules/mobile/common/services/deviceFileOpenerService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceFileDownloadService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/fileSelectorService.js',
                         '<%= config.scripts %>/modules/common/services/navigationService.js',
