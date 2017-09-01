@@ -2118,7 +2118,7 @@ $.widget('wm.datatable', {
 
         //For always new row, dont trigger the edit action
         if ($nextRow.hasClass('always-new-row')) {
-            if (self.options.formPosition !== 'top') {
+            if (self.options.formPosition !== 'top' || $row.hasClass('always-new-row')) {
                 self.addNewRow(skipFocus);
             }
         } else if ($nextRow.length) {
