@@ -484,7 +484,7 @@ wm.variables.services.$servicevariable = ['Variables',
         function getMethodInfo(variable, inputFields, options) {
             var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo),
                 securityDefnObj = _.get(methodInfo.securityDefinitions, '0'),
-                isOAuthTypeService = securityDefnObj.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2;
+                isOAuthTypeService = securityDefnObj && (securityDefnObj.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2);
             if (methodInfo.parameters) {
                 methodInfo.parameters.forEach(function (param) {
                     //Ignore readOnly params in case of formData file params will be duplicated
