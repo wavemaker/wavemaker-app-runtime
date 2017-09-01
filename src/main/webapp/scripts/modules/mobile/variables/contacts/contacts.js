@@ -28,7 +28,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
                     {"target": "autoUpdate", "type": "boolean"},
                     {"target": "contactFilter", "type": "string", "value": "", "dataBinding": true}
                 ],
-                invoke : function (variable, options, success) {
+                invoke : function (variable, options, success, error) {
                     var findOptions = {
                             filter : variable.contactFilter,
                             multiple : true,
@@ -52,7 +52,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
                             return c.phoneNumbers && c.phoneNumbers.length > 0;
                         });
                         success(data);
-                    });
+                    }, error);
                 },
                 getMeta : function () {
                     return modelMeta;

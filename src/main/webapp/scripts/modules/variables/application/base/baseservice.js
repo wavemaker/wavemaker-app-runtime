@@ -673,7 +673,9 @@ wm.variables.services.Variables = [
              * @param variable
              */
             makeVariableCall = function (variable) {
-                var method, deferredVariableCall = $q.defer();
+                var method,
+                    deferredVariableCall = $q.defer(),
+                    forceResolve;
                 switch (variable.category) {
                 case 'wm.ServiceVariable':
                     method = 'update';
@@ -703,9 +705,18 @@ wm.variables.services.Variables = [
                     break;
                 case 'wm.DeviceVariable':
                     method = 'invoke';
+                    forceResolve = true;
                     break;
                 }
                 if (WM.isFunction(variable[method])) {
+                    /* TODO [VIBHU]: TEMP fix for continuous spinner issue in fetching contacts
+                     * Variable has startUpdate and autoUpdate enabled
+                     * autoUpdate call is going first and being met
+                     * startUpdate call is going but not resolved by cordova. Needs to be checked
+                     */
+                    if (forceResolve) {
+                        deferredVariableCall.resolve();
+                    }
                     variable[method](undefined, deferredVariableCall.resolve, deferredVariableCall.reject);
                 } else {
                     deferredVariableCall.reject();
