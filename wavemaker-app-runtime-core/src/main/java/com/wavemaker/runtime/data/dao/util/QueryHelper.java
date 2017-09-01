@@ -64,8 +64,8 @@ public class QueryHelper {
             withOrderBy = ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryString) +
                     ORDER_BY +
                     buildOrderByClause(sort, ((Function<String, String>) transformer::aliasFromFieldName)
-                            .andThen(dialect::quote)
-                            .andThen(QueryHelper::quoteWithBackTick));
+                            .andThen(QueryHelper::quoteWithBackTick)
+                            .andThen(dialect::quote));
         }
         return withOrderBy;
     }
