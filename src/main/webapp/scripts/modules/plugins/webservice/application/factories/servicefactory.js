@@ -37,7 +37,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             FULLY_QUALIFIED_TYPE_KEY = 'x-WM-FULLY_QUALIFIED_TYPE',
             WM_SCHEMA = 'x-WM-SCHEMA',
             parameterTypeKey = 'in',
-            AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
+            AUTH_BASIC_TYPE = VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC,
             prefabDataTypes = {},
 
         /*function to get service object matching its name*/
@@ -415,7 +415,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         });
                     }
 
-                    if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
+                    if (securityDefinitions && securityDefinitions[AUTH_BASIC_TYPE] && securityDefinitions[AUTH_BASIC_TYPE].type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC && operation.security[0][AUTH_BASIC_TYPE]) {
                         if (!operationObject.parameter) {
                             operationObject.parameter = [];
                         }
