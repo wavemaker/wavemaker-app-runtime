@@ -511,6 +511,24 @@ wm.variables.services.$servicevariable = ['Variables',
         }
 
         /**
+         * this function adds the inputParams of basic auth related
+         * @param inputParams
+         * @param inputFields
+         */
+        function addBasicAuthParams(inputParams, inputFields) {
+            var username_param = {name: "wm_auth_username", parameterType: "auth", required: false, type: null, readOnly: false},
+                pwd_param = {name: "wm_auth_password", parameterType: "auth", required: false, type: null, readOnly: false};
+
+            username_param.sampleValue = inputFields[username_param.name];
+            pwd_param.sampleValue = inputFields[pwd_param.name];
+
+            inputParams = inputParams || [];
+
+            inputParams.push(username_param);
+            inputParams.push(pwd_param);
+        }
+
+        /**
          * function to get variable data in RUN Mode
          * @param variable
          * @param options
@@ -550,6 +568,10 @@ wm.variables.services.$servicevariable = ['Variables',
 
             if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
                 methodInfo = getMethodInfo(variable, inputFields, options);
+                /*Adding basic auth params via script should be removed once the backend gives a fix*/
+                if (_.get(methodInfo.securityDefinitions, '0.type') === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC) {
+                    addBasicAuthParams(methodInfo.parameters, inputFields);
+                }
                 if (_.isEmpty(methodInfo)) {
                     params = {
                         'error': {
