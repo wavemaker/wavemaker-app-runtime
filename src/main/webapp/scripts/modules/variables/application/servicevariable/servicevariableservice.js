@@ -702,7 +702,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 /*iterate over the paths received from the service response*/
                 var pathsArr = Object.keys(response.paths),
                     securityDefinitions = response.securityDefinitions,
-                    AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
+                    AUTH_BASIC_TYPE = VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC,
                     paramDataType,
                     i,
                     nPaths,
@@ -755,8 +755,8 @@ wm.variables.services.$servicevariable = ['Variables',
                                     });
                                 });
                             }
-                            if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
-                                operationInfo.authorization = securityDefinitions[AUTH_TYPE_KEY].type;
+                            if (securityDefinitions && securityDefinitions[AUTH_BASIC_TYPE] && securityDefinitions[AUTH_BASIC_TYPE].type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC && operation.security[0][AUTH_BASIC_TYPE]) {
+                                operationInfo.authorization = securityDefinitions[AUTH_BASIC_TYPE].type;
                                 operationInfo.parameters.push({
                                     "name": "wm_auth_username",
                                     "parameterType": "auth"
