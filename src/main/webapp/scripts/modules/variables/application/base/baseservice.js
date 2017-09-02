@@ -1460,7 +1460,7 @@ wm.variables.services.Variables = [
                             /*checking if current variable name is not equal to the variable name provided.*/
                             if (!variableName || curVariableName !== variableName) {
                                 methods = variableConfig[curVariable.category].methods;
-                                variableArray.push({name: curVariableName, category: curVariable.category, methods : methods});
+                                variableArray.push({name: curVariableName, category: curVariable.category, methods : methods, serviceType: getVariableServiceType(curVariable)});
                             }
                         }
                     });
@@ -2653,6 +2653,15 @@ wm.variables.services.Variables = [
              * @params {parentReference} reference for the target bind map to be prepared at
              */
             getBindMap: getBindMap,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#isActionTypeVariable
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Returns true if the variable passed is of Action type (New categorisation intriduced in 9.0)
+             */
+            isActionTypeVariable: isActionTypeVariable,
             /**
              * @ngdoc method
              * @name $Variables#addVariableConfig
