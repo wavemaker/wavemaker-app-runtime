@@ -2790,6 +2790,20 @@ WM.module('wm.utils', [])
             return isList ? _.map(files, _.identity) : files && files[0];
         }
 
+
+        /**
+         * This function returns true if file size exceeds sizeInMb.
+         * @param file file object.
+         * @param sizeInMb file size in MB
+         * @returns {boolean} true if file size exceeds.
+         */
+        function isFileSizeWithinLimit(file, sizeInMb) {
+            var FILESIZE_MB = 1048576,
+                FILE_MAX_SIZE = sizeInMb * FILESIZE_MB;
+
+            return file.size > FILE_MAX_SIZE;
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2935,4 +2949,5 @@ WM.module('wm.utils', [])
         this.getFiles                   = getFiles;
         this.exportHandler              = exportHandler;
         this.isVariableOrActionEvent    = isVariableOrActionEvent;
+        this.isFileSizeWithinLimit      = isFileSizeWithinLimit;
     }]);
