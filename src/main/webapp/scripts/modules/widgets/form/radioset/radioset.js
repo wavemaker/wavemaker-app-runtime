@@ -164,7 +164,7 @@ WM.module('wm.widgets.form')
                                 checkedDisplayOption;
 
                             // RadioOption should not be deselected when clicked again. Model and display value remains the same.
-                            if (dataObj && (radioOption == dataObj.key)) {
+                            if (dataObj && (_.toString(radioOption) === _.toString(dataObj.key))) {
                                 return;
                             }
 
