@@ -10,6 +10,7 @@
         <mvc:message-converters>
             <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
                 <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
                 <property name="writeAcceptCharset" value="false"/>
             </bean>
