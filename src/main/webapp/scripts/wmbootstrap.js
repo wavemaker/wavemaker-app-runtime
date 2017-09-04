@@ -1002,7 +1002,7 @@ Application
                 // function to invoke a service during run time
                 $rs.$on('invoke-service', function (event, name, options, onSuccess, onError) {
                     // if function call is bound with the button, return
-                    if (_.startsWith(name, 'Variables.')) {
+                    if (Utils.isVariableOrActionEvent(name)) {
                         name = name.split('.')[1];//If invoked with exp with 'Variables.' in it then retriving variable name from it
                     } else if (_.includes(name, '(')) {
                         return;

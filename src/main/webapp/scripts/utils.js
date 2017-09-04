@@ -1965,18 +1965,22 @@ WM.module('wm.utils', [])
             });
         }
 
+        function isVariableOrActionEvent(expr){
+            return _.startsWith(expr, 'Variables.') || _.startsWith(expr, 'Actions.');
+        }
+
         //Function to evaluate expression
         function evalExp(scope, evtValue) {
             var d = $q.defer();
             //Modifying expression in to array notation for variables with special characters in name
-            if (_.includes(evtValue, 'Variables.')) {
+            if (_.includes(evtValue, 'Variables.') || _.includes(evtValue, 'Actions.')) {
                 var parts = evtValue.split('.');
                 evtValue = parts[0] + '["' + parts[1] + '"].' + parts[2];
             }
             //Evaluating in timeout so that the binding get updated
             $timeout(function () {
                 //Evaluating for Variables,Widgets and Form events inside list
-                if (_.startsWith(evtValue, 'Variables') || _.startsWith(evtValue, 'Widgets.') || !_.includes(evtValue, '.')) {
+                if (isVariableOrActionEvent(evtValue) || _.startsWith(evtValue, 'Widgets.') || !_.includes(evtValue, '.')) {
                     scope.$eval(evtValue);
                 } else {
                     $rootScope.$emit('invoke-service', evtValue);//Invoking Prefab events
@@ -1997,7 +2001,7 @@ WM.module('wm.utils', [])
                 if (eventValue === 'Javascript') {
                     retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data, info);
                 }
-                if (_.startsWith(eventValue, 'Widgets.') || _.startsWith(eventValue, 'Variables.')) {
+                if (_.startsWith(eventValue, 'Widgets.') || isVariableOrActionEvent(eventValue)) {
                     evalExp(callBackScope, eventValue);
                     return;
                 }
@@ -2930,4 +2934,5 @@ WM.module('wm.utils', [])
         this.addXsrfCookieHeader        = addXsrfCookieHeader;
         this.getFiles                   = getFiles;
         this.exportHandler              = exportHandler;
+        this.isVariableOrActionEvent    = isVariableOrActionEvent;
     }]);

@@ -183,7 +183,7 @@ WM.module('wm.widgets.dialog')
                                         loginBtnClickFn({'$event': event, '$scope': $is});
                                     }
                                     //In case of login variable invoke
-                                    if (_.startsWith(submitFn, 'Variables.')) {
+                                    if (Utils.isVariableOrActionEvent(submitFn)) {
                                         $is.$root.$emit('invoke-service', submitFn, {'scope': $s, 'mode': 'dialog'}, onSuccess.bind(undefined, event), onError.bind(undefined, event));
                                     } else if (submitFn.indexOf('(') !== -1) {
                                         $is.onSubmit({'$event': event, '$scope': $is});

@@ -158,7 +158,7 @@ WM.module('wm.widgets.base')
                                     }
                                 }
 
-                                if ((!_.includes(trimmedFnName, '(') || _.startsWith(trimmedFnName, 'Variables.') || _.startsWith(trimmedFnName, 'Widgets.')) && !_.includes(trimmedFnName, '=')) {
+                                if ((!_.includes(trimmedFnName, '(') || Utils.isVariableOrActionEvent(trimmedFnName) || _.startsWith(trimmedFnName, 'Widgets.')) && !_.includes(trimmedFnName, '=')) {
                                     overrideFlg = true;
                                     return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '", iScope)';
                                 }
