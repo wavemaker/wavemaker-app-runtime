@@ -55,6 +55,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     WEB_SERVICE_VARIABLE_SERVICES: ["SoapService", "FeedService", "RestService", "WebSocketService"],
     WEB_SERVICE_VARIABLE_WITH_NO_OPERATION: ["RestService", "WebSocketService"],
     PAGINATION_PARAMS: ["page", "size", "sort"],
+    DATA_BINDING_FIELDS: ["target", "value", "type", "invalid", "isList"],
     DEFAULT_VAR: {
         "NOTIFICATION": "appNotification"
     },

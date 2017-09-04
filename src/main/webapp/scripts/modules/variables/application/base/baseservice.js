@@ -1479,8 +1479,19 @@ wm.variables.services.Variables = [
              * @param bindings
              */
             cleanseBindings = function (bindings, variable) {
+                var shouldCleanse,
+                    requiredKeys = VARIABLE_CONSTANTS.DATA_BINDING_FIELDS,
+                    redundantKeys;
+                /* remove non-required keys from binding object */
                 _.remove(bindings, function (binding) {
-                    return (WM.isUndefined(binding.value) || binding.value === '' || (_.isNull(binding.value) && variable && variable.category === 'wm.LiveVariable'));
+                    shouldCleanse = (WM.isUndefined(binding.value) || binding.value === '' || (_.isNull(binding.value) && variable && variable.category === 'wm.LiveVariable'));
+                    if (!shouldCleanse) {
+                        redundantKeys = _.difference(_.keys(binding), requiredKeys);
+                        _.forEach(redundantKeys, function (key) {
+                            binding[key] = undefined;
+                        });
+                    }
+                    return shouldCleanse;
                 });
             },
 
