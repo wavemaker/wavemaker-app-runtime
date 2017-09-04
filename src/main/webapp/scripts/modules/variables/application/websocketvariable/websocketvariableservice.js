@@ -321,11 +321,13 @@ wm.variables.services.$websocketvariable = ['BaseVariablePropertyFactory', 'Vari
         function init() {
             if (shouldAppendData(this)) {
                 Object.defineProperty(this, 'firstRecord', {
+                    'configurable': true,
                     'get': function () {
                         return this.dataSet[0];
                     }
                 });
                 Object.defineProperty(this, 'lastRecord', {
+                    'configurable': true,
                     'get': function () {
                         var content = this.dataSet || [];
                         return content[content.length - 1];

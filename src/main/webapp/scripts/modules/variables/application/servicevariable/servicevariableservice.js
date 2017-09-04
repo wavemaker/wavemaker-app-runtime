@@ -990,6 +990,7 @@ wm.variables.services.$servicevariable = ['Variables',
             init: function () {
                 if (this.isList) {
                     Object.defineProperty(this, 'firstRecord', {
+                        'configurable': true,
                         'get': function () {
                             var dataSet = methods.getDataSet(this);
                             //For procedure(v1) data doesn't come under content
@@ -997,6 +998,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                     });
                     Object.defineProperty(this, 'lastRecord', {
+                        'configurable': true,
                         'get': function () {
                             var dataSet = methods.getDataSet(this);
                             //For procedure(v1) data doesn't come under content

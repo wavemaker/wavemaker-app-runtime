@@ -1856,11 +1856,13 @@ wm.variables.services.$liveVariable = [
                 init: function () {
                     if (this.operation === 'read') {
                         Object.defineProperty(this, 'firstRecord', {
+                            'configurable': true,
                             'get': function () {
                                 return _.get(methods.getDataSet(this), 'data[0]', {});
                             }
                         });
                         Object.defineProperty(this, 'lastRecord', {
+                            'configurable': true,
                             'get': function () {
                                 var data = _.get(methods.getDataSet(this), 'data', []);
                                 return data[data.length - 1];
