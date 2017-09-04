@@ -1966,7 +1966,7 @@ WM.module('wm.utils', [])
         }
 
         function isVariableOrActionEvent(expr){
-            return _.startsWith(expr, 'Variables.') || _.startsWith(expr, 'Actions.');
+            return _.startsWith(expr, 'Variables.') || _.startsWith(expr, 'Actions.') || _.startsWith(expr, 'Variables[') || _.startsWith(expr, 'Actions[') ;
         }
 
         //Function to evaluate expression
