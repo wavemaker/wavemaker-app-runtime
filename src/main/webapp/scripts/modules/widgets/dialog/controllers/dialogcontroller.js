@@ -26,7 +26,7 @@ WM.module('wm.widgets.dialog')
                     }
                 }
 
-            } else if (_.startsWith(eventName, 'Widgets.') || _.startsWith(eventName, 'Variables.')) {
+            } else if (_.startsWith(eventName, 'Widgets.') || Utils.isVariableOrActionEvent(eventName)) {
                 Utils.evalExp($scope, eventName);
             }
             if (hideDialog) {

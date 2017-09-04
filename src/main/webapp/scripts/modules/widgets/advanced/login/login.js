@@ -113,7 +113,7 @@ WM.module('wm.widgets.advanced')
                                         clickFn({$event: event, $scope: scope});
                                     }
                                     //In case of login variable invoke
-                                    if (_.startsWith(submitFn, 'Variables.')) {
+                                    if (Utils.isVariableOrActionEvent(submitFn)) {
                                         $rootScope.$emit('invoke-service', submitFn, {scope: element.scope()}, onSuccess, onError);
                                     } else if (submitFn.indexOf('(') !== -1) {
                                         scope.onSubmit({$event: event, $scope: scope});
