@@ -28,8 +28,8 @@ public class OAuth2RuntimeIntegrationController {
     }
 
     @RequestMapping(value = "callback", method = RequestMethod.GET, produces = "text/html")
-    public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url") String redirectUrl, @RequestParam(name = "code")
-            String code, HttpServletRequest httpServletRequest) {
+    public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url", required = false) String redirectUrl,
+                           @RequestParam(name = "code") String code, HttpServletRequest httpServletRequest) {
         return oAuth2RuntimeServiceManager.callBack(providerId, redirectUrl, code, httpServletRequest);
     }
 
