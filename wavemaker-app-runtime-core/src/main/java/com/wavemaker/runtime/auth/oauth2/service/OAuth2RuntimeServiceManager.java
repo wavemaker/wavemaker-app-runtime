@@ -95,8 +95,7 @@ public class OAuth2RuntimeServiceManager {
     public String callBack(String providerId, String redirectUrl, String code, HttpServletRequest httpServletRequest) {
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
-            redirectUrl = new StringBuilder().append(httpServletRequest.getScheme()).append("://").append(httpServletRequest.getServerName())
-                    .append(':').append(httpServletRequest.getServerPort()).append(httpServletRequest.getContextPath())
+            redirectUrl = new StringBuilder().append(HttpRequestUtils.getBaseUrl(httpServletRequest)).append(httpServletRequest.getContextPath())
                     .append("/services/oauth2/").append(providerId).append("/callback").toString();
         }
 
