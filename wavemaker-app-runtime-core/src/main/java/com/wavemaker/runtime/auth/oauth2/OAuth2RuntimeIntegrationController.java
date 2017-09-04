@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.oauth2;
+package com.wavemaker.runtime.auth.oauth2;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wavemaker.runtime.oauth2.service.OAuth2RuntimeServiceManager;
+import com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager;
 
 /**
  * Created by srujant on 18/7/17.

@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.oauth2;
+package com.wavemaker.runtime.auth;
 
 import com.wavemaker.runtime.service.reflect.ReflectServiceType;
 

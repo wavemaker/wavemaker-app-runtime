@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.oauth2.service;
+package com.wavemaker.runtime.auth.oauth2.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,9 +24,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.oauth2.OAuth2Helper;
-import com.wavemaker.commons.oauth2.OAuth2ProviderConfig;
-import com.wavemaker.commons.oauth2.extractors.AccessTokenRequestContext;
+import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
+import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
+import com.wavemaker.commons.auth.oauth2.extractors.AccessTokenRequestContext;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -135,9 +135,5 @@ public class OAuth2RuntimeServiceManager {
             }
         }
         throw new ResourceNotFoundException("No OAuth2ProviderConfig found for given providerId - " + providerId);
-    }
-
-    public void addOAuthProviderConfig(OAuth2ProviderConfig oAuth2ProviderConfig) {
-        oAuth2ProviderConfigList.add(oAuth2ProviderConfig);
     }
 }
