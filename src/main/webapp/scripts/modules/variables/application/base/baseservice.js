@@ -855,7 +855,7 @@ wm.variables.services.Variables = [
                 return _.includes(actionServiceTypes, serviceType);
             },
 
-            defineActionsOnScope = function (scope) {
+            defineActionsOnScope = function (scope, context) {
                 scope.Actions = {};
                 WM.forEach(scope.Variables, function (variable, name) {
                     if (isActionTypeVariable(variable)) {
@@ -867,6 +867,20 @@ wm.variables.services.Variables = [
                         });
                     }
                 });
+
+                /* extend scope Actions with app Actions, in studio mode */
+                if (context !== VARIABLE_CONSTANTS.OWNER.APP) {
+                    WM.forEach(self.variableCollection[$rootScope.$id], function (variable, name) {
+                        if (!scope.Actions.hasOwnProperty(name) && isActionTypeVariable(variable)) {
+                            Object.defineProperty(scope.Actions, name, {
+                                configurable: true,
+                                get: function () {
+                                    return variable;
+                                }
+                            });
+                        }
+                    });
+                }
             },
             /*
              * Updates the variables in a context with their latest values
@@ -892,7 +906,6 @@ wm.variables.services.Variables = [
                         if (!scope.Variables.hasOwnProperty(name)) {
                             Object.defineProperty(scope.Variables, name, {
                                 configurable: true,
-                                enumerable: true,
                                 get: function () {
                                     return variable;
                                 }
@@ -906,7 +919,7 @@ wm.variables.services.Variables = [
                 });
 
                 // Expose the Actions in a separate namespace (Post 9.0)
-                defineActionsOnScope(scope);
+                defineActionsOnScope(scope, context);
             },
 
             /* function to update variable values in $rootScope */
