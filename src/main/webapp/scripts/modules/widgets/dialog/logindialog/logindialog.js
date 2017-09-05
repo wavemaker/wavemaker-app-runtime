@@ -168,7 +168,7 @@ WM.module('wm.widgets.dialog')
                                         'password'  : password,
                                         'rememberme': rememberMe
                                     };
-                                    $s.Variables.loginVariable.login(
+                                    $s.Variables.loginAction.login(
                                         {'loginInfo': loginDetails, 'mode': 'dialog'},
                                         function () {
                                             if (lastLoggedinUser && curUser !== lastLoggedinUser) {
