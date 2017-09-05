@@ -107,7 +107,7 @@ WM.module('wm.widgets.advanced')
                                         'password'   : $password.val(),
                                         'rememberme' : $rememberMe
                                     };
-                                    element.scope().Variables.loginVariable.login({loginInfo: loginDetails}, onSuccess, onError);
+                                    element.scope().Variables.loginAction.login({loginInfo: loginDetails}, onSuccess, onError);
                                 } else {
                                     if (clickFn) {
                                         clickFn({$event: event, $scope: scope});
