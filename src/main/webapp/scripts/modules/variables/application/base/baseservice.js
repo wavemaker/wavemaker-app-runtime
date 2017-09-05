@@ -933,9 +933,9 @@ wm.variables.services.Variables = [
             },
 
             /* function to get page variables for a specified page*/
-            getPageVariables = function (pageName, success, error) {
+            getPageVariables = function (pageName, success, error, skipEmptyCRUD) {
                 var requestParams;
-                if (!runMode) {
+                if (!runMode && !skipEmptyCRUD) {
                     /*Initializing map with pageName context*/
                     CRUDMAP.CREATE[pageName] = [];
                     CRUDMAP.DELETE[pageName] = [];
