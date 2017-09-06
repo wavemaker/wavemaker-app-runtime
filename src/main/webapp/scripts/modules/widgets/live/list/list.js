@@ -252,9 +252,14 @@ WM.module('wm.widgets.live')
                 var lastScrollTop  = 0,
                     $ul            = $el.find('> ul'),
                     $scrollParent,
-                    scrollNode;
+                    scrollNode,
+                    $firstChild = $ul.children().first();
 
-                $scrollParent = $ul.children().first().scrollParent(false);
+                if (!$firstChild.length) {
+                    return;
+                }
+
+                $scrollParent = $firstChild.scrollParent(false);
 
                 if ($scrollParent[0] === document) {
                     scrollNode = document.body;

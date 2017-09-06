@@ -2093,6 +2093,7 @@ WM.module('wm.widgets.live')
                 }
                 primaryKeys         = boundVariable.getRelatedTablePrimaryKeys(relatedField);
                 columnDef.datafield = datafield;
+                columnDef.isDefinedData = true;
                 if (CONSTANTS.isRunMode) {
                     columnDef._primaryKey = _.isEmpty(primaryKeys) ? undefined : primaryKeys[0];
                 }
@@ -2107,7 +2108,6 @@ WM.module('wm.widgets.live')
                 } else {
                     boundVariable.getRelatedTableData(relatedField, {'pagesize': columnDef.limit}, function (response) {
                         columnDef.dataset       = response;
-                        columnDef.isDefinedData = true;
                         displayField            = displayField || columnDef._primaryKey ||  _.head(_.keys(_.get(response, '[0]')));
                         columnDef.displayfield  = columnDef.displayfield || displayField;
                     });

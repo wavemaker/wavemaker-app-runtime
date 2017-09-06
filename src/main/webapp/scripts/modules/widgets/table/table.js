@@ -133,7 +133,8 @@ WM.module('wm.widgets.table')
                 'filternullrecords'  : true,
                 'spacing'            : true,
                 'exportformat'       : true,
-                'editmode'           : CONSTANTS.isStudioMode
+                'editmode'           : CONSTANTS.isStudioMode,
+                'shownewrow'         : true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1, i;
@@ -444,7 +445,8 @@ WM.module('wm.widgets.table')
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
                             var addNewRowButtonIndex,
-                                isFormMode;
+                                isFormMode,
+                                enableNewRow;
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
@@ -609,6 +611,13 @@ WM.module('wm.widgets.table')
                                     wp.onFormrender.show        = !isFormMode;
                                     wp.onBeforeformrender.show  = !isFormMode;
                                 }
+                                break;
+                            case 'shownewrow':
+                                //Enable new row if shownew is true or addNewRow buton is present
+                                enableNewRow = newVal || _.some($is.actions, function(act){
+                                        return _.includes(act.action, 'addNewRow()');
+                                    });
+                                $is.callDataGridMethod('option', 'actionsEnabled.new', enableNewRow);
                                 break;
                             }
                         }

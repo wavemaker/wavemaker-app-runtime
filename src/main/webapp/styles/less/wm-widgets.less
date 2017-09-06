@@ -1948,15 +1948,6 @@ If the height and width are not specified the video takes the height of the post
     border-collapse: initial;
     // Fix for height of input box in pagination.
     .app-datagrid-paginator  {
-      display: table-cell;
-      vertical-align: top;
-      .pagination-sm {
-        li {
-          a {
-            padding-top: 6px;
-          }
-        }
-      }
       .app-datanavigator a:focus {
         outline: 1px solid #1794ef !important;
       }
@@ -2230,6 +2221,20 @@ If the height and width are not specified the video takes the height of the post
     }
   }
 }
+
+// Fix for height of input box in pagination.
+.app-datagrid-paginator  {
+  display: table-cell;
+  vertical-align: top;
+  .pagination-sm {
+    li {
+      a {
+        padding-top: 6px;
+      }
+    }
+  }
+}
+
 .wm-app .dropdown-menu.matchmode-dropdown {
   z-index: 2000;
 }

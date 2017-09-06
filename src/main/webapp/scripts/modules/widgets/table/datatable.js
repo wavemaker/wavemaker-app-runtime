@@ -55,7 +55,10 @@ $.widget('wm.datatable', {
         loadingicon: '',
         startRowIndex: 1,
         editmode: '',
-        actionsEnabled: {},
+        actionsEnabled: {
+            'edit'  : true,
+            'new'   : true
+        },
         searchHandler: WM.noop,
         sortHandler: function (sortInfo, e) {
             /* Local sorting if server side sort handler is not provided. */
@@ -1335,7 +1338,11 @@ $.widget('wm.datatable', {
         if (action || (isQuickEdit && $target.hasClass('app-datagrid-cell') && !$row.hasClass('always-new-row'))) {
             //In case of advanced edit, Edit the row on click of a row
             options.action = options.action || 'edit';
-            this.toggleEditRow(e, options);
+
+            if (options.operation === 'new' || self.options.actionsEnabled.edit) {
+                this.toggleEditRow(e, options);
+            }
+
             if (options.skipSelect) {
                 return;
             }
@@ -1677,20 +1684,13 @@ $.widget('wm.datatable', {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = self._isNewRow($row);
             if (action === 'save') {
-                $requiredEls = $editableElements.find('.ng-invalid-required');
-                //If required fields are present and value is not filled, return here
-                if ($requiredEls.length > 0) {
-                    $requiredEls.addClass('ng-touched');
-                    if ($.isFunction(options.success)) {
-                        options.success(false, true);
-                    }
-                    return;
-                }
+
                 if (isNewRow) {
                     isDataChanged = true;
                 } else {
                     isDataChanged = this.isDataModified($editableElements, rowData);
                 }
+
                 if (isDataChanged) {
                     $editableElements.each(function () {
                         var $el    = $(this),
@@ -1709,7 +1709,9 @@ $.widget('wm.datatable', {
                                     if (fields.length > 1) {
                                         _.set(rowData, fields[0], text); //For related fields, set the object to null
                                     } else {
-                                        _.set(rowData, colDef.field, ''); //Set to empty for normal fields
+                                        if (!isNewRow) {
+                                            _.set(rowData, colDef.field, ''); //Set to empty for normal fields
+                                        }
                                     }
                                 } else {
                                     _.set(rowData, colDef.field, text);
@@ -1722,14 +1724,26 @@ $.widget('wm.datatable', {
                             }
                         }
                     });
-                    if (isNewRow) {
-                        if (advancedEdit && _.isEmpty(rowData)) {
-                            self.removeNewRow($row);
-                            if ($.isFunction(options.success)) {
-                                options.success(false, undefined, true);
-                            }
-                            return;
+
+                    if (isNewRow && advancedEdit && _.isEmpty(rowData)) {
+                        self.removeNewRow($row);
+                        if ($.isFunction(options.success)) {
+                            options.success(false, undefined, true);
                         }
+                        return;
+                    }
+
+                    $requiredEls = $editableElements.find('.ng-invalid-required');
+                    //If required fields are present and value is not filled, return here
+                    if ($requiredEls.length > 0) {
+                        $requiredEls.addClass('ng-touched');
+                        if ($.isFunction(options.success)) {
+                            options.success(false, true);
+                        }
+                        return;
+                    }
+
+                    if (isNewRow) {
                         if ($.isFunction(this.options.onBeforeRowInsert)) {
                             isValid = this.options.onBeforeRowInsert(rowData, e);
                             if (isValid === false) {
@@ -2123,7 +2137,7 @@ $.widget('wm.datatable', {
             }
         } else if ($nextRow.length) {
             $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus, skipSelect: self.options.multiselect}]);
-        } else {
+        } else if (self.options.actionsEnabled.new) {
             self.addNewRow(skipFocus);
         }
     },
