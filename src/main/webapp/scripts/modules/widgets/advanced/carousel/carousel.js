@@ -282,7 +282,8 @@ WM.module('wm.widgets.advanced')
                                 }
                                 var oldElement = $is.contents[$is.activeIndex].getElement(),
                                     newElement = $is.contents[index].getElement(),
-                                    type = direction || 'next';
+                                    type = direction || 'next',
+                                    oldIndex = $is.activeIndex;
 
                                 if ($is.widgetid) {
                                     oldElement.removeClass('active');
@@ -297,7 +298,7 @@ WM.module('wm.widgets.advanced')
                                     animateSlide(oldElement, newElement, type);
                                     $is.activeIndex  = index;
                                     $is.play();
-                                    Utils.triggerFn($is.onChange, {$isolateScope: $is});
+                                    Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
                                     $el.find('.ng-isolate-scope')
                                         .each(function () {
@@ -371,11 +372,12 @@ WM.module('wm.widgets.advanced')
                                 $slideTemplate = prepareSlideTemplate(listCtrl.$get('carouselTemplate'), attrs);
                                 $el.prepend($slideTemplate);
                                 $compile($slideTemplate)($el.closest('[data-identifier="carousel"]').isolateScope());
-                                handlers.push($is.$watch('active', function (nv) {
+                                handlers.push($is.$watch('active', function (nv, ov) {
                                     if (nv !== undefined) {
                                         $is.currentslide = $is.fieldDefs[nv];
+                                        $is.previousslide = $is.fieldDefs[ov];
                                         if (attrs.onChange) {
-                                            Utils.triggerFn($is.onChange, {$isolateScope: $is});
+                                            Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: nv, oldIndex: ov});
                                         }
                                     }
                                 }));
