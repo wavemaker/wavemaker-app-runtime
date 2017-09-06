@@ -200,12 +200,10 @@ WM.module('wm.widgets.basic')
                     renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
                 } else {
                     try { //might throw an error
-                        WM.element('[id=ng-app]').injector().get('AppManager').loadPartial(content).then(function(response) {
-                            toasterTemplates[content] = response.html;
-                            templateUrl = 'toasterTemplates/' + content;
-                            $tc.put(templateUrl, toasterTemplates[content]);
-                            renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
-                        });
+                        toasterTemplates[content] = '<wm-container content="' + content + '"></wm-container>';
+                        templateUrl = 'toasterTemplates/' + content;
+                        $tc.put(templateUrl, toasterTemplates[content]);
+                        renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
                     } catch (e) {
                         //do nothing
                     }
