@@ -18,7 +18,8 @@ wm.modules.wmCommon.services.BaseService = [
     "Utils",
     "CONSTANTS",
     "$q",
-    function ($http, $rootScope, $injector, BaseServiceManager, DialogService, Utils, CONSTANTS, $q) {
+    "$window",
+    function ($http, $rootScope, $injector, BaseServiceManager, DialogService, Utils, CONSTANTS, $q, $window) {
         "use strict";
 
         var wmLogger,
@@ -203,12 +204,27 @@ wm.modules.wmCommon.services.BaseService = [
                 return error.status === 401 && getLoginErrorMsg(error) === MSG_LOGIN_FAILURE;
             },
 
+            /**
+             * This is only for preview release.
+             * Redirect to /login for only edn-services as they do not return the required header for session timeout dialog
+             * @param config
+             * @param error
+             * @param failureCallback
+             */
+            doEdnTimeoutCheck = function (config, error) {
+                if (CONSTANTS.isStudioMode && _.includes(config.url, '/edn-services/') && error.status === 401) {
+                    $window.location.href = '/login/login';
+                }
+            },
+
             failureHandler = function (config, successCallback, failureCallback, error) {
                 var errTitle, errMsg, errorDetails = error, appManager,
                     HTTP_STATUS_MSG = {
                         404: "Requested resource not found",
                         401: "Requested resource requires authentication"
                     };
+                // This is only for Preview.
+                doEdnTimeoutCheck(config, error, failureCallback);
                 /*if user is unauthorized, then show login dialog*/
                 if (isPlatformSessionTimeout(error) && !config.isDirectCall) {
                     if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {
