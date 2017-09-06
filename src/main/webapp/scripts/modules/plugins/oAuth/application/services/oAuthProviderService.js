@@ -259,6 +259,7 @@ wm.plugins.security.services.oAuthProviderService = [
             loginObj.accesstoken_retrieved = true;
             setAccessToken(providerId, accessToken);
             localStorage.removeItem(providerId + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
+            delete $rs.providersConfig[providerId];
             if (onSuccess) {
                 onSuccess();
             }
@@ -312,7 +313,7 @@ wm.plugins.security.services.oAuthProviderService = [
                         url: response,
                         invoke: function () {
                             if (Utils.isIE()) { //handling for IE
-                                handleLoginForIE(url, providerId, onSuccess, onError);
+                                handleLoginForIE(response, providerId, onSuccess, onError);
                             } else {
                                 postGetAuthorizationURL(providerId, onSuccess, window.open(response, '_blank', newWindowProps));
                             }
