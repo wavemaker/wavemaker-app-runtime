@@ -515,7 +515,7 @@ WM.module('wm.widgets.form')
                             if (!groupedKeys[field[0]]) {
                                 groupedKeys[field[0]] = {'keys': []};
                             }
-                            groupedKeys[field[0]].keys.push({'title': field[1], 'index': index, 'key': key});
+                            groupedKeys[field[0]].keys.push({'title': _.replace(key, field[0] + '.', ''), 'index': index, 'key': key});
                         } else {
                             groupedKeys.all.keys.push({'title': key, 'index': index, 'key': key});
                         }
