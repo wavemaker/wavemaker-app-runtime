@@ -217,9 +217,13 @@ WM.module('wm.widgets.form')
                     selectedOption,
                     filterField;
 
-                // In studioMode, handle the model having comma separated string.
-                if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
-                    scope._model_ = model = _.map(model.split(','), _.trim);
+                if (scope._widgettype === 'wm-checkboxset') {
+                    // handle the model having comma separated string as default datavalue.
+                    if (WM.isString(model) && model !== '') {
+                        scope._model_ = model = _.map(model.split(','), _.trim);
+                    } else if (!WM.isArray(model) && WM.isObject(model)) { // handle the model having object as default datavalue.
+                        scope._model_ = [model];
+                    }
                 }
 
                 // reset isChecked flag for displayOptions.
