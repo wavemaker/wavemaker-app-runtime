@@ -441,7 +441,13 @@ WM.module('wm.widgets.advanced')
                         //sends the date and time selected without the timezone affecting the selected value
                         function getUTCDateTime(dateObj) {
                             dateObj = WM.isObject(dateObj) ? dateObj : moment(dateObj);
-                            return new Date(dateObj.format('YYYY-MM-DD HH:mm:ss'));
+                            var year = dateObj.format('YYYY'),
+                                month = dateObj.format('MM'),
+                                day = dateObj.format('DD'),
+                                hours = dateObj.format('HH'),
+                                minutes = dateObj.format('mm'),
+                                seconds = dateObj.format('ss');
+                            return new Date(year, month, day, hours, minutes, seconds);
                         }
                         function onSelectProxy(start, end, jsEvent, view) {
                             $is.selecteddates = {'start': getUTCDateTime(start), 'end': getUTCDateTime(end)};
