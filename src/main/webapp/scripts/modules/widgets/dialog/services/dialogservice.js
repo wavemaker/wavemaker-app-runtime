@@ -418,7 +418,6 @@ WM.module('wm.widgets.dialog')
             params.dialogId   = '_app-confirm-dialog';
             params.onOk       = 'confirmDialogActionOk()';
             params.onCancel   = 'confirmDialogActionCancel()';
-            params.onClose    = 'confirmDialogActionClose()';
             params.oktext     = _.get($rootScope.appLocale, 'LABEL_OK') || 'Ok';
             params.canceltext = _.get($rootScope.appLocale, 'LABEL_CANCEL') || 'Cancel';
             showConfirmDialog(params);
@@ -443,7 +442,7 @@ WM.module('wm.widgets.dialog')
         this._showAppConfirmDialog = _showAppConfirmDialog;
         this.closeAllDialogs = closeAllDialogs;
     }])
-    .controller('AppConfirmDialogController', ['$scope', 'confirmActionOk', 'confirmActionCancel', 'DialogService', 'Utils', function ($scope, confirmActionOk, confirmActionCancel, DialogService, Utils) {
+    .controller('AppConfirmDialogController', ['$scope', 'confirmActionOk', 'confirmActionCancel', 'DialogService', 'Utils', '$timeout', function ($scope, confirmActionOk, confirmActionCancel, DialogService, Utils, $timeout) {
         'use strict';
         $scope.confirmDialogActionOk = function () {
             Utils.triggerFn(confirmActionOk);
@@ -451,11 +450,15 @@ WM.module('wm.widgets.dialog')
         };
 
         $scope.confirmDialogActionCancel = function () {
-            Utils.triggerFn(confirmActionCancel);
             DialogService.close('_app-confirm-dialog');
         };
 
-        $scope.confirmDialogActionClose = function () {
+        $scope.$on('$destroy', function () {
             Utils.triggerFn(confirmActionCancel);
-        };
+        });
+
+        //Fccus the cancel button on open
+        $timeout(function () {
+            WM.element('.cancel-action').focus();
+        });
     }]);
