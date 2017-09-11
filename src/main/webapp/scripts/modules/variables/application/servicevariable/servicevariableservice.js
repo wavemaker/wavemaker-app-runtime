@@ -414,7 +414,11 @@ wm.variables.services.$servicevariable = ['Variables',
             if (!skipNotification) {
                 initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, errMsg, xhrObj, skipDefaultNotification);
             }
-
+            var methodInfo = getMethodInfo(variable, {}, {}),
+                securityDefnObj = _.get(methodInfo, 'securityDefinitions.0');
+            if (_.get(methodInfo.securityDefinitions, '0.type') === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2 && _.includes([WS_CONSTANTS.HTTP_STATUS_CODE.UNAUTHORIZED, WS_CONSTANTS.HTTP_STATUS_CODE.FORBIDDEN], _.get(xhrObj, 'status'))) {
+                oAuthProviderService.removeAccessToken(securityDefnObj[OAUTH_PROVIDER_KEY]);
+            }
             /* trigger error callback */
             Utils.triggerFn(errorCB, errMsg);
 
@@ -533,9 +537,9 @@ wm.variables.services.$servicevariable = ['Variables',
          * @param variable
          * @param options
          * @param success
-         * @param error
+         * @param errorCB
          */
-        function getDataInRun(variable, options, success, error) {
+        function getDataInRun(variable, options, success, errorCB) {
             /* get the service and operation from the variable object */
             var service = variable.service,
                 operation = variable.operation,
@@ -550,7 +554,7 @@ wm.variables.services.$servicevariable = ['Variables',
             if (CONSTANTS.isRunMode) {
                 output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, inputFields);
                 if (output === false) {
-                    Utils.triggerFn(error);
+                    Utils.triggerFn(errorCB);
                     return;
                 }
                 if (_.isObject(output)) {
@@ -584,13 +588,13 @@ wm.variables.services.$servicevariable = ['Variables',
                     params = constructRestRequestParams(methodInfo, variable, inputFields);
                 }
                 if (params.error && params.error.type === ERR_TYPE_NO_ACCESSTOKEN) {
-                    oAuthProviderService.performAuthorization(undefined, params.securityDefnObj[OAUTH_PROVIDER_KEY], getDataInRun.bind(undefined, variable, options, success, error));
-                    processErrorResponse(variable, params.error.message, error, options.xheObj, true, true);
+                    oAuthProviderService.performAuthorization(undefined, params.securityDefnObj[OAUTH_PROVIDER_KEY], getDataInRun.bind(undefined, variable, options, success, errorCB));
+                    processErrorResponse(variable, params.error.message, errorCB, options.xheObj, true, true);
                     return;
                 }
                 if (params.error && params.error.message) {
                     console.warn(params.error.message);
-                    processErrorResponse(variable, params.error.message, error, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);
+                    processErrorResponse(variable, params.error.message, errorCB, options.xhrObj, options.skipNotification, params.error.skipDefaultNotification);
                     return;
                 }
             } else if (serviceType === SERVICE_TYPE_REST) {
@@ -626,7 +630,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     Utils.triggerFn(success);
                 }, function () {
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable);
-                    Utils.triggerFn(error);
+                    Utils.triggerFn(errorCB);
                 });
                 variableActive[variable.activeScope.$id][variable.name] = false;
                 return;
@@ -636,16 +640,16 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
                 variable.promise = WebService.invokeJavaService(params, function (response, xhrObj) {
                     if (_.get(xhrObj, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
-                        processErrorResponse(variable, 'Possible CORS Failure, try disabling Same-Origin Policy on the browser.', error, xhrObj, options.skipNotification);
+                        processErrorResponse(variable, WS_CONSTANTS.HTTP_STATUS_CODE_MESSAGES[WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE], errorCB, xhrObj, options.skipNotification);
                     } else {
                         options.xhrObj = xhrObj;
-                        processSuccessResponse(response, variable, options, success, error);
+                        processSuccessResponse(response, variable, options, success, errorCB);
                     }
                 }, function (errorMsg, details, xhrObj) {
                     if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
-                        errorMsg = 'Possible CORS Failure, try disabling Same-Origin Policy on the browser.';
+                        errorMsg = WS_CONSTANTS.HTTP_STATUS_CODE_MESSAGES[WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE];
                     }
-                    processErrorResponse(variable, errorMsg, error, xhrObj, options.skipNotification);
+                    processErrorResponse(variable, errorMsg, errorCB, xhrObj, options.skipNotification);
                 });
             }
         }

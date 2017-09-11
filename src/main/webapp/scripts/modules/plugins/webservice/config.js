@@ -153,7 +153,13 @@ wm.plugins.webServices.constant('WS_CONSTANTS', {
         PROCEDURE_CONTROLLER: "ProcedureExecutionController"
     },
     HTTP_STATUS_CODE: {
-        CORS_FAILURE: -1
+        CORS_FAILURE: -1,
+        UNAUTHORIZED: 401,
+        FORBIDDEN: 403
+    },
+    HTTP_STATUS_CODE_MESSAGES: {
+        '401': "Requested resource requires authentication",
+        '-1': "Possible CORS Failure, try disabling Same-Origin Policy on the browser."
     }
 });
 

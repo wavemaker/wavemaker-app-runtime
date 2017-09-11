@@ -134,18 +134,36 @@ wm.plugins.security.services.oAuthProviderService = [
     }
 
     /**
-     * This function sets the accessToken
+     * This function returns the accesstoken placeholder based on the studio or run mode for the project
      * @param provider
-     * @param accesstoken
+     * @returns {*}
      */
-    function setAccessToken(provider, accesstoken) {
+    function getAccessTokenPlaceholder(provider) {
         var accessTokenKey;
         if (CONSTANTS.isStudioMode) {
             accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.STUDIO + $rs.project.name + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
         } else {
             accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.RUN + $rs.project.id + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
         }
+        return accessTokenKey;
+    }
+
+    /**
+     * This function sets the accessToken
+     * @param provider
+     * @param accesstoken
+     */
+    function setAccessToken(provider, accesstoken) {
+        var accessTokenKey = getAccessTokenPlaceholder(provider);
         sessionStorage.setItem(accessTokenKey, accesstoken);
+    }
+    /**
+     * This function remove the accessToken for a provider
+     * @param provider
+     */
+    function removeAccessToken(provider) {
+        var accessTokenKey = getAccessTokenPlaceholder(provider);
+        sessionStorage.removeItem(accessTokenKey);
     }
 
     /**
@@ -154,12 +172,7 @@ wm.plugins.security.services.oAuthProviderService = [
      * @returns {*}
      */
     function getAccessToken(provider, checkLocalStorage) {
-        var accessTokenKey;
-        if (CONSTANTS.isStudioMode) {
-            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.STUDIO + $rs.project.name + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
-        } else {
-            accessTokenKey = ACCESSTOKEN_PLACEHOLDERS.RUN + $rs.project.id + '_' + provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
-        }
+        var accessTokenKey = getAccessTokenPlaceholder(provider);
         if (checkLocalStorage) {
             return localStorage.getItem(provider + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT);
         }
@@ -330,4 +343,5 @@ wm.plugins.security.services.oAuthProviderService = [
     this.getAuthorizationUrl = getAuthorizationUrl;
     this.performAuthorization = performAuthorization;
     this.getAccessToken = getAccessToken;
+    this.removeAccessToken = removeAccessToken;
 }];

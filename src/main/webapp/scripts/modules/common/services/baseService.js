@@ -231,10 +231,11 @@ wm.modules.wmCommon.services.BaseService = [
                 }
                 isUnAuthorized = false;
                 if (error.status === 403 && !config.isDirectCall) {
+                    errMsg = $rootScope.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.';
                     pushToErrorCallStack(config, successCallback, failureCallback);
-                    displayMessage('failure', $rootScope.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', $rootScope.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.');
+                    displayMessage('failure', $rootScope.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', errMsg);
                     /* In runtime, the variable error handler needs to be invoked to hide the spinner */
-                    Utils.triggerFn(failureCallback);
+                    Utils.triggerFn(failureCallback, errMsg, _.get(error, 'data.error'), error);
                     return;
                 }
                 /*check if 'locale' resource is loaded*/
