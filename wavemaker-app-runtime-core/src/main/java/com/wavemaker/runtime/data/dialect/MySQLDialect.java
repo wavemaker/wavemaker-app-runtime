@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,9 @@ package com.wavemaker.runtime.data.dialect;
 
 import java.sql.Types;
 
+import org.hibernate.dialect.InnoDBStorageEngine;
 import org.hibernate.dialect.MySQL5Dialect;
+import org.hibernate.dialect.MySQLStorageEngine;
 import org.hibernate.dialect.function.NoArgSQLFunction;
 import org.hibernate.type.StringType;
 
@@ -38,4 +40,8 @@ public class MySQLDialect extends MySQL5Dialect {
         registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
     }
 
+    @Override
+    protected MySQLStorageEngine getDefaultMySQLStorageEngine() {
+        return InnoDBStorageEngine.INSTANCE;
+    }
 }
