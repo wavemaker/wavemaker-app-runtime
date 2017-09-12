@@ -102,12 +102,24 @@ wm.plugins.database.services.LocalDBManager = [
                 'columns' : []
             });
             _.forEach(entity.columns, function (col) {
+                var defaultValue = col.columnValue ? col.columnValue.defaultValue : "",
+                    type = col.sqlType;
+                if (type === 'number' && !col.primaryKey) {
+                    defaultValue = _.isEmpty(defaultValue) ? 0 : _.parseInt(defaultValue);
+                } else if (type === 'boolean') {
+                    defaultValue = _.isEmpty(defaultValue) ? null : (defaultValue === "true" ? 1 : 0);
+                } else {
+                    defaultValue = _.isEmpty(defaultValue) ? null : defaultValue;
+                }
                 reqEntity.columns.push({
                     'name' : col['name'],
                     'fieldName' : col['fieldName'],
                     'generatorType' : col['generatorType'],
                     'sqlType' : col['sqlType'],
-                    'primaryKey' : col['primaryKey']
+                    'primaryKey' : col['primaryKey'],
+                    'columnValue' : {
+                        'defaultValue': defaultValue
+                    }
                 });
             });
             _.forEach(entity.relations, function (r) {
