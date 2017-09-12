@@ -114,6 +114,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                         operator = 'like';
                     }
                     target = "'" + target + "'";
+                } else if (filterCriterion.attributeType === 'BOOLEAN') {
+                    target =  (target === true ? 1 : 0);
                 }
                 return escapeName(tableName) + '.' + escapeName(colName) + ' ' + operator + ' ' + target;
             });
@@ -148,6 +150,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                         delete dataObj[childFieldName];
                     });
                     dataObj[col.sourceFieldName] = childEntity;
+                } else if (col.sqlType === 'boolean') {
+                    dataObj[col.fieldName] = dataObj[col.fieldName] === 1 ? true : false;
                 }
             });
             return dataObj;
@@ -156,12 +160,15 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         function mapObjToRow(store, entity) {
             var row = {};
             _.forEach(store.schema.columns, function (col) {
-                row[col.name] = entity[col.fieldName];
+                var value = entity[col.fieldName];
                 if (col.targetEntity && entity[col.sourceFieldName]) {
                     row[col.name] = entity[col.sourceFieldName][col.targetFieldName];
-                }
-                if (!col.primaryKey && (_.isUndefined(row[col.name]) || _.isNull(row[col.name])) && col.sqlType === 'number') {
-                    row[col.name] = 0;
+                } else if (_.isNil(value)) {
+                    row[col.name] = col.columnValue.defaultValue;
+                } else if (col.sqlType === 'boolean') {
+                    row[col.name] = (value === true ? 1 : 0);
+                } else {
+                    row[col.name] = value;
                 }
             });
             return row;
