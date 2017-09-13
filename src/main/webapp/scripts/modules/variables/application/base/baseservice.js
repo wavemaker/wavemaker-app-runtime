@@ -2152,6 +2152,7 @@ wm.variables.services.Variables = [
                     updateVariableValues(activePageName);
                 }
                 function onSuccess() {
+                    $rootScope.$emit("update-variables-tree");
                     if (_.includes(reloadRequired, 'App')) {
                         reloadVariables(success, error);
                     } else if (_.includes(reloadRequired, activePageName)) {
