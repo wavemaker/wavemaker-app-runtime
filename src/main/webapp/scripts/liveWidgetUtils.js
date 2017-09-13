@@ -2705,14 +2705,39 @@ WM.module('wm.widgets.live')
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
         'use strict';
-        var getRecords = function (options, success, error) {
-                var variable = options.variable;
+        var getRecords = function (options, operation, success, error) {
+                var variable    = options.variable,
+                    widgetScope = options.scope,
+                    index,
+                    dataNavigator;
 
-                variable.update({}, function (response) {
-                    Utils.triggerFn(success, response);
-                }, function (err) {
-                    Utils.triggerFn(error, err);
-                });
+                if (widgetScope.navigation !== 'None' && widgetScope.dataNavigator) {
+                    dataNavigator = widgetScope.dataNavigator;
+
+                    //If operation is delete, decrease the data size and check if navigation to previous page is required
+                    if (operation === 'delete') {
+                        dataNavigator.dataSize -= 1;
+                        dataNavigator.calculatePagingValues();
+                        index = dataNavigator.pageCount < dataNavigator.dn.currentPage ? 'prev' : undefined;
+                    } else {
+                        //If operation is insert, go to last page. If update operation, stay on current page
+                        index = operation === 'insert' ? 'last' : 'current';
+                        if (index === 'last') {
+                            dataNavigator.dataSize += 1;
+                        }
+                        dataNavigator.calculatePagingValues();
+                    }
+
+                    dataNavigator.navigatePage(index, null, true, function (response) {
+                        Utils.triggerFn(success, response);
+                    });
+                } else {
+                    variable.update({}, function (response) {
+                        Utils.triggerFn(success, response);
+                    }, function (err) {
+                        Utils.triggerFn(error, err);
+                    });
+                }
             },
             insertRecord = function (options, success, error) {
                 var variable = options.variable,
@@ -2811,8 +2836,8 @@ WM.module('wm.widgets.live')
                         errorHandler(response.error);
                         return;
                     }
-                    if (fn !== 'read') {
-                        getRecords(options, function () {
+                    if (operation !== 'read') {
+                        getRecords(options, operation, function () {
                             successHandler(response);
                         }, function () {
                             successHandler(response);
