@@ -88,8 +88,6 @@
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
-    <bean id="corsBeanPostProcessor" class="com.wavemaker.runtime.cors.CorsBeanPostProcessor"/>
-
     <bean id="httpsConnection" class="com.wavemaker.commons.util.InitializeHttpsURLConnection" lazy-init="false"/>
 
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
