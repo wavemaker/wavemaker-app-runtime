@@ -34,7 +34,7 @@ WM.module('wm.widgets.form')
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'readonly':
-                if (CONSTANTS.isRunMode && !scope.disabled) {
+                if (CONSTANTS.isRunMode && !(scope.disabled || scope.binddisabled)) {
                     scope.disabled = newVal;
                 }
                 break;
