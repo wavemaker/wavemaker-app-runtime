@@ -855,6 +855,10 @@ wm.variables.services.Variables = [
                 return _.includes(actionServiceTypes, serviceType);
             },
 
+            getVariableCollectionType = function(variable) {
+                return variableConfig[variable.category].collectionType;
+            },
+
             defineActionsOnScope = function (scope, context) {
                 scope.Actions = {};
                 WM.forEach(scope.Variables, function (variable, name) {
@@ -2687,6 +2691,15 @@ wm.variables.services.Variables = [
              * Returns true if the variable passed is of Action type (New categorisation intriduced in 9.0)
              */
             isActionTypeVariable: isActionTypeVariable,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#getVariableCollectionType
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Returns variable collection type
+             */
+            getVariableCollectionType: getVariableCollectionType,
             /**
              * @ngdoc method
              * @name $Variables#addVariableConfig
