@@ -658,7 +658,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     },
     "DML_QUERY_INDICATORS": {
         "SELECT": "SELECT",
-        "UPDATE": ["INSERT ", "UPDATE ", "DELETE "]
+        "UPDATE": ["INSERT", "UPDATE", "DELETE"]
     },
     "DDL_QUERY_INDICATORS": ["CREATE", "ALTER", "RENAME", "DROP"],
     "PROCEDURE_INDICATORS": {
