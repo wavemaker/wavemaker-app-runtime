@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" ng-class="{\'panel\': title}" title="{{hint}}" apply-styles>' +
+            '<div init-widget class="app-chart" ng-class="{\'panel\': title}" apply-styles>' +
             '<div class="panel-heading" ng-if="title">' +
                 '<h3 class="panel-title">' +
                     '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
