@@ -1320,6 +1320,12 @@ wm.variables.services.Variables = [
                         if (!variable.appOnly && (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType)) {
                             filteredVariables.push(variable);
                         }
+                        if(variable.category === 'wm.ServiceVariable') {
+                            var securityIndex = variable.serviceTypes.indexOf(VARIABLE_CONSTANTS.VARIABLE_SERVICE_TYPES.SECURITY);
+                            if (securityIndex !== -1) {
+                                variable.serviceTypes.splice(securityIndex,1);
+                            }
+                        }
                     });
                 }
                 _.forEach(filteredVariables, function (variable) {
