@@ -442,7 +442,8 @@ WM.module('wm.widgets.advanced')
                         function getUTCDateTime(dateObj) {
                             dateObj = WM.isObject(dateObj) ? dateObj : moment(dateObj);
                             var year = dateObj.format('YYYY'),
-                                month = dateObj.format('MM'),
+                                //javascript starts the month count from '0' where as moment returns the human count
+                                month = dateObj.format('MM') - 1,
                                 day = dateObj.format('DD'),
                                 hours = dateObj.format('HH'),
                                 minutes = dateObj.format('mm'),
