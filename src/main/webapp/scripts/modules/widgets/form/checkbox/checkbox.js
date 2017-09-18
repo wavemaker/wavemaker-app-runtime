@@ -6,12 +6,12 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/checkbox.html',
             '<div class="app-checkbox checkbox" ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model title="{{hint}}" role="input">' +
-                '<label ng-class="{disabled:disabled, unchecked: isUnchecked(), required: required && _caption }" apply-styles role="button">' +
+                '<label ng-class="{disabled:disabled || readonly, unchecked: isUnchecked(), required: required && _caption }" apply-styles role="button">' +
                     '<input focus-target type="checkbox" ' +
                         ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                         ' ng-readonly="readonly" ' +
                         ' ng-required="required"' +
-                        ' ng-disabled="disabled" ' +
+                        ' ng-disabled="disabled || readonly" ' +
                         ' accesskey="{{::shortcutkey}}"' +
                         ' ng-change="_onChange({$event: $event, $scope: this})">' +
                     '<span class="caption" ng-bind-html="_caption"></span>' +
@@ -26,18 +26,12 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors.abstracteditors']),
             notifyFor = {
-                'readonly': true,
                 'caption' : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case 'readonly':
-                if (CONSTANTS.isRunMode && !(scope.disabled || scope.binddisabled)) {
-                    scope.disabled = newVal;
-                }
-                break;
             case 'caption':
                 if (!WM.isDefined(newVal) || newVal === '') {
                     scope._caption = '&nbsp;';
