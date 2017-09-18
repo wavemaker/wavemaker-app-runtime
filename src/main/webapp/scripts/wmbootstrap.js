@@ -522,7 +522,7 @@ Application
 
                 // This function returns the accepted languages list
                 function getAcceptedLanguages() {
-                    var languages = CONSTANTS.hasCordova ? navigator.languages : ($cookies.get('X-Accept-Language') || '').split(',');
+                    var languages = CONSTANTS.hasCordova ? (navigator.languages || [navigator.language]) : ($cookies.get('X-Accept-Language') || '').split(',');
                     return _.map(languages, _.toLower);
                 }
 
