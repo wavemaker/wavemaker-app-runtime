@@ -2724,6 +2724,11 @@ $.widget('wm.datatable', {
             }
             $col.attr('title', val);
             $col.find('.header-data').html(val);
+
+            //Change the display name in the search filter options
+            if (this.options.filtermode === this.CONSTANTS.SEARCH && this.gridSearch) {
+                this.gridSearch.find('select option[value="' + fieldName + '"]').text(val);
+            }
             break;
         }
     },
