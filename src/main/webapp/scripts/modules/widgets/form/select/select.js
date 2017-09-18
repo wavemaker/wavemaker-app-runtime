@@ -85,7 +85,7 @@ WM.module('wm.widgets.form')
 
             // modelProxy should not change when select is set to readonly.
             if (scope.readonly) {
-                if (dataField && dataField !== ALLFIELDS) {
+                if (dataField !== ALLFIELDS) {
                     scope.modelProxy = scope._model_;
                 } else {
                     prevSelectedOption = _.find(scope.displayOptions, function (opt) {
