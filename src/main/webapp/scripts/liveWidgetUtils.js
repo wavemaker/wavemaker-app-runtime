@@ -2097,19 +2097,19 @@ WM.module('wm.widgets.live')
                 if (CONSTANTS.isRunMode) {
                     columnDef._primaryKey = _.isEmpty(primaryKeys) ? undefined : primaryKeys[0];
                 }
-                displayField        = datafield === 'All Fields' ? undefined : datafield;
+
+                displayField = datafield === 'All Fields' ? undefined : datafield;
+                columnDef.displayfield = displayField = (columnDef.displayfield || displayField || columnDef._primaryKey);
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (isSearchWidgetType(widget)) {
                     columnDef.dataoptions  = {'relatedField': relatedField};
                     columnDef.dataset      = parentScope.binddataset;
-                    displayField           = displayField || columnDef._primaryKey;
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displayfield = (columnDef.displaylabel || displayField);
                 } else {
                     boundVariable.getRelatedTableData(relatedField, {'pagesize': columnDef.limit}, function (response) {
                         columnDef.dataset       = response;
-                        displayField            = displayField || columnDef._primaryKey ||  _.head(_.keys(_.get(response, '[0]')));
-                        columnDef.displayfield  = columnDef.displayfield || displayField;
+                        columnDef.displayfield  = columnDef.displayfield || _.head(_.keys(_.get(response, '[0]')));
                     });
                 }
             }
