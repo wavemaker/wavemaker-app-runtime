@@ -3,8 +3,6 @@ package com.wavemaker.runtime.cors;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +26,11 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
     private static final String DEFAULT_EXPOSED_HEADERS = "";
     private static final long DEFAULT_MAX_AGE = 1600;
 
+    @Autowired
     private CorsConfigurationSource corsConfigurationSource;
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @PostConstruct
-    public void init() {
-        corsConfigurationSource = (CorsConfigurationSource) applicationContext.getBean("corsConfigurationSource");
-    }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -53,18 +47,19 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
 
         List<PathEntry> pathEntriesList = corsConfig.getPathEntries();
         Long maxAge = corsConfig.getMaxAge();
+        boolean allowCredentials = corsConfig.isAllowCredentials();
 
         for (PathEntry pathEntry : pathEntriesList) {
             String path = pathEntry.getPath();
             if (StringUtils.isBlank(path)) {
                 throw new WMRuntimeException("Path cannot be empty for corsPathEntry " + pathEntry.getName());
             }
-            CorsConfiguration corsConfiguration = buildCorsConfigurationObject(pathEntry, maxAge);
+            CorsConfiguration corsConfiguration = buildCorsConfigurationObject(pathEntry, maxAge, allowCredentials);
             ((UrlBasedCorsConfigurationSource) corsConfigurationSource).registerCorsConfiguration(path, corsConfiguration);
         }
     }
 
-    private CorsConfiguration buildCorsConfigurationObject(PathEntry pathEntry, Long maxAge) {
+    private CorsConfiguration buildCorsConfigurationObject(PathEntry pathEntry, Long maxAge, boolean allowCredentials) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         if (maxAge == null) {
@@ -80,7 +75,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
         corsConfiguration.setAllowedMethods(toList(DEFAULT_ALLOWED_METHODS));
         corsConfiguration.setAllowedHeaders(toList(DEFAULT_ALLOWED_HEADERS));
         corsConfiguration.setExposedHeaders(toList(DEFAULT_EXPOSED_HEADERS));
-        corsConfiguration.setAllowCredentials(false);
+        corsConfiguration.setAllowCredentials(allowCredentials);
         return corsConfiguration;
     }
 
