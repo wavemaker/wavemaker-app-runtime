@@ -414,6 +414,11 @@ WM.module('wm.prefabs')
                                     'get': function () {
                                         return pfScope.Variables;
                                     }
+                                },
+                                'Actions': {
+                                    'get': function () {
+                                        return pfScope.Actions;
+                                    }
                                 }
                             });
 
