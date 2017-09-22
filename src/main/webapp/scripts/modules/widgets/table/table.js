@@ -352,6 +352,7 @@ WM.module('wm.widgets.table')
                          * element.scope() might refer to the controller scope/parent scope.*/
                         var elScope    = element.scope();
                         $is.Variables  = elScope.Variables;
+                        $is.Actions    = elScope.Actions;
                         $is.Widgets    = elScope.Widgets;
                         $is.pageParams = elScope.pageParams;
                         $is.appLocale  = $rs.appLocale;

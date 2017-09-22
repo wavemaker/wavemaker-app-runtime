@@ -2725,6 +2725,11 @@ WM.module('wm.utils', [])
                         return _scope.Variables;
                     }
                 },
+                'Actions': {
+                    'get': function () {
+                        return _scope.Actions;
+                    }
+                },
                 'Widgets': {
                     'get': function () {
                         return _scope.Widgets;

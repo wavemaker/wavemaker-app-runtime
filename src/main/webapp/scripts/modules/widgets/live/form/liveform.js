@@ -828,6 +828,7 @@ WM.module('wm.widgets.live')
                          * and "Variables", "Widgets" will not be available in that scope.
                          * element.scope() might refer to the controller scope/parent scope.*/
                         scope.Variables  = elScope.Variables;
+                        scope.Actions    = elScope.Actions;
                         scope.Widgets    = elScope.Widgets;
                         scope.appLocale  = $rootScope.appLocale;
                         scope.pageParams = elScope.pageParams;

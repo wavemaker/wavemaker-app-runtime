@@ -226,6 +226,7 @@ WM.module('wm.widgets.basic')
                                                                 partialScope  = $parEl.scope();
                                                                 $is.Widgets   = partialScope.Widgets;
                                                                 $is.Variables = partialScope.Variables;
+                                                                $is.Actions   = partialScope.Actions;
                                                             }
                                                         }
                                                         Utils.triggerFn($is.onLoad, {'$isolateScope': $is});

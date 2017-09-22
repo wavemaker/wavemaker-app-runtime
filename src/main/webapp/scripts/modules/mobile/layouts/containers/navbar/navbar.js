@@ -184,6 +184,12 @@ WM.module('wm.layouts.containers')
                                 return $s.Variables;
                             }
                         });
+
+                        Object.defineProperty($is, 'Actions', {
+                            get: function () {
+                                return $s.Actions;
+                            }
+                        });
                     },
                     'post': function ($is, $el, attrs) {
                         $is.leftNavPanel = ($el.closest('.app-page').find('.app-left-panel:first')).isolateScope();

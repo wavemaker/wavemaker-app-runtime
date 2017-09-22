@@ -190,6 +190,7 @@ WM.module('wm.layouts.page')
                             // expose partial page's Variabes to its container's scope (to be visible to parent)
                             if (containerScope) {
                                 containerScope.Variables = $s.Variables;
+                                containerScope.Actions = $s.Actions;
                             }
 
                             // if specified, call page variables ready function in the page.js
@@ -261,6 +262,7 @@ WM.module('wm.layouts.page')
                     // expose partial's Variables to its container's scope (to be visible to parent)
                     if (CONSTANTS.isRunMode && containerScope) {
                         containerScope.Variables = $s.Variables;
+                        containerScope.Actions = $s.Actions;
                     }
                 });
             }
@@ -284,6 +286,7 @@ WM.module('wm.layouts.page')
                         if (CONSTANTS.isRunMode) {
                             $s.Widgets   = {};
                             $s.Variables = {};
+                            $s.Actions = {};
 
                             // get partial container's scope
                             containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
