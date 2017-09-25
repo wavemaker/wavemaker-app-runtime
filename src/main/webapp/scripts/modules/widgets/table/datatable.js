@@ -1220,12 +1220,12 @@ $.widget('wm.datatable', {
     selectFirstRow: function (value, visible) {
         var $row,
             id;
-        //If visible flag is true, select the first visible row item
+        //If visible flag is true, select the first visible row item (Do not select the always new row)
         if (visible && this.gridElement.find('tBody').is(':visible')) {
             this.__setStatus();
-            $row = this.gridElement.find('tBody tr:visible:first');
+            $row = this.gridElement.find('tBody tr:visible:not(.always-new-row):first');
         } else {
-            $row = this.gridElement.find('tBody tr:first');
+            $row = this.gridElement.find('tBody tr:not(.always-new-row):first');
         }
         id = $row.attr('data-row-id');
         // Select the first row if it exists, i.e. it is not the first row being added.
@@ -1497,9 +1497,10 @@ $.widget('wm.datatable', {
         }
     },
     //Function to the first input element in a row
-    setFocusOnElement: function (e, $el) {
+    setFocusOnElement: function (e, $el, skipDelay) {
         var $firstEl,
-            $target = e && $(e.target);
+            $target = e && $(e.target),
+            $focusEl;
         //If focused directly on the cell, focus the input in the cell
         if ($target && $target.hasClass('app-datagrid-cell')) {
             $firstEl = $target.find('input');
@@ -1520,10 +1521,16 @@ $.widget('wm.datatable', {
         }
         //Focus and select the first element
         if ($firstEl.length) {
-            this.options.timeoutCall(function () {
-                $firstEl.first().focus();
-                $firstEl.first().select();
-            });
+            $focusEl = $firstEl.first();
+            if (skipDelay) {
+                $focusEl.focus();
+                $focusEl.select();
+            } else {
+                this.options.timeoutCall(function () {
+                    $focusEl.focus();
+                    $focusEl.select();
+                });
+            }
         }
     },
     removeNewRow: function ($row) {
@@ -2033,7 +2040,7 @@ $.widget('wm.datatable', {
         //Remove ng touched classes
         $row.find('.ng-touched').removeClass('ng-touched');
         self.options.safeApply();
-        self.setFocusOnElement(undefined, $row);
+        self.setFocusOnElement(undefined, $row, true);
     },
     // Handles keydown event on row items.
     onKeyDown: function (event) {
@@ -2066,7 +2073,7 @@ $.widget('wm.datatable', {
             return;
         }
         if (event.which === 13) { //Enter key
-            if (quickEdit && $target.hasClass('app-datagrid-row')) {
+            if (quickEdit && $target.hasClass('app-datagrid-row') && !$target.hasClass('row-editing')) {
                 $row.trigger('click', [undefined, {action: 'edit'}]);
             } else {
                 //On click of enter while inside a widget in editing row, save the row
@@ -2143,14 +2150,17 @@ $.widget('wm.datatable', {
     },
     //Method to check if the docus is on last column
     isLastColumn: function ($target) {
-        var $cell = $target.closest('td.app-datagrid-cell');
+        var $cell = $target.closest('td.app-datagrid-cell'),
+            $editCells;
 
         if ($cell.is(':last-child')) {
             return true;
         }
 
         if ($cell.hasClass('cell-editing')) {
-            return $cell.attr('data-col-id') === $cell.closest('tr.app-datagrid-row').find('.cell-editing').last().attr('data-col-id');
+            //Find and compare the last editable column which is not disabled
+            $editCells = $cell.closest('tr.app-datagrid-row').find('.cell-editing').has('> :not([disabled="disabled"])');
+            return $cell.attr('data-col-id') === $editCells.last().attr('data-col-id');
         }
         return false;
     },
@@ -2229,8 +2239,8 @@ $.widget('wm.datatable', {
                     }
                 }
 
-                //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row.
-                if (!self.isLastColumn($target, $relatedTarget) || $row.hasClass('danger') || e.relatedTarget === null) {
+                //Save the row on last column of the data table. If class has danger, confirm dialog is opened, so dont save the row. Do not save the row if focus is out of input file.
+                if (!self.isLastColumn($target, $relatedTarget) || $row.hasClass('danger') || e.relatedTarget === null || $target.hasClass('file-upload')) {
                     return;
                 }
                 //If focusout is because of input element or row action or current row, dont save the row
