@@ -2971,7 +2971,8 @@ WM.module('wm.widgets.base', [])
                     var val;
                     /* convert indexes to properties, so as to work for even 'key1[0].child1'*/
                     strKey.replace(/\[(\w+)\]/g, '.$1').split('.').forEach(function (key) {
-                        val = (val && val[key]) || obj[key];
+                        //If obj is null, then assign val to null.
+                        val = (val && val[key]) || (_.isNull(obj) ? obj : obj[key]);
                     });
                     return val;
                 }

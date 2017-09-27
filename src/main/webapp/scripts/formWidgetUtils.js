@@ -141,12 +141,7 @@ WM.module('wm.widgets.form')
                 // ModelProxy is undefined, then update the _dataVal which can be used when latest dataset is obtained.
                 if (!scope._isChangedManually && WM.isUndefined(selectedValue) && WM.isDefined(scope._model_)) {
                     scope._dataVal = scope._model_;
-                    scope.datavalue = selectedValue;
                     scope._model_ = selectedValue;
-
-                    if (scope._onChange) {
-                        scope._onChange({$scope: scope});
-                    }
                 } else if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
                     scope._model_ = selectedValue;
                 } else if (scope.datafield === ALLFIELDS) {
@@ -156,6 +151,11 @@ WM.module('wm.widgets.form')
                     }
                 } else {
                     scope._model_ = selectedValue;
+                }
+
+                // Invoke onChange to update the scopedatavalue.
+                if (scope._onChange) {
+                    scope._onChange({$scope: scope});
                 }
 
                 // clear _dataVal when model is defined.
