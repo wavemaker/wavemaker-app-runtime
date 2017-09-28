@@ -206,7 +206,13 @@ WM.module("wm.widgets.basic")
 
                 /*Function to check if the variable bound to the data-navigator has paging.*/
                 $scope.isVariableHasPaging = function () {
-                    var dataSet = $scope.dataset;
+                    var dataSet = $scope.dataset,
+                        category = $scope.variable && $scope.variable.category;
+
+                    if (category === 'wm.LiveVariable' || (category === 'wm.ServiceVariable' && $scope.variable.controller === 'QueryExecution')) {
+                        return true;
+                    }
+
                     return (WM.isObject(dataSet) && (dataSet.pagingOptions || Utils.isPageable(dataSet)));
                 };
 
@@ -216,9 +222,8 @@ WM.module("wm.widgets.basic")
                         maxResults,
                         currentPage,
                         variable,
-                        variableOptions = {},
-                        elScope;
-                    //Store the data in __fullData. This is used for client side searching with out modifying the actual dataset.
+                        variableOptions = {};
+                    //Store the data in __fullData. This is used for client side searching witvah out modifying the actual dataset.
                     $scope.__fullData = newVal;
                     /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
                     $scope.result = newVal;
@@ -226,24 +231,18 @@ WM.module("wm.widgets.basic")
                     /*Check for sanity*/
                     if ($scope.binddataset) {
 
-                        /*Set the variable name based on whether the widget is bound to a variable opr widget*/
-                        if ($scope.binddataset.indexOf('bind:Variables.') !== -1) {
-                            $scope.variableName = $scope.binddataset.replace('bind:Variables.', '');
-                            $scope.variableName = $scope.variableName.substr(0, $scope.variableName.indexOf('.'));
-                            elScope             = $scope.navigatorElement.scope();
-                            if ($scope.variableName && elScope) {
-                                variable        = elScope.Variables[$scope.variableName];
-                                variableOptions = variable._options || {};
-                            }
-                        } else if (newVal) {
+                        if (newVal) {
                             if (newVal.isBoundToFilter && newVal.widgetName) {
                                 $scope.isBoundToFilter = true;
                                 $scope.widgetName = newVal.widgetName;
-                            } else {
+                            } else if (newVal.variableName) {
                                 $scope.variableName = newVal.variableName;
+                                $scope.variable = $scope.navigatorElement.scope().Variables[$scope.variableName];
                             }
                         }
 
+                        variable        = $scope.variable || {};
+                        variableOptions = variable._options || {};
                         /*Check for number of elements in the data set*/
                         if (newVal) {
                             if ($scope.isVariableHasPaging()) {
@@ -340,7 +339,7 @@ WM.module("wm.widgets.basic")
 
                 /*Function to get data for the current page*/
                 $scope.getPageData = function (event, callback) {
-                    var variable = $scope.navigatorElement.scope().Variables[$scope.variableName],
+                    var variable = $scope.variable,
                         data,
                         startIndex,
                         widgetScope,
@@ -499,6 +498,27 @@ WM.module("wm.widgets.basic")
                     },
                     'post': function (scope, element, attrs) {
 
+                        var handlers = [];
+
+                        /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
+                         * variable is changed*/
+                        handlers.push(scope.$watch('binddataset', function (newVal) {
+                            var elScope;
+
+                            if (!newVal) {
+                                newVal = scope.$parent.binddataset;
+                            }
+                            /*Set the variable name based on whether the widget is bound to a variable opr widget*/
+                            if (newVal && newVal.indexOf('bind:Variables.') !== -1) {
+                                scope.variableName = newVal.replace('bind:Variables.', '');
+                                scope.variableName = scope.variableName.substr(0, scope.variableName.indexOf('.'));
+                                elScope             = element.scope();
+                                if (scope.variableName && elScope) {
+                                    scope.variable = elScope.Variables[scope.variableName];
+                                }
+                            }
+                        }));
+
                         scope.dn = {}; //dataNavigator
 
                         scope.navigatorElement = element;
@@ -506,6 +526,10 @@ WM.module("wm.widgets.basic")
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        scope.$on('$destroy', function () {
+                            handlers.forEach(Utils.triggerFn);
+                        });
                     }
                 };
             }
