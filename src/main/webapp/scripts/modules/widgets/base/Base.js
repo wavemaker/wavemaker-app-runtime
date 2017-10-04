@@ -3628,8 +3628,8 @@ WM.module('wm.widgets.base', [])
                 $is   = $root.isolateScope();
 
                 if ($is && $is.widgetProps.tabindex) {
-                    $el.attr('tabindex', $is.tabindex);
                     $root.removeAttr('tabindex');
+                    $el.attr('tabindex', $is.tabindex);
                 }
             }
         };
