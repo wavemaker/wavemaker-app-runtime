@@ -151,10 +151,6 @@ WM.module("wm.widgets.basic")
                     $scope.dn.currentPage = $scope.dn.currentPage || 1;
                 };
 
-                $scope.isPagingValuesComputed = function () {
-                    return (WM.isDefined($scope.maxResults) && WM.isDefined($scope.dataSize) && WM.isDefined($scope.dn.currentPage) && WM.isDefined($scope.pageCount));
-                };
-
                 /*Function to set default values to the paging parameters*/
                 $scope.setDefaultPagingValues = function (dataSize, maxResults, currentPage, pageCount) {
                     /*If neither "dataSize" nor "maxResults" is set, then set default values to the paging parameters.*/
@@ -266,9 +262,8 @@ WM.module("wm.widgets.basic")
                                     $scope.checkDataSize(dataSize, newVal.numberOfElements, newVal.size);
                                 }
                                 /*Re-compute the paging values in the following cases.
-                                1. Paging values have not been computed.
-                                2. Data corresponding to the table associated with the live-variable changes.*/
-                                if (!$scope.isPagingValuesComputed() || newVal.pagingOptions) {
+                                Data corresponding to the table associated with the live-variable changes.*/
+                                if (newVal.pagingOptions) {
                                     dataSize = newVal.pagingOptions.dataSize;
 
                                     maxResults = newVal.pagingOptions.maxResults;
