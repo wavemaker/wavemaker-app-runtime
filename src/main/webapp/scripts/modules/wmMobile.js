@@ -28,3 +28,4 @@ wm.modules.wmCommon.services.DeviceFileService = WM.noop;
 wm.variables.services.DeviceVariableService = WM.noop;
 wm.variables.services.FileSelectorService = WM.noop;
 wm.variables.services.DeviceMediaService = WM.noop;
+wm.variables.services.ExtAppMessageService = WM.noop;

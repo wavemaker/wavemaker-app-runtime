@@ -11,6 +11,7 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import com.wavemaker.runtime.WMAppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -156,15 +157,15 @@ public class OAuth2RuntimeServiceManager {
 
     private synchronized void setCustomUrlScheme() {
         if (customUrlScheme == null) {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.json");
-            JSONObject configJsonObject = null;
+            InputStream stream = null;
             try {
-                configJsonObject = JSONUtils.toObject(stream, JSONObject.class);
+                stream = WMAppContext.getInstance().getContext().getResourceAsStream("config.json");
+                JSONObject configJsonObject = JSONUtils.toJSONObject(stream);
                 customUrlScheme = configJsonObject.getString(OAuth2Constants.CUSTOM_URL_SCHEME);
-            } catch (IOException e) {
-                throw new WMRuntimeException("Failed to read jsonFile", e);
             } catch (JSONException e) {
                 throw new WMRuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(stream);
             }
         }
     }
