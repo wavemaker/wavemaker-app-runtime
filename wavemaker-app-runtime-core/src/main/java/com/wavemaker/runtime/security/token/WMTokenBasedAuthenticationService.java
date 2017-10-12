@@ -19,7 +19,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.UUID;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -167,7 +166,7 @@ public class WMTokenBasedAuthenticationService {
 
     protected Authentication toAuthentication(final WMUser wmUser) {
         if (wmUser != null) {
-            return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), null, wmUser.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(wmUser, null, wmUser.getAuthorities());
         }
         return null;
     }
