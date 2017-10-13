@@ -23,14 +23,16 @@ public class OAuth2RuntimeIntegrationController {
 
 
     @RequestMapping(value = "authorizationUrl", method = RequestMethod.GET)
-    public String getAuthorizationUrl(@PathVariable("providerId") String providerId, HttpServletRequest httpServletRequest) {
-        return oAuth2RuntimeServiceManager.getAuthorizationUrl(providerId, httpServletRequest);
+    public String getAuthorizationUrl(@PathVariable("providerId") String providerId, @RequestParam(name = "key", required = false) String key, @RequestParam
+            (name = "requestSourceType", required = false) String requestSourceType, HttpServletRequest httpServletRequest) {
+        return oAuth2RuntimeServiceManager.getAuthorizationUrl(providerId, requestSourceType, key, httpServletRequest);
     }
 
     @RequestMapping(value = "callback", method = RequestMethod.GET, produces = "text/html")
     public String callBack(@PathVariable("providerId") String providerId, @RequestParam(name = "redirect_url", required = false) String redirectUrl,
-                           @RequestParam(name = "code") String code, HttpServletRequest httpServletRequest) {
-        return oAuth2RuntimeServiceManager.callBack(providerId, redirectUrl, code, httpServletRequest);
+                           @RequestParam(name = "code") String code, @RequestParam(name = "state", required = false) String state, HttpServletRequest
+                                   httpServletRequest) {
+        return oAuth2RuntimeServiceManager.callBack(providerId, redirectUrl, code, state, httpServletRequest);
     }
 
 }

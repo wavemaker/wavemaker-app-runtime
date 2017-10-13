@@ -24,9 +24,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
 import com.wavemaker.commons.auth.oauth2.OAuth2Helper;
 import com.wavemaker.commons.auth.oauth2.OAuth2ProviderConfig;
 import com.wavemaker.commons.auth.oauth2.extractors.AccessTokenRequestContext;
+import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
 import com.wavemaker.runtime.WMObjectMapper;
@@ -42,6 +44,8 @@ public class OAuth2RuntimeServiceManager {
 
     private static RestConnector restConnector = new RestConnector();
     private static final String REDIRECT_URL = "/services/oauth2/${providerId}/callback";
+    private String customUrlScheme;
+
 
     private List<OAuth2ProviderConfig> oAuth2ProviderConfigList = new ArrayList<>();
 
@@ -62,23 +66,25 @@ public class OAuth2RuntimeServiceManager {
     }
 
 
-    public String getAuthorizationUrl(String providerId, HttpServletRequest httpServletRequest) {
+    public String getAuthorizationUrl(String providerId, String requestSourceType, String key, HttpServletRequest httpServletRequest) {
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
 
         String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
         String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
-        String redirectUrl = getRedirectUrl(providerId, httpServletRequest, baseUrl, appPath);
+        String redirectUrl = getRedirectUrl(providerId, appPath);
         try {
             JSONObject stateObject = new JSONObject();
             stateObject.put("mode", "runtTime");
             stateObject.put("appPath", appPath);
+            stateObject.put("key", key);
+            stateObject.put(OAuth2Constants.REQUEST_SOURCE_TYPE, requestSourceType);
             return OAuth2Helper.getAuthorizationUrl(oAuth2ProviderConfig, redirectUrl, stateObject);
         } catch (JSONException e) {
             throw new InvalidInputException("Invalid input to jsonObject", e);
         }
     }
 
-    private String getRedirectUrl(String providerId, HttpServletRequest httpServletRequest, String baseUrl, String appPath) {
+    private String getRedirectUrl(String providerId, String appPath) {
         String redirectUrl;
         String studioUrl = RuntimeEnvironment.getStudioUrl();
         if (StringUtils.isNotBlank(studioUrl)) {
@@ -92,7 +98,8 @@ public class OAuth2RuntimeServiceManager {
         return redirectUrl;
     }
 
-    public String callBack(String providerId, String redirectUrl, String code, HttpServletRequest httpServletRequest) {
+    public String callBack(String providerId, String redirectUrl, String code, String state, HttpServletRequest httpServletRequest) {
+
         OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
         if (StringUtils.isBlank(redirectUrl)) {
             redirectUrl = new StringBuilder().append(HttpRequestUtils.getBaseUrl(httpServletRequest)).append(httpServletRequest.getContextPath())
@@ -115,7 +122,18 @@ public class OAuth2RuntimeServiceManager {
                         oAuth2ProviderConfig.getAccessTokenUrl(), response);
 
                 String accessToken = OAuth2Helper.extractAccessToken(accessTokenRequestContext);
-                return OAuth2Helper.getCallbackResponse(providerId, accessToken);
+                String requestSourceType = null;
+//                TODO Have to perform encryption on accessToken
+                if (state != null) {
+                    JSONObject jsonObject = OAuth2Helper.getStateObject(state);
+                    if (jsonObject.has(OAuth2Constants.REQUEST_SOURCE_TYPE)) {
+                        requestSourceType = jsonObject.getString(OAuth2Constants.REQUEST_SOURCE_TYPE);
+                    }
+                    if ("MOBILE".equalsIgnoreCase(requestSourceType) && customUrlScheme == null) {
+                        setCustomUrlScheme();
+                    }
+                }
+                return OAuth2Helper.getCallbackResponse(providerId, accessToken, customUrlScheme, requestSourceType);
             } else {
                 logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
                 throw new WMRuntimeException("Failed to fetch access token");
@@ -135,4 +153,20 @@ public class OAuth2RuntimeServiceManager {
         }
         throw new ResourceNotFoundException("No OAuth2ProviderConfig found for given providerId - " + providerId);
     }
+
+    private synchronized void setCustomUrlScheme() {
+        if (customUrlScheme == null) {
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.json");
+            JSONObject configJsonObject = null;
+            try {
+                configJsonObject = JSONUtils.toObject(stream, JSONObject.class);
+                customUrlScheme = configJsonObject.getString(OAuth2Constants.CUSTOM_URL_SCHEME);
+            } catch (IOException e) {
+                throw new WMRuntimeException("Failed to read jsonFile", e);
+            } catch (JSONException e) {
+                throw new WMRuntimeException(e);
+            }
+        }
+    }
+
 }
