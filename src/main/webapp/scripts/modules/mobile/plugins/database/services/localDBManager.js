@@ -93,6 +93,48 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectory = dbInstallParentDirectory + dbInstallDirectoryName;
         }
 
+        /**
+         * Executes SQL query;
+         * 
+         * @param dbName
+         * @param sql
+         * @param params
+         * @returns {*}
+         */
+        function executeSQLQuery(dbName, sql, params) {
+            var db = databases[dbName];
+            if (db) {
+                return $cordovaSQLite.execute(db.connection, sql, params).then(function (result) {
+                    var i,
+                        data = [],
+                        rows = result.rows;
+                    for (i = 0; i < rows.length; i++) {
+                        data.push(rows.item(i));
+                    }
+                    return {
+                        'rowsAffected'  : result.rowsAffected,
+                        'rows'          : data
+                    };
+                });
+            }
+            return $q.reject('No Database with name ' + dbName + 'found');
+        }
+
+        /**
+         * A sql query should not have space character in column/table names. To overcome that in sqlite, column name 
+         * should be  surrounded by double quotes. If double quote is part of the column/table name, then it can be 
+         * escaped by placing another double quote right after it. This function transforms the given string as per 
+         * escaping rule.
+         * @param name
+         * @returns {string}
+         */
+        function escapeName(name) {
+            if (name) {
+                name = name.replace(/"/g, '""');
+                return '"' + name + '"';
+            }
+        }
+
         //Picks essential details from the given schema.
         function compactEntitySchema(schema, entity, transformedSchemas) {
             var reqEntity = transformedSchemas[entity['entityName']];
@@ -479,14 +521,11 @@ wm.plugins.database.services.LocalDBManager = [
         };
 
         /**
-         * Deletes any existing databases and copies the databases that are packaged with the app. After db creation,
-         * appInfo is saved.
+         * Deletes any existing databases (except wavemaker db) and copies the databases that are packaged with the app.
          *
-         * @param appInfo
-         * @param currentBuildTime
          * @returns {*}
          */
-        function cleanAndCopyDatabases(appInfo, currentBuildTime) {
+        function cleanAndCopyDatabases() {
             var databasesCreated = $q.defer(),
                 dbSeedFolder = cordova.file.applicationDirectory + META_LOCATION;
             $cordovaFile.createDir(dbInstallParentDirectory, dbInstallDirectoryName, false).finally(function () {
@@ -514,37 +553,75 @@ wm.plugins.database.services.LocalDBManager = [
                             }
                             return filesCopied.promise;
                         });
-                }).then(function () {
-                    if (!appInfo) {
-                        appInfo = {};
-                    }
-                    appInfo.createdOn = currentBuildTime || _.now();
-                    return $cordovaFile.writeFile(cordova.file.dataDirectory, "app.info", JSON.stringify(appInfo), true)
-                        .then(databasesCreated.resolve);
-                }).catch(databasesCreated.reject);
+                }).then(databasesCreated.resolve, databasesCreated.reject);
             });
             return databasesCreated.promise;
         }
 
         /**
-         * When app is opened for first time, then old databases are removed and new databases are created using
-         * bundled databases.
+         * When app is opened for first time  after a fresh install or update, then old databases are removed and 
+         * new databases are created using bundled databases.
          *
-         * @returns {*}
+         * @returns {*} a promise that is resolved with true, if the databases are newly created or resolved with false
+         * if existing databases are being used.
          */
         function setupDatabases() {
-            var currentBuildTime;
+            var appInfo, currentBuildTime;
             return $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', "config.json")
                 .then(function (appConfig) {
                     currentBuildTime = JSON.parse(appConfig).buildTime;
+                }).then(function () {
                     return $cordovaFile.readAsText(cordova.file.dataDirectory, "app.info")
-                        .then(function (appInfo) {
-                            appInfo = JSON.parse(appInfo);
-                            if (appInfo.createdOn < currentBuildTime) {
-                                return cleanAndCopyDatabases(appInfo, currentBuildTime);
+                        .then(function (content) {
+                            appInfo = JSON.parse(content);
+                        }, WM.noop)
+                        .then(function () {
+                            if (!appInfo || appInfo.createdOn < currentBuildTime) {
+                                return cleanAndCopyDatabases().then(function () {
+                                    appInfo = appInfo || {};
+                                    appInfo.createdOn = currentBuildTime || _.now();
+                                    return $cordovaFile.writeFile(cordova.file.dataDirectory, "app.info", JSON.stringify(appInfo), true);
+                                }).then(function () {
+                                    return true;
+                                });
                             }
-                        }, cleanAndCopyDatabases.bind(undefined, null, currentBuildTime));
+                            return false;
+                        });
                 });
+        }
+
+        /**
+         * SQLite does not support boolean data. Instead of using boolean values, data will be changed to 0 or 1.
+         * If the value is 'true', then 1 is set as value. If value is not 1 nor null, then column value is set as 0.
+         * @param dbName
+         * @param tableName
+         * @param colName
+         * @returns {*}
+         */
+        function normalizeBooleanData(dbName, tableName, colName) {
+            var trueTo1Query = "update " + escapeName(tableName) + " set " + escapeName(colName) + " = 1 "
+                               +  " where " + escapeName(colName) + " = 'true'",
+                exceptNullAnd1to0Query = "update " + escapeName(tableName) + " set " + escapeName(colName) + " = 0 "
+                                + " where " + escapeName(colName) + " is not null and "  + escapeName(colName) + " != 1";
+            return executeSQLQuery(dbName, trueTo1Query).then(function () {
+                return executeSQLQuery(dbName, exceptNullAnd1to0Query);
+            });
+        }
+
+        /**
+         * Converts data to support SQLite.
+         * @returns {*}
+         */
+        function normalizeData() {
+            return $q.all(_.map(databases, function (database) {
+                return $q.all(_.map(database.schema.entities, function (entitySchema) {
+                    return $q.all(_.map(entitySchema.columns, function (column) {
+                        if (column.sqlType === 'boolean') {
+                            return normalizeBooleanData(database.schema.name, entitySchema.name, column.name);
+                        }
+                    }));
+                }));
+            }));
         }
 
         function openDatabase(dbMetadata) {
@@ -626,26 +703,34 @@ wm.plugins.database.services.LocalDBManager = [
          */
         this.loadDatabases = function () {
             var d = $q.defer(),
-                self = this;
+                self = this,
+                newDatabasesCreated;
             if (databases) {
                 d.resolve(databases);
             } else {
                 databases = {};
                 setupDatabases()
+                    .then(function (flag) {
+                        newDatabasesCreated = flag;
+                    })
                     .then(loadDBSchemas)
                     .then(loadNamedQueries)
                     .then(loadOfflineConfig)
                     .then(function (metadata) {
-                        var dbPromises = [];
-                        _.forEach(metadata, function (dbMetadata) {
-                            dbPromises.push(openDatabase(dbMetadata).then(function (database) {
+                        return $q.all(_.map(metadata, function (dbMetadata) {
+                            return openDatabase(dbMetadata).then(function (database) {
                                 databases[dbMetadata.schema.name] = database;
-                            }));
-                        });
-                        $q.all(dbPromises).then(function () {
-                            LocalKeyValueService.init(self.getStore('wavemaker', 'key-value'));
+                            });
+                        }));
+                    }).then(function () {
+                        LocalKeyValueService.init(self.getStore('wavemaker', 'key-value'));
+                        if (newDatabasesCreated) {
+                            normalizeData().then(function () {
+                                d.resolve(databases);
+                            });
+                        } else {
                             d.resolve(databases);
-                        });
+                        }
                     });
             }
             return d.promise;
@@ -722,24 +807,7 @@ wm.plugins.database.services.LocalDBManager = [
          * @param {object} params parameters required for query.
          * @returns {object} a promise.
          */
-        this.executeSQLQuery = function (dbName, sql, params) {
-            var db = databases[dbName];
-            if (db) {
-                return $cordovaSQLite.execute(db.connection, sql, params).then(function (result) {
-                    var i,
-                        data = [],
-                        rows = result.rows;
-                    for (i = 0; i < rows.length; i++) {
-                        data.push(rows.item(i));
-                    }
-                    return {
-                        'rowsAffected'  : result.rowsAffected,
-                        'rows'          : data
-                    };
-                });
-            }
-            return $q.reject('No Database with name ' + dbName + 'found');
-        };
+        this.executeSQLQuery = executeSQLQuery;
 
         /**
          * @ngdoc method

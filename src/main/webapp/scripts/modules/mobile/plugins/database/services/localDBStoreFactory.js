@@ -140,7 +140,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
 
         function mapRowDataToObj(schema, dataObj) {
             _.forEach(schema.columns, function (col) {
-                var childEntity;
+                var childEntity,
+                    val = dataObj[col.fieldName];
                 if (col.targetEntity) {
                     _.forEach(col.dataMapper, function (childCol, childFieldName) {
                         if (dataObj[childFieldName]) {
@@ -150,8 +151,8 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                         delete dataObj[childFieldName];
                     });
                     dataObj[col.sourceFieldName] = childEntity;
-                } else if (col.sqlType === 'boolean') {
-                    dataObj[col.fieldName] = dataObj[col.fieldName] === 1 ? true : false;
+                } else if (col.sqlType === 'boolean' && !_.isNil(val)) {
+                    dataObj[col.fieldName] = (val === 1);
                 }
             });
             return dataObj;
