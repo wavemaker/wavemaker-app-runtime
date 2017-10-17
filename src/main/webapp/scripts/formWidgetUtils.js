@@ -155,7 +155,7 @@ WM.module('wm.widgets.form')
 
                 // Invoke onChange to update the scopedatavalue.
                 if (scope._onChange) {
-                    scope._onChange({$scope: scope});
+                    scope._onChange();
                 }
 
                 // clear _dataVal when model is defined.
@@ -180,7 +180,7 @@ WM.module('wm.widgets.form')
                     scope.datavalue = selectedCheckboxValue;
 
                     if (scope._onChange) {
-                        scope._onChange({$scope: scope});
+                        scope._onChange();
                     }
                 } else if (selectedCheckboxValue) {
                     scope._model_ = [];
