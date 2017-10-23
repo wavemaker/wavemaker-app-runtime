@@ -391,11 +391,6 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         ],
         "SQLServer": [
             {
-                "DB_VERSION": "SQL Server 2005",
-                "DRIVER_VERSION": "Driver 4.2",
-                "URL": ""
-            },
-            {
                 "DB_VERSION": "SQL Server 2008",
                 "DRIVER_VERSION": "Driver 4.2",
                 "URL": ""
