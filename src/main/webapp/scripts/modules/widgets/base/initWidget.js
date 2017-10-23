@@ -117,9 +117,8 @@ WM.module('wm.widgets.base')
             }
 
             function isActiveNavItem(fnName) {
-                var prefix = 'Variables.goToPage',
-                    suffix = $routeParams.name + '.invoke()';
-                return (fnName === prefix + '_' + suffix) || (fnName === prefix + '-' + suffix);
+                var routeRegex = new RegExp('^(Variables|Actions)\.goToPage(_|-)' + $routeParams.name + '\.invoke\(\)');
+                return routeRegex.test(fnName);
             }
 
             function overrideEventHandlers($is, $s, $el, attrs) {
