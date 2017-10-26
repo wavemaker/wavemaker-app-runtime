@@ -362,7 +362,7 @@ $.widget('wm.datatable', {
                 'class="form-control app-select">' +
                 '<option value="" selected class="placeholder">' + this.options.messages.selectField + '</option>',
             searchLabel = (this.Utils.isDefined(this.options.searchLabel) &&
-                this.options.searchLabel.length) ? this.options.searchLabel : 'Search:';
+                this.options.searchLabel.length) ? this.options.searchLabel : '';
         this.options.colDefs.forEach(function (colDef, index) {
             if (colDef.field !== 'none' && colDef.field !== 'rowOperations' && colDef.searchable) {
                 sel += '<option value="' + colDef.field +
@@ -377,7 +377,7 @@ $.widget('wm.datatable', {
                 '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="' +  searchLabel + '" style="display: inline-block;"/>' +
             '</div><div class="input-append input-group">' +
                 sel +
-                '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
+                '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="' + searchLabel + '">' +
                         '<i class="wi wi-search"></i>' +
                     '</button></span>' +
                 '</div>' +
@@ -1110,9 +1110,8 @@ $.widget('wm.datatable', {
             break;
         case 'searchLabel':
             if (this.gridSearch) {
-                this.gridSearch.find(
-                    '[data-element="dgSearchText"]'
-                ).attr('placeholder', value);
+                this.gridSearch.find('[data-element="dgSearchText"]').attr('placeholder', value);
+                this.gridSearch.find('[data-element="dgSearchButton"]').attr('title', value);
             }
             break;
         case 'rowngclass':
