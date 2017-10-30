@@ -522,7 +522,22 @@ Application
 
                 // This function returns the accepted languages list
                 function getAcceptedLanguages() {
-                    var languages = CONSTANTS.hasCordova ? (navigator.languages || [navigator.language]) : ($cookies.get('X-Accept-Language') || '').split(',');
+                    var languages;
+                    if (CONSTANTS.hasCordova) {
+                        languages = navigator.languages || [navigator.language];
+                    } else {
+                        languages = $cookies.get('X-Accept-Language') || '';
+                        /**
+                         * Accept-Language Header will contain set of supported locale, so try splitting the string to proper locale set
+                         * Ex: en,en-US;q=0.9,de;q=0.6,ar;q=0.2,hi
+                         *
+                         * Split the above into [en,en-us,de,ar,hi]
+                         * @type {Array}
+                         */
+                        languages = languages.split(',').map(function(locale) {
+                            return locale.split(';')[0];
+                        });
+                    }
                     return _.map(languages, _.toLower);
                 }
 
