@@ -538,11 +538,35 @@ WM.module('wm.widgets.basic')
                 return value === 'hide' ? false : true;
             }
 
+            /**
+             * Customise the tooltip for donut & pie charts and also for charts having only one value attached to yaxis
+             * @param key
+             * @param label
+             */
+            function customiseTooltip(chart, propertyValueMap, scope, label) {
+                chart.tooltip.contentGenerator(function (key) {
+                    var yValue;
+                    yValue = getNumberFormatedData(propertyValueMap.ynumberformat, key.data.y);
+                    if(isPieType(scope.type)) {
+                        label = key.data.x;
+                    }
+                    return '<table>' +
+                        '<tbody>' +
+                        '<tr>' +
+                        '<td class="legend-color-guide"><div style="background-color:' + key.color + ';"></div></td>' +
+                        '<td class="key">' + label + '</td>' +
+                        '<td class="value">' + yValue + '</td>' +
+                        '</tr>' +
+                        '</tbody>' +
+                        '</table>';
+                });
+            }
+
             // intializes the chart obejct
             function initChart(scope, xDomainValues, yDomainValues, propertyValueMap, isPreview) {
                 propertyValueMap =  initProperties(scope, propertyValueMap);
                 var chart, xValue = {}, yValue = {}, colors = [], xaxislabel, yaxislabel, labelConfig, radius, barSpacing,
-                    showLegend, xAxisValue;
+                    showLegend, xAxisValue, hasMultipleYValues;
                 switch (scope.type) {
                 case 'Column':
                     barSpacing = getNumberValue(propertyValueMap.barspacing, getBarSpacingValue) || barSpacingMap.medium;
@@ -691,18 +715,7 @@ WM.module('wm.widgets.basic')
                         });
                     }
                     //Customizing the tooltips in case of the pie and donut when labelType is value
-                    chart.tooltip.contentGenerator(function (key) {
-                        yValue = getNumberFormatedData(propertyValueMap.ynumberformat, key.data.y);
-                        return '<table>' +
-                                    '<tbody>' +
-                                         '<tr>' +
-                                            '<td class="legend-color-guide"><div style="background-color:' + key.color + ';"></div></td>' +
-                                            '<td class="key">' + key.data.x + '</td>' +
-                                            '<td class="value">' + yValue + '</td>' +
-                                        '</tr>' +
-                                    '</tbody>' +
-                                '</table>';
-                    });
+                    customiseTooltip(chart, propertyValueMap, scope);
                 } else {
                     chart.showXAxis(propertyValueMap.showxaxis)
                         .showYAxis(propertyValueMap.showyaxis);
@@ -710,6 +723,16 @@ WM.module('wm.widgets.basic')
                     //Setting the labels if they are specified explicitly or taking the axiskeys chosen
                     xaxislabel = propertyValueMap.xaxislabel || Utils.prettifyLabels(scope.xaxisdatakey) || 'x caption';
                     yaxislabel = propertyValueMap.yaxislabel || Utils.prettifyLabels(scope.yaxisdatakey) || 'y caption';
+
+                    //Checking if y axis has multiple values
+                    if (scope.yaxisdatakey && scope.yaxisdatakey.split(',').length > 1) {
+                        hasMultipleYValues = true;
+                    }
+                    //Customizing the tooltip to show yaxislabel, only if the y axis contains one value
+                    if(!hasMultipleYValues) {
+                        customiseTooltip(chart,propertyValueMap, scope, yaxislabel);
+                    }
+
                     //Adding the units to the captions if they are specified
                     xaxislabel += propertyValueMap.xunits ? '(' + propertyValueMap.xunits + ')' : '';
                     yaxislabel += propertyValueMap.yunits ? '(' + propertyValueMap.yunits + ')' : '';
