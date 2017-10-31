@@ -53,7 +53,7 @@ WM.module('wm.utils', [])
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
-                'project': ['../lib', '../project', '../project/services', '../project/lib', '../project/src', '../project/test', '../project/src/main', '../project/src/main/webapp', '../project/src/main/resources', '../project/src/main/webapp/services', '../project/src/main/webapp/resources', '../project/src/main/webapp/pages', '../project/src/main/webapp/resources/images', '../project/src/main/webapp/resources/WEB-INF', '../project/src/main/webapp/resources/ngLocale', '../project/src/main/webapp/resources/i18n', '../project/src/main/webapp/resources/images/imagelists', '../project/src/main/webapp/resources/audio', '../project/src/main/webapp/resources/video'],
+                'project': ['../lib', '../project', '../project/i18n', '../project/services', '../project/lib', '../project/src', '../project/test', '../project/src/main', '../project/src/main/webapp', '../project/src/main/resources', '../project/src/main/webapp/services', '../project/src/main/webapp/resources', '../project/src/main/webapp/pages', '../project/src/main/webapp/resources/images', '../project/src/main/webapp/resources/WEB-INF', '../project/src/main/webapp/resources/ngLocale', '../project/src/main/webapp/resources/i18n', '../project/src/main/webapp/resources/images/imagelists', '../project/src/main/webapp/resources/audio', '../project/src/main/webapp/resources/video'],
                 'resources': ['', '/services', '/resources', '/WEB-INF', '/app', '/pages', '/resources/i18n', '/resources/ngLocale', 'resources/images', 'resources/audio', 'resources/video', 'resources/images/imagelists'],
                 'lib': ['../lib'],
                 'jar': ['../lib'],
@@ -80,6 +80,9 @@ WM.module('wm.utils', [])
                         delete window.localStorage[key];
                     }
                 }
+            },
+            isI18nResourceFolder = function(path) {
+                return _.includes(path, '/i18n');
             },
             isIE11 = function () {
                 return navigator.appVersion.indexOf('Trident/') > -1;
@@ -2888,6 +2891,7 @@ WM.module('wm.utils', [])
         this.isIE                       = isIE;
         this.isIE9                      = isIE9;
         this.isIE11                     = isIE11;
+        this.isI18nResourceFolder       = isI18nResourceFolder;
         this.getValidJSON               = getValidJSON;
         this.getActionFromKey           = getActionFromKey;
         this.preventCachingOf           = preventCachingOf;

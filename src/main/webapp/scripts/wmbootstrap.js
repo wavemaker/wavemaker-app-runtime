@@ -617,6 +617,18 @@ Application
                     return deferred.promise;
                 }
 
+                /**
+                 * updates the supportedLocale Variable with application configured locale
+                 */
+                function updateSupportedLocaleVariable() {
+                    var supportedLocaleVar = $rs.Variables && $rs.Variables.supportedLocale;
+
+                    /*Overriding the app variable supported locale with the wmProperties i18n DataValues*/
+                    if (supportedLocaleVar) {
+                        supportedLocaleVar.dataSet = i18nService.getSupportedLocaleMap();
+                    }
+                }
+
                 function getPreparedPageContent(pageName) {
 
                     var content  = cache.get(pageName).html,
@@ -690,6 +702,7 @@ Application
                     Variables.initAppVariables(undefined, function () {
                         appVariablesLoaded = true;
                         updateLoggedInUserVariable().then(deferred.resolve);
+                        updateSupportedLocaleVariable();
                     }, function (error) {
                         deferred.reject(error);
                     });

@@ -501,6 +501,17 @@ WM.module('i18n')
                     extendAppLocale(path);
                 }
             }
+            /*this function returns the supported locale by the project with their code map*/
+            function getSupportedLocaleMap() {
+                var supportedLocale = _.split(_WM_APP_PROPERTIES.supportedLanguages, ','),
+                    supportedLocaleMap = {};
+
+                _.forEach(supportedLocale, function (locale) {
+                    supportedLocaleMap[locale] = localeCodesMap[locale];
+                });
+
+                return supportedLocaleMap;
+            }
 
             function getLocaleCodesMap() {
                 return localeCodesMap;
@@ -581,5 +592,16 @@ WM.module('i18n')
              * returns the available locale codes - name map
              */
             this.getLocaleCodesMap = getLocaleCodesMap;
+
+            /**
+             * @ngdoc function
+             * @name i18nService#getSupportedLocaleMap
+             * @methodOf i18nService
+             * @function
+             *
+             * @description
+             * returns the supported locale codes - name map
+             */
+            this.getSupportedLocaleMap = getSupportedLocaleMap;
         }
     ]);
