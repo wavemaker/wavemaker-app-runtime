@@ -89,7 +89,7 @@
    <example module="wmCore">
        <file name="index.html">
            <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
-               <wm-table  name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-table>
+               <wm-table  name="grid3" dataset="{{data}}" navigation="None" enablesort="false"></wm-table>
            </div>
        </file>
        <file name="script.js">
