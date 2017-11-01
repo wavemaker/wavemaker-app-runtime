@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -46,6 +45,7 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -84,6 +84,33 @@ public class CleanupListener implements ServletContextListener {
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
         WMAppContext.init(event);
+
+        warmUpPoiInParentClassLoader();
+    }
+
+    /*
+        In XSSFPicture, while creating prototype it internally using current app class loader references, due to this
+         app classloader was not cleared event after app undeploy.
+        To fix memory leak caused by first time initialization from Web app, We are loading prototype through
+        common class loader.
+     */
+    private void warmUpPoiInParentClassLoader() {
+        try {
+            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            if (currentCL != XSSFPicture.class.getClassLoader()) {
+                try {
+                    Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
+                    logger.info("warming up poi prototype field");
+                    final Method prototype = XSSFPicture.class.getDeclaredMethod("prototype");
+                    prototype.setAccessible(true);
+                    prototype.invoke(null);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(currentCL);
+                }
+            }
+        } catch (Throwable e) {
+            logger.warn("Failed to initialize prototype method", e);
+        }
     }
 
     @Override
@@ -192,7 +219,8 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private void deRegisterOracleDiagnosabilityMBean(String nameValue) throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
+    private void deRegisterOracleDiagnosabilityMBean(
+            String nameValue) throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final Hashtable<String, String> keys = new Hashtable<>();
         keys.put("type", "diagnosability");
@@ -217,10 +245,12 @@ public class CleanupListener implements ServletContextListener {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
             Field listenerListField = ReflectionUtils.findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
-                throw new WMRuntimeException("Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
+                throw new WMRuntimeException(
+                        "Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
             }
             listenerListField.setAccessible(true);
-            List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
+            List listenerInfoList = (List) listenerListField
+                    .get(notificationEmitter);//This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = o.getClass().getDeclaredField("listener");
                 if (listenerListField == null) {
@@ -228,8 +258,10 @@ public class CleanupListener implements ServletContextListener {
                 }
                 listenerField.setAccessible(true);
                 NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
-                if (notificationListener.getClass().getClassLoader() == Thread.currentThread().getContextClassLoader()) {
-                    logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
+                if (notificationListener.getClass().getClassLoader() == Thread.currentThread()
+                        .getContextClassLoader()) {
+                    logger.info("Removing registered mBean notification listener {}",
+                            notificationListener.getClass().getName());
                     notificationEmitter.removeNotificationListener(notificationListener);
                 }
             }
@@ -237,15 +269,19 @@ public class CleanupListener implements ServletContextListener {
             String className = "oracle.jdbc.driver.BlockSource";
             Class loadedClass = null;
             try {
-                loadedClass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+                loadedClass = ClassLoaderUtils
+                        .findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
             } catch (Exception e1) {
                 logger.warn("Failed to find loaded class for class {}", className, e1);
             }
             if (loadedClass == null) {
-                logger.info("MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                logger.info(
+                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
                 logger.trace("Exception Stack trace", e);
             } else {
-                logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
+                logger.warn(
+                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
+                        e);
             }
         }
     }
@@ -278,7 +314,9 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private void removeTCLKnownLevels(Map<Object, List> nameToKnownLevels, Field levelObjectField, Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
+    private void removeTCLKnownLevels(
+            Map<Object, List> nameToKnownLevels, Field levelObjectField,
+            Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
         Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
         while (mapEntryIterator.hasNext()) {
@@ -389,7 +427,6 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }*/
-
     private void clearThreadConnections() {
         Set<Thread> threads = Thread.getAllStackTraces().keySet();
         for (Thread thread : threads) {
