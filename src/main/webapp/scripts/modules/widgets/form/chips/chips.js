@@ -108,9 +108,6 @@ WM.module('wm.widgets.form')
 
             //tries to get the chip from existing dataset, if not exists adds to the chips and returns it
             function getChip($s, ele) {
-                if ($s.binddataset && _.isEmpty($s.chips)) {
-                    return;
-                }
                 var newItemObject,
                     searchScope = $s.searchScope,
                     queryModel = _.get(searchScope, 'queryModel'),
