@@ -142,6 +142,11 @@ WM.module('wm.widgets.form')
                 if (!scope._isChangedManually && WM.isUndefined(selectedValue) && WM.isDefined(scope._model_)) {
                     scope._dataVal = scope._model_;
                     scope._model_ = selectedValue;
+
+                    //Invoke onChange to update the scopedatavalue.
+                    if (scope._onChange) {
+                        scope._onChange();
+                    }
                 } else if (_.isNull(selectedValue)) { // key can never be null, so return model as undefined.
                     scope._model_ = selectedValue;
                 } else if (scope.datafield === ALLFIELDS) {
@@ -151,11 +156,6 @@ WM.module('wm.widgets.form')
                     }
                 } else {
                     scope._model_ = selectedValue;
-                }
-
-                // Invoke onChange to update the scopedatavalue.
-                if (scope._onChange) {
-                    scope._onChange();
                 }
 
                 // clear _dataVal when model is defined.
