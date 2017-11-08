@@ -1698,7 +1698,8 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "getSampleDbConnectionProperties",
                     urlParams: {
-                        projectID: params.projectID
+                        projectID: params.projectID,
+                        sampleDbName: params.sampleDbName
                     }
                 }, successCallback, failureCallback);
             },

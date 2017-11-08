@@ -330,7 +330,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
 
         /*Database connection properties*/
         getSampleDbConnectionProperties: {
-            url: "services/projects/:projectID/database/sample/connectionProps",
+            url: "services/projects/:projectID/database/sample/connectionProps?sampleDbName=:sampleDbName",
             method: "GET"
         },
         getConnectionProperties: {
@@ -357,7 +357,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
 /*Defining the constants for the database service module*/
 wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_WORKSPACE_TYPE": "db",
-    "WAVEMAKER_SAMPLE_DB_NAME": "hrdb",
+    "WAVEMAKER_SAMPLE_DATABASES": ["hrdb", "salesdb"],
     "DEFAULT_DB_NAME": "MyTestDatabase",
     "HSQL_DB_TYPE": "HSQLDB",
     "MYSQL_DB_TYPE": "MySQL",
