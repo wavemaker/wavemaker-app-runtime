@@ -88,8 +88,6 @@
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 
-    <bean id="httpsConnection" class="com.wavemaker.commons.util.InitializeHttpsURLConnection" lazy-init="false"/>
-
     <bean id="appRuntimeSessionListener" class="com.wavemaker.runtime.web.AppRuntimeSessionListener"/>
 
     <bean id="securityService" class="com.wavemaker.runtime.security.SecurityService"/>
@@ -138,5 +136,9 @@
     <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
         <property name="validator" ref="validator"/>
     </bean>
+
+    <bean id="appSSLSocketFactory" class="com.wavemaker.runtime.ssl.SSLSocketFactoryFactoryBean"/>
+    
+    <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
 
 </beans>
