@@ -167,6 +167,22 @@ WM.module('wm.widgets.base', [])
                 }
             ],
             EVERYONE = "Everyone",
+            barcodeFormatOptions = [
+                { "label" : "ALL", "value" : "ALL"},
+                { "label" : "CODABAR (not supported in iOS)", "value" : "CODABAR"},
+                { "label" : "CODE_39", "value" : "CODE_39"},
+                { "label" : "CODE_93 (not supported in iOS)", "value" : "CODE_93"},
+                { "label" : "CODE_128", "value" : "CODE_128"},
+                { "label" : "DATA_MATRIX", "value" : "DATA_MATRIX"},
+                { "label" : "EAN_8", "value" : "EAN_8"},
+                { "label" : "EAN_13", "value" : "EAN_13"},
+                { "label" : "ITF", "value" : "ITF"},
+                { "label" : "PDF_417 (not supported in iOS)", "value" : "PDF_417"},
+                { "label" : "QR_CODE", "value" : "QR_CODE"},
+                { "label" : "RSS14 (not supported in iOS)", "value" : "RSS14"},
+                { "label" : "RSS_EXPANDED (not supported in iOS)", "value" : "RSS_EXPANDED"},
+                { "label" : "UPC_E", "value" : "UPC_E"},
+                { "label" : "UPC_A", "value" : "UPC_A"}],
             result = {
                 "properties": {
                     "wm.base": {
@@ -375,7 +391,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.barcodescanner": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
-                        "barcodeformat": {"type": "list", "options" : ["ALL", "QR_CODE", "DATA_MATRIX", "UPC_E", "UPC_A", "EAN_8", "EAN_13", "CODE_128", "CODE_39", "ITF"], "value" : "ALL"},
+                        "barcodeformat": {"type": "select-by-object", "options" : barcodeFormatOptions, "value" : "ALL"},
                         "caption": {"type": "string", "value": "", "bindable": "in-bound", "maxlength": 256, "showPrettyExprInDesigner": true },
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-barcode", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
