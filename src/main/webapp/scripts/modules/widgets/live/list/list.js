@@ -30,7 +30,7 @@ WM.module('wm.widgets.live')
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
                         '<wm-pagination showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +
-                        '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-justified {{paginationclass}}">{{ondemandmessage}}</a>' +
+                        '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-block {{paginationclass}}">{{ondemandmessage}}</a>' +
                     '</div>' +
                 '</div>'
             );
@@ -836,7 +836,7 @@ WM.module('wm.widgets.live')
             /* In case of run mode, the field-definitions will be generated from the markup
              * Define the property change handler. This function will be triggered when there is a change in the widget property
              */
-            function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv) {
+            function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
                 var doNotRemoveTemplate,
                     selectedVariable,
                     eleScope    = $el.scope(),
@@ -893,6 +893,11 @@ WM.module('wm.widgets.live')
                     wp.paginationclass.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
                     onNavigationTypeChange($is, nv);
                     setNavigationClass($is, $el, $is.paginationclass);
+                    //Adds 'btn-default' class as a default value
+                    if (ov) {
+                        $is.paginationclass = nv === 'On-Demand' ? 'btn-default' : '';
+                        $is.$root.$emit('set-markup-attr', $is.widgetid, {'paginationclass': $is.paginationclass});
+                    }
                     break;
                 case 'groupby':
                     selectedVariable = eleScope.Variables[variable];
