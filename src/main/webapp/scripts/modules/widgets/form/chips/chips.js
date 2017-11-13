@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-show="!(readonly || saturate)">' +
-                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="{{binddataset}}" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
+                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="bind:dataset" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
                             'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false">' +
@@ -49,174 +49,108 @@ WM.module('wm.widgets.form')
                     'DELETE'    : 'DELETE',
                     'TAB'       : 'TAB'
                 },
-                ignoreUpdate,
-                displayField;
+                ignoreUpdate;
 
             //Check if newItem already exists
-            function isDuplicate($s, newItemObject) {
-                return _.findIndex($s.selectedChips, newItemObject) > -1;
+            function isDuplicate($s, val) {
+                return _.findIndex($s.selectedChips, {value: val}) > -1;
             }
 
-            //constructs and returns a chip item object
-            function constructChip($s, displayValue, dataValue, imgSrcValue) {
-                //When data field is not provided, set display value as data value
-                if (!dataValue) {
-                    dataValue   = displayValue;
+            /* constructs and returns a chip item object
+             * chipObj contains
+             *          'value' represents dataValue (= displayValue when it is custom chip)
+             *          'key' represents displayValue
+             *          'isCustom' set to true if datavalue is not within dataset
+             *          'index' count variable that to chips that are not custom.
+             *          'isDuplicate' to check if chips are duplicated based on displayValue
+             */
+            function constructChip($s, option) {
+                var displayVal = option.value,
+                    key        = option.key,
+                    isCustom   = option.isCustom,
+                    chipObj = {
+                        'key'       : displayVal,
+                        'value'     : key,
+                        'wmImgSrc'  : option.imgSrc,
+                        'fullValue' : displayVal +  ($s.datafield === 'All Fields' ? '' : ' <' + key + '>'),
+                        'isCustom'  : isCustom
+                    };
+                if (isDuplicate($s, key)) {
+                    return;
                 }
-                var chipObj = {
-                    'key'       : displayValue,
-                    'value'     : dataValue,
-                    'wmImgSrc'  : imgSrcValue,
-                    'fullValue' : displayValue + ' <' + dataValue + '>'
-                };
-                chipObj.isDuplicate = isDuplicate($s, chipObj);
+
+                if (!isCustom) {
+                    chipObj.index = $s._chipCount;
+                    $s._chipCount++;
+                }
                 return chipObj;
             }
 
-            //Evaluates and returns the display, data and image values based on the options chosen
-            function getEvaluatedValues($s, chip) {
-                //Support of display expression
-                var displayValue = WidgetUtilService.getEvaluatedData($s, chip, {fieldName: 'displayfield', expressionName: 'displayexpression'}),
-                    dataValue = $s.datafield === 'All Fields' ? displayValue : Utils.getEvaluatedExprValue(chip, $s.datafield),
-                    imageFieldValue   =  $s.binddisplayimagesrc ? WidgetUtilService.getEvaluatedData($s, chip, {expressionName: 'displayimagesrc'}) : _.get(chip, $s.displayimagesrc);
-                return {
-                    'displayField' : displayValue,
-                    'dataField'    : dataValue,
-                    'imageField'   : imageFieldValue
-                };
-            }
-
-            //takes dataObj as input evaluates the  values and returns chip object
-            function createChip($s, dataObj) {
-                var values = getEvaluatedValues($s, dataObj);
-                if (displayField) {
-                    return $s.constructChip(values.displayField, values.dataField, values.imageField);
-                }
-                return $s.constructChip(dataObj);
-            }
-
             //resets the query model of search
-            function resetSearchModel(searchScope) {
-                if (searchScope) {
-                    $rs.$safeApply(searchScope, function () {
-                        //clear search value
-                        searchScope.datavalue = '';
-                        searchScope.queryModel = '';
-                    });
+            function resetSearchModel($s, $event) {
+                if ($s.searchScope) {
+                    $s.searchScope.reset();
                 }
+
+                $s.$apply(function () {
+                    if ($event) {
+                        $timeout(function () {
+                            $event.target.value = '';
+                            $event.target.focus();
+                        }, 200);
+                    }
+                });
             }
 
-            //tries to get the chip from existing dataset, if not exists adds to the chips and returns it
-            function getChip($s, ele) {
-                var newItemObject,
-                    searchScope = $s.searchScope,
-                    queryModel = _.get(searchScope, 'queryModel'),
-                    key,
-                    value,
-                    filterObj = {},
-                    values = queryModel ? getEvaluatedValues($s, queryModel) : {},
-                    imgSrc;
+            function addChip($s, selectedChip) {
+                var chipObj;
 
-                ele = ele || searchScope.query;
-                key =  _.get(values, 'displayField') || ele;
-                imgSrc =  _.get(values, 'imageField');
-                value = ($s.datafield !== 'All Fields' && _.get(values, 'dataField')) || ele;
-                if (key) {
-                    filterObj.key = key;
-                }
-                if (value) {
-                    filterObj.value = value;
-                }
-                if (imgSrc) {
-                    filterObj.wmImgSrc = imgSrc;
-                }
-
-                newItemObject = _.find($s.chips, filterObj);
-
-                //Add the selected item to chips if not present in current dataset
-                if (!newItemObject && searchScope) {
-                    if (WM.isObject(queryModel)) {
-                        $s.chips.push(createChip($s, queryModel));
-                        newItemObject = _.find($s.chips, filterObj);
-                    } else if (!$s.allowonlyselect) {
-                        newItemObject = $s.constructChip(ele);
-                        $s.chips.push(newItemObject);
+                if (selectedChip) {
+                    chipObj = $s.constructChip(selectedChip);
+                    if (chipObj) {
+                        $s.selectedChips.push(chipObj);
                     }
                 }
-                resetSearchModel(searchScope);
-                return newItemObject;
-
             }
 
-            //Update the selected chips
-            function updateSelectedChips(chips, $s) {
+            /**
+             * This function constructs the chips depending on the modelProxy.
+             * Invoked when Default datavalue is binded and datavalue is within the dataset.
+             *
+             */
+            function updateSelectedChips($s, chips) {
+                if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
+                    return;
+                }
                 //Ignore _model_ update when it triggered by within the widget
                 if (ignoreUpdate) {
                     ignoreUpdate = false;
                     return;
                 }
-                var values,
-                    chip,
-                    value;
+                var selectedChip,
+                    i,
+                    _modelProxy = $s.modelProxy;
                 chips = chips || [];
-                /*
-                * 1. In case of variable's  first record, it will be object
-                * 2. In case of datavalue it will be string, In case of form, filter on field chosen, chips will be array of strings
-                * 3. In case of default chips it will be array of objects
-                */
-                $s.selectedChips = [];
-                if (WM.isObject(chips) && !WM.isArray(chips)) {
-                    values = getEvaluatedValues($s, chips);
-                    $s.selectedChips.push($s.constructChip(values.displayField, values.dataField, values.imageField));
-                } else if (!WM.isArray(chips) || (WM.isArray(chips) && !WM.isObject(_.first(chips)))) {
-                    if ($s.datafield === 'All Fields') {
-                        return;
-                    }
-                    //If chips is empty array_.split gives [''], which leads issue in filter reset so initialize with []
-                    values  = chips.length ? _.split(chips, ',') : [];
-                    _.forEach(values, function (ele) {
-                        ele = _.trim(ele);
-                        value = parseFloat(ele, 10);
-                        ele = isNaN(value) ? ele : value;
-                        //find chip object from dataset to get value and img source
-                        chip = getChip($s, ele);
-                        if (chip) {
-                            // ele also need to be send since in security chips, there will not be any dataset
-                            $s.selectedChips.push($s.constructChip(_.get(chip, 'key') || ele, _.get(chip, 'value'), _.get(chip, 'wmImgSrc')));
-                        }
-                    });
-                } else {
-                    $s.selectedChips = chips;
-                }
-                $timeout(function () {
-                    resetSearchModel($s.searchScope);
-                }, 50);
-            }
 
-            //Create list of options for the search
-            function createSelectOptions($s, dataset) {
-                var chips          = [],
-                    value           = $s.value || $s.datavalue;
-                displayField = $s.displayfield || $s.displayexpression || $s.binddisplayexpression;
-                //Avoiding resetting empty values
-                if (($s.binddataset || $s.scopedataset) && (!displayField && !$s.datavalue)) {
+                $s.selectedChips = $s.selectedChips || [];
+
+                if (WM.isUndefined(_modelProxy)) {
                     return;
                 }
 
-                $s.chips.length = 0;
-                if (WM.isArray(dataset) && dataset.length) {
-                    chips = _.map(dataset, function (dataObj) {
-                        return createChip($s, dataObj);
-                    });
+                if (WM.isArray(_modelProxy)) {
+                    for (i = 0; i < _modelProxy.length; i++) {
+                        selectedChip = _.find($s.displayOptions, {'key': _modelProxy[i]});
+                        addChip($s, selectedChip);
+                    }
+                } else {
+                    selectedChip = _.find($s.displayOptions, {'key': _modelProxy});
+                    addChip($s, selectedChip);
                 }
-                $s.chips         = chips;
-                //Default chips showing Option1, Option2, Option3 on drag and drop where it has only dataset but not binddataset or scopedataset
-                if (!$s.binddataset && !$s.scopedataset) {
-                    updateSelectedChips(Utils.getClonedObject(chips), $s);
-                } else if (value) {
-                    //Creating chips in form based on the value
-                    updateSelectedChips(value, $s);
-                }
+
+                $timeout(function () {
+                    resetSearchModel($s);
+                });
             }
 
             //get the boolean value
@@ -235,7 +169,7 @@ WM.module('wm.widgets.form')
                 //editable is internal property used in security owasp tab
                 $s.editable = getBooleanValue($s.editable);
                 //In case of readonly user cannot edit chips
-                if ($s.readonly || $s.editable === false) {
+                if ($s.readonly || !chip.isCustom || $s.editable === false) {
                     return;
                 }
                 //Making all non-editable false
@@ -248,16 +182,6 @@ WM.module('wm.widgets.form')
 
             //Update the datavalue on add, edit and delete of the chips
             function onModelUpdate($s, $event) {
-                var values = [];
-                ignoreUpdate = true;
-                if ($s.datafield === 'All Fields') {
-                    $s._model_ = Utils.getClonedObject($s.selectedChips);
-                } else {
-                    values   = _.map($s.selectedChips, function (ele) {
-                        return ele.value;
-                    });
-                    $s._model_ = values;
-                }
                 $s._onChange($event);
             }
 
@@ -324,13 +248,40 @@ WM.module('wm.widgets.form')
 
             //Remove the item from list
             function removeItem($s, $event, index) {
-                var indexes = WM.isArray(index) ? index : [index];
-                //remove chip
-                _.pullAt($s.selectedChips, indexes);
+                var indexes = WM.isArray(index) ? index : [index],
+                    count = 0,
+                    //remove chips
+                    deletedChips = _.pullAt($s.selectedChips, indexes);
+
+                // update the model on deletion.
+                _.forEach(deletedChips, function (chip) {
+                    _.pullAt($s._model_, chip.index);
+                });
+
+                /* Updates the indexes of the selectedChips.
+                 * Reset the index value in order to delete the appropriate chip from the model when datafield is ALL_FIELDS
+                 * If selectedChips contain [{name: Eric, index: 0}, {name: apple, isCustom: true}, {name: Brad, index: 1}]
+                 * On deleting chip {name: Eric}, value at index 0 will be deleted in the _model_,
+                 * then update {name: Brad} with index 0.
+                */
+                if ($s.datafield === 'All Fields') {
+                    _.forEach($s.selectedChips, function (chip) {
+                        if (!chip.isCustom) {
+                            chip.index = count;
+                            count++;
+                        }
+                    });
+                    $s._chipCount = count;
+                }
+
                 onModelUpdate($s, $event);
                 checkMaxSize($s);
                 //validate duplicates
                 validateDuplicates($s);
+
+                if ($s.onRemove) {
+                    $s.onRemove({$event: $event, $isolateScope: $s});
+                }
             }
 
             //handle delete keypress event for chips
@@ -339,9 +290,6 @@ WM.module('wm.widgets.form')
                     activeElementIndices = [];
                 if (key === KEYS.DELETE) {
                     if (!$s.selectedChips.length || $s.readonly) {
-                        return;
-                    }
-                    if ($s.newItem.name) {
                         return;
                     }
                     //Getting indexes of all active chips
@@ -362,7 +310,6 @@ WM.module('wm.widgets.form')
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER && searchScope.query) {
                     $s.addItem($event, searchScope);
-                    stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
                     newItem = searchScope.query;
                     //Only in case of apple product remove the chip on click of delete button
@@ -419,44 +366,60 @@ WM.module('wm.widgets.form')
             }
 
             //Add the newItem to the list
-            function addItem($s, element, $event, searchScope) {
-                var newItemObject,
-                    allowAdd      = true;
+            function addItem($s, $event, searchScope) {
+                var option,
+                    allowAdd,
+                    chipObj,
+                    customValue = searchScope.queryModel,
+                    dataVal = searchScope.datavalue;
 
-                //Add the selected item to chips if not present in current dataset
-                newItemObject = getChip($s);
-
-                //Don't add new chip if already reaches max size
-                if (checkMaxSize($s) || (!searchScope && !searchScope.query) ||  !newItemObject) {
-                    element.find('input.app-textbox').focus(100);
-                    return;
+                if (!$s._model_) {
+                    $s._model_ = [];
+                }
+                if (!WM.isArray($s._model_)) {
+                    $s._model_ = [$s._model_];
                 }
 
-                if (WM.isObject(newItemObject)) {
-                    newItemObject = $s.constructChip(_.get(newItemObject, 'key'), _.get(newItemObject, 'value'), _.get(newItemObject, 'wmImgSrc'));
+                if (WM.isDefined(dataVal)) {
+                    option = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, dataVal);
+                    option.isCustom = false;
                 } else {
-                    newItemObject = $s.constructChip(newItemObject);
+                    option = {key: customValue, value: customValue, isCustom: true};
                 }
-                if (isDuplicate($s, newItemObject)) {
-                    newItemObject.isDuplicate = true;
-                }
+
+                chipObj = $s.constructChip(option);
 
                 if ($s.onBeforeadd) {
-                    allowAdd = $s.onBeforeadd({$event: 'event', $isolateScope: $s, newItem: newItemObject});
+                    allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, $item: chipObj});
                 }
                 //If onBeforeadd method returns false abort adding chip
                 if (!WM.isUndefined(allowAdd) && !allowAdd) {
                     return;
                 }
-                $s.selectedChips.push(newItemObject);
-                //Focus on to search widget
-                element.find('input.app-textbox').focus(100);
-                checkMaxSize($s);
-                //add chip
-                onModelUpdate($s, $event);
-                $s.newItem.name  = '';
-            }
 
+                if (chipObj) {
+                    $s.selectedChips.push(chipObj);
+                }
+
+                if (WM.isDefined(dataVal)) {
+                    $s._model_.push(dataVal);
+                } else {
+                    if ($s.allowonlyselect) {
+                        return;
+                    }
+                    // Update model if dataVal is available. If datafield is not All Fields then only update the model with custom value.
+                    if ($s.datafield !== 'All Fields') {
+                        $s._model_.push(customValue);
+                    }
+                }
+
+                resetSearchModel($s, $event);
+                onModelUpdate($s, $event);
+
+                if ($s.onAdd) {
+                    $s.onAdd({$event: $event, $isolateScope: $s});
+                }
+            }
             //Reset chips method for form
             function reset($s) {
                 $s.selectedChips.length = 0;
@@ -464,10 +427,8 @@ WM.module('wm.widgets.form')
 
             //Intialize $s level variables
             function init($s, widgetId) {
-                $s.newItem              = {};
                 $s.dropdown             = {};
                 $s.selectedChips        = [];
-                $s.chips                = [];
                 $s.isWidgetInsideCanvas = !!widgetId;
             }
 
@@ -476,23 +437,14 @@ WM.module('wm.widgets.form')
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
+                    FormWidgetUtils.extractDisplayOptions($s.dataset, $s, $el);
+                    updateSelectedChips($s, $s.modelProxy);
+                    break;
                 case 'displayfield':
                 case 'datafield':
-                    var data = $s.dataset;
-                    if (data) {
-                        if ($s.binddataset) {
-                            data = data.data || (WM.isArray(data) ? data : [data]);
-                        } else if (!WM.isArray(data)) {
-                            //Filter usecase where data is array but there is no binding
-                            data = _.split(data, ',');
-                        }
-                        //Support for order by
-                        if ($s.orderby) {
-                            data = FormWidgetUtils.getOrderedDataSet(data, $s.orderby);
-                        }
-                        if (data.length) {
-                            $s.createSelectOptions(data);
-                        }
+                    if ($s.widgetid) {
+                        FormWidgetUtils.extractDisplayOptions($s.dataset, $s, $el);
+                        updateSelectedChips($s, $s.modelProxy);
                     }
                     break;
                 }
@@ -507,10 +459,10 @@ WM.module('wm.widgets.form')
                 'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/chips.html'),
                 'link'    : {
                     'pre' : function ($is, $el, attrs) {
-
+                        $is._chipCount = 0;
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
-                        $is.createSelectOptions = _.debounce(createSelectOptions.bind(undefined, $is), 50);
+                        $is.updateSelectedChips = updateSelectedChips.bind(undefined, $is);
 
                         if (!attrs.widgetid) {
                             Object.defineProperty($is, '_model_', {
@@ -519,11 +471,12 @@ WM.module('wm.widgets.form')
                                 },
                                 set: function (newVal) {
                                     this._proxyModel = newVal;
-                                    if (WM.isDefined(newVal)) {
-                                        /*Handling the script usecase
-                                         Update the selected options when the _model_ is updated while adding or deleting or editing a chip*/
-                                        updateSelectedChips(newVal, $is);
-                                    } else {
+                                    if (_.isEmpty($is.selectedChips)) {
+                                        FormWidgetUtils.updatedCheckedValues($is);
+                                        updateSelectedChips($is, $is.modelProxy);
+                                    }
+
+                                    if (WM.isUndefined(newVal)) {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
                                     }
@@ -542,7 +495,7 @@ WM.module('wm.widgets.form')
                             $s.removeItem                = removeItem.bind(undefined, $s);
                             $s.handleKeyPressEvent       = handleKeyPressEvent.bind(undefined, $s, $el);
                             $s.handleDeleteKeyPressEvent = handleDeleteKeyPressEvent.bind(undefined, $s);
-                            $s.addItem                   = _.debounce(addItem.bind(undefined, $s, $el), 50);
+                            $s.addItem                   = _.debounce(addItem.bind(undefined, $s), 50);
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
@@ -559,7 +512,8 @@ WM.module('wm.widgets.form')
                         //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
                         if (!attrs.widgetid && _.includes($s.binddataset, 'selecteditem.')) {
                             LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
-                                $s.createSelectOptions(data);
+                                FormWidgetUtils.extractDisplayOptions(data, $s, $el);
+                                updateSelectedChips($s, $s.modelProxy);
                             });
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
