@@ -38,7 +38,7 @@ public class PrefabFactoryImpl implements PrefabFactory {
     private PrefabUtils prefabUtils;
 
     private URL[] getPrefabFiles(final File prefabDir) {
-        return Utils.convertToURLS(prefabUtils.getPrefabConfigDirectory(prefabDir),
+        return Utils.convertToURLS(prefabUtils.getPrefabBuildDirectory(prefabDir),
                 prefabUtils.readJarFilesForPrefab(prefabDir));
     }
 

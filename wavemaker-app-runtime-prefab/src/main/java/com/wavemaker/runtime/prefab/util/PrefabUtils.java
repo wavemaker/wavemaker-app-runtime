@@ -89,6 +89,10 @@ public class PrefabUtils {
         return new File(prefabDirectory, prefabsConfig.getPrefabConfigDir());
     }
 
+    public File getPrefabBuildDirectory(final  File prefabDirectory){
+        return new File(prefabDirectory,prefabsConfig.getPrefabBuildDir());
+    }
+
     public boolean isDirContainsConfig(File directory) {
         File prefabConfigDirectory = new File(directory, prefabsConfig.getPrefabConfigDir());
         if (prefabConfigDirectory.exists() && prefabConfigDirectory.isDirectory()) {
