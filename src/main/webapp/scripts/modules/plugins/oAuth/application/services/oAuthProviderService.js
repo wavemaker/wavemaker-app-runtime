@@ -16,8 +16,9 @@ wm.plugins.security.services.oAuthProviderService = [
     "$templateCache",
     "VARIABLE_CONSTANTS",
     "Utils",
+    "ExtAppMessageService",
 
-    function (BaseService, $rs, $timeout, CONSTANTS, $uibModal, $tc, VARIABLE_CONSTANTS, Utils) {
+    function (BaseService, $rs, $timeout, CONSTANTS, $uibModal, $tc, VARIABLE_CONSTANTS, Utils, ExtAppMessageService) {
     'use strict';
 
     var listeners = {},
@@ -129,6 +130,9 @@ wm.plugins.security.services.oAuthProviderService = [
             urlParams: {
                 projectId : $rs.project.id,
                 providerId: params.providerId
+            },
+            params : {
+                'requestSourceType' : params.requestSourceType
             }
         }, successCallback, failureCallback);
     }
@@ -235,15 +239,42 @@ wm.plugins.security.services.oAuthProviderService = [
         }
     }
 
+    function listenForExternalOAuthMessage(providerId, callback) {
+        var deregister, timerId;
+        deregister = ExtAppMessageService.addMessageListener('^services/oauth/' + providerId + '$', function (message) {
+            callback(message.data.access_token);
+            clearTimeout(timerId);
+        });
+        timerId = setTimeout(function () {
+            deregister();
+            callback();
+        }, 60000);
+    }
+
     /**
      * this function is a callback function which enables the listener and checks for the window existence
      * @param providerId
      * @param onSuccess
-     * @param oAuthWindow
+     * @param url
      */
-    function postGetAuthorizationURL(providerId, onSuccess, oAuthWindow) {
-        onAuthWindowOpen(providerId, onSuccess);
-        checkForWindowExistence(oAuthWindow, providerId, onSuccess);
+    function postGetAuthorizationURL(url, providerId, onSuccess) {
+        var oAuthWindow;
+        if (CONSTANTS.hasCordova) {
+            window.open(url, '_system');
+            listenForExternalOAuthMessage(providerId, function (accessToken) {
+                var key = providerId + VARIABLE_CONSTANTS.REST_SERVICE.ACCESSTOKEN_PLACEHOLDER.RIGHT;
+                if (accessToken) {
+                    localStorage.setItem(key, accessToken);
+                    checkAuthenticationStatus(providerId, onSuccess);
+                } else {
+                    onSuccess('error');
+                }
+            });
+        } else {
+            oAuthWindow = window.open(url, '_blank', newWindowProps);
+            onAuthWindowOpen(providerId, onSuccess);
+            checkForWindowExistence(oAuthWindow, providerId, onSuccess);
+        }
     }
 
     /**
@@ -308,17 +339,22 @@ wm.plugins.security.services.oAuthProviderService = [
      * @returns {*}
      */
     function performAuthorization(url, providerId, onSuccess, onError) {
-        var oAuthWindow;
+        var requestSourceType = 'WEB';
         if (url) {
             if (Utils.isIE()) { //handling for IE
                 handleLoginForIE(url, providerId, onSuccess, onError);
             } else {
-                oAuthWindow = window.open(url, '_blank', newWindowProps);
-                postGetAuthorizationURL(providerId, onSuccess, oAuthWindow);
+                postGetAuthorizationURL(url, providerId, onSuccess);
             }
         } else {
+            if (CONSTANTS.isWaveLens) {
+                requestSourceType = 'WAVELENS';
+            } else if (CONSTANTS.hasCordova) {
+                requestSourceType = 'MOBILE';
+            }
             return getAuthorizationUrl({
-                'providerId': providerId
+                'providerId': providerId,
+                'requestSourceType' : requestSourceType
             }).then(function(response) {
                 if (!$rs.isStudioMode) {
                     $rs.providersConfig[providerId] = {
@@ -328,7 +364,7 @@ wm.plugins.security.services.oAuthProviderService = [
                             if (Utils.isIE()) { //handling for IE
                                 handleLoginForIE(response, providerId, onSuccess, onError);
                             } else {
-                                postGetAuthorizationURL(providerId, onSuccess, window.open(response, '_blank', newWindowProps));
+                                postGetAuthorizationURL(response, providerId, onSuccess);
                             }
                         }
                     };

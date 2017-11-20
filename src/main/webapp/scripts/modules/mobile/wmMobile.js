@@ -1,5 +1,46 @@
 /*global WM, window, _, $, cordova, document, navigator */
-
+(function (window, document) {
+    'use strict';
+    //listen app-to-app communication via url schemes
+    function subString(str, begin, end) {
+        end = end < 0 ? undefined : end;
+        return (str && begin >= 0 && str.length > begin && str.substring(begin, end)) || undefined;
+    }
+    function indexOf(str, pattern) {
+        return str && str.indexOf(pattern);
+    }
+    function extractData(url) {
+        var str = subString(url, indexOf(url, '?') + 1, indexOf(url, '#')),
+            data = {};
+        _.forEach(_.split(str, '&'), function (entry) {
+            var esplits = entry.split('=');
+            data[esplits[0]] = esplits[1];
+        });
+        return data;
+    }
+    function extractAddress(url) {
+        return subString(url, indexOf(url, '://') + 3, indexOf(url, '?'));
+    }
+    function createMessage(url) {
+        return {
+            'address': extractAddress(url),
+            'data': extractData(url)
+        };
+    }
+    window.handleOpenURL = function (url) {
+        var e, message;
+        if (window.handleOpenURL.isReady && !_.startsWith(url, "http")) {
+            message = createMessage(url);
+            e = new window.CustomEvent('externalAppMessageReceived', {
+                'detail': {
+                    'message': message
+                }
+            });
+            document.dispatchEvent(e);
+        }
+        window.handleOpenURL.lastURL = url;
+    };
+}(window, document));
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', '$cordovaFileTransfer', '$cordovaFileOpener2', 'Utils', '$cordovaFile', 'wmToaster', 'wmSpinner',
@@ -77,6 +118,15 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                             wmToaster.show('error',  'Failed to download ', error);
                         });
                 }, false);
+
+                $rootScope.$on('application-ready', function () {
+                    window.handleOpenURL.isReady = true;
+                    window.handleOpenURL(window.handleOpenURL.lastURL);
+                });
+
+                document.addEventListener("externalAppMessageReceived", function (e) {
+                    $rootScope.$emit('externalAppMessageReceived', e.detail.message);
+                });
 
                 pageReadyDeregister = $rootScope.$on('page-ready', function () {
                     navigator.splashscreen.hide();
