@@ -32,7 +32,11 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
         },
         importWSDL: {
             url: "services/projects/:projectID/soapservice/import",
-            method: "POST"
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            },
+            transformRequest: WM.identity
         },
         uploadWSDL: {
             url: "services/projects/:projectID/soapservice/import",

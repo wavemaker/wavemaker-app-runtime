@@ -130,7 +130,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 target: 'WebService',
                 action: 'importWSDL',
                 params: connectionParams.params,
-                urlParams: connectionParams.urlParams
+                urlParams: connectionParams.urlParams,
+                data: connectionParams.content
             }, successCallback, failureCallback);
         },
 
