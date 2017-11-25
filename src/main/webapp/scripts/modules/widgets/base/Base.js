@@ -1073,6 +1073,9 @@ WM.module('wm.widgets.base', [])
                         "loaddelay" : {"type" : "number", "min": "10", "value" : "10"},
                         "onReady" : {"type" : "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
+                    'wm.scrollablecontainer': {
+                        "smoothscroll": {"type": "boolean", "value": true, "show": false, "bindable": "in-bound"}
+                    },
 
                     'wm.layouts.header': {
                         "height": {"type": "string", "pattern": dimensionRegex}
@@ -1274,6 +1277,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.container': {
                         "margin": {"type": "string", "widget": "box-model"},
+                        "smoothscroll": {"type": "boolean", "value": false, "show": false, "bindable": "in-bound"},
                         "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "border-style"},
                         "bordercolor": {"type": "string", "widget": "color"},
@@ -2576,7 +2580,7 @@ WM.module('wm.widgets.base', [])
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
                 ' opacity overflow padding picturesource avatar textalign textdecoration verticalalign visibility ' +
-                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass conditionalclass';
+                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass conditionalclass smoothscroll';
 
 
             //use requestIdleCallback when available otherwise use setTimeout

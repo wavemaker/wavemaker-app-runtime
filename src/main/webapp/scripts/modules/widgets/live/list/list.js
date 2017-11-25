@@ -247,6 +247,29 @@ WM.module('wm.widgets.live')
                 });
             }
 
+            function bindIScrollEvt($is, $el) {
+                var iScroll,
+                    $scrollParent = $el.closest('[wm-smoothscroll="true"]'),
+                    lastScrollTop,
+                    wrapper,
+                    $scrollNode = $scrollParent[0];
+
+                iScroll = $scrollNode.iscroll;
+
+                wrapper = iScroll.wrapper;
+
+                iScroll.on('scrollEnd', function () {
+                    var clientHeight = wrapper.clientHeight,
+                        totalHeight  = wrapper.scrollHeight,
+                        scrollTop    = Math.abs(this.y);
+
+                    if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
+                        _fetchNextOnScroll($is, $el);
+                    }
+
+                    lastScrollTop = scrollTop;
+                });
+            }
 
             function bindScrollEvt($is, $el) {
                 var lastScrollTop  = 0,
@@ -551,7 +574,11 @@ WM.module('wm.widgets.live')
                         //Functionality of On-Demand and Scroll will be same except we don't attach scroll events
                         if (fieldDefs.length && !$is.onDemandLoad) {
                             $timeout(function () {
-                                bindScrollEvt($is, $el);
+                                if (CONSTANTS.hasCordova && $el.closest('[wm-smoothscroll="true"]').length) {
+                                    bindIScrollEvt($is, $el);
+                                } else {
+                                    bindScrollEvt($is, $el);
+                                }
                             }, 100);
                         }
                     });

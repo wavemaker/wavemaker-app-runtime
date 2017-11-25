@@ -20,7 +20,7 @@ WM.module('wm.layouts.containers')
                     '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>' +
                 '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'">' +
-                    '<div class="panel-body" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
+                    '<div class="panel-body" wm-smoothscroll="{{smoothscroll}}" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
                 '</div>' +
             '</div>'
             );
@@ -38,12 +38,12 @@ WM.module('wm.layouts.containers')
             switch (key) {
             case 'defaultpaneindex':
             //If no activepane is set ie.. no isdefaultpane then honor defaultpaneindex
-            if (!scope.activePane) {
-                scope.activePane = scope.panes[newVal || 0];
-            }
-            scope.activePane.expand();
+                if (!scope.activePane) {
+                    scope.activePane = scope.panes[newVal || 0];
+                }
+                scope.activePane.expand();
 
-            break;
+                break;
             }
         }
 
@@ -85,7 +85,7 @@ WM.module('wm.layouts.containers')
                     'pre': function (scope, $el, attrs) {
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                     },
-                    'post': function (scope, element, attrs, ctrl) {
+                    'post': function (scope, element, attrs) {
 
                         _.forEach(scope.panes, function (pane) {
                             if (pane.isdefaultpane && !attrs.defaultpaneindex) {
@@ -102,10 +102,10 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
+    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, CONSTANTS) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base', 'wm.scrollablecontainer']);
 
         return {
             'restrict': 'E',

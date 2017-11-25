@@ -352,6 +352,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.jsLoader.js',
                         //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
+                        '<%= config.scripts %>/modules/iScroll/iscroll.js',
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.components %>/ng-cordova-oauth/ng-cordova-oauth.min.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
@@ -639,6 +640,7 @@ module.exports = function (grunt) {
                         //Mobile Specific files start
                         '<%= config.scripts %>/modules/mobile/wmMobile.js',
                         '<%= config.scripts %>/modules/mobile/common/directives/imageCache.js',
+                        '<%= config.scripts %>/modules/mobile/common/directives/smoothScroll.js',
                         '<%= config.scripts %>/modules/mobile/common/services/appAutoUpdateService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceFileService.js',

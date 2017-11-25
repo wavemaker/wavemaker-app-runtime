@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/pagecontent.html',
-            '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
+            '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wm-smoothscroll="{{smoothscroll}}" wmtransclude></div></div>'
             );
         $templateCache.put('template/layout/page/pagecontent-loader.html',
             '<div class="app-page-content-loader">' +
@@ -16,7 +16,7 @@ WM.module('wm.layouts.page')
     .directive('wmPageContent', ['$route', '$rootScope', '$templateCache', '$timeout', 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function ($route, $rootScope, $templateCache, $timeout, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch', 'wm.scrollablecontainer']),
             notifyFor = {
                 'columnwidth': true
             };

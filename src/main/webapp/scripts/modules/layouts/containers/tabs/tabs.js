@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" page-container init-widget ng-class="{disabled: isDisabled, active: isActive}" wm-navigable-element="true"><div class="tab-body" apply-styles="container" page-container-target wmtransclude></div></div>');
+            '<div class="tab-pane" page-container init-widget wm-smoothscroll="{{smoothscroll}}" ng-class="{disabled: isDisabled, active: isActive}" wm-navigable-element="true"><div class="tab-body app-ng-transclude" apply-styles="container" page-container-target wmtransclude></div></div>');
 
     }])
     .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile, $timeout) {
@@ -323,7 +323,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'CONSTANTS', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rs, CONSTANTS, $compile) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base', 'wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base', 'wm.layouts', 'wm.scrollablecontainer']),
             $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: isDisabled}" ng-show="showHeader" ng-click="select($event)" role="tab" tabindex="-1" hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);">' +
                             '<a href="javascript:void(0);" role="button" tabindex="0">' +
                                 '<div class="tab-heading">' +

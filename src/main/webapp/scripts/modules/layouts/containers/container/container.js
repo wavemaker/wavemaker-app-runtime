@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/container.html',
-            '<div page-container init-widget class="app-container" apply-styles="container" wmtransclude page-container-target></div>'
+            '<div page-container init-widget class="app-container" apply-styles="container" wm-smoothscroll="{{smoothscroll}}" wmtransclude page-container-target></div>'
             );
     }])
     .directive('wmContainer', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {

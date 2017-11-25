@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
+                '<aside data-role="page-left-panel" wm-smoothscroll="{{smoothscroll}}" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
                 '       data-ng-class="[animation, expanded ? \'left-panel-expanded\' : \'left-panel-collapsed\']" ' +
                 '       apply-styles="container">' +
                 '   <div class="app-ng-transclude" wmtransclude page-container-target></div>' +
@@ -13,7 +13,7 @@ WM.module('wm.layouts.page')
     }])
     .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout', 'CONSTANTS', 'Utils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout, CONSTANTS, Utils, $templateCache) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch', 'wm.scrollablecontainer']),
             notifyFor = {
                 'columnwidth': true,
                 'xscolumnwidth': true,
