@@ -747,7 +747,7 @@ WM.module('wm.widgets.basic')
                         if (isLineTypeChart(scope.type)) {
                             chart.xAxis.tickFormat(function (d) {
                                 //get the actual value
-                                xAxisValue = isPreview ? dateList[d - 1] : scope.xDataKeyArr[d - 1];
+                                xAxisValue = isPreview ? dateList[d - 1] : scope.xDataKeyArr[d];
                                 return getDateFormatedData(propertyValueMap.xdateformat, xAxisValue);
                             });
                         } else {
