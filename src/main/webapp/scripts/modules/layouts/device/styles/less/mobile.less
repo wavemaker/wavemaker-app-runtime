@@ -392,12 +392,19 @@
           z-index: 0;
           white-space: nowrap;
           overflow: hidden;
-          &.left-panel-collapsed .app-nav > .app-nav-item > .app-anchor {
-            > .app-icon {
-              font-size: 2em;
+          &.left-panel-collapsed .app-nav > .app-nav-item {
+            > .app-anchor, > .dropdown .dropdown-toggle {
+              > .app-icon {
+                font-size: 2em;
+              }
+              > .anchor-caption, > .caption {
+                display: none;
+              }
             }
-            > .anchor-caption {
-              display: none;
+            .dropdown.open {
+              .dropdown-menu {
+                display: none;
+              }
             }
           }
         }
