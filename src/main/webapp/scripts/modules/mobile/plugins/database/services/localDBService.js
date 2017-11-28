@@ -166,7 +166,15 @@ wm.plugins.database.services.LocalDBService = [
          * @param {function=} failureCallback
          *                    Callback function to be triggered on failure.
          */
-        this.insertMultiPartTableData = this.insertTableData;
+        this.insertMultiPartTableData = function (params, successCallback, failureCallback) {
+            var localDBService = this;
+            getStore(params).then(function (store) {
+                store.serialize(params.data).then(function (data) {
+                    params.data = data;
+                    localDBService.insertTableData(params, successCallback, failureCallback);
+                });
+            }).catch(failureCallback);
+        };
 
         /**
          * @ngdoc method

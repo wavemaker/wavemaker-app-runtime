@@ -13,46 +13,15 @@ wm.plugins.offline.services.OfflineFileUploadService = [
     '$cordovaFile',
     'ChangeLogService',
     '$q',
+    'DeviceService',
     'DeviceFileService',
     function ($cordovaFile,
               ChangeLogService,
               $q,
+              DeviceService,
               DeviceFileService) {
         'use strict';
-        var uploadDir,
-            initialized = false;
-        /**
-         * @ngdoc
-         * @name wm.plugins.offline.services.$OfflineFileUploadService#init
-         * @methodOf wm.plugins.offline.services.$OfflineFileUploadService
-         * @description
-         * Creates the uploads directory, if not exists.
-         */
-        this.init = function () {
-            if (!initialized) {
-                initialized = true;
-                var uploadsDirName = 'uploads',
-                    appDir = cordova.file.dataDirectory;
-                $cordovaFile.checkDir(appDir, uploadsDirName).then(function () {
-                    uploadDir = appDir + uploadsDirName;
-                }, function () {
-                    $cordovaFile.createDir(appDir, uploadsDirName).then(function () {
-                        uploadDir = appDir + uploadsDirName;
-                    });
-                });
-            }
-        };
-
-        /**
-         * @ngdoc
-         * @name wm.plugins.offline.services.$OfflineFileUploadService#getUploadDirectory
-         * @methodOf wm.plugins.offline.services.$OfflineFileUploadService
-         * @description
-         * Returns the path of upload directory
-         */
-        this.getUploadDirectory = function () {
-            return uploadDir;
-        };
+        var uploadDir;
 
         /**
          * @ngdoc
@@ -110,4 +79,7 @@ wm.plugins.offline.services.OfflineFileUploadService = [
                 }, defer.reject.bind());
             return defer.promise;
         };
+        DeviceService.whenDeviceReady().then(function () {
+            uploadDir = DeviceFileService.getUploadDirectory();
+        });
     }];
