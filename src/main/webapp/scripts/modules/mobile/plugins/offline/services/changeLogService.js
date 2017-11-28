@@ -737,82 +737,13 @@ wm.plugins.offline.run([
     "ChangeLogService",
     "DeviceFileService",
     "LocalDBManager",
-    "OfflineFileUploadService",
-    "SWAGGER_CONSTANTS",
-    "Utils",
     function ($cordovaFile,
               $q,
               ChangeLogService,
               DeviceFileService,
-              LocalDBManager,
-              OfflineFileUploadService,
-              SWAGGER_CONSTANTS,
-              Utils) {
+              LocalDBManager) {
         'use strict';
 
-        function saveBlobToFile(blob) {
-            var fileName = DeviceFileService.appendToFileName(blob.name),
-                uploadDir = OfflineFileUploadService.getUploadDirectory();
-            return $cordovaFile.writeFile(uploadDir, fileName, blob).then(function () {
-                return {
-                    'name' : blob.name,
-                    'type' : blob.type,
-                    'lastModified' : blob.lastModified,
-                    'lastModifiedDate' : blob.lastModifiedDate,
-                    'size' : blob.size,
-                    'wmLocalPath' : uploadDir + '/' + fileName
-                };
-            });
-        }
-
-        /**
-         * Converts form data object to map for storing request in local database..
-         */
-        function convertFormDataToMap(formData, store) {
-            var blobcolumns = _.filter(store.schema.columns, {
-                    'sqlType' : 'blob'
-                }),
-                map = {},
-                promises = [];
-            if (formData && typeof formData.append === 'function' && formData.rowData) {
-                _.forEach(formData.rowData, function (fieldData, fieldName) {
-                    if (fieldData && _.find(blobcolumns, {'fieldName' : fieldName})) {
-                        promises.push(saveBlobToFile(fieldData).then(function (localFile) {
-                            map[fieldName] = localFile;
-                        }));
-                    } else {
-                        map[fieldName] = fieldData;
-                    }
-                });
-            }
-            return $q.all(promises).then(function () {
-                return !formData || map;
-            });
-        }
-        /**
-         * Converts map object back to form data.
-         */
-        function convertMapToFormData(map, store) {
-            var formData = new FormData(),
-                blobColumns = _.filter(store.schema.columns, {
-                    'sqlType' : 'blob'
-                }),
-                promises = [];
-            _.forEach(blobColumns, function (column) {
-                var value = map[column.fieldName];
-                if (value) {
-                    promises.push(Utils.convertToBlob(value.wmLocalPath)
-                        .then(function (result) {
-                            formData.append(column.fieldName, result.blob, value.name);
-                        }));
-                    map[column.fieldName] = '';
-                }
-            });
-            formData.append(SWAGGER_CONSTANTS.WM_DATA_JSON, new Blob([JSON.stringify(map)], {
-                type: 'application/json'
-            }));
-            return $q.all(promises).then(function () { return formData; });
-        }
         // Registers for offline change log events.
         ChangeLogService.registerCallback({
             'transformParamsToMap' : function (change) {
@@ -822,10 +753,7 @@ wm.plugins.offline.run([
                     case 'insertMultiPartTableData':
                     case 'updateMultiPartTableData':
                         store = LocalDBManager.getStore(change.params.dataModelName, change.params.entityName);
-                        return convertFormDataToMap(change.params.data, store).then(function (map) {
-                            if (change.operation === 'insertMultiPartTableData') {
-                                map[store.primaryKeyName] = change.params.data[store.primaryKeyName];
-                            }
+                        return store.serialize(change.params.data).then(function (map) {
                             change.params.data = map;
                             /**
                              * As save method called with FormData object, empty row is inserted.
@@ -847,7 +775,7 @@ wm.plugins.offline.run([
                     case 'updateMultiPartTableData':
                         store = LocalDBManager.getStore(change.params.dataModelName, change.params.entityName);
                         //construct Form data
-                        return convertMapToFormData(change.params.data, store).then(function (formData) {
+                        return store.deserialize(change.params.data).then(function (formData) {
                             change.params.data = formData;
                         });
                     }

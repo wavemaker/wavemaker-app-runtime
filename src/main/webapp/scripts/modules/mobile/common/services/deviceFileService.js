@@ -60,7 +60,8 @@ wm.modules.wmCommon.services.DeviceFileService = [
                         }
                     ]
                 }]
-            }];
+            }],
+            uploadDir;
 
         function createFolderIfNotExists(parent, folders, fileTypeLocationMap) {
             var childPromises = [];
@@ -115,6 +116,22 @@ wm.modules.wmCommon.services.DeviceFileService = [
             return self.DOCUMENT_FILE_TYPE;
         }
 
+        /**
+         * Create the upload directory, if not exists.
+         * @returns {*}
+         */
+        function setupUploadDirectory() {
+            var uploadsDirName = 'uploads',
+                appDir = cordova.file.dataDirectory;
+            return $cordovaFile.checkDir(appDir, uploadsDirName).then(function () {
+                uploadDir = appDir + uploadsDirName;
+            }, function () {
+                return $cordovaFile.createDir(appDir, uploadsDirName).then(function () {
+                    uploadDir = appDir + uploadsDirName;
+                });
+            });
+        }
+
         function init() {
             var d = $q.defer();
             self.PERSISTENT_ROOT_PATH = cordova.file.dataDirectory;
@@ -128,6 +145,7 @@ wm.modules.wmCommon.services.DeviceFileService = [
                 promises.push(createFolderIfNotExists(self.PERSISTENT_ROOT_PATH,
                     APP_FOLDER_STRUCTURE,
                     fileTypeVsPathMap.persistent));
+                promises.push(setupUploadDirectory());
                 $q.all(promises).then(d.resolve, d.reject);
             });
             return d.promise;
@@ -395,6 +413,17 @@ wm.modules.wmCommon.services.DeviceFileService = [
                 dir = filePath.substring(0, i),
                 file = filePath.substring(i + 1);
             return $cordovaFile.removeFile(dir, file);
+        };
+
+        /**
+         * @ngdoc
+         * @name wm.modules.wmCommon.services.$DeviceFileService#getUploadDirectory
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileService
+         * @description
+         * Returns the path of upload directory
+         */
+        this.getUploadDirectory = function () {
+            return uploadDir;
         };
 
         if (window.cordova && window.cordova.file) {

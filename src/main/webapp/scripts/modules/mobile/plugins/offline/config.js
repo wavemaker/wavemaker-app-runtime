@@ -106,7 +106,6 @@ wm.plugins.offline.run([
          * Intercepts FileTransfer#upload and if device is offline, then OfflineFileUploadService will handle it.
          */
         function addOfflineFileUploadSupport() {
-            OfflineFileUploadService.init();
             var upload = FileTransfer.prototype.upload;
             FileTransfer.prototype.upload = function (filePath, serverUrl, onSuccess, onFail, ftOptions) {
                 if ($cordovaNetwork.isOnline()) {

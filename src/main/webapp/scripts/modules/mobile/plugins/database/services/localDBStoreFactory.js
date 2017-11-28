@@ -9,8 +9,12 @@
  */
 wm.plugins.database.services.LocalDBStoreFactory = [
     "$q",
+    "$cordovaFile",
     "$cordovaSQLite",
-    function ($q, $cordovaSQLite) {
+    "DeviceFileService",
+    "SWAGGER_CONSTANTS",
+    "Utils",
+    function ($q, $cordovaFile, $cordovaSQLite, DeviceFileService, SWAGGER_CONSTANTS, Utils) {
         'use strict';
 
         function escapeName(name) {
@@ -173,6 +177,77 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 }
             });
             return row;
+        }
+
+        /**
+         * Save blob to a local file
+         * @param blob
+         * @returns {*}
+         */
+        function saveBlobToFile(blob) {
+            var fileName = DeviceFileService.appendToFileName(blob.name),
+                uploadDir = DeviceFileService.getUploadDirectory();
+            return $cordovaFile.writeFile(uploadDir, fileName, blob).then(function () {
+                return {
+                    'name' : blob.name,
+                    'type' : blob.type,
+                    'lastModified' : blob.lastModified,
+                    'lastModifiedDate' : blob.lastModifiedDate,
+                    'size' : blob.size,
+                    'wmLocalPath' : uploadDir + '/' + fileName
+                };
+            });
+        }
+
+        /**
+         * Converts form data object to map for storing request in local database..
+         */
+        function serializeFormDataToMap(formData, store) {
+            var blobcolumns = _.filter(store.schema.columns, {
+                    'sqlType' : 'blob'
+                }),
+                map = {},
+                promises = [];
+            if (formData && typeof formData.append === 'function' && formData.rowData) {
+                _.forEach(formData.rowData, function (fieldData, fieldName) {
+                    if (fieldData && _.find(blobcolumns, {'fieldName' : fieldName})) {
+                        promises.push(saveBlobToFile(fieldData).then(function (localFile) {
+                            map[fieldName] = localFile;
+                        }));
+                    } else {
+                        map[fieldName] = fieldData;
+                    }
+                });
+            } else {
+                map = formData;
+            }
+            return $q.all(promises).then(function () {
+                return map;
+            });
+        }
+        /**
+         * Converts map object back to form data.
+         */
+        function deserializeMapToFormData(map, store) {
+            var formData = new FormData(),
+                blobColumns = _.filter(store.schema.columns, {
+                    'sqlType' : 'blob'
+                }),
+                promises = [];
+            _.forEach(blobColumns, function (column) {
+                var value = map[column.fieldName];
+                if (value) {
+                    promises.push(Utils.convertToBlob(value.wmLocalPath)
+                        .then(function (result) {
+                            formData.append(column.fieldName, result.blob, value.name);
+                        }));
+                    map[column.fieldName] = '';
+                }
+            });
+            formData.append(SWAGGER_CONSTANTS.WM_DATA_JSON, new Blob([JSON.stringify(map)], {
+                type: 'application/json'
+            }));
+            return $q.all(promises).then(function () { return formData; });
         }
         /**
          * @ngdoc object
@@ -374,6 +449,33 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                     }
                     return objArr;
                 });
+            },
+            /**
+             * @ngdoc method
+             * @name wm.plugins.database.services.$LocalDBStoreFactory.$Store#serialize
+             * @methodOf wm.plugins.database.services.$LocalDBStoreFactory.$Store
+             * @description
+             * Based on this store columns, this function converts the given FormData to a map object.
+             * Multipart file is stored as a local file. If form data cannot be serialized,
+             * then formData is returned back.
+             * @param  {FormData} formData object to serialize
+             * @returns {object} promise that is resolved with a map.
+             */
+            serialize : function (formData) {
+                return serializeFormDataToMap(formData, this);
+            },
+            /**
+             * @ngdoc method
+             * @name wm.plugins.database.services.$LocalDBStoreFactory.$Store#deserialize
+             * @methodOf wm.plugins.database.services.$LocalDBStoreFactory.$Store
+             * @description
+             * This function deserializes the given map object to FormData, provided that map object was
+             * serialized by using serialize method of this store.
+             * @param  {object} map object to deserialize
+             * @returns {object} promise that is resolved with the deserialized FormData.
+             */
+            deserialize : function (map) {
+                return deserializeMapToFormData(map, this);
             }
         });
         /**
