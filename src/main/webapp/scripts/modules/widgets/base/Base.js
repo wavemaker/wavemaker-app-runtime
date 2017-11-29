@@ -730,7 +730,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.slider": {
-                        "hint": {"type": "string"},
+                        "hint": {"type": "string", "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "minvalue": {"type": "number", "bindable": "in-out-bound"},
