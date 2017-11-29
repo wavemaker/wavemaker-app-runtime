@@ -103,7 +103,7 @@ WM.module('wm.widgets.form')
             function propertyChangeHandler($is, $el, key, nv) {
                 var inputEl  = $el.find('input'),
                     buttonEl = $el.find('button'),
-                    currentDateTime = moment().valueOf(),
+                    currentDateTime = moment().toDate(),
                     isDisabled;
 
                 switch (key) {
@@ -132,13 +132,13 @@ WM.module('wm.widgets.form')
                     if (!$is.widgetid && nv ===  CURRENT_DATETIME) {
                         $is.maxdate = currentDateTime;
                     }
-                    $is._dateOptions.maxDate = $is.maxdate;
+                    $is._dateOptions.maxDate = moment($is.maxdate).toDate();
                     break;
                 case 'mindate':
                     if (!$is.widgetid && nv ===  CURRENT_DATETIME) {
                         $is.mindate = currentDateTime;
                     }
-                    $is._dateOptions.minDate = $is.mindate;
+                    $is._dateOptions.minDate = moment($is.mindate).toDate();
                     break;
                 }
             }

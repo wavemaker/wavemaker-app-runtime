@@ -61,7 +61,7 @@ WM.module('wm.widgets.form')
                 CURRENT_DATE     = 'CURRENT_DATE';
 
             function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-                var currentDate = moment().valueOf(),
+                var currentDate = moment().toDate(),
                     inputEl  = element.find('input'),
                     buttonEl = element.find('button'),
                     isDisabled;
@@ -90,13 +90,13 @@ WM.module('wm.widgets.form')
                     if (!scope.widgetid && newVal ===  CURRENT_DATE) {
                         scope.maxdate = currentDate;
                     }
-                    scope._dateOptions.maxDate = scope.maxdate;
+                    scope._dateOptions.maxDate = moment(scope.maxdate).toDate();
                     break;
                 case 'mindate':
                     if (!scope.widgetid && newVal ===  CURRENT_DATE) {
                         scope.mindate = currentDate;
                     }
-                    scope._dateOptions.minDate = scope.mindate;
+                    scope._dateOptions.minDate = moment(scope.mindate).toDate();
                     break;
                 }
             }
