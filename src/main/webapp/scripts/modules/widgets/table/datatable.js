@@ -209,7 +209,7 @@ $.widget('wm.datatable', {
         _.forEach(config, function (col) {
             if (col.isGroup) {
                 col.colspan = self._getColSpan(col.columns);
-                self.gridHeaderElement.find('th[data-col-group="' + col.field + '"]').attr('colspan', col.colspan);
+                self.gridHeader.find('th[data-col-group="' + col.field + '"]').attr('colspan', col.colspan);
                 self._setColSpan(col.columns);
             }
         });
