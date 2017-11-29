@@ -17,7 +17,7 @@ WM.module('wm.layouts.containers')
                             '<div class="description" ng-bind-html="subheading"></div></div>' +
                         '</a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>' +
                 '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'">' +
                     '<div class="panel-body" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
