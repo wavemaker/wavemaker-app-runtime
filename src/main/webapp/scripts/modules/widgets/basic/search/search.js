@@ -72,6 +72,10 @@ WM.module('wm.widgets.basic')
                     });
                 } else {
                     filteredEntries = _.filter(entries, function (entry) {
+                        if (!casesensitive) {
+                            entry = _.toLower(entry);
+                            val = _.toLower(val);
+                        }
                         return _.includes(entry, val);
                     });
                 }
@@ -521,7 +525,12 @@ WM.module('wm.widgets.basic')
                 var uniqData,
                     isAllFields = dataField === ALL_FIELDS;
 
-                uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
+                if (!dataField) {
+                    // when datafield is undefined for local data with array of string in dataset.
+                    uniqData = _.uniq(data);
+                } else {
+                    uniqData = isAllFields ? _.uniqWith(data, _.isEqual) : _.uniqBy(data, dataField);
+                }
 
                 if (!displayField && isLocalSearch) {
                     return uniqData;

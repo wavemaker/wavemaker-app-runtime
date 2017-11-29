@@ -791,7 +791,7 @@ WM.module('wm.widgets.base', [])
                     "wm.chips": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "datavalue": {"type": "string, array", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "displayimagesrc": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
@@ -801,8 +801,11 @@ WM.module('wm.widgets.base', [])
                         "allowonlyselect": {"type": "boolean", "value": false},
                         "class": {"type": "string", "pattern": classRegex},
                         "backgroundcolor": {"type": "string", "widget": "color"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforeadd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onAdd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onRemove": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
 
@@ -2123,7 +2126,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
-                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
+                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},

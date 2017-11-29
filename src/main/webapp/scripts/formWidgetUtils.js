@@ -201,6 +201,44 @@ WM.module('wm.widgets.form')
             }
 
             /**
+             * This function finds the match in displayOptions depending on model param
+             * @param displayOptions displayOptions
+             * @param dataField
+             * @param model value to be compared with
+             * @returns object / string
+             */
+            function getSelectedObjFromDisplayOptions(displayOptions, dataField, model) {
+                var selectedOption,
+                    selectedOptions = [],
+                    filterField = dataField === ALLFIELDS ? 'dataObject' : 'key';
+
+                if (WM.isArray(model)) {
+                    _.forEach(model, function (modelVal) {
+                        selectedOption = _.find(displayOptions, function (obj) {
+                            if (filterField === 'dataObject') {
+                                return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(modelVal)));
+                            }
+                            return _.toString(obj[filterField]) === _.toString(modelVal);
+                        });
+
+                        if (selectedOption) {
+                            selectedOptions.push(selectedOption);
+                        }
+                    });
+                    return selectedOptions;
+                }
+                model = _.trim(model);
+                selectedOption = _.find(displayOptions, function (obj) {
+                    if (filterField === 'dataObject') {
+                        return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(model)));
+                    }
+                    return _.toString(obj[filterField]) === _.toString(model);
+                });
+
+                return selectedOption;
+            }
+
+            /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#updatedCheckedValues
              * @methodOf wm.widgets.form.FormWidgetUtils
@@ -214,10 +252,9 @@ WM.module('wm.widgets.form')
             function updatedCheckedValues(scope) {
                 var model = scope._model_,
                     _modelProxy,
-                    selectedOption,
-                    filterField;
+                    selectedOption;
 
-                if (scope._widgettype === 'wm-checkboxset') {
+                if (scope._widgettype === 'wm-checkboxset' || scope._widgettype === 'wm-chips') {
                     // handle the model having comma separated string as default datavalue.
                     if (WM.isString(model) && model !== '') {
                         scope._model_ = model = _.map(model.split(','), _.trim);
@@ -247,29 +284,19 @@ WM.module('wm.widgets.form')
                 }
 
                 if (WM.isDefined(scope.displayOptions) && !scope.usekeys) {
-                    // set the filterField depending on whether displayOptions contain 'dataObject', if not set filterField to 'key'
-                    filterField = _.get(scope.displayOptions[0], 'dataObject') ? 'dataObject' : 'key';
+                    selectedOption = getSelectedObjFromDisplayOptions(scope.displayOptions, scope.datafield, model);
+
                     if (WM.isArray(model)) {
                         _modelProxy = [];
-                        _.forEach(model, function (modelVal) {
-                            selectedOption = _.find(scope.displayOptions, function (obj) {
-                                if (filterField === 'dataObject') {
-                                    return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(modelVal)));
-                                }
-                                return _.toString(obj[filterField]) === _.toString(modelVal);
+
+                        if (selectedOption.length) {
+                            _.forEach(selectedOption, function (option) {
+                                _modelProxy.push(option.key);
                             });
-                            if (selectedOption) {
-                                _modelProxy.push(selectedOption.key);
-                            }
-                        });
+                        }
                     } else {
                         _modelProxy = undefined;
-                        selectedOption = _.find(scope.displayOptions, function (obj) {
-                            if (filterField === 'dataObject') {
-                                return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(model)));
-                            }
-                            return _.toString(obj[filterField]) === _.toString(model);
-                        });
+
                         if (selectedOption) {
                             _modelProxy = selectedOption.key;
                         }
@@ -280,7 +307,10 @@ WM.module('wm.widgets.form')
 
                 scope.modelProxy = _modelProxy;
 
-                setCheckedAndDisplayValues(scope, _modelProxy);
+
+                if (scope.hasOwnProperty('displayValue')) {
+                    setCheckedAndDisplayValues(scope, _modelProxy);
+                }
 
                 /* In studioMode, create CheckedValues for checkboxset and radioset when groupFields is true.
                  * checkedValues is a object with key as dataField value and value is boolean which represents isChecked value.
@@ -385,7 +415,8 @@ WM.module('wm.widgets.form')
                     displayField = getDisplayField(dataSet, scope.displayfield || scope.datafield),
                     objectKeys  = [],
                     key,
-                    value;
+                    value,
+                    imgSrc;
 
                 if (WM.isString(dataSet)) {
                     dataSet = _.map(_.split(dataSet, ','), _.trim);
@@ -408,13 +439,19 @@ WM.module('wm.widgets.form')
                     if (WM.isObject(dataSet) && !WM.isArray(dataSet)) {
                         key   = WidgetUtilService.getObjValueByKey(dataSet, dataField);
                         value = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                        data.push({'key' : key, 'value' : value});
+                        if (scope.binddisplayimagesrc || scope.displayimagesrc) {
+                            imgSrc = WidgetUtilService.getEvaluatedData(scope, dataSet, {expressionName: 'displayimagesrc'});
+                        }
+                        data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
                     } else {
                         if (WM.isObject(dataSet[0])) {
                             _.forEach(dataSet, function (option) {
                                 key   = WidgetUtilService.getObjValueByKey(option, dataField);
                                 value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                                data.push({'key' : key, 'value' : value});
+                                if (scope.binddisplayimagesrc || scope.displayimagesrc) {
+                                    imgSrc = WidgetUtilService.getEvaluatedData(scope, dataSet, {expressionName: 'displayimagesrc'});
+                                }
+                                data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
                             });
                         } else {
                             _.forEach(dataSet, function (option) {
@@ -427,20 +464,27 @@ WM.module('wm.widgets.form')
                     if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1) {
                         key   = 0;
                         value = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-
-                        data.push({'key' : key, 'value' : value, 'dataObject': dataSet});
+                        if (scope.binddisplayimagesrc || scope.displayimagesrc) {
+                            imgSrc = WidgetUtilService.getEvaluatedData(scope, dataSet, {expressionName: 'displayimagesrc'});
+                        }
+                        data.push({'key' : key, 'value' : value, 'dataObject': dataSet, 'imgSrc': imgSrc});
                     } else {
                         _.forEach(dataSet, function (option, index) {
                             if (WM.isObject(option)) {
                                 if (scope.datafield === ALLFIELDS) {
                                     key = index;
                                     value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-
-                                    data.push({'key' : key, 'value' : value, 'dataObject': option});
+                                    if (scope.binddisplayimagesrc || scope.displayimagesrc) {
+                                        imgSrc = WidgetUtilService.getEvaluatedData(scope, option, {expressionName: 'displayimagesrc'});
+                                    }
+                                    data.push({'key' : key, 'value' : value, 'dataObject': option, 'imgSrc': imgSrc});
                                 } else {
                                     key   = WidgetUtilService.getObjValueByKey(option, dataField);
                                     value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                                    data.push({'key' : key, 'value' : value});
+                                    if (scope.binddisplayimagesrc || scope.displayimagesrc) {
+                                        imgSrc = WidgetUtilService.getEvaluatedData(scope, option, {expressionName: 'displayimagesrc'});
+                                    }
+                                    data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
                                 }
                             } else {
                                 if (WM.isArray(dataSet)) {
@@ -497,7 +541,8 @@ WM.module('wm.widgets.form')
 
                 updatedCheckedValues(scope);
 
-                scope.assignModelValue(scope);
+                Utils.triggerFn(scope.assignModelValue, scope);
+
             }
 
             /**
@@ -906,6 +951,7 @@ WM.module('wm.widgets.form')
             this.setFixedHeader                  = setFixedHeader;
             this.getGroupedFields                = getGroupedFields;
             this.updatePropertyOptionsWithParams = updatePropertyOptionsWithParams;
+            this.getSelectedObjFromDisplayOptions = getSelectedObjFromDisplayOptions;
         }
     ])
     .constant('FIELD_TYPE', {
