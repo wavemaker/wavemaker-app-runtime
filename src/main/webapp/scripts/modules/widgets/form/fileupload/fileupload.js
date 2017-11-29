@@ -240,7 +240,10 @@ WM.module('wm.widgets.form')
 
         /* function to call user-defined on-error fn*/
         function onUploadError(scope, event) {
-            Utils.triggerFn(scope.onError, {'$event': event, '$scope': scope});
+            if (scope._hasOnErrorEvt) {
+                scope.onError({'$event': event, '$scope': scope});
+                return;
+            }
             if (!scope.multiple) {
                 wmToaster.show('error',  'File upload failed');
             }
@@ -288,7 +291,6 @@ WM.module('wm.widgets.form')
                     return;
                 }
             }
-            Utils.triggerFn(scope.onSuccess, {'$event': event, '$scope': scope});
         }
 
         // Checking if the selected file is valid for the choosen filter type
@@ -370,6 +372,10 @@ WM.module('wm.widgets.form')
             if (scope.fileTransfers.length) {
                 //show success toaster after all file transfers are successful
                 $q.all(scope.fileTransfers).then(function () {
+                    if (scope._hasOnSuccessEvt) {
+                        scope.onSuccess({'$scope': scope});
+                        return;
+                    }
                     wmToaster.show('success', 'File Uploaded');
                 });
             }
@@ -466,6 +472,9 @@ WM.module('wm.widgets.form')
                             "length": "",
                             "status": ""
                         };
+                        scope._hasOnSuccessEvt = WM.isDefined(attrs.onSuccess);
+                        scope._hasOnErrorEvt = WM.isDefined(attrs.onError);
+
                         scope.reset = function () {
                             //In case of upload mode
                             if (scope.fileTransfers) {
