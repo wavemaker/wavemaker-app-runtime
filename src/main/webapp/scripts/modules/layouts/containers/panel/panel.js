@@ -34,7 +34,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>'
             );
-        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer clearfix" ng-show="expanded" wmtransclude></div>');
+        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer clearfix" ng-show="footerExpanded" wmtransclude></div>');
     }])
     .directive('wmPanel', [
         'PropertiesFactory',
@@ -102,9 +102,13 @@ WM.module('wm.layouts.containers')
                     }
                     return template[0].outerHTML;
                 },
-                'controller': function () {
+                'controller': function ($scope) {
                     this.registerFooter = function (footer) {
                         this.footer = footer;
+                    };
+
+                    this.isExpanded = function () {
+                        return $scope.expanded;
                     };
                 },
                 'compile': function ($tEl) {
@@ -129,16 +133,17 @@ WM.module('wm.layouts.containers')
                             if ($is.expanded === undefined) {
                                 $is.expanded = true;
                             }
+
                             /* Expand Collapse the panel */
                             $is.expandCollapsePanel = function ($event) {
                                 if ($is.collapsible) {
                                     if ($is.expanded) {
                                         if ($is.onCollapse) {
-                                            $is.onCollapse({$event: $event, $scope: this});
+                                            $is.onCollapse({$event: $event, $isolateScope: this});
                                         }
                                     } else {
                                         if ($is.onExpand) {
-                                            $is.onExpand({$event: $event, $scope: this});
+                                            $is.onExpand({$event: $event, $isolateScope: this});
                                         }
                                         //Re-plot the widgets inside panel on expand
                                         $el.find('.ng-isolate-scope')
@@ -151,9 +156,6 @@ WM.module('wm.layouts.containers')
 
                                     /* flip the active flag */
                                     $is.expanded = !$is.expanded;
-                                    if (panelCtrl.footer) {
-                                        panelCtrl.footer.isolateScope().expanded = $is.expanded;
-                                    }
                                 }
                             };
                             /* Toggle FullScreen the panel */
@@ -222,8 +224,11 @@ WM.module('wm.layouts.containers')
             'require'   : '^wmPanel',
             'template'  : $tc.get('template/layout/container/panel-footer.html'),
             'link'      : function ($is, $el, attrs, panelCtrl) {
-                $is.expanded = true;
                 panelCtrl.registerFooter($el);
+
+                Object.defineProperty($is, 'footerExpanded', {
+                    get: panelCtrl.isExpanded
+                });
             }
         };
     }]);
