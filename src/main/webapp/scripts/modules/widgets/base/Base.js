@@ -1558,6 +1558,7 @@ WM.module('wm.widgets.base', [])
                         "onRowinsert": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforerowupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onRowupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onRowclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onRowdblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onColumnselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},

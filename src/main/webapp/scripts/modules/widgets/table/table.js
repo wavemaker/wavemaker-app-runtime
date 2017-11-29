@@ -227,8 +227,9 @@ WM.module('wm.widgets.table')
                 'onRowinsert'       : '&',
                 'onBeforerowupdate' : '&',
                 'onRowupdate'       : '&',
+                'onError'           : '&',
                 'onRowdeleted'      : '&',
-                'onRowdelete'      : '&',
+                'onRowdelete'       :  '&',
                 'onBeforeformrender': '&',
                 'onFormrender'      : '&',
                 'onRowclick'        : '&',
@@ -604,11 +605,12 @@ WM.module('wm.widgets.table')
                             case 'editmode':
                                 if ($is.widgetid) {
                                     isFormMode = ($is.editmode === EDIT_MODE.DIALOG || $is.editmode === EDIT_MODE.FORM);
-                                    wp.onRowdelete.show        = !isFormMode;
+                                    wp.onRowdelete.show         = !isFormMode;
                                     wp.onBeforerowinsert.show   = !isFormMode;
                                     wp.onRowinsert.show         = !isFormMode;
                                     wp.onBeforerowupdate.show   = !isFormMode;
                                     wp.onRowupdate.show         = !isFormMode;
+                                    wp.onError.show             = !isFormMode;
                                     wp.onFormrender.show        = !isFormMode;
                                     wp.onBeforeformrender.show  = !isFormMode;
                                 }
@@ -907,7 +909,12 @@ WM.module('wm.widgets.table')
                         'property': 'deleterow'
                     }
                 },
-                isDataSetWidgets = Utils.getDataSetWidgets();
+                isDataSetWidgets = Utils.getDataSetWidgets(),
+                OPERATION = {
+                    'NEW': 'new',
+                    'EDIT': 'edit',
+                    'DELETE': 'delete'
+                };
             /* Check whether it is non-empty row. */
             function isEmptyRecord(record) {
                 var properties = Object.keys(record),
@@ -1352,6 +1359,7 @@ WM.module('wm.widgets.table')
                                 'skipNotification'  : true
                             }, successHandler, function (error) {
                                 Utils.triggerFn(callBack, undefined, true);
+                                $is.onError({$event: evt, $isolateScope: $is, $operation: OPERATION.DELETE, $data: error});
                                 $is.toggleMessage(true, 'error', $is.errormessage || error);
                             });
                         } else {
@@ -1398,6 +1406,7 @@ WM.module('wm.widgets.table')
                     successHandler = function (response) {
                         /*Display appropriate error message in case of error.*/
                         if (response.error) {
+                            $is.onError({$event: options.event, $isolateScope: $is, $operation: OPERATION.NEW, $data: response.error});
                             $is.toggleMessage(true, 'error', $is.errormessage || response.error);
                             Utils.triggerFn(options.error, response);
                         } else {
@@ -1422,6 +1431,7 @@ WM.module('wm.widgets.table')
                         return;
                     }
                     variable.insertRecord(dataObject, successHandler, function (error) {
+                        $is.onError({$event: options.event, $isolateScope: $is, $operation: OPERATION.NEW, $data: error});
                         $is.toggleMessage(true, 'error', $is.errormessage || error);
                         Utils.triggerFn(options.error, error);
                         Utils.triggerFn(options.callBack, undefined, true);
@@ -1443,6 +1453,7 @@ WM.module('wm.widgets.table')
                     successHandler = function (response) {
                         /*Display appropriate error message in case of error.*/
                         if (response.error) {
+                            $is.onError({$event: options.event, $isolateScope: $is, $operation: OPERATION.EDIT, $data: response.error});
                             /*disable readonly and show the appropriate error*/
                             $is.toggleMessage(true, 'error', $is.errormessage || response.error);
                             Utils.triggerFn(options.error, response);
@@ -1468,6 +1479,7 @@ WM.module('wm.widgets.table')
                         return;
                     }
                     variable.updateRecord(dataObject, successHandler, function (error) {
+                        $is.onError({$event: options.event, $isolateScope: $is, $operation: OPERATION.EDIT, $data: error});
                         $is.toggleMessage(true, 'error', $is.errormessage || error);
                         Utils.triggerFn(options.error, error);
                         Utils.triggerFn(options.callBack, undefined, true);

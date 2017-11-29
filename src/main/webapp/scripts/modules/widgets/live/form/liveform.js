@@ -335,12 +335,12 @@ WM.module('wm.widgets.live')
                             variable.updateRecord(requestData, function (response) {
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
+                                    onResult(response, false, event);
                                     /*disable readonly and show the appropriate error*/
                                     $scope.toggleMessage(true, response.error, 'error');
-                                    onResult(response, false, event);
                                 } else {
-                                    $scope.toggleMessage(true, $scope.updatemessage, 'success');
                                     onResult(response, true, event);
+                                    $scope.toggleMessage(true, $scope.updatemessage, 'success');
                                     if ($scope.ctrl) {
                                         /* highlight the current updated row */
                                         $scope.$emit("on-result", "update", response, newForm, updateMode);
@@ -353,8 +353,8 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                $scope.toggleMessage(true, error, 'error');
                                 onResult(error, false, event);
+                                $scope.toggleMessage(true, error, 'error');
                             });
                         }
                         break;
@@ -373,11 +373,11 @@ WM.module('wm.widgets.live')
                             variable.insertRecord(requestData, function (response) {
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
-                                    $scope.toggleMessage(true, response.error, 'error');
                                     onResult(response, false, event);
+                                    $scope.toggleMessage(true, response.error, 'error');
                                 } else {
-                                    $scope.toggleMessage(true, $scope.insertmessage, 'success');
                                     onResult(response, true, event);
+                                    $scope.toggleMessage(true, $scope.insertmessage, 'success');
                                     /* if successfully inserted  change editable mode to false */
                                     if ($scope.ctrl) {
                                         /* highlight the current updated row */
@@ -391,8 +391,8 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                $scope.toggleMessage(true, error, 'error');
                                 onResult(error, false, event);
+                                $scope.toggleMessage(true, error, 'error');
                             });
                         }
                         break;
@@ -402,8 +402,8 @@ WM.module('wm.widgets.live')
                                 /* check the response whether the data successfully deleted or not , if any error occurred show the
                                  * corresponding error , other wise remove the row from grid */
                                 if (success && success.error) {
-                                    $scope.toggleMessage(true, success.error, 'error');
                                     onResult(success, false);
+                                    $scope.toggleMessage(true, success.error, 'error');
                                     return;
                                 }
                                 onResult(requestData.row, true);
@@ -421,8 +421,8 @@ WM.module('wm.widgets.live')
                                 }
 
                             }, function (error) {
-                                $scope.toggleMessage(true, error, 'error');
                                 onResult(error, false);
+                                $scope.toggleMessage(true, error, 'error');
                                 Utils.triggerFn(callBackFn);
                             });
                         };

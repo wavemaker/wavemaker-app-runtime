@@ -160,7 +160,7 @@ WM.module('wm.widgets.basic')
             hide: function (toasterObj) {
                 var toasterClass;
                 //in studio just ignore the toasterObj and hide all the toasters
-                if (CONSTANTS.isStudioMode) {
+                if (CONSTANTS.isStudioMode || !toasterObj) {
                     WM.element('.toast').hide();
                     return;
                 }
