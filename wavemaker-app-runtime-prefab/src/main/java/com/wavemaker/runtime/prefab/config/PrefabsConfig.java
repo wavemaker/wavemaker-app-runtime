@@ -35,10 +35,12 @@ public class PrefabsConfig {
     private static final String PREFAB_HOME_DIR_PROP = "prefabs.home.dir";
     private static final String PREFAB_LIB_DIR_PROP = "prefabs.lib.dir";
     private static final String PREFAB_CONFIG_DIR_PROP = "prefabs.config.dir";
+    private static final String PREFAB_BUILD_DIR_PROP = "prefabs.build.dir";
 
     private String prefabsHomeDir;
     private String prefabLibDir;
     private String prefabConfigDir;
+    private String prefabBuildDir;
 
     @Autowired
     public void setPrefabsHomeDir(@Value("${" + PREFAB_HOME_DIR_PROP + "}") String prefabsHomeDir) {
@@ -55,6 +57,11 @@ public class PrefabsConfig {
         this.prefabConfigDir = defaultOnEmpty(prefabConfigDir, PrefabConstants.PREFAB_DEFAULT_CONF_DIR, PREFAB_CONFIG_DIR_PROP);
     }
 
+    @Autowired
+    public void setPrefabBuildDir(@Value("${" + PREFAB_BUILD_DIR_PROP + "}") String prefabBuildDirDir) {
+        this.prefabBuildDir = defaultOnEmpty(prefabBuildDir, PrefabConstants.PREFAB_DEFAULT_BUILD_DIR, PREFAB_BUILD_DIR_PROP);
+    }
+
 
     public String getPrefabsHomeDir() {
         return prefabsHomeDir;
@@ -66,6 +73,10 @@ public class PrefabsConfig {
 
     public String getPrefabConfigDir() {
         return prefabConfigDir;
+    }
+
+    public String getPrefabBuildDir() {
+        return prefabBuildDir;
     }
 
     private String defaultOnEmpty(String value, String defaultValue, String propKey) {
