@@ -359,14 +359,16 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_WORKSPACE_TYPE": "db",
     "WAVEMAKER_SAMPLE_DATABASES": ["hrdb", "salesdb"],
     "DEFAULT_DB_NAME": "MyTestDatabase",
-    "HSQL_DB_TYPE": "HSQLDB",
-    "MYSQL_DB_TYPE": "MySQL",
-    "POSTGRESQL_DB_TYPE": "PostgreSQL",
-    "ORACLE_DB_TYPE": "Oracle",
-    "SQL_SERVER_DB_TYPE": "SQLServer",
-    "DB2_DB_TYPE": "DB2",
     "MYSQL_CLOUD_HOST": "{WM_CLOUD_MYSQL_HOST}",
-    "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud",
+    "DB_TYPES": {
+        "HSQL_DB_TYPE": "HSQLDB",
+        "MYSQL_DB_TYPE": "MySQL",
+        "POSTGRESQL_DB_TYPE": "PostgreSQL",
+        "ORACLE_DB_TYPE": "Oracle",
+        "SQL_SERVER_DB_TYPE": "SQLServer",
+        "DB2_DB_TYPE": "DB2",
+        "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud"
+    },
     "DB_TYPE": {
         "OTHER": 'Other'
     },
