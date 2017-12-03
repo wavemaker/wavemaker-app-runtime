@@ -380,17 +380,20 @@ WM.module('wm.widgets.form')
                     $s._model_ = [$s._model_];
                 }
 
-                if (WM.isDefined(dataVal)) {
+                if (WM.isDefined(dataVal) && dataVal !== '') {
                     option = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, dataVal);
-                    option.isCustom = false;
                 } else {
+                    if ($s.allowonlyselect) {
+                        resetSearchModel($s, $event);
+                        return;
+                    }
                     option = {key: customValue, value: customValue, isCustom: true};
                 }
 
                 chipObj = $s.constructChip(option);
 
                 if ($s.onBeforeadd) {
-                    allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, $item: chipObj});
+                    allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
                 }
                 //If onBeforeadd method returns false abort adding chip
                 if (!WM.isUndefined(allowAdd) && !allowAdd) {
