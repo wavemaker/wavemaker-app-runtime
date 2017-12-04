@@ -30,6 +30,26 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/database/testDriver?dbType=:dbType",
             method: "GET"
         },
+        read: {
+            url: "services/projects/:projectID/database/read",
+            method: "POST"
+        },
+        create: {
+            url: "services/projects/:projectID/database/services/create",
+            method: "POST"
+        },
+        readExistingDB: {
+            url: "services/projects/:projectID/database/services/:serviceId/read",
+            method: "POST"
+        },
+        reImportExistingDB: {
+            url: "services/projects/:projectID/database/services/:serviceId/sources",
+            method: "POST"
+        },
+        reImportCorruptDB: {
+            url: "services/projects/:projectID/database/services/:serviceId/sources/update",
+            method: "POST"
+        },
         importDB: {
             url: "services/projects/:projectID/database/services/import",
             method: "POST"
@@ -49,6 +69,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         listTables: {
             url: "services/projects/:projectID/database/listTables",
             method: "POST"
+        },
+        getGeneratorTypes: {
+            url: "services/projects/:projectID/database/configuration/:dbType",
+            method: "GET"
         },
 
         /*DataModel related services*/
@@ -367,11 +391,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "ORACLE_DB_TYPE": "Oracle",
         "SQL_SERVER_DB_TYPE": "SQLServer",
         "DB2_DB_TYPE": "DB2",
-        "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud"
-    },
-    "DB_TYPE": {
+        "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud",
         "OTHER": 'Other'
     },
+    "SEQUENCE_SUPPORTED_DB_TYPES": ["HSQLDB", "PostgreSQL", "Oracle", "SQLServer", "DB2", 'Other'],
     "LOGIN": {
         "SAAS_MYSQL_CLOUD": {
             "USERNAME": "{WM_CLOUD_MYSQL_USERNAME}",

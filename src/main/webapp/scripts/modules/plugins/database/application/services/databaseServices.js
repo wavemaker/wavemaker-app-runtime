@@ -277,6 +277,237 @@ wm.plugins.database.services.DatabaseService = [
 
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#read
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to read the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            read: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "read",
+                    data: {
+                        "serviceId": params.serviceId,
+                        "packageName": params.packageName,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "tableFilter": params.tableFilter,
+                        "schemaName": params.schemaName,
+                        "schemaFilter": params.schemaFilter,
+                        "driverClass": params.driverClass,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false,
+                        "activeDirectoryDomain": params.activeDirectoryDomain,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.dbName,
+                        "readOnly": params.readOnly
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#create
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to create the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            create: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "create",
+                    data: {
+                        "dataModel": params.dataModel,
+                        "properties" : {
+                            "serviceId": params.serviceId,
+                            "packageName": params.packageName,
+                            "username": params.username,
+                            "password": params.password,
+                            "url": params.url,
+                            "tableFilter": params.tableFilter,
+                            "schemaName": params.schemaName,
+                            "schemaFilter": params.schemaFilter,
+                            "driverClass": params.driverClass,
+                            "dialect": params.dialect,
+                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                            "impersonateUser": false,
+                            "activeDirectoryDomain": params.activeDirectoryDomain,
+                            "dbType": params.dbType,
+                            "host": params.host,
+                            "port": params.port,
+                            "dbName": params.dbName,
+                            "readOnly": params.readOnly
+                        }
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#readExistingDB
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to read the specified existing database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            readExistingDB: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "readExistingDB",
+                    data: {
+                        "serviceId": params.serviceId,
+                        "packageName": params.packageName,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "tableFilter": params.tableFilter,
+                        "schemaName": params.schemaName,
+                        "schemaFilter": params.schemaFilter,
+                        "driverClass": params.driverClass,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false,
+                        "activeDirectoryDomain": params.activeDirectoryDomain,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.dbName,
+                        "readOnly": params.readOnly
+                    },
+                    urlParams: {
+                        "projectID"     : params.projectID,
+                        "serviceId"     : params.serviceId
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#reImportExistingDB
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to reImport the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            reImportExistingDB: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "reImportExistingDB",
+                    data: {
+                        "dataModel": params.dataModel,
+                        "properties" : {
+                            "serviceId": params.serviceId,
+                            "packageName": params.packageName,
+                            "username": params.username,
+                            "password": params.password,
+                            "url": params.url,
+                            "tableFilter": params.tableFilter,
+                            "schemaName": params.schemaName,
+                            "schemaFilter": params.schemaFilter,
+                            "driverClass": params.driverClass,
+                            "dialect": params.dialect,
+                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                            "impersonateUser": false,
+                            "activeDirectoryDomain": params.activeDirectoryDomain,
+                            "dbType": params.dbType,
+                            "host": params.host,
+                            "port": params.port,
+                            "dbName": params.dbName,
+                            "readOnly": params.readOnly
+                        }
+                    },
+                    urlParams: {
+                        "projectID": params.projectID,
+                        "serviceId": params.serviceId
+                    }
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#reImportCorruptDB
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to reImport the corrupt database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            reImportCorruptDB: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "reImportCorruptDB",
+                    data: {
+                        reInitialize: params.reInitialize || true
+                    },
+                    urlParams: {
+                        "projectID": params.projectID,
+                        "serviceId"     : params.serviceId
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#importDB
              * @methodOf wm.database.$DatabaseService
              * @function
@@ -441,6 +672,33 @@ wm.plugins.database.services.DatabaseService = [
                     },
                     urlParams: {
                         "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#getGeneratorTypes
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to load all the generator types.
+             *
+             * @param {object} params
+             *                 Object containing id of the project & type of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getGeneratorTypes: function (params, successCallback, failureCallback) {
+                BaseService.execute({
+                    target: "Database",
+                    action: "getGeneratorTypes",
+                    urlParams: {
+                        "projectID": params.projectID,
+                        "dbType": params.dbType
                     }
                 }, successCallback, failureCallback);
             },
