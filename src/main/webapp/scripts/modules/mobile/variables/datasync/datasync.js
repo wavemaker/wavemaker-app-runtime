@@ -94,13 +94,16 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                             .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
                             .then(function () {
                                 var clearData = variable.clearData === "true" || variable.clearData === true;
-                                DeviceVariableService.initiateCallback('onBefore', variable);
-                                $rootScope.$emit('toggle-variable-state', variable, true);
-                                LocalDBManager.pullData(clearData).then(success, error, function (progress) {
-                                    variable.dataSet = progress;
-                                    DeviceVariableService.initiateCallback('onProgress', variable, progress);
-                                }).finally(function () {
-                                    $rootScope.$emit('toggle-variable-state', variable, false);
+                                DeviceVariableService.initiateCallback('onBefore', variable).then(function (proceed) {
+                                    if (proceed !== false) {
+                                        $rootScope.$emit('toggle-variable-state', variable, true);
+                                        LocalDBManager.pullData(clearData).then(success, error, function (progress) {
+                                            variable.dataSet = progress;
+                                            DeviceVariableService.initiateCallback('onProgress', variable, progress);
+                                        }).finally(function () {
+                                            $rootScope.$emit('toggle-variable-state', variable, false);
+                                        });
+                                    }
                                 });
                             });
                     } else {
@@ -164,16 +167,19 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                             .then(getOfflineChanges)
                             .then(function (changes) {
                                 if (changes.pendingToSync.total > 0) {
-                                    DeviceVariableService.initiateCallback('onBefore', variable, changes);
-                                    $rootScope.$emit('toggle-variable-state', variable, true);
-                                    ChangeLogService.flush(function (stats) {
-                                        var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
-                                        variable.dataSet = addOldPropertiesForPushData(stats);
-                                        $rootScope.$emit('toggle-variable-state', variable, false);
-                                        DeviceVariableService.initiateCallback(eventName, variable, stats);
-                                    }, function (stats) {
-                                        variable.dataSet = addOldPropertiesForPushData(stats);
-                                        DeviceVariableService.initiateCallback('onProgress', variable, stats);
+                                    DeviceVariableService.initiateCallback('onBefore', variable, changes).then(function (proceed) {
+                                        if (proceed !== false) {
+                                            $rootScope.$emit('toggle-variable-state', variable, true);
+                                            ChangeLogService.flush(function (stats) {
+                                                var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
+                                                variable.dataSet = addOldPropertiesForPushData(stats);
+                                                $rootScope.$emit('toggle-variable-state', variable, false);
+                                                DeviceVariableService.initiateCallback(eventName, variable, stats);
+                                            }, function (stats) {
+                                                variable.dataSet = addOldPropertiesForPushData(stats);
+                                                DeviceVariableService.initiateCallback('onProgress', variable, stats);
+                                            });
+                                        }
                                     });
                                 }
                             });
