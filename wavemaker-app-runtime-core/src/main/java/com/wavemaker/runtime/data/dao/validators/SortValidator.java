@@ -18,20 +18,17 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
  */
 public class SortValidator {
 
-    private static final int MAX_CHILDREN_LEVEL = 3;
-
     private Class<?> entityClass;
     private Set<String> fieldNames;
 
     public SortValidator(Class<?> entityClass) {
         this.entityClass = entityClass;
+        fieldNames = new HashSet<>();
+        buildFieldNameList(entityClass, "", fieldNames, new HashSet<Class<?>>());
     }
 
     public void validate(Pageable pageable) {
         if (pageable != null && pageable.getSort() != null) {
-            if (fieldNames == null) {
-                this.fieldNames = buildFieldNameList(entityClass, "", 0);
-            }
             final Sort sort = pageable.getSort();
             for (final Sort.Order order : sort) {
                 final String propertyName = order.getProperty();
@@ -42,8 +39,7 @@ public class SortValidator {
         }
     }
 
-    private Set<String> buildFieldNameList(Class<?> entityClass, String prefix, int currentLevel) {
-        Set<String> names = new HashSet<>();
+    private void buildFieldNameList(Class<?> entityClass, String prefix, Set<String> names, Set<Class<?>> visitedUserDefinedTypes) {
         for (final Field field : entityClass.getDeclaredFields()) {
             String fieldName = field.getName();
             if (StringUtils.isNotBlank(prefix)) {
@@ -52,10 +48,9 @@ public class SortValidator {
             final Class<?> fieldType = field.getType();
             if (JavaTypeUtils.isKnownType(fieldType)) {
                 names.add(fieldName);
-            } else if (currentLevel < MAX_CHILDREN_LEVEL && JavaTypeUtils.isNotCollectionType(fieldType)) {
-                names.addAll(buildFieldNameList(fieldType, fieldName, ++currentLevel));
+            } else if (JavaTypeUtils.isNotCollectionType(fieldType) && visitedUserDefinedTypes.add(fieldType)) {
+                buildFieldNameList(fieldType, fieldName, names, visitedUserDefinedTypes);
             }
         }
-        return names;
     }
 }
