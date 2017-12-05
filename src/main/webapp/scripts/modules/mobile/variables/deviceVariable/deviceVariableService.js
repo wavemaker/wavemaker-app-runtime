@@ -13,8 +13,8 @@
  * @description
  * The 'DeviceVariableService' provides methods to work with Mobile API.
  */
-wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils', 'CONSTANTS', 'BaseVariablePropertyFactory',
-    function ($rootScope, Variables, Utils, CONSTANTS, BaseVariablePropertyFactory) {
+wm.variables.services.DeviceVariableService = ['$rootScope', '$q', 'Variables', 'Utils', 'CONSTANTS', 'BaseVariablePropertyFactory',
+    function ($rootScope, $q, Variables, Utils, CONSTANTS, BaseVariablePropertyFactory) {
         "use strict";
         var availableServices = {},
             propertyGroups = BaseVariablePropertyFactory.getPropertyGroups();
@@ -84,7 +84,7 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 return operation;
             },
             initiateCallback : function (eventName, variable, eventData) {
-                Variables.initiateCallback(eventName, variable, eventData);
+                return $q.when(Variables.initiateCallback(eventName, variable, eventData));
             },
             listAllOperations : function (serviceName) {
                 return _.sortBy(_.keys(availableServices[serviceName]));
