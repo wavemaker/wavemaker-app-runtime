@@ -68,7 +68,7 @@ wm.plugins.database.services.LocalDBService = [
          */
         function remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
             onlineHandler.call(DatabaseService, params, function (response) {
-                if (!operation.update) {
+                if (!(operation.update  || params.skipLocalDB)) {
                     _.forEach(response.content, function (r) {
                         var updateParams = {
                             dataModelName: params.dataModelName,

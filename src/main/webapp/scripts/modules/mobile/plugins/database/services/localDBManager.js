@@ -94,6 +94,19 @@ wm.plugins.database.services.LocalDBManager = [
         }
 
         /**
+         *  returns store bound to the dataModelName and entityName.
+         *
+         * @param dataModelName
+         * @param entityName
+         * @returns {*}
+         */
+        function getStore(dataModelName, entityName) {
+            if (databases[dataModelName]) {
+                return databases[dataModelName].stores[entityName];
+            }
+            return null;
+        }
+        /**
          * Executes SQL query;
          * 
          * @param dbName
@@ -386,9 +399,18 @@ wm.plugins.database.services.LocalDBManager = [
                     size: pageSize,
                     data: filter,
                     sort: entitySchema.syncOptions.orderBy,
-                    onlyOnline: true
+                    onlyOnline: true,
+                    skipLocalDB: true
                 };
-                DatabaseService.searchTableData(params, defer.resolve, defer.reject);
+                DatabaseService.searchTableData(params, function (response) {
+                    var store = getStore(dataModelName, entitySchema.entityName),
+                        savePromises = _.map(response.content, function (o) {
+                            return store.save(o);
+                        });
+                    $q.all(savePromises).then(function () {
+                        defer.resolve(response);
+                    });
+                }, defer.reject);
             } else {
                 defer.reject();
             }
@@ -559,6 +581,16 @@ wm.plugins.database.services.LocalDBManager = [
         }
 
         /**
+         * Turns off foreign keys
+         * @returns {*}
+         */
+        function disableForeignKeys() {
+            return $q.all(_.map(databases, function (db) {
+                return executeSQLQuery(db.schema.name, 'PRAGMA foreign_keys = OFF');
+            }));
+        }
+
+        /**
          * When app is opened for first time  after a fresh install or update, then old databases are removed and 
          * new databases are created using bundled databases.
          *
@@ -726,6 +758,8 @@ wm.plugins.database.services.LocalDBManager = [
                         LocalKeyValueService.init(self.getStore('wavemaker', 'key-value'));
                         if (newDatabasesCreated) {
                             normalizeData().then(function () {
+                                return disableForeignKeys();
+                            }).then(function () {
                                 d.resolve(databases);
                             });
                         } else {
@@ -817,12 +851,7 @@ wm.plugins.database.services.LocalDBManager = [
          * @param {string} entityName Name of the entity
          * @returns {object} the database store.
          */
-        this.getStore = function (dataModelName, entityName) {
-            if (databases[dataModelName]) {
-                return databases[dataModelName].stores[entityName];
-            }
-            return null;
-        };
+        this.getStore = getStore;
 
         /**
          * @ngdoc method
