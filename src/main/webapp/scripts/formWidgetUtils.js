@@ -535,7 +535,7 @@ WM.module('wm.widgets.form')
                 });
 
                 // Use _dataVal as model when the displayOptions are updated i.e. when latest dataset is retrieved
-                if (scope.displayOptions.length && WM.isDefined(scope._dataVal) && scope._model_ !== '' && (WM.isUndefined(scope._model_) || !scope._model_.length)) {
+                if (scope.displayOptions.length && WM.isDefined(scope._dataVal) && !_.isNull(scope._model_) && scope._model_ !== '' && (WM.isUndefined(scope._model_) || !scope._model_.length)) {
                     scope._model_ = scope._dataVal;
                 }
 
