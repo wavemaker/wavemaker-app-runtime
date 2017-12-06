@@ -253,10 +253,14 @@ WM.module('wm.widgets.form')
                     //remove chips
                     deletedChips = _.pullAt($s.selectedChips, indexes);
 
-                // update the model on deletion.
-                _.forEach(deletedChips, function (chip) {
-                    _.pullAt($s._model_, chip.index);
-                });
+                if ($s.datafield !== 'All Fields') {
+                    _.pullAt($s._model_, indexes);
+                } else {
+                    // update the model on deletion.
+                    _.forEach(deletedChips, function (chip) {
+                        _.pullAt($s._model_, chip.index);
+                    });
+                }
 
                 /* Updates the indexes of the selectedChips.
                  * Reset the index value in order to delete the appropriate chip from the model when datafield is ALL_FIELDS
@@ -387,6 +391,9 @@ WM.module('wm.widgets.form')
                         resetSearchModel($s, $event);
                         return;
                     }
+                    if (!_.trim(customValue)) {
+                        return;
+                    }
                     option = {key: customValue, value: customValue, isCustom: true};
                 }
 
@@ -404,7 +411,7 @@ WM.module('wm.widgets.form')
                     $s.selectedChips.push(chipObj);
                 }
 
-                if (WM.isDefined(dataVal)) {
+                if (WM.isDefined(dataVal) && dataVal !== '') {
                     $s._model_.push(dataVal);
                 } else {
                     if ($s.allowonlyselect) {
@@ -422,6 +429,7 @@ WM.module('wm.widgets.form')
                 if ($s.onAdd) {
                     $s.onAdd({$event: $event, $isolateScope: $s});
                 }
+                checkMaxSize($s);
             }
             //Reset chips method for form
             function reset($s) {
@@ -465,7 +473,6 @@ WM.module('wm.widgets.form')
                         $is._chipCount = 0;
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
-                        $is.updateSelectedChips = updateSelectedChips.bind(undefined, $is);
 
                         if (!attrs.widgetid) {
                             Object.defineProperty($is, '_model_', {
