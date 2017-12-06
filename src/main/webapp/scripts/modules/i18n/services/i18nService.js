@@ -344,6 +344,12 @@ WM.module('i18n')
                     .then(function (response) {
                         // extend the $rs.locale object with the response json
                         WM.extend($rs[localeKey], response.data, content);
+                    }, function () {
+                        // error case
+                        if (CONSTANTS.isRunMode) {
+                            $rs.appLocale = {};
+                            console.warn("Error while loading the message bundle for loacle(" + _selectedLocale + ")" );
+                        }
                     });
                 //i18nService implementation can be ignored as of now
                 /*return BaseService
