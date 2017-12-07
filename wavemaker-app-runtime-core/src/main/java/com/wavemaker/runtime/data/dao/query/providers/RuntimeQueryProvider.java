@@ -9,6 +9,7 @@ import org.hibernate.query.Query;
 import org.springframework.data.domain.Pageable;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.data.transform.Transformers;
 import com.wavemaker.runtime.data.transform.WMResultTransformer;
@@ -44,6 +45,16 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
                 .withQueryString(query.getQueryString())
                 .withCountQueryString(countQueryString)
                 .withNativeSql(query.isNativeSql())
+                .build();
+    }
+
+    public static <R> RuntimeQueryProvider<R> from(WMQueryInfo queryInfo, Class<R> returnType) {
+        String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
+
+        return RuntimeQueryProvider.newBuilder(returnType)
+                .withQueryString(queryInfo.getQuery())
+                .withCountQueryString(countQuery)
+                .withNativeSql(false)
                 .build();
     }
 

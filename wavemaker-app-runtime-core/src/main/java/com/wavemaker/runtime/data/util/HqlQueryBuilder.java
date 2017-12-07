@@ -5,17 +5,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Pageable;
 
+import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.Aggregation;
 import com.wavemaker.runtime.data.model.AggregationInfo;
+import com.wavemaker.runtime.data.periods.PeriodClause;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -31,16 +34,22 @@ public class HqlQueryBuilder {
     private String distinctField;
     private List<String> groupByFields;
 
-    private List<Aggregation> aggregations;
+    private List<PeriodClause> periodClauses = new ArrayList<>(2);
 
+    private Map<String, Object> filterConditions = new HashMap<>();
     private String filter;
-    private Pageable pageable;
+
+    private List<Aggregation> aggregations;
 
     private final Class<?> entityClass;
 
     public HqlQueryBuilder(final Class<?> entityClass) {
         this.entityClass = entityClass;
 
+    }
+
+    public static HqlQueryBuilder newBuilder(Class<?> entityClass) {
+        return new HqlQueryBuilder(entityClass);
     }
 
     public HqlQueryBuilder withFields(final List<String> fields) {
@@ -58,6 +67,27 @@ public class HqlQueryBuilder {
         return this;
     }
 
+    public HqlQueryBuilder withPeriodClauses(final List<PeriodClause> periodClauses) {
+        this.periodClauses.addAll(periodClauses);
+        return this;
+    }
+
+    public HqlQueryBuilder withPeriodClause(PeriodClause periodClause) {
+        this.periodClauses.add(periodClause);
+        return this;
+    }
+
+    public HqlQueryBuilder withFilterConditions(final Map<String, Object> filterConditions) {
+        this.filterConditions.putAll(filterConditions);
+        return this;
+    }
+
+    public HqlQueryBuilder withFilterCondition(String fieldName, Object value) {
+        this.filterConditions.put(fieldName, value);
+        return this;
+    }
+
+
     public HqlQueryBuilder withAggregations(final List<Aggregation> aggregations) {
         this.aggregations = aggregations;
         return this;
@@ -65,11 +95,6 @@ public class HqlQueryBuilder {
 
     public HqlQueryBuilder withFilter(final String filter) {
         this.filter = filter;
-        return this;
-    }
-
-    public HqlQueryBuilder withPageable(final Pageable pageable) {
-        this.pageable = pageable;
         return this;
     }
 
@@ -92,17 +117,8 @@ public class HqlQueryBuilder {
                     .append(" ");
         }
 
-        builder.append("from ")
-                .append(entityClass.getCanonicalName())
-                .append(" ");
-
-        if (StringUtils.isNotBlank(filter)) {
-            final WMQueryInfo queryInfo = interceptFilter(filter);
-            builder.append("where ")
-                    .append(queryInfo.getQuery())
-                    .append(" ");
-            parameters = queryInfo.getParameters();
-        }
+        builder.append(generateFromClause(parameters));
+        builder.append(generateWhereClause(parameters));
 
         if (CollectionUtils.isNotEmpty(groupByFields)) {
             builder.append("group by ")
@@ -110,20 +126,68 @@ public class HqlQueryBuilder {
                     .append(" ");
         }
 
-      /*  if (HQLQueryUtils.isSortAppliedOnPageable(pageable)) {
-            builder.append(HQLQueryUtils.buildOrderByClause(pageable.getSort()));
-        }*/
-/*
-        Query hqlQuery = session.createQuery(builder.toString());
+        return new WMQueryInfo(builder.toString(), parameters);
+    }
 
-        if (pageable != null) {
-            hqlQuery.setFirstResult(pageable.getOffset());
-            hqlQuery.setMaxResults(pageable.getPageSize());
+    public Optional<WMQueryInfo> buildCountQuery() {
+        Optional<WMQueryInfo> result = Optional.empty();
+
+        // hql doesn't support group by in combination of group by
+        if (CollectionUtils.isEmpty(groupByFields)) {
+            Map<String, Object> parameters = new HashMap<>();
+
+            final String countQuery = "select count(*) " +
+                    generateFromClause(parameters) +
+                    generateWhereClause(parameters);
+
+            result = Optional.of(new WMQueryInfo(countQuery, parameters));
+
         }
 
-        return new HqlQueryHolder(hqlQuery, parameters);*/
+        return result;
+    }
 
-        return new WMQueryInfo(builder.toString(), parameters);
+    private String generateFromClause(final Map<String, Object> parameters) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("from ")
+                .append(entityClass.getCanonicalName())
+                .append(" ");
+
+        periodClauses.stream()
+                .map(PeriodClause::asWMQueryClause)
+                .forEach(queryInfo -> {
+                    builder.append(queryInfo.getQuery()).append(" ");
+                    parameters.putAll(queryInfo.getParameters());
+                });
+        return builder.toString();
+    }
+
+    private String generateWhereClause(final Map<String, Object> parameters) {
+        final StringBuilder builder = new StringBuilder();
+
+        if (!filterConditions.isEmpty() || StringUtils.isNotBlank(filter)) {
+            builder.append("where ");
+
+            builder.append(filterConditions.entrySet().stream()
+                    .map(entry -> new Tuple.Two<>(entry, "wm_filter_" + entry.getKey()))
+                    .peek(tuple -> parameters.put(tuple.v2, tuple.v1.getValue()))
+                    .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
+                    .collect(Collectors.joining("and", " ", " ")));
+
+            if (StringUtils.isNotBlank(filter)) {
+                final WMQueryInfo queryInfo = interceptFilter(filter);
+
+                if (!filterConditions.isEmpty()) {
+                    builder.append("and ");
+                }
+                builder.append(queryInfo.getQuery())
+                        .append(" ");
+
+                parameters.putAll(queryInfo.getParameters());
+            }
+        }
+
+        return builder.toString();
     }
 
     private String generateProjections() {
