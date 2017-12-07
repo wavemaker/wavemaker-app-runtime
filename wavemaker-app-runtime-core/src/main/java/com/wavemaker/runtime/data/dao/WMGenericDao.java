@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.model.AggregationInfo;
+import com.wavemaker.runtime.data.periods.PeriodClause;
 import com.wavemaker.runtime.file.model.Downloadable;
 
 public interface WMGenericDao<Entity, Identifier> {
@@ -39,6 +41,7 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Page<Entity> list(Pageable pageable);
 
+    @Deprecated
     Page getAssociatedObjects(Object value, String entityName, String key, Pageable pageable);
 
     Page<Entity> search(QueryFilter queryFilters[], Pageable pageable);
@@ -52,4 +55,6 @@ public interface WMGenericDao<Entity, Identifier> {
     Page<Map<String, Object>> getAggregatedValues(final AggregationInfo aggregationInfo, Pageable pageable);
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
+
+    Page<Entity> findHistory(List<PeriodClause> periodClauses, String query, Pageable pageable);
 }

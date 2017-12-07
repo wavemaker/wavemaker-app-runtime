@@ -38,13 +38,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.commons.util.Tuple;
-import com.wavemaker.runtime.data.dao.callbacks.PaginatedQueryCallback;
+import com.wavemaker.runtime.data.annotations.TableTemporal;
+import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
+import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
+import com.wavemaker.runtime.data.dao.generators.TemporalQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
-import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.export.DataExporter;
@@ -56,9 +57,10 @@ import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.AggregationInfo;
+import com.wavemaker.runtime.data.periods.PeriodClause;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
-import com.wavemaker.runtime.data.util.HQLQueryUtils;
 import com.wavemaker.runtime.data.util.HqlQueryBuilder;
+import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
@@ -67,6 +69,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     private Class<Entity> entityClass;
     private SortValidator sortValidator;
+    private EntityQueryGenerator<Entity, Identifier> queryGenerator;
 
     public abstract HibernateTemplate getTemplate();
 
@@ -80,20 +83,30 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
         this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
         this.sortValidator = new SortValidator(entityClass);
+
+        queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
+
+        if (entityClass.isAnnotationPresent(TableTemporal.class)) {
+            final TableTemporal temporal = entityClass.getAnnotation(TableTemporal.class);
+            // decorating with given temporal types
+            for (final TableTemporal.TemporalType temporalType : temporal.value()) {
+                queryGenerator = new TemporalQueryGenerator<>(queryGenerator, temporalType);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
         getTemplate().flush();
-        getTemplate().refresh(entity);
+//        getTemplate().refresh(entity);
         return entity;
     }
 
     public void update(Entity entity) {
         getTemplate().update(entity);
         getTemplate().flush();
-        getTemplate().refresh(entity);
+//        getTemplate().refresh(entity);
     }
 
     public void delete(Entity entity) {
@@ -101,19 +114,16 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     public Entity findById(Identifier entityId) {
-        return getTemplate().get(entityClass, entityId);
+        final HqlQueryBuilder builder = queryGenerator.findById(entityId);
+
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
     }
 
     @SuppressWarnings("unchecked")
     public Entity findByUniqueKey(final Map<String, Object> fieldValueMap) {
-        return getTemplate().execute(session -> {
-            Criteria criteria = session.createCriteria(entityClass);
-            for (final Map.Entry<String, Object> entry : fieldValueMap.entrySet()) {
-                criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
-            }
-            final List list = criteria.list();
-            return list.isEmpty() ? null : (Entity) list.get(0);
-        });
+        final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
+
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
     }
 
     @Override
@@ -158,29 +168,22 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
         this.sortValidator.validate(pageable);
-        return getTemplate().execute(session -> {
-            final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
-                    .createHQLQuery(entityClass.getName(), query, pageable, session);
-            return HQLQueryUtils
-                    .executeHQLQuery(queryInfo.v1, queryInfo.v2, pageable, getTemplate());
-        });
+
+        final HqlQueryBuilder builder = queryGenerator.searchByQuery(query);
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, pageable);
     }
 
     @Override
     public long count() {
-        return getTemplate().execute(session -> {
-            Criteria criteria = session.createCriteria(entityClass);
-            return CriteriaUtils.getRowCount(criteria);
-        });
+        return count("");
     }
 
     @Override
     public long count(final String query) {
         return getTemplate().execute(session -> {
-            Tuple.Two<Query, Map<String, Object>> queryInfo =
-                    HQLQueryUtils.createHQLQuery(entityClass.getName(), query, null, session);
+            final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
             return QueryHelper
-                    .getQueryResultCount(queryInfo.v1.getQueryString(), queryInfo.v2, false, getTemplate());
+                    .getQueryResultCount(queryInfo.getQuery(), queryInfo.getParameters(), false, getTemplate());
         });
     }
 
@@ -189,23 +192,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
         this.sortValidator.validate(pageable);
-        HqlQueryBuilder builder = new HqlQueryBuilder(entityClass);
-        builder.withAggregationInfo(aggregationInfo);
 
-        final WMQueryInfo queryInfo = builder.build();
-        String countQuery = QueryHelper.getCountQuery(queryInfo.getQuery(), false);
+        final HqlQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
+        final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, pageable);
 
-        final RuntimeQueryProvider<Map> queryProvider = RuntimeQueryProvider.newBuilder(Map.class)
-                .withQueryString(queryInfo.getQuery())
-                .withCountQueryString(countQuery)
-                .build();
-        ParametersProvider parametersProvider = new AppRuntimeParameterProvider(queryInfo.getParameters(),
-                new HqlParameterTypeResolver());
-
-        final Page result = getTemplate()
-                .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
         return (Page<Map<String, Object>>) result;
-
     }
 
     @Override
@@ -213,11 +204,15 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         this.sortValidator.validate(pageable);
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(session -> {
-                    final Tuple.Two<Query, Map<String, Object>> queryInfo = HQLQueryUtils
-                            .createHQLQuery(entityClass.getName(), query, pageable, session);
+                    final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
+                    final RuntimeQueryProvider<Entity> queryProvider = RuntimeQueryProvider
+                            .from(queryInfo, entityClass);
+                    ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
+                            HqlParameterTypeResolver());
 
-                    ParametersConfigurator.configure(queryInfo.v1, queryInfo.v2);
-                    QueryExtractor queryExtractor = new HqlQueryExtractor(queryInfo.v1.scroll());
+                    final Query<Entity> hqlQuery = queryProvider.getQuery(session, pageable, provider);
+                    QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
+
                     return DataExporter.export(queryExtractor, exportType);
                 });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
@@ -227,6 +222,16 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     public Page<Entity> list() {
         return search(null, null);
+    }
+
+    @Override
+    public Page<Entity> findHistory(
+            final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
+        final HqlQueryBuilder builder = HqlQueryBuilder.newBuilder(entityClass)
+                .withFilter(query);
+        periodClauses.forEach(builder::withPeriodClause);
+
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, pageable);
     }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {

@@ -40,7 +40,7 @@ public class WMQueryFunctionInterceptor implements QueryInterceptor {
         while (matcher.find()) {
             final WMHqlFunction function = WMHqlFunction.valueOf(matcher.group(FUNCTION_NAME_GROUP).toUpperCase());
 
-            String parameterName = "param" + (parameterIndex++);
+            String parameterName = "wm_fun_param" + (parameterIndex++);
 
             matcher.appendReplacement(newQuerySB, ":" + parameterName);
             queryInfo.addParameter(parameterName, function.convertValue(matcher.group(VALUE_GROUP)));
