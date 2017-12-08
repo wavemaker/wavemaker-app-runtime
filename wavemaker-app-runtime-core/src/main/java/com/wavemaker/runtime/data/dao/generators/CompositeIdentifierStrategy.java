@@ -32,7 +32,7 @@ public class CompositeIdentifierStrategy<Entity, Identifier> implements Identifi
 
         idProperties.forEach(idProperty -> {
             try {
-                idProperty.getReadMethod().invoke(identifier);
+                valuesMap.put(idProperty.getName(), idProperty.getReadMethod().invoke(identifier));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new WMRuntimeException("unable to get identifier property:" + idProperty.getName(), e);
             }

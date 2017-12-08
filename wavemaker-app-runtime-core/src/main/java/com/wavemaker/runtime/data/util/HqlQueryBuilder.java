@@ -172,7 +172,7 @@ public class HqlQueryBuilder {
                     .map(entry -> new Tuple.Two<>(entry, "wm_filter_" + entry.getKey()))
                     .peek(tuple -> parameters.put(tuple.v2, tuple.v1.getValue()))
                     .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
-                    .collect(Collectors.joining("and", " ", " ")));
+                    .collect(Collectors.joining(" and ", " ", " ")));
 
             if (StringUtils.isNotBlank(filter)) {
                 final WMQueryInfo queryInfo = interceptFilter(filter);
