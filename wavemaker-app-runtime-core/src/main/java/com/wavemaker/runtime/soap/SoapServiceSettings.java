@@ -33,6 +33,7 @@ public class SoapServiceSettings {
     private int requestTimeout;
 
     private String soapActionURI;
+    private String packageName;
 
     private Map<String, String> httpHeaders;
 
@@ -142,6 +143,24 @@ public class SoapServiceSettings {
      */
     public void setSoapActionURI(String soapActionURI) {
         this.soapActionURI = soapActionURI;
+    }
+
+
+    /**
+     * Returns the service base package name
+     * @return
+     */
+    public String getPackageName() {
+        return packageName;
+    }
+
+
+    /**
+     * Sets the service base package name
+     * @param packageName
+     */
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     /**
