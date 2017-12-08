@@ -120,10 +120,8 @@ WM.module('wm.layouts.containers')
             function goBack(attrs, $is, $event) {
                 if (attrs.onBackbtnclick && $is.onBackbtnclick) {
                     $is.onBackbtnclick({'$event' : $event, '$scope' : $is});
-                } else if (CONSTANTS.hasCordova) {
-                    $window.history.go(-1);
                 } else {
-                    NavigationService.goToPrevious();
+                    $window.history.go(-1);
                 }
             }
 
