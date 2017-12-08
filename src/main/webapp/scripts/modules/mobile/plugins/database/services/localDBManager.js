@@ -237,7 +237,7 @@ wm.plugins.database.services.LocalDBManager = [
                 var query, params;
                 if (queryData.nativeSql && !queryData.update) {
                     query = queryData.queryString;
-                    params = _.map(query.match(/:[a-zA-Z0-9]+\s?/g), function (p) {
+                    params = _.map(query.match(/:[a-zA-Z0-9_]+\s?/g), function (p) {
                         var paramObj;
                         p = _.trim(p.substring(1));
                         paramObj = _.find(queryData.parameters, {'name' : p});
