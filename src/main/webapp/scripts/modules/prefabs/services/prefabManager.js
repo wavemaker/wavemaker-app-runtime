@@ -650,16 +650,6 @@ WM.module('wm.prefabs')
                 return _url;
             }
 
-            function extendAppLocale(root) {
-                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/i18n/';
-
-                if (CONSTANTS.isRunMode) {
-                    i18nService.loadComponentLocaleBundle(localePath);
-                } else {
-                    $rs.$emit('load-component-locale-bundle', localePath);
-                }
-            }
-
             function loadDependencies(prefabName) {
                 var config = appPrefabNameConfigMap[prefabName],
                     resources,
@@ -715,8 +705,6 @@ WM.module('wm.prefabs')
                     });
 
                     Utils.loadStyleSheets(styleFiles);
-
-                    extendAppLocale(resourcePath);
 
                     loadScripts(scriptFiles)
                         .then(loadModules.bind(undefined, modules))
