@@ -34,6 +34,10 @@ public class SoapServiceSettings {
 
     private String soapActionURI;
     private String packageName;
+    private String wsdlLocation;
+    private SoapWsdlSource wsdlSource;
+    private String bindingsFile;
+    private String wsdlFile;
 
     private Map<String, String> httpHeaders;
 
@@ -163,6 +167,32 @@ public class SoapServiceSettings {
         this.packageName = packageName;
     }
 
+
+    /**
+     * Gets the location (URL) of wsdl
+     * @return
+     */
+    public String getWsdlLocation() {
+        return wsdlLocation;
+    }
+
+    /**
+     * Sets the location (URL) of wsdl
+     * @param wsdlLocation
+     */
+    public void setWsdlLocation(String wsdlLocation) {
+        this.wsdlLocation = wsdlLocation;
+    }
+
+
+    public SoapWsdlSource getWsdlSource() {
+        return wsdlSource;
+    }
+
+    public void setWsdlSource(SoapWsdlSource wsdlSource) {
+        this.wsdlSource = wsdlSource;
+    }
+
     /**
      * Returns additional HTTP headers.
      *
@@ -179,5 +209,22 @@ public class SoapServiceSettings {
      */
     public void setHttpHeaders(Map<String, String> httpHeaders) {
         this.httpHeaders = httpHeaders;
+    }
+
+
+    public String getBindingsFile() {
+        return bindingsFile;
+    }
+
+    public void setBindingsFile(String bindingsFile) {
+        this.bindingsFile = bindingsFile;
+    }
+
+    public String getWsdlFile() {
+        return wsdlFile;
+    }
+
+    public void setWsdlFile(String wsdlFile) {
+        this.wsdlFile = wsdlFile;
     }
 }
