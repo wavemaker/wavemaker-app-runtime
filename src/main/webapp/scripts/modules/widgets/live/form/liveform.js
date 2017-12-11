@@ -322,13 +322,15 @@ WM.module('wm.widgets.live')
                         requestData.rowData = $scope.rowdata || $scope.formdata;
                         requestData.prevData = prevData;
                         if ($scope.subscribedWidget) {
-                            $scope.subscribedWidget.call("update", requestData, function () {
+                            $scope.subscribedWidget.call("update", requestData, function (response) {
                                 if ($scope.isLayoutDialog) {
                                     DialogService.hideDialog($scope._dialogid);
                                 }
                                 $scope.isUpdateMode = false;
+                                onResult(response, true, event);
                                 $scope.toggleMessage(true, $scope.updatemessage, 'success');
                             }, function (error) {
+                                onResult(error, false, event);
                                 $scope.toggleMessage(true, $scope.errormessage || error, 'error');
                             });
                         } else {
@@ -360,13 +362,15 @@ WM.module('wm.widgets.live')
                         break;
                     case "insert":
                         if ($scope.subscribedWidget) {
-                            $scope.subscribedWidget.call("create", requestData, function () {
+                            $scope.subscribedWidget.call("create", requestData, function (response) {
                                 if ($scope.isLayoutDialog) {
                                     DialogService.hideDialog($scope._dialogid);
                                 }
                                 $scope.isUpdateMode = false;
+                                onResult(response, true, event);
                                 $scope.toggleMessage(true, $scope.insertmessage, 'success');
                             }, function (error) {
+                                onResult(error, false, event);
                                 $scope.toggleMessage(true, $scope.errormessage || error, 'error');
                             });
                         } else {
