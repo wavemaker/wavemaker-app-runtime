@@ -1,4 +1,4 @@
-/*global wm, _, WM*/
+/*global wm,window, _, WM*/
 /*jslint sub: true */
 /*Directive for pageTransition */
 
@@ -26,6 +26,7 @@ wm.modules.wmCommon.services.NavigationService = [
 
         var nextTransitionToApply,
             parentSelector = 'body:first >#wm-app-content:last',
+            pageAddedToStack,
             pageStackObject;
 
         pageStackObject = (function () {
@@ -34,20 +35,23 @@ wm.modules.wmCommon.services.NavigationService = [
                 'getCurrentPage' : function () {
                     return currentPage;
                 },
-                'addPage' : function (pageInfo) {
+                'push' : function (pageInfo) {
                     if (currentPage) {
                         stack.push(currentPage);
                     }
                     currentPage = pageInfo;
                 },
-                'goBack' : function () {
+                'pop' : function () {
                     currentPage = stack.pop();
                 },
                 'getLastPage' : function () {
                     return stack.length > 0 ? stack[stack.length - 1] : undefined;
                 },
-                'isLastVisitedPage' : function (pageName) {
-                    return stack.length > 0 ? this.getLastPage().name === pageName : false;
+                'isEqual' : function (page1, page2) {
+                    return page1 && page2 && page1.name === page2.name && _.isEqual(page1.urlParams, page2.urlParams);
+                },
+                'isLastVisitedPage' : function (page) {
+                    return this.isEqual(page, this.getLastPage());
                 }
             };
         }());
@@ -183,7 +187,8 @@ wm.modules.wmCommon.services.NavigationService = [
         }
 
         $rs.$on('$routeChangeStart', function (evt, $next, $p) {
-            var pageName = $next.params.name;
+            var pageName = $next.params.name,
+                urlParams = _.clone($next.params);
             if (pageName) {
                 /*
                  * Commenting this code, one client project has Home_Page configured as Login Page.
@@ -193,22 +198,19 @@ wm.modules.wmCommon.services.NavigationService = [
                         stopLoginPagePostLogin($p);
                     }
                  */
-                if (pageStackObject.isLastVisitedPage(pageName)) {
-                    nextTransitionToApply = pageStackObject.getCurrentPage().transition;
-                    if (!_.isEmpty(nextTransitionToApply)) {
-                        nextTransitionToApply += '-exit';
-                    }
-                    pageStackObject.goBack();
-                } else {
-                    pageStackObject.addPage({
-                        'name' : pageName,
-                        'transition' : nextTransitionToApply
+                delete urlParams.name;
+                if (!pageAddedToStack) {
+                    pageStackObject.push({
+                        name : pageName,
+                        urlParams : urlParams,
+                        transition : nextTransitionToApply
                     });
                 }
                 if (!_.isEmpty(nextTransitionToApply)) {
                     $next.transition = 'page-transition page-transition-' + nextTransitionToApply;
-                    nextTransitionToApply = '';
                 }
+                pageAddedToStack = false;
+                nextTransitionToApply = '';
             }
         });
 
@@ -239,7 +241,12 @@ wm.modules.wmCommon.services.NavigationService = [
             }
 
             $rs._appNavEvt = options.$event;
-
+            pageStackObject.push({
+                name : pageName,
+                urlParams : queryParams,
+                transition : nextTransitionToApply
+            });
+            pageAddedToStack = true;
             $location.path(location).search(queryParams);
         };
 
@@ -286,13 +293,14 @@ wm.modules.wmCommon.services.NavigationService = [
          * @description
          * Navigates to last visited page.
          */
-        this.goToPrevious = function ($event) {
-            var lastPage = pageStackObject.getLastPage();
-            if (lastPage) {
-                this.goToPage(lastPage.name, {$event: $event});
-                return true;
+        this.goToPrevious = function () {
+            nextTransitionToApply = pageStackObject.getCurrentPage().transition;
+            if (!_.isEmpty(nextTransitionToApply)) {
+                nextTransitionToApply += '-exit';
             }
-            return false;
+            pageStackObject.pop();
+            pageAddedToStack = true;
+            window.history.back();
         };
     }
 ];
