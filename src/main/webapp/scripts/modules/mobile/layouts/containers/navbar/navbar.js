@@ -121,7 +121,7 @@ WM.module('wm.layouts.containers')
                 if (attrs.onBackbtnclick && $is.onBackbtnclick) {
                     $is.onBackbtnclick({'$event' : $event, '$scope' : $is});
                 } else {
-                    $window.history.go(-1);
+                    NavigationService.goToPrevious();
                 }
             }
 

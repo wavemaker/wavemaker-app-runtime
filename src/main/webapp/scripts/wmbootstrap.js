@@ -252,8 +252,8 @@ Application
             'DeviceService',
             '$cookies',
             'PREVIEW_CONSTANTS',
-
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies, PREVIEW_CONSTANTS) {
+            'NavigationService',
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies, PREVIEW_CONSTANTS, NavigationService) {
                 'use strict';
 
                 var prevRoute,
@@ -760,7 +760,7 @@ Application
                     if (landingPageName === $rs.activePageName) {
                         $window.navigator.app.exitApp();
                     } else {
-                        $window.history.back();
+                        NavigationService.goToPrevious();
                     }
                 });
 
