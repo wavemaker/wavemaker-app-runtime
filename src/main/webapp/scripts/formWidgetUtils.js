@@ -227,12 +227,11 @@ WM.module('wm.widgets.form')
                     });
                     return selectedOptions;
                 }
-                model = _.trim(model);
                 selectedOption = _.find(displayOptions, function (obj) {
                     if (filterField === 'dataObject') {
                         return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(model)));
                     }
-                    return _.toString(obj[filterField]) === _.toString(model);
+                    return _.toString(obj[filterField]) === _.toString(_.trim(model));
                 });
 
                 return selectedOption;
@@ -406,17 +405,35 @@ WM.module('wm.widgets.form')
 
             /*
              * parse dataSet to filter the options based on the datafield, displayfield & displayexpression
+             * If "isModel" flag is set to true then check for variable binding on dataset etc. can be avoided.
+             * For dataset binding, "isModel" is false.
              */
-            function extractDataObjects(dataSet, scope) {
+            function extractDataObjects(dataSet, scope, $el, isModel) {
                 /*store parsed data in 'data'*/
                 var data = dataSet,
-                    useKeys = scope.usekeys,
-                    dataField = scope.datafield,
+                    useKeys = scope && scope.usekeys,
+                    dataField = scope && scope.datafield,
                     displayField = getDisplayField(dataSet, scope.displayfield || scope.datafield),
                     objectKeys  = [],
+                    isBoundToLiveVariable,
                     key,
                     value,
                     imgSrc;
+
+                if (_.isEmpty(dataSet)) {
+                    return;
+                }
+
+                if (!isModel) {
+                    //Checking if widget is bound to service variable
+                    if (scope.binddataset) {
+                        isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && getBoundVariableCategory(scope, scope.widgetid ? $rootScope.domScope : $el.scope()) === 'wm.LiveVariable';
+                    }
+
+                    // assign dataSet according to liveVariable or other variable
+                    dataSet = (isBoundToLiveVariable && dataSet.hasOwnProperty('data')) ? dataSet.data : dataSet;
+                    dataSet = getOrderedDataSet(dataSet, scope.orderby);
+                }
 
                 if (WM.isString(dataSet)) {
                     dataSet = _.map(_.split(dataSet, ','), _.trim);
@@ -507,7 +524,6 @@ WM.module('wm.widgets.form')
              * @param scope isolateScope of the widget.
              */
             function extractDisplayOptions(dataset, scope, $el) {
-                var isBoundToLiveVariable;
 
                 scope.displayOptions = [];
 
@@ -515,17 +531,7 @@ WM.module('wm.widgets.form')
                     return;
                 }
 
-                //Checking if widget is bound to service variable
-                if (scope.binddataset) {
-                    isBoundToLiveVariable = _.startsWith(scope.binddataset, 'bind:Variables.') && getBoundVariableCategory(scope, scope.widgetid ? $rootScope.domScope : $el.scope()) === 'wm.LiveVariable';
-                }
-
-                // assign dataSet according to liveVariable or other variable
-                dataset = (isBoundToLiveVariable && dataset.hasOwnProperty('data')) ? dataset.data : dataset;
-                dataset = getOrderedDataSet(dataset, scope.orderby);
-                if (!_.isEmpty(dataset)) {
-                    dataset = extractDataObjects(dataset, scope);
-                }
+                dataset = extractDataObjects(dataset, scope, $el);
 
                 scope.displayOptions = _.uniqBy(dataset, 'key');
 
@@ -932,6 +938,7 @@ WM.module('wm.widgets.form')
             this.setPropertiesTextWidget         = setPropertiesTextWidget;
             this.createDataKeys                  = createDataKeys;
             this.extractDisplayOptions           = extractDisplayOptions;
+            this.extractDataObjects              = extractDataObjects;
             this.updateCheckedValue              = updateCheckedValue;
             this.assignModelForMultiSelect       = assignModelForMultiSelect;
             this.assignModelForSelected          = assignModelForSelected;
