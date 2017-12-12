@@ -306,32 +306,6 @@ WM.module('i18n')
                 });
             }
 
-            function loadComponentLocaleBundles() {
-                var deferred = $q.defer(),
-                    count    = _componentLocalePaths.length,
-                    content  = {};
-
-                if (!count) {
-                    deferred.resolve(content);
-                }
-
-                _componentLocalePaths.forEach(function (path) {
-                    path  += _selectedLocale + '.json';
-                    $http
-                        .get(path)
-                        .then(function (response) {
-                            // extend the $rs.locale object with the response json
-                            WM.extend(content, response);
-                            count--;
-                            if (!count) {
-                                deferred.resolve(content);
-                            }
-                        }, deferred.resolve);
-                });
-
-                return deferred.promise;
-            }
-
             /**
              * Loads the localeBundle.
              * Placeholders in the path will be replaced with the selected locale value and localeBundle will be loaded using the constructed path.
@@ -414,7 +388,6 @@ WM.module('i18n')
             // loads the locale bundles
             function loadLocaleBundles(emitEvent) {
                 loadNgLocaleBundle()
-                    .then(loadComponentLocaleBundles)
                     .then(loadAppLocaleBundle)
                     .then(loadMomentLocaleBundle)
                     .then(function () {
@@ -496,17 +469,6 @@ WM.module('i18n')
                         }
                     });
             }
-
-            // loads the locale bundle related to a component
-            function loadComponentLocaleBundle(path) {
-                if (!_initSuccess) {
-                    return;
-                }
-                if (path && !_.includes(_componentLocalePaths, path)) {
-                    _componentLocalePaths.push(path);
-                    extendAppLocale(path);
-                }
-            }
             /*this function returns the supported locale by the project with their code map*/
             function getSupportedLocaleMap() {
                 var supportedLocale = _.split(_WM_APP_PROPERTIES.supportedLanguages, ','),
@@ -574,19 +536,6 @@ WM.module('i18n')
              * @param {String} locale locale id for which the bundle needs to be loaded.
              */
             this.setSelectedLocale = setSelectedLocale;
-
-            /**
-             * @ngdoc function
-             * @name i18nService#loadComponentLocaleBundle
-             * @methodOf i18nService
-             * @function
-             *
-             * @description
-             * load the locale bundle of a component
-             *
-             * @param {String} path path from where the component locale bundle needs to be loaded
-             */
-            this.loadComponentLocaleBundle = loadComponentLocaleBundle;
 
             /**
              * @ngdoc function
