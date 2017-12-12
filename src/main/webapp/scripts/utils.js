@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', function ($rootScope, $location, $window, CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', 'WIDGET_CONSTANTS', '$sce', 'DialogService', '$timeout', '$http', '$filter', '$q', '$cookies', 'wmToaster', function ($rootScope, $location, $window, CONSTANTS, WIDGET_CONSTANTS, $sce, DialogService, $timeout, $http, $filter, $q, $cookies, wmToaster) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1809,7 +1809,7 @@ WM.module('wm.utils', [])
                 eventNumber = 0,
                 customEvents = [];
             _.forEach(events, function (event, index) {
-                if (event === 'Javascript') {
+                if (event === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                     newCustomEvent = prefix;
                     newEventName = newCustomEvent + args;
                     while (_.includes(events, newEventName)) {
@@ -2002,11 +2002,15 @@ WM.module('wm.utils', [])
                 firstArg = variable || event;
             _.forEach(_.split(customEvents, ';'), function (eventValue) {
                 /* if event value is javascript, call the function defined in the callback scope of the variable */
-                if (eventValue === 'Javascript') {
+                if (eventValue === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                     retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data, info);
                 }
                 if (_.startsWith(eventValue, 'Widgets.') || isVariableOrActionEvent(eventValue)) {
                     evalExp(callBackScope, eventValue);
+                    return;
+                }
+                if (eventValue === WIDGET_CONSTANTS.EVENTS.STOP_PROP_FN) {
+                    event && event.stopPropagation && event.stopPropagation();
                     return;
                 }
                 if (_.includes(eventValue, '(')) {

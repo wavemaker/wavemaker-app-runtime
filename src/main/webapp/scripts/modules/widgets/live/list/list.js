@@ -55,6 +55,7 @@ WM.module('wm.widgets.live')
         'PropertiesFactory',
         '$templateCache',
         'CONSTANTS',
+        'WIDGET_CONSTANTS',
         '$compile',
         'Utils',
         '$rootScope',
@@ -68,7 +69,7 @@ WM.module('wm.widgets.live')
         '$parse',
         'AppDefaults',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse, AppDefaults) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, WIDGET_CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse, AppDefaults) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.list', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
@@ -873,7 +874,7 @@ WM.module('wm.widgets.live')
                     matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
                     typeUtils = Utils.getService('TypeUtils'),
                     showOrHideMatchProperty = function () {
-                        if (!$is.binddataset || $is.groupby === 'Javascript') {
+                        if (!$is.binddataset || $is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                             return;
                         }
                         selectedVariable = selectedVariable || eleScope.Variables[variable];
@@ -934,7 +935,7 @@ WM.module('wm.widgets.live')
                         if (nv && nv !== '') {
                             $is.enablereorder     = false;
                             wp.enablereorder.show = false;
-                            if (nv === 'Javascript') {
+                            if (nv === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                                 wp.groupby.isGroupBy = true;
                             } else {
                                 wp.groupby.isGroupBy = false;

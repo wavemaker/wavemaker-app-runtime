@@ -5,7 +5,13 @@
 WM.module('wm.widgets.base', [])
     .constant('WIDGET_CONSTANTS', {
         //This list will be extended with variable types in baseService
-        EVENTS_OPTIONS: ["No Event", "Javascript", "Stop Propagation"]
+        EVENTS: {
+            'NO_EVENT': 'No Event',
+            'JAVASCRIPT': 'Javascript',
+            'STOP_PROPAGATION': 'Stop Propagation',
+            'STOP_PROP_FN': '$event.stopPropagation()'
+        },
+        EVENTS_OPTIONS: ['No Event', 'Javascript', 'Stop Propagation']
     })
 
     /**
