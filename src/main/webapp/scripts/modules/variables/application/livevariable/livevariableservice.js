@@ -273,6 +273,10 @@ wm.variables.services.$liveVariable = [
                         });
                         /*Loop through the table*/
                         _.forEach(table.columns, function (column) {
+                            /*Hidden columns should not be included in properties map*/
+                            if (column.hidden) {
+                                return;
+                            }
                             /*Columns names are present in primary keys. Map the respective field names*/
                             if (_.includes(table.primaryKey.columns, column.name)) {
                                 tableDetails[tableName].primaryFields.push(column.fieldName);
