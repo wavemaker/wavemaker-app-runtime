@@ -16,8 +16,8 @@ WM.module('wm.widgets.form')
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
-                    '<li ng-show="!(readonly || saturate)">' +
-                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="bind:dataset" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
+                    '<li ng-show="widgetid || !(readonly || saturate)">' +
+                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
                             'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false">' +
@@ -114,38 +114,64 @@ WM.module('wm.widgets.form')
             }
 
             /**
-             * This function constructs the chips depending on the modelProxy.
+             * This function constructs the chips.
              * Invoked when Default datavalue is binded and datavalue is within the dataset.
+             * Extracts the chipsObj to construct chip.
              *
              */
-            function updateSelectedChips($s, chips) {
-                if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
-                    return;
-                }
+            function updateSelectedChips($s, $el) {
+                var option,
+                    chipsObj,
+                    model = $s._model_,
+                    dataField = $s.datafield;
+
                 //Ignore _model_ update when it triggered by within the widget
                 if (ignoreUpdate) {
                     ignoreUpdate = false;
                     return;
                 }
-                var selectedChip,
-                    i,
-                    _modelProxy = $s.modelProxy;
-                chips = chips || [];
-
                 $s.selectedChips = $s.selectedChips || [];
 
-                if (WM.isUndefined(_modelProxy)) {
+                if (!WM.isDefined(model) || _.isNull(model)) {
                     return;
                 }
 
-                if (WM.isArray(_modelProxy)) {
-                    for (i = 0; i < _modelProxy.length; i++) {
-                        selectedChip = _.find($s.displayOptions, {'key': _modelProxy[i]});
-                        addChip($s, selectedChip);
+                if (_.isString(model)) {
+                    model =  _.map(_.split(model, ','), _.trim);
+                    //$s._model_ = model;
+                } else if (!WM.isArray(model) && !_.isEmpty(model) && WM.isObject(model)) { // handle the model having object as default datavalue.
+                    model = [model];
+                }
+
+                if ($s.allowonlyselect) {
+                    if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
+                        return;
                     }
+                    chipsObj = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, dataField, model);
+                    _.forEach(chipsObj, function (obj) {
+                        addChip($s, obj);
+                    });
                 } else {
-                    selectedChip = _.find($s.displayOptions, {'key': _modelProxy});
-                    addChip($s, selectedChip);
+                    // Add the default datavalue as the chips when allowonlyselect is false.
+                    if (dataField === 'All Fields') {
+                        if (!_.isEmpty(model)) {
+                            chipsObj = FormWidgetUtils.extractDataObjects(model, $s, $el, true);
+
+                            _.forEach(chipsObj, function (obj) {
+                                addChip($s, obj);
+                            });
+                        }
+                    } else {
+                        if (WM.isArray(model)) {
+                            _.forEach(model, function (o) {
+                                option = {key: o, value: o};
+                                addChip($s, option);
+                            });
+                        } else {
+                            option = {key: model, value: model};
+                            addChip($s, option);
+                        }
+                    }
                 }
 
                 $timeout(function () {
@@ -314,6 +340,7 @@ WM.module('wm.widgets.form')
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER && searchScope.query) {
                     $s.addItem($event, searchScope);
+                    stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
                     newItem = searchScope.query;
                     //Only in case of apple product remove the chip on click of delete button
@@ -409,27 +436,27 @@ WM.module('wm.widgets.form')
 
                 if (chipObj) {
                     $s.selectedChips.push(chipObj);
-                }
 
-                if (WM.isDefined(dataVal) && dataVal !== '') {
-                    $s._model_.push(dataVal);
-                } else {
-                    if ($s.allowonlyselect) {
-                        return;
+                    if (WM.isDefined(dataVal) && dataVal !== '') {
+                        $s._model_.push(dataVal);
+                    } else {
+                        if ($s.allowonlyselect) {
+                            return;
+                        }
+                        // Update model if dataVal is available. If datafield is not All Fields then only update the model with custom value.
+                        if ($s.datafield !== 'All Fields') {
+                            $s._model_.push(customValue);
+                        }
                     }
-                    // Update model if dataVal is available. If datafield is not All Fields then only update the model with custom value.
-                    if ($s.datafield !== 'All Fields') {
-                        $s._model_.push(customValue);
+
+                    if ($s.onAdd) {
+                        $s.onAdd({$event: $event, $isolateScope: $s});
                     }
+                    checkMaxSize($s);
                 }
 
                 resetSearchModel($s, $event);
                 onModelUpdate($s, $event);
-
-                if ($s.onAdd) {
-                    $s.onAdd({$event: $event, $isolateScope: $s});
-                }
-                checkMaxSize($s);
             }
             //Reset chips method for form
             function reset($s) {
@@ -448,14 +475,14 @@ WM.module('wm.widgets.form')
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
-                    FormWidgetUtils.extractDisplayOptions($s.dataset, $s, $el);
-                    updateSelectedChips($s, $s.modelProxy);
+                    $s.displayOptions = FormWidgetUtils.extractDataObjects($s.dataset, $s, $el);
+                    updateSelectedChips($s, $el);
                     break;
                 case 'displayfield':
                 case 'datafield':
                     if ($s.widgetid) {
-                        FormWidgetUtils.extractDisplayOptions($s.dataset, $s, $el);
-                        updateSelectedChips($s, $s.modelProxy);
+                        $s.displayOptions = FormWidgetUtils.extractDataObjects($s.dataset, $s, $el);
+                        updateSelectedChips($s, $el);
                     }
                     break;
                 }
@@ -482,11 +509,10 @@ WM.module('wm.widgets.form')
                                 set: function (newVal) {
                                     this._proxyModel = newVal;
                                     if (_.isEmpty($is.selectedChips)) {
-                                        FormWidgetUtils.updatedCheckedValues($is);
-                                        updateSelectedChips($is, $is.modelProxy);
+                                        updateSelectedChips($is, $el);
                                     }
 
-                                    if (WM.isUndefined(newVal)) {
+                                    if (WM.isUndefined(newVal) || newVal === '') {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
                                     }
@@ -522,8 +548,8 @@ WM.module('wm.widgets.form')
                         //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
                         if (!attrs.widgetid && _.includes($s.binddataset, 'selecteditem.')) {
                             LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
-                                FormWidgetUtils.extractDisplayOptions(data, $s, $el);
-                                updateSelectedChips($s, $s.modelProxy);
+                                $s.displayOptions = FormWidgetUtils.extractDataObjects(data, $s, $el);
+                                updateSelectedChips($s, $el);
                             });
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
