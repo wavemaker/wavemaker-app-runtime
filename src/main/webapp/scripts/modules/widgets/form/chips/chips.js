@@ -72,7 +72,7 @@ WM.module('wm.widgets.form')
                         'key'       : displayVal,
                         'value'     : key,
                         'wmImgSrc'  : option.imgSrc,
-                        'fullValue' : displayVal +  ($s.datafield === 'All Fields' ? '' : ' <' + key + '>'),
+                        'fullValue' : displayVal + ' <' + key + '>',
                         'isCustom'  : isCustom
                     };
                 if (isDuplicate($s, key)) {
@@ -414,6 +414,16 @@ WM.module('wm.widgets.form')
 
                 if (WM.isDefined(dataVal) && dataVal !== '') {
                     option = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, dataVal);
+
+                    /* Update the model on new item select when default datavalue is not within dataset.
+                    *  If allowonlyselect is true, dataset is empData and default value is "test"
+                    *  No chip is added but datavalue is ["test"].
+                    *  On adding new emp. chip "Eric", model has to update with ["Eric"] and not ["test", "Eric"]
+                    */
+                    if ($s.allowonlyselect && $s.selectedChips.length < $s._model_.length) {
+                        FormWidgetUtils.updatedCheckedValues($s);
+                        $s._model_ = $s.modelProxy;
+                    }
                 } else {
                     if ($s.allowonlyselect) {
                         resetSearchModel($s, $event);
