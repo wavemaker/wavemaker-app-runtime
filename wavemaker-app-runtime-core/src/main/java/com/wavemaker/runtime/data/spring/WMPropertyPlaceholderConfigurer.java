@@ -18,6 +18,8 @@ package com.wavemaker.runtime.data.spring;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -25,6 +27,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.util.StringUtils;
 import com.wavemaker.commons.util.SystemUtils;
@@ -35,17 +38,23 @@ import com.wavemaker.runtime.data.util.DataServiceUtils;
 /**
  * @author Simon Toens
  */
-public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements EnvironmentAware {
+public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements EnvironmentAware, ServletContextAware {
 
     private static final String RANDOM_STRING = "{randomStr}";
     private static final String TMP_DIR = "{tmpDir}";
 
     private Environment environment;
     private String beanName;
+    private ServletContext servletContext;
 
     @Override
     public void setEnvironment(final Environment environment) {
         this.environment = environment;
+    }
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 
     @Override
@@ -61,8 +70,8 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
         }
 
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
-            if (WMAppContext.getInstance() != null) {
-                String path = WMAppContext.getInstance().getAppContextRoot();
+            if (servletContext != null) {
+                String path = servletContext.getRealPath("/");
                 if (!org.apache.commons.lang3.StringUtils.isBlank(path)) {
                     value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
                 }

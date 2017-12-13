@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -61,7 +62,6 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.commons.util.WMUtils;
-import com.wavemaker.runtime.WMAppContext;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -83,8 +83,6 @@ public class CleanupListener implements ServletContextListener {
         //properties set to time out LDAP connections automatically
         System.setProperty("com.sun.jndi.ldap.connect.pool.timeout", "2000");
         System.setProperty("ldap.connection.com.sun.jndi.ldap.read.timeout", "1000");
-        WMAppContext.init(event);
-
         warmUpPoiInParentClassLoader();
     }
 
@@ -140,8 +138,6 @@ public class CleanupListener implements ServletContextListener {
             logger.info("Clean Up Successful!");
         } catch (Exception e) {
             logger.info("Failed to clean up some things on app undeploy", e);
-        } finally {
-            WMAppContext.clearInstance();
         }
     }
 

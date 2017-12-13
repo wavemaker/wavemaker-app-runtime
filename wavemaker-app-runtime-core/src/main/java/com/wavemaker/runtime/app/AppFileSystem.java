@@ -22,6 +22,10 @@ public class AppFileSystem implements ServletContextAware {
         this.context = servletContext;
     }
 
+    public String getAppContextRoot() {
+        return this.context.getRealPath("/");
+    }
+
     public InputStream getClasspathResourceStream(String resourcePath) {
         return context.getClass().getClassLoader().getResourceAsStream(resourcePath);
     }

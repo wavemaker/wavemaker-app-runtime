@@ -15,16 +15,16 @@
  */
 package com.wavemaker.runtime;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.context.ApplicationContextAware;
 
+import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 
 /**
@@ -33,9 +33,7 @@ import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
  * @author Seung Lee
  * @author Jeremy Grelle
  */
-public class WMAppContext {
-
-    private ServletContext context;
+public class WMAppContext implements ApplicationContextAware {
 
     private String applicationHostUrl = null;
 
@@ -46,29 +44,19 @@ public class WMAppContext {
     private boolean initialized = false;
     
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
+    
+    private ApplicationContext rootApplicationContext;
 
     private static WMAppContext instance;
 
     private static final Logger logger = LoggerFactory.getLogger(WMAppContext.class);
 
-    private WMAppContext(ServletContextEvent event) {
-        this.context = event.getServletContext();
-    }
-
-    public static synchronized WMAppContext init(ServletContextEvent event) {
-        if (instance == null) {
-            instance = new WMAppContext(event);
-        }
-
-        return instance;
+    private WMAppContext() {
+        instance = this;
     }
 
     public static synchronized WMAppContext getInstance() {
         return instance;
-    }
-
-    public static void clearInstance() {
-        instance = null;
     }
 
     @Override
@@ -77,7 +65,7 @@ public class WMAppContext {
     }
 
     public String getAppContextRoot() {
-        return this.context.getRealPath("/");
+        return getSpringBean(AppFileSystem.class).getAppContextRoot();
     }
 
     public <T> T getSpringBean(String beanId) {
@@ -116,11 +104,7 @@ public class WMAppContext {
     }
 
     private ApplicationContext getRootApplicationContext() {
-        return WebApplicationContextUtils.getWebApplicationContext(context);
-    }
-
-    public ServletContext getContext() {
-        return context;
+        return rootApplicationContext;
     }
 
     public void init(HttpServletRequest httpServletRequest) {
@@ -142,5 +126,10 @@ public class WMAppContext {
 
     public boolean isSecured() {
         return secured;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.rootApplicationContext = applicationContext;
     }
 }

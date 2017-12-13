@@ -11,7 +11,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import com.wavemaker.runtime.WMAppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -32,7 +31,9 @@ import com.wavemaker.commons.auth.oauth2.extractors.AccessTokenRequestContext;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.RuntimeEnvironment;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.rest.builder.HttpRequestDetailsBuilder;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -157,15 +158,16 @@ public class OAuth2RuntimeServiceManager {
 
     private synchronized void setCustomUrlScheme() {
         if (customUrlScheme == null) {
-            InputStream stream = null;
+            InputStream inputStream = null;
             try {
-                stream = WMAppContext.getInstance().getContext().getResourceAsStream("config.json");
-                JSONObject configJsonObject = JSONUtils.toJSONObject(stream);
+                AppFileSystem appFileSystem = WMAppContext.getInstance().getSpringBean(AppFileSystem.class);
+                inputStream = appFileSystem.getWebappResource("config.json");
+                JSONObject configJsonObject = JSONUtils.toJSONObject(inputStream);
                 customUrlScheme = configJsonObject.getString(OAuth2Constants.CUSTOM_URL_SCHEME);
             } catch (JSONException e) {
                 throw new WMRuntimeException(e);
             } finally {
-                IOUtils.closeQuietly(stream);
+                IOUtils.closeQuietly(inputStream);
             }
         }
     }

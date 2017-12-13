@@ -17,8 +17,6 @@ package com.wavemaker.runtime.security.xss.sanitizer;
 
 import java.io.InputStream;
 
-import javax.servlet.ServletContext;
-
 import org.owasp.validator.html.AntiSamy;
 import org.owasp.validator.html.CleanResults;
 import org.owasp.validator.html.Policy;
@@ -28,6 +26,7 @@ import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.app.AppFileSystem;
 
 /**
  * Created by kishorer on 6/7/16.
@@ -59,8 +58,8 @@ public class XSSWhiteListSanitizer implements XSSSanitizer {
     private Policy buildPolicy(String policyFile) {
         InputStream resourceStream = null;
         try {
-            ServletContext servletContext = WMAppContext.getInstance().getContext();
-            resourceStream = servletContext.getResourceAsStream(POLICIES_LOCATION + policyFile);
+            AppFileSystem appFileSystem = WMAppContext.getInstance().getSpringBean(AppFileSystem.class);
+            resourceStream = appFileSystem.getWebappResource(POLICIES_LOCATION + policyFile);
             if (resourceStream == null) {
                 resourceStream = ClassLoaderUtils.getResourceAsStream(policyFile);
             }
