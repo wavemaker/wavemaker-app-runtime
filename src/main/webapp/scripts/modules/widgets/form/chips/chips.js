@@ -138,9 +138,10 @@ WM.module('wm.widgets.form')
 
                 if (_.isString(model)) {
                     model =  _.map(_.split(model, ','), _.trim);
-                    //$s._model_ = model;
+                    $s._model_ = model;
                 } else if (!WM.isArray(model) && !_.isEmpty(model) && WM.isObject(model)) { // handle the model having object as default datavalue.
                     model = [model];
+                    $s._model_ = model;
                 }
 
                 if ($s.allowonlyselect) {
