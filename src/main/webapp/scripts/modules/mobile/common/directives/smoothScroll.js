@@ -27,7 +27,7 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
 
         options = {
             'scrollbars': true,
-            'click': true,
+            'preventDefault': false,
             'bounce': Utils.isIOS(),
             'fadeScrollbars': true
         };
