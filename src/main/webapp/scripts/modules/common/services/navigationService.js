@@ -52,6 +52,9 @@ wm.modules.wmCommon.services.NavigationService = [
                 },
                 'isLastVisitedPage' : function (page) {
                     return this.isEqual(page, this.getLastPage());
+                },
+                'getPagesCount': function () {
+                    return stack.length;
                 }
             };
         }());
@@ -294,13 +297,15 @@ wm.modules.wmCommon.services.NavigationService = [
          * Navigates to last visited page.
          */
         this.goToPrevious = function () {
-            nextTransitionToApply = pageStackObject.getCurrentPage().transition;
-            if (!_.isEmpty(nextTransitionToApply)) {
-                nextTransitionToApply += '-exit';
+            if (pageStackObject.getPagesCount()) {
+                nextTransitionToApply = pageStackObject.getCurrentPage().transition;
+                if (!_.isEmpty(nextTransitionToApply)) {
+                    nextTransitionToApply += '-exit';
+                }
+                pageStackObject.pop();
+                pageAddedToStack = true;
+                window.history.back();
             }
-            pageStackObject.pop();
-            pageAddedToStack = true;
-            window.history.back();
         };
     }
 ];
