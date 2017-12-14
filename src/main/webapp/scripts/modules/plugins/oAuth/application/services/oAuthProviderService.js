@@ -243,6 +243,7 @@ wm.plugins.security.services.oAuthProviderService = [
         var deregister, timerId;
         deregister = ExtAppMessageService.addMessageListener('^services/oauth/' + providerId + '$', function (message) {
             callback(message.data.access_token);
+            deregister();
             clearTimeout(timerId);
         });
         timerId = setTimeout(function () {
