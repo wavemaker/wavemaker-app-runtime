@@ -98,14 +98,14 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
-//        getTemplate().flush();
+        getTemplate().flush();
         getTemplate().refresh(entity);
         return entity;
     }
 
     public void update(Entity entity) {
         getTemplate().update(entity);
-//        getTemplate().flush();
+        getTemplate().flush();
         getTemplate().refresh(entity);
     }
 
