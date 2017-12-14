@@ -466,7 +466,7 @@ WM.module('wm.widgets.form')
                                 key   = WidgetUtilService.getObjValueByKey(option, dataField);
                                 value = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                                 if (scope.binddisplayimagesrc || scope.displayimagesrc) {
-                                    imgSrc = WidgetUtilService.getEvaluatedData(scope, dataSet, {expressionName: 'displayimagesrc'});
+                                    imgSrc = WidgetUtilService.getEvaluatedData(scope, option, {expressionName: 'displayimagesrc'});
                                 }
                                 data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
                             });
