@@ -14,7 +14,8 @@ wm.modules.wmCommon.services.ExtAppMessageService = [
         var handlers = [];
         $rootScope.$on("externalAppMessageReceived", function (e, message) {
             _.forEach(handlers, function (handler) {
-                if (message.address.match(handler.pattern).length > 0) {
+                var matches = handler && message.address.match(handler.pattern);
+                if (matches && matches.length > 0) {
                     handler.callBack(message);
                 }
             });
@@ -35,10 +36,10 @@ wm.modules.wmCommon.services.ExtAppMessageService = [
             var handler = {
                 'pattern' : new RegExp(messageAddressPattern),
                 'callBack' : listener
-            };
+            }, i = handlers.length;
             handlers.push(handler);
             return function () {
-                delete handlers[_.findIndex(handlers, handler)];
+                handlers[i] = undefined;
             };
         };
     }];
