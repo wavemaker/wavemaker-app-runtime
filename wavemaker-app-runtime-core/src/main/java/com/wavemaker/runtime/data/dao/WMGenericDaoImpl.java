@@ -89,8 +89,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (entityClass.isAnnotationPresent(TableTemporal.class)) {
             final TableTemporal temporal = entityClass.getAnnotation(TableTemporal.class);
             // decorating with given temporal types
-            for (final TableTemporal.TemporalType temporalType : temporal.value()) {
-                queryGenerator = new TemporalQueryGenerator<>(queryGenerator, temporalType);
+            final boolean applicationTemporalExists = Arrays.stream(temporal.value())
+                    .anyMatch(temporalType -> temporalType == TableTemporal.TemporalType.APPLICATION);
+
+            if (applicationTemporalExists) {
+                queryGenerator = new TemporalQueryGenerator<>(queryGenerator, TableTemporal.TemporalType.APPLICATION);
             }
         }
     }
