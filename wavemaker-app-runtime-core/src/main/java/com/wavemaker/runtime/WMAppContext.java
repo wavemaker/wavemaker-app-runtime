@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.runtime.app.AppFileSystem;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
@@ -33,7 +35,7 @@ import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
  * @author Seung Lee
  * @author Jeremy Grelle
  */
-public class WMAppContext implements ApplicationContextAware {
+public class WMAppContext implements ApplicationContextAware, ServletContextAware {
 
     private String applicationHostUrl = null;
 
@@ -46,6 +48,8 @@ public class WMAppContext implements ApplicationContextAware {
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
     
     private ApplicationContext rootApplicationContext;
+    
+    private ServletContext servletContext;
 
     private static WMAppContext instance;
 
@@ -57,6 +61,15 @@ public class WMAppContext implements ApplicationContextAware {
 
     public static synchronized WMAppContext getInstance() {
         return instance;
+    }
+
+    /**
+     * Used by old file service java classes
+     * @return
+     */
+    @Deprecated
+    public ServletContext getContext() {
+        return servletContext;
     }
 
     @Override
@@ -131,5 +144,10 @@ public class WMAppContext implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.rootApplicationContext = applicationContext;
+    }
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 }
