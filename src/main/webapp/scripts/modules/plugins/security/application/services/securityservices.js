@@ -181,11 +181,11 @@ wm.plugins.security.services.SecurityService = [
                 loggedInUser = config && config.userInfo;
             },
         /*Function to get the details of the logged-in user in the Application/RUN mode.*/
-            getLoggedInUser = function (successCallback, failureCallback) {
+            getLoggedInUser = function (getConfigFn, successCallback, failureCallback) {
                 /*If the details of the logged-in user have already been fetched, trigger the success callback.
                 * Else, make a call to the service to fetch details and then trigger the callback.*/
                 if (!loggedInUser) {
-                    getConfig(successCallback, failureCallback);
+                    getConfigFn(successCallback, failureCallback);
                 } else {
                     Utils.triggerFn(successCallback, loggedInUser);
                 }
@@ -1063,7 +1063,8 @@ wm.plugins.security.services.SecurityService = [
             appLogin: function (params, successCallback, failureCallback) {
                 var rememberme = WM.isUndefined(params.rememberme) ? false : params.rememberme,
                     loginParams = ['username', 'password', 'rememberme'],
-                    customParams = '';
+                    customParams = '',
+                    self = this;
 
                 // process extra data if passed
                 _.each(params, function (value, name) {
@@ -1080,7 +1081,7 @@ wm.plugins.security.services.SecurityService = [
                         '&remember-me=' + rememberme +
                         customParams
                 }, function (response) {
-                    getConfig(function (config) {
+                    self.getConfig(function (config) {
                         var xsrfCookieValue = response[CONSTANTS.XSRF_COOKIE_NAME];
 
                         //override the default xsrf cookie name and xsrf header names with WaveMaker specific values
@@ -1142,7 +1143,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             isAuthenticated: function (successCallback, failureCallback) {
-                getConfig(function (config) {
+                this.getConfig(function (config) {
                     Utils.triggerFn(successCallback, config.authenticated);
                 }, failureCallback);
             },
@@ -1161,7 +1162,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             getUserName: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
+                getLoggedInUser(this.getConfig, function (loggedInUser) {
                     Utils.triggerFn(successCallback, loggedInUser.userName);
                 }, failureCallback);
             },
@@ -1180,7 +1181,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             getUserId: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
+                getLoggedInUser(this.getConfig, function (loggedInUser) {
                     Utils.triggerFn(successCallback, loggedInUser.userId);
                 }, failureCallback);
             },
@@ -1199,7 +1200,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             getTenantId: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
+                getLoggedInUser(this.getConfig, function (loggedInUser) {
                     Utils.triggerFn(successCallback, loggedInUser.tenantId);
                 }, failureCallback);
             },
@@ -1218,7 +1219,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             getUserRoles: function (successCallback, failureCallback) {
-                getConfig(function (config) {
+                this.getConfig(function (config) {
                     Utils.triggerFn(successCallback, config.userInfo.userRoles, config.authenticated);
                 }, failureCallback);
             },
@@ -1237,7 +1238,7 @@ wm.plugins.security.services.SecurityService = [
              */
 
             isSecurityEnabled: function (successCallback, failureCallback) {
-                getConfig(function (loggedInUser) {
+                this.getConfig(function (loggedInUser) {
                     Utils.triggerFn(successCallback, config.securityEnabled);
                 }, failureCallback);
             },
@@ -1450,7 +1451,7 @@ wm.plugins.security.services.SecurityService = [
             onUserLogin: function () {
                 var deferred = $q.defer();
 
-                getConfig(function (config) {
+                this.getConfig(function (config) {
                     if (config.securityEnabled) {
                         if (config.authenticated) {
                             deferred.resolve();

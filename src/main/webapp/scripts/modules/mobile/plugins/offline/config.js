@@ -82,22 +82,20 @@ wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
 
 /*Bootstrapping the offline module*/
 wm.plugins.offline.run([
-    '$cordovaNetwork',
-    '$rootScope',
     'ChangeLogService',
     'DeviceService',
     'LocalDBManager',
     'LocalDBService',
     'OfflineFileUploadService',
+    'NetworkService',
     'Utils',
     'WebService',
-    function ($cordovaNetwork,
-              $rootScope,
-              ChangeLogService,
+    function (ChangeLogService,
               DeviceService,
               LocalDBManager,
               LocalDBService,
               OfflineFileUploadService,
+              NetworkService,
               Utils,
               WebService) {
         'use strict';
@@ -108,7 +106,7 @@ wm.plugins.offline.run([
         function addOfflineFileUploadSupport() {
             var upload = FileTransfer.prototype.upload;
             FileTransfer.prototype.upload = function (filePath, serverUrl, onSuccess, onFail, ftOptions) {
-                if ($cordovaNetwork.isOnline()) {
+                if (NetworkService.isConnected()) {
                     return upload.call(this, filePath, serverUrl, onSuccess, onFail, ftOptions);
                 }
                 return OfflineFileUploadService.upload(filePath, serverUrl, ftOptions).then(function (result) {
@@ -148,7 +146,7 @@ wm.plugins.offline.run([
         function addOfflineNamedQuerySupport() {
             var origInvokeJavaService = WebService.invokeJavaService;
             WebService.invokeJavaService = function (params, onSuccess, onError) {
-                if ($cordovaNetwork.isOffline() && params.url.indexOf('/queryExecutor/') > 0) {
+                if (!NetworkService.isConnected() && params.url.indexOf('/queryExecutor/') > 0) {
                     var url = params.url,
                         hasUrlParams = url.indexOf('?') > 0,
                         dbName = substring(url, 'services/', '/queryExecutor'),
@@ -191,6 +189,11 @@ wm.plugins.offline.run([
                     addOfflineNamedQuerySupport();
                     addOfflineFileUploadSupport();
                     ChangeLogService.registerCallback({
+                        'onAddCall': function () {
+                            if (!NetworkService.isConnected()) {
+                                NetworkService.disableAutoConnect();
+                            }
+                        },
                         'postFlush' : function (stats) {
                             if (stats.totalTaskCount > 0) {
                                 LocalDBManager.close().finally(function () {

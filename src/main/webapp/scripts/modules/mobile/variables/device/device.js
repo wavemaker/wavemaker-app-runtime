@@ -7,23 +7,28 @@ WM.module('wm.variables').run([
     '$cordovaAppVersion',
     '$rootScope',
     'DeviceVariableService',
+    'NetworkService',
     function ($cordovaNetwork,
               $cordovaGeolocation,
               $cordovaVibration,
               $cordovaDevice,
               $cordovaAppVersion,
               $rootScope,
-              DeviceVariableService) {
+              DeviceVariableService,
+              NetworkService) {
         "use strict";
         var operations;
 
-        $rootScope.$on('$cordovaNetwork:online', function () {
-            $rootScope.networkStatus = true;
+        $rootScope.$on('onNetworkStateChange', function (event, data) {
+            $rootScope.networkStatus = data;
         });
 
-        $rootScope.$on('$cordovaNetwork:offline', function () {
-            $rootScope.networkStatus = false;
-        });
+        $rootScope.networkStatus = {
+            isConnecting : false,
+            isConnected : true,
+            isNetworkAvailable : true,
+            isServiceAvailable : true
+        };
 
         operations = {
             getAppInfo: {
@@ -109,6 +114,8 @@ WM.module('wm.variables').run([
             getNetworkInfo: {
                 model: {
                     connectionType: 'NONE',
+                    isConnecting: false,
+                    isNetworkAvailable: true,
                     isOnline: true,
                     isOffline: false
                 },
@@ -121,16 +128,33 @@ WM.module('wm.variables').run([
                     {"target": "onOffline", "hide" : false}
                 ],
                 invoke: function (variable, options, success) {
+                    var isOnline = NetworkService.isConnected();
                     success({
                         connectionType: $cordovaNetwork.getNetwork(),
-                        isOnline: $cordovaNetwork.isOnline(),
-                        isOffline: $cordovaNetwork.isOffline()
+                        isConnecting: $rootScope.networkStatus.isConnecting,
+                        isNetworkAvailable: $rootScope.networkStatus.isNetworkAvailable,
+                        isOnline: $rootScope.networkStatus.isConnected,
+                        isOffline: !$rootScope.networkStatus.isConnected
                     });
-                    if ($cordovaNetwork.isOnline()) {
+                    if (isOnline) {
                         DeviceVariableService.initiateCallback('onOnline', variable);
                     } else {
                         DeviceVariableService.initiateCallback('onOffline', variable);
                     }
+                }
+            },
+            goOnline : {
+                model: {},
+                properties: [],
+                invoke: function (variable, options, success, error) {
+                    NetworkService.connect().then(success, error);
+                }
+            },
+            goOffline : {
+                model: {},
+                properties: [],
+                invoke: function (variable, options, success, error) {
+                    NetworkService.disconnect().then(success, error);
                 }
             },
             vibrate: {
