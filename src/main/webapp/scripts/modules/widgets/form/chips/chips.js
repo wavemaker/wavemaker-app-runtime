@@ -17,10 +17,10 @@ WM.module('wm.widgets.form')
                         '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
                     '</li>' +
                     '<li ng-show="widgetid || !(readonly || saturate)">' +
-                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}" datavalue="bind:datavalue" ' +
+                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" type="{{type}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
-                            'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="false">' +
+                            'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}">' +
                         '</wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
@@ -130,7 +130,7 @@ WM.module('wm.widgets.form')
                     ignoreUpdate = false;
                     return;
                 }
-                $s.selectedChips = $s.selectedChips || [];
+                $s.selectedChips = [];
 
                 if (!WM.isDefined(model) || _.isNull(model)) {
                     return;
@@ -472,6 +472,7 @@ WM.module('wm.widgets.form')
             //Reset chips method for form
             function reset($s) {
                 $s.selectedChips.length = 0;
+                $s._model_ = [];
             }
 
             //Intialize $s level variables
@@ -509,6 +510,7 @@ WM.module('wm.widgets.form')
                 'link'    : {
                     'pre' : function ($is, $el, attrs) {
                         $is._chipCount = 0;
+                        $is.showsearchicon = false;
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
 
@@ -519,14 +521,13 @@ WM.module('wm.widgets.form')
                                 },
                                 set: function (newVal) {
                                     this._proxyModel = newVal;
-                                    if (_.isEmpty($is.selectedChips)) {
-                                        updateSelectedChips($is, $el);
-                                    }
 
-                                    if (WM.isUndefined(newVal) || newVal === '') {
+                                    if (WM.isUndefined(newVal) || _.isEmpty(newVal)) {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
+                                        return;
                                     }
+                                    updateSelectedChips($is, $el);
                                 }
                             });
                             Utils.defineProps($is, $el);

@@ -796,6 +796,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.chips": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": true},
                         "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
