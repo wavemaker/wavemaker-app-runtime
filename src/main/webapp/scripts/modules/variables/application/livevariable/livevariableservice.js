@@ -238,6 +238,11 @@ wm.variables.services.$liveVariable = [
                                 relatedCol = _.find(table.columns, function (col) {
                                     return col.name === sourceCols[0];
                                 });
+
+                                if (relatedCol.hidden) {
+                                    columnsAdded = columnsAdded.concat(sourceCols);
+                                    return;
+                                }
                                 javaType = getJavaType(relatedCol.javaType);
                                 newColumn = {
                                     'fieldName'          : relation.fieldName,
