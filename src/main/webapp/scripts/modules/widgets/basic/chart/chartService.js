@@ -545,13 +545,16 @@ WM.module('wm.widgets.basic')
              */
             function customiseTooltip(chart, propertyValueMap, scope, label) {
                 chart.tooltip.contentGenerator(function (key) {
-                    var yValue;
+                    var xValue = key.data.x, yValue;
                     yValue = getNumberFormatedData(propertyValueMap.ynumberformat, key.data.y);
                     if(isPieType(scope.type)) {
                         label = key.data.x;
+                        xValue = '';
                     }
                     return '<table>' +
                         '<tbody>' +
+                        '<tr class="value"><b>' + xValue +
+                        '</b></tr>' +
                         '<tr>' +
                         '<td class="legend-color-guide"><div style="background-color:' + key.color + ';"></div></td>' +
                         '<td class="key">' + label + '</td>' +
@@ -729,7 +732,7 @@ WM.module('wm.widgets.basic')
                         hasMultipleYValues = true;
                     }
                     //Customizing the tooltip to show yaxislabel, only if the y axis contains one value
-                    if(!hasMultipleYValues) {
+                    if(!hasMultipleYValues && !isBubbleChart(scope.type)) {
                         customiseTooltip(chart,propertyValueMap, scope, yaxislabel);
                     }
 
