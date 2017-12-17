@@ -123,7 +123,9 @@ WM.module('wm.widgets.form')
                 var option,
                     chipsObj,
                     model = $s._model_,
-                    dataField = $s.datafield;
+                    dataField = $s.datafield,
+                    i,
+                    modelVal;
 
                 //Ignore _model_ update when it triggered by within the widget
                 if (ignoreUpdate) {
@@ -143,33 +145,32 @@ WM.module('wm.widgets.form')
                     model = [model];
                     $s._model_ = model;
                 }
+                if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
+                    return;
+                }
 
-                if ($s.allowonlyselect) {
-                    if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
-                        return;
+                if (dataField === 'All Fields') {
+                    if (!_.isEmpty(model)) {
+                        chipsObj = FormWidgetUtils.extractDataObjects(model, $s, $el, true);
+
+                        // updating key which is index value (0, 1, 2) with the display value.
+                        _.map(chipsObj, function (o) {
+                            o.key = o.value;
+                            return o;
+                        });
+
+                        _.forEach(chipsObj, function (obj) {
+                            addChip($s, obj);
+                        });
                     }
-                    chipsObj = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, dataField, model);
-                    _.forEach(chipsObj, function (obj) {
-                        addChip($s, obj);
-                    });
                 } else {
-                    // Add the default datavalue as the chips when allowonlyselect is false.
-                    if (dataField === 'All Fields') {
-                        if (!_.isEmpty(model)) {
-                            chipsObj = FormWidgetUtils.extractDataObjects(model, $s, $el, true);
-
-                            _.forEach(chipsObj, function (obj) {
-                                addChip($s, obj);
-                            });
-                        }
-                    } else {
-                        if (WM.isArray(model)) {
-                            _.forEach(model, function (o) {
-                                option = {key: o, value: o};
-                                addChip($s, option);
-                            });
-                        } else {
-                            option = {key: model, value: model};
+                    for (i = 0; i < model.length; i++) {
+                        modelVal = model[i];
+                        chipsObj = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, dataField, modelVal);
+                        if (chipsObj) {
+                            addChip($s, chipsObj);
+                        } else if (!$s.allowonlyselect) {
+                            option = {key: modelVal, value: modelVal};
                             addChip($s, option);
                         }
                     }
@@ -403,7 +404,8 @@ WM.module('wm.widgets.form')
                     allowAdd,
                     chipObj,
                     customValue = searchScope.queryModel,
-                    dataVal = searchScope.datavalue;
+                    dataVal = searchScope.datavalue,
+                    displayVal = searchScope.query;
 
                 if (!$s._model_) {
                     $s._model_ = [];
@@ -414,6 +416,10 @@ WM.module('wm.widgets.form')
 
                 if (WM.isDefined(dataVal) && dataVal !== '') {
                     option = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, dataVal);
+
+                    if (!option) {
+                        option = {key: ($s.datafield === 'All Fields' ? displayVal : dataVal), value: displayVal, imgSrc: WidgetUtilService.getEvaluatedData($s, customValue, {expressionName: 'displayimagesrc'})};
+                    }
 
                     /* Update the model on new item select when default datavalue is not within dataset.
                     *  If allowonlyselect is true, dataset is empData and default value is "test"
@@ -565,6 +571,11 @@ WM.module('wm.widgets.form')
                             });
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
+                        if ($s.type === 'autocomplete') {
+                            $s.searchScope.showsearchicon = false;
+                            $s.searchScope.minLength = 0;
+                        }
+
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
                         WidgetUtilService.postWidgetCreate($s, $el, attrs);

@@ -798,7 +798,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": true},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "string, array", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "datavalue": {"type": "string, object", "isList": true, "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "displayimagesrc": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
