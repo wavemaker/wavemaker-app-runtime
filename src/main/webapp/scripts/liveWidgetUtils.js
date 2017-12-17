@@ -604,7 +604,7 @@ WM.module('wm.widgets.live')
 
             /*Returns chips template */
             function getChipsTemplate(fieldDef, index) {
-                var additionalFields = getDataSetFields(fieldDef, index) + ' dataoptions="formFields[' + index + '].dataoptions" ';
+                var additionalFields = getDataSetFields(fieldDef, index) + ' dataoptions="formFields[' + index + '].dataoptions" type="' + fieldDef.type + '"';
                 return getDefaultTemplate('chips', fieldDef, index, '', '', 'Type here...', additionalFields);
             }
 
