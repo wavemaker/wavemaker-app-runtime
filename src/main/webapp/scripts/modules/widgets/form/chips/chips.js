@@ -141,16 +141,17 @@ WM.module('wm.widgets.form')
                 if (_.isString(model)) {
                     model =  _.map(_.split(model, ','), _.trim);
                     $s._model_ = model;
-                } else if (!WM.isArray(model) && !_.isEmpty(model) && WM.isObject(model)) { // handle the model having object as default datavalue.
+                } else if (!WM.isArray(model)) { // handle the model having object as default datavalue.
                     model = [model];
                     $s._model_ = model;
                 }
+
                 if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
                     return;
                 }
 
                 if (dataField === 'All Fields') {
-                    if (!_.isEmpty(model)) {
+                    if (model.length) {
                         chipsObj = FormWidgetUtils.extractDataObjects(model, $s, $el, true);
 
                         // updating key which is index value (0, 1, 2) with the display value.
@@ -528,7 +529,7 @@ WM.module('wm.widgets.form')
                                 set: function (newVal) {
                                     this._proxyModel = newVal;
 
-                                    if (WM.isUndefined(newVal) || _.isEmpty(newVal)) {
+                                    if (WM.isUndefined(newVal) || newVal === '' || (_.isArray(newVal) && newVal.length === 0)) {
                                         //Handling the form reset usecase
                                         $is.selectedChips.length = 0;
                                         return;
