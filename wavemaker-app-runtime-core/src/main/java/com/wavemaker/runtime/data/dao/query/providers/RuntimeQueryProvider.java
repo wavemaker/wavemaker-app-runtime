@@ -64,20 +64,23 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
 
     @Override
     public Query<R> getQuery(final Session session, final Pageable pageable) {
-        String sortedQuery;
+        String sortedQuery = queryString;
 
-        final WMResultTransformer transformer = Transformers.aliasToMappedClass(responseType);
-        if (nativeSql) {
-            sortedQuery = QueryHelper.applySortingForNativeQuery(queryString, pageable.getSort(),
-                    transformer,
-                    ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
-        } else {
-            sortedQuery = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort(), transformer);
+        if (pageable != null) {
+            final WMResultTransformer transformer = Transformers.aliasToMappedClass(responseType);
+            if (nativeSql) {
+                sortedQuery = QueryHelper.applySortingForNativeQuery(queryString, pageable.getSort(),
+                        transformer, ((SessionFactoryImplementor) session.getSessionFactory()).getDialect());
+            } else {
+                sortedQuery = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort(), transformer);
+            }
         }
         Query<R> hibernateQuery = createQuery(session, sortedQuery, responseType);
 
-        hibernateQuery.setFirstResult(pageable.getOffset());
-        hibernateQuery.setMaxResults(pageable.getPageSize());
+        if (pageable != null) {
+            hibernateQuery.setFirstResult(pageable.getOffset());
+            hibernateQuery.setMaxResults(pageable.getPageSize());
+        }
 
         return hibernateQuery;
     }
