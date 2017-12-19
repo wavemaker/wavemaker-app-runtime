@@ -807,7 +807,6 @@ WM.module('wm.widgets.base', [])
                         "allowonlyselect": {"type": "boolean", "value": false},
                         "class": {"type": "string", "pattern": classRegex},
                         "backgroundcolor": {"type": "string", "widget": "color"},
-                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforeadd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onAdd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
