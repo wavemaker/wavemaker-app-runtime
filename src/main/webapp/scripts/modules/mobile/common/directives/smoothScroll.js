@@ -39,7 +39,9 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
             iScroll.refresh();
         }, 100));
 
-        $s.$on('$destroy', iScroll.destroy);
+        $s.$on('$destroy', function() {
+            iScroll.destroy();
+        });
 
         return {
             iScroll: iScroll,

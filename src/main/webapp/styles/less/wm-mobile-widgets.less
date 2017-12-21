@@ -161,3 +161,38 @@
     width : 100%;
   }
 }
+/****************************************************************************************************
+*****************************************backend service info toaster *******************************
+******************************************************************************************************/
+.network-info-toaster {
+  background: #000;
+  padding: 5pt 10pt;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  &.ng-hide-add{
+    transition: transform 200ms linear;
+    transform: translate3d(0, 0, 0);
+  }
+  &.ng-hide-add-active {
+    transform: translate3d(0, 100%, 0);
+  }
+  &.ng-hide-remove {
+    transition: transform 200ms linear;
+    transform: translate3d(0, 100%, 0);
+  }
+  &.ng-hide-remove-active {
+    transform: translate3d(0, 0, 0);
+  }
+  .info{
+    color: #fff;
+    clear: both;
+  }
+  .message{
+    line-height: 28pt;
+    float: left;
+  }
+  .btn{
+    float: right;
+  }
+}

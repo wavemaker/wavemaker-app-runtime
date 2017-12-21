@@ -9,7 +9,6 @@
  */
 wm.plugins.database.services.LocalDBManager = [
     '$cordovaFile',
-    '$cordovaNetwork',
     '$cordovaSQLite',
     '$q',
     '$rootScope',
@@ -19,11 +18,11 @@ wm.plugins.database.services.LocalDBManager = [
     'LocalKeyValueService',
     'LocalDBStoreFactory',
     'OFFLINE_WAVEMAKER_DATABASE_SCHEMA',
+    'NetworkService',
     'SecurityService',
     '$timeout',
     'Utils',
     function ($cordovaFile,
-              $cordovaNetwork,
               $cordovaSQLite,
               $q,
               $rootScope,
@@ -33,6 +32,7 @@ wm.plugins.database.services.LocalDBManager = [
               LocalKeyValueService,
               LocalDBStoreFactory,
               OFFLINE_WAVEMAKER_DATABASE_SCHEMA,
+              NetworkService,
               SecurityService,
               $timeout,
               Utils) {
@@ -407,7 +407,7 @@ wm.plugins.database.services.LocalDBManager = [
                         savePromises = _.map(response.content, function (o) {
                             return store.save(o);
                         });
-                    $q.all(savePromises).then(function () {
+                    $q.all(savePromises).finally(function () {
                         defer.resolve(response);
                     });
                 }, defer.reject);
@@ -435,7 +435,7 @@ wm.plugins.database.services.LocalDBManager = [
             return {
                 "check" : function () {
                     var defer = $q.defer();
-                    if ($cordovaNetwork.isOnline()) {
+                    if (NetworkService.isConnected()) {
                         if (datamodelName) {
                             return pullDataFromServer(datamodelName, entitySchema, 1);
                         }

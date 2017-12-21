@@ -51,5 +51,12 @@
   "MESSAGE_NO_CHANGES": "Es wurden keine Änderungen festgestellt",
   "MESSAGE_NO_DATA": "Keine Daten gefunden",
   "MESSAGE_PAGE_NOT_FOUND": "Die Seite, die Sie erreichen möchten, ist nicht verfügbar",
-  "MESSAGE_SELECT_FIELD": "Feld auswählen"
+  "MESSAGE_SELECT_FIELD": "Feld auswählen",
+  "LABEL_HIDE_NETWORK_INFO": "verbergen",
+  "MESSAGE_SERVICE_NOT_AVAILABLE": "Der Service ist nicht erreichbar.",
+  "LABEL_CONNECT_TO_SERVICE": "Verbinden",
+  "MESSAGE_NETWORK_NOT_AVAILABLE": "Netzwerk nicht verfügbar.",
+  "MESSAGE_SERVICE_AVAILABLE": "Service ist verfügbar.",
+  "MESSAGE_SERVICE_CONNECTING": "Verbindung zum Dienst",
+  "MESSAGE_SERVICE_CONNECTED": "Du bist online."
 }

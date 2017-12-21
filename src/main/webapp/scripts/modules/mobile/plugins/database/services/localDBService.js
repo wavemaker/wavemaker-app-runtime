@@ -10,13 +10,13 @@
  * handled by LocalDBService.
  */
 wm.plugins.database.services.LocalDBService = [
-    '$cordovaNetwork',
     '$q',
     'DatabaseService',
     'ChangeLogService',
     'LocalDBManager',
+    'NetworkService',
     "Utils",
-    function ($cordovaNetwork, $q, DatabaseService, ChangeLogService, LocalDBManager, Utils) {
+    function ($q, DatabaseService, ChangeLogService, LocalDBManager, NetworkService, Utils) {
         'use strict';
 
         var self = this,
@@ -97,7 +97,7 @@ wm.plugins.database.services.LocalDBService = [
                 if (onlineHandler) {
                     DatabaseService[operation.name] = function (params, successCallback, failureCallback) {
                         var isBundleData = LocalDBManager.isBundled(params.dataModelName, params.entityName);
-                        if (isBundleData || ($cordovaNetwork.isOffline() && !params.onlyOnline)) {
+                        if (isBundleData || (!NetworkService.isConnected() && !params.onlyOnline)) {
                             if (isBundleData && operation.update) {
                                 Utils.triggerFn(failureCallback, "Data modification is not allowed on bundled data.");
                             } else {

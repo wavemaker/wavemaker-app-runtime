@@ -11,12 +11,14 @@ wm.plugins.offline.services.OfflineSecurityService = [
     '$cordovaFile',
     '$cordovaNetwork',
     '$rootScope',
+    'NetworkService',
     'SecurityService',
     'Utils',
     'wmSpinner',
     function ($cordovaFile,
               $cordovaNetwork,
               $rootScope,
+              NetworkService,
               SecurityService,
               Utils,
               wmSpinner) {
@@ -45,7 +47,7 @@ wm.plugins.offline.services.OfflineSecurityService = [
              * @param failureCallback
              */
             SecurityService.getConfig = function (successCallback, failureCallback) {
-                if ($cordovaNetwork.isOnline()) {
+                if (NetworkService.isConnected()) {
                     origConfig.call(SecurityService, function (config) {
                         securityConfig = config;
                         saveSecurityConfigLocally(config);
@@ -76,10 +78,10 @@ wm.plugins.offline.services.OfflineSecurityService = [
                 securityConfig = {
                     authenticated : false,
                     loggedOut : true,
-                    loggedOutOffline : $cordovaNetwork.isOffline()
+                    loggedOutOffline : !NetworkService.isConnected()
                 };
                 saveSecurityConfigLocally(securityConfig).finally(function () {
-                    if ($cordovaNetwork.isOnline()) {
+                    if (NetworkService.isConnected()) {
                         origAppLogout.call(SecurityService, successCallback, failureCallback);
                         wmSpinner.hide(spinerId);
                     } else {
@@ -98,7 +100,7 @@ wm.plugins.offline.services.OfflineSecurityService = [
         function clearLastLoggedInUser() {
             return readLocalSecurityConfig().then(function (config) {
                 securityConfig = config || {};
-                if (securityConfig.loggedOutOffline && $cordovaNetwork.isOnline()) {
+                if (securityConfig.loggedOutOffline && NetworkService.isConnected()) {
                     SecurityService.appLogout();
                 }
             });
@@ -118,8 +120,10 @@ wm.plugins.offline.services.OfflineSecurityService = [
                  * If the user has chosen to logout while app is offline, then invalidation of cookies happens when
                  * app comes online next time.
                  */
-                $rootScope.$on('$cordovaNetwork:online', function () {
-                    clearLastLoggedInUser();
+                $rootScope.$on('onNetworkStateChange', function (data) {
+                    if (data.isConnected) {
+                        clearLastLoggedInUser();
+                    }
                 });
             }
         }

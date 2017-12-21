@@ -51,5 +51,12 @@
   "MESSAGE_NO_CHANGES": "No changes detected",
   "MESSAGE_NO_DATA": "No data found",
   "MESSAGE_PAGE_NOT_FOUND": "The page you are trying to reach is not available",
-  "MESSAGE_SELECT_FIELD": "Select Field"
+  "MESSAGE_SELECT_FIELD": "Select Field",
+  "LABEL_HIDE_NETWORK_INFO": "Hide",
+  "MESSAGE_SERVICE_NOT_AVAILABLE": "Service is not reachable.",
+  "LABEL_CONNECT_TO_SERVICE": "Connect",
+  "MESSAGE_NETWORK_NOT_AVAILABLE": "Network not available.",
+  "MESSAGE_SERVICE_AVAILABLE": "Service is available.",
+  "MESSAGE_SERVICE_CONNECTING": "Connecting to server.",
+  "MESSAGE_SERVICE_CONNECTED": "You are online."
 }
