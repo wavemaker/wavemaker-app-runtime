@@ -24,13 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.type.AbstractStandardBasicType;
-import org.hibernate.type.CustomType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.commons.data.type.WMPersistentLocalDateTime;
 import com.wavemaker.commons.util.Tuple;
 import com.wavemaker.runtime.data.dao.util.ParametersConfigurator;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
@@ -38,7 +36,6 @@ import com.wavemaker.runtime.data.filter.LegacyQueryFilterInterceptor;
 import com.wavemaker.runtime.data.filter.QueryInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryFunctionInterceptor;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
-import com.wavemaker.runtime.data.model.JavaType;
 import com.wavemaker.runtime.data.model.ReferenceType;
 import com.wavemaker.runtime.data.model.returns.FieldType;
 import com.wavemaker.runtime.data.model.returns.ReturnProperty;
@@ -107,10 +104,6 @@ public class HQLQueryUtils {
             if (type instanceof AbstractStandardBasicType) {
                 final Class typeClass = ((AbstractStandardBasicType) type).getJavaTypeDescriptor().getJavaTypeClass();
                 typeRef = typeClass.getCanonicalName();
-            } else if (type instanceof CustomType) { // TODO remove this when type is as expected
-                if (typeRef.equals(WMPersistentLocalDateTime.class.getName())) {
-                    typeRef = JavaType.DATETIME.getClassName();
-                }
             }
 
             fieldType.setTypeRef(typeRef);
