@@ -552,10 +552,12 @@ wm.variables.services.Variables = [
                         setValueToNode(target, obj, root, variable, newVal); // clonning newVal to keep the source clean
 
                         if (runMode) {
+                            /*set the internal bound node map with the latest updated value*/
+                            _.set(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, target], newVal);
+                            /*update the internal nodes after internal node map is set*/
                             if (WM.isObject(newVal)) {
                                 updateInternalNodes(target, root, variable);
                             }
-                            _.set(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root, target], newVal);
                         }
                     }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
