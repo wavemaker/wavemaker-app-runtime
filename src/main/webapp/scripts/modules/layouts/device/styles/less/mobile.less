@@ -1,5 +1,25 @@
 @app-mobile-nav-height: 36pt;
 @app-mobile-nav-icon-size: 18pt;
+@keyframes pageContainerCollapse {
+  100% {
+    -webkit-transform: translate3d(-90%, 0, 0);
+    transform: translate3d(-90%, 0, 0);
+  }
+  95% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+  }
+@keyframes leftPanelCollapse {
+  0% {
+    -webkit-transform: translate3d(-90%, 0, 0);
+    transform: translate3d(-90%, 0, 0);
+  }
+  50% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+}
 .mobile-left-panel(){
   display: block;
   height: 100%;
@@ -9,13 +29,44 @@
   top: 0;
   &.slide-in{
     z-index: 0;
+    left:0;
+    &.left-panel-collapsed {
+      z-index: 99;
+      opacity: 0;
+      -webkit-transition: -webkit-transform 0.1s ease-out 0.1s, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+      -webkit-transform: translate3d(-90%, 0, 0);
+      transition: transform 0.1s ease-out 0.1s, opacity 0.001s linear 0.2s, z-index 0.3s linear 0.35s;
+      transform: translate3d(-90%, 0, 0);
+      -webkit-animation: pageContainerCollapse 0.1s linear 0.2;
+      animation: pageContainerCollapse 0.1s linear 0.2;
+    }
+    &.left-panel-expanded {
+      opacity: 1;
+      -webkit-transform: translate3d(-100%, 0, 0);
+      transform: translate3d(-100%, 0, 0);
+      z-index: 101;
+    }
   }
   &.slide-over {
-    left: -100%;
-    z-index: 101;
-
+    left: 0;
+    z-index: 0;
+    opacity: 1;
+    &.left-panel-collapsed {
+      z-index: 99;
+      opacity: 0;
+      -webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+      -webkit-transform: translate3d(-90%, 0, 0);
+      transition: transform 0.3s ease-out, opacity 0.001s linear 0.2s, z-index 0.3s linear 0.35s;
+      transform: translate3d(-90%, 0, 0);
+      -webkit-animation: leftPanelCollapse 0.3s linear 0.1s;
+      animation: leftPanelCollapse 0.3s linear 0.1s;
+    }
     &.left-panel-expanded {
-      left: 0;
+      -webkit-transition: -webkit-transform 0.3s ease-out;
+      transition: transform 0.3s ease-out;
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+      z-index: 101;
     }
   }
   .dropdown-submenu {
@@ -41,8 +92,9 @@
       width: 100%;
       &.slide-in-left-panel-container,
       &.slide-over-left-panel-container{
-        &.left-panel-expanded-container main:after {
-          background: rgba(0, 0, 0, 0.5);
+        z-index: 0;
+        &.left-panel-expanded-container:after {
+//          background: rgba(0, 0, 0, 0.5);
           position: absolute;
           top: 0;
           width: 100%;
@@ -337,27 +389,24 @@
       //position: fixed;
       width: 100%;
       left: 0;
-      transition: left 0.5s ease-in-out;
       &.left-panel-expanded-container {
         .compute-left-position(@n:0) when (@n <= 12) {
           &.left-panel-container-@{device}-@{n} {
-            left: (1 - @n / 12)*100%;
+            -webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+            -webkit-transform: translate3d((1 - @n / 12)*100%, 0, 0);
+            transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+            transform: translate3d((1 - @n / 12)*100%, 0, 0);
           }
           .compute-left-position(@n + 1);
         }
         .compute-left-position();
       }
-    }
-    .app-left-panel.slide-in {
-      left: 0;
-      &.left-panel-collapsed {
-        .compute-left-position(@n:1) when (@n <= 12) {
-          &.col-@{device}-@{n} {
-            left: -(@n / 12)*100%;
-          }
-          .compute-left-position(@n + 1);
-        }
-        .compute-left-position();
+      &.left-panel-collapsed-container {
+        -webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+        -webkit-transform: translate3d(0, 0, 0);
+        transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+        transform: translate3d(0, 0, 0);
+        z-index: 0;
       }
     }
   }
@@ -391,6 +440,9 @@
           left: 0;
           z-index: 0;
           white-space: nowrap;
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+          animation: none;
           overflow: hidden;
           &.left-panel-collapsed .app-nav > .app-nav-item {
             > .app-anchor, > .dropdown .dropdown-toggle {

@@ -12,7 +12,7 @@
  * This directive is used for the applying smooth scroll on scrollable containers.
  * By setting smoothscroll="true" on the element, smooth scroll will be applied on the element.
  * By default page-content, accordion pane, tab pane, segment content, app-left-panel has the smoothscroll set to true.
- * This works only on device.
+ * This works on device, mobile browsers.
  */
 wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootScope', function (Utils, CONSTANTS, $rs) {
     'use strict';
@@ -56,7 +56,7 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
     return {
         'restrict': 'A',
         'link': function ($s, $el, attrs) {
-            if (CONSTANTS.hasCordova) {
+            if (Utils.isMobile()) {
                 var smoothScroll;
                 // observe the smoothscroll attr
                 attrs.$observe('wmSmoothscroll', function (nv) {

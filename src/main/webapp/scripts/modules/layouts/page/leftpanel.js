@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, $ */
 
 WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
@@ -19,6 +19,197 @@ WM.module('wm.layouts.page')
                 'xscolumnwidth': true,
                 'animation': true
             };
+
+        function addSwipeeForSlideIn($ele, state) {
+            $ele.swipee({
+                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'threshold': 5,
+                'onSwipeStart': function (e, data) {
+                    if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
+                        return false;
+                    }
+
+                    // set leftPanel element on state.
+                    state.leftPanel = $(this);
+                    state.leftPanelWidth = state.leftPanel.width();
+
+                    // Set the pageContainer element on state.
+                    state.pageContainer = state.leftPanel.closest('.app-page');
+                    state.pageContainerWidth = state.pageContainer.width();
+
+                    state.pageContainer.css({
+                        'transition': 'none'
+                    });
+
+                    // disable the iscroll to avoid scroll during swipe.
+                    if (state.leftPanel[0].iscroll) {
+                        state.leftPanel[0].iscroll.disable();
+                    }
+
+                    // disable pointer-events during swipe.
+                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', 'none');
+
+                    state.leftPanel.css({
+                        'opacity': 1,
+                        'transition': 'none',
+                        'z-index': 101,
+                        'transform': 'translate3d(-100%, 0, 0)',
+                        '-webkit-transform': 'translate3d(-100%, 0, 0)'
+                    });
+                },
+                'onSwipe': function (e, data) {
+                    var d = 0,
+                        maxX = (1 - state.colWidth / 12) * 100;
+
+                    if (state.isExpanded && data.length < 0) {
+                        d = (data.length / state.pageContainerWidth) * 100 + maxX;
+                    } else if (!state.isExpanded && data.length > 0) {
+                        d = (data.length / state.pageContainerWidth) * 100 + 10;
+                    }
+
+                    if (d > maxX) {
+                        d = maxX;
+                    } else if (d < 0) {
+                        d = 0;
+                    }
+                    state.pageContainer.css({
+                        'transform': 'translate3d(' + d + '%, 0, 0)'
+                    });
+
+                },
+                'onSwipeEnd': function (e, data) {
+                    // enable pointer-events on the swipe end.
+                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', '');
+
+                    var iscope = state.leftPanel.isolateScope();
+
+                    if (data.length > 10) {
+                        if (state.leftPanel[0].iscroll) {
+                            state.leftPanel[0].iscroll.enable();
+                        }
+                        // expand the leftPanel
+                        if (iscope) {
+                            iscope.expand();
+                        }
+                        state.isExpanded = true;
+                        state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
+                    } else if (data.length < 10) {
+                        // collapse the leftPanel
+                        if (iscope) {
+                            iscope.collapse();
+                        }
+                        if (state.leftPanel[0].iscroll) {
+                            state.leftPanel[0].iscroll.disable();
+                        }
+                        state.isExpanded = false;
+                        state.leftPanel.addClass('left-panel-collapsed').removeClass('left-panel-expanded');
+                    }
+                    // reset the styles on pageContainer and leftPanel
+                    state.pageContainer.css({
+                        'transition': '',
+                        'transform': '',
+                        'left': ''
+                    });
+
+                    state.leftPanel.css({
+                        'transition': '',
+                        'transform': '',
+                        'left': '',
+                        'opacity': '',
+                        'z-index': ''
+                    });
+                    state = {
+                        'isExpanded': state.isExpanded,
+                        'colWidth': iscope && iscope.columnwidth
+                    };
+                }
+            });
+        }
+
+        function addSwipeeForSlideOver($ele, state) {
+            $ele.swipee({
+                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'threshold': 5,
+                'onSwipeStart': function (e, data) {
+                    if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
+                        return false;
+                    }
+
+                    // set leftPanel element on state.
+                    state.leftPanel = $(this);
+                    state.leftPanelWidth = state.leftPanel.width();
+
+                    // disable the iscroll to avoid scroll during swipe.
+                    if (state.leftPanel[0].iscroll) {
+                        state.leftPanel[0].iscroll.disable();
+                    }
+
+                    // disable pointer-events during swipe.
+                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', 'none');
+
+                    state.leftPanel.css({
+                        'opacity': 1,
+                        'transition': 'none',
+                        'z-index': 101
+                    });
+                },
+                'onSwipe': function (e, data) {
+                    var d = 0;
+                    if (state.isExpanded && data.length < 0) {
+                        d = (data.length / state.leftPanelWidth) * 100;
+                    } else if (!state.isExpanded && data.length > 0) {
+                        d = (data.length / state.leftPanelWidth) * 100 - 95;
+                    }
+                    if (d > 0) {
+                        d = 0;
+                    } else if (d < -90) {
+                        d = -90;
+                    }
+                    state.leftPanel.css({
+                        'transform': 'translate3d(' + d + '%, 0, 0)'
+                    });
+                },
+                'onSwipeEnd': function (e, data) {
+                    // enable pointer-events on the swipe end.
+                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', '');
+
+                    var iscope = state.leftPanel.isolateScope();
+
+                    if (data.length > 10) {
+                        if (state.leftPanel[0].iscroll) {
+                            state.leftPanel[0].iscroll.enable();
+                        }
+                        // expand the leftPanel
+                        if (iscope) {
+                            iscope.expand();
+                        }
+                        state.isExpanded = true;
+                        state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
+                    } else if (data.length < 10) {
+                        // collapse the leftPanel
+                        if (iscope) {
+                            iscope.collapse();
+                        }
+                        if (state.leftPanel[0].iscroll) {
+                            state.leftPanel[0].iscroll.disable();
+                        }
+                        state.isExpanded = false;
+                        state.leftPanel.addClass('left-panel-collapsed').removeClass('left-panel-expanded');
+                    }
+                    // reset the styles on pageContainer and leftPanel
+                    state.leftPanel.css({
+                        'transition': '',
+                        'transform': '',
+                        'left': '',
+                        'opacity': '',
+                        'z-index': ''
+                    });
+                    state = {
+                        'isExpanded': state.isExpanded
+                    };
+                }
+            });
+        }
 
 
         function setLeftPanelWidth(element, devices, newVal, oldVal) {
@@ -151,6 +342,23 @@ WM.module('wm.layouts.page')
                             $rootScope.$safeApply(scope);
                         };
                         element.closest('.app-page').addClass('left-panel-collapsed-container');
+
+                        var state = {
+                            'isExpanded': false,
+                            'colWidth': scope.columnwidth,
+                            'leftPanel': '',
+                            'pageContainer': '',
+                            'leftPanelWidth': '',
+                            'pageContainerWidth': ''
+                        };
+
+                        // Apply swipe changes on mobile.
+                        if (scope.animation === 'slide-in') {
+                            addSwipeeForSlideIn(element, state);
+                        } else {
+                            addSwipeeForSlideOver(element, state);
+                        }
+
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
