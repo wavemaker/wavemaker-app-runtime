@@ -58,7 +58,7 @@ public class PrefabsConfig {
     }
 
     @Autowired
-    public void setPrefabBuildDir(@Value("${" + PREFAB_BUILD_DIR_PROP + "}") String prefabBuildDirDir) {
+    public void setPrefabBuildDir(@Value("${" + PREFAB_BUILD_DIR_PROP + "}") String prefabBuildDir) {
         this.prefabBuildDir = defaultOnEmpty(prefabBuildDir, PrefabConstants.PREFAB_DEFAULT_BUILD_DIR, PREFAB_BUILD_DIR_PROP);
     }
 
