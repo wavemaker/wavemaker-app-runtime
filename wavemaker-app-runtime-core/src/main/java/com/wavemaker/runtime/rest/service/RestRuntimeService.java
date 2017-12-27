@@ -66,6 +66,11 @@ public class RestRuntimeService {
     private static final String AUTHORIZATION = "authorization";
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
+    
+    public HttpResponseDetails executeRestCall(String serviceId, String operationId, HttpRequestData httpRequestData) {
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+        return new RestConnector().invokeRestCall(httpRequestDetails);
+    }
 
     public void executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
@@ -81,7 +86,7 @@ public class RestRuntimeService {
 
     public void executeRestCall(String serviceId, String operationId, final HttpRequestData httpRequestData,
                                 final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) throws IOException {
-        final HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
+        HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
         List<HttpRequestProcessor> httpRequestProcessors = restRuntimeConfig.getHttpRequestProcessorList();

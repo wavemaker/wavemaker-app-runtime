@@ -26,6 +26,9 @@ public class HttpRequestCookieProcessor extends AbstractHttpRequestProcessor {
     @Override
     protected void doProcess(HttpRequestProcessorContext httpRequestProcessorContext) {
         HttpServletRequest httpServletRequest = httpRequestProcessorContext.getHttpServletRequest();
+        if (httpServletRequest == null) {
+            return;
+        }
         HttpSession httpSession = httpServletRequest.getSession(false);
         if (httpSession == null) {
             return;
