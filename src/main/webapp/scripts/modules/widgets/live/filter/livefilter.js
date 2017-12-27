@@ -402,10 +402,16 @@ WM.module('wm.widgets.live')
                     $scope._onBlurField = function ($event) {
                         WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
                     };
+
+                    function _onChangeField($is) {
+                        var index = _.get($is.$element.closest('[data-role="filter-field"]').isolateScope(), 'index');
+                        if (WM.isDefined(index)) {
+                            $scope.applyFilterOnField($scope.formFields[index]);
+                        }
+                    }
                     //On change of a field, if autoupdate is set, trigger the filter
-                    $scope._onChangeField = function ($event, $is, newVal, oldVal) {
-                        var index = $is.$element.closest('[data-role="filter-field"]').isolateScope().index;
-                        $scope.applyFilterOnField($scope.formFields[index]);
+                    $scope._onChangeField = function ($event, $is, newVal) {
+                        _onChangeField($is);
                         //Filter only if newVal is defined
                         if ($scope.autoupdate && WM.isDefined(newVal)) {
                             $scope.filter();
@@ -413,8 +419,7 @@ WM.module('wm.widgets.live')
                     };
                     //On submit of a autocomplete field, if autoupdate is set, trigger the filter
                     $scope._onSubmitField = function ($event, $is) {
-                        var index = $is.$element.closest('[data-role="filter-field"]').isolateScope().index;
-                        $scope.applyFilterOnField($scope.formFields[index]);
+                        _onChangeField($is);
                         if ($scope.autoupdate) {
                             $scope.filter();
                         }

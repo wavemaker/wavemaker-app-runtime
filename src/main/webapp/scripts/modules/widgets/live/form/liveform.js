@@ -1347,19 +1347,23 @@ WM.module('wm.widgets.live')
                             var $field     = WM.element($event.target).closest('.live-field'),
                                 fieldScope = $field.parent('[data-role="form-field"]').isolateScope();
                             $field.removeClass('active');
-                            setValidity(fieldScope.name, true);
+                            setValidity(fieldScope && fieldScope.name, true);
                         };
+
+                        function _onChangeField($is) {
+                            var formIndex = _.get($is.$element.closest('[data-role="form-field"]').isolateScope(), 'index');
+                            if (WM.isDefined(formIndex)) {
+                                parentScope.constructDataObject();
+                                parentScope.applyFilterOnField(parentScope.formFields[formIndex]);
+                            }
+                        }
                         //On change of a field, update the dataoutput on form/liveform
                         parentScope._onChangeField = parentScope._onChangeField || function ($event, $is) {
-                            var formIndex = $is.$element.closest('[data-role="form-field"]').isolateScope().index;
-                            parentScope.constructDataObject();
-                            parentScope.applyFilterOnField(parentScope.formFields[formIndex]);
+                            _onChangeField($is);
                         };
                         //On submit of a autocomplete field, update the dataoutput on form/liveform
                         parentScope._onSubmitField = parentScope._onSubmitField || function ($event, $is) {
-                            var formIndex = $is.$element.closest('[data-role="form-field"]').isolateScope().index;
-                            parentScope.constructDataObject();
-                            parentScope.applyFilterOnField(parentScope.formFields[formIndex]);
+                            _onChangeField($is);
                         };
                         parentScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
