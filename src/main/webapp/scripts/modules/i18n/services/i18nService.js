@@ -28,6 +28,7 @@ WM.module('i18n')
                 _componentLocalePaths = [],
                 _initSuccess          = false,
                 localeCodesMap        = {},
+                RTL_LANGUAGE_CODES,
                 _defaultLocale,
                 _appLocaleRootPath,
                 _ngLocaleRootPath,
@@ -284,6 +285,8 @@ WM.module('i18n')
                 "zu-za": "isiZulu (iNingizimu Afrika)" // Zulu (South Africa)
             };
 
+            RTL_LANGUAGE_CODES = ["ar", "ar-001", "ar-ae", "ar-bh", "ar-dz", "ar-eg", "ar-iq", "ar-jo", "ar-kw", "ar-lb", "ar-ly", "ar-ma", "ar-om", "ar-qa", "ar-sa", "ar-sd", "ar-sy", "ar-tn", "ar-ye", "arc", "bcc", "bqi", "ckb", "dv", "fa", "glk", "he", "ku", "mzn", "pnb", "ps", "sd", "ug", "ur", "yi"];
+
             $rs[localeKey] = {}; // reset the locale object on the rootScope
 
             // function to get the parameterized localized messages.
@@ -306,6 +309,15 @@ WM.module('i18n')
                 });
             }
 
+            // sets the direction of the document based on the selectedLocale
+            function setLanguageDirection(localeCode) {
+                if (_.includes(RTL_LANGUAGE_CODES, localeCode)) {
+                    WM.element('body').css('direction', 'rtl');
+                } else {
+                    WM.element('body').css('direction', 'ltr');
+                }
+            }
+
             /**
              * Loads the localeBundle.
              * Placeholders in the path will be replaced with the selected locale value and localeBundle will be loaded using the constructed path.
@@ -316,6 +328,7 @@ WM.module('i18n')
                 return $http
                     .get(path)
                     .then(function (response) {
+                        setLanguageDirection(_selectedLocale);
                         // extend the $rs.locale object with the response json
                         WM.extend($rs[localeKey], response.data, content);
                     }, function () {
