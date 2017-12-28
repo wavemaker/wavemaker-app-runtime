@@ -160,7 +160,7 @@
                 return $q.resolve(networkState.isConnected);
             }
 
-            if (window.cordova) {
+            if (window.cordova && window.Connection) {
                 networkState.isNetworkAvailable = $cordovaNetwork.isOnline();
                 /* Check Initially, whether the  service is available.*/
                 isServiceAvailable().then(function () {

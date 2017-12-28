@@ -31,7 +31,7 @@ WM.module('wm.widgets.advanced')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.advancedformwidgets']);
 
             function openBarcodeScanner($is) {
-                var config = null;
+                var config;
                 if (CONSTANTS.isStudioMode) {
                     return;
                 }

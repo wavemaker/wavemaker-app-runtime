@@ -45,7 +45,7 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils', 'wm
             if (multiple) {
                 maxImg = 10;
             }
-            window.plugins.imagePicker.getPictures(
+            window.imagePicker.getPictures(
                 function (files) {
                     getFiles(files)
                         .then(deferred.resolve, deferred.reject);
