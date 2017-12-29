@@ -16,10 +16,9 @@
 package com.wavemaker.runtime.data.converters;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
+
+import org.joda.time.LocalDateTime;
 
 import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
 import com.wavemaker.runtime.data.model.JavaType;
@@ -42,10 +41,10 @@ public class DateTimeConverter implements JavaTypeConverter {
         if (Timestamp.class.isInstance(fromValue)) {
             Timestamp timestamp = ((Timestamp) fromValue);
             Date date = new Date(timestamp.getTime());
-            return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            return LocalDateTime.fromDateFields(date);
         }
         if (Date.class.isInstance(fromValue)) {
-            return LocalDateTime.ofInstant(((Date) fromValue).toInstant(), ZoneId.systemDefault());
+            return LocalDateTime.fromDateFields(((Date) fromValue));
         }
         return WMLocalDateTimeDeSerializer.getLocalDateTime(String.valueOf(fromValue));
     }
@@ -53,7 +52,7 @@ public class DateTimeConverter implements JavaTypeConverter {
     @Override
     public Object toDbValue(final Object value, final Class<?> toType) {
         if (value instanceof LocalDateTime) {
-            Timestamp timeStamp = Timestamp.valueOf(((LocalDateTime) value).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            Timestamp timeStamp = Timestamp.valueOf(((LocalDateTime) value).toString("yyyy-MM-dd HH:mm:ss"));
             return JavaType.TIMESTAMP.toDbValue(timeStamp);
         }
         return value;

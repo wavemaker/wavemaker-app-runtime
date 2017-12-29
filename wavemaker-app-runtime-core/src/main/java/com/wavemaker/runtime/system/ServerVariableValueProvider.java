@@ -3,10 +3,10 @@ package com.wavemaker.runtime.system;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -31,7 +31,7 @@ public class ServerVariableValueProvider implements VariableValueProvider {
 
         keyVsValueMap.put("date", (key) -> new Date(Calendar.getInstance().getTime().getTime()));
         keyVsValueMap.put("time", (key) -> new Time(Calendar.getInstance().getTime().getTime()));
-        keyVsValueMap.put("date_time", (key) -> LocalDateTime.now()); // use java LocalDateTime
+        keyVsValueMap.put("date_time", (key) -> new LocalDateTime()); // use java LocalDateTime
         keyVsValueMap.put("timestamp", (key) -> new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         keyVsValueMap.put("user_id", (key) -> securityService.getUserId());
