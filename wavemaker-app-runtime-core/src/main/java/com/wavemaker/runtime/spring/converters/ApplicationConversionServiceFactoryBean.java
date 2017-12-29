@@ -17,10 +17,10 @@ package com.wavemaker.runtime.spring.converters;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 

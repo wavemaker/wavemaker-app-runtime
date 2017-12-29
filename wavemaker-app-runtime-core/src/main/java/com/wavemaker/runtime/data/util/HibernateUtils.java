@@ -1,10 +1,10 @@
 package com.wavemaker.runtime.data.util;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.hibernate.TypeHelper;
 import org.hibernate.type.Type;
+import org.joda.time.LocalDateTime;
 
 import com.wavemaker.commons.data.type.WMPersistentLocalDateTime;
 
