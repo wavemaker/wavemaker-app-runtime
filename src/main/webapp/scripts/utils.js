@@ -733,6 +733,10 @@ WM.module('wm.utils', [])
             return (REGEX.WINDOWS.test(userAgent));
         }
 
+        function isPreview() {
+            return CONSTANTS.isRunMode && WM.element('.preview-panel-ctr').length > 0;
+        }
+
         function isMobile() {
             if (CONSTANTS.isRunMode) {
                 return isAndroidPhone() || isIphone() || isIpod() || isIpad() || isAndroidTablet() || isWindowsPhone() || WM.element('#wm-mobile-display:visible').length > 0;
@@ -2844,6 +2848,7 @@ WM.module('wm.utils', [])
         this.isAndroidTablet            = isAndroidTablet;
         this.isTablet                   = isTablet;
         this.isMobile                   = isMobile;
+        this.isPreview                  = isPreview;
         this.isScriptLoaded             = isScriptLoaded;
         this.isValidJavaPackageName     = isValidJavaPackageName;
         this.isValidHtml                = isValidHtml;

@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, $ */
 /*jslint todo: true */
 /*Directive for tabs */
 
@@ -10,7 +10,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/tabs.html',
                 '<div class="app-tabs clearfix" init-widget apply-styles="container" tabindex="-1">' +
                     '<ul class="nav nav-tabs" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
+                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
                 '</div>'
             );
 
@@ -36,15 +36,63 @@ WM.module('wm.layouts.containers')
                 scope.setTabsPosition(newVal);
                 break;
             case 'defaultpaneindex':
-            //If no active tab is set ie.. no isdefaulttab then honor the defaultpaneindex
-            if (!scope.activeTab) {
-                scope.activeTab = scope.tabs[newVal || 0];
-            }
+                //If no active tab is set ie.. no isdefaulttab then honor the defaultpaneindex
+                if (!scope.activeTab) {
+                    scope.activeTab = scope.tabs[newVal || 0];
+                }
 
-            scope.selectTab(scope.activeTab, false, true);
+                scope.selectTab(scope.activeTab, false, true);
 
-            break;
+                break;
             }
+        }
+
+        // This function adds swipe features on the element.
+        function addSwipee($scope, $ele) {
+            $ele.swipee({
+                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                //'threshold': 20,
+                'onSwipeStart': function (e, data) {
+                    data.totalTabs = this.find('>.tab-pane').length;
+                    data.tabLength = this.find('>.tab-pane:first').width();
+                    data.transformState = -$scope.activeTabIndex * data.tabLength;
+                    this.css({
+                        'transition': 'none'
+                    });
+                    $(this).addClass('swipee-transition');
+                },
+                'onSwipe': function (e, data) {
+                    this.css({
+                        'transform': 'translate3d(' + (data.transformState + data.length) + 'px, 0, 0)'
+                    });
+                },
+                'onSwipeEnd': function (e, data) {
+                    if (data.length < 0) {
+                        $scope.next();
+                    } else if (data.length > 0) {
+                        $scope.previous();
+                    }
+                    this.css({
+                        'transition': '',
+                        'transform': 'translate3d(' + -1 * ($scope.activeTabIndex * 100 / data.totalTabs) + '%, 0, 0)'
+                    });
+                    this.one('webkitTransitionEnd', function () {
+                        $(this).removeClass('swipee-transition');
+                        $timeout(WM.noop, 500);
+                    });
+                }
+            });
+        }
+
+        // Calculates the tabs left position depending on no. of tabs.
+        function setTabsLeftPosition($element, activeIndex) {
+            var noOfTabs = $element.find('.tab-pane').length,
+                leftVal;
+
+            leftVal = -1 * (activeIndex * 100 / noOfTabs);
+            $element.css({
+                'transform': 'translate3d(' + leftVal + '%, 0, 0)'
+            });
         }
 
         return {
@@ -103,6 +151,8 @@ WM.module('wm.layouts.containers')
                 this.selectTab = function (tab, skipOnSelect, skipActiveWidget) {
                     var _tab = $scope.activeTab,
                         i,
+                        hasSwipeTransition,
+                        tabContent,
                         tabs = $scope.tabs;
                     if (!tab) {
                         return;
@@ -119,13 +169,22 @@ WM.module('wm.layouts.containers')
                             break;
                         }
                     }
+                    // Apply isActive on tabHeader.
+                    $rootScope.$safeApply($scope);
 
                     if (!skipOnSelect) {
                         Utils.triggerFn(tab.onSelect);
                     }
 
                     if (tab) {
-                        tab._animateIn($element.hasClass('has-transition'));
+                        tabContent =  $element.find('.tab-content');
+                        hasSwipeTransition = tabContent.hasClass('swipee-transition');
+
+                        // add left position only when element is not having swipe.
+                        if (!hasSwipeTransition) {
+                            setTabsLeftPosition(tabContent, tab.tabId);
+                        }
+                        tab._animateIn();
                     }
                     // In studio mode on click on header set tab-pane as active widget
                     if (CONSTANTS.isStudioMode && !skipActiveWidget) {
@@ -135,8 +194,26 @@ WM.module('wm.layouts.containers')
                     Utils.triggerFn(tab.$lazyLoad);
                 };
 
+                // This function assigns the width and transform values on the tab content.
+                this.setTabsLeftAndWidth = function (activeIndex) {
+                    var content = $element.find('.tab-content'),
+                        noOfTabs = content.find('.tab-pane').length;
+
+                    // set width on the tab-content
+                    content.css({
+                        'max-width': noOfTabs * 100 + '%',
+                        'width': noOfTabs * 100 + '%'
+                    });
+                    content.find('.tab-pane').css({
+                        'width': 100 / noOfTabs + '%'
+                    });
+
+                    setTabsLeftPosition(content, activeIndex);
+                };
+
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
                 $scope.selectTab = this.selectTab;
+                $scope.setTabsLeftAndWidth = this.setTabsLeftAndWidth;
             },
             link: {
                 'pre': function (scope, element, attrs) {
@@ -169,7 +246,9 @@ WM.module('wm.layouts.containers')
                         activeTab,
                         tab,
                         $li,
-                        $ul = element.find('> ul');
+                        $ul = element.find('> ul'),
+                        content = element.find('.tab-content');
+
                     /* find the first tab which has isdefaulttab set and make it active.
                      * mark the other tabs as inactive
                      */
@@ -309,6 +388,12 @@ WM.module('wm.layouts.containers')
                             }
                         });
 
+                        scope.setTabsLeftAndWidth(scope.defaultpaneindex);
+
+                        // Adding swipe on tabs content
+                        if (!Utils.isPreview() && Utils.isMobile()) {
+                            addSwipee(scope, content);
+                        }
                     }
 
                     /* register the property change handler */
@@ -371,7 +456,12 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function (scope, element, attrs, ctrl) {
 
-                        var parentScope = element.closest('.app-tabs').isolateScope();
+                        var parentScope = element.closest('.app-tabs').isolateScope(),
+                            index = parentScope.activeTabIndex || element.index();
+
+                        if (scope.widgetid) {
+                            ctrl.setTabsLeftAndWidth(index);
+                        }
 
                         //To support backward compatibility for old projects
                         if (scope.title === undefined && !scope.bindtitle) {
@@ -417,32 +507,14 @@ WM.module('wm.layouts.containers')
                             ctrl.selectTab(scope);
                         };
 
-                        scope._animateIn = function (hasTransition) {
-
-                            var index = element.index(),
-                                $parent = element.parent(),
-                                delta,
-                                ul,
+                        scope._animateIn = function () {
+                            var ul,
                                 $prevHeaderEle;
 
-                            // when the transition is setup animate the selected tab into the view.
-                            if (hasTransition) {
-                                delta = index * $parent.width();
+                            //when the animation is not present toggle the active class.
+                            element.siblings('.active').removeClass('active');
+                            element.addClass('active');
 
-                                $parent.animate({scrollLeft: delta}, {
-                                    'duration': 'fast',
-                                    'start'   : function () {
-                                        element.addClass('active');
-                                    },
-                                    'complete': function () {
-                                        element.siblings('.active').removeClass('active');
-                                    }
-                                });
-                            } else {
-                                //when the animation is not present toggle the active class.
-                                element.siblings('.active').removeClass('active');
-                                element.addClass('active');
-                            }
 
                             ul = scope._headerElement.parent()[0];
                             // move the tabheader into the viewport

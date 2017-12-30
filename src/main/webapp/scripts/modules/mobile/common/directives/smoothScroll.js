@@ -39,7 +39,7 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
             iScroll.refresh();
         }, 100));
 
-        $s.$on('$destroy', function() {
+        $s.$on('$destroy', function () {
             iScroll.destroy();
         });
 
@@ -56,7 +56,7 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
     return {
         'restrict': 'A',
         'link': function ($s, $el, attrs) {
-            if (Utils.isMobile()) {
+            if (!Utils.isPreview() && Utils.isMobile()) {
                 var smoothScroll;
                 // observe the smoothscroll attr
                 attrs.$observe('wmSmoothscroll', function (nv) {
