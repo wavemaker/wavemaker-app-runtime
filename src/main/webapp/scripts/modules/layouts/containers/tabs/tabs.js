@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" page-container init-widget wm-smoothscroll="{{smoothscroll}}" ng-class="{disabled: isDisabled, active: isActive}" wm-navigable-element="true"><div class="tab-body app-ng-transclude" apply-styles="container" page-container-target wmtransclude></div></div>');
+            '<div class="tab-pane" page-container init-widget ng-class="{disabled: isDisabled, active: isActive}" wm-navigable-element="true"><div class="tab-body app-ng-transclude" wm-smoothscroll="{{smoothscroll}}" apply-styles="container" page-container-target wmtransclude></div></div>');
 
     }])
     .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile, $timeout) {
@@ -391,7 +391,7 @@ WM.module('wm.layouts.containers')
                         scope.setTabsLeftAndWidth(scope.defaultpaneindex);
 
                         // Adding swipe on tabs content
-                        if (!Utils.isPreview() && Utils.isMobile()) {
+                        if (Utils.isMobile()) {
                             addSwipee(scope, content);
                         }
                     }
