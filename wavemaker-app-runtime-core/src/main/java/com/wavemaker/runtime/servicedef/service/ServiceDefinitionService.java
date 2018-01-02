@@ -17,24 +17,37 @@ package com.wavemaker.runtime.servicedef.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.servicedef.model.ServiceDefinition;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.prefab.core.Prefab;
 import com.wavemaker.runtime.prefab.core.PrefabManager;
 import com.wavemaker.runtime.prefab.event.PrefabsLoadedEvent;
+import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.servicedef.helper.ServiceDefinitionHelper;
 
 /**
@@ -47,21 +60,37 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     public static final String SERVICE_DEF_RESOURCE_POST_FIX = "-service-definitions.json";
     public static final String SERVICE_DEF_LOCATION_PATTERN = "/servicedefs/**" + SERVICE_DEF_RESOURCE_POST_FIX;
     public static final String PREFAB_SERVICE_DEF_LOCATION_PATTERN = "/prefab-servicedefs/**" + SERVICE_DEF_RESOURCE_POST_FIX;
-    private static final Logger logger = LoggerFactory.getLogger(
-            ServiceDefinitionService.class);
+    
     private ServiceDefinitionHelper serviceDefinitionHelper = new ServiceDefinitionHelper();
 
-    private Map<String, ServiceDefinition> serviceDefinitionsCache = null;
+    private MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = null;
     private Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = null;
+    private Map<String, ServiceDefinition> baseServiceDefinitions;
 
     @Autowired
     private PrefabManager prefabManager;
+    
+    @Autowired
+    private SecurityService securityService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceDefinitionService.class);
 
     public Map<String, ServiceDefinition> listServiceDefs() {
-        if (serviceDefinitionsCache == null) {
+        if (authExpressionVsServiceDefinitions == null) {
             loadServiceDefinitions();
         }
-        return serviceDefinitionsCache;
+
+        if (securityService.isSecurityEnabled() && securityService.isAuthenticated()) {
+            Map<String, ServiceDefinition> serviceDefinitionsMap = new HashMap<>(baseServiceDefinitions);
+            putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), serviceDefinitionsMap, false);
+            String[] userRoles = securityService.getUserRoles();
+            for (String role: userRoles) {
+                putElements(authExpressionVsServiceDefinitions.get("ROLE_" + role), serviceDefinitionsMap, false);
+            }
+            return serviceDefinitionsMap;
+        } else {
+            return baseServiceDefinitions;
+        }
     }
 
     public Map<String, ServiceDefinition> listPrefabServiceDefs(final String prefabName) {
@@ -76,9 +105,9 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadServiceDefinitions() {
-        if (serviceDefinitionsCache == null) {
+        if (authExpressionVsServiceDefinitions == null) {
             synchronized (this) {
-                if (serviceDefinitionsCache == null) {
+                if (authExpressionVsServiceDefinitions == null) {
                     Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
                     Resource[] resources = getServiceDefResources(false);
                     if (resources != null) {
@@ -92,10 +121,61 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                     } else {
                         logger.warn("Service def resources does not exist for this project");
                     }
-                    this.serviceDefinitionsCache = serviceDefinitionsCache;
+                    this.authExpressionVsServiceDefinitions = constructAuthVsServiceDefinitions(serviceDefinitionsCache);
+                    this.baseServiceDefinitions = new HashMap<>();
+                    putElements(authExpressionVsServiceDefinitions.get("permitAll"), baseServiceDefinitions, false);
+                    putElements(authExpressionVsServiceDefinitions.get("isAuthenticated()"), baseServiceDefinitions, true);
+                    Set<String> authExpressions = authExpressionVsServiceDefinitions.keySet();
+                    authExpressions.stream().filter(s->s.startsWith("ROLE_")).forEach(s->{
+                        putElements(authExpressionVsServiceDefinitions.get(s), baseServiceDefinitions, true);
+                    });
                 }
             }
         }
+    }
+
+    //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
+    private MultiValuedMap<String, ServiceDefinition> constructAuthVsServiceDefinitions(Map<String, ServiceDefinition> serviceDefinitions) {
+        MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = new ArrayListValuedHashMap<>();
+        if (securityService.isSecurityEnabled() != null) {
+            FilterSecurityInterceptor filterSecurityInterceptor = WMAppContext.getInstance().getSpringBean(FilterSecurityInterceptor.class);
+            FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
+            for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
+                String path = serviceDefinition.getWmServiceOperationInfo().getRelativePath();
+                String method = serviceDefinition.getWmServiceOperationInfo().getHttpMethod();
+                method = StringUtils.upperCase(method);
+                Collection<ConfigAttribute> attributes = securityMetadataSource.getAttributes(new FilterInvocation(null, "/services", path, null, 
+                        method));
+                List<ConfigAttribute> configAttributeList;
+                if (attributes instanceof List) {
+                    configAttributeList = (List) attributes;
+                } else {
+                    configAttributeList = new ArrayList<>(attributes);
+                }
+                if (configAttributeList.size() == 1) {
+                    ConfigAttribute configAttribute = configAttributeList.get(0);
+                    if (configAttribute != null) {
+                        String attribute = configAttribute.toString().trim();
+                        if (attribute.startsWith("hasAnyRole(")) {
+                            String rolesString = attribute.substring("hasAnyRole(".length(), attribute.length() -1);
+                            String[] roles = rolesString.split(",");
+                            for (String role : roles) {
+                                role = role.trim();
+                                role = role.substring(1, role.length()- 1);
+                                authExpressionVsServiceDefinitions.put(role, serviceDefinition);
+                            }
+                        } else {
+                            authExpressionVsServiceDefinitions.put(attribute, serviceDefinition);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
+                authExpressionVsServiceDefinitions.put("permitAll", serviceDefinition);
+            }
+        }
+        return authExpressionVsServiceDefinitions;
     }
 
     private void loadPrefabsServiceDefinitions() {
@@ -166,6 +246,18 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             loadServiceDefinitions(executor);
         } finally {
             executor.shutdown();
+        }
+    }
+
+    private void putElements(Collection<ServiceDefinition> serviceDefinitions, Map<String, ServiceDefinition> serviceDefinitionsMap, boolean valueLess) {
+        if (serviceDefinitions != null) {
+            for (ServiceDefinition serviceDefinition : serviceDefinitions) {
+                if (valueLess) {
+                    serviceDefinitionsMap.put(serviceDefinition.getId(), null);
+                } else {
+                    serviceDefinitionsMap.put(serviceDefinition.getId(), serviceDefinition);
+                }
+            }
         }
     }
 
