@@ -137,7 +137,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
     private MultiValuedMap<String, ServiceDefinition> constructAuthVsServiceDefinitions(Map<String, ServiceDefinition> serviceDefinitions) {
         MultiValuedMap<String, ServiceDefinition> authExpressionVsServiceDefinitions = new ArrayListValuedHashMap<>();
-        if (securityService.isSecurityEnabled() != null) {
+        if (securityService.isSecurityEnabled()) {
             FilterSecurityInterceptor filterSecurityInterceptor = WMAppContext.getInstance().getSpringBean(FilterSecurityInterceptor.class);
             FilterInvocationSecurityMetadataSource securityMetadataSource = filterSecurityInterceptor.getSecurityMetadataSource();
             for (ServiceDefinition serviceDefinition : serviceDefinitions.values()) {
