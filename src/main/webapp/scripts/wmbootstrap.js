@@ -253,7 +253,8 @@ Application
             '$cookies',
             'PREVIEW_CONSTANTS',
             'NavigationService',
-            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies, PREVIEW_CONSTANTS, NavigationService) {
+            'MetaDataFactory',
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route, $http, DeviceService, $cookies, PREVIEW_CONSTANTS, NavigationService, MetaDataFactory) {
                 'use strict';
 
                 var prevRoute,
@@ -734,13 +735,15 @@ Application
                     var deferred = $q.defer();
                     SecurityService.setConfig(null);
                     SecurityService.getConfig(function () {
-                        if (!appVariablesLoaded) {
-                            initAppVariablesAndDependencies().
+                        MetaDataFactory.load().then(function() {
+                            if (!appVariablesLoaded) {
+                                initAppVariablesAndDependencies().
                                 then(deferred.resolve, deferred.resolve);
-                        } else {
-                            updateLoggedInUserVariable().
+                            } else {
+                                updateLoggedInUserVariable().
                                 then(deferred.resolve, deferred.resolve);
-                        }
+                            }
+                        });
                     }, WM.noop, true);
                     return deferred.promise;
                 }

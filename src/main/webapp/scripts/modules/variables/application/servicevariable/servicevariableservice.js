@@ -26,8 +26,9 @@ wm.variables.services.$servicevariable = ['Variables',
     '$base64',
     'SWAGGER_CONSTANTS',
     'oAuthProviderService',
+    'SecurityService',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS, oAuthProviderService) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS, oAuthProviderService, SecurityService) {
         "use strict";
 
         var requestQueue = {},
@@ -486,6 +487,9 @@ wm.variables.services.$servicevariable = ['Variables',
 
         //Gets method info for given variable and input fields using options provided
         function getMethodInfo(variable, inputFields, options) {
+            if(!variable._wmServiceOperationInfo) {
+                return {};
+            }
             var methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo),
                 securityDefnObj = _.get(methodInfo.securityDefinitions, '0'),
                 isOAuthTypeService = securityDefnObj && (securityDefnObj.type === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_OAUTH2);
@@ -510,7 +514,6 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                 });
             }
-
             return methodInfo;
         }
 
@@ -570,22 +573,47 @@ wm.variables.services.$servicevariable = ['Variables',
                 dataParams.push(param);
             });
 
-            if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
-                methodInfo = getMethodInfo(variable, inputFields, options);
-                /*Adding basic auth params via script should be removed once the backend gives a fix*/
-                if (_.get(methodInfo.securityDefinitions, '0.type') === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC) {
-                    addBasicAuthParams(methodInfo.parameters, inputFields);
-                }
-                if (_.isEmpty(methodInfo)) {
-                    params = {
-                        'error': {
-                            'type': 'meta_data_missing',
-                            'field': '_wmServiceOperationInfo',
-                            'message': 'Meta data for the service "' + variable.service + '" is missing. Please run the project again.'
+            if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1) {
+                //If meta data for a service is not found, check if the user is authenticated or not
+                //If user is athenticated then display a toaster stating he is not authorised
+                //else redirect him to login dialog or login page based on project settings
+                if (!variable._wmServiceOperationInfo) {
+                    SecurityService.isAuthenticated(function (isAuthenticated) {
+                        if (isAuthenticated) {
+                            params = {
+                                'error': {
+                                    'type': 'meta_data_missing',
+                                    'field': '_wmServiceOperationInfo',
+                                    'message': 'You\'re not authorised to access the resource "' + variable.service + '".'
+                                }
+                            };
+                        } else {
+                            params =  {
+                                'error' : {}
+                            };
+                            var appManager = Utils.getService("AppManager");
+                            appManager.handleSessionTimeOut();
                         }
-                    };
+                    }, function (authenticationError) {
+                        console.warn(authenticationError);
+                    });
                 } else {
-                    params = constructRestRequestParams(methodInfo, variable, inputFields);
+                    methodInfo = getMethodInfo(variable, inputFields, options);
+                    /*Adding basic auth params via script should be removed once the backend gives a fix*/
+                    if (_.get(methodInfo.securityDefinitions, '0.type') === VARIABLE_CONSTANTS.REST_SERVICE.SECURITY_DEFN_BASIC) {
+                        addBasicAuthParams(methodInfo.parameters, inputFields);
+                    }
+                    if (_.isEmpty(methodInfo)) {
+                        params = {
+                            'error': {
+                                'type': 'meta_data_missing',
+                                'field': '_wmServiceOperationInfo',
+                                'message': 'Meta data for the service "' + variable.service + '" is missing. Please run the project again.'
+                            }
+                        };
+                    } else {
+                        params = constructRestRequestParams(methodInfo, variable, inputFields);
+                    }
                 }
                 if (params.error && params.error.type === ERR_TYPE_NO_ACCESSTOKEN) {
                     oAuthProviderService.performAuthorization(undefined, params.securityDefnObj[OAUTH_PROVIDER_KEY], getDataInRun.bind(undefined, variable, options, success, errorCB));
@@ -624,7 +652,7 @@ wm.variables.services.$servicevariable = ['Variables',
             }
 
             /* if the service produces octet/stream, replicate file download through form submit */
-            if (WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
+            if (methodInfo && WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
                 Utils.simulateFileDownload(params, variable.dataBinding.file || variable.name, variable.dataBinding.exportType, function () {
                     initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable);
                     Utils.triggerFn(success);

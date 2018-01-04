@@ -44,8 +44,12 @@ wm.variables.factories.MetaDataFactory = [
 
         // Get metadata of the variable corresponding to operationId and prefabName
         function getByOperationId(operationId, prefabName) {
-            var scope = prefabName || 'APP';
+            var scope = prefabName || 'APP',
+                serviceMetaInfo = _.get(metaInfo[scope], operationId);
             // Return metadata of the variable
+            if (!serviceMetaInfo) {
+                return serviceMetaInfo;
+            }
             return _.get(metaInfo[scope], [operationId, 'wmServiceOperationInfo']) || {};
         }
         return {
