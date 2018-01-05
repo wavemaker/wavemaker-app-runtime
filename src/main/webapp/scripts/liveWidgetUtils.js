@@ -431,10 +431,10 @@ WM.module('wm.widgets.live')
 
             function getCaptionByWidget(type, index, isRelated) {
                 if (isRelated) {
-                    return '{{getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield || formFields[' + index + '].displaylabel)}}';
+                    return 'getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield || formFields[' + index + '].displaylabel)';
                 }
                 if (type === 'password') {
-                    return '********';
+                    return '\'********\'';
                 }
                 var caption = 'formFields[' + index + '].value';
                 if (type === 'datetime' || type === 'timestamp') {
@@ -442,11 +442,11 @@ WM.module('wm.widgets.live')
                 } else if (type === 'time') {
                     caption += ' | date:formFields[' + index + '].timepattern ||  \'hh:mm a\'';
                 } else if (type === 'date') {
-                    caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MM-dd\'';
+                    caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MMM-dd\'';
                 } else if (type === 'rating' || type === 'upload') {
                     caption = '';
                 }
-                return '{{' + caption + '}}';
+                return caption;
             }
 
             function getFormFields(fieldDef) {
@@ -702,7 +702,7 @@ WM.module('wm.widgets.live')
                 template    = template +
                     '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
                     '<div class="{{formFields[' + index + '].class}}" ng-class="formFields[' + index + '].displayname ? _widgetClass : \'' + controlLayout + '\'">' +
-                    '<label class="form-control-static app-label" ng-show="!isUpdateMode && formFields[' + index + '].viewmodewidget !== \'' + VIEW_MODE_OPTIONS.DEFAULT + '\'">' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '</label>';
+                    '<label class="form-control-static app-label" ng-show="!isUpdateMode && formFields[' + index + '].viewmodewidget !== \'' + VIEW_MODE_OPTIONS.DEFAULT + '\'" ng-bind-html="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '"></label>';
 
                 switch (widgetType) {
                 case 'number':
