@@ -1,11 +1,11 @@
-/*global WM,_*/
+/*global WM,_, $, window */
 /*jslint todo: true */
 /*Directive for carousel */
 WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
-                '<div init-widget class="app-carousel carousel slide" ng-class="navigationClass" apply-styles hm-swipe-left="next()" hm-swipe-right="prev()">' +
+                '<div init-widget class="app-carousel carousel slide" ng-class="navigationClass" apply-styles>' +
                     '<ol class="carousel-indicators">' +
                         '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
@@ -78,7 +78,7 @@ WM.module('wm.widgets.advanced')
             };
 
             slideTemplateWrapper =
-                '<div uib-carousel interval="interval" active="active" ng-show="!noDataFound" no-wrap="noWrapSlides" hm-swipe-left="onSwipe(\'left\')" hm-swipe-right="onSwipe(\'right\')"> ' +
+                '<div uib-carousel interval="interval" active="active" ng-show="!noDataFound" no-wrap="noWrapSlides">' +
                     '<div uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></div>' +
                 '</div>';
 
@@ -209,6 +209,161 @@ WM.module('wm.widgets.advanced')
                 handlers.forEach(Utils.triggerFn);
             }
 
+            // Adds swipe functionality on the element.
+            function addSwipee($scope, $ele) {
+                var state = {
+                    'activeItem': '',
+                    'leftItem': '',
+                    'rightItem': '',
+                    'follower': '',
+                    'noOfItems': ''
+                };
+                $ele.swipee({
+                    'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                    'onSwipeStart': function () {
+                        var items = this.find('.app-carousel-item');
+                        state.activeIndex = $scope.activeIndex;
+                        state.noOfItems = items.length;
+                        state.activeItem = items.eq(state.activeIndex);
+                        state.leftItem = items.eq((state.noOfItems + state.activeIndex - 1) % state.noOfItems);
+                        state.rightItem = items.eq((state.noOfItems + state.activeIndex + 1) % state.noOfItems);
+                        state.activeItem.css({
+                            'transition': 'none'
+                        });
+                        state.leftItem.css({
+                            'transition': 'none'
+                        });
+                        state.rightItem.css({
+                            'transition': 'none'
+                        });
+
+                        this.addClass('swipee-transition');
+                    },
+                    'onSwipe': function (e, data) {
+                        // assign the follower and translate depending on data.length
+                        if (state.follower !== state.leftItem && data.length > 0) {
+                            if (state.follower) {
+                                state.follower.css({
+                                    'transform': 'translate3d(0, 0, 0)'
+                                });
+                            }
+                            state.follower = state.leftItem;
+                        } else if (state.follower !== state.rightItem && data.length < 0) {
+                            if (state.follower) {
+                                state.follower.css({
+                                    'transform': 'translate3d(0, 0, 0)'
+                                });
+                            }
+                            state.follower = state.rightItem;
+                        }
+                        state.activeItem.css({
+                            'transform': 'translate3d(' + data.length + 'px, 0, 0)'
+                        });
+                        state.follower.css({
+                            'transform': 'translate3d(' + data.length + 'px, 0, 0)'
+                        });
+                    },
+                    'onSwipeEnd': function (e, data) {
+                        var index = state.activeIndex,
+                            ltr = false;
+
+                        this.removeClass('swipee-transition');
+
+                        // update the activeIndex depending on data.length and reset the styles.
+                        if (data.length > 50) {
+                            index--;
+                            ltr = true;
+                        } else if (-data.length > 50) {
+                            index++;
+                        }
+
+                        state.activeItem.css({
+                            'transition': '',
+                            'transform': ''
+                        });
+                        state.leftItem.css({
+                            'transition': '',
+                            'transform': ''
+                        });
+                        state.rightItem.css({
+                            'transition': '',
+                            'transform': ''
+                        });
+                        state = {};
+
+                        $scope.goTo(index, ltr);
+                    }
+                });
+            }
+
+            // This function applies transition on the items.
+            function animate(items, from, to, ltr) {
+                var callback = {
+                        'success': WM.noop,
+                        'then': function (fn) {
+                            this.success = fn;
+                        }
+                    },
+                    tx = ltr ? 100 : -100,
+                    // item at from index
+                    item = items.eq((from + items.length) % items.length),
+                    // item at to index
+                    follower = items.eq((to + items.length) % items.length);
+                window.requestAnimationFrame(function () {
+                    if (from === to) {
+                        tx = 0;
+                    } else {
+                        if (ltr) {
+                            follower.addClass('left-item').removeClass('right-item');
+                        } else {
+                            follower.addClass('right-item').removeClass('left-item');
+                        }
+                        item.removeClass('right-item left-item');
+                    }
+                    item.css({
+                        '-webkit-transition': '-webkit-transform 0.1s linear',
+                        '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
+                        'transition': 'transform 0.1s linear',
+                        'transform': 'translate3d(' + tx + '%, 0, 0)'
+                    });
+                    follower.css({
+                        '-webkit-transition': '-webkit-transform 0.1s linear',
+                        '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
+                        'transition': 'transform 0.1s linear',
+                        'transform': 'translate3d(' + tx + '%, 0, 0)'
+                    });
+                });
+                $timeout(function () {
+                    item.css({
+                        '-webkit-transition': 'none',
+                        '-webkit-transform': '',
+                        'transition': 'none',
+                        'transform': ''
+                    });
+                    follower.css({
+                        '-webkit-transition': 'none',
+                        '-webkit-transform': '',
+                        'transition': 'none',
+                        'transform': ''
+                    });
+                    // execute the callback fn.
+                    callback.success();
+                }, 150);
+                return callback;
+            }
+
+            // Sets active item, leftItem, rightItem by removing / adding respective classes.
+            function setActiveItem(items, from, to) {
+                // if from and to are undefined then set to 0 index.
+                from = from || 0;
+                to = to || 0;
+
+                items.eq((items.length + from) % items.length).removeClass('left-item').addClass('right-item');
+                items.eq((items.length + to - 1) % items.length).addClass('left-item').removeClass('right-item');
+                items.eq((items.length + to) % items.length).removeClass('left-item right-item');
+                items.eq((items.length + to + 1) % items.length).addClass('right-item').removeClass('left-item');
+            }
+
             directiveDefn = {
                 'restrict'  : 'E',
                 'scope'     : {},
@@ -251,19 +406,6 @@ WM.module('wm.widgets.advanced')
                 },
                 'link' : {
                     'pre': function ($is, $el, attrs) {
-                        //Animation function to move the slides
-                        function animateSlide($active, $next, type) {
-                            var direction = type === 'next' ? 'left' : 'right';
-                            $next.addClass(type);
-                            $next[0].offsetWidth; // force reflow
-                            $active.addClass(direction);
-                            $next.addClass(direction);
-                            $timeout(function () {
-                                $next.removeClass([type, direction].join(' ')).addClass('active');
-                                $active.removeClass(['active', direction].join(' '));
-                                isMoving = false;
-                            }, 600, false);
-                        }
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.widgetProps.nodatamessage.show = attrs.type === CAROUSEL_TYPE.DYNAMIC;
                         $is.noDataFound = false;
@@ -276,14 +418,27 @@ WM.module('wm.widgets.advanced')
                             }
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index, direction) {
+                                var ltr,
+                                    oldElement,
+                                    newElement,
+                                    oldIndex,
+                                    content = $el.find('.carousel-inner'),
+                                    items = content.find('.app-carousel-item');
+
+                                index = (items.length + index) % items.length;
+
+                                if (index === $is.activeIndex) {
+                                    return;
+                                }
+
                                 // if the carousel is not animating then move to another slide.
                                 if (!$is.contents[$is.activeIndex]) {
                                     return;
                                 }
-                                var oldElement = $is.contents[$is.activeIndex].getElement(),
-                                    newElement = $is.contents[index].getElement(),
-                                    type = direction || 'next',
-                                    oldIndex = $is.activeIndex;
+
+                                oldElement = $is.contents[$is.activeIndex].getElement();
+                                newElement = $is.contents[index].getElement();
+                                oldIndex = $is.activeIndex;
 
                                 if ($is.widgetid) {
                                     oldElement.removeClass('active');
@@ -292,10 +447,21 @@ WM.module('wm.widgets.advanced')
                                 } else if (index !== $is.activeIndex && !isMoving) {
                                     isMoving = true;
                                     $is.stop();
-                                    if ($is.activeIndex > index && !direction) {
-                                        type = 'prev';
+                                    if (direction === 'next') {
+                                        ltr = false;
+                                    } else if (direction === 'prev') {
+                                        ltr = true;
+                                    } else if (_.isBoolean(direction)) {
+                                        ltr = direction;
                                     }
-                                    animateSlide(oldElement, newElement, type);
+
+                                    if (WM.isUndefined(ltr)) {
+                                        ltr = $is.activeIndex > index;
+                                    }
+                                    animate(items, $is.activeIndex, index, ltr).then(function () {
+                                        setActiveItem(items, oldIndex, index);
+                                        isMoving = false;
+                                    });
                                     $is.activeIndex  = index;
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
@@ -309,18 +475,14 @@ WM.module('wm.widgets.advanced')
 
                             //function to move to next slide
                             $is.next = function () {
-                                if ($is.activeIndex > $is.contents.length - 2) {
-                                    $is.goTo(0, 'next');
-                                } else {
+                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
                                     $is.goTo($is.activeIndex + 1, 'next');
                                 }
                             };
 
                             //function to move to previous slide
                             $is.prev = function () {
-                                if ($is.activeIndex < 1) {
-                                    $is.goTo($is.contents.length - 1, 'prev');
-                                } else {
+                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
                                     $is.goTo($is.activeIndex - 1, 'prev');
                                 }
                             };
@@ -360,9 +522,16 @@ WM.module('wm.widgets.advanced')
                         var handlers = [],
                             $slideTemplate,
                             _onDestroy,
-                            $innerCarousel;
+                            $innerCarousel,
+                            items,
+                            content;
 
                         Utils.defineProps($is, $el);
+
+                        content = $el.find('>.carousel-inner');
+                        items = content.find('>.app-carousel-item');
+                        items.addClass('right-item');
+                        setActiveItem(items);
 
                         if (CONSTANTS.isRunMode) {
                             if (!attrs.type) {
@@ -392,6 +561,13 @@ WM.module('wm.widgets.advanced')
                                 };
                             }
                         }
+
+                        // add swipe functionality on element for mobile device.
+                        if (Utils.isMobile()) {
+                            $el.addClass('swipee-carousel');
+                            addSwipee($is, content);
+                        }
+
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
                         _onDestroy = onDestroy.bind(undefined, $is, handlers);
