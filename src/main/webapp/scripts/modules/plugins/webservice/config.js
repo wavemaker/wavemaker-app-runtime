@@ -121,6 +121,14 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             url: "services/projects/:projectId/soapservice/:serviceId/settings",
             method: "POST"
         },
+        reImportSoapService: {
+            url: "services/projects/:projectID/soapservice/:serviceId/reimport",
+            method: "POST",
+            headers: {
+                'Content-Type': undefined
+            },
+            transformRequest: WM.identity
+        },
         configureWebSocketService: {
             url: "services/projects/:projectID/websocketservice/settings",
             method: "POST"
