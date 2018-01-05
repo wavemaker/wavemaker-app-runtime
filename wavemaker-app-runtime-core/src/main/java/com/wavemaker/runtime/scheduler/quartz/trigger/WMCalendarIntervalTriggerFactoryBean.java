@@ -16,9 +16,10 @@
 package com.wavemaker.runtime.scheduler.quartz.trigger;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
-import org.joda.time.LocalDateTime;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.DateBuilder;
 import org.quartz.JobDataMap;
@@ -130,11 +131,11 @@ public class WMCalendarIntervalTriggerFactoryBean implements FactoryBean<Calenda
             timeZone = TimeZone.getDefault();
         }
 
-        Timestamp startTimestamp = Timestamp.valueOf(LocalDateTime.parse(startTime).toString(DEFAULT_TIMESTAMP_FORMAT));
+        Timestamp startTimestamp = Timestamp.valueOf(LocalDateTime.parse(startTime).format(DateTimeFormatter.ofPattern(DEFAULT_TIMESTAMP_FORMAT)));
 
         Timestamp endTimestamp = null;
         if(endTime != null){
-            endTimestamp = Timestamp.valueOf(LocalDateTime.parse(endTime).toString(DEFAULT_TIMESTAMP_FORMAT));
+            endTimestamp = Timestamp.valueOf(LocalDateTime.parse(endTime).format(DateTimeFormatter.ofPattern(DEFAULT_TIMESTAMP_FORMAT)));
         }
 
         WMCalendarIntervalTriggerImpl calendarIntervalTriggerImpl = new WMCalendarIntervalTriggerImpl();

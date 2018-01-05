@@ -23,10 +23,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
-import org.joda.time.LocalDateTime;
 import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -42,9 +42,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wavemaker.commons.json.deserializer.HttpHeadersDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
-import com.wavemaker.commons.json.deserializer.WMLocalDateTimeDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.json.serializer.NoOpByteArraySerializer;
 import com.wavemaker.commons.json.serializer.WMLocalDateTimeSerializer;
@@ -256,9 +256,11 @@ public class WMObjectMapper extends ObjectMapper {
 
             module.addDeserializer(Date.class, new WMDateDeSerializer());
             module.addDeserializer(java.sql.Date.class, new WMSqlDateDeSerializer());
-            module.addDeserializer(LocalDateTime.class, new WMLocalDateTimeDeSerializer());
             module.addDeserializer(HttpHeaders.class, new HttpHeadersDeSerializer());
             registerModule(module);
+
+            JavaTimeModule javaTimeModule = new JavaTimeModule();
+            registerModule(javaTimeModule);
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
@@ -281,8 +283,11 @@ public class WMObjectMapper extends ObjectMapper {
 
             SimpleModule module = new SimpleModule("WMDefaultSerializer");
             module.addSerializer(byte[].class, new NoOpByteArraySerializer());
-            module.addSerializer(LocalDateTime.class, new WMLocalDateTimeSerializer());
             registerModule(module);
+
+            JavaTimeModule javaTimeModule = new JavaTimeModule();
+            javaTimeModule.addSerializer(LocalDateTime.class, new WMLocalDateTimeSerializer());
+            registerModule(javaTimeModule);
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
