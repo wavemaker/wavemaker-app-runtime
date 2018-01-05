@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.wavemaker.runtime.data.model.TemporalHistoryEntity;
+
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 27/11/17
@@ -16,6 +18,8 @@ import java.lang.annotation.Target;
 public @interface TableTemporal {
 
     TemporalType[] value();
+
+    Class<? extends TemporalHistoryEntity> historyClass();
 
     enum TemporalType {
         SYSTEM,

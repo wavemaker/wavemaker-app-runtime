@@ -23,7 +23,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -38,10 +37,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
-import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
 import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
-import com.wavemaker.runtime.data.dao.generators.TemporalQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
@@ -57,7 +54,6 @@ import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.AggregationInfo;
-import com.wavemaker.runtime.data.periods.PeriodClause;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
@@ -67,9 +63,10 @@ import com.wavemaker.runtime.file.model.Downloadable;
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
         WMGenericDao<Entity, Identifier> {
 
-    private Class<Entity> entityClass;
+    protected Class<Entity> entityClass;
+    protected EntityQueryGenerator<Entity, Identifier> queryGenerator;
+
     private SortValidator sortValidator;
-    private EntityQueryGenerator<Entity, Identifier> queryGenerator;
 
     public abstract HibernateTemplate getTemplate();
 
@@ -85,17 +82,6 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         this.sortValidator = new SortValidator(entityClass);
 
         queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
-
-        if (entityClass.isAnnotationPresent(TableTemporal.class)) {
-            final TableTemporal temporal = entityClass.getAnnotation(TableTemporal.class);
-            // decorating with given temporal types
-            final boolean applicationTemporalExists = Arrays.stream(temporal.value())
-                    .anyMatch(temporalType -> temporalType == TableTemporal.TemporalType.APPLICATION);
-
-            if (applicationTemporalExists) {
-                queryGenerator = new TemporalQueryGenerator<>(queryGenerator, TableTemporal.TemporalType.APPLICATION);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -227,15 +213,6 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return search(null, null);
     }
 
-    @Override
-    public Page<Entity> findHistory(
-            final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
-        final HqlQueryBuilder builder = HqlQueryBuilder.newBuilder(entityClass)
-                .withFilter(query);
-        periodClauses.forEach(builder::withPeriodClause);
-
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, pageable);
-    }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
         if (ArrayUtils.isNotEmpty(queryFilters)) {

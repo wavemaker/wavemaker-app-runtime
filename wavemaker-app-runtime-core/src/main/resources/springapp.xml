@@ -72,6 +72,15 @@
 
     <bean id="procedureDesignService" class="com.wavemaker.runtime.service.ProcedureDesignServiceImpl"/>
 
+    <bean id="nonHistoryEntitiesFilter" class="com.wavemaker.runtime.data.util.NegatingTypeFilter">
+        <constructor-arg ref="historyEntitiesFilter"/>
+    </bean>
+
+    <bean id="historyEntitiesFilter" class="org.springframework.core.type.filter.AssignableTypeFilter">
+        <constructor-arg value="com.wavemaker.runtime.data.model.TemporalHistoryEntity"/>
+    </bean>
+
+
     <bean id="serviceDefinitionController"
           class="com.wavemaker.runtime.servicedef.controller.ServiceDefinitionController"/>
 
