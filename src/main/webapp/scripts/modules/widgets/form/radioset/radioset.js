@@ -49,7 +49,7 @@ WM.module('wm.widgets.form')
 
             FormWidgetUtils.extractDisplayOptions(dataSet, scope, element);
 
-            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'radioset');
+            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, element, 'radioset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
         }

@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                 '</ul>'
             );
     }])
-    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', '$rootScope', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils, $rs) {
+    .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', 'LiveWidgetUtils', '$rootScope', 'WIDGET_CONSTANTS', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache, LiveWidgetUtils, $rs, WIDGET_CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.base.editors.dataseteditors']),
             notifyFor = {
@@ -23,7 +23,9 @@ WM.module('wm.widgets.form')
                 'selectedvalues': true,
                 'disabled'      : true,
                 'orderby'       : true,
-                'layout'        : true
+                'layout'        : true,
+                'groupby'       : CONSTANTS.isStudioMode,
+                'match'         : CONSTANTS.isStudioMode
             },
             ALLFIELDS = 'All Fields';
 
@@ -51,7 +53,7 @@ WM.module('wm.widgets.form')
 
             FormWidgetUtils.extractDisplayOptions(dataSet, scope, element);
 
-            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
+            template         = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, element, 'checkboxset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
 
@@ -64,8 +66,11 @@ WM.module('wm.widgets.form')
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var dataSet,
-                isBoundToServiceVariable;
-
+                isBoundToServiceVariable,
+                eleScope    = element.scope(),
+                variable    = Utils.getVariableName(scope, eleScope),
+                wp          = scope.widgetProps,
+                selectedVariable;
             dataSet = scope.dataset || scope.scopedataset;
 
             //Checking if widget is bound to service variable
@@ -80,6 +85,10 @@ WM.module('wm.widgets.form')
                     FormWidgetUtils.appendMessage(element);
                 } else {
                     constructCheckboxSet(scope, element, newVal);
+                }
+                if (scope.widgetid) {
+                    selectedVariable = eleScope.Variables[variable];
+                    FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wp);
                 }
                 break;
             case 'datafield':
@@ -101,6 +110,25 @@ WM.module('wm.widgets.form')
                 break;
             case 'layout':
                 element.removeClass(oldVal).addClass(newVal);
+                break;
+            case 'groupby':
+                if (scope.widgetid) {
+                    selectedVariable = eleScope.Variables[variable];
+                    FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wp);
+                    if (newVal && newVal !== '') {
+                        if (newVal === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
+                            wp.groupby.isGroupBy = true;
+                        } else {
+                            wp.groupby.isGroupBy = false;
+                        }
+                    }
+                    constructCheckboxSet(scope, element, dataSet);
+                }
+                break;
+            case 'match':
+                if (scope.widgetid) {
+                    wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], scope.match);
+                }
                 break;
             }
         }

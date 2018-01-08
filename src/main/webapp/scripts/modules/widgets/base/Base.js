@@ -774,7 +774,11 @@ WM.module('wm.widgets.base', [])
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "media-list"]},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
-
+                        "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
+                        "match": {"type": "list-group", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word", "datasetfilter": "none"},
+                        "collapsible": {"type": "boolean", "show": false},
+                        "showcount": {"type": "boolean", "show": false},
+                        "dateformat": {"type": "list", "options": [], "widget": "date-time-patterns", "show": false},
                         /* ---- events ---- */
 
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -3132,7 +3136,7 @@ WM.module('wm.widgets.base', [])
                         optionCategoryName = 'Field';
 
                     // default options for live list
-                    if (scope.widgettype === 'wm-list') {
+                    if (scope.widgettype === 'wm-list' || scope.widgettype === 'wm-checkboxset') {
                         defaultOptions = [{"name": "Javascript", "category": "Script"}];
                         if (_.includes(scope[prop], '(')) {
                             defaultOptions.push({
