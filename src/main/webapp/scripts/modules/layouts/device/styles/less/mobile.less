@@ -9,7 +9,7 @@
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
   }
-  }
+}
 @keyframes leftPanelCollapse {
   0% {
     -webkit-transform: translate3d(-90%, 0, 0);
@@ -33,18 +33,30 @@
     &.left-panel-collapsed {
       z-index: 99;
       opacity: 0;
-      -webkit-transition: -webkit-transform 0.1s ease-out 0.1s, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
-      -webkit-transform: translate3d(-90%, 0, 0);
-      transition: transform 0.1s ease-out 0.1s, opacity 0.001s linear 0.2s, z-index 0.3s linear 0.35s;
-      transform: translate3d(-90%, 0, 0);
-      -webkit-animation: pageContainerCollapse 0.1s linear 0.2;
-      animation: pageContainerCollapse 0.1s linear 0.2;
+      -webkit-transition: -webkit-transform 0.1s ease-out, opacity 0.001s linear 0.2s, z-index 0.05s linear 0.35s;
+      -webkit-transform: translate3d(-100%, 0, 0);
+      transition: transform 0.1s ease-out, opacity 0.001s linear 0.2s, z-index 0.2s linear 0.35s;
+      transform: translate3d(-100%, 0, 0);
+      -webkit-animation: pageContainerCollapse 0.3s linear 0.1s;
+      animation: pageContainerCollapse 0.3s linear 0.1s;
+      animation-fill-mode: forwards;
     }
     &.left-panel-expanded {
+      -webkit-transition: -webkit-transform 0.3s ease-out;
+      transition: transform 0.3s ease-out;
       opacity: 1;
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
       z-index: 101;
+    }
+    &.swipee-transition:after {
+      content: '';
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: block;
+      opacity: 0;
+      z-index: 100;
     }
   }
   &.slide-over {
@@ -392,9 +404,9 @@
       &.left-panel-expanded-container {
         .compute-left-position(@n:0) when (@n <= 12) {
           &.left-panel-container-@{device}-@{n} {
-            -webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+            -webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
             -webkit-transform: translate3d((1 - @n / 12)*100%, 0, 0);
-            transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+            transition: -webkit-transform 0.2s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
             transform: translate3d((1 - @n / 12)*100%, 0, 0);
           }
           .compute-left-position(@n + 1);
@@ -402,9 +414,9 @@
         .compute-left-position();
       }
       &.left-panel-collapsed-container {
-        -webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+        -webkit-transition: -webkit-transform 0.1s ease-out, z-index 0.05s linear 0.35s;
         -webkit-transform: translate3d(0, 0, 0);
-        transition: -webkit-transform 0.3s ease-out, opacity 0.001s linear 0.4s, z-index 0.05s linear 0.35s;
+        transition: -webkit-transform 0.1s ease-out, z-index 0.05s linear 0.35s;
         transform: translate3d(0, 0, 0);
         z-index: 0;
       }

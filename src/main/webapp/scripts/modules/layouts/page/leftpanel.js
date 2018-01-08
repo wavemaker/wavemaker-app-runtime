@@ -20,22 +20,20 @@ WM.module('wm.layouts.page')
                 'animation': true
             };
 
-        function addSwipeeForSlideIn($ele, state) {
+        function addSwipeeForSlideIn($ele, state, $s) {
             $ele.swipee({
                 'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'onSwipeStart': function (e, data) {
+                    state.isExpanded = $s.expanded;
                     if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
                         return false;
                     }
 
-                    // set leftPanel element on state.
-                    state.leftPanel = $(this);
-                    state.leftPanelWidth = state.leftPanel.width();
-
-                    // Set the pageContainer element on state.
-                    state.pageContainer = state.leftPanel.closest('.app-page');
-                    state.pageContainerWidth = state.pageContainer.width();
+                    if (!state.leftPanelWidth) {
+                        state.leftPanelWidth = state.leftPanel.width();
+                        state.pageContainerWidth = state.pageContainer.width();
+                    }
 
                     state.pageContainer.css({
                         'transition': 'none'
@@ -45,9 +43,6 @@ WM.module('wm.layouts.page')
                     if (state.leftPanel[0].iscroll) {
                         state.leftPanel[0].iscroll.disable();
                     }
-
-                    // disable pointer-events during swipe.
-                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', 'none');
 
                     state.leftPanel.css({
                         'opacity': 1,
@@ -78,26 +73,19 @@ WM.module('wm.layouts.page')
 
                 },
                 'onSwipeEnd': function (e, data) {
-                    // enable pointer-events on the swipe end.
-                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', '');
-
-                    var iscope = state.leftPanel.isolateScope();
-
                     if (data.length > 10) {
                         if (state.leftPanel[0].iscroll) {
                             state.leftPanel[0].iscroll.enable();
                         }
                         // expand the leftPanel
-                        if (iscope) {
-                            iscope.expand();
-                        }
+                        $s.expand();
+
                         state.isExpanded = true;
                         state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
                     } else if (data.length < 10) {
                         // collapse the leftPanel
-                        if (iscope) {
-                            iscope.collapse();
-                        }
+                        $s.collapse();
+
                         if (state.leftPanel[0].iscroll) {
                             state.leftPanel[0].iscroll.disable();
                         }
@@ -118,34 +106,28 @@ WM.module('wm.layouts.page')
                         'opacity': '',
                         'z-index': ''
                     });
-                    state = {
-                        'isExpanded': state.isExpanded,
-                        'colWidth': iscope && iscope.columnwidth
-                    };
                 }
             });
         }
 
-        function addSwipeeForSlideOver($ele, state) {
+        function addSwipeeForSlideOver($ele, state, $s) {
             $ele.swipee({
                 'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'onSwipeStart': function (e, data) {
+                    state.isExpanded = $s.expanded;
                     if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
                         return false;
                     }
 
-                    // set leftPanel element on state.
-                    state.leftPanel = $(this);
-                    state.leftPanelWidth = state.leftPanel.width();
+                    if (!state.leftPanelWidth) {
+                        state.leftPanelWidth = state.leftPanel.width();
+                    }
 
                     // disable the iscroll to avoid scroll during swipe.
                     if (state.leftPanel[0].iscroll) {
                         state.leftPanel[0].iscroll.disable();
                     }
-
-                    // disable pointer-events during swipe.
-                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', 'none');
 
                     state.leftPanel.css({
                         'opacity': 1,
@@ -170,26 +152,19 @@ WM.module('wm.layouts.page')
                     });
                 },
                 'onSwipeEnd': function (e, data) {
-                    // enable pointer-events on the swipe end.
-                    state.leftPanel.find('.app-ng-transclude').css('pointer-events', '');
-
-                    var iscope = state.leftPanel.isolateScope();
-
                     if (data.length > 10) {
                         if (state.leftPanel[0].iscroll) {
                             state.leftPanel[0].iscroll.enable();
                         }
                         // expand the leftPanel
-                        if (iscope) {
-                            iscope.expand();
-                        }
+                        $s.expand();
+
                         state.isExpanded = true;
                         state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
                     } else if (data.length < 10) {
                         // collapse the leftPanel
-                        if (iscope) {
-                            iscope.collapse();
-                        }
+                        $s.collapse();
+
                         if (state.leftPanel[0].iscroll) {
                             state.leftPanel[0].iscroll.disable();
                         }
@@ -204,9 +179,6 @@ WM.module('wm.layouts.page')
                         'opacity': '',
                         'z-index': ''
                     });
-                    state = {
-                        'isExpanded': state.isExpanded
-                    };
                 }
             });
         }
@@ -302,6 +274,9 @@ WM.module('wm.layouts.page')
                     },
 
                     'post': function (scope, element, attrs) {
+                        var pageContainer,
+                            state;
+
                         /*If columnwidth is passed set the appropriate class*/
                         if (scope.columnwidth) {
                             setLeftPanelWidth(element, ['md', 'sm'], scope.columnwidth);
@@ -315,6 +290,9 @@ WM.module('wm.layouts.page')
                         };
                         scope.expand = function () {
                             var appPage = element.closest('.app-page');
+
+                            element.removeClass('swipee-transition');
+
                             scope.expanded = true;
                             if (!($rootScope.isTabletApplicationType && scope.animation === 'slide-in')) {
                                 scope.destroyCollapseActionListener = listenForCollapseAction(scope, element, appPage);
@@ -330,6 +308,9 @@ WM.module('wm.layouts.page')
                         };
                         scope.collapse = function () {
                             var appPage = element.closest('.app-page');
+
+                            element.addClass('swipee-transition');
+
                             scope.expanded = false;
                             appPage.addClass('left-panel-collapsed-container')
                                 .removeClass('left-panel-expanded-container');
@@ -341,22 +322,24 @@ WM.module('wm.layouts.page')
                             Utils.triggerFn(scope.destroyCollapseActionListener);
                             $rootScope.$safeApply(scope);
                         };
-                        element.closest('.app-page').addClass('left-panel-collapsed-container');
+                        pageContainer = element.closest('.app-page');
+                        pageContainer.addClass('left-panel-collapsed-container');
 
-                        var state = {
+                        state = {
                             'isExpanded': false,
                             'colWidth': scope.columnwidth,
-                            'leftPanel': '',
-                            'pageContainer': '',
+                            'leftPanel': element,
+                            'pageContainer': pageContainer,
                             'leftPanelWidth': '',
                             'pageContainerWidth': ''
                         };
 
+                        element.addClass('swipee-transition');
                         // Apply swipe changes on mobile.
                         if (scope.animation === 'slide-in') {
-                            addSwipeeForSlideIn(element, state);
+                            addSwipeeForSlideIn(element, state, scope);
                         } else {
-                            addSwipeeForSlideOver(element, state);
+                            addSwipeeForSlideOver(element, state, scope);
                         }
 
                         /* register the property change handler */
