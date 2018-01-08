@@ -79,7 +79,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
         this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
-        this.sortValidator = new SortValidator(entityClass);
+        this.sortValidator = new SortValidator();
 
         queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
     }
@@ -123,7 +123,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
-        this.sortValidator.validate(pageable);
+        this.sortValidator.validate(pageable, entityClass);
         return getTemplate().execute(session -> {
             Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
             criteria.add(Restrictions.eq(key, value));
@@ -133,7 +133,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @SuppressWarnings("unchecked")
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
-        this.sortValidator.validate(pageable);
+        this.sortValidator.validate(pageable, entityClass);
         validateQueryFilters(queryFilters);
         return getTemplate().execute((HibernateCallback<Page>) session -> {
             Criteria criteria = session.createCriteria(entityClass);
@@ -156,7 +156,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @Override
     @SuppressWarnings("unchecked")
     public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
-        this.sortValidator.validate(pageable);
+        this.sortValidator.validate(pageable, entityClass);
 
         final HqlQueryBuilder builder = queryGenerator.searchByQuery(query);
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder, pageable);
@@ -180,7 +180,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
-        this.sortValidator.validate(pageable);
+        this.sortValidator.validate(pageable, entityClass);
 
         final HqlQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
         final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, pageable);
@@ -190,7 +190,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        this.sortValidator.validate(pageable);
+        this.sortValidator.validate(pageable, entityClass);
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(session -> {
                     final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
