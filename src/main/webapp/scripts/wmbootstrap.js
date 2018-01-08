@@ -800,8 +800,10 @@ Application
                     routeConfig = {
                         'template': initText,
                         'resolve' : {
-                            'securityConfig': function (AppManager) {
-                                return AppManager.loadSecurityConfig();
+                            'securityConfig': function (AppManager, DeviceService) {
+                                return DeviceService.whenDeviceReady().then(function () {
+                                    return AppManager.loadSecurityConfig();
+                                });
                             },
                             // make sure that the app Variables are loaded before processing the page content
                             'appVariables': ['$q', '$rootScope', function ($q, $rs) {

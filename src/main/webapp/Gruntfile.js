@@ -644,6 +644,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/common/directives/imageCache.js',
                         '<%= config.scripts %>/modules/mobile/common/directives/smoothScroll.js',
                         '<%= config.scripts %>/modules/mobile/common/services/appAutoUpdateService.js',
+                        '<%= config.scripts %>/modules/mobile/common/services/cookieService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/networkService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/deviceFileService.js',

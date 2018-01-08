@@ -269,4 +269,29 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 init();
             }
         }
+    ]).run([
+        '$rootScope',
+        'CookieService',
+        'SecurityService',
+        function ($rootScope, CookieService, SecurityService) {
+            'use strict';
+            var hostName,
+                jsessionidCookieName = 'JSESSIONID',
+                rememberCookieName = 'SPRING_SECURITY_REMEMBER_ME_COOKIE',
+                originalAppLogin = SecurityService.appLogin;
+
+            if (window.cordova) {
+                SecurityService.appLogin = function (params, onSuccess, onError) {
+                    originalAppLogin.call(SecurityService, params, function () {
+                        //on every user login, persist cookies.
+                        hostName = hostName || $rootScope.project.deployedUrl;
+                        CookieService.persistCookie(hostName, jsessionidCookieName);
+                        CookieService.persistCookie(hostName, rememberCookieName);
+                        if (_.isFunction(onSuccess)) {
+                            onSuccess.apply(undefined, arguments);
+                        }
+                    }, onError);
+                };
+            }
+        }
     ]);
