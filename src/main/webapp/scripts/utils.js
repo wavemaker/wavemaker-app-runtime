@@ -170,6 +170,7 @@ WM.module('wm.utils', [])
                 'CAMERA'          : [{'name' : 'cordova-plugin-camera', 'spec' : '2.4.1'},
                                      {'name' : 'cordova-plugin-media-capture', 'spec' : '1.4.3'}],
                 'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '2.3.1'}],
+                'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
                 'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.3'}, {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.3'}, {'name' : 'cordova-plugin-file-opener2', 'spec' : '2.0.19'}],
                 'GEOLOCATION'     : [{'name' : 'cordova-plugin-geolocation', 'spec' : '2.4.3'}],
                 'NETWORK'         : [{'name' : 'cordova-plugin-network-information', 'spec' : '2.0.0'}],
