@@ -295,6 +295,30 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             }, successCallback,failureCallback);
         },
 
+        /**
+         * @ngdoc function
+         * @name wm.WebService.$WebService#reImportSoapService
+         * @methodOf wm.webservice.$WebService
+         * @function
+         *
+         * @description
+         * reimport for an existing SOAP web service in a project.
+         *
+         * @param {object} connectionParams parameters required for the service
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        reImportSoapService: function (connectionParams, successCallback, failureCallback) {
+
+            BaseService.send({
+                target: 'WebService',
+                action: 'reImportSoapService',
+                data : connectionParams.data,
+                params: connectionParams.params,
+                urlParams: connectionParams.urlParams
+            }, successCallback,failureCallback);
+        },
+
 
         /**
          * @ngdoc function
