@@ -313,7 +313,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'reImportSoapService',
-                data : connectionParams.data,
+                data : connectionParams.content,
                 params: connectionParams.params,
                 urlParams: connectionParams.urlParams
             }, successCallback,failureCallback);
