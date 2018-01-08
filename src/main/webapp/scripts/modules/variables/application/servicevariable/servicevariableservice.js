@@ -27,8 +27,9 @@ wm.variables.services.$servicevariable = ['Variables',
     'SWAGGER_CONSTANTS',
     'oAuthProviderService',
     'SecurityService',
+    'BaseService',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS, oAuthProviderService, SecurityService) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, $timeout, $base64, SWAGGER_CONSTANTS, oAuthProviderService, SecurityService, BaseService) {
         "use strict";
 
         var requestQueue = {},
@@ -577,7 +578,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 //If meta data for a service is not found, check if the user is authenticated or not
                 //If user is athenticated then display a toaster stating he is not authorised
                 //else redirect him to login dialog or login page based on project settings
-                if (!variable._wmServiceOperationInfo) {
+                if (variable._wmServiceOperationInfo === null) {
                     SecurityService.isAuthenticated(function (isAuthenticated) {
                         if (isAuthenticated) {
                             params = {
@@ -591,6 +592,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             params =  {
                                 'error' : {}
                             };
+                            BaseService.pushToErrorCallStack(undefined, variable.invoke, WM.noop)
                             var appManager = Utils.getService("AppManager");
                             appManager.handleSessionTimeOut();
                         }
