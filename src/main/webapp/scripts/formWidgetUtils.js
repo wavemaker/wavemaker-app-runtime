@@ -14,10 +14,42 @@ WM.module('wm.widgets.form')
         '$servicevariable',
         '$rootScope',
         '$filter',
+        'AppDefaults',
+        'WIDGET_CONSTANTS',
+        'DeviceVariableService',
 
-        function (WidgetUtilService, Utils, Variables, $servicevariable, $rootScope, $filter) {
+        function (WidgetUtilService, Utils, Variables, $servicevariable, $rootScope, $filter, AppDefaults, WIDGET_CONSTANTS, DeviceVariableService) {
             'use strict';
-            var ALLFIELDS   = 'All Fields';
+            var ALLFIELDS   = 'All Fields',
+                momentLocale             = moment.localeData(),
+                momentCalendarOptions    = Utils.getClonedObject(momentLocale._calendar),
+                momentCalendarDayOptions = momentLocale._calendarDay || {
+                    'lastDay'  : '[Yesterday]',
+                    'lastWeek' : '[Last] dddd',
+                    'nextDay'  : '[Tomorrow]',
+                    'nextWeek' : 'dddd',
+                    'sameDay'  : '[Today]',
+                    'sameElse' : 'L'
+                },
+                GROUP_BY_OPTIONS    = {
+                    'ALPHABET' : 'alphabet',
+                    'WORD'     : 'word',
+                    'OTHERS'   : 'Others'
+                },
+                TIME_ROLLUP_OPTIONS = {
+                    'HOUR'  : 'hour',
+                    'DAY'   : 'day',
+                    'WEEK'  : 'week',
+                    'MONTH' : 'month',
+                    'YEAR'  : 'year'
+                },
+                ROLLUP_PATTERNS    = {
+                    'DAY'   : 'yyyy-MM-dd',
+                    'WEEK'  : 'w \'Week\',  yyyy',
+                    'MONTH' : 'MMM, yyyy',
+                    'YEAR'  : 'YYYY',
+                    'HOUR'  : 'hh:mm a'
+                };
 
             /**
              * @ngdoc function
@@ -388,7 +420,7 @@ WM.module('wm.widgets.form')
              * @param {object} dataset dataset on which sort is to be performed
              * @param {string} orderby orderby having field and directions
              */
-            function getOrderedDataSet(dataset, orderby) {
+            function getOrderedDataSet(dataset, orderby, innerItem) {
                 if (!orderby) {
                     return dataset;
                 }
@@ -397,7 +429,7 @@ WM.module('wm.widgets.form')
                     directions = [];
                 _.forEach(items, function (obj) {
                     var item = _.split(obj, ':');
-                    fields.push(item[0]);
+                    fields.push(innerItem ? innerItem + '.' + item[0] : item[0]);
                     directions.push(item[1]);
                 });
                 return _.orderBy(dataset, fields, directions);
@@ -468,11 +500,11 @@ WM.module('wm.widgets.form')
                                 if (scope.binddisplayimagesrc || scope.displayimagesrc) {
                                     imgSrc = WidgetUtilService.getEvaluatedData(scope, option, {expressionName: 'displayimagesrc'});
                                 }
-                                data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
+                                data.push({'key' : key, 'value' : value, 'dataObject': option, 'imgSrc': imgSrc});
                             });
                         } else {
                             _.forEach(dataSet, function (option) {
-                                data.push({'key' : option, 'value' : option});
+                                data.push({'key' : option, 'value' : option, 'dataObject': option});
                             });
                         }
                     }
@@ -501,14 +533,14 @@ WM.module('wm.widgets.form')
                                     if (scope.binddisplayimagesrc || scope.displayimagesrc) {
                                         imgSrc = WidgetUtilService.getEvaluatedData(scope, option, {expressionName: 'displayimagesrc'});
                                     }
-                                    data.push({'key' : key, 'value' : value, 'imgSrc': imgSrc});
+                                    data.push({'key' : key, 'value' : value, 'dataObject': option, 'imgSrc': imgSrc});
                                 }
                             } else {
                                 if (WM.isArray(dataSet)) {
-                                    data.push({'key' : option, 'value' : option});
+                                    data.push({'key' : option, 'value' : option, 'dataObject': option});
                                 } else {
                                     // If dataset is object with key, value and useKeys set to true, only keys are to be returned.
-                                    data.push({'key' : index, 'value' : useKeys ? index : option});
+                                    data.push({'key' : index, 'value' : useKeys ? index : option, 'dataObject': option});
                                 }
                             }
                         });
@@ -598,15 +630,27 @@ WM.module('wm.widgets.form')
              * @param {string} widgetType radioset or checkboxset
              *
              */
-            function getRadiosetCheckboxsetTemplate(scope, widgetType) {
+            function getRadiosetCheckboxsetTemplate(scope, element, widgetType) {
                 var template = '',
                     liClass,
                     labelClass,
                     type,
                     required = '',
                     groupedKeys = {},
+                    groupDataByUserDefinedFn,
+                    groupedLiData,
+                    elScope,
                 //Generate a unique name for inputs in widget, so that when widget is used multiple times (like livelist), each widget behaves independently
                     uniqueName  = 'name=' + (scope.name || widgetType) + Utils.generateGUId();
+
+                function getEndTemplate(_displayOptions) {
+                    return '<li class="' + liClass + ' {{itemclass}}" ng-repeat="dataObj in ' + _displayOptions + ' track by $index" ng-class="{\'active\': dataObj.isChecked}">' +
+                        '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="{{dataObj.value}}">' +
+                        '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index="{{$index}}" value="{{dataObj.key}}" tabindex="{{tabindex}}" ng-checked="dataObj.isChecked"/>' +
+                        '<span class="caption">{{dataObj.value.toString()}}</span>' +
+                        '</label>' +
+                        '</li>';
+                }
                 switch (widgetType) {
                 case 'checkboxset':
                     liClass = 'checkbox app-checkbox';
@@ -642,21 +686,62 @@ WM.module('wm.widgets.form')
 
                             template = template +
                                 '<li class="' + liClass + ' {{itemclass}}" ng-class="{\'active\': checkedValues[\'' + parsedKey + '\']}">' +
-                                '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
-                                '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" ng-checked="checkedValues[\'' + parsedKey + '\']"/>' +
-                                '<span class="caption">' + dataKey.title + '</span>' +
-                                '</label>' +
+                                    '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="' + dataKey.key + '">' +
+                                        '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + dataKey.index + ' value="' + dataKey.key + '" tabindex="' + scope.tabindex + '" ng-checked="checkedValues[\'' + parsedKey + '\']"/>' +
+                                        '<span class="caption">' + dataKey.title + '</span>' +
+                                    '</label>' +
                                 '</li>';
                         });
                     });
+                } else if (scope.groupby) {
+
+                    if (_.includes(scope.groupby, '(')) {
+                        elScope = element.scope();
+                        if (elScope) {
+                            groupDataByUserDefinedFn = elScope[scope.groupby.split('(')[0]];
+                            groupedLiData = _.groupBy(scope.displayOptions, function (data) {
+                                return Utils.triggerFn(groupDataByUserDefinedFn, data.dataObject);
+                            });
+                        }
+                    } else {
+                        groupedLiData = getGroupedData(scope.displayOptions, scope.groupby, scope.match, scope.orderby, scope.dateformat, 'dataObject');
+                    }
+
+                    scope.groupedData = getSortedGroupedData(groupedLiData, scope.groupby);
+
+                    template = template +
+                        '<li class="app-list-item-group" ng-repeat="groupObj in groupedData track by $index">' +
+                            '<ul class="item-group">' +
+                                '<li class="list-group-header" title="{{groupObj.key}}"  ng-class="{\'collapsible-content\' : collapsible}">' +
+                                    '<h4 class="group-title">{{groupObj.key}}' +
+                                        '<div class="header-action">' +
+                                            '<i class="app-icon wi action wi-chevron-up" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
+                                            '<span ng-if="showcount" class="label label-default">{{groupObj.data.length}}</span>' +
+                                        '</div>' +
+                                    '</h4>' +
+                                '</li>' +
+                                getEndTemplate('groupObj.data') +
+                            '</ul>' +
+                        '</li>'
+
+                    if (scope.collapsible && scope.groupedData.length) {
+                        // on groupby header click, collapse or expand the list-items.
+                        element.on('click', 'li.list-group-header', function (e) {
+                            var selectedGroup   = WM.element(e.target).closest('.item-group'),
+                                selectedAppIcon = selectedGroup.find('li.list-group-header .app-icon');
+
+                            if (selectedAppIcon.hasClass('wi-chevron-down')) {
+                                selectedAppIcon.removeClass('wi-chevron-down').addClass('wi-chevron-up');
+                            } else {
+                                selectedAppIcon.removeClass('wi-chevron-up').addClass('wi-chevron-down');
+                            }
+
+                            selectedGroup.find('.app-checkbox').toggle();
+                        });
+                    }
                 } else {
                     template = template +
-                        '<li class="' + liClass + ' {{itemclass}}" ng-repeat="dataObj in displayOptions track by $index" ng-class="{\'active\': dataObj.isChecked}">' +
-                        '<label class="' + labelClass + '" ng-class="{\'disabled\':disabled}" title="{{dataObj.value}}">' +
-                        '<input ' + uniqueName + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index="{{$index}}" value="{{dataObj.key}}" tabindex="{{tabindex}}" ng-checked="dataObj.isChecked"/>' +
-                        '<span class="caption">{{dataObj.value.toString()}}</span>' +
-                        '</label>' +
-                        '</li>';
+                        getEndTemplate('displayOptions');
                 }
 
                 /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
@@ -934,6 +1019,226 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            //Format the date with given date format
+            function filterDate(value, format, defaultFormat) {
+                if (format === 'timestamp') { //For timestamp format, return the epoch value
+                    return value;
+                }
+                return $filter('date')(value, format || defaultFormat);
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getTimeRolledUpString
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This method returns the groupkey based on the rollup passed
+             *
+             * @param {str} string passed value
+             * @param {rollUp} string rollUp
+             * @param {dateformat} string date format
+             */
+            function getTimeRolledUpString(str, rollUp, dateformat) {
+                var groupByKey,
+                    currMoment = moment(),
+                    strMoment  = moment(str),
+                    dateFormat = dateformat,
+                    getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
+                        return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.DAY) + ']';
+                    };
+                switch (rollUp) {
+                    case TIME_ROLLUP_OPTIONS.HOUR:
+                        dateFormat = dateFormat || AppDefaults.get('timeFormat');
+                        if (!strMoment.isValid()) { //If date is invalid, check if data is in forom of hh:mm a
+                            strMoment = moment(new Date().toDateString() + ' ' + str);
+                            if (strMoment.isValid()) {
+                                momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
+                                    return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.HOUR) + ']';
+                                };
+                            }
+                        }
+                        strMoment = strMoment.startOf('hour'); //round off to nearest last hour
+                        momentLocale._calendar.sameElse = getSameElseFormat;
+                        groupByKey = strMoment.calendar(currMoment);
+                        break;
+                    case TIME_ROLLUP_OPTIONS.WEEK:
+                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.WEEK);
+                        break;
+                    case TIME_ROLLUP_OPTIONS.MONTH:
+                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.MONTH);
+                        break;
+                    case TIME_ROLLUP_OPTIONS.YEAR:
+                        groupByKey = strMoment.format(ROLLUP_PATTERNS.YEAR);
+                        break;
+                    case TIME_ROLLUP_OPTIONS.DAY:
+                        dateFormat = dateFormat || AppDefaults.get('dateFormat');
+                        strMoment = strMoment.startOf('day'); //round off to current day
+                        momentLocale._calendar.sameElse = getSameElseFormat;
+                        groupByKey = strMoment.calendar(currMoment);
+                        break;
+
+                }
+                if (groupByKey === 'Invalid date') { //If invalid date is returned, Categorize it as Others.
+                    return GROUP_BY_OPTIONS.OTHERS;
+                }
+                return groupByKey;
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getGroupDataFieldName
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This method returns distinct group field name
+             *
+             * @param {groupkey} string passed group key
+             * @param {count} number count to keep track
+             */
+            function getGroupDataFieldName(groupkey, count) {
+                var regex                    = /\W/g,
+                    groupedDataFieldName     = '_groupData' + groupkey;
+
+                // replace special characters in groupkey by '_'
+                if (regex.test(groupedDataFieldName)) {
+                    groupedDataFieldName = groupedDataFieldName.replace(regex, '_') + count;
+                }
+                return groupedDataFieldName;
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#setGroupedData
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This method returns sorted data to set on scope based to groupkey
+             *
+             * @param {groupedLiData} array grouped data
+             * @param {groupkey} string generated groupby key
+             * @param {groupBy} string groupBy
+             * @param {index} string index of the grouped data
+             */
+            function getSortedGroupedData(groupedLiData, groupBy) {
+                var _groupedData = [];
+                _.forEach(_.keys(groupedLiData), function (groupkey, index) {
+                    var liData = groupedLiData[groupkey];
+                    _groupedData.push({
+                        'key':  groupkey,
+                        'data': _.sortBy(liData, function (data) {
+                            data._groupIndex = index + 1;
+                            return data[groupBy];
+                        })
+                    });
+                });
+                return _groupedData;
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getGroupedData
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This method returns the gouped data
+             *
+             * @param {fieldDefs} string dataset
+             * @param {groupby} string groupby
+             * @param {match} string match
+             * @param {orderby} string orderby
+             * @param {dateFormat} string date format
+             * @param {innerItem} string item to look for in the passed data
+             */
+            function getGroupedData(fieldDefs, groupby, match, orderby, dateFormat, innerItem) {
+                var groupedLiData;
+                // groups the fields based on the groupby value.
+                function groupDataByField(liData) {
+                    var concatStr = _.get(innerItem? liData[innerItem] : liData, groupby);
+
+                    if (WM.isUndefined(concatStr) || _.isNull(concatStr)) {
+                        return GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
+                    }
+
+                    // if match prop is alphabetic ,get the starting alphabet of the word as key.
+                    if (match === GROUP_BY_OPTIONS.ALPHABET) {
+                        concatStr = concatStr.substr(0, 1);
+                    }
+
+                    if (_.includes(_.values(TIME_ROLLUP_OPTIONS), match)) {
+                        concatStr = getTimeRolledUpString(concatStr, match, dateFormat);
+                    }
+
+                    return _.toLower(concatStr);
+                }
+
+                if (!orderby) { //Apply implicit orderby on group by clause, if order by not specified
+                    fieldDefs = getOrderedDataSet(fieldDefs, groupby, innerItem);
+                }
+                if (match === TIME_ROLLUP_OPTIONS.DAY) {
+                    momentLocale._calendar = momentCalendarDayOptions; //For day, set the relevant moment calendar options
+                }
+                // handling case-in-sensitive scenario
+                fieldDefs = _.orderBy(fieldDefs, function (fieldDef) {
+                    var groupKey = _.get(innerItem ? fieldDef[innerItem] : fieldDef, groupby);
+                    if (groupKey) {
+                        return _.toLower(groupKey);
+                    }
+                });
+                groupedLiData = _.groupBy(fieldDefs, groupDataByField);
+                momentLocale._calendar = momentCalendarOptions; //Reset to default moment calendar options
+                return groupedLiData;
+            }
+
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#showOrHideMatchProperty
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * This method shows or hide match based on the groupby
+             *
+             * @param {$is} object isolate scope of the widget
+             * @param {variable} object variable bound
+             * @param {wp} object widget properties
+             */
+            function showOrHideMatchProperty($is, variable, wp) {
+                var matchDataTypes  = ['string', 'date', 'time', 'datetime', 'timestamp'],
+                    matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
+                    typeUtils = Utils.getService('TypeUtils'),
+                    variableCategory = variable && variable.category;
+
+                if (!$is.binddataset || $is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
+                    return;
+                }
+                if (!$is.groupby || _.includes($is.groupby, '(')) {
+                    wp.match.show = false;
+                } else if (variableCategory) {
+                    if (variableCategory === 'wm.LiveVariable') {
+                        wp.match.show = _.includes(matchDataTypes, _.toLower(Utils.extractType(typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby))));
+                    } else if (variableCategory === 'wm.DeviceVariable') {
+                        wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
+                    } else if (variableCategory === 'wm.ServiceVariable' || variableCategory === 'wm.Variable') {
+                        wp.match.show = _.includes(matchServiceDataTypes, typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby));
+                    }
+                }
+                if (!wp.match.show) {
+                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                    $is.match = '';
+                }
+                wp.showcount.show = wp.collapsible.show = $is.groupby ? true : false;
+
+                if (!wp.collapsible.show) {
+                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'collapsible': ''});
+                    $is.collapsible = false;
+                }
+            };
+
             this.getDisplayField                 = getDisplayField;
             this.setPropertiesTextWidget         = setPropertiesTextWidget;
             this.createDataKeys                  = createDataKeys;
@@ -957,6 +1262,10 @@ WM.module('wm.widgets.form')
             this.disableDates                    = disableDates;
             this.setFixedHeader                  = setFixedHeader;
             this.getGroupedFields                = getGroupedFields;
+            this.getGroupedData                  = getGroupedData;
+            this.getSortedGroupedData            = getSortedGroupedData;
+            this.getGroupDataFieldName           = getGroupDataFieldName;
+            this.showOrHideMatchProperty         = showOrHideMatchProperty;
             this.updatePropertyOptionsWithParams = updatePropertyOptionsWithParams;
             this.getSelectedObjFromDisplayOptions = getSelectedObjFromDisplayOptions;
         }

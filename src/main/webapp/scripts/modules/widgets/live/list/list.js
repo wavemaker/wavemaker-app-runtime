@@ -59,17 +59,14 @@ WM.module('wm.widgets.live')
         '$compile',
         'Utils',
         '$rootScope',
-        '$servicevariable',
         '$timeout',
-        'DeviceVariableService',
         'LiveWidgetUtils',
         'FormWidgetUtils',
         '$filter',
         '$interpolate',
         '$parse',
-        'AppDefaults',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, WIDGET_CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse, AppDefaults) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, WIDGET_CONSTANTS, $compile, Utils, $rs, $timeout, LiveWidgetUtils, FormWidgetUtils, $filter, $interpolate, $parse) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.list', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation', 'wm.layouts.panel.defaults']),
@@ -77,7 +74,7 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_end,
                 notifyFor = {
                     'dataset'        : true,
-                    'groupby'        : true,
+                    'groupby'        : CONSTANTS.isStudioMode,
                     'navigation'     : CONSTANTS.isStudioMode,
                     'itemsperrow'    : true,
                     'match'          : CONSTANTS.isStudioMode,
@@ -380,175 +377,45 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            //Format the date with given date format
-            function filterDate(value, format, defaultFormat) {
-                if (format === 'timestamp') { //For timestamp format, return the epoch value
-                    return value;
-                }
-                return $filter('date')(value, format || defaultFormat);
-            }
             // This function adds the li elements if groupby is set.
             function addListElements(_s, $el, $is, attrs, listCtrl) {
                 var $liTemplate,
                     groupedLiData,
-                    groupDataByUserDefinedFn,
-                    regex                    = /\W/g,
-                    momentLocale             = moment.localeData(),
-                    momentCalendarOptions    = Utils.getClonedObject(momentLocale._calendar),
-                    momentCalendarDayOptions = momentLocale._calendarDay || {
-                        'lastDay'  : '[Yesterday]',
-                        'lastWeek' : '[Last] dddd',
-                        'nextDay'  : '[Tomorrow]',
-                        'nextWeek' : 'dddd',
-                        'sameDay'  : '[Today]',
-                        'sameElse' : 'L'
-                    },
-                    GROUP_BY_OPTIONS    = {
-                        'ALPHABET' : 'alphabet',
-                        'WORD'     : 'word',
-                        'OTHERS'   : 'Others'
-                    },
-                    TIME_ROLLUP_OPTIONS = {
-                        'HOUR'  : 'hour',
-                        'DAY'   : 'day',
-                        'WEEK'  : 'week',
-                        'MONTH' : 'month',
-                        'YEAR'  : 'year'
-                    },
-                    ROLLUP_PATTERNS    = {
-                        'DAY'   : 'yyyy-MM-dd',
-                        'WEEK'  : 'w \'Week\',  yyyy',
-                        'MONTH' : 'MMM, yyyy',
-                        'YEAR'  : 'YYYY',
-                        'HOUR'  : 'hh:mm a'
-                    },
-                    groupedDataFieldName = '',
-                    count                = 0;
+                    groupDataByUserDefinedFn;
 
                 //Get the group by roll up string for time based group by options
-                function getTimeRolledUpString(str, rollUp) {
-                    var groupByKey,
-                        currMoment = moment(),
-                        strMoment  = moment(str),
-                        dateFormat = $is.dateformat,
-                        getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
-                            return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.DAY) + ']';
-                        };
-                    switch (rollUp) {
-                    case TIME_ROLLUP_OPTIONS.HOUR:
-                        dateFormat = dateFormat || AppDefaults.get('timeFormat');
-                        if (!strMoment.isValid()) { //If date is invalid, check if data is in forom of hh:mm a
-                            strMoment = moment(new Date().toDateString() + ' ' + str);
-                            if (strMoment.isValid()) {
-                                momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
-                                    return '[' + filterDate(this.valueOf(), dateFormat, ROLLUP_PATTERNS.HOUR) + ']';
-                                };
-                            }
-                        }
-                        strMoment = strMoment.startOf('hour'); //round off to nearest last hour
-                        momentLocale._calendar.sameElse = getSameElseFormat;
-                        groupByKey = strMoment.calendar(currMoment);
-                        break;
-                    case TIME_ROLLUP_OPTIONS.WEEK:
-                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.WEEK);
-                        break;
-                    case TIME_ROLLUP_OPTIONS.MONTH:
-                        groupByKey = filterDate(strMoment.valueOf(), dateFormat, ROLLUP_PATTERNS.MONTH);
-                        break;
-                    case TIME_ROLLUP_OPTIONS.YEAR:
-                        groupByKey = strMoment.format(ROLLUP_PATTERNS.YEAR);
-                        break;
-                    case TIME_ROLLUP_OPTIONS.DAY:
-                        dateFormat = dateFormat || AppDefaults.get('dateFormat');
-                        strMoment = strMoment.startOf('day'); //round off to current day
-                        momentLocale._calendar.sameElse = getSameElseFormat;
-                        groupByKey = strMoment.calendar(currMoment);
-                        break;
-
-                    }
-                    if (groupByKey === 'Invalid date') { //If invalid date is returned, Categorize it as Others.
-                        return GROUP_BY_OPTIONS.OTHERS;
-                    }
-                    return groupByKey;
-                }
-
-                function groupDataByField(liData) {
-                    var concatStr = _.get(liData, $is.groupby);
-
-                    if (WM.isUndefined(concatStr) || _.isNull(concatStr)) {
-                        return GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
-                    }
-
-                    // if match prop is alphabetic ,get the starting alphabet of the word as key.
-                    if ($is.match === GROUP_BY_OPTIONS.ALPHABET) {
-                        concatStr = concatStr.substr(0, 1);
-                    }
-
-                    if (_.includes(_.values(TIME_ROLLUP_OPTIONS), $is.match)) {
-                        concatStr = getTimeRolledUpString(concatStr, $is.match);
-                    }
-
-                    return _.toLower(concatStr);
-                }
 
                 $el.find('> [data-identifier=list]').empty();
 
-                // groups the fields based on the groupby value.
                 if (_.includes($is.groupby, '(')) {
                     groupDataByUserDefinedFn = _s[$is.groupby.split('(')[0]];
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByUserDefinedFn);
                 } else {
-                    if (!$is.orderby) { //Apply implicit orderby on group by clause, if order by not specified
-                        _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.groupby);
-                    }
-                    if ($is.match === TIME_ROLLUP_OPTIONS.DAY) {
-                        momentLocale._calendar = momentCalendarDayOptions; //For day, set the relevant moment calendar options
-                    }
-                    // handling case-in-sensitive scenario
-                    _s.fieldDefs = _.orderBy(_s.fieldDefs, function (fieldDef) {
-                        var groupKey = _.get(fieldDef, $is.groupby);
-                        if (groupKey) {
-                            return _.toLower(groupKey);
-                        }
-                    });
-                    groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
-                    momentLocale._calendar = momentCalendarOptions; //Reset to default moment calendar options
+                    groupedLiData = FormWidgetUtils.getGroupedData(_s.fieldDefs, $is.groupby, $is.match, $is.orderby, $is.dateformat);
                 }
 
-                // append data to li based on the grouped data.
-                _.forEach(_.keys(groupedLiData), function (groupkey, index) {
-                    var groupedData = groupedLiData[groupkey];
-                    groupedDataFieldName     = '_groupData' + groupkey;
-                    liTemplateWrapper_start  = '';
-                    liTemplateWrapper_end    = '></li></ul></li>';
+                _s.groupedData = FormWidgetUtils.getSortedGroupedData(groupedLiData, $is.groupby);
 
-                    // replace special characters in groupkey by '_'
-                    if (regex.test(groupedDataFieldName)) {
-                        count = count + 1;
-                        groupedDataFieldName = groupedDataFieldName.replace(regex, '_') + count;
-                    }
+                liTemplateWrapper_start  = '';
+                liTemplateWrapper_end    = '></li></ul></li>';
 
-                    // appending the sorted data to scope based to groupkey
-                    _s[groupedDataFieldName] = _.sortBy(groupedData, function (data) {
-                        data._groupIndex = index + 1;
-                        return data[$is.groupby];
-                    });
+                liTemplateWrapper_start +=
+                    '<li ng-repeat="groupObj in groupedData track by $index" class="app-list-item-group clearfix">' +
+                        '<ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item" ng-class="{\'collapsible-content\' : collapsible}">' +
+                            '<h4>{{groupObj.key}}' +
+                                '<div class="header-action">' +
+                                    '<i class="app-icon wi action wi-chevron-up" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
+                                    '<span ng-if="showcount" class="label label-default">{{groupObj.data.length}}</span>' +
+                                '</div>' +
+                            '</h4>' +
+                    '</li>';
 
-                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item" ng-class="{\'collapsible-content\' : collapsible}">' +
-                                                '<h4>' + groupkey +
-                                                '<div class="header-action">' +
-                                                    '<i class="app-icon wi action wi-chevron-up" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}"></i>' +
-                                                    '<span ng-if="showcount" class="label label-default">' + _s[groupedDataFieldName].length + '</span>' +
-                                                '</div>' +
-                                                '</h4></li>';
+                liTemplateWrapper_start += '<li ng-repeat="item in groupObj.data track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in ' +  groupedDataFieldName + ' track by $index" tabindex="0" ng-init="addCurrentItemWidgets(this);" ng-focus="onFocus($event)" class="app-list-item" ng-class="[itemsPerRowClass, _itemClass(this), {\'disable-item\': _disableItem(this)}]" ';
+                $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
 
-                    $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true, $is.name);
-
-                    $el.find('> [data-identifier=list]').append($liTemplate);
-                    $compile($liTemplate)($is.$liScope);
-                });
+                $el.find('> [data-identifier=list]').append($liTemplate);
+                $compile($liTemplate)($is.$liScope);
             }
 
             // With given data, creates list items and updates the markup
@@ -598,9 +465,9 @@ WM.module('wm.widgets.live')
 
                 if ($is.groupby) {
                     addListElements(_s, $el, $is, attrs, listCtrl);
-                    if ($is.collapsible) {
+                    if ($is.collapsible && _s.groupedData.length) {
                         // on groupby header click, collapse or expand the list-items.
-                        $el.find('li.app-list-item-header').on('click', function (e) {
+                        $el.on('click', 'li.app-list-item-header', function (e) {
                             var selectedGroup   = WM.element(e.target).closest('.list-group'),
                                 selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
 
@@ -870,37 +737,7 @@ WM.module('wm.widgets.live')
                     selectedVariable,
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
-                    wp          = $is.widgetProps,
-                    matchDataTypes  = ['string', 'date', 'time', 'datetime', 'timestamp'],
-                    matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
-                    typeUtils = Utils.getService('TypeUtils'),
-                    showOrHideMatchProperty = function () {
-                        if (!$is.binddataset || $is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
-                            return;
-                        }
-                        selectedVariable = selectedVariable || eleScope.Variables[variable];
-                        if (!$is.groupby || _.includes($is.groupby, '(')) {
-                            wp.match.show = false;
-                        } else if (selectedVariable) {
-                            if (selectedVariable.category === 'wm.LiveVariable') {
-                                wp.match.show = _.includes(matchDataTypes, _.toLower(Utils.extractType(typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby))));
-                            } else if (selectedVariable.category === 'wm.DeviceVariable') {
-                                wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
-                            } else if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
-                                wp.match.show = _.includes(matchServiceDataTypes, typeUtils.getTypeForExpression($is.binddataset + '.' + $is.groupby));
-                            }
-                        }
-                        if (!wp.match.show) {
-                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
-                            $is.match = '';
-                        }
-                        wp.showcount.show = wp.collapsible.show = $is.groupby ? true : false;
-
-                        if (!wp.collapsible.show) {
-                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'collapsible': ''});
-                            $is.collapsible = false;
-                        }
-                    };
+                    wp          = $is.widgetProps;
 
                 //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
@@ -908,7 +745,8 @@ WM.module('wm.widgets.live')
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
                     if ($is.widgetid) {
-                        showOrHideMatchProperty();
+                        selectedVariable = eleScope.Variables[variable];
+                        FormWidgetUtils.showOrHideMatchProperty($is, selectedVariable, wp);
                     }
                     break;
                 case 'navigation':
@@ -929,9 +767,10 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'groupby':
-                    selectedVariable = eleScope.Variables[variable];
                     if ($is.widgetid) {
-                        showOrHideMatchProperty();
+                        selectedVariable = eleScope.Variables[variable];
+                        FormWidgetUtils.showOrHideMatchProperty($is, selectedVariable, wp);
+
                         // enablereorder is not shown with groupby
                         if (nv && nv !== '') {
                             $is.enablereorder     = false;
@@ -947,7 +786,9 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'match':
-                    wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
+                    if ($is.widgetid) {
+                        wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
+                    }
                     break;
                 case 'padding':
                     $rs.$emit('apply-box-model-property', $el.find('> .app-livelist-container'), 'padding', nv);
