@@ -14,40 +14,98 @@
  * By default page-content, accordion pane, tab pane, segment content, app-left-panel has the smoothscroll set to true.
  * This works on device, mobile browsers.
  */
-wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootScope', function (Utils, CONSTANTS, $rs) {
+wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function (Utils, $rs) {
     'use strict';
 
     // Creates iScroll instance.
-    function createSmoothScroll($s, $el) {
+    function createSmoothScroll($s, $el, $events) {
         var options,
             iScroll,
             removeWatcher;
 
+        // Set the fadeScrollbars to true only when content is scrollable inside the smoothscroll-container
         options = {
-            'scrollbars': true,
+            'scrollbars' : true,
             'preventDefault': false,
             'bounce': Utils.isIOS(),
-            'fadeScrollbars': true
+            'fadeScrollbars': false
         };
+
+        // Add fadeScrollbars options only when smoothscroll container is included, which means content is scrollable.
+        if ($events) {
+            options.fadeScrollbars = true;
+        }
 
         if (!$el[0].children.length) {
             return {};
         }
         iScroll = new IScroll($el[0], options);
+
+        if ($events) {
+            // map all events on previous iscroll to the newly created iscroll.
+            _.map($events, function (val, key) {
+                iScroll._events[key] = val;
+            });
+            iScroll.refresh();
+        }
+
+        // refresh the indicators.
+        iScroll.indicatorRefresh = function () {
+            var indicators = $el[0].iscroll.indicators,
+                i;
+            if (indicators.length) {
+                for (i = 0; i < indicators.length; i++) {
+                    indicators[i].refresh();
+                }
+            }
+        };
+
         $el[0].iscroll = iScroll;
 
+        /* This function gets called for every digest cycle.
+         * When element has scroll (i.e. scrollHeight > clientHeight), a div with smoothscroll-container class will be added.
+         * new iScroll will be initialised on the element after the div addition, by removing the existing iscroll on the element.
+         * This div will have no height, so the elements inside this div will inherit this height, i.e. no height,
+         * Scenario: tabs with 100% height, as it covers the pageContent with no scroll, this div will not be added.
+         * TODO: Scenario: tabs with 100% height and add others widgets after/before, as it has scroll, this div will be added.
+         *          But tabs having 100% height will not be honoured as div is having no height.
+         */
         removeWatcher = $rs.$watch(_.debounce(function () {
-            iScroll.refresh();
+            if (iScroll !== null) {
+                iScroll.refresh();
+                // Check for scrollable content and if smoothscroll-container div is already added.
+                if (iScroll.wrapper && !_.includes(iScroll.wrapper.children[0].classList, 'smoothscroll-container') && iScroll.wrapper.scrollHeight > iScroll.wrapper.clientHeight) {
+                    var cloneEvents = iScroll._events;
+
+                    // Adds the smoothscroll container div wrapper only when element has scrollable content.
+                    WM.element(iScroll.wrapper.children).wrapAll('<div class="smoothscroll-container"></div>');
+
+                    // destroy the existing iscroll on the element
+                    iScroll.destroy();
+                    // Removing if any styles are added on scroller element.
+                    WM.element(iScroll.scroller).attr('style', '');
+                    iScroll = null;
+                    delete $el[0].iscroll;
+                    removeWatcher();
+
+                    // create new iscroll instance on the element
+                    createSmoothScroll($s, $el, cloneEvents);
+                }
+            }
         }, 100));
 
         $s.$on('$destroy', function () {
-            iScroll.destroy();
+            if (iScroll !== null) {
+                iScroll.destroy();
+            }
         });
 
         return {
             iScroll: iScroll,
             destroy: function () {
                 iScroll.destroy();
+                WM.element(iScroll.scroller).attr('style', '');
+                iScroll = null;
                 delete $el[0].iscroll;
                 removeWatcher();
             }
@@ -63,33 +121,6 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', 'CONSTANTS', '$rootSco
                 attrs.$observe('wmSmoothscroll', function (nv) {
                     if (nv === 'true') {
                         smoothScroll = createSmoothScroll($s, $el);
-
-                        // listen to scrollStart event.
-                        if (smoothScroll.iScroll) {
-                            smoothScroll.iScroll.on('scrollStart', function () {
-                                if (_.includes(this.wrapper.children[0].classList, 'smoothscroll-container')) {
-                                    // stop listening to scroll event.
-                                    smoothScroll.iScroll.off('scrollStart');
-                                } else if (this.wrapper.scrollHeight > this.wrapper.clientHeight) {
-                                    // Adds the smoothscroll container div wrapper only when element has scrollable content.
-                                    var children = this.wrapper.children,
-                                        $scrollerEl = children[0],
-                                        $scrollerStyle = $scrollerEl.style,
-                                        style = 'transition-timing-function: ' + $scrollerStyle.transitionTimingFunction +  ';transition-duration: ' + $scrollerStyle.transitionDuration + ';transform: ' + $scrollerStyle.transform;
-
-                                    $scrollerEl.removeAttribute('style');
-
-                                    // if element is scrollable then destroy the iscroll on element.
-                                    // and re-create smoothscroll after adding the div
-                                    smoothScroll.destroy();
-
-                                    WM.element(this.wrapper.children).wrapAll('<div class="smoothscroll-container" style="' + style + '"></div>');
-                                    // stop listening to scroll event.
-                                    smoothScroll.iScroll.off('scrollStart');
-                                    createSmoothScroll($s, $el);
-                                }
-                            });
-                        }
                     } else if (smoothScroll) {
                         smoothScroll.destroy();
                     }

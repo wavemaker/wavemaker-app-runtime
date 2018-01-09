@@ -134,18 +134,25 @@ WM.module('wm.layouts.page')
                         'transition': 'none',
                         'z-index': 101
                     });
+
+                    if (!state.isExpanded) {
+                        state.leftPanel.css({
+                            'transform': 'translate3d(-100%, 0, 0)',
+                            '-webkit-transform': 'translate3d(-100%, 0, 0)'
+                        });
+                    }
                 },
                 'onSwipe': function (e, data) {
                     var d = 0;
                     if (state.isExpanded && data.length < 0) {
                         d = (data.length / state.leftPanelWidth) * 100;
                     } else if (!state.isExpanded && data.length > 0) {
-                        d = (data.length / state.leftPanelWidth) * 100 - 95;
+                        d = (data.length / state.leftPanelWidth) * 100 - 100;
                     }
                     if (d > 0) {
                         d = 0;
-                    } else if (d < -90) {
-                        d = -90;
+                    } else if (d < -100) {
+                        d = -100;
                     }
                     state.leftPanel.css({
                         'transform': 'translate3d(' + d + '%, 0, 0)'
@@ -171,13 +178,15 @@ WM.module('wm.layouts.page')
                         state.isExpanded = false;
                         state.leftPanel.addClass('left-panel-collapsed').removeClass('left-panel-expanded');
                     }
-                    // reset the styles on pageContainer and leftPanel
-                    state.leftPanel.css({
-                        'transition': '',
-                        'transform': '',
-                        'left': '',
-                        'opacity': '',
-                        'z-index': ''
+                    $timeout(function () {
+                        // reset the styles on pageContainer and leftPanel
+                        state.leftPanel.css({
+                            'transition': '',
+                            'transform': '',
+                            'left': '',
+                            'opacity': '',
+                            'z-index': ''
+                        });
                     });
                 }
             });

@@ -251,7 +251,7 @@ WM.module('wm.widgets.live')
             function bindIScrollEvt($is, $el) {
                 var iScroll,
                     $scrollParent = $el.closest('[wm-smoothscroll="true"]'),
-                    lastScrollTop,
+                    lastScrollTop = 0,
                     wrapper,
                     $scrollNode = $scrollParent[0];
 
@@ -266,6 +266,7 @@ WM.module('wm.widgets.live')
 
                     if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
                         _fetchNextOnScroll($is, $el);
+                        iScroll.indicatorRefresh();
                     }
 
                     lastScrollTop = scrollTop;
