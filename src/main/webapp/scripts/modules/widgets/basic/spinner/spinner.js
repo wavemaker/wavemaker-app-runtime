@@ -9,7 +9,7 @@ WM.module('wm.widgets.basic')
                 '<div class="spinner-message">' +
                     '<span class="spinner-image animated infinite {{animation}}" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
                     '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
-                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent && !spinnerMessages"></span>' +
+                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="showCaption"></span>' +
                     '<div class="spinner-messages" ng-if="spinnerMessages"><p ng-repeat="(key, value) in spinnerMessages">{{value}}</p></div>' +
                 '</div>' +
             '</div>'
@@ -94,6 +94,18 @@ WM.module('wm.widgets.basic')
                             }
                         }));
                     }
+                    /*By default show caption will be true. Only hidden when script tries to inject spinnerMessages*/
+                    scope.showCaption = true;
+                    /*sets the show caption property when spinnerMessages are set*/
+                    Object.defineProperty(scope, 'spinnerMessages', {
+                        set: function (newVal) {
+                            scope.showCaption = _.isEmpty(newVal);
+                            scope._spinnerMessages = newVal;
+                        },
+                        get: function () {
+                            return scope._spinnerMessages;
+                        }
+                    });
                 }
             }
         };
