@@ -36,11 +36,20 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
             OFFLINE_PLUGIN_NOT_FOUND = 'Offline DB Plugin is required, but missing.';
 
         function generateChangeSet(changes) {
+            var createChanges =  _.filter(changes, function (c) {
+                return c.service === 'DatabaseService' &&
+                        (c.operation === 'insertTableData'
+                            || c.operation === 'insertMultiPartTableData');
+            }), updateChanges =  _.filter(changes, function (c) {
+                return c.service === 'DatabaseService' &&
+                    (c.operation === 'updateTableData'
+                    || c.operation === 'updateMultiPartTableData');
+            });
             return {
                 'total' : changes ? changes.length : 0,
                 'database' : {
-                    'create' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'insertTableData'}),
-                    'update' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'updateTableData'}),
+                    'create' : createChanges,
+                    'update' : updateChanges,
                     'delete' : _.filter(changes, {'service' : 'DatabaseService', 'operation' : 'deleteTableData'})
                 },
                 'uploads' : _.filter(changes, {'service' : 'OfflineFileUploadService', 'operation' : 'uploadToServer'})
