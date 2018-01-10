@@ -606,6 +606,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time", "bindable": "in-bound"},
+                        "mintime": {"type": "string"},
+                        "maxtime": {"type": "string"},
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
@@ -2114,7 +2116,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "xaxis", "properties": ["xaxisdatakey"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
-                {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "validationtype", "maxchars", "minvalue", "maxvalue", "step"], "parent": "properties"},
+                {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "mintime", "maxtime", "excludedays", "excludedates", "novalidate", "validationtype", "maxchars", "minvalue", "maxvalue", "step"], "parent": "properties"},
                 {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
