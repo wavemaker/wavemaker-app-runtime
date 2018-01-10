@@ -1956,13 +1956,22 @@ WM.module('wm.widgets.live')
                 $el.find('.form-elements [role="input"]').each(function () {
                     var $inputEl = WM.element(this),
                         fieldKey,
+                        fieldTarget,
+                        fieldName,
                         val;
                     //Get the values of the widgets (other than form fields and composite widgets)
                     if (_.isEmpty($inputEl.closest('[data-role="form-field"]')) && !$inputEl.hasClass('app-composite-widget')) {
                         fieldKey = $inputEl.attr('key') || $inputEl.attr('name');
+                        fieldTarget = _.split(fieldKey, '.');
+                        fieldName = fieldTarget[0],
                         val      = $inputEl.isolateScope() && $inputEl.isolateScope().datavalue;
                         if (val && !_.has(dataObject, fieldKey)) {
-                            dataObject[fieldKey] = val;
+                            if (fieldTarget.length === 1) {
+                                dataObject[fieldName] = val;
+                            } else {
+                                dataObject[fieldName]                 = dataObject[fieldName] || {};
+                                dataObject[fieldName][fieldTarget[1]] = val;
+                            }
                         }
                     }
                 });

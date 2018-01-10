@@ -626,28 +626,39 @@ WM.module('wm.widgets.live')
                         element;
                     formFields = isPreviousData ? prevformFields : $scope.formFields;
                     _.forEach(formFields, function (field) {
-                        var dateTime;
+                        var dateTime,
+                            fieldTarget = _.split(field.key, '.'),
+                            fieldName = fieldTarget[0] || field.key,
+                            fieldValue;
+
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if ((field.widget && Utils.isDateTimeType(field.widget)) || Utils.isDateTimeType(field.type)) {
                             if (field.value) {
                                 dateTime = Utils.getValidDateObject(field.value);
                                 if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
-                                    dataObject[field.key] = field.value ? dateTime.getTime() : null;
+                                    fieldValue = field.value ? dateTime.getTime() : null;
                                 } else if (field.outputformat) {
-                                    dataObject[field.key] = $filter('date')(dateTime, field.outputformat);
+                                    fieldValue = $filter('date')(dateTime, field.outputformat);
                                 } else {
-                                    dataObject[field.key] = field.value;
+                                    fieldValue = field.value;
                                 }
                             } else {
-                                dataObject[field.key] = undefined;
+                                fieldValue = undefined;
                             }
                         } else if (field.type === 'blob') {
-                            dataObject[field.key] = _.get(document.forms, [formName, field.key + '_formWidget', 'files', 0]);//passing file
+                            fieldValue = _.get(document.forms, [formName, fieldName + '_formWidget', 'files', 0]);//passing file
                         } else if (field.type === 'list') {
-                            dataObject[field.key] = field.value || undefined;
+                            fieldValue = field.value || undefined;
                         } else {
-                            dataObject[field.key] = field.value;
+                            fieldValue = field.value;
+                        }
+
+                        if (fieldTarget.length === 1) {
+                            dataObject[fieldName] = fieldValue;
+                        } else {
+                            dataObject[fieldName]                 = dataObject[fieldName] || {};
+                            dataObject[fieldName][fieldTarget[1]] = fieldValue;
                         }
                     });
                     if (!isPreviousData) {
