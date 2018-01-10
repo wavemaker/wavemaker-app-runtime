@@ -17,15 +17,16 @@
  *   3) onError callback(function)
  */
 wm.plugins.offline.services.ChangeLogService = [
-    'LocalDBManager',
     '$q',
     'Utils',
     '$log',
     '$injector',
+    'LocalDBManager',
     'LocalKeyValueService',
+    'NetworkService',
     'SecurityService',
 
-    function (LocalDBManager, $q, Utils, $log, $injector, LocalKeyValueService, SecurityService) {
+    function ($q, Utils, $log, $injector, LocalDBManager, LocalKeyValueService, NetworkService, SecurityService) {
         'use strict';
         var contextKey = 'changeLogService.flushContext',
             lastPushInfoKey = 'changeLogService.lastPushInfo',
@@ -177,7 +178,7 @@ wm.plugins.offline.services.ChangeLogService = [
                     onComplete();
                 }
             }, function (change) {
-                LocalDBManager.canConnectToServer().then(function () {
+                NetworkService.isAvailable(true).then(function () {
                     change.hasError = 1;
                 }, function () {
                     //failed due to lack of network
