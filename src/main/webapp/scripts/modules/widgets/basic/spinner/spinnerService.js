@@ -111,8 +111,10 @@ WM.module('wm.widgets.basic').
                 }
                 //the below functionality can be used to create a spinner by sending spinner message to the function.
                 spinnerScope = getAppSpinnerScope();
-
-                spinnerContextMap.page[id]   = _.trim(message);
+                /* do not map the message if it is empty */
+                if (_.trim(message)) {
+                    spinnerContextMap.page[id]   = _.trim(message);
+                }
                 spinnerScope.spinnerMessages = spinnerContextMap.page;
                 spinnerScope.show            = true;
                 spinnerScope.spinnerclass    = spinnerClass;
