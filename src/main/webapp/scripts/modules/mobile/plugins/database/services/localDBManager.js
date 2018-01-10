@@ -43,8 +43,6 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectory,
             dbInstallDirectoryName,
             databases,
-            connectivityChecker,
-            lastPullInfoKey = 'localDBManager.lastPullInfo',
             systemProperties;
         systemProperties = {
             'USER_ID' : {
@@ -226,6 +224,7 @@ wm.plugins.database.services.LocalDBManager = [
             });
             return {
                 'name' : schema.name,
+                'isInternal' : schema.isInternal,
                 'entities' : transformedSchemas
             };
         }
@@ -351,196 +350,6 @@ wm.plugins.database.services.LocalDBManager = [
                     return metadata;
                 });
         }
-
-        /**
-         * Iterates entities that belong to remote schema and calls callback for each entity. Callback will be called
-         * with two arguments 1) database and 2) entity schema.
-         *
-         * @param {Function} callBack a function to call for every entity
-         */
-        function iterateExternalEntities(callBack) {
-            var exit = false;
-            _.forEach(databases, function (database) {
-                if (database.schema.name !== 'wavemaker') {
-                    _.forEach(database.schema.entities, function (entity) {
-                        if (callBack(database, entity) === false) {
-                            exit = true;
-                            return false;
-                        }
-                    });
-                    return !exit;
-                }
-            });
-        }
-
-        /**
-         * A promise based implementation to pull data based on the given params
-         *
-         * @param dataModelName
-         * @param entitySchema
-         * @param pageSize
-         * @returns {*} a promise that is resolved with the results.
-         */
-        function pullDataFromServer(dataModelName, entitySchema, pageSize) {
-            var defer = $q.defer(), filter, params;
-            if (dataModelName && entitySchema) {
-                filter = _.chain(_.cloneDeep(entitySchema.syncOptions.filter))
-                    .forEach(function (v) {
-                        if (_.startsWith(v.attributeValue, "bind:")) {
-                            v.attributeValue = $rootScope.$eval(v.attributeValue.replace('bind:', ''));
-                        }
-                    }).filter(function (v) {
-                        return !_.isNil(v.attributeValue);
-                    }).value();
-                params = {
-                    dataModelName: dataModelName,
-                    entityName: entitySchema.entityName,
-                    page: 1,
-                    size: pageSize,
-                    data: filter,
-                    sort: entitySchema.syncOptions.orderBy,
-                    onlyOnline: true,
-                    skipLocalDB: true
-                };
-                DatabaseService.searchTableData(params, function (response) {
-                    var store = getStore(dataModelName, entitySchema.entityName),
-                        savePromises = _.map(response.content, function (o) {
-                            return store.save(o);
-                        });
-                    $q.all(savePromises).finally(function () {
-                        defer.resolve(response);
-                    });
-                }, defer.reject);
-            } else {
-                defer.reject();
-            }
-            return defer.promise;
-        }
-
-        /**
-         * return an object with only one function that checks whether connection be made
-         * to the remote server.
-         *
-         * @returns {{check: function}}
-         */
-        function createConnectivityChecker() {
-            var datamodelName, entitySchema;
-            iterateExternalEntities(function (database, eSchema) {
-                if (eSchema.syncType === 'APP_START') {
-                    datamodelName = database.schema.name;
-                    entitySchema = eSchema;
-                    return false;
-                }
-            });
-            return {
-                "check" : function () {
-                    var defer = $q.defer();
-                    if (NetworkService.isConnected()) {
-                        if (datamodelName) {
-                            return pullDataFromServer(datamodelName, entitySchema, 1);
-                        }
-                        defer.resolve();
-                    } else {
-                        defer.reject();
-                    }
-                    return defer.promise;
-                }
-            };
-        }
-
-        /**
-         * Checks whether server connection can be made by sending a database request.
-         *
-         * @returns {*} a promise that is resolved when connection attempt is successful..
-         */
-        function canConnectToServer() {
-            connectivityChecker = connectivityChecker || createConnectivityChecker();
-            return connectivityChecker.check();
-        }
-
-        /**
-         * @ngdoc method
-         * @name wm.plugins.database.services.$LocalDBManager#pullData
-         * @methodOf wm.plugins.database.services.$LocalDBManager
-         *
-         *
-         * @description
-         * Clears and pulls data (other than 'BUNDLED') from server using the configured rules in offline configuration.
-         * Before clearing data, it is checked whether connection can be made to server.
-         *
-         * @param {boolean} clear if true, then data (other than 'BUNDLED') in the database will be deleted.
-         * @returns {object} a promise.
-         */
-        this.pullData = function (clear) {
-            var defer = $q.defer(),
-                data = {
-                    'completedTaskCount' : 0,
-                    'totalTaskCount' : 0,
-                    'inProgress' : true
-                },
-                pullInfo = {
-                    'databases' : [],
-                    'totalPulledRecordCount' : 0
-                };
-            SecurityService.onUserLogin()
-                .then(canConnectToServer)
-                .then(function () {
-                    if (clear) {
-                        // clears all data other than BUNDLED data
-                        var promises = [];
-                        iterateExternalEntities(function (database, entity) {
-                            if (entity.syncType !== 'BUNDLED') {
-                                promises.push(database.stores[entity.entityName].clear());
-                            }
-                        });
-                        return $q.all(promises);
-                    }
-                })
-                .then(function () {
-                    // Pull data
-                    var promises = [];
-                    pullInfo.startTime = new Date();
-                    iterateExternalEntities(function (database, eSchema) {
-                        if (eSchema.syncType === 'APP_START') {
-                            promises.push(pullDataFromServer(database.schema.name, eSchema).then(function (response) {
-                                var pullDatabaseInfo = _.find(pullInfo.databases, {'name' : database.schema.name});
-                                if (!pullDatabaseInfo) {
-                                    pullDatabaseInfo = {
-                                        'name' : database.schema.name,
-                                        'entities' : [],
-                                        'pulledRecordCount' : 0
-                                    };
-                                    pullInfo.databases.push(pullDatabaseInfo);
-                                }
-                                pullDatabaseInfo.entities.push({
-                                    'entityName' : eSchema.entityName,
-                                    'pulledRecordCount' : response.totalElements
-                                });
-                                pullInfo.totalPulledRecordCount += response.totalElements;
-                                data.completedTaskCount++;
-                                defer.notify(data);
-                            }));
-                        }
-                    });
-                    data.totalTaskCount = promises.length;
-                    return $q.all(promises);
-                }).then(function () {
-                    //after successful pull, store metrics and resolve the promise.
-                    pullInfo.endTime = new Date();
-                    _.forEach(pullInfo.databases, function (database) {
-                        database.pulledRecordCount = _.reduce(database.entities, function (sum, entity) {
-                            return sum + entity.pulledRecordCount;
-                        }, 0);
-                    });
-                    LocalKeyValueService.put(lastPullInfoKey, pullInfo);
-                    data.inProgress = false;
-                    defer.resolve(data);
-                }, function () {
-                    data.inProgress = false;
-                    defer.reject(data);
-                });
-            return defer.promise;
-        };
 
         /**
          * Deletes any existing databases (except wavemaker db) and copies the databases that are packaged with the app.
@@ -687,20 +496,6 @@ wm.plugins.database.services.LocalDBManager = [
             });
             return $q.all(closePromises);
         }
-
-        /**
-         * @ngdoc method
-         * @name wm.plugins.database.services.$LocalDBManager#canConnectToServer
-         * @methodOf wm.plugins.database.services.$LocalDBManager
-         *
-         *
-         * @description
-         * Checks whether the remote server can be connected. A sample request will be sent to the server to check
-         * network connectivity.
-         *
-         * @returns {object} a promise.
-         */
-        this.canConnectToServer = canConnectToServer;
 
         /**
          * @ngdoc method
@@ -889,24 +684,5 @@ wm.plugins.database.services.LocalDBManager = [
                 }
             });
             return $q.all(promises);
-        };
-
-        /**
-         * @ngdoc method
-         * @name wm.plugins.database.services.$LocalDBManager#getLastPullInfo
-         * @methodOf wm.plugins.database.services.$LocalDBManager
-         * @returns {object} that have total no of records fetched, start and end timestamps of last successful pull
-         * of data from remote server.
-         */
-        this.getLastPullInfo = function () {
-            return LocalKeyValueService.get(lastPullInfoKey).then(function (info) {
-                if (_.isString(info.startTime)) {
-                    info.startTime = new Date(info.startTime);
-                }
-                if (_.isString(info.endTime)) {
-                    info.endTime = new Date(info.endTime);
-                }
-                return info;
-            });
         };
     }];

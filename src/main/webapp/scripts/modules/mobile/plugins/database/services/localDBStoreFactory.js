@@ -1,4 +1,4 @@
-/*global wm, WM, FileTransfer, _*/
+/*global wm, WM, FileTransfer, _, Blob, FormData*/
 /*jslint sub: true */
 
 /**
@@ -51,6 +51,16 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 placeHolder.push('?');
             });
             return 'INSERT INTO ' + escapeName(schema.name) + ' (' + columnNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
+        }
+
+        function replaceRecordSqlTemplate(schema) {
+            var columnNames = [],
+                placeHolder = [];
+            _.forEach(schema.columns, function (col) {
+                columnNames.push(escapeName(col.name));
+                placeHolder.push('?');
+            });
+            return 'REPLACE INTO ' + escapeName(schema.name) + ' (' + columnNames.join(',') + ') VALUES (' + placeHolder.join(',') + ')';
         }
 
         function updateRecordSqlTemplate(schema) {
@@ -261,6 +271,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             this.primaryKeyField = _.find(schema.columns, 'primaryKey');
             this.primaryKeyName = this.primaryKeyField ? this.primaryKeyField.fieldName : undefined;
             this.insertRecordSqlTemplate = insertRecordSqlTemplate(schema);
+            this.replaceRecordSqlTemplate = replaceRecordSqlTemplate(schema);
             this.updateRecordSqlTemplate = updateRecordSqlTemplate(schema);
             this.deleteRecordTemplate = deleteRecordTemplate(schema);
             this.selectSqlTemplate = selectSqlTemplate(schema);
@@ -337,28 +348,30 @@ wm.plugins.database.services.LocalDBStoreFactory = [
              * @returns {object} promise
              */
             'save': function (entity) {
+                return this.saveAll([entity]);
+            },
+            /**
+             * @ngdoc method
+             * @name wm.plugins.database.services.$LocalDBStoreFactory.$Store#save
+             * @methodOf wm.plugins.database.services.$LocalDBStoreFactory.$Store
+             * @description
+             * saves the given entity to the store. If the record is not available, then a new record will be created.
+             * @param {object} entity the entity to save
+             * @returns {object} promise
+             */
+            'saveAll': function (entities) {
                 var defer = $q.defer(),
-                    self = this,
-                    params = [],
-                    pk = 0,
-                    rowData = mapObjToRow(this, entity);
-                _.forEach(this.schema.columns, function (f) {
-                    if (f.primaryKey) {
-                        pk = rowData[f.name];
-                    } else {
+                    thisStore = this,
+                    queries;
+                queries = _.map(entities, function (entity) {
+                    var rowData = mapObjToRow(thisStore, entity),
+                        params = [];
+                    _.forEach(thisStore.schema.columns, function (f) {
                         params.push(rowData[f.name]);
-                    }
+                    });
+                    return [thisStore.replaceRecordSqlTemplate, params];
                 });
-                params.push(pk);
-                $cordovaSQLite.execute(this.dbConnection, this.updateRecordSqlTemplate, params).then(function (result) {
-                    if (result.rowsAffected === 0) {
-                        self.add(entity).then(function (result) {
-                            defer.resolve(result);
-                        });
-                    } else {
-                        defer.resolve();
-                    }
-                });
+                this.dbConnection.sqlBatch(queries, defer.resolve, defer.reject);
                 return defer.promise;
             },
             /**

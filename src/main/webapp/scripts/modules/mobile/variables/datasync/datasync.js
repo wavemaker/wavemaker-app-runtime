@@ -1,6 +1,6 @@
 /*global WM, _, window*/
-WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariableService', 'LocalDBManager', 'SecurityService', 'VARIABLE_CONSTANTS',
-    function ($rootScope, ChangeLogService, DeviceVariableService, LocalDBManager, SecurityService, VARIABLE_CONSTANTS) {
+WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariableService', 'LocalDBDataPullService', 'NetworkService', 'SecurityService', 'VARIABLE_CONSTANTS',
+    function ($rootScope, ChangeLogService, DeviceVariableService, LocalDBDataPullService, NetworkService, SecurityService, VARIABLE_CONSTANTS) {
         "use strict";
         var operations,
             dataChangeTemplate = {
@@ -100,13 +100,13 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     if (window.SQLitePlugin) {
                         // If user is authenticated and online, then start the data pull process.
                         SecurityService.onUserLogin()
-                            .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
+                            .then(NetworkService.isConnected.bind(NetworkService))
                             .then(function () {
                                 var clearData = variable.clearData === "true" || variable.clearData === true;
                                 DeviceVariableService.initiateCallback('onBefore', variable).then(function (proceed) {
                                     if (proceed !== false) {
                                         $rootScope.$emit('toggle-variable-state', variable, true);
-                                        LocalDBManager.pullData(clearData).then(success, error, function (progress) {
+                                        LocalDBDataPullService.pullAllDbData(clearData).then(success, error, function (progress) {
                                             variable.dataSet = progress;
                                             DeviceVariableService.initiateCallback('onProgress', variable, progress);
                                         }).finally(function () {
@@ -144,7 +144,7 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
                         $rootScope.$emit('toggle-variable-state', variable, true);
-                        LocalDBManager.getLastPullInfo().then(success, error).finally(function () {
+                        LocalDBDataPullService.getLastPullInfo().then(success, error).finally(function () {
                             $rootScope.$emit('toggle-variable-state', variable, false);
                         });
                     } else {
@@ -172,7 +172,7 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     if (window.SQLitePlugin) {
                         // If user is authenticated and online, then start the data push process.
                         SecurityService.onUserLogin()
-                            .then(LocalDBManager.canConnectToServer.bind(LocalDBManager))
+                            .then(NetworkService.isConnected.bind(NetworkService))
                             .then(getOfflineChanges)
                             .then(function (changes) {
                                 if (changes.pendingToSync.total > 0) {

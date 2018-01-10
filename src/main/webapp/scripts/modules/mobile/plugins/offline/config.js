@@ -30,6 +30,7 @@ wm.plugins.offline.factory(wm.plugins.offline.factories);
 wm.plugins.offline.constant('OFFLINE_WAVEMAKER_DATABASE_SCHEMA', {
     'name': 'wavemaker',
     'version': 1,
+    'isInternal' : true,
     'tables': [
         {
             'name': 'key_value',
