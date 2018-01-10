@@ -1,4 +1,4 @@
-/*global wm, WM, _*/
+/*global wm, WM, _, window*/
 WM.module('wm.variables').run([
     '$cordovaNetwork',
     '$cordovaGeolocation',
@@ -166,7 +166,7 @@ WM.module('wm.variables').run([
                     var vibrationTimeOptions = {
                         time: variable.vibrationtime * 1000
                     };
-                    $cordovaVibration.vibrate(vibrationTimeOptions.time);
+                    window.navigator.vibrate(vibrationTimeOptions.time);
                 }
             }
         };
