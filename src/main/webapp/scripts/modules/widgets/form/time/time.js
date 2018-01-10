@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                 '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel();_onChange({$event: $event, $scope: this})" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keyup="_onKeyUp($event)" autocomplete="off">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
-                        '<div uib-timepicker ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
+                        '<div uib-timepicker min="_minTime" max="_maxTime" ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
@@ -58,6 +58,14 @@ WM.module('wm.widgets.form')
                 } else {
                     $is._timeModel = $filter('date')($is._proxyModel, $is.timepattern);
                 }
+            }
+            /*returns back the date object from the time value*/
+            function getDateObjFromTime(value) {
+                var dateObj = moment(value, 'HH:mm')._d;
+                if (dateObj.toString() === 'Invalid Date') {
+                    return null;
+                }
+                return dateObj;
             }
 
             function propertyChangeHandler($is, $el, key, nv) {
@@ -152,6 +160,11 @@ WM.module('wm.widgets.form')
 
                         if ($rs.isMobileApplicationType && attrs.type !== 'uib-picker') {
                             $is._nativeMode = true;
+                        }
+
+                        if (attrs.mintime && attrs.maxtime) {
+                            $is._minTime = getDateObjFromTime(attrs.mintime);
+                            $is._maxTime = getDateObjFromTime(attrs.maxtime);
                         }
                     },
                     'post': function ($is, $el, attrs) {
