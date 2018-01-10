@@ -17,7 +17,7 @@ wm.variables.factories.MetaDataFactory = [
         "use strict";
         var metaInfo = {};
         // Get the service operation info of the project/prefab in run mode
-        function load(prefabName) {
+        function load(prefabName, resetMeta) {
             var deferred = $q.defer(),
                 method = 'getServiceOpInfo',
                 scope = 'APP',
@@ -27,7 +27,7 @@ wm.variables.factories.MetaDataFactory = [
                 method = 'getPrefabServiceOpInfo';
                 params = {'prefabName' : prefabName};
             }
-            if (metaInfo[scope]) {
+            if (metaInfo[scope] && !resetMeta) {
                 deferred.resolve();
             }
             //Load metaData for prefabs and app
@@ -47,7 +47,7 @@ wm.variables.factories.MetaDataFactory = [
             var scope = prefabName || 'APP',
                 serviceMetaInfo = _.get(metaInfo[scope], operationId);
             // Return metadata of the variable
-            if (!serviceMetaInfo) {
+            if (serviceMetaInfo === null) {
                 return serviceMetaInfo;
             }
             return _.get(metaInfo[scope], [operationId, 'wmServiceOperationInfo']) || {};

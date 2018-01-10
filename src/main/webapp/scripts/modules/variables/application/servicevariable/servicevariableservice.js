@@ -578,7 +578,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 //If meta data for a service is not found, check if the user is authenticated or not
                 //If user is athenticated then display a toaster stating he is not authorised
                 //else redirect him to login dialog or login page based on project settings
-                if (variable._wmServiceOperationInfo === null) {
+                if (!variable._wmServiceOperationInfo) {
                     SecurityService.isAuthenticated(function (isAuthenticated) {
                         if (isAuthenticated) {
                             params = {
@@ -592,7 +592,8 @@ wm.variables.services.$servicevariable = ['Variables',
                             params =  {
                                 'error' : {}
                             };
-                            BaseService.pushToErrorCallStack(undefined, variable.invoke, WM.noop)
+                            variableActive[variable.activeScope.$id][variable.name] = false;
+                            BaseService.pushToErrorCallStack(null, variable.invoke.bind(variable, options, success, errorCB), WM.noop);
                             var appManager = Utils.getService("AppManager");
                             appManager.handleSessionTimeOut();
                         }

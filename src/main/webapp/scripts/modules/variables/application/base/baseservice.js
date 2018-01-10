@@ -920,6 +920,13 @@ wm.variables.services.Variables = [
                     });
                 }
                 _.forEach(self.variableCollection[scope.$id], function (variable, name) {
+                    /*Define Property getter setter for operation Info*/
+                    Object.defineProperty(variable, '_wmServiceOperationInfo', {
+                        get: function () {
+                            return MetaDataFactory.getByOperationId(variable.operationId, variable._prefabName);
+                        },
+                        configurable: true
+                    });
                     //Trigger update on variable based on run/studio mode
                     updateVariableData(variable, name, context, scope);
                 });

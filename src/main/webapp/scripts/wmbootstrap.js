@@ -735,7 +735,7 @@ Application
                     var deferred = $q.defer();
                     SecurityService.setConfig(null);
                     SecurityService.getConfig(function () {
-                        MetaDataFactory.load().then(function() {
+                            MetaDataFactory.load(undefined, true).then(function() {
                             if (!appVariablesLoaded) {
                                 initAppVariablesAndDependencies().
                                 then(deferred.resolve, deferred.resolve);
