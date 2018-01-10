@@ -652,11 +652,15 @@ body {
     overflow: hidden;
     .tab-content {
       white-space: nowrap;
-      -webkit-transition: -webkit-transform 0.4s ease-out;
-      transition: transform 0.4s ease-out;
       .tab-pane {
         display: inline-block;
         vertical-align: top;
+      }
+    }
+    &.has-transition {
+      .tab-content {
+        -webkit-transition: -webkit-transform 0.4s ease-out;
+        transition: transform 0.4s ease-out;
       }
     }
   }
