@@ -2818,6 +2818,22 @@ WM.module('wm.utils', [])
             return file.size > FILE_MAX_SIZE;
         }
 
+        /**
+         * This function returns true by comparing two objects based on the fields
+         * @param obj1 object
+         * @param obj2 object
+         * @param compareBy string field values to compare
+         * @returns {boolean} true if object equality returns true based on fields
+         */
+        function isEqualWithFields(obj1, obj2, compareBy) {
+            var _compareBy = _.isArray(compareBy) ? compareBy : _.split(compareBy, ',');
+            return _.isEqualWith(obj1, obj2, function (o1, o2) {
+                return _.every(_compareBy, function(cb) {
+                    return o1[cb] === o2[cb];
+                });
+            });
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -2965,4 +2981,5 @@ WM.module('wm.utils', [])
         this.exportHandler              = exportHandler;
         this.isVariableOrActionEvent    = isVariableOrActionEvent;
         this.isFileSizeWithinLimit      = isFileSizeWithinLimit;
+        this.isEqualWithFields          = isEqualWithFields;
     }]);
