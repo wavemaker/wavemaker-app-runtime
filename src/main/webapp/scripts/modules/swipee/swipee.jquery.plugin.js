@@ -230,6 +230,8 @@ window.requestAnimationFrame = (function(callback) {
         settings.swipeTarget.addEventListener('touchmove', swipeHandler);
         document.addEventListener('mouseup', swipeEndHandler);
         document.addEventListener('touchend', swipeEndHandler);
+        // remove if there are any destroyListeners already present on setting object.
+        settings.destroyListeners && settings.destroyListeners();
         settings.destroyListeners = function() {
             settings.swipeTarget.removeEventListener('mousemove', swipeHandler);
             settings.swipeTarget.removeEventListener('touchmove', swipeHandler);

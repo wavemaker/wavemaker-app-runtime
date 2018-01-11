@@ -81,9 +81,15 @@ WM.module('wm.variables').run(['$rootScope',
                     {"target": "spinnerMessage", "hide" : false}
                 ],
                 invoke: function (variable, options, success, error) {
-                    var fileType = defaultFileTypesToOpen[variable.fileType];
+                    var fileType = defaultFileTypesToOpen[variable.fileType],
+                        filePath = variable.filePath;
                     $rootScope.$emit('toggle-variable-state', variable, true);
-                    DeviceFileOpenerService.openRemoteFile(variable.filePath, fileType.mimeType, fileType.extension)
+
+                    // if relative path is given, then append url with deployedUrl, to access files in resources.
+                    if (!Utils.isValidWebURL(filePath)) {
+                        filePath = $rootScope.project.deployedUrl + '/' + filePath;
+                    }
+                    DeviceFileOpenerService.openRemoteFile(filePath, fileType.mimeType, fileType.extension)
                         .then(success, error)
                         .finally(function () {
                             $rootScope.$emit('toggle-variable-state', variable, false);
