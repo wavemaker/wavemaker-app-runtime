@@ -61,21 +61,30 @@
         '$cordovaFileTransfer',
         '$cordovaNetwork',
         '$http',
+        '$interval',
         '$q',
         '$rootScope',
         '$timeout',
-        'CONSTANTS',
+        'ProjectService',
         function (
             $cordovaFileTransfer,
             $cordovaNetwork,
             $http,
+            $interval,
             $q,
             $rootScope,
             $timeout,
-            CONSTANTS
+            ProjectService
         ) {
-            var autoConnect = false,
-                originalDownload = $cordovaFileTransfer.download;
+            var AUTO_CONNECT_KEY = "WM.NetworkService.autoConnect",
+                autoConnect = localStorage.getItem(AUTO_CONNECT_KEY) !== "false",
+                originalDownload = $cordovaFileTransfer.download,
+                baseURL;
+
+            function setAutoConnect(flag) {
+                autoConnect = flag;
+                localStorage.setItem(AUTO_CONNECT_KEY, flag);
+            }
 
             /**
              * Override download method to stop downloads via $cordovaFileTransfer when app is not connected
@@ -94,17 +103,19 @@
              * Otherwise, the promise is resolved with false.
              */
             function pingServer() {
-                var base = $rootScope.project.deployedUrl;
-                if (base && !_.endsWith(base, '/')) {
-                    base += '/';
+                var defer = $q.defer();
+                baseURL = baseURL || ProjectService.getDeployedUrl();
+                if (baseURL && !_.endsWith(baseURL, '/')) {
+                    baseURL += '/';
                 } else {
-                    base = base || '';
+                    baseURL = baseURL || '';
                 }
-                return $http.get(base + 'wmProperties.js?t=' + Date.now()).then(function () {
-                    return true;
+                $http.get(baseURL + 'wmProperties.js?t=' + Date.now()).then(function () {
+                    defer.resolve(true);
                 }, function () {
-                    return false;
+                    defer.resolve(false);
                 });
+                return defer.promise;
             }
 
             /**
@@ -120,20 +131,45 @@
             }
 
             /**
+             * Returns a promise that is resolved when server is available.
+             * @returns {*}
+             */
+            function checkForServiceAvailiblity() {
+                var defer = $q.defer(),
+                    promise = $interval(function () {
+                        isServiceAvailable().then(function (available) {
+                            if (available) {
+                                defer.resolve();
+                                $interval.cancel(promise);
+                            }
+                        });
+                    }, 5000);
+                return defer.promise;
+            }
+
+            /**
              * Tries to connect to remote server. Network State will be changed based on the success of connection
              * operation and emits an event notifying the network state change.
+             *
+             * @param silent {boolean} if true and connection is successful, then no event is emitted. Otherwise,
+             * events are emitted for network status change.
              * @returns {*} a promise
              */
-            function connect() {
+            function connect(silentMode) {
                 var d = $q.defer();
                 isServiceAvailable().then(function () {
-                    if (networkState.isServiceAvailable) {
+                    if (networkState.isServiceAvailable && autoConnect) {
                         networkState.isConnecting = true;
+                        if (!silentMode) {
+                            $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                        }
                         $timeout(function () {
                             networkState.isConnecting = false;
                             networkState.isConnected = true;
                             localStorage.setItem(IS_CONNECTED_KEY, true);
-                            $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                            if (!silentMode) {
+                                $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                            }
                             d.resolve(true);
                         }, 5000);
                     } else {
@@ -141,8 +177,8 @@
                         networkState.isConnected = false;
                         localStorage.setItem(IS_CONNECTED_KEY, false);
                         d.reject();
+                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
                     }
-                    $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
                 });
                 return d.promise;
             }
@@ -154,23 +190,15 @@
             function disconnect() {
                 networkState.isConnected = false;
                 networkState.connecting = false;
-                autoConnect = true;
                 $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
                 localStorage.setItem(IS_CONNECTED_KEY, networkState.isConnected);
                 return $q.resolve(networkState.isConnected);
             }
 
+            //On startup, try to connect
             if (window.cordova && window.Connection) {
                 networkState.isNetworkAvailable = $cordovaNetwork.isOnline();
-                /* Check Initially, whether the  service is available.*/
-                isServiceAvailable().then(function () {
-                    if (!networkState.isServiceAvailable) {
-                        networkState.isConnected = false;
-                    }
-                    if (!networkState.isConnected) {
-                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
-                    }
-                });
+                connect(true);
             }
 
             /*
@@ -178,14 +206,8 @@
              * connect flag is true, then app is automatically connected to remote server.
              */
             $rootScope.$on('$cordovaNetwork:online', function () {
-                networkState.isNetworkAvailable = false;
-                if (autoConnect) {
-                    connect();
-                } else {
-                    isServiceAvailable().then(function () {
-                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
-                    });
-                }
+                networkState.isNetworkAvailable = true;
+                connect();
             });
 
             /*
@@ -195,6 +217,18 @@
                 networkState.isNetworkAvailable = false;
                 networkState.isServiceAvailable = false;
                 disconnect();
+            });
+
+            $rootScope.$on('onNetworkStateChange', function (event, data) {
+                /**
+                 * If network is available and server is not available,then
+                 * try to connect when server is available.
+                 */
+                if (data.isNetworkAvailable && !data.isServiceAvailable) {
+                    checkForServiceAvailiblity().then(function () {
+                        connect();
+                    });
+                }
             });
 
             /**
@@ -207,7 +241,7 @@
              * the auto connection flow using this method.
              */
             this.disableAutoConnect = function () {
-                autoConnect = false;
+                setAutoConnect(false);
             };
 
             /**
@@ -248,7 +282,9 @@
              */
             this.isAvailable = function (pingServer) {
                 if (pingServer) {
-                    return isServiceAvailable();
+                    return isServiceAvailable().then(function () {
+                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                    });
                 }
                 return networkState.isServiceAvailable;
             };
@@ -277,7 +313,10 @@
              *
              * @returns {object} promise
              */
-            this.connect = connect;
+            this.connect = function () {
+                setAutoConnect(true);
+                return connect();
+            };
 
             /**
              * @ngdoc method
@@ -285,11 +324,15 @@
              * @methodOf wm.modules.wmCommon.services.$NetworkService
              * @description
              * This method disconnects the app from the server and returns a promise that will be resolved with
-             * a boolean value based on the operation result.
+             * a boolean value based on the operation result. Use connect method to reconnect.
              *
              * @returns {object} promise
              */
-            this.disconnect = disconnect;
+            this.disconnect = function () {
+                var p = disconnect();
+                this.disableAutoConnect();
+                return p;
+            };
 
         }];
 }());
