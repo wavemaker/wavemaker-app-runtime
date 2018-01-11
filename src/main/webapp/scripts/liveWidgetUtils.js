@@ -17,8 +17,9 @@ WM.module('wm.widgets.live')
         'WidgetUtilService',
         'Variables',
         '$timeout',
+        'WIDGET_CONSTANTS',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout, WIDGET_CONSTANTS) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
@@ -1018,7 +1019,10 @@ WM.module('wm.widgets.live')
                     wdgtProperties = scope.widgetProps, //Find out the form widget inside the form field
                     formWidget     = getFormFieldWidget(scope, element),
                     fieldDef       = parentScope.formFields[index],
-                    resetProps     = {};
+                    resetProps     = {},
+                    eleScope       = element.scope(),
+                    variable,
+                    selectedVariable;
 
                 function setFormField() {
                     if (CONSTANTS.isRunMode) {
@@ -1098,6 +1102,27 @@ WM.module('wm.widgets.live')
                     //In case of range, add the placeholder to the second widget
                     element.find('.form-control').last().attr('placeholder', newVal);
                     break;
+                case 'groupby':
+                    if (scope.widgetid) {
+                        variable    = Utils.getVariableName(scope, eleScope);
+                        selectedVariable = eleScope && eleScope.Variables[variable];
+                        FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wdgtProperties);
+                        if (newVal && newVal !== '') {
+                            if (newVal === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
+                                wdgtProperties.groupby.isGroupBy = true;
+                            } else {
+                                wdgtProperties.groupby.isGroupBy = false;
+                            }
+                        }
+                    }
+                    setFormField();
+                    break;
+                case 'match':
+                    if (scope.widgetid) {
+                        wdgtProperties.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], scope.match);
+                    }
+                    setFormField();
+                    break;
                 case 'disabled':
                 case 'readonly':
                 case 'required':
@@ -1111,6 +1136,12 @@ WM.module('wm.widgets.live')
                             FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
                         } else if (isDataSetWidgets[scope.widget]) {
                             updatePropertyPanelOptions(scope);
+                            if (wdgtProperties.groupby && wdgtProperties.groupby.show) {
+                                variable    = Utils.getVariableName(scope, eleScope);
+                                selectedVariable = eleScope && eleScope.Variables[variable];
+                                FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wdgtProperties);
+                                wdgtProperties.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], scope.match);
+                            }
                         }
                     }
                     break;

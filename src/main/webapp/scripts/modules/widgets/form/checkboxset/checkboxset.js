@@ -87,7 +87,7 @@ WM.module('wm.widgets.form')
                     constructCheckboxSet(scope, element, newVal);
                 }
                 if (scope.widgetid) {
-                    selectedVariable = eleScope.Variables[variable];
+                    selectedVariable = eleScope && eleScope.Variables[variable];
                     FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wp);
                 }
                 break;
@@ -113,7 +113,7 @@ WM.module('wm.widgets.form')
                 break;
             case 'groupby':
                 if (scope.widgetid) {
-                    selectedVariable = eleScope.Variables[variable];
+                    selectedVariable = eleScope && eleScope.Variables[variable];
                     FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wp);
                     if (newVal && newVal !== '') {
                         if (newVal === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
