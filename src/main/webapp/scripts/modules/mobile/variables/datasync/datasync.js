@@ -100,20 +100,21 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     if (window.SQLitePlugin) {
                         // If user is authenticated and online, then start the data pull process.
                         SecurityService.onUserLogin()
-                            .then(NetworkService.isConnected.bind(NetworkService))
                             .then(function () {
                                 var clearData = variable.clearData === "true" || variable.clearData === true;
-                                DeviceVariableService.initiateCallback('onBefore', variable).then(function (proceed) {
-                                    if (proceed !== false) {
-                                        $rootScope.$emit('toggle-variable-state', variable, true);
-                                        LocalDBDataPullService.pullAllDbData(clearData).then(success, error, function (progress) {
-                                            variable.dataSet = progress;
-                                            DeviceVariableService.initiateCallback('onProgress', variable, progress);
-                                        }).finally(function () {
-                                            $rootScope.$emit('toggle-variable-state', variable, false);
-                                        });
-                                    }
-                                });
+                                if (NetworkService.isConnected()) {
+                                    DeviceVariableService.initiateCallback('onBefore', variable).then(function (proceed) {
+                                        if (proceed !== false) {
+                                            $rootScope.$emit('toggle-variable-state', variable, true);
+                                            LocalDBDataPullService.pullAllDbData(clearData).then(success, error, function (progress) {
+                                                variable.dataSet = progress;
+                                                DeviceVariableService.initiateCallback('onProgress', variable, progress);
+                                            }).finally(function () {
+                                                $rootScope.$emit('toggle-variable-state', variable, false);
+                                            });
+                                        }
+                                    });
+                                }
                             });
                     } else {
                         error(OFFLINE_PLUGIN_NOT_FOUND);
@@ -172,10 +173,9 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     if (window.SQLitePlugin) {
                         // If user is authenticated and online, then start the data push process.
                         SecurityService.onUserLogin()
-                            .then(NetworkService.isConnected.bind(NetworkService))
                             .then(getOfflineChanges)
                             .then(function (changes) {
-                                if (changes.pendingToSync.total > 0) {
+                                if (NetworkService.isConnected() && changes.pendingToSync.total > 0) {
                                     DeviceVariableService.initiateCallback('onBefore', variable, changes).then(function (proceed) {
                                         if (proceed !== false) {
                                             $rootScope.$emit('toggle-variable-state', variable, true);
