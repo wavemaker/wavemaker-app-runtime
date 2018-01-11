@@ -423,6 +423,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
+                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false},
                         "iconclass": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "number", "value": "0"},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
@@ -713,7 +714,8 @@ WM.module('wm.widgets.base', [])
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "bindable": "in-bound", "getTypeFrom": "dataset"},
-                        "displayValue": {"type": "string", "show": false, "bindable": "out-bound"}
+                        "displayValue": {"type": "string", "show": false, "bindable": "out-bound"},
+                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
                     },
                     "wm.colorpicker": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -797,7 +799,8 @@ WM.module('wm.widgets.base', [])
                         "usekeys": {"type": "boolean"},
                         "selectedvalues": {"type": "string, object", "isList": true, "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "displayValue": {"type": "string, array", "isList": true, "show": false, "bindable": "out-bound"}
+                        "displayValue": {"type": "string, array", "isList": true, "show": false, "bindable": "out-bound"},
+                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
                     },
 
                     "wm.chips": {
@@ -836,7 +839,8 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
                         "backgroundcolor": {"type": "string", "widget": "color"},
-                        "displayValue": {"type": "string", "getIsListFrom": "expr:multiple", "show": false, "bindable": "out-bound"}
+                        "displayValue": {"type": "string", "getIsListFrom": "expr:multiple", "show": false, "bindable": "out-bound"},
+                        "compareby": {"type": "list", "widget": "select-all", "datasetfilter": "terminals", "show": false}
                     },
 
                     "wm.marquee": {
@@ -2107,7 +2111,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
                 {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["modal", "vertical", "avatar"], "parent": "properties"},
-                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
+                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "metadata", "searchkey", "displaylabel", "displayimagesrc", "usekeys",  "datafield", "displayfield", "displayexpression", "groupby", "match", "scale", "dateformat", "aggregation", "aggregationcolumn", "orderby", "compareby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren", "nodeid", "nodeaction", "nodeclick", "thumbnailurl", "mediaurl"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "maxdefaultvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},

@@ -239,7 +239,7 @@ WM.module('wm.widgets.form')
              * @param model value to be compared with
              * @returns object / string
              */
-            function getSelectedObjFromDisplayOptions(displayOptions, dataField, model) {
+            function getSelectedObjFromDisplayOptions(displayOptions, dataField, model, compareby) {
                 var selectedOption,
                     selectedOptions = [],
                     filterField = dataField === ALLFIELDS ? 'dataObject' : 'key';
@@ -248,6 +248,9 @@ WM.module('wm.widgets.form')
                     _.forEach(model, function (modelVal) {
                         selectedOption = _.find(displayOptions, function (obj) {
                             if (filterField === 'dataObject') {
+                                if (compareby && compareby.length) {
+                                    return Utils.isEqualWithFields(obj[filterField], modelVal, compareby);
+                                }
                                 return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(modelVal)));
                             }
                             return _.toString(obj[filterField]) === _.toString(modelVal);
@@ -261,6 +264,9 @@ WM.module('wm.widgets.form')
                 }
                 selectedOption = _.find(displayOptions, function (obj) {
                     if (filterField === 'dataObject') {
+                        if (compareby && compareby.length) {
+                            return Utils.isEqualWithFields(obj[filterField], model, compareby);
+                        }
                         return _.isEqual(WM.fromJson(WM.toJson(obj[filterField])), WM.fromJson(WM.toJson(model)));
                     }
                     return _.toString(obj[filterField]) === _.toString(_.trim(model));
@@ -315,7 +321,7 @@ WM.module('wm.widgets.form')
                 }
 
                 if (WM.isDefined(scope.displayOptions) && !scope.usekeys) {
-                    selectedOption = getSelectedObjFromDisplayOptions(scope.displayOptions, scope.datafield, model);
+                    selectedOption = getSelectedObjFromDisplayOptions(scope.displayOptions, scope.datafield, model, scope.compareby);
 
                     if (WM.isArray(model)) {
                         _modelProxy = [];

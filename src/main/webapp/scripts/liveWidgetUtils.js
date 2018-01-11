@@ -503,7 +503,7 @@ WM.module('wm.widgets.live')
                 if (isSearchWidgetType(fieldDef.widget)) {
                     template = ' datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" displaylabel="{{formFields[' + index + '].displaylabel}}" displayfield="{{formFields[' + index + '].displayfield}}"';
                 } else {
-                    template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                    template = ' datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" compareby="{{formFields[' + index + '].compareby}}"';
                 }
                 if (!fieldDef.dataset || _.isObject(fieldDef.dataset)) {
                     //In studio mode, set default option instead of scopedataset and add representational data indicator
@@ -2135,6 +2135,7 @@ WM.module('wm.widgets.live')
                 columnDef.datafield = datafield;
                 if (CONSTANTS.isRunMode) {
                     columnDef._primaryKey = _.isEmpty(primaryKeys) ? undefined : primaryKeys[0];
+                    columnDef.compareby = primaryKeys && primaryKeys.join(',');
                 }
 
                 displayField = datafield === 'All Fields' ? undefined : datafield;
