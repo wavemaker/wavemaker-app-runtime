@@ -46,6 +46,19 @@ wm.plugins.database.services.LocalDBService = [
                 'update' : false
             }];
 
+        function getStore(params) {
+            var deferredStore = $q.defer(),
+                store = LocalDBManager.getStore(params.dataModelName, params.entityName);
+            if (store) {
+                deferredStore.resolve(store);
+            } else {
+                deferredStore.reject("No store is found with name \'" + params.entityName + "\' in database \'"
+                    + params.dataModelName + "\'.");
+            }
+            return deferredStore.promise;
+
+        }
+
         /*
          * During offline, LocalDBService will answer to all the calls. All data modifications will be recorded
          * and will be reported to DatabaseService when device goes online.
@@ -69,13 +82,8 @@ wm.plugins.database.services.LocalDBService = [
         function remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
             onlineHandler.call(DatabaseService, params, function (response) {
                 if (!(operation.update  || params.skipLocalDB)) {
-                    _.forEach(response.content, function (r) {
-                        var updateParams = {
-                            dataModelName: params.dataModelName,
-                            entityName: params.entityName,
-                            data: r
-                        };
-                        self.updateTableData(updateParams, WM.noop, WM.noop, false);
+                    getStore(params).then(function (store) {
+                        store.saveAll(response.content);
                     });
                 } else if (operation.name !== 'insertTableData' && operation.name !== 'insertMultiPartTableData') {
                     self[operation.name](params, WM.noop, WM.noop);
@@ -113,19 +121,6 @@ wm.plugins.database.services.LocalDBService = [
                 }
             });
         };
-
-        function getStore(params) {
-            var deferredStore = $q.defer(),
-                store = LocalDBManager.getStore(params.dataModelName, params.entityName);
-            if (store) {
-                deferredStore.resolve(store);
-            } else {
-                deferredStore.reject("No store is found with name \'" + params.entityName + "\' in database \'"
-                    + params.dataModelName + "\'.");
-            }
-            return deferredStore.promise;
-
-        }
 
         /**
          * @ngdoc method
