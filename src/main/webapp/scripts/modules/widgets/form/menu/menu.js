@@ -270,7 +270,7 @@ WM.module('wm.widgets.form')
         'use strict';
         function openLink(link, target) {
             if (CONSTANTS.hasCordova && _.startsWith(link, '#')) {
-                location.href = link;
+                location.hash = link;
             } else {
                 $window.open(link, target);
             }
