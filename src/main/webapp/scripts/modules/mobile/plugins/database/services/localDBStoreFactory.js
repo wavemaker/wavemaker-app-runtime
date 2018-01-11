@@ -363,6 +363,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 var defer = $q.defer(),
                     thisStore = this,
                     queries;
+                if (_.isEmpty(entities)) {
+                    return $q.resolve();
+                }
                 queries = _.map(entities, function (entity) {
                     var rowData = mapObjToRow(thisStore, entity),
                         params = [];
