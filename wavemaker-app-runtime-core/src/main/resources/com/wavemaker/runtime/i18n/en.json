@@ -58,5 +58,7 @@
   "MESSAGE_NETWORK_NOT_AVAILABLE": "Network not available.",
   "MESSAGE_SERVICE_AVAILABLE": "Service is available.",
   "MESSAGE_SERVICE_CONNECTING": "Connecting to server.",
-  "MESSAGE_SERVICE_CONNECTED": "You are online."
+  "MESSAGE_SERVICE_CONNECTED": "You are online.",
+  "MESSAGE_FILE_UPLOAD_SUCCESS": "File uploaded successfully",
+  "MESSAGE_FILE_UPLOAD_ERROR": "File upload failed"
 }
