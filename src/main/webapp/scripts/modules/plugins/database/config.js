@@ -395,6 +395,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "OTHER": 'Other'
     },
     "SEQUENCE_SUPPORTED_DB_TYPES": ["HSQLDB", "PostgreSQL", "Oracle", "SQLServer", "DB2", 'Other'],
+    "GENERATOR_TYPES" : {
+        "ASSIGNED": "assigned",
+        "SEQUENCE": "sequence",
+        "IDENTITY": "identity"
+    },
     "LOGIN": {
         "SAAS_MYSQL_CLOUD": {
             "USERNAME": "{WM_CLOUD_MYSQL_USERNAME}",
