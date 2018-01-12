@@ -15,9 +15,15 @@
  */
 package com.wavemaker.runtime.security.provider.saml;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
@@ -37,20 +43,21 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
     @Override
     public Object loadUserBySAML(final SAMLCredential credential) throws UsernameNotFoundException {
         final String username = credential.getNameID().getValue();
-        if (StringUtils.isNotBlank(roleAttributeName)) {
-            final String attrValue = credential.getAttributeAsString(roleAttributeName);
-            LOGGER.info("Attribute value for {} is {}", roleAttributeName, attrValue);
-            if (StringUtils.isNotBlank(attrValue)) {
-                return new WMUser("", username, "", username, 0, true, true, true, true,
-                        AuthorityUtils.createAuthorityList(attrValue),
-                        System.currentTimeMillis());
-            } else {
-                return createNoAuthoritiesUser(username);
-            }
 
-        } else {
-            return createNoAuthoritiesUser(username);
+        List<GrantedAuthority> authorities = null;
+        if (StringUtils.isNotBlank(roleAttributeName)) {
+            final String attributeValues[] = credential.getAttributeAsStringArray(roleAttributeName);
+            LOGGER.info("Attribute values for {} is {}", roleAttributeName, Arrays.toString(attributeValues));
+            if (ArrayUtils.isNotEmpty(attributeValues)) {
+                authorities = AuthorityUtils.createAuthorityList(attributeValues);
+            }
         }
+
+        if (CollectionUtils.isEmpty(authorities)) {
+            authorities = AuthorityUtils.NO_AUTHORITIES;
+        }
+
+        return new WMUser("", username, "", username, 0, true, true, true, true, authorities, System.currentTimeMillis());
     }
 
     public String getRoleAttributeName() {
@@ -59,10 +66,5 @@ public class WMSAMLUserDetailsService implements SAMLUserDetailsService {
 
     public void setRoleAttributeName(final String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
-    }
-
-    private WMUser createNoAuthoritiesUser(String username) {
-        return new WMUser("", username, "", username, 0, true, true, true, true, AuthorityUtils.NO_AUTHORITIES,
-                System.currentTimeMillis());
     }
 }
