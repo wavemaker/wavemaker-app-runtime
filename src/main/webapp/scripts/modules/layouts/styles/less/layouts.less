@@ -649,12 +649,14 @@ body {
   }
   /********************************* tab classes *****************************/
   .app-tabs {
-    overflow: hidden;
-    .tab-content {
-      white-space: nowrap;
-      .tab-pane {
-        display: inline-block;
-        vertical-align: top;
+    &.has-swipee {
+      overflow: hidden;
+      .tab-content {
+        white-space: nowrap;
+        .tab-pane {
+          display: inline-block;
+          vertical-align: top;
+        }
       }
     }
     &.has-transition {

@@ -85,12 +85,11 @@ WM.module('wm.layouts.containers')
         }
 
         // Calculates the tabs left position depending on no. of tabs.
-        function setTabsLeftPosition($element, activeIndex) {
-            var noOfTabs = $element.find('.tab-pane').length,
-                leftVal;
+        function setTabsLeftPosition(activeIndex, noOfTabs, $el) {
+            var leftVal;
 
-            leftVal = -1 * (activeIndex * 100 / noOfTabs);
-            $element.css({
+            leftVal = (-1 * activeIndex * 100 / noOfTabs);
+            $el.css({
                 'transform': 'translate3d(' + leftVal + '%, 0, 0)'
             });
         }
@@ -181,9 +180,10 @@ WM.module('wm.layouts.containers')
                         hasSwipeTransition = tabContent.hasClass('swipee-transition');
 
                         // add left position only when element is not having swipe.
-                        if (!hasSwipeTransition) {
-                            setTabsLeftPosition(tabContent, tab.tabId);
+                        if ($element.hasClass('has-transition') && !hasSwipeTransition) {
+                            setTabsLeftPosition(tab.tabId, $scope.tabs.length, tabContent);
                         }
+
                         tab._animateIn();
                     }
                     // In studio mode on click on header set tab-pane as active widget
@@ -208,7 +208,7 @@ WM.module('wm.layouts.containers')
                         'width': 100 / noOfTabs + '%'
                     });
 
-                    setTabsLeftPosition(content, activeIndex);
+                    setTabsLeftPosition(activeIndex, noOfTabs, content);
                 };
 
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
@@ -388,11 +388,13 @@ WM.module('wm.layouts.containers')
                             }
                         });
 
-                        scope.setTabsLeftAndWidth(scope.defaultpaneindex);
+                        if (element.hasClass('has-transition')) {
+                            scope.setTabsLeftAndWidth(scope.defaultpaneindex);
 
-                        // Adding swipe on tabs content
-                        if (Utils.isMobile()) {
-                            addSwipee(scope, content);
+                            // Adding swipe on tabs content
+                            if (Utils.isMobile()) {
+                                addSwipee(scope, content);
+                            }
                         }
                     }
 
@@ -456,12 +458,7 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function (scope, element, attrs, ctrl) {
 
-                        var parentScope = element.closest('.app-tabs').isolateScope(),
-                            index = parentScope.activeTabIndex || element.index();
-
-                        if (scope.widgetid) {
-                            ctrl.setTabsLeftAndWidth(index);
-                        }
+                        var parentScope = element.closest('.app-tabs').isolateScope();
 
                         //To support backward compatibility for old projects
                         if (scope.title === undefined && !scope.bindtitle) {
