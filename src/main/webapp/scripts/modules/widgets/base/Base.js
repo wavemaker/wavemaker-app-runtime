@@ -3142,7 +3142,7 @@ WM.module('wm.widgets.base', [])
                         optionCategoryName = 'Field';
 
                     // default options for live list
-                    if (scope.widgettype === 'wm-list' || scope.widgettype === 'wm-checkboxset') {
+                    if (_.includes(['wm-list', 'wm-checkboxset', 'wm-form-field', 'wm-filter-field'], scope.widgettype)) {
                         defaultOptions = [{"name": "Javascript", "category": "Script"}];
                         if (_.includes(scope[prop], '(')) {
                             defaultOptions.push({

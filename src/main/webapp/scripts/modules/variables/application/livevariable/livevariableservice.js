@@ -651,7 +651,7 @@ wm.variables.services.$liveVariable = [
                 /*get the filter fields from the options*/
                 _.forEach(options.filterFields, function (value, key) {
                     value.fieldName = key;
-                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || options.matchMode];
+                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || options.matchMode || variable.matchMode];
                     filterFields.push(value);
                 });
                 if (variable.operation === 'read' || options.operation === 'read') {
