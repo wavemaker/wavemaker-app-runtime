@@ -1047,6 +1047,15 @@ WM.module('wm.widgets.live')
                     $compile(element.contents())(parentScope);
                 }
 
+                function updateGroupBy() {
+                    if (wdgtProperties.groupby) {
+                        variable    = Utils.getVariableName(scope, eleScope);
+                        selectedVariable = eleScope && eleScope.Variables[variable];
+                        FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wdgtProperties);
+                        wdgtProperties.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], scope.match);
+                    }
+                }
+
                 //For show and required, expression is bound. So, no need to apply on inner widget
                 if (formWidget && (key !== 'show' && key !== 'readonly')) {
                     formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
@@ -1082,6 +1091,7 @@ WM.module('wm.widgets.live')
                         if (scope.widget === 'checkboxset' || scope.widget === 'radioset') {
                             compileField();
                         }
+                        updateGroupBy();
                     }
                     break;
                 case 'inputtype':
@@ -1104,9 +1114,7 @@ WM.module('wm.widgets.live')
                     break;
                 case 'groupby':
                     if (scope.widgetid) {
-                        variable    = Utils.getVariableName(scope, eleScope);
-                        selectedVariable = eleScope && eleScope.Variables[variable];
-                        FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wdgtProperties);
+                        updateGroupBy();
                         if (newVal && newVal !== '') {
                             if (newVal === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                                 wdgtProperties.groupby.isGroupBy = true;
@@ -1136,12 +1144,7 @@ WM.module('wm.widgets.live')
                             FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
                         } else if (isDataSetWidgets[scope.widget]) {
                             updatePropertyPanelOptions(scope);
-                            if (wdgtProperties.groupby && wdgtProperties.groupby.show) {
-                                variable    = Utils.getVariableName(scope, eleScope);
-                                selectedVariable = eleScope && eleScope.Variables[variable];
-                                FormWidgetUtils.showOrHideMatchProperty(scope, selectedVariable, wdgtProperties);
-                                wdgtProperties.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], scope.match);
-                            }
+                            updateGroupBy();
                         }
                     }
                     break;

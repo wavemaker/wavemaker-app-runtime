@@ -1219,9 +1219,22 @@ WM.module('wm.widgets.form')
                     typeUtils = Utils.getService('TypeUtils'),
                     variableCategory = variable && variable.category;
 
-                if (!$is.binddataset || $is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
+                if ($is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                     return;
                 }
+
+                if (!$is.binddataset) {
+                    if (!_.isString($is.dataset)) {
+                        wp.groupby.show = true;
+                        return;
+                    }
+                    wp.groupby.show = false;
+                    $rootScope.$emit('set-markup-attr', $is.widgetid, {'groupby': ''});
+                    $is.groupby = '';
+                } else {
+                    wp.groupby.show = true;
+                }
+
                 if (!$is.groupby || _.includes($is.groupby, '(')) {
                     wp.match.show = false;
                 } else if (variableCategory) {
@@ -1234,14 +1247,19 @@ WM.module('wm.widgets.form')
                     }
                 }
                 if (!wp.match.show) {
-                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                    $rootScope.$emit('set-markup-attr', $is.widgetid, {'match': ''});
                     $is.match = '';
                 }
                 wp.showcount.show = wp.collapsible.show = $is.groupby ? true : false;
 
                 if (!wp.collapsible.show) {
-                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'collapsible': ''});
+                    $rootScope.$emit('set-markup-attr', $is.widgetid, {'collapsible': ''});
                     $is.collapsible = false;
+                }
+
+                if (!wp.showcount.show) {
+                    $rootScope.$emit('set-markup-attr', $is.widgetid, {'showcount': ''});
+                    $is.showcount = false;
                 }
             };
 
