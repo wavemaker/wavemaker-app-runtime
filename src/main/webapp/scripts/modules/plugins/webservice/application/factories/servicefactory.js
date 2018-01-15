@@ -432,7 +432,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             },
 
         /*function to get list of operations for a service from the backend*/
-            getServiceOperations = function (serviceId, successCallBack, reloadFlag) {
+            getServiceOperations = function (serviceId, successCallBack, errorCallBack, reloadFlag) {
                 /*sanity checking of the params*/
                 if (!serviceId || serviceId === '') {
                     return;
@@ -463,6 +463,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 break;
                             }
                         }
+                        Utils.triggerFn(errorCallBack);
                     };
 
                 /*if service's operations already fetched once and reloadFlag not set, return the fetched operations*/
@@ -530,7 +531,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
             },
         /*function to get list of params and return type for an operation of a service from the backend*/
-            getServiceOperationParams = function (serviceId, operationId, successCallBack, reloadFlag) {
+            getServiceOperationParams = function (serviceId, operationId, successCallBack, errorCallBack, reloadFlag) {
                 /*sanity checking of the params*/
                 if (_.isEmpty(serviceId)) {
                     return;
@@ -543,6 +544,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     urlParams,
                     onOperationParamsFetch = function () {
                         Utils.triggerFn(successCallBack, operationObj);
+                    },
+                    onOperationParamsFetchError = function () {
+                        Utils.triggerFn(errorCallBack);
                     };
 
                 /*if service's operation's params already fetched once and reloadFlag not set, return the fetched params*/
@@ -555,7 +559,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     getServiceOperations(serviceId, function () {
                         operationObj = getServiceOperationObjectById(serviceId, operationId);
                         Utils.triggerFn(successCallBack, operationObj);
-                    }, true);
+                    }, undefined, true);
                 } else {
                     urlParams = {
                         projectID: projectId || $rootScope.project.id,
@@ -567,6 +571,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         onOperationParamsFetch(response);
                     }, function () {
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHOD_PARAMS_DESC"]);
+                        onOperationParamsFetchError();
                     });
                 }
             },
