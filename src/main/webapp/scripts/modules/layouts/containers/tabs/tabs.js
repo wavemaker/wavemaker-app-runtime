@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs clearfix" init-widget apply-styles="container" tabindex="-1">' +
+                '<div class="app-tabs clearfix" init-widget apply-styles="container" wm-gestures="{{gestures}}" tabindex="-1">' +
                     '<ul class="nav nav-tabs" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
                     '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
                 '</div>'
@@ -325,7 +325,7 @@ WM.module('wm.layouts.containers')
                     /*method exposed to move to a particular tab from current active tab*/
                     scope.goToTab = function (tabNum, onBeforeSwitchTab) {
                         /*to go to a particular tab, we need tabScope.
-                        * If number is passed, we fetch the tabscope and then select that particular tab, else return*/
+                         * If number is passed, we fetch the tabscope and then select that particular tab, else return*/
                         if (WM.isNumber(tabNum)) {
                             /*tabNum should be more than 0 and less than tabs length*/
                             if (tabNum > 0 && tabNum <= tabs.length) {
@@ -388,22 +388,23 @@ WM.module('wm.layouts.containers')
                             }
                         });
 
+                        // Adding swipe on tabs content
+                        if (scope.gestures === 'on' && Utils.isMobile()) {
+                            element.addClass('has-transition');
+                            addSwipee(scope, content);
+                        }
+
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
-
-                            // Adding swipe on tabs content
-                            if (Utils.isMobile()) {
-                                addSwipee(scope, content);
-                            }
                         }
+
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
+                        /* initialize the widget */
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
                     }
-
-                    /* register the property change handler */
-                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-
-                    /* initialize the widget */
-                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
                 }
             }
         };
