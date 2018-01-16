@@ -5,7 +5,7 @@ WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
-                '<div init-widget class="app-carousel carousel slide" ng-class="navigationClass" apply-styles>' +
+                '<div init-widget class="app-carousel carousel slide" ng-class="navigationClass" apply-styles wm-gestures="{{gestures}}">' +
                     '<ol class="carousel-indicators">' +
                         '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
@@ -19,11 +19,11 @@ WM.module('wm.widgets.advanced')
                 '</div>'
             );
         $tc.put('template/widget/advanced/carousel/design/dynamic/carousel.html',
-            '<div apply-styles init-widget class="app-carousel carousel slide" wmtransclude></div>'
+            '<div apply-styles init-widget class="app-carousel carousel slide" wmtransclude wm-gestures="{{gestures}}"></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/design/static/carousel.html',
-                 '<div init-widget class="app-carousel carousel slide" apply-styles>' +
+                 '<div init-widget class="app-carousel carousel slide" apply-styles wm-gestures="{{gestures}}">' +
                      '<div class="carousel-inner" wmtransclude></div>' +
                      '<div class="carousel-actions">' +
                         '<ul class="pagination" >' +
@@ -563,7 +563,7 @@ WM.module('wm.widgets.advanced')
                         }
 
                         // add swipe functionality on element for mobile device.
-                        if (Utils.isMobile()) {
+                        if ($is.gestures === 'on' && Utils.isMobile()) {
                             $el.addClass('swipee-carousel');
                             addSwipee($is, content);
                         }

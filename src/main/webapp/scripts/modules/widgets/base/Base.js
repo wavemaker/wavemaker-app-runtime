@@ -1216,7 +1216,8 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.leftpanel.mobile': {
                         "columnwidth": {"type": "list", "options": columnWidths, "value": "3", "show" : false},
-                        "xscolumnwidth": {"type": "list", "options": columnWidths, "value": "10", "show" : true}
+                        "xscolumnwidth": {"type": "list", "options": columnWidths, "value": "10", "show" : true},
+                        "gestures": {"type": "string", "value": "on", "bindable": "in-bound"}
                     },
                     'wm.layouts.rightpanel': {
                         "columnwidth": {"type": "list", "options": columnWidths, "value": "2"}
@@ -1722,6 +1723,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.tabs": {
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Tab Pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
+                        "gestures": {"type": "string", "value": "on", "bindable": "in-bound"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tab-order", "dataset": []},
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"},
@@ -1775,6 +1777,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
+                        "gestures": {"type": "string", "value": "on", "bindable": "in-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
