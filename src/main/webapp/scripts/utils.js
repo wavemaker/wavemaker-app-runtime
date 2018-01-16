@@ -2586,7 +2586,7 @@ WM.module('wm.utils', [])
                 if (!isNaN(dateValue)) {
                     dateValue = parseInt(dateValue, 10);
                 }
-                epoch = moment(dateValue).valueOf();
+                epoch = dateValue && moment(dateValue).valueOf();
             }
             if (type === 'timestamp') {
                 return epoch;
