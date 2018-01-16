@@ -590,7 +590,12 @@ wm.variables.services.$servicevariable = ['Variables',
                             };
                         } else {
                             params =  {
-                                'error' : {}
+                                'error' : {
+                                    'type': 'meta_data_missing',
+                                    'field': '_wmServiceOperationInfo',
+                                    'message': 'You\'re not authenticated to access the resource "' + variable.service + '".',
+                                    'skipDefaultNotification' : true
+                                }
                             };
                             variableActive[variable.activeScope.$id][variable.name] = false;
                             BaseService.pushToErrorCallStack(null, variable.invoke.bind(variable, options, success, errorCB), WM.noop);
