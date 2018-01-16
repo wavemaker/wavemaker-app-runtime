@@ -806,6 +806,7 @@ WM.module('wm.widgets.base', [])
                     "wm.chips": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},

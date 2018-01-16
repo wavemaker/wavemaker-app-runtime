@@ -975,6 +975,8 @@ WM.module('wm.widgets.basic')
                         $is.executeKeyDownEvent = function ($event) {
                             $is.onKeydown({$event: $event, $scope: $is});
                         };
+
+                        $is.fetchVariableData = fetchVariableData;
                     }
                 }
             };
