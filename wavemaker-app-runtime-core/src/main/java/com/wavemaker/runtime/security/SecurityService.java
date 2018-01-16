@@ -114,11 +114,11 @@ public class SecurityService {
      *
      * @return true if the security is enabled; otherwise, false.
      */
-    public Boolean isSecurityEnabled() {
+    public boolean isSecurityEnabled() {
         if (securityEnabled == null) {
-            try {
+            if (wmAppSecurityConfig != null) {
                 securityEnabled = wmAppSecurityConfig.isEnforceSecurity();
-            } catch (NoSuchBeanDefinitionException e) {
+            } else {
                 securityEnabled = false;
             }
         }
