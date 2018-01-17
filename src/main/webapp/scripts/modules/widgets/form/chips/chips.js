@@ -9,8 +9,8 @@ WM.module('wm.widgets.form')
                 ' ng-model="_model_">' +
                     '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-dblclick="makeEditable(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
                         '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.wmImgSrc}">' +
-                            '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.wmImgSrc}}"  ng-if="chip.wmImgSrc"/>' +
-                            '{{chip.key}}' +
+                            '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.imgSrc}}"  ng-if="chip.imgSrc"/>' +
+                            '{{chip.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
                             '<button type="button" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
@@ -52,7 +52,7 @@ WM.module('wm.widgets.form')
 
             //Check if newItem already exists
             function isDuplicate($s, val) {
-                return _.findIndex($s.selectedChips, {value: val}) > -1;
+                return _.findIndex($s.selectedChips, {datavalue: val}) > -1;
             }
 
             /* constructs and returns a chip item object
@@ -64,17 +64,20 @@ WM.module('wm.widgets.form')
              *          'isDuplicate' to check if chips are duplicated based on displayValue
              */
             function constructChip($s, option) {
-                var displayVal = option.value,
-                    key        = option.key,
+                var displayvalue = option.value,
+                    datavalue = $s.datafield === 'All Fields' ? option.dataObject || option.key : option.key,
                     isCustom   = option.isCustom,
+                    chipObj;
+
                     chipObj = {
-                        'key'       : displayVal,
-                        'value'     : key,
-                        'wmImgSrc'  : option.imgSrc,
-                        'fullValue' : displayVal + ' <' + key + '>',
-                        'isCustom'  : isCustom
+                        'displayvalue'  : displayvalue,
+                        'datavalue'     : datavalue,
+                        'imgSrc'        : option.imgSrc,
+                        'fullValue'     : displayvalue + ' <' + datavalue + '>',
+                        'isCustom'      : isCustom
                     };
-                if (isDuplicate($s, key)) {
+
+                if (isDuplicate($s, datavalue)) {
                     return;
                 }
                 return chipObj;
@@ -192,6 +195,14 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            function createCustomDataModel($s, val) {
+                var customObj = {},
+                    displayField = FormWidgetUtils.getDisplayField($s.dataset, $s.displayfield || $s.datafield);
+
+                customObj[displayField] = val;
+                return customObj;
+            }
+
             /**
              * This function constructs the chips.
              * Invoked when Default datavalue is binded and datavalue is within the dataset.
@@ -221,6 +232,10 @@ WM.module('wm.widgets.form')
                     return;
                 }
 
+                if ($s.maxsize && model.length > parseInt($s.maxsize, 10)) {
+                    $s._model_ = _.slice($s._model_, $s.maxsize);
+                }
+
                 if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
                     return;
                 }
@@ -234,14 +249,14 @@ WM.module('wm.widgets.form')
                     if (model.length) {
                         model = _.reduce(_.cloneDeep(model), function (result, value) {
                             var index,
-                                customObj = {};
+                                customObj;
                             // if default value is not object, make custom object and update the model.
                             if(!_.isObject(value)) {
                                 index = $s._model_.indexOf(value);
                                 if(index !== -1) {
                                     _.pullAt($s._model_, index);
                                     if (!$s.allowonlyselect) {
-                                        customObj[$s.displayfield] = value;
+                                        customObj = createCustomDataModel($s, value);
                                         $s._model_.splice(index, 0, customObj);
                                         result.push(customObj);
                                         return result;
@@ -266,7 +281,7 @@ WM.module('wm.widgets.form')
                         if (chipsObj) {
                             addChip($s, chipsObj);
                         } else if (!$s.allowonlyselect) { // if its a custom chip
-                            option = {key: modelVal, value: modelVal};
+                            option = {key: modelVal, value: modelVal, isCustom: true};
                             addChip($s, option);
                         }
                     }
@@ -312,7 +327,7 @@ WM.module('wm.widgets.form')
             //Validate all chips and mark duplicates if exists after removing or editing chips
             function validateDuplicates($s) {
                 //Pick data of useful properties only
-                var chipsCopy = _.map($s.selectedChips, function (ele) { return _.pick(ele, ['key', 'value', 'wmImgSrc', 'fullValue']); });
+                var chipsCopy = _.map($s.selectedChips, function (ele) { return _.pick(ele, ['datavalue', 'displayvalue', 'imgSrc', 'fullValue']); });
                 _.forEach(chipsCopy, function (chip, index) {
                     //If only one entry exists or if it is first occurance
                     if ((_.findIndex(chipsCopy, chip) === _.findLastIndex(chipsCopy, chip)) || (_.findIndex(chipsCopy, chip) === index)) {
@@ -333,8 +348,8 @@ WM.module('wm.widgets.form')
                 var values;
                 chip.edit  = false;
                 values     = _.split(chip.fullValue, '<');
-                chip.key   = _.trim(values[0]);
-                chip.value = _.trim(_.split(values[1], '>')[0]);
+                chip.datavalue   = _.trim(values[0]);
+                chip.displayvalue = _.trim(_.split(values[1], '>')[0]);
                 //edit chip
                 onModelUpdate($s, $event);
                 validateDuplicates($s);
@@ -474,7 +489,7 @@ WM.module('wm.widgets.form')
                 var option,
                     allowAdd,
                     chipObj,
-                    customObj = {},
+                    customObj,
                     customValue = searchScope.queryModel,
                     dataVal = searchScope.datavalue,
                     displayVal = searchScope.query;
@@ -500,7 +515,10 @@ WM.module('wm.widgets.form')
                     if (!customValue) {
                         return;
                     }
-                    option = {key: customValue, value: customValue, isCustom: true};
+                    if($s.datafield === 'All Fields') {
+                        customObj = createCustomDataModel($s, customValue);
+                    }
+                    option = {key: customObj || customValue, value: customValue, isCustom: true};
                 }
 
                 if(!option) {
@@ -520,22 +538,7 @@ WM.module('wm.widgets.form')
 
                 if (chipObj) {
                     $s.selectedChips.push(chipObj);
-
-                    if (WM.isDefined(dataVal) && dataVal !== '') {
-                        $s._model_.push(dataVal);
-                    } else {
-                        if ($s.allowonlyselect) {
-                            return;
-                        }
-                        // Update model if dataVal is available. If datafield is not All Fields then only update the model with custom value.
-                        if ($s.datafield !== 'All Fields') {
-                            $s._model_.push(customValue);
-                        } else {
-                            customObj[FormWidgetUtils.getDisplayField($s.dataset, $s.displayfield || $s.datafield)] = customValue;
-                            $s._model_.push(customObj);
-                        }
-                    }
-
+                    $s._model_.push(chipObj.datavalue);
                     if ($s.onAdd) {
                         $s.onAdd({$event: $event, $isolateScope: $s});
                     }
