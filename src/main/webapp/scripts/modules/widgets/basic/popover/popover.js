@@ -133,7 +133,7 @@ WM.module('wm.widgets.basic')
                     if (CONSTANTS.isRunMode) {
                         //popover uses anchor template, so add below attributes on anchor markup to use uib-popover and also setting partial content
                         template.attr({
-                            'popover-class'         : '{{"app-popover " + _popoverOptions.customclass}}',
+                            'popover-class'         : '{{"app-popover " + _popoverOptions.customclass + _popoverOptions.animationclass}}',
                             'popover-placement'     : '{{_popoverOptions.placement}}',
                             'popover-trigger'       : '_popoverOptions.trigger',
                             'popover-title'         : '{{title}}',
@@ -154,7 +154,7 @@ WM.module('wm.widgets.basic')
                     return {
                         'pre': function ($is, $el, attrs) {
                             var trigger = attrs.interaction ? interaction[attrs.interaction] : interaction.click;
-                            $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is)};
+                            $is._popoverOptions = {'trigger': trigger, 'setHideTrigger': setHideTrigger.bind(undefined, $is), 'animationclass': ' animated ' + attrs.contentanimation};
                             $is.widgetProps     = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                             $is.$lazyLoad       = WM.noop;
                             $el.removeAttr('title');

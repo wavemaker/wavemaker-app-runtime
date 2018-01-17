@@ -1667,7 +1667,8 @@ WM.module('wm.widgets.base', [])
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "conditionalclass": {"show": false, "bindable": "in-bound"}
+                        "conditionalclass": {"show": false, "bindable": "in-bound"},
+                        "contentanimation": {"type": "list", "options": animationOptions}
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box-model"},
@@ -2129,8 +2130,9 @@ WM.module('wm.widgets.base', [])
                     "multiple", "maxsize", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",
-                    "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "interaction", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "xpadding", "ypadding", "interaction", "autoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "showcaptions", "multiselect", "radioselect", "enablesort", "enablecolumnselection", "gridfirstrowselect", "selectfirstitem", "selectionlimit", "formposition", "enableemptyfilter", "autoupdate", "displayformat", "captionplacement", "updateon", "updatedelay", "actionlink", "actiontitle", "offline", "encodeurl", "keyboard", "barcodeformat"], "parent": "properties"},
+                {"name": "popoverbehavior", "properties": ["popoverplacement", "contentanimation", "popoverarrow", "popoverautoclose"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign", "ondemandmessage"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datatable", "properties": ["showrowindex", "exportformat", "exportdatasize"], "parent": "properties"},
