@@ -1219,20 +1219,8 @@ WM.module('wm.widgets.form')
                     typeUtils = Utils.getService('TypeUtils'),
                     variableCategory = variable && variable.category;
 
-                if ($is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
+                if (!$is.binddataset || $is.groupby === WIDGET_CONSTANTS.EVENTS.JAVASCRIPT) {
                     return;
-                }
-
-                if (!$is.binddataset) {
-                    if (!_.isString($is.dataset)) {
-                        wp.groupby.show = true;
-                        return;
-                    }
-                    wp.groupby.show = false;
-                    $rootScope.$emit('set-markup-attr', $is.widgetid, {'groupby': ''});
-                    $is.groupby = '';
-                } else {
-                    wp.groupby.show = true;
                 }
 
                 if (!$is.groupby || _.includes($is.groupby, '(')) {
@@ -1334,5 +1322,31 @@ WM.module('wm.widgets.form')
         'UPLOAD'       : 'upload',
         'RATING'       : 'rating',
         'DATETIME'     : 'datetime',
-        'AUTOCOMPLETE' : 'autocomplete'
+        'AUTOCOMPLETE' : 'autocomplete',
+        'CHIPS'        : 'chips',
+        'COLORPICKER'  : 'colorpicker'
+    })
+    .constant('FIELD_TO_WM_WIDGET_MAP', {
+        'text'         : 'wm-text',
+        'number'       : 'wm-text',
+        'textarea'     : 'wm-textarea',
+        'password'     : 'wm-text',
+        'checkbox'     : 'wm-checkbox',
+        'toggle'       : 'wm-checkbox',
+        'slider'       : 'wm-slider',
+        'richtext'     : 'wm-richtexteditor',
+        'currency'     : 'wm-currency',
+        'switch'       : 'wm-switch',
+        'select'       : 'wm-select',
+        'checkboxset'  : 'wm-checkboxset',
+        'radioset'     : 'wm-radioset',
+        'date'         : 'wm-date',
+        'time'         : 'wm-time',
+        'timestamp'    : 'wm-timestamp',
+        'upload'       : 'wm-upload',
+        'rating'       : 'wm-rating',
+        'datetime'     : 'wm-datetime',
+        'autocomplete' : 'wm-search',
+        'chips'        : 'wm-chips',
+        'colorpicker'  : 'wm-colorpicker'
     });
