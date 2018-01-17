@@ -51,6 +51,16 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 return serviceObject;
             },
 
+        /*function to get service object matching its name*/
+            removeService = function (name) {
+                WM.forEach(services, function (serviceObj) {
+                    if (serviceObj.name === name) {
+                        serviceObj = undefined;
+                        serviceDefMap[name] = undefined;
+                    }
+                });
+            },
+
         /*function to get service operation object matching its name*/
             getServiceOperationObjectById = function (serviceName, operationId) {
                 var serviceObj = getServiceObjectByName(serviceName);
@@ -781,7 +791,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
              * @param {object} param object
              */
             getType: getType,
-            isBodyTypeQueryProcedure: isBodyTypeQueryProcedure
+            isBodyTypeQueryProcedure: isBodyTypeQueryProcedure,
+            removeService: removeService
         };
     }
 ];
