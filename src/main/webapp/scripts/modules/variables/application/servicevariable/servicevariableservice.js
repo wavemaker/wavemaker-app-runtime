@@ -1,4 +1,4 @@
-/*global wm, WM, Blob, FormData, Array, _*/
+/*global wm, WM, Blob, FormData, Array, _, navigator*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -683,7 +683,11 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                 }, function (errorMsg, details, xhrObj) {
                     if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {
-                        errorMsg = WS_CONSTANTS.HTTP_STATUS_CODE_MESSAGES[WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE];
+                        if (navigator.onLine) {
+                            errorMsg = WS_CONSTANTS.HTTP_STATUS_CODE_MESSAGES[WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE];
+                        } else {
+                            errorMsg = $rootScope.appLocale["MESSAGE_NETWORK_NOT_AVAILABLE"];
+                        }
                     }
                     processErrorResponse(variable, errorMsg, errorCB, xhrObj, options.skipNotification);
                 });
