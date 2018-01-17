@@ -168,6 +168,7 @@ wm.plugins.offline.run([
                                 "first": true,
                                 "sort": null,
                                 "numberOfElements": rows.length,
+                                "pageable" : {},
                                 "last": true,
                                 "size": params.size,
                                 "number": 0,

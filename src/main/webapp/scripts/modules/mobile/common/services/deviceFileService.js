@@ -410,9 +410,39 @@ wm.modules.wmCommon.services.DeviceFileService = [
          */
         this.removeFile = function (filePath) {
             var i = filePath.lastIndexOf('/'),
-                dir = filePath.substring(0, i),
+                dir = filePath.substring(0, i + 1),
                 file = filePath.substring(i + 1);
-            return $cordovaFile.removeFile(dir, file);
+            return $cordovaFile.checkFile(dir, file).then(function () {
+                var resolve = $q.resolve.bind($q);
+                return $cordovaFile.removeFile(dir, file).then(resolve, resolve);
+            }, $q.resolve.bind($q));
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.modules.wmCommon.services.$DeviceFileService#removeFile
+         * @methodOf wm.modules.wmCommon.services.$DeviceFileService
+         * @description
+         * removes the directory at the specified location.
+         *
+         * @param {string} dirPath absolute path of directory
+         */
+        this.removeDir = function (dirPath) {
+            var i = dirPath.lastIndexOf('/'),
+                parentdir = dirPath.substring(0, i + 1),
+                dir = dirPath.substring(i + 1),
+                movedDir = dir + _.now();
+            return $cordovaFile.checkDir(parentdir, dir).then(function () {
+                /**
+                 * If folder is remove directly without moving, then INVALID_MODIFICATION_ERR is thrown in android
+                 * when a copy opertion is done with the same directory name. To avoid this, directory will be moved
+                 * first and removed.
+                 */
+                return $cordovaFile.moveDir(parentdir, dir, parentdir, movedDir).then(function () {
+                    var resolve = $q.resolve.bind($q);
+                    return $cordovaFile.removeDir(parentdir, movedDir).then(resolve, resolve);
+                });
+            }, $q.resolve.bind($q));
         };
 
         /**

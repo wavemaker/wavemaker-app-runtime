@@ -129,17 +129,20 @@ WM.module('wm.variables').run([
                 ],
                 invoke: function (variable, options, success) {
                     var isOnline = NetworkService.isConnected();
-                    success({
-                        connectionType: $cordovaNetwork.getNetwork(),
-                        isConnecting: $rootScope.networkStatus.isConnecting,
-                        isNetworkAvailable: $rootScope.networkStatus.isNetworkAvailable,
-                        isOnline: $rootScope.networkStatus.isConnected,
-                        isOffline: !$rootScope.networkStatus.isConnected
-                    });
-                    if (isOnline) {
-                        DeviceVariableService.initiateCallback('onOnline', variable);
-                    } else {
-                        DeviceVariableService.initiateCallback('onOffline', variable);
+                    if (isOnline !== variable.dataSet.isOnline || !variable.dataSet.executedAtleastOnce) {
+                        success({
+                            connectionType: $cordovaNetwork.getNetwork(),
+                            isConnecting: $rootScope.networkStatus.isConnecting,
+                            isNetworkAvailable: $rootScope.networkStatus.isNetworkAvailable,
+                            isOnline: isOnline,
+                            isOffline: !isOnline
+                        });
+                        if (isOnline) {
+                            DeviceVariableService.initiateCallback('onOnline', variable);
+                        } else {
+                            DeviceVariableService.initiateCallback('onOffline', variable);
+                        }
+                        variable.dataSet.executedAtleastOnce = true;
                     }
                 }
             },

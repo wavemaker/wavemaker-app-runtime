@@ -42,8 +42,32 @@
     };
 }(window, document));
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova', 'ngCordovaOauth', 'wm.plugins.offline'])
-    //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', '$cordovaFileTransfer', '$cordovaFileOpener2', 'Utils', '$cordovaFile', 'wmToaster', 'wmSpinner',
+    .config(['$httpProvider', function ($httpProvider) {
+        'use strict';
+        function getNetworkService() {
+            try {
+                return WM.element('[id=ng-app]').injector().get('NetworkService');
+            } catch (e) {
+                return;
+            }
+        }
+        $httpProvider.interceptors.push(function ($q) {
+            var NetworkService;
+            return {
+                'responseError': function (rejection) {
+                    NetworkService = NetworkService || getNetworkService();
+                    if (window.cordova
+                            && (!rejection || !rejection.status || rejection.status < 0 || rejection.status === 404)
+                            && (NetworkService && NetworkService.isConnected())) {
+                        return NetworkService.isAvailable(true).then(function () {
+                            return $q.reject(rejection);
+                        });
+                    }
+                    return $q.reject(rejection);
+                }
+            };
+        });
+    }]).run(['$rootScope', '$location', 'CONSTANTS', '$cordovaFileTransfer', '$cordovaFileOpener2', 'Utils', '$cordovaFile', 'wmToaster', 'wmSpinner',
         // Don't remove below services. This is required for initialization
         'AppAutoUpdateService', 'DeviceFileService', 'DeviceFileCacheService',
         function ($rootScope, $location, CONSTANTS, $cordovaFileTransfer, $cordovaFileOpener2, Utils, $cordovaFile, wmToaster, wmSpinner) {

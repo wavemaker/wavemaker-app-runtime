@@ -171,7 +171,11 @@ WM.module('wm.utils', [])
                                      {'name' : 'cordova-plugin-media-capture', 'spec' : '1.4.3'}],
                 'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '2.3.1'}],
                 'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
-                'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.3'}, {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.3'}, {'name' : 'cordova-plugin-file-opener2', 'spec' : '2.0.19'}, {'name' : 'cordova-plugin-transport-security', 'spec': '0.1.2'}],
+                'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.3'},
+                                        {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.3'},
+                                        {'name' : 'cordova-plugin-file-opener2', 'spec' : '2.0.19'},
+                                        {'name' : 'cordova-plugin-transport-security', 'spec': '0.1.2'},
+                                        {'name' : 'cordova-plugin-zeep', 'spec': '0.0.4'}],
                 'GEOLOCATION'     : [{'name' : 'cordova-plugin-geolocation', 'spec' : '2.4.3'}],
                 'NETWORK'         : [{'name' : 'cordova-plugin-network-information', 'spec' : '2.0.0'}],
                 'VIBRATE'         : [{'name' : 'cordova-plugin-vibration', 'spec' : '3.0.0'}],
@@ -1591,6 +1595,7 @@ WM.module('wm.utils', [])
                 'last'            : true,
                 'number'          : 0,
                 'numberOfElements': 10,
+                'pageable'        : {},
                 'size'            : 20,
                 'sort'            : null,
                 'totalElements'   : 10,
@@ -2896,6 +2901,91 @@ WM.module('wm.utils', [])
             return;
         }
 
+        /**
+         * This function invokes the given the function (fn) until the function successfully executes or the maximum number
+         * of retries is reached or onBeforeRetry returns false.
+         *
+         * @param fn - a function that is needs to be invoked. The function can also return a promise as well.
+         * @param interval - minimum time gap between successive retries. This argument should be greater or equal to 0.
+         * @param maxRetries - maximum number of retries. This argument should be greater than 0. For all other values,
+         * maxRetries is infinity.
+         * @param onBeforeRetry - a callback function that will be invoked before re-invoking again. This function can
+         * return false or a promise that is resolved to false to stop further retry attempts.
+         * @returns {*} a promise that is resolved when fn is success (or) maximum retry attempts reached
+         * (or) onBeforeRetry returned false.
+         */
+        function retryIfFails(fn, interval, maxRetries, onBeforeRetry) {
+            var defer = $q.defer(),
+                retryCount = 0,
+                tryFn = function () {
+                    retryCount++;
+                    if (_.isFunction(fn)) {
+                        return fn();
+                    }
+                };
+            maxRetries = (_.isNumber(maxRetries) && maxRetries > 0 ? maxRetries : 0);
+            interval = (_.isNumber(interval) && interval > 0 ? interval : 0);
+            onBeforeRetry = _.isFunction(onBeforeRetry) ? onBeforeRetry : WM.noop;
+            function errorFn() {
+                var errArgs = arguments;
+                $timeout(function () {
+                    $q.when(onBeforeRetry(), function (retry) {
+                        if (retry !== false && (!maxRetries || retryCount <= maxRetries)) {
+                            $q.when(tryFn(), defer.resolve.bind(defer), errorFn, defer.notify.bind(defer));
+                        } else {
+                            defer.reject.apply(defer, errArgs);
+                        }
+                    }, function () {
+                        defer.reject.apply(defer, errArgs);
+                    });
+                }, interval);
+            }
+            $q.when(tryFn(), defer.resolve.bind(defer), errorFn, defer.notify.bind(defer));
+            return defer.promise;
+        }
+
+        /**
+         * Promise of a defer created using this function, has abort function that will reject the defer when called.
+         * @returns {*} angular defer object
+         */
+        function getAbortableDefer() {
+            var d = $q.defer();
+            d.promise.abort = function () {
+                triggerFn(d.onAbort);
+                d.reject('aborted');
+                d.isAborted = false;
+            };
+            return d;
+        }
+
+        /*
+         * Invokes the given list of functions sequentially with the given arguments. If a function returns a promise,
+         * then next function will be invoked only if the promise is resolved.
+         */
+        function executeDeferChain(fns, args, d, i) {
+            var returnObj;
+            d = d || $q.defer();
+            i = i || 0;
+            if (i === 0) {
+                fns = _.filter(fns, function (fn) {
+                    return !(_.isUndefined(fn) || _.isNull(fn));
+                });
+            }
+            if (fns && i < fns.length) {
+                try {
+                    returnObj = fns[i].apply(undefined, args);
+                    $q.when(returnObj, function () {
+                        executeDeferChain(fns, args, d, i + 1);
+                    }, d.reject);
+                } catch (e) {
+                    d.reject(e);
+                }
+            } else {
+                d.resolve();
+            }
+            return d.promise;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3047,4 +3137,7 @@ WM.module('wm.utils', [])
         this.isVariableOrActionEvent    = isVariableOrActionEvent;
         this.isFileSizeWithinLimit      = isFileSizeWithinLimit;
         this.isEqualWithFields          = isEqualWithFields;
+        this.retryIfFails               = retryIfFails;
+        this.getAbortableDefer          = getAbortableDefer;
+        this.executeDeferChain          = executeDeferChain;
     }]);

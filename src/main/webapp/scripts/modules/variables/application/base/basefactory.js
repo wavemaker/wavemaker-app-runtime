@@ -147,6 +147,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "startUpdate": {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}, "placeholder": "Search Widgets", "widgettype": "typeahead", "hide": true},
                     "spinnerMessage": {"type": "string", "hide": true},
+                    "showProgress" : {"type": "boolean", "widgettype": "boolean-inputfirst", "value": false, "hide": true},
                     /*events*/
                     "onSuccess": {"type": "event", "options": variableEventOptions},
                     "onError": {"type": "event", "options": variableEventOptions},
@@ -190,7 +191,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
-                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
+                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions", "showProgress"], "parent": "properties"},
                 {"name": "dataset", "properties": ["dataUpdateStrategy", "dataLimit"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},

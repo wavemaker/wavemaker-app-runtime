@@ -300,7 +300,7 @@ wm.modules.wmCommon.services.BaseService = [
 
                 if (CONSTANTS.isRunMode && $rootScope.isMobileApplicationType && isServiceCall(config.url)) {
                     var deployUrl = $rootScope.project.deployedUrl;
-                    deployUrl += _.last(deployUrl) === '/' ? '' : '/';
+                    deployUrl += _.first(config.url) === '/' ? '' : '/';
                     config.url =  deployUrl + config.url;
                 }
 

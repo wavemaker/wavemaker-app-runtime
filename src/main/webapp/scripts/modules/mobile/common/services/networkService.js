@@ -60,30 +60,41 @@
     wm.modules.wmCommon.services.NetworkService = [
         '$cordovaFileTransfer',
         '$cordovaNetwork',
-        '$http',
         '$interval',
         '$q',
         '$rootScope',
         '$timeout',
         'ProjectService',
+        'Utils',
         function (
             $cordovaFileTransfer,
             $cordovaNetwork,
-            $http,
             $interval,
             $q,
             $rootScope,
             $timeout,
-            ProjectService
+            ProjectService,
+            Utils
         ) {
             var AUTO_CONNECT_KEY = "WM.NetworkService.autoConnect",
                 autoConnect = localStorage.getItem(AUTO_CONNECT_KEY) !== "false",
                 originalDownload = $cordovaFileTransfer.download,
-                baseURL;
+                baseURL,
+                lastKnownNetworkState;
 
             function setAutoConnect(flag) {
                 autoConnect = flag;
                 localStorage.setItem(AUTO_CONNECT_KEY, flag);
+            }
+
+            /**
+             * Emits
+             */
+            function checkForNetworkStateChange() {
+                if (!_.isEqual(lastKnownNetworkState, networkState)) {
+                    lastKnownNetworkState = _.clone(networkState);
+                    $rootScope.$emit('onNetworkStateChange', lastKnownNetworkState);
+                }
             }
 
             /**
@@ -103,18 +114,26 @@
              * Otherwise, the promise is resolved with false.
              */
             function pingServer() {
-                var defer = $q.defer();
+                var defer = $q.defer(),
+                    oReq = new XMLHttpRequest();
                 baseURL = baseURL || ProjectService.getDeployedUrl();
                 if (baseURL && !_.endsWith(baseURL, '/')) {
                     baseURL += '/';
                 } else {
                     baseURL = baseURL || '';
                 }
-                $http.get(baseURL + 'wmProperties.js?t=' + Date.now()).then(function () {
-                    defer.resolve(true);
-                }, function () {
+                oReq.addEventListener("load", function () {
+                    if (this.status === 200) {
+                        defer.resolve(true);
+                    } else {
+                        defer.resolve(false);
+                    }
+                });
+                oReq.addEventListener("error", function () {
                     defer.resolve(false);
                 });
+                oReq.open("GET", baseURL + 'wmProperties.js?t=' + Date.now());
+                oReq.send();
                 return defer.promise;
             }
 
@@ -126,6 +145,10 @@
             function isServiceAvailable() {
                 return pingServer().then(function (response) {
                     networkState.isServiceAvailable = response;
+                    if (!networkState.isServiceAvailable) {
+                        networkState.isConnecting = false;
+                        networkState.isConnected = false;
+                    }
                     return response;
                 });
             }
@@ -161,23 +184,23 @@
                     if (networkState.isServiceAvailable && autoConnect) {
                         networkState.isConnecting = true;
                         if (!silentMode) {
-                            $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                            checkForNetworkStateChange();
                         }
                         $timeout(function () {
                             networkState.isConnecting = false;
                             networkState.isConnected = true;
                             localStorage.setItem(IS_CONNECTED_KEY, true);
                             if (!silentMode) {
-                                $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                                checkForNetworkStateChange();
                             }
                             d.resolve(true);
-                        }, 5000);
+                        }, silentMode ? 0 : 5000);
                     } else {
                         networkState.isConnecting = false;
                         networkState.isConnected = false;
                         localStorage.setItem(IS_CONNECTED_KEY, false);
                         d.reject();
-                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                        checkForNetworkStateChange();
                     }
                 });
                 return d.promise;
@@ -190,7 +213,7 @@
             function disconnect() {
                 networkState.isConnected = false;
                 networkState.connecting = false;
-                $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                checkForNetworkStateChange();
                 localStorage.setItem(IS_CONNECTED_KEY, networkState.isConnected);
                 return $q.resolve(networkState.isConnected);
             }
@@ -283,7 +306,7 @@
             this.isAvailable = function (pingServer) {
                 if (pingServer) {
                     return isServiceAvailable().then(function () {
-                        $rootScope.$emit('onNetworkStateChange', _.clone(networkState));
+                        checkForNetworkStateChange();
                     });
                 }
                 return networkState.isServiceAvailable;
@@ -334,5 +357,61 @@
                 return p;
             };
 
+            /**
+             * @ngdoc method
+             * @name wm.modules.wmCommon.services.$NetworkService#retryIfNetworkFails
+             * @methodOf wm.modules.wmCommon.services.$NetworkService
+             * @description
+             * This is a util method. If fn cannot execute successfully and network lost connection, then the fn will
+             * be invoked when network is back. The returned can also be aborted.
+             *
+             * @param {function()} fn method to invoke.
+             * @returns {object} promise a promise that is resolved with the returned object of fn
+             */
+            this.retryIfNetworkFails = function (fn) {
+                var defer = Utils.getAbortableDefer(),
+                    networkService = this;
+                Utils.retryIfFails(fn, 0, 0, function () {
+                    var onConnectPromise;
+                    if (!networkService.isConnected()) {
+                        onConnectPromise = networkService.onConnect();
+                        defer.promise.catch(function () {
+                            onConnectPromise.abort();
+                        });
+                        return onConnectPromise;
+                    }
+                    return false;
+                }).then(defer.resolve, defer.reject, defer.notify);
+                return defer.promise;
+            };
+
+            /**
+             * @ngdoc method
+             * @name wm.modules.wmCommon.services.$NetworkService#onConnect
+             * @methodOf wm.modules.wmCommon.services.$NetworkService
+             * @description
+             * This method returns a promise that is resolved when connection is established with server.
+             *
+             * @returns {object} promise a promise that is resolved with the returned object of fn
+             */
+            this.onConnect = function () {
+                var defer,
+                    networkService = this,
+                    watcherDestroyer;
+                if (networkService.isConnected()) {
+                    return $q.resolve();
+                }
+                defer = Utils.getAbortableDefer();
+                watcherDestroyer = $rootScope.$on('onNetworkStateChange', function () {
+                    if (networkService.isConnected()) {
+                        defer.resolve(true);
+                        watcherDestroyer();
+                    }
+                });
+                defer.promise.catch(function () {
+                    watcherDestroyer();
+                });
+                return defer.promise;
+            };
         }];
 }());

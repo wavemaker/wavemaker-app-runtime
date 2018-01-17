@@ -60,5 +60,9 @@
   "MESSAGE_SERVICE_CONNECTING": "Connecting to server.",
   "MESSAGE_SERVICE_CONNECTED": "You are online.",
   "MESSAGE_FILE_UPLOAD_SUCCESS": "File uploaded successfully",
-  "MESSAGE_FILE_UPLOAD_ERROR": "File upload failed"
+  "MESSAGE_FILE_UPLOAD_ERROR": "File upload failed",
+  "LABEL_DATA_PULL_PROGRESS": "Pulling Data for offline",
+  "LABEL_DATA_PULL_PROGRESS_STOP_BTN": "Stop",
+  "LABEL_DATA_PUSH_PROGRESS": "Pushing offline changes",
+  "LABEL_DATA_PUSH_PROGRESS_STOP_BTN": "Stop"
 }

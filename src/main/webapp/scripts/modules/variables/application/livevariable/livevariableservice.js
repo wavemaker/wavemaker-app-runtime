@@ -40,7 +40,7 @@ wm.variables.services.$liveVariable = [
          * 1. In the RUN mode, project is deployed.
          * 2. In the STUDIO mode, project has to be explicitly deployed.*/
         var isProjectDeployed = (CONSTANTS.isRunMode),
-            DataModelDesignManager = CONSTANTS.isStudioMode && Utils.getService('DataModelDesignManager'),
+            DataModelDesignManager,
             isProjectDeployInProgress = false,
             projectDeployReqQueue,
             callbackParams = [],
@@ -161,12 +161,18 @@ wm.variables.services.$liveVariable = [
                     Variables.updateVariable(writableVariable.name, writableVariable);
                 }
             },
+            getDataModelDesignManager = function () {
+                if (!DataModelDesignManager) {
+                    DataModelDesignManager = CONSTANTS.isStudioMode && Utils.getService('DataModelDesignManager');
+                }
+                return DataModelDesignManager;
+            },
         /*Function to fetch the meta data for the table.*/
             getTableMetaData = function (projectID, variable, writableVariable, options, callback, success) {
                 var tableDetails = {};
 
                 /*Fetch the type nodes(consisting of the table & column details) for the database*/
-                DataModelDesignManager.getDataModel(projectID, variable.liveSource, false, function (database) {
+                getDataModelDesignManager().getDataModel(projectID, variable.liveSource, false, function (database) {
                     var variableTable,
                         variableType,
                         firstPrimaryKey,
@@ -1890,6 +1896,7 @@ wm.variables.services.$liveVariable = [
 
         return {
             reset                 : reset,
+            getSearchQuery        : getSearchQuery,
             getTableMetaData      : getTableMetaData,
             updateVariableDataset : updateVariableDataset
         };
