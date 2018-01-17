@@ -1,4 +1,4 @@
-/*global WM, wm, _*/
+/*global WM, wm, _, window*/
 /*jslint todo: true */
 /**
  * @ngdoc service
@@ -26,7 +26,8 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
     function getDeployedUrl(successCallback, forceDeploy) {
         var locationUrl,
             lastIndex,
-            projectDeployedUrl = $rootScope.project.deployedUrl;
+            projectDeployedUrl = $rootScope.project.deployedUrl,
+            waveLensAppUrl = _.get(window, 'WaveLens.appUrl');
 
         /*If $location.$$absUrl is of the form http://localhost:8080/WM2c908a52446c435b01446cfdacf50013/#/Main,
          * remove # and the page name to get only the deployed url of the project.*/
@@ -50,6 +51,8 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
                 } else {
                     projectDeployedUrl = projectDeployedUrl.substr(5);
                 }
+            } else if (waveLensAppUrl) { // TODO: Temporary Fix for WMS-13072, baseUrl is {{DEVELOPMENT_URL}} in wavelens
+                projectDeployedUrl = waveLensAppUrl;
             } else if (projectDeployedUrl.indexOf('file') !== -1) {
                 /* Set root url */
                 Utils.fetchContent(
