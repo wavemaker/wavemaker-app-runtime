@@ -760,19 +760,7 @@ WM.module('wm.widgets.live')
                 };
 
                 /*For related fields, get the display value from the object*/
-                $scope.getDisplayExpr = function (object, displayExpr) {
-                    if (WM.isObject(object)) {
-                        if (!displayExpr) {
-                            displayExpr = Object.keys(object)[0];
-                            //If dataset is not ready, display expression will not be defined
-                            if (!displayExpr) {
-                                return;
-                            }
-                        }
-                        return WidgetUtilService.updateAndEvalExp(object, displayExpr, $scope);
-                    }
-                    return object;
-                };
+                $scope.getDisplayExpr = LiveWidgetUtils.getDisplayExpr.bind(undefined, $scope);
                 /*returns the default output formats for date time types*/
                 $scope.getOutputPatterns = function (type, outputFormat) {
                     if (Utils.isDateTimeType(type)) {

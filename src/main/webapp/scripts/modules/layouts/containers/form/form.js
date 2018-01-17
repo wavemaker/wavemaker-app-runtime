@@ -375,6 +375,7 @@ WM.module('wm.layouts.containers')
                         scope.elScope.isUpdateMode = true;
                         scope.elScope.constructDataObject = scope.constructDataObject = constructDataObject.bind(undefined, scope, element);
                         scope.elScope.applyFilterOnField = WM.noop;
+                        scope.elScope.getDisplayExpr = scope.getDisplayExpr = LiveWidgetUtils.getDisplayExpr.bind(undefined, scope);
                         element.removeAttr('title');
 
                         //handle the backward compatibility for no validate
