@@ -1736,6 +1736,10 @@ WM.module('wm.widgets.base', [])
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
+                    'wm.tabs.mobile': {
+                        "transition": {"type": "list", "options": ["none", "slide"], "value": "slide"}
+                    },
+
                     "wm.tab": {
                         "title": {"type": "string", "bindable": "in-bound"}
                     },
