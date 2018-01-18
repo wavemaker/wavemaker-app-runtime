@@ -53,12 +53,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
         /*function to get service object matching its name*/
             removeService = function (name) {
-                WM.forEach(services, function (serviceObj) {
-                    if (serviceObj.name === name) {
-                        serviceObj = undefined;
-                        serviceDefMap[name] = undefined;
-                    }
-                });
+                _.remove(services, {'name': name});
+                serviceDefMap[name] = undefined;
             },
 
         /*function to get service operation object matching its name*/
