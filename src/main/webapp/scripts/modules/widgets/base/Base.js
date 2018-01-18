@@ -809,6 +809,7 @@ WM.module('wm.widgets.base', [])
                         "scopedatavalue": {"type": "string"},
                         "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
+                        "enablereorder": {"type": "boolean"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "displayimagesrc": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
@@ -821,7 +822,8 @@ WM.module('wm.widgets.base', [])
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforeadd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onAdd": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onRemove": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onRemove": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onReorder" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
 
