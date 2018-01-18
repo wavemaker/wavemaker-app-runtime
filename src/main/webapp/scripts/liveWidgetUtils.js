@@ -49,7 +49,8 @@ WM.module('wm.widgets.live')
                 VIEW_MODE_OPTIONS = {
                     'DEFAULT'   : 'default',
                     'LABEL'     : 'label'
-                };
+                },
+                ALLFIELDS   = 'All Fields';
 
             //Returns true if the value is defined and is not empty or null
             function isDefined (val) {
@@ -430,8 +431,34 @@ WM.module('wm.widgets.live')
                 return fieldObj.scale ? Math.pow(10, fieldObj.scale * -1) : 0;
             }
 
-            function getCaptionByWidget(type, index, isRelated) {
-                if (isRelated) {
+            function evaluateExpr(scope, object, displayExpr) {
+                if (!displayExpr) {
+                    displayExpr = Object.keys(object)[0];
+                    //If dataset is not ready, display expression will not be defined
+                    if (!displayExpr) {
+                        return;
+                    }
+                }
+                return WidgetUtilService.updateAndEvalExp(object, displayExpr, scope);
+            }
+
+            function getDisplayExpr(scope, object, displayExpr) {
+                var caption = [];
+                if (WM.isObject(object)) {
+                    if (WM.isArray(object)) {
+                        _.forEach(object, function (obj) {
+                            caption.push(evaluateExpr(scope, obj, displayExpr));
+                        });
+                    } else {
+                        caption.push(evaluateExpr(scope, object, displayExpr));
+                    }
+                    return _.join(caption, ',');
+                }
+                return object;
+            }
+
+            function getCaptionByWidget(type, index, fieldDef) {
+                if (fieldDef.isRelated) {
                     return 'getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield || formFields[' + index + '].displaylabel)';
                 }
                 if (type === 'password') {
@@ -446,6 +473,8 @@ WM.module('wm.widgets.live')
                     caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MMM-dd\'';
                 } else if (type === 'rating' || type === 'upload') {
                     caption = '';
+                } else if (isDataSetWidgets[type] && fieldDef.datafield === ALLFIELDS) {
+                    return 'getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield || formFields[' + index + '].displaylabel)';
                 }
                 return caption;
             }
@@ -703,7 +732,7 @@ WM.module('wm.widgets.live')
                 template    = template +
                     '<div class="live-field form-group app-composite-widget clearfix caption-{{captionposition}}" widget="' + widgetType + '" >' + displayLabel +
                     '<div class="{{formFields[' + index + '].class}}" ng-class="formFields[' + index + '].displayname ? _widgetClass : \'' + controlLayout + '\'">' +
-                    '<label class="form-control-static app-label" ng-show="!isUpdateMode && formFields[' + index + '].viewmodewidget !== \'' + VIEW_MODE_OPTIONS.DEFAULT + '\'" ng-bind-html="' + getCaptionByWidget(widgetType, index, fieldDef.isRelated) + '"></label>';
+                    '<label class="form-control-static app-label" ng-show="!isUpdateMode && formFields[' + index + '].viewmodewidget !== \'' + VIEW_MODE_OPTIONS.DEFAULT + '\'" ng-bind-html="' + getCaptionByWidget(widgetType, index, fieldDef) + '"></label>';
 
                 switch (widgetType) {
                 case 'number':
@@ -2141,7 +2170,7 @@ WM.module('wm.widgets.live')
                     columnDef.compareby = primaryKeys && primaryKeys.join(',');
                 }
 
-                displayField = datafield === 'All Fields' ? undefined : datafield;
+                displayField = datafield === ALLFIELDS ? undefined : datafield;
                 columnDef.displayfield = displayField = (columnDef.displayfield || displayField || columnDef._primaryKey);
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (isSearchWidgetType(widget)) {
@@ -2748,6 +2777,7 @@ WM.module('wm.widgets.live')
             this.validateFieldsOnSubmit     = validateFieldsOnSubmit;
             this.getFieldLayoutConfig       = getFieldLayoutConfig;
             this.getDefaultViewModeWidget   = getDefaultViewModeWidget;
+            this.getDisplayExpr             = getDisplayExpr;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
