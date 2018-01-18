@@ -397,14 +397,14 @@ WM.module('wm.layouts.containers')
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
                         }
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-
-                        /* initialize the widget */
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
                     }
+
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
+                    /* initialize the widget */
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
                 }
             }
         };
