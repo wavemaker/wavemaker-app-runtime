@@ -345,11 +345,6 @@ WM.module('wm.widgets.form')
                         }
                     }
                 }
-
-                if (!WM.element('.app-chips').hasClass('ui-sortable') && $s.enablereorder) {
-                    configureDnD($el, $s);
-                }
-
                 checkMaxSize($s);
 
                 $timeout(function () {
@@ -439,10 +434,25 @@ WM.module('wm.widgets.form')
 
             //Remove the item from list
             function removeItem($s, $event, index) {
-                var indexes = WM.isArray(index) ? index : [index];
+                var indexes = WM.isArray(index) ? index : [index],
+                    items,
+                    allowRemove = true;
 
-                _.pullAt($s.selectedChips, indexes);
+                items = _.reduce(indexes, function (result, index) {
+                    result.push($s.selectedChips[index]);
+                    return result;
+                }, []);
+
+                if ($s.onBeforeremove) {
+                    allowRemove = $s.onBeforeremove({$event: $event, $isolateScope: $s, $item: items.length === 1 ? items[0] : items });
+                }
+
+                if (getBooleanValue(allowRemove) === false) {
+                    return;
+                }
+
                 _.pullAt($s._model_, indexes);
+                items = _.pullAt($s.selectedChips, indexes);
 
                 onModelUpdate($s, $event);
                 checkMaxSize($s);
@@ -450,7 +460,7 @@ WM.module('wm.widgets.form')
                 validateDuplicates($s);
 
                 if ($s.onRemove) {
-                    $s.onRemove({$event: $event, $isolateScope: $s});
+                    $s.onRemove({$event: $event, $isolateScope: $s, $item: items.length === 1 ? items[0] : items});
                 }
             }
 
@@ -580,25 +590,24 @@ WM.module('wm.widgets.form')
 
                 chipObj = $s.constructChip(option);
 
-                if ($s.onBeforeadd) {
-                    allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
-                }
-                //If onBeforeadd method returns false abort adding chip
-                if (!WM.isUndefined(allowAdd) && !allowAdd) {
-                    return;
-                }
-
                 if (chipObj) {
+                    if ($s.onBeforeadd) {
+                        allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
+                    }
+                    //If onBeforeadd method returns false abort adding chip
+                    if (getBooleanValue(allowAdd) === false) {
+                        return;
+                    }
                     $s.selectedChips.push(chipObj);
                     $s._model_.push(chipObj.datavalue);
                     if ($s.onAdd) {
-                        $s.onAdd({$event: $event, $isolateScope: $s});
+                        $s.onAdd({$event: $event, $isolateScope: $s, $item: chipObj});
                     }
                     checkMaxSize($s);
+                    onModelUpdate($s, $event);
                 }
                 // reset input box when item is added.
                 resetSearchModel($s, $event);
-                onModelUpdate($s, $event);
             }
             //Reset chips method for form
             function reset($s) {
@@ -701,6 +710,9 @@ WM.module('wm.widgets.form')
                                 $s.canUpdateDefaultModel = true;
                                 updateSelectedChips($s, $el);
                             });
+                        }
+                        if (!WM.element('.app-chips').hasClass('ui-sortable') && $s.enablereorder) {
+                            configureDnD($el, $s);
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         // register the property change handler
