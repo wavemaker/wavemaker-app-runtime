@@ -444,6 +444,7 @@ WM.module('wm.widgets.advanced')
                                     oldElement.removeClass('active');
                                     newElement.addClass('active');
                                     $is.activeIndex  = index;
+                                    setActiveItem(items, oldIndex, index);
                                 } else if (index !== $is.activeIndex && !isMoving) {
                                     isMoving = true;
                                     $is.stop();
