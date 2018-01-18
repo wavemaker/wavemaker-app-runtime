@@ -219,11 +219,6 @@ WM.module('wm.layouts.containers')
                 'pre': function (scope, element, attrs) {
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
-                    // In run mode when the tabs position is horizontal and transition is setup add 'has-transition' class
-                    if (CONSTANTS.isRunMode && attrs.transition && attrs.transition !== 'none' && (!attrs.tabsposition || attrs.tabsposition === 'top' || attrs.tabsposition === 'bottom')) {
-                        element.addClass('has-transition');
-                    }
-
                     if (CONSTANTS.isStudioMode) {
                         // define the _select method. This will be called in studio mode when a tab is selected using tabslist dropdown
                         scope._select = function (el) {
@@ -247,7 +242,14 @@ WM.module('wm.layouts.containers')
                         tab,
                         $li,
                         $ul = element.find('> ul'),
-                        content = element.find('.tab-content');
+                        content = element.find('.tab-content'),
+                        transition = attrs.transition || scope.transition,
+                        tabsPosition =  attrs.tabsposition || scope.tabsposition;
+
+                    // In run mode when the tabs position is horizontal and transition is setup add 'has-transition' class
+                    if (CONSTANTS.isRunMode && transition && transition !== 'none' && (!tabsPosition || tabsPosition === 'top' || tabsPosition === 'bottom')) {
+                        element.addClass('has-transition');
+                    }
 
                     /* find the first tab which has isdefaulttab set and make it active.
                      * mark the other tabs as inactive
@@ -389,7 +391,7 @@ WM.module('wm.layouts.containers')
                         });
 
                         // Adding swipe on tabs content
-                        if (scope.gestures === 'on' && Utils.isMobile()) {
+                        if (element.hasClass('has-transition') && scope.gestures === 'on' && Utils.isMobile()) {
                             element.addClass('has-transition');
                             addSwipee(scope, content);
                         }
