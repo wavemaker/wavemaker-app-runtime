@@ -8,18 +8,18 @@ WM.module('wm.widgets.form')
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
                     '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-dblclick="makeEditable(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
-                        '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.wmImgSrc}">' +
-                            '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.imgSrc}}"  ng-if="chip.imgSrc"/>' +
+                        '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.imgsrc}">' +
+                            '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.imgsrc}}"  ng-if="chip.imgsrc"/>' +
                             '{{chip.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
                             '<button type="button" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
-                        '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullValue"/>' +
+                        '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullvalue"/>' +
                     '</li>' +
-                    '<li ng-show="widgetid || !(readonly || saturate)">' +
-                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
+                    '<li>' +
+                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
-                            'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{placeholder}}" on-select="addItem($event, $scope)" ' +
+                            'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
                             'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}">' +
                         '</wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
@@ -59,22 +59,22 @@ WM.module('wm.widgets.form')
              * chipObj contains
              *          'value' represents dataValue (= displayValue when it is custom chip)
              *          'key' represents displayValue
-             *          'isCustom' set to true if datavalue is not within dataset
+             *          'iscustom' set to true if datavalue is not within dataset
              *          'index' count variable that to chips that are not custom.
              *          'isDuplicate' to check if chips are duplicated based on displayValue
              */
             function constructChip($s, option) {
                 var displayvalue = option.value,
                     datavalue = $s.datafield === 'All Fields' ? option.dataObject || option.key : option.key,
-                    isCustom   = option.isCustom,
+                    iscustom   = option.iscustom,
                     chipObj;
 
                     chipObj = {
                         'displayvalue'  : displayvalue,
                         'datavalue'     : datavalue,
-                        'imgSrc'        : option.imgSrc,
-                        'fullValue'     : displayvalue + ' <' + datavalue + '>',
-                        'isCustom'      : isCustom
+                        'imgsrc'        : option.imgSrc,
+                        'fullvalue'     : displayvalue + ' <' + datavalue + '>',
+                        'iscustom'      : iscustom
                     };
 
                 if (isDuplicate($s, datavalue)) {
@@ -203,6 +203,65 @@ WM.module('wm.widgets.form')
                 return customObj;
             }
 
+            function reorderData(data, newIndex, oldIndex) {
+                var draggedItem = _.pullAt(data, oldIndex)[0];
+                data.splice(newIndex, 0, draggedItem);
+            }
+
+            function configureDnD($el, $is) {
+                var $ulEle = $el;
+                $ulEle.sortable({
+                    'appendTo'    : 'body',
+                    'containment' : $ulEle,
+                    'delay'       : 100,
+                    'opacity'     : 0.8,
+                    'helper'      : 'clone',
+                    'zIndex'      : 1050,
+                    'tolerance'   : 'pointer',
+                    'start'       : function (evt, ui) {
+                        ui.placeholder.height(ui.item.height());
+                        WM.element(this).data('oldIndex', ui.item.index());
+                    },
+                    'update'      : function (evt, ui) {
+                        var changedItem = {},
+                            newIndex,
+                            oldIndex,
+                            $dragEl;
+
+                        $dragEl     = WM.element(this);
+                        newIndex    = ui.item.index();
+                        oldIndex    = $dragEl.data('oldIndex');
+
+                        reorderData($is.selectedChips, newIndex, oldIndex);
+                        reorderData($is._model_, newIndex, oldIndex);
+
+                        // cancel the sort even. as the data model is changed Angular will render the list.
+                        $ulEle.sortable("cancel");
+                        changedItem = {
+                            oldIndex: oldIndex,
+                            newIndex: newIndex,
+                            item: $is.selectedChips[newIndex]
+                        };
+                        Utils.triggerFn($is.onReorder, {$event: evt, $data: $is.selectedChips, $changedItem: changedItem});
+                        $dragEl.removeData('oldIndex');
+                        $rs.$safeApply($is);
+                    }
+                });
+            }
+
+            //Check if max size is reached
+            function checkMaxSize($s) {
+                var maxSize    = parseInt($s.maxsize, 10),
+                    size       = $s.selectedChips.length;
+                $s.saturate = false;
+                if (maxSize > 0 &&  size === maxSize) {
+                    $s.saturate = true;
+                    //Max size reached
+                    return true;
+                }
+                return false;
+            }
+
             /**
              * This function constructs the chips.
              * Invoked when Default datavalue is binded and datavalue is within the dataset.
@@ -281,11 +340,17 @@ WM.module('wm.widgets.form')
                         if (chipsObj) {
                             addChip($s, chipsObj);
                         } else if (!$s.allowonlyselect) { // if its a custom chip
-                            option = {key: modelVal, value: modelVal, isCustom: true};
+                            option = {key: modelVal, value: modelVal, iscustom: true};
                             addChip($s, option);
                         }
                     }
                 }
+
+                if (!WM.element('.app-chips').hasClass('ui-sortable') && $s.enablereorder) {
+                    configureDnD($el, $s);
+                }
+
+                checkMaxSize($s);
 
                 $timeout(function () {
                     resetSearchModel($s);
@@ -308,7 +373,7 @@ WM.module('wm.widgets.form')
                 //editable is internal property used in security owasp tab
                 $s.editable = getBooleanValue($s.editable);
                 //In case of readonly user cannot edit chips
-                if ($s.readonly || !chip.isCustom || $s.editable === false) {
+                if ($s.readonly || !chip.iscustom || $s.editable === false) {
                     return;
                 }
                 //Making all non-editable false
@@ -327,7 +392,7 @@ WM.module('wm.widgets.form')
             //Validate all chips and mark duplicates if exists after removing or editing chips
             function validateDuplicates($s) {
                 //Pick data of useful properties only
-                var chipsCopy = _.map($s.selectedChips, function (ele) { return _.pick(ele, ['datavalue', 'displayvalue', 'imgSrc', 'fullValue']); });
+                var chipsCopy = _.map($s.selectedChips, function (ele) { return _.pick(ele, ['datavalue', 'displayvalue', 'imgsrc', 'fullvalue']); });
                 _.forEach(chipsCopy, function (chip, index) {
                     //If only one entry exists or if it is first occurance
                     if ((_.findIndex(chipsCopy, chip) === _.findLastIndex(chipsCopy, chip)) || (_.findIndex(chipsCopy, chip) === index)) {
@@ -347,7 +412,7 @@ WM.module('wm.widgets.form')
             function updateChip($s, $event, chip) {
                 var values;
                 chip.edit  = false;
-                values     = _.split(chip.fullValue, '<');
+                values     = _.split(chip.fullvalue, '<');
                 chip.datavalue   = _.trim(values[0]);
                 chip.displayvalue = _.trim(_.split(values[1], '>')[0]);
                 //edit chip
@@ -370,19 +435,6 @@ WM.module('wm.widgets.form')
                     //Avoid deleting chips in delete mode
                     $event.stopPropagation();
                 }
-            }
-
-            //Check if max size is reached
-            function checkMaxSize($s) {
-                var maxSize    = parseInt($s.maxsize, 10),
-                    size       = $s.selectedChips.length;
-                $s.saturate = false;
-                if (maxSize > 0 &&  size === maxSize) {
-                    $s.saturate = true;
-                    //Max size reached
-                    return true;
-                }
-                return false;
             }
 
             //Remove the item from list
@@ -518,7 +570,7 @@ WM.module('wm.widgets.form')
                     if($s.datafield === 'All Fields') {
                         customObj = createCustomDataModel($s, customValue);
                     }
-                    option = {key: customObj || customValue, value: customValue, isCustom: true};
+                    option = {key: customObj || customValue, value: customValue, iscustom: true};
                 }
 
                 if(!option) {
@@ -630,6 +682,7 @@ WM.module('wm.widgets.form')
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.resetActiveState          = resetActiveState.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
+                            $s.maxSizeReached            = 'Max size reached';
                         }
 
                         if (!attrs.widgetid && attrs.scopedataset) {
