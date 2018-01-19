@@ -197,9 +197,11 @@ WM.module('wm.widgets.form')
 
             function createCustomDataModel($s, val) {
                 var customObj = {},
-                    displayField = FormWidgetUtils.getDisplayField($s.dataset, $s.displayfield || $s.datafield);
+                    displayField = $s.displayfield  || ($s.datafield !== 'All Fields' ?  $s.datafield : undefined);
 
-                customObj[displayField] = val;
+                if (displayField) {
+                    customObj[displayField] = val;
+                }
                 return customObj;
             }
 
@@ -289,6 +291,10 @@ WM.module('wm.widgets.form')
                 if (!WM.isArray(model)) { // handle the model having object as default datavalue.
                     $s._model_ = [model];
                     return;
+                }
+                model = _.uniqWith(model, _.isEqual);
+                if ($s._model_.length !== model.length) {
+                    $s._proxyModel = model;
                 }
 
                 if ($s.maxsize && model.length > parseInt($s.maxsize, 10)) {
@@ -594,8 +600,8 @@ WM.module('wm.widgets.form')
                     if ($s.onBeforeadd) {
                         allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
                     }
-                    //If onBeforeadd method returns false abort adding chip
-                    if (getBooleanValue(allowAdd) === false) {
+                    //If onBeforeadd method returns false or if datavalue is empty object abort adding chip.
+                    if (getBooleanValue(allowAdd) === false || (_.isObject(chipObj.datavalue) && _.isEmpty(chipObj.datavalue))) {
                         return;
                     }
                     $s.selectedChips.push(chipObj);
@@ -711,7 +717,7 @@ WM.module('wm.widgets.form')
                                 updateSelectedChips($s, $el);
                             });
                         }
-                        if (!WM.element('.app-chips').hasClass('ui-sortable') && $s.enablereorder) {
+                        if ($s.enablereorder) {
                             configureDnD($el, $s);
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
