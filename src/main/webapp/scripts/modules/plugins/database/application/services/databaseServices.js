@@ -1390,7 +1390,7 @@ wm.plugins.database.services.DatabaseService = [
                         entityName: encodeURIComponent(params.entityName),
                         relationName: encodeURIComponent(params.relationName)
                     },
-                    data: params.data
+                    data: params.data.cascadeOptions
                 }, successCallback, failureCallback);
             },
 
