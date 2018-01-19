@@ -228,22 +228,36 @@ WM.module('wm.widgets.form')
                         var changedItem = {},
                             newIndex,
                             oldIndex,
-                            $dragEl;
+                            $dragEl,
+                            allowReorder = true;
+
+
 
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
 
-                        reorderData($is.selectedChips, newIndex, oldIndex);
-                        reorderData($is._model_, newIndex, oldIndex);
-
-                        // cancel the sort even. as the data model is changed Angular will render the list.
-                        $ulEle.sortable("cancel");
                         changedItem = {
                             oldIndex: oldIndex,
                             newIndex: newIndex,
-                            item: $is.selectedChips[newIndex]
+                            item: $is.selectedChips[oldIndex]
                         };
+
+                        if ($is.onBeforereorder) {
+                            allowReorder = $is.onBeforereorder({$event: evt, $isolateScope: $is, $changedItem: $is.selectedChips[oldIndex]});
+                            if(getBooleanValue(allowReorder) === false) {
+                                $ulEle.sortable("cancel");
+                                $dragEl.removeData('oldIndex');
+                                return;
+                            }
+                        }
+
+                        reorderData($is.selectedChips, newIndex, oldIndex);
+                        reorderData($is._model_, newIndex, oldIndex);
+
+                        changedItem.item = $is.selectedChips[newIndex];
+                        // cancel the sort even. as the data model is changed Angular will render the list.
+                        $ulEle.sortable("cancel");
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: $is.selectedChips, $changedItem: changedItem});
                         $dragEl.removeData('oldIndex');
                         $rs.$safeApply($is);
@@ -298,7 +312,7 @@ WM.module('wm.widgets.form')
                 }
 
                 if ($s.maxsize && model.length > parseInt($s.maxsize, 10)) {
-                    $s._model_ = _.slice($s._model_, $s.maxsize);
+                    $s._proxyModel = model = _.slice($s._model_, 0, parseInt($s.maxsize, 10));
                 }
 
                 if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
@@ -721,6 +735,7 @@ WM.module('wm.widgets.form')
                             configureDnD($el, $s);
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
+                        $s.searchScope.tabindex = $s.tabindex;
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
                         WidgetUtilService.postWidgetCreate($s, $el, attrs);
