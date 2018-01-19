@@ -169,7 +169,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         updateRelation: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName/cascadeOptions",
             method: "PUT"
         },
         deleteRelation: {
@@ -735,6 +735,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "DATE_TIME" : "Current Datetime",
         "USER_ID"   : "LoggedIn UserId",
         "USER_NAME" : "LoggedIn Username"
+    },
+    "RELATION_CASCADE_OPTIONS": {
+        "NONE": "None",
+        "REMOVE": "Remove"
     }
 });
 
