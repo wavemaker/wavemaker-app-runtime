@@ -1064,8 +1064,12 @@ wm.variables.services.Variables = [
                     if (!runMode && variable.category === "wm.LiveVariable") {
                         variables[name].dataSet = [];
                     } else if (runMode && (variable.category === "wm.ServiceVariable" || variable.category === "wm.WebSocketVariable")) {
-                        // Attaching service operation info to variables if in run mode
-                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable._prefabName);
+                        Object.defineProperty(variables[name], '_wmServiceOperationInfo', {
+                            get: function () {
+                                return MetaDataFactory.getByOperationId(variables[name].operationId, variables[name]._prefabName);
+                            },
+                            configurable: true
+                        });
 
                         // service variable migration for old service variables not having controller names
                         if (runMode && !variable.controller && variable.operationId) {
