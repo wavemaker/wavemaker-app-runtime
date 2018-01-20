@@ -210,10 +210,15 @@ WM.module('wm.widgets.form')
                 data.splice(newIndex, 0, draggedItem);
             }
 
+            function resetReorder($ulEle, $dragEl) {
+                // cancel the sort even. as the data model is changed Angular will render the list.
+                $ulEle.sortable("cancel");
+                $dragEl.removeData('oldIndex');
+            }
+
             function configureDnD($el, $is) {
                 var $ulEle = $el;
                 $ulEle.sortable({
-                    'appendTo'    : 'body',
                     'containment' : $ulEle,
                     'delay'       : 100,
                     'opacity'     : 0.8,
@@ -221,6 +226,9 @@ WM.module('wm.widgets.form')
                     'zIndex'      : 1050,
                     'tolerance'   : 'pointer',
                     'start'       : function (evt, ui) {
+                        var helper = ui.helper;
+                        // increasing the width of the dragged item by 1
+                        helper.width(helper.width() + 1);
                         ui.placeholder.height(ui.item.height());
                         WM.element(this).data('oldIndex', ui.item.index());
                     },
@@ -231,23 +239,26 @@ WM.module('wm.widgets.form')
                             $dragEl,
                             allowReorder = true;
 
-
-
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
 
+                        newIndex = $is.selectedChips.length === newIndex ? newIndex - 1 : newIndex;
                         changedItem = {
                             oldIndex: oldIndex,
                             newIndex: newIndex,
                             item: $is.selectedChips[oldIndex]
                         };
 
+                        if (newIndex === oldIndex) {
+                            resetReorder($ulEle, $dragEl);
+                            return;
+                        }
+
                         if ($is.onBeforereorder) {
                             allowReorder = $is.onBeforereorder({$event: evt, $isolateScope: $is, $changedItem: $is.selectedChips[oldIndex]});
                             if(getBooleanValue(allowReorder) === false) {
-                                $ulEle.sortable("cancel");
-                                $dragEl.removeData('oldIndex');
+                                resetReorder($ulEle, $dragEl);
                                 return;
                             }
                         }
@@ -256,10 +267,9 @@ WM.module('wm.widgets.form')
                         reorderData($is._model_, newIndex, oldIndex);
 
                         changedItem.item = $is.selectedChips[newIndex];
-                        // cancel the sort even. as the data model is changed Angular will render the list.
-                        $ulEle.sortable("cancel");
+
+                        resetReorder($ulEle, $dragEl);
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: $is.selectedChips, $changedItem: changedItem});
-                        $dragEl.removeData('oldIndex');
                         $rs.$safeApply($is);
                     }
                 });
@@ -613,9 +623,12 @@ WM.module('wm.widgets.form')
                 if (chipObj) {
                     if ($s.onBeforeadd) {
                         allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
+                        if (getBooleanValue(allowAdd) === false || isDuplicate($s, chipObj.datavalue)) {
+                            return;
+                        }
                     }
                     //If onBeforeadd method returns false or if datavalue is empty object abort adding chip.
-                    if (getBooleanValue(allowAdd) === false || (_.isObject(chipObj.datavalue) && _.isEmpty(chipObj.datavalue))) {
+                    if (_.isObject(chipObj.datavalue) && _.isEmpty(chipObj.datavalue)) {
                         return;
                     }
                     $s.selectedChips.push(chipObj);
