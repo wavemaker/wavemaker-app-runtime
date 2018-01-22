@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
             '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" ng-keydown="handleDeleteKeyPressEvent($event)" tabindex="0" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
-                    '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-dblclick="makeEditable(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
+                    '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
                         '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.imgsrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.imgsrc}}"  ng-if="chip.imgsrc"/>' +
                             '{{chip.displayvalue}}' +
