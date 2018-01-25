@@ -7,14 +7,14 @@ WM.module('wm.widgets.form')
             '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" ng-keydown="handleDeleteKeyPressEvent($event)" tabindex="0" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
-                    '<li ng-repeat="chip in selectedChips track by $index" ng-click="setActiveStates(chip)" ng-class="{\'active\': chip.active, \'disabled\': disabled}">' +
-                        '<a class="app-chip" href="javascript:void(0);" ng-if="!chip.edit" ng-class="{\'chip-duplicate bg-danger\': chip.isDuplicate, \'chip-picture\': chip.imgsrc}">' +
-                            '<img data-identifier="img" class="button-image-icon" ng-src="{{chip.imgsrc}}"  ng-if="chip.imgsrc"/>' +
-                            '{{chip.displayvalue}}' +
+                    '<li ng-repeat="item in selectedChips track by $index" ng-click="setActiveStates(item)" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
+                        '<a class="app-chip" href="javascript:void(0);" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
+                            '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
+                            '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
                             '<button type="button" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
-                        '<input class="app-chip-input" type="text" ng-if="chip.edit" ng-keydown="handleEnterKeyPressEvent($event, chip)" ng-model="chip.fullvalue"/>' +
+                        '<input class="app-chip-input" type="text" ng-if="item.edit" ng-keydown="handleEnterKeyPressEvent($event, item)" ng-model="item.fullvalue"/>' +
                     '</li>' +
                     '<li>' +
                         '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
@@ -35,7 +35,8 @@ WM.module('wm.widgets.form')
         'LiveWidgetUtils',
         '$rootScope',
         '$timeout',
-        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs, $timeout) {
+        '$parse',
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs, $timeout, $parse) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors']),
                 notifyFor   = {
@@ -674,6 +675,21 @@ WM.module('wm.widgets.form')
                     break;
                 }
             }
+
+            function getEvalFn(itemAttr) {
+                var watchFn;
+                // when the property is binded
+                if (_.startsWith(itemAttr, 'bind:')) {
+                    // get the updated attribute
+                    watchFn = $parse(_.replace(itemAttr, 'bind:', ''));
+                    return function ($s) { // evaluate the expression
+                        return watchFn($s);
+                    };
+                }
+                // when the property doesn't contain any binding
+                return _.identity.bind(undefined, itemAttr);
+            }
+
             return {
                 'restrict': 'E',
                 'scope'   : {
@@ -750,6 +766,7 @@ WM.module('wm.widgets.form')
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         $s.searchScope.tabindex = $s.tabindex;
                         // register the property change handler
+                        $s._chipClass   = getEvalFn(attrs.chipclass);
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
                         WidgetUtilService.postWidgetCreate($s, $el, attrs);
                     }
