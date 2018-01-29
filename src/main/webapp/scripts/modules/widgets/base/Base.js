@@ -804,6 +804,9 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.chips": {
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "width": {"type": "string", "pattern": dimensionRegex},
+                        "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "tabindex": {"type": "number", "value": "0"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},

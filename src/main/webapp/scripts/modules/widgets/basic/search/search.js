@@ -359,14 +359,16 @@ WM.module('wm.widgets.basic')
                     }
                 }
                 $is.query = inputVal;
-                $rs.$evalAsync(function () {
-                    $is.showClosebtn = (inputVal !== '');
+                if(_.trim(inputVal)) {
+                    $rs.$evalAsync(function () {
+                        $is.showClosebtn = (inputVal !== '');
 
-                    // hide the keypad on submit.
-                    if (_action === 'ENTER') {
-                        element.find('input[uib-typeahead]').blur();
-                    }
-                });
+                        // hide the keypad on submit.
+                        if (_action === 'ENTER') {
+                            element.find('input[uib-typeahead]').blur();
+                        }
+                    });
+                }
             }
             //Check if the widget is of type autocomplete in mobile view/ app
             function isMobileAutoComplete(type) {
