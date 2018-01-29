@@ -42,7 +42,9 @@ WM.module('wm.widgets.form')
                 notifyFor   = {
                     'dataset'       : true,
                     'displayfield'  : true,
-                    'datafield'     : true
+                    'datafield'     : true,
+                    'readonly'      : true,
+                    'enablereorder' : true
                 },
                 KEYS  = {
                     'BACKSPACE' : 'BACKSPACE',
@@ -662,7 +664,8 @@ WM.module('wm.widgets.form')
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, $el, key) {
+            function propertyChangeHandler($s, $el, key, val) {
+                var isSortable;
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
@@ -676,6 +679,19 @@ WM.module('wm.widgets.form')
                         $s.displayOptions = extractDataObjects($s.dataset, $s, $el);
                         $s.canUpdateDefaultModel = true;
                         updateSelectedChips($s, $el);
+                    }
+                    break;
+                case 'readonly':
+                case 'enablereorder':
+                    isSortable = $el.hasClass('ui-sortable');
+                    if ($s.enablereorder && !$s.readonly) {
+                        if(isSortable) {
+                            $el.sortable("enable");
+                        } else {
+                            configureDnD($el, $s);
+                        }
+                    } else if (isSortable) {
+                        $el.sortable("disable");
                     }
                     break;
                 }
