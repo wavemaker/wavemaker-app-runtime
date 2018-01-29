@@ -525,7 +525,7 @@ WM.module('wm.widgets.form')
                     lastTag,
                     newItem,
                     length = $s.selectedChips.length;
-                if (key === KEYS.ENTER && searchScope.query) {
+                if (key === KEYS.ENTER && _.trim(searchScope.query)) {
                     $s.addItem($event, searchScope);
                     stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
@@ -608,11 +608,9 @@ WM.module('wm.widgets.form')
                         option.key = $s.datafield === 'All Fields' ? displayVal : dataVal;
                     }
                 } else {
-                    if ($s.allowonlyselect) {
-                        return;
-                    }
                     queryModel = _.trim(queryModel);
-                    if (!queryModel) {
+                    if ($s.allowonlyselect || !queryModel) {
+                        resetSearchModel($s, $event);
                         return;
                     }
                     if($s.datafield === 'All Fields') {
