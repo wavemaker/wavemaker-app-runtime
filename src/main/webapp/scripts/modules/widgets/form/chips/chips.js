@@ -132,8 +132,10 @@ WM.module('wm.widgets.form')
              */
             function fetchVariableData($s, $searchEl, query, $el) {
                 $s.searchScope.fetchVariableData($s,  $searchEl, query, $el.scope()).then(function (value) {
-                    value = value.length ? value : query;
-                    $s.displayOptions = _.concat($s.displayOptions, extractDataObjects(value, $s, $el, true));
+                    value = value.length ? value : ($s.allowonlyselect ? value : [query]);
+                    if(value.length) {
+                        $s.displayOptions = _.concat($s.displayOptions, extractDataObjects(value, $s, $el, true));
+                    }
                     $s.canUpdateDefaultModel = false;
                     updateSelectedChips($s, $el);
                 }, function () {  $s.canUpdateDefaultModel = false; });
@@ -323,7 +325,7 @@ WM.module('wm.widgets.form')
                 }
 
                 if ($s.maxsize && model.length > parseInt($s.maxsize, 10)) {
-                    $s._proxyModel = model = _.slice($s._model_, 0, parseInt($s.maxsize, 10));
+                    $s._proxyModel = _.slice($s._model_, 0, parseInt($s.maxsize, 10));
                 }
 
                 if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
@@ -335,6 +337,7 @@ WM.module('wm.widgets.form')
                     return;
                 }
 
+                model = $s._model_;
                 if (dataField === 'All Fields') {
                     if (model.length) {
                         model = _.reduce(_.cloneDeep(model), function (result, value) {
@@ -373,6 +376,9 @@ WM.module('wm.widgets.form')
                         } else if (!$s.allowonlyselect) { // if its a custom chip
                             option = {key: modelVal, value: modelVal, iscustom: true};
                             addChip($s, option);
+                        } else {
+                            model.splice(i,1);
+                            i--;
                         }
                     }
                 }
@@ -583,7 +589,7 @@ WM.module('wm.widgets.form')
                     allowAdd,
                     chipObj,
                     customObj,
-                    customValue = searchScope.queryModel,
+                    queryModel = searchScope.queryModel,
                     dataVal = searchScope.datavalue,
                     displayVal = searchScope.query;
 
@@ -595,23 +601,24 @@ WM.module('wm.widgets.form')
                 }
 
                 if (WM.isDefined(dataVal) && dataVal !== '') {
-                    option = FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, dataVal);
-
-                    if (!option) {
-                        option = {key: ($s.datafield === 'All Fields' ? displayVal : dataVal), value: displayVal, imgSrc: WidgetUtilService.getEvaluatedData($s, customValue, {expressionName: 'displayimagesrc'})};
+                    option = {value: displayVal, imgSrc: WidgetUtilService.getEvaluatedData($s, queryModel, {expressionName: 'displayimagesrc'})};
+                    if(_.isObject(dataVal)){
+                        option.key = dataVal;
+                    } else {
+                        option.key = $s.datafield === 'All Fields' ? displayVal : dataVal;
                     }
                 } else {
                     if ($s.allowonlyselect) {
                         return;
                     }
-                    customValue = _.trim(customValue);
-                    if (!customValue) {
+                    queryModel = _.trim(queryModel);
+                    if (!queryModel) {
                         return;
                     }
                     if($s.datafield === 'All Fields') {
-                        customObj = createCustomDataModel($s, customValue);
+                        customObj = createCustomDataModel($s, queryModel);
                     }
-                    option = {key: customObj || customValue, value: customValue, iscustom: true};
+                    option = {key: customObj || queryModel, value: queryModel, iscustom: true};
                 }
 
                 if(!option) {
@@ -760,7 +767,7 @@ WM.module('wm.widgets.form')
                                 updateSelectedChips($s, $el);
                             });
                         }
-                        if ($s.enablereorder) {
+                        if ($s.enablereorder && !$s.readonly) {
                             configureDnD($el, $s);
                         }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
