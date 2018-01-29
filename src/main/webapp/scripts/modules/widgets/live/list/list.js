@@ -82,15 +82,7 @@ WM.module('wm.widgets.live')
                     'paginationclass': true
                 },
                 directiveDefn,
-                NAVIGATION = {
-                    'BASIC'    : 'Basic',
-                    'CLASSIC'  : 'Classic',
-                    'ADVANCED' : 'Advanced',
-                    'SCROLL'   : 'Scroll',
-                    'INLINE'   : 'Inline',
-                    'PAGER'    : 'Pager',
-                    'ONDEMAND' : 'On-Demand'
-                };
+                NAVIGATION = WIDGET_CONSTANTS.NAVIGATION_TYPE;
 
             //Based on the given item, find the index of the list item
             function getItemIndex(listItems, item) {
@@ -754,15 +746,15 @@ WM.module('wm.widgets.live')
                         $is.navigation = 'Classic';
                         return;
                     }
-                    wp.navigationalign.show = !_.includes(['None', 'Scroll', 'Inline', 'On-Demand'], nv);
-                    wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None', 'On-Demand'], nv);
-                    wp.ondemandmessage.show = nv === 'On-Demand';
+                    wp.navigationalign.show = !_.includes([NAVIGATION.NONE, NAVIGATION.SCROLL, NAVIGATION.INLINE, NAVIGATION.ONDEMAND], nv);
+                    wp.showrecordcount.show = !_.includes([NAVIGATION.PAGER, NAVIGATION.INLINE, NAVIGATION.SCROLL, NAVIGATION.NONE, NAVIGATION.ONDEMAND], nv);
+                    wp.ondemandmessage.show = nv === NAVIGATION.ONDEMAND;
                     wp.paginationclass.show = !_.includes(['None', 'Scroll', 'Inline'], nv);
                     onNavigationTypeChange($is, nv);
                     setNavigationClass($is, $el, $is.paginationclass);
                     //Adds 'btn-default' class as a default value
                     if (ov) {
-                        $is.paginationclass = nv === 'On-Demand' ? 'btn-default' : '';
+                        $is.paginationclass = nv === NAVIGATION.ONDEMAND ? 'btn-default' : '';
                         $is.$root.$emit('set-markup-attr', $is.widgetid, {'paginationclass': $is.paginationclass});
                     }
                     break;

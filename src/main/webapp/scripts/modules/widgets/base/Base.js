@@ -11,7 +11,16 @@ WM.module('wm.widgets.base', [])
             'STOP_PROPAGATION': 'Stop Propagation',
             'STOP_PROP_FN': '$event.stopPropagation()'
         },
-        EVENTS_OPTIONS: ['No Event', 'Javascript', 'Stop Propagation']
+        EVENTS_OPTIONS: ['No Event', 'Javascript', 'Stop Propagation'],
+        NAVIGATION_TYPE: {
+            'BASIC'    : 'Basic',
+            'CLASSIC'  : 'Classic',
+            'ADVANCED' : 'Advanced',
+            'SCROLL'   : 'Scroll',
+            'INLINE'   : 'Inline',
+            'PAGER'    : 'Pager',
+            'ONDEMAND' : 'On-Demand'
+        }
     })
 
     /**
