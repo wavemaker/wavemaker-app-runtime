@@ -560,10 +560,18 @@ body {
     }
   }
   .app-left-panel, .app-right-panel {
-    .nav li {
-      .badge {
-        right: 1em;
-        top: 1em;
+    .nav {
+      .app-nav-item {
+        .badge {
+          right: 1em;
+          top: 1em;
+        }
+        > .btn {
+          margin-top: 0;
+        }
+      }
+      &.nav-tabs {
+        border-color: transparent;
       }
     }
   }
