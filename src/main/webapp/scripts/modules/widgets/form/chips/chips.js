@@ -133,14 +133,23 @@ WM.module('wm.widgets.form')
              * @param $el : Widget Element.
              */
             function fetchVariableData($s, $searchEl, query, $el) {
+                var limit = $s.limit;
+                // changing limit to query length to fetch all the matched results.
+                $s.limit = _.isArray(query) ? query.length : limit;
                 $s.searchScope.fetchVariableData($s,  $searchEl, query, $el.scope()).then(function (value) {
                     value = value.length ? value : ($s.allowonlyselect ? value : [query]);
                     if(value.length) {
                         $s.displayOptions = _.concat($s.displayOptions, extractDataObjects(value, $s, $el, true));
                     }
+                    if(!_.isArray(query)) {
+                        query = [query];
+                    }
                     $s.canUpdateDefaultModel = false;
+                    $s._model_.concat(query);
                     updateSelectedChips($s, $el);
                 }, function () {  $s.canUpdateDefaultModel = false; });
+                //setting limit to its original value
+                $s.limit = limit;
             }
 
 
