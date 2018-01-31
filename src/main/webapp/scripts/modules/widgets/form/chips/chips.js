@@ -4,15 +4,15 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chips.html',
-            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" ng-keydown="handleDeleteKeyPressEvent($event)" tabindex="0" listen-property="dataset"' +
+            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
-                    '<li ng-repeat="item in selectedChips track by $index" ng-click="setActiveStates(item)" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
-                        '<a class="app-chip" href="javascript:void(0);" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
+                    '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
+                        '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-keydown="handleChipSelect($event, $index)" data-ng-focus="item.active=true" data-ng-blur="item.active=false" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
-                            '<button type="button" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
+                            '<button type="button" tabindex="-1" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="item.edit" ng-keydown="handleEnterKeyPressEvent($event, item)" ng-model="item.fullvalue"/>' +
                     '</li>' +
@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
                         '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
                             'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                             'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
-                            'on-focus="resetActiveState()" on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}">' +
+                            'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}">' +
                         '</wm-search>' +
                         '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
                     '</li>' +
@@ -47,10 +47,12 @@ WM.module('wm.widgets.form')
                     'enablereorder' : true
                 },
                 KEYS  = {
-                    'BACKSPACE' : 'BACKSPACE',
-                    'ENTER'     : 'ENTER',
-                    'DELETE'    : 'DELETE',
-                    'TAB'       : 'TAB'
+                    'BACKSPACE'   : 'BACKSPACE',
+                    'ENTER'       : 'ENTER',
+                    'DELETE'      : 'DELETE',
+                    'TAB'         : 'TAB',
+                    'LEFT-ARROW'  : 'LEFT-ARROW',
+                    'RIGHT-ARROW' : 'RIGHT-ARROW'
                 };
 
             //Check if newItem already exists
@@ -268,9 +270,9 @@ WM.module('wm.widgets.form')
                             resetReorder($ulEle, $dragEl);
                             return;
                         }
-
+                        changedItem.item = $is.selectedChips[oldIndex];
                         if ($is.onBeforereorder) {
-                            allowReorder = $is.onBeforereorder({$event: evt, $isolateScope: $is, $changedItem: $is.selectedChips[oldIndex]});
+                            allowReorder = $is.onBeforereorder({$event: evt, $isolateScope: $is, $changedItem: changedItem});
                             if(getBooleanValue(allowReorder) === false) {
                                 resetReorder($ulEle, $dragEl);
                                 return;
@@ -480,9 +482,18 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            /**
+             * focus search box
+             * @param $el Widget's JQuery object.
+             */
+            function focusSearchBox($el) {
+                $el.find('.app-chip-input > input.app-textbox').focus();
+            }
+
             //Remove the item from list
-            function removeItem($s, $event, index) {
+            function removeItem($s, $el, $event, index) {
                 var indexes = WM.isArray(index) ? index : [index],
+                    focusIndex = _.max(indexes),
                     items,
                     allowRemove = true;
 
@@ -502,6 +513,24 @@ WM.module('wm.widgets.form')
                 _.pullAt($s._model_, indexes);
                 items = _.pullAt($s.selectedChips, indexes);
 
+                // focus next chip after deletion.
+                $timeout(function () {
+                    var chipsLength = $s.selectedChips.length,
+                        $chipsList = $el.find('li.chip-item > a.app-chip');
+
+                    // if there are no chips in the list focus search box
+                    if(!chipsLength) {
+                        focusSearchBox($el);
+                    } else if((chipsLength - 1) < focusIndex) {
+                        // if focus index is greater than chips length select last chip
+                       $chipsList.get(chipsLength-1).focus();
+                   } else {
+                       // manually set the succeeding chip as active if there is a chip next to the current chip.
+                       $s.selectedChips[focusIndex].active = true;
+                       $chipsList.get(focusIndex).focus();
+                   }
+                });
+
                 onModelUpdate($s, $event);
                 checkMaxSize($s);
                 //validate duplicates
@@ -512,60 +541,56 @@ WM.module('wm.widgets.form')
                 }
             }
 
-            //handle delete keypress event for chips
-            function handleDeleteKeyPressEvent($s, $event) {
-                var key = Utils.getActionFromKey($event),
-                    activeElementIndices = [];
-                if (key === KEYS.DELETE) {
-                    if (!$s.selectedChips.length || $s.readonly) {
-                        return;
-                    }
-                    //Getting indexes of all active chips
-                    _.forEach($s.selectedChips, function (chip, index) {
-                        if (chip.active) {
-                            activeElementIndices.push(index);
-                        }
-                    });
-                    $s.removeItem($event, activeElementIndices);
-                }
-            }
-
             //handle keypress events for input box
             function handleKeyPressEvent($s, $el, $event, searchScope) {
                 var key = Utils.getActionFromKey($event),
-                    lastTag,
-                    newItem,
+                    newItem = searchScope.query,
                     length = $s.selectedChips.length;
                 if (key === KEYS.ENTER && _.trim(searchScope.query)) {
                     $s.addItem($event, searchScope);
                     stopEvent($event);
                 } else if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
-                    newItem = searchScope.query;
                     //Only in case of apple product remove the chip on click of delete button
                     if (!length || $s.dropdown.open || newItem) {
                         return;
                     }
-                    lastTag = _.last($s.selectedChips);
-                    //If last tag is active then delete it
-                    if (lastTag.active) {
-                        $s.removeItem($event, length - 1);
-                    } else {
-                        //set last tag as active
-                        $s.setActiveStates(lastTag);
-                    }
+                    $el.find('li.chip-item > a.app-chip:last').focus();
                     stopEvent($event);
+                } else if(!newItem) { // if search box is empty only then perform left and right arrow actions.
+                    if(key === KEYS['LEFT-ARROW']) {
+                        $el.find('li.chip-item > a.app-chip:last').focus();
+                    }
+                    else if(key === KEYS['RIGHT-ARROW']) {
+                        $el.find('li.chip-item > a.app-chip:first').focus();
+                    }
                 }
             }
 
-            function resetActiveState($s, currChip) {
-                if (!$s.multiple) {
-                    //In case of multiple property set to false, only one active chip at a time
-                    _.forEach($s.selectedChips, function (chip) {
-                        chip.active = false;
-                        if (!currChip) {
-                            chip.edit = false;
-                        }
-                    });
+            /**
+             * navigates over chips and deletes the current focused chip
+             * @param $s : Widget's isolate scope
+             * @param $el : Widget's JQuery object
+             * @param $event : event object
+             * @param $index : Chip index
+             */
+            function handleChipSelect($s, $el, $event, $index) {
+                var key = Utils.getActionFromKey($event);
+                if (key === KEYS.BACKSPACE ||  key === KEYS.DELETE) {
+                    $s.removeItem($event, $index);
+                }
+                else if(key === KEYS['LEFT-ARROW']) {
+                    if($index > 0) {
+                        $el.find('li.chip-item > a.app-chip').get($index - 1).focus();
+                    } else {
+                        focusSearchBox($el);
+                    }
+                }
+                else if(key === KEYS['RIGHT-ARROW']) {
+                    if($index < ($s.selectedChips.length - 1)) {
+                        $el.find('li.chip-item > a.app-chip').get($index + 1).focus();
+                    } else {
+                        focusSearchBox($el);
+                    }
                 }
             }
 
@@ -574,23 +599,6 @@ WM.module('wm.widgets.form')
                 var edittedChip = _.find($s.selectedChips, {'edit' : true});
                 if (edittedChip) {
                     updateChip($s, $event, edittedChip);
-                }
-                $s.resetActiveState();
-            }
-
-            //Handle chip active behavior based on the multiple property
-            function setActiveStates($s, currChip) {
-                var index = _.findLastIndex($s.selectedChips, currChip),
-                    value;
-                //In case of multiple property set to true, multiple chips can be selected  at a time
-                if ($s.multiple && index > -1) {
-                    value = !$s.selectedChips[index].active;
-                } else {
-                    value = true;
-                    $s.resetActiveState(currChip);
-                }
-                if (index > -1) {
-                    $s.selectedChips[index].active = value;
                 }
             }
 
@@ -673,7 +681,7 @@ WM.module('wm.widgets.form')
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, $el, key, val) {
+            function propertyChangeHandler($s, $el, key) {
                 var isSortable;
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
@@ -761,14 +769,12 @@ WM.module('wm.widgets.form')
 
                         if (!$s.isWidgetInsideCanvas) {
                             $s.handleEnterKeyPressEvent  = handleEnterKeyPressEvent.bind(undefined, $s, $el);
-                            $s.setActiveStates           = setActiveStates.bind(undefined, $s);
                             $s.makeEditable              = makeEditable.bind(undefined, $s);
-                            $s.removeItem                = removeItem.bind(undefined, $s);
+                            $s.removeItem                = removeItem.bind(undefined, $s, $el);
                             $s.handleKeyPressEvent       = handleKeyPressEvent.bind(undefined, $s, $el);
-                            $s.handleDeleteKeyPressEvent = handleDeleteKeyPressEvent.bind(undefined, $s);
+                            $s.handleChipSelect          = handleChipSelect.bind(undefined, $s, $el);
                             $s.addItem                   = _.debounce(addItem.bind(undefined, $s), 50);
                             $s.reset                     = reset.bind(undefined, $s);
-                            $s.resetActiveState          = resetActiveState.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
                             $s.maxSizeReached            = 'Max size reached';
                         }
