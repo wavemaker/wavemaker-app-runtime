@@ -358,6 +358,12 @@ WM.module('wm.widgets.advanced')
                 from = from || 0;
                 to = to || 0;
 
+                // if there is only one carousel-item then there won't be any right or left-item.
+                if (items.length === 1) {
+                    items.eq(0).removeClass('left-item right-item');
+                    return;
+                }
+
                 items.eq((items.length + from) % items.length).removeClass('left-item').addClass('right-item');
                 items.eq((items.length + to - 1) % items.length).addClass('left-item').removeClass('right-item');
                 items.eq((items.length + to) % items.length).removeClass('left-item right-item');
