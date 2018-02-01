@@ -156,15 +156,29 @@ WM.module('wm.layouts.containers')
                         scope.onItemClick = function ($item) {
                             var link = $item.link || '',
                                 navFn = scope.onBeforenavigate,
-                                canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $item: $item}) !== false  : true;
+                                canNavigate = _.isFunction(navFn) ? navFn({$isolateScope: scope, $item: $item}) !== false  : true,
+                                index,
+                                queryParams,
+                                params = {};
                             if (canNavigate) {
                                 /* removing spl characters from the beginning of the path.
                                    1. #/Main  -> Main
                                    2. .#/Main/abc -> Main/abc
                                 */
                                 link = _.first(link.match(/[\w]+.*/g));
+
+                                //If url params are present, construct params object and pass it to search
+                                index = link.indexOf('?');
+                                if (index !== -1) {
+                                    queryParams = _.split(link.substring(index + 1, link.length), '&');
+                                    link = link.substring(0, index);
+                                    _.forEach(queryParams, function (param) {
+                                        param = _.split(param, '=');
+                                        params[param[0]] = param[1];
+                                    });
+                                }
                                 //search method is passed with empty object to remove url parameters.
-                                $location.path(link).search({});
+                                $location.path(link).search(params);
                             }
                         };
                     }
