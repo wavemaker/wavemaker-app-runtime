@@ -1140,13 +1140,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "type":  {"type": "list", "options": ["pills", "tabs"]},
-                        "itemicon": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
-                        "itemlabel": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
-                        "itemlink": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itembadge": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
-                        "itemaction": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
-                        "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
-                        "userrole": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file', 'margin': ''} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file', 'margin': ''} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file', 'margin': ''} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -3285,6 +3279,16 @@ WM.module('wm.widgets.base', [])
                 return keys;
             }
 
+            function isActiveNavItem(link, routeName) {
+                if (!link || !routeName) {
+                    return false;
+                }
+
+                var routeRegex = new RegExp('^(#\/|#)' + routeName + '$');
+                link = link.indexOf('?') === -1 ? link : link.substring(0, link.indexOf('?'));
+                return routeRegex.test(link);
+            }
+
             return {
 
                 /**
@@ -3370,8 +3374,19 @@ WM.module('wm.widgets.base', [])
                 getEvaluatedData: getEvaluatedData,
                 updateAndEvalExp: updateAndEvalExp,
 
-                updatePropertyPanelOptions: updatePropertyPanelOptions
-            };
+                updatePropertyPanelOptions: updatePropertyPanelOptions,
+
+                /**
+                 * @ngdoc function
+                 * @name wm.widgets.$WidgetUtilService#isActiveNavItem
+                 * @methodOf wm.widgets.$WidgetUtilService
+                 * @function
+                 *
+                 * @description
+                 * This function returns true if given link is matched with route params url
+                 */
+                isActiveNavItem: isActiveNavItem
+        }
         }])
     .directive('applyStyles', [
         'WidgetUtilService',
