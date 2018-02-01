@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget uib-dropdown auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
                     '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles focus-target accesskey="{{::shortcutkey}}">' +
                         '<i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
@@ -16,7 +16,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
-                '<div class="dropdown app-menu" init-widget uib-dropdown auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
                     '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
@@ -266,7 +266,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams',  function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams) {
+    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams', "WidgetUtilService", function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams, WidgetUtilService) {
         'use strict';
         function openLink(link, target) {
             if (CONSTANTS.hasCordova && _.startsWith(link, '#')) {
@@ -292,8 +292,7 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 var menuScope = element.closest('.dropdown').isolateScope(),
-                    menuLink,
-                    routeRegex;
+                    menuLink;
 
                 if (scope.item.children && scope.item.children.length > 0) {
                     element.append('<wm-menu-dropdown items="item.children"  linktarget="linktarget" menualign="menualign"/>');
@@ -308,9 +307,9 @@ WM.module('wm.widgets.form')
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
                     //menuLink can be #/routeName or #routeName
-                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
-                    if (routeRegex.test(menuLink)) {
+                    if (WidgetUtilService.isActiveNavItem(menuLink, $routeParams.name)) {
                         element.addClass('active');
+                        menuScope.isOpen = true;
                     }
                 }
 

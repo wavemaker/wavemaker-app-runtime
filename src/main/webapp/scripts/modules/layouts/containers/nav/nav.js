@@ -17,7 +17,7 @@ WM.module('wm.layouts.containers')
 
         function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils, $window) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers', 'wm.menu.dataProps']),
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
@@ -77,13 +77,11 @@ WM.module('wm.layouts.containers')
                         badgeField    = $is.itembadge    || 'badge',
                         childrenField = $is.itemchildren || 'children',
                         actionField   = $is.itemaction   || 'action',
-                        routeRegex;
-
-                    routeRegex = new RegExp('^(#\/|#)' + $routeParams.name + '$');
+                        userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
 
-                        if (Utils.validateAccessRoles(node[$is.userrole])) {
+                        if (Utils.validateAccessRoles(node[userRole])) {
                             result.push(node);
                             var $a           = WM.element('<a class="app-anchor"></a>'),
                                 $a_caption   = WM.element('<span class="anchor-caption"></span>'),
@@ -102,7 +100,7 @@ WM.module('wm.layouts.containers')
                             // push the current object as an array into the internal array
                             $is._nodes.push(node[childrenField]);
                             //itemLink can be #/routeName or #routeName
-                            if (itemLink && routeRegex.test(itemLink)) {
+                            if (WidgetUtilService.isActiveNavItem(itemLink, $routeParams.name)) {
                                 $li.addClass('active');
                             }
 
@@ -118,6 +116,7 @@ WM.module('wm.layouts.containers')
                                     'itemaction'  : itemAction,
                                     'itemicon'    : iconField,
                                     'itemchildren': childrenField,
+                                    'userrole'    : userRole,
                                     'type'        : 'anchor',
                                     'iconclass'   : itemClass || '',
                                     'on-select'   : '_onMenuItemSelect($event, $item)',
