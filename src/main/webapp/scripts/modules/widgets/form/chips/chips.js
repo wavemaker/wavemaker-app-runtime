@@ -8,7 +8,9 @@ WM.module('wm.widgets.form')
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_">' +
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
-                        '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-keydown="handleChipSelect($event, $index)" data-ng-focus="item.active=true" data-ng-blur="item.active=false" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
+                        '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && onChipClick($event)" ' +
+                            'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && (item.active=true)" ' +
+                            'data-ng-blur="!readonly && (item.active=false)" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
@@ -57,7 +59,7 @@ WM.module('wm.widgets.form')
 
             //Check if newItem already exists
             function isDuplicate($s, val) {
-                return _.findIndex($s.selectedChips, {datavalue: val}) > -1;
+                return _.findIndex($s.selectedChips, function (chip) {return _.isEqual(chip.datavalue, val);}) > -1;
             }
 
             /* constructs and returns a chip item object
@@ -594,6 +596,10 @@ WM.module('wm.widgets.form')
                 }
             }
 
+            function onChipClick($event) {
+                $event.currentTarget.focus();
+            }
+
             //Update the chip which are in edit mode
             function updateStates($s, $event) {
                 var edittedChip = _.find($s.selectedChips, {'edit' : true});
@@ -777,6 +783,7 @@ WM.module('wm.widgets.form')
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
                             $s.maxSizeReached            = 'Max size reached';
+                            $s.onChipClick               = onChipClick;
                         }
 
                         if (!attrs.widgetid && attrs.scopedataset) {
