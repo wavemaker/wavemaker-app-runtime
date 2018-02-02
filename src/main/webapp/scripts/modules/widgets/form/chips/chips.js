@@ -749,7 +749,8 @@ WM.module('wm.widgets.form')
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
                         $is.canUpdateDefaultModel = true;
-
+                        // delegating tabindex to search widget.
+                        _.isUndefined(attrs.tabindex) || $el.find('li > .app-chip-input').attr('tabindex', attrs.tabindex);
                         if (!attrs.widgetid) {
                             Object.defineProperty($is, '_model_', {
                                 get: function () {
@@ -773,7 +774,8 @@ WM.module('wm.widgets.form')
                     },
                     'post': function ($s, $el, attrs) {
                         init($s, attrs.widgetid);
-
+                        // removing tabindex on the chips widget
+                        $el.removeAttr('tabindex');
                         if (!$s.isWidgetInsideCanvas) {
                             $s.handleEnterKeyPressEvent  = handleEnterKeyPressEvent.bind(undefined, $s, $el);
                             $s.makeEditable              = makeEditable.bind(undefined, $s);
