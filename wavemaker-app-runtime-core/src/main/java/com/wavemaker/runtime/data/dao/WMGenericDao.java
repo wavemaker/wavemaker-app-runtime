@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
@@ -53,4 +54,6 @@ public interface WMGenericDao<Entity, Identifier> {
     Page<Map<String, Object>> getAggregatedValues(final AggregationInfo aggregationInfo, Pageable pageable);
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
+
+    <T> T execute(HibernateCallback<T> callback);
 }

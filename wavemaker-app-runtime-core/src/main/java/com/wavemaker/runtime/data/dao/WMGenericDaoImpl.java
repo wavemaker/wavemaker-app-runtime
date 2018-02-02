@@ -209,6 +209,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
+    @Override
+    public <T> T execute(final HibernateCallback<T> callback) {
+        return getTemplate().execute(callback);
+    }
+
     public Page<Entity> list() {
         return search(null, null);
     }
