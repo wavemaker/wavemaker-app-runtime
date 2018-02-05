@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -73,6 +74,8 @@ import com.wavemaker.commons.util.WMUtils;
 public class CleanupListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(CleanupListener.class);
+    
+    private static final int MAX_WAIT_TIME_FOR_RUNNING_THREADS = Integer.getInteger("wm.app.maxWaitTimeRunningThreads", 5000); 
 
     private boolean isSharedLib() {
         return WMUtils.isSharedLibSetup();
@@ -129,7 +132,7 @@ public class CleanupListener implements ServletContextListener {
             clearThreadConnections();
             cleanupMBeanNotificationListeners();
             cleanupJULIReferences();
-
+            stopRunningThreads(MAX_WAIT_TIME_FOR_RUNNING_THREADS);
             //Release all open references for logging
             LogFactory.release(this.getClass().getClassLoader());
 
@@ -159,12 +162,6 @@ public class CleanupListener implements ServletContextListener {
                 Object timerObj = timerMethod.invoke(null);
                 if (timerObj != null) {
                     hsqlTimerClass.getMethod("shutDown").invoke(timerObj);
-
-                    Thread hsqlTimerThread = (Thread) hsqlTimerClass.getMethod("getThread").invoke(timerObj);
-                    if (hsqlTimerThread != null && hsqlTimerThread.isAlive()) {
-                        logger.info("Joining HSQL-Timer thread: {}", hsqlTimerThread.getName());
-                        hsqlTimerThread.join(2000);
-                    }
                 }
             }
         } catch (Throwable e) {
@@ -424,10 +421,9 @@ public class CleanupListener implements ServletContextListener {
         }
     }*/
     private void clearThreadConnections() {
-        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+        List<Thread> threads = getCCLThreads();
         for (Thread thread : threads) {
-            if (thread.isAlive() && !(thread == Thread.currentThread()) &&
-                    (thread.getContextClassLoader() == Thread.currentThread().getContextClassLoader())) {
+            if (isAliveAndNotCurrentThread(thread)) {
                 try {
                     if (thread.getName().startsWith("Thread-")) {
                         Field targetField = Thread.class.getDeclaredField("target");
@@ -443,9 +439,6 @@ public class CleanupListener implements ServletContextListener {
                             LdapClient ldapClient = (LdapClient) parent.get(conn);
                             ldapClient.closeConnection();
                             LdapPoolManager.expire(3000);
-                            if (!thread.isInterrupted()) {
-                                thread.stop();
-                            }
                         }
                     }
                 } catch (Throwable t) {
@@ -487,6 +480,125 @@ public class CleanupListener implements ServletContextListener {
             }
         } catch (Throwable e) {
             logger.warn("Failed to de-register drivers", e);
+        }
+    }
+
+    /**
+     * Will interrupt all the running threads in the current context class loader except current thread.
+     * Post interrupt after a specific timeout if any threads are still alive
+     */
+    public static void stopRunningThreads(long waitTimeOutInMillis) {
+        try {
+            List<Thread> threads = getCCLThreads();
+            List<Thread> runningThreads = new ArrayList<>();
+            for (Thread thread : threads) {
+                if (isAliveAndNotCurrentThread(thread)) {
+                    logger.info("Interrupting thread {}", thread);
+                    thread.interrupt();
+                    runningThreads.add(thread);
+                }
+            }
+            if (!runningThreads.isEmpty()) {
+                logger.info("Waiting for interrupted threads to be finished in max of {} ms before it will be force killed", waitTimeOutInMillis);
+                join(runningThreads, waitTimeOutInMillis);
+                for (Thread thread : runningThreads) {
+                    if (thread.isAlive()) {
+                        logger.info("Force stopping thread {} as it is still alive", thread);
+                        thread.stop();
+                    }
+                }
+                join(runningThreads, 500);
+                for (Thread thread : runningThreads) {
+                    if (thread.isAlive()) {
+                        StackTraceElement[] stackTrace = thread.getStackTrace();
+                        Throwable throwable = new IllegalThreadStateException("Thread " + thread.getName() + "Still running");
+                        throwable.setStackTrace(stackTrace);
+                        logger.warn("Thread {} is still alive even on thread.stop() and will mostly probably create a memory leak", thread.getName(), throwable);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed in stopRunningThreads", e);
+        }
+    }
+
+    private static List<Thread> getCCLThreads() {
+        ClassLoader currentThreadContextClassLoader = Thread.currentThread().getContextClassLoader();
+        return Thread.getAllStackTraces().keySet().stream().filter(thread -> {
+            return thread.getContextClassLoader() == currentThreadContextClassLoader || thread.getClass().getClassLoader() == currentThreadContextClassLoader;
+        }).collect(Collectors.toList());
+    }
+
+    private static boolean isAliveAndNotCurrentThread(Thread thread) {
+        return thread.isAlive() && thread != Thread.currentThread();
+    }
+
+    private static final synchronized void join(List<Thread> threads, long millis) throws InterruptedException {
+        if (millis < 0) {
+            throw new IllegalArgumentException("timeout value is negative");
+        } else if (millis == 0) {
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } else {
+
+            long base = System.currentTimeMillis();
+            long now = 0;
+
+            for (Thread thread : threads) {
+                while (thread.isAlive()) {
+                    long delay = millis - now;
+                    if (delay <= 0) {
+                        break;
+                    }
+                    thread.join(delay);
+                    now = System.currentTimeMillis() - base;
+                }
+            }
+        }
+    }
+    
+    private static class TestRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                    System.out.println("test method");
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private static class TestRunnable2 implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                    System.out.println("test method");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static class TestRunnable3 implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                    System.out.println("test method");
+                } catch (Throwable e) {
+                }
+            }
         }
     }
 }
