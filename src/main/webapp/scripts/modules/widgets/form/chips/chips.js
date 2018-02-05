@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
-                            '<button type="button" tabindex="-1" class="btn btn-transparent" ng-click="removeItem($event, $index)" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
+                            '<button type="button" tabindex="-1" class="btn btn-transparent" ng-click="removeItem($event, $index); $event.stopPropagation();" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="item.edit" ng-keydown="handleEnterKeyPressEvent($event, item)" ng-model="item.fullvalue"/>' +
                     '</li>' +
@@ -494,7 +494,7 @@ WM.module('wm.widgets.form')
             }
 
             //Remove the item from list
-            function removeItem($s, $el, $event, index) {
+            function removeItem($s, $el, $event, index, canFocus) {
                 var indexes = WM.isArray(index) ? index : [index],
                     focusIndex = _.max(indexes),
                     items,
@@ -522,16 +522,16 @@ WM.module('wm.widgets.form')
                         $chipsList = $el.find('li.chip-item > a.app-chip');
 
                     // if there are no chips in the list focus search box
-                    if(!chipsLength) {
+                    if(!chipsLength || !canFocus) {
                         focusSearchBox($el);
                     } else if((chipsLength - 1) < focusIndex) {
                         // if focus index is greater than chips length select last chip
-                       $chipsList.get(chipsLength-1).focus();
-                   } else {
-                       // manually set the succeeding chip as active if there is a chip next to the current chip.
-                       $s.selectedChips[focusIndex].active = true;
-                       $chipsList.get(focusIndex).focus();
-                   }
+                        $chipsList.get(chipsLength-1).focus();
+                    } else {
+                        // manually set the succeeding chip as active if there is a chip next to the current chip.
+                        $s.selectedChips[focusIndex].active = true;
+                        $chipsList.get(focusIndex).focus();
+                    }
                 });
 
                 onModelUpdate($s, $event);
@@ -579,7 +579,7 @@ WM.module('wm.widgets.form')
             function handleChipSelect($s, $el, $event, $index) {
                 var key = Utils.getActionFromKey($event);
                 if (key === KEYS.BACKSPACE ||  key === KEYS.DELETE) {
-                    $s.removeItem($event, $index);
+                    $s.removeItem($event, $index, key === KEYS.BACKSPACE);
                 }
                 else if(key === KEYS['LEFT-ARROW']) {
                     if($index > 0) {
