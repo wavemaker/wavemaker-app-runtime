@@ -125,7 +125,6 @@ wm.modules.wmCommon.services.BaseService = [
                     }
 
                     /* set extra config flags */
-                    config.byPassResult    = serviceParams.byPassResult;
                     config.isDirectCall    = serviceParams.isDirectCall;
                     config.isExtURL        = serviceParams.isExtURL;
                     config.preventMultiple = serviceParams.preventMultiple;
@@ -176,17 +175,10 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             successHandler = function (config, successCallback, response) {
-                var returnVal;
                 isUnAuthorized = false;
-                if (!config.byPassResult && response.data.hasOwnProperty('result')) {
-                    Utils.triggerFn(successCallback, response.data.result, response);
-                    returnVal = response.data.result;
-                } else {
-                    Utils.triggerFn(successCallback, response.data, response);
-                    returnVal = response.data;
-                }
+                Utils.triggerFn(successCallback, response.data, response);
                 logAction("success", "GOT_RESPONSE_FROM_SERVER", config.url);
-                return returnVal;
+                return response.data;
             },
 
             getLoginErrorMsg = function (error) {
