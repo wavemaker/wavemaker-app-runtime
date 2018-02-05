@@ -80,7 +80,6 @@ WM.module('wm.layouts.containers')
                         userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
-
                         if (Utils.validateAccessRoles(node[userRole])) {
                             result.push(node);
                             var $a           = WM.element('<a class="app-anchor"></a>'),
@@ -98,7 +97,7 @@ WM.module('wm.layouts.containers')
 
                             // menu widget expects data as an array.
                             // push the current object as an array into the internal array
-                            $is._nodes.push(node[childrenField]);
+                            $is._nodes[index] = node[childrenField];
                             //itemLink can be #/routeName or #routeName
                             if (WidgetUtilService.isActiveNavItem(itemLink, $routeParams.name)) {
                                 $li.addClass('active');

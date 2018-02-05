@@ -160,7 +160,7 @@ WM.module('wm.layouts.containers')
                                 index,
                                 queryParams,
                                 params = {};
-                            if (canNavigate) {
+                            if (link && canNavigate) {
                                 /* removing spl characters from the beginning of the path.
                                    1. #/Main  -> Main
                                    2. .#/Main/abc -> Main/abc
