@@ -396,26 +396,7 @@ wm.plugins.database.services.DatabaseService = [
                 BaseService.execute({
                     target: "Database",
                     action: "readExistingDB",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "tableFilter": params.tableFilter,
-                        "schemaName": params.schemaName,
-                        "schemaFilter": params.schemaFilter,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "activeDirectoryDomain": params.activeDirectoryDomain,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName,
-                        "readOnly": params.readOnly
-                    },
+                    data: params.data,
                     urlParams: {
                         "projectID"     : params.projectID,
                         "serviceId"     : params.serviceId
@@ -447,26 +428,7 @@ wm.plugins.database.services.DatabaseService = [
                     action: "reImportExistingDB",
                     data: {
                         "dataModel": params.dataModel,
-                        "properties" : {
-                            "serviceId": params.serviceId,
-                            "packageName": params.packageName,
-                            "username": params.username,
-                            "password": params.password,
-                            "url": params.url,
-                            "tableFilter": params.tableFilter,
-                            "schemaName": params.schemaName,
-                            "schemaFilter": params.schemaFilter,
-                            "driverClass": params.driverClass,
-                            "dialect": params.dialect,
-                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                            "impersonateUser": false,
-                            "activeDirectoryDomain": params.activeDirectoryDomain,
-                            "dbType": params.dbType,
-                            "host": params.host,
-                            "port": params.port,
-                            "dbName": params.dbName,
-                            "readOnly": params.readOnly
-                        }
+                        "properties" : params.data
                     },
                     urlParams: {
                         "projectID": params.projectID,
@@ -653,23 +615,7 @@ wm.plugins.database.services.DatabaseService = [
                 BaseService.execute({
                     target: "Database",
                     action: "listTables",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "schemaFilter": params.schemaFilter,
-                        "tableFilter": [],
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName
-                    },
+                    data: params.data,
                     urlParams: {
                         "projectID": params.projectID
                     }
