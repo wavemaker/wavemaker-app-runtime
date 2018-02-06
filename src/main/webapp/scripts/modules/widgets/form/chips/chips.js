@@ -139,22 +139,28 @@ WM.module('wm.widgets.form')
              */
             function fetchVariableData($s, $searchEl, query, $el) {
                 var limit = $s.limit;
+                query = _.isArray(query) ? query : [query];
+
                 // changing limit to query length to fetch all the matched results.
-                $s.limit = _.isArray(query) ? query.length : limit;
+                $s.limit = query.length || limit;
                 $s.searchScope.fetchVariableData($s,  $searchEl, query, $el.scope()).then(function (value) {
-                    value = value.length ? value : ($s.allowonlyselect ? value : [query]);
+                    value = value.length ? value : ($s.allowonlyselect ? value : _.head(query));
                     if(value.length) {
-                        $s.displayOptions = _.concat($s.displayOptions, extractDataObjects(value, $s, $el, true));
+                        $s.displayOptions = _.concat($s.displayOptions || [], extractDataObjects(value, $s, $el, true));
                     }
-                    if(!_.isArray(query)) {
-                        query = [query];
-                    }
-                    $s.canUpdateDefaultModel = false;
-                    $s._model_.concat(query);
+                    _.forEach(query, function (val) {
+                       if(_.indexOf($s._model_, val) === -1) {
+                           $s._model_.push(val);
+                       }
+                    });
                     updateSelectedChips($s, $el);
-                }, function () {  $s.canUpdateDefaultModel = false; });
+                });
                 //setting limit to its original value
                 $s.limit = limit;
+            }
+
+            function boundToLiveVariable($s, $el) {
+                return _.startsWith($s.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory($s, $s.widgetid ? $rs.domScope : $el.scope()) === 'wm.LiveVariable';
             }
 
 
@@ -166,12 +172,12 @@ WM.module('wm.widgets.form')
             function updateDefaultModel($s, $el) {
                 var model = $s._model_,
                     $searchEl = $el.find('.app-search.ng-isolate-scope'),
-                    isBoundToLiveVariable = _.startsWith($s.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory($s, $s.widgetid ? $rs.domScope : $el.scope()) === 'wm.LiveVariable',
+                    isBoundToLiveVariable = boundToLiveVariable($s, $el),
                     searchQuery = [];
 
+                $s.canUpdateDefaultModel = false;
                 // if not bould to live varibale or if datafield is all fields the return
                 if ( !isBoundToLiveVariable || $s.datafield === 'All Fields' || _.isObject(model[0])) {
-                    $s.canUpdateDefaultModel = false;
                     updateSelectedChips($s, $el);
                     return;
                 }
@@ -184,7 +190,11 @@ WM.module('wm.widgets.form')
                             searchQuery.push(query);
                         }
                     });
-                    fetchVariableData($s, $searchEl, searchQuery, $el);
+                    if(searchQuery.length) {
+                        fetchVariableData($s, $searchEl, searchQuery, $el);
+                    } else {
+                        updateSelectedChips($s, $el);
+                    }
                 } else {
                     // if allowonly select is false then make individual quries to fetch the data.
                     _.forEach(model ,function (query) {
@@ -344,15 +354,19 @@ WM.module('wm.widgets.form')
                     $s._proxyModel = _.slice($s._model_, 0, parseInt($s.maxsize, 10));
                 }
 
-                if (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length) {
+                if (!boundToLiveVariable($s, $el) && (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length)) {
                     return;
                 }
 
-                if($s.canUpdateDefaultModel) {
+                if(!$s.searchScope) {
+                    return;
+                }
+
+                // donot make calls to get default values in studio mode.
+                if($s.canUpdateDefaultModel && !$s.widgetid) {
                     updateDefaultModel($s, $el);
                     return;
                 }
-
                 model = $s._model_;
                 if (dataField === 'All Fields') {
                     if (model.length) {
@@ -364,7 +378,8 @@ WM.module('wm.widgets.form')
                                 index = $s._model_.indexOf(value);
                                 if(index !== -1) {
                                     _.pullAt($s._model_, index);
-                                    if (!$s.allowonlyselect) {
+                                    //not modifying model in studio mode
+                                    if (!$s.allowonlyselect || $s.widgetid) {
                                         customObj = createCustomDataModel($s, value);
                                         $s._model_.splice(index, 0, customObj);
                                         result.push(customObj);
@@ -392,7 +407,7 @@ WM.module('wm.widgets.form')
                         } else if (!$s.allowonlyselect) { // if its a custom chip
                             option = {key: modelVal, value: modelVal, iscustom: true};
                             addChip($s, option);
-                        } else {
+                        } else if(!$s.widgetid) { // not modifying model in studio mode.
                             model.splice(i,1);
                             i--;
                         }
@@ -578,8 +593,11 @@ WM.module('wm.widgets.form')
              */
             function handleChipSelect($s, $el, $event, $index) {
                 var key = Utils.getActionFromKey($event);
-                if (key === KEYS.BACKSPACE ||  key === KEYS.DELETE) {
-                    $s.removeItem($event, $index, key === KEYS.BACKSPACE);
+                if (key === KEYS.BACKSPACE || (Utils.isAppleProduct && key === KEYS.DELETE)) {
+                    //Only in case of apple product remove the chip on click of delete button
+                    $s.removeItem($event, $index, true);
+                } else if(key === KEYS.DELETE) {
+                    $s.removeItem($event, $index);
                 }
                 else if(key === KEYS['LEFT-ARROW']) {
                     if($index > 0) {
@@ -693,8 +711,7 @@ WM.module('wm.widgets.form')
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
-                    $s.displayOptions = extractDataObjects($s.dataset, $s, $el);
-                    $s.canUpdateDefaultModel = true;
+                    $s.displayOptions = extractDataObjects($s.dataset, $s, $el) || $s.displayOptions;
                     updateSelectedChips($s, $el);
                     break;
                 case 'displayfield':
@@ -749,6 +766,7 @@ WM.module('wm.widgets.form')
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         $is.constructChip = constructChip.bind(undefined, $is);
                         $is.canUpdateDefaultModel = true;
+                        $is.displayOptions = [];
                         // delegating tabindex to search widget.
                         _.isUndefined(attrs.tabindex) || $el.find('li > .app-chip-input').attr('tabindex', attrs.tabindex);
                         if (!attrs.widgetid) {
@@ -765,6 +783,7 @@ WM.module('wm.widgets.form')
                                         return;
                                     }
 
+                                    $is.canUpdateDefaultModel = true;
                                     // Constructs chips by referring the model.
                                     updateSelectedChips($is, $el);
                                 }
@@ -789,28 +808,30 @@ WM.module('wm.widgets.form')
                             $s.onChipClick               = onChipClick;
                         }
 
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            //Form and filter usecase where scopedataset is updated programatically
-                            $s.$watch('scopedataset', function () {
-                                if ($s.scopedataset) {
-                                    $s.dataset = $s.scopedataset;
-                                }
-                            }, true);
-                        }
-                        //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
-                        if (!attrs.widgetid && _.includes($s.binddataset, 'selecteditem.')) {
-                            LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
-                                $s.displayOptions = extractDataObjects(data, $s, $el);
-                                // to consider default value.
-                                $s.canUpdateDefaultModel = true;
-                                updateSelectedChips($s, $el);
-                            });
-                        }
-                        if ($s.enablereorder && !$s.readonly) {
-                            configureDnD($el, $s);
-                        }
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         $s.searchScope.tabindex = $s.tabindex;
+
+                        if (!attrs.widgetid) {
+                            //Form and filter usecase where scopedataset is updated programatically
+                            if( attrs.scopedataset) {
+                                $s.$watch('scopedataset', function () {
+                                    if ($s.scopedataset) {
+                                        $s.dataset = $s.scopedataset;
+                                    }
+                                }, true);
+                            }
+                            //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
+                            if(_.includes($s.binddataset, 'selecteditem.')) {
+                                LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
+                                    $s.displayOptions = extractDataObjects(data, $s, $el) || $s.displayOptions;
+                                    updateSelectedChips($s, $el);
+                                });
+                            }
+                            if ($s.enablereorder && !$s.readonly) {
+                                configureDnD($el, $s);
+                            }
+                            updateSelectedChips($s, $el);
+                        }
                         // register the property change handler
                         $s._chipClass   = getEvalFn(attrs.chipclass);
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $s, $el), $s, notifyFor);
