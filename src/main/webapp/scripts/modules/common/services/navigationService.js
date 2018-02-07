@@ -20,8 +20,9 @@ wm.modules.wmCommon.services.NavigationService = [
     '$timeout',
     '$location',
     'SecurityService',
+    'CONSTANTS',
 
-    function ($rs, ViewService, DialogService, $timeout, $location, SecurityService) {
+    function ($rs, ViewService, DialogService, $timeout, $location, SecurityService, CONSTANTS) {
         'use strict';
 
         var nextTransitionToApply,
@@ -233,6 +234,9 @@ wm.modules.wmCommon.services.NavigationService = [
          *                  - $event initiator event
          */
         this.goToPage = function (pageName, options) {
+            if(CONSTANTS.isStudioMode){
+                return;
+            }
             options = options || {};
             var location    = '/' + pageName,
                 viewName    = options.viewName,
