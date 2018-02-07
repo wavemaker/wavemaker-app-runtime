@@ -830,6 +830,7 @@ WM.module('wm.widgets.base', [])
                         "onRemove": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforereorder": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onReorder" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "autofocus": {"type": "boolean", "value": false },
                         "onFocus": {"show": false},
                         "onBlur": {"show": false}
                     },
