@@ -221,8 +221,6 @@ WM.module("wm.widgets.basic")
                         variableOptions = {};
                     //Store the data in __fullData. This is used for client side searching witvah out modifying the actual dataset.
                     $scope.__fullData = newVal;
-                    /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
-                    $scope.result = newVal;
                     $scope.isBoundToFilter = undefined;
                     /*Check for sanity*/
                     if ($scope.binddataset) {
@@ -272,11 +270,14 @@ WM.module("wm.widgets.basic")
                                     $scope.disableNavigation();
                                     $scope.checkDataSize(dataSize);
                                 }
+
+                                $scope.result = newVal;
                             } else if (!WM.isString(newVal)) {
                                 setNonPageableData(newVal, variable);
                             }
                             $rootScope.$safeApply($scope);
                         } else {
+                            $scope.result = newVal;
                             $scope.resetPageNavigation();
                         }
                     } else {
