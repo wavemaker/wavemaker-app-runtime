@@ -32,6 +32,9 @@ import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
+import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
+import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
+
 /**
  * Created by ArjunSahasranam on 27/10/16.
  */
@@ -50,6 +53,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint {
                             final HttpServletResponse response,
                             final AuthenticationException e) throws IOException, ServletException {
         if (HttpRequestUtils.isAjaxRequest(request)) {
+            response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             if (SAMLConfig.ValidateType.RELAXED == samlConfig.getValidateType()) {
