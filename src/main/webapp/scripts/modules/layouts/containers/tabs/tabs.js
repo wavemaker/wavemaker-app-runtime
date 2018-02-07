@@ -48,7 +48,7 @@ WM.module('wm.layouts.containers')
         }
 
         // This function adds swipe features on the element.
-        function addSwipe($scope, $ele) {
+        function addSwipee($scope, $ele) {
             var emptyEvents = {};
 
             // set the bindEvents to empty array when gestures is off
@@ -155,7 +155,6 @@ WM.module('wm.layouts.containers')
                 this.selectTab = function (tab, skipOnSelect, skipActiveWidget) {
                     var _tab = $scope.activeTab,
                         i,
-                        hasSwipeTransition,
                         tabContent,
                         tabs = $scope.tabs;
                     if (!tab) {
@@ -181,11 +180,10 @@ WM.module('wm.layouts.containers')
                     }
 
                     if (tab) {
-                        tabContent =  $element.find('.tab-content');
-                        hasSwipeTransition = tabContent.hasClass('swipee-transition');
+                        tabContent =  $element.find('>.tab-content');
 
                         // add left position only when element is not having swipe.
-                        if ($element.hasClass('has-transition') && !hasSwipeTransition) {
+                        if ($element.hasClass('has-transition')) {
                             setTabsLeftPosition(tab.tabId, $scope.tabs.length, tabContent);
                         }
 
@@ -201,15 +199,17 @@ WM.module('wm.layouts.containers')
 
                 // This function assigns the width and transform values on the tab content.
                 this.setTabsLeftAndWidth = function (activeIndex) {
-                    var content = $element.find('.tab-content'),
-                        noOfTabs = content.find('.tab-pane').length;
+                    var content = $element.find(' > .tab-content'),
+                        $childEls = content.find('>.tab-pane'),
+                        noOfTabs = $childEls.length;
 
                     // set width on the tab-content
                     content.css({
                         'max-width': noOfTabs * 100 + '%',
                         'width': noOfTabs * 100 + '%'
                     });
-                    content.find('.tab-pane').css({
+
+                    $childEls.css({
                         'width': 100 / noOfTabs + '%'
                     });
 
@@ -247,7 +247,7 @@ WM.module('wm.layouts.containers')
                         tab,
                         $li,
                         $ul = element.find('> ul'),
-                        content = element.find('.tab-content'),
+                        content = element.find('>.tab-content'),
                         transition = attrs.transition || scope.transition,
                         tabsPosition =  attrs.tabsposition || scope.tabsposition;
 
@@ -398,7 +398,7 @@ WM.module('wm.layouts.containers')
                         // Adding swipe on tabs content
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
-                            addSwipe(scope, content);
+                            addSwipee(scope, content);
                         }
                     }
 
