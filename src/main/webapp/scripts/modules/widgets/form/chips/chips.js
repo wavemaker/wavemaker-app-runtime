@@ -47,7 +47,8 @@ WM.module('wm.widgets.form')
                     'displayfield'  : true,
                     'datafield'     : true,
                     'readonly'      : true,
-                    'enablereorder' : true
+                    'enablereorder' : true,
+                    'autofocus'     : true
                 },
                 KEYS  = {
                     'BACKSPACE'   : 'BACKSPACE',
@@ -688,7 +689,7 @@ WM.module('wm.widgets.form')
             }
 
             // Define the property change handler. This function will be triggered when there is a change in the widget property
-            function propertyChangeHandler($s, $el, key) {
+            function propertyChangeHandler($s, $el, key, val) {
                 var isSortable;
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
@@ -716,6 +717,11 @@ WM.module('wm.widgets.form')
                         }
                     } else if (isSortable) {
                         $el.sortable("disable");
+                    }
+                    break;
+                case 'autofocus':
+                    if (val) {
+                        focusSearchBox($el);
                     }
                     break;
                 }
