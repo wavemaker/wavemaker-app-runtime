@@ -983,7 +983,7 @@ WM.module('wm.widgets.live')
 
                     if ($liScope && !$liScope._disableItem($liScope)) {
                         // trigger $apply, as 'click' or 'tap' is out of angular-scope
-                        if (attrs.onClick) {
+                        if (attrs.onClick  && !$is.widgetid) {
                             Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
                         }
                         if (attrs.onTap) {
