@@ -33,6 +33,9 @@ import org.springframework.security.core.AuthenticationException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
+import static com.wavemaker.runtime.security.SecurityConstants.SESSION_NOT_FOUND;
+import static com.wavemaker.runtime.security.SecurityConstants.X_WM_LOGIN_ERROR_MESSAGE;
+
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
@@ -64,6 +67,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     public final void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
                                final AuthenticationException authenticationException) throws IOException, ServletException {
         if (HttpRequestUtils.isAjaxRequest(servletRequest)) {
+            response.setHeader(X_WM_LOGIN_ERROR_MESSAGE, SESSION_NOT_FOUND);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             final String urlEncodedService = createServiceUrl(servletRequest, response);
