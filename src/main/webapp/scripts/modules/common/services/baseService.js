@@ -178,7 +178,7 @@ wm.modules.wmCommon.services.BaseService = [
             successHandler = function (config, successCallback, response) {
                 var returnVal;
                 isUnAuthorized = false;
-                if (!config.byPassResult && response.data.hasOwnProperty('result')) {
+                if (!config.byPassResult && response.data.hasOwnProperty('__result__')) {
                     Utils.triggerFn(successCallback, response.data.result, response);
                     returnVal = response.data.result;
                 } else {
