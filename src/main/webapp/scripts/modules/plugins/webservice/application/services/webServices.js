@@ -482,7 +482,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 config: {
                     "url": connectionParams.url
-                }
+                },
+                "byPassResult": true
             }, successCallback, failureCallback);
         },
 
@@ -510,7 +511,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 config: {
                     "url": connectionParams.url
-                }
+                },
+                "byPassResult": true
             }, successCallback, failureCallback);
         },
 
@@ -582,6 +584,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 data: params.dataParams || undefined,
                 "isDirectCall": params.isDirectCall,
+                "byPassResult": true,
                 "isExtURL": params.isExtURL
             }, successCallback, failureCallback);
         },
