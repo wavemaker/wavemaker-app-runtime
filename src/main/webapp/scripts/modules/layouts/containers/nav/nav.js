@@ -74,9 +74,7 @@ WM.module('wm.layouts.containers')
                     var iconField     = $is.itemicon     || 'icon',
                         labelField    = $is.itemlabel    || 'label',
                         itemField     = $is.itemlink     || 'link',
-                        badgeField    = $is.itembadge    || 'badge',
                         childrenField = $is.itemchildren || 'children',
-                        actionField   = $is.itemaction   || 'action',
                         userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
@@ -87,12 +85,12 @@ WM.module('wm.layouts.containers')
                                 $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
                                 $i           = WM.element('<i class="app-nav-icon"></i>'),
                                 $badge       = WM.element('<span class="badge"></span>'),
-                                itemLabel    = node[labelField],
-                                itemClass    = node[iconField],
-                                itemLink     = node[itemField],
-                                itemBadge    = node[badgeField],
-                                itemAction   = node[actionField],
-                                itemChildren = node[childrenField],
+                                itemLabel    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlabel'}) || node.label,
+                                itemClass    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemicon'}) || node.icon,
+                                itemLink     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}) || node.link,
+                                itemBadge    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itembadge'}) || node.badge,
+                                itemAction   = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'}) || node.action,
+                                itemChildren = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node.children,
                                 $menu;
 
                             // menu widget expects data as an array.
@@ -110,12 +108,12 @@ WM.module('wm.layouts.containers')
                                 $menu.attr({
                                     'caption'     : itemLabel,
                                     'dataset'     : 'bind:_nodes['+ index +']',
-                                    'itemlabel'   : labelField,
-                                    'itemlink'    : itemField,
+                                    'itemlabel'   : $is.binditemlabel || labelField,
+                                    'itemlink'    : $is.binditemlink || itemField,
                                     'itemaction'  : itemAction,
-                                    'itemicon'    : iconField,
-                                    'itemchildren': childrenField,
-                                    'userrole'    : userRole,
+                                    'itemicon'    : $is.binditemicon || iconField,
+                                    'itemchildren': $is.binditemchildren || childrenField,
+                                    'userrole'    : $is.binduserrole || userRole,
                                     'type'        : 'anchor',
                                     'iconclass'   : itemClass || '',
                                     'on-select'   : '_onMenuItemSelect($event, $item)',
