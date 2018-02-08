@@ -179,8 +179,8 @@ wm.modules.wmCommon.services.BaseService = [
                 var returnVal;
                 isUnAuthorized = false;
                 if (!config.byPassResult && response.data.hasOwnProperty('__result__')) {
-                    Utils.triggerFn(successCallback, response.data.result, response);
-                    returnVal = response.data.result;
+                    returnVal = response.data.__result__;
+                    Utils.triggerFn(successCallback, returnVal, response);
                 } else {
                     Utils.triggerFn(successCallback, response.data, response);
                     returnVal = response.data;
