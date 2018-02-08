@@ -60,7 +60,7 @@ WM.module('wm.widgets.form')
                 if (WM.isDefined(scope._model_) && _.trim(scope._model_).length) {
                     options.some(function (opt, index) {
                         if (scope.datafield === 'All Fields' && scope.compareby && scope.compareby.length) {
-                            if (Utils.isEqualWithFields(scope._model_, opt, scope.compareby)) {
+                            if (Utils.isEqualWithFields(opt, scope._model_, scope.compareby)) {
                                 scope.selected.index = index;
                                 return true;
                             }

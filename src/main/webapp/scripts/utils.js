@@ -188,7 +188,8 @@ WM.module('wm.utils', [])
                 'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : 'https://github.com/wavemaker/Cordova-sqlite-storage.git#1bd1887'}],
                 'CUSTOMURLSCHEME' : [{'name' : 'cordova-plugin-customurlscheme', 'spec' : '4.3.0', 'variables': [{ 'name': 'URL_SCHEME', 'value': ''}]}]
             },
-            exportTypesMap   = { 'EXCEL' : '.xlsx', 'CSV' : '.csv'};
+            exportTypesMap   = { 'EXCEL' : '.xlsx', 'CSV' : '.csv'},
+            compareBySeparator = ':';
 
         /* set default attrs for link */
         linkEl.rel = 'stylesheet';
@@ -2826,10 +2827,26 @@ WM.module('wm.utils', [])
          * @returns {boolean} true if object equality returns true based on fields
          */
         function isEqualWithFields(obj1, obj2, compareBy) {
+            // compareBy can be 'id' or 'id1, id2' or 'id1, id2:id3'
+            // Split the compareby comma separated values
             var _compareBy = _.isArray(compareBy) ? compareBy : _.split(compareBy, ',');
+
+            _compareBy = _.map(_compareBy, _.trim);
+
             return _.isEqualWith(obj1, obj2, function (o1, o2) {
                 return _.every(_compareBy, function(cb) {
-                    return o1[cb] === o2[cb];
+                    var cb1, cb2, _cb;
+
+                    //If compareby contains : , compare the values by the keys on either side of :
+                    if (_.indexOf(cb, compareBySeparator) === -1) {
+                        cb1 = cb2 = _.trim(cb);
+                    } else {
+                        _cb = _.split(cb, compareBySeparator);
+                        cb1 = _.trim(_cb[0]);
+                        cb2 = _.trim(_cb[1]);
+                    }
+
+                    return _.get(o1, cb1) === _.get(o2, cb2);
                 });
             });
         }
