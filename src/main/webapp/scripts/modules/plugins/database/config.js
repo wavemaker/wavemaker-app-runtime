@@ -169,7 +169,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         updateRelation: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName/cascadeOptions",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
             method: "PUT"
         },
         deleteRelation: {
