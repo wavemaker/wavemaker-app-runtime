@@ -1117,7 +1117,8 @@ wm.plugins.security.services.SecurityService = [
             appLogout: function (successCallback, failureCallback) {
                 return BaseService.send({
                     target: 'Security',
-                    action: 'appLogout'
+                    action: 'appLogout',
+                    byPassResult: true
                 }, function (response) {
                     _.set(_config, 'authenticated', false);
                     _.set(_config, 'userInfo', null);
