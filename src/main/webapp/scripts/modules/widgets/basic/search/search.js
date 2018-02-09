@@ -490,6 +490,9 @@ WM.module('wm.widgets.basic')
                     break;
                 }
 
+                // trigger callback to event to modify input fields
+                $is.onBeforeservicecall({$scope: $is, inputData: inputFields});
+
                 return requestParams;
             }
 
@@ -780,6 +783,7 @@ WM.module('wm.widgets.basic')
                     'dataoptions': '=?',
                     'onSubmit': '&',
                     'onSelect': '&',
+                    'onBeforeservicecall': '&',
                     'query': '=?',
                     'queryModel': '=?',
                     'allowonlyselect': '=?',
