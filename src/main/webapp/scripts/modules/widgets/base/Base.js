@@ -1926,6 +1926,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "limit": {"type": "number"},
                         "placeholder": {"type": "string", "value": "Search", "bindable": "in-bound"},
+                        "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
