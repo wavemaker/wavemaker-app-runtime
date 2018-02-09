@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.BasicScheme;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -76,6 +78,12 @@ public class HttpRequestDetailsBuilder {
     public HttpRequestDetailsBuilder setBasicAuthorization(final String authorization) {
         httpRequestDetails.getHeaders().set(RestConstants.AUTHORIZATION, authorization);
         return this;
+    }
+
+    public HttpRequestDetailsBuilder setBasicAuthorization(String username, String password) {
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+        String authorization = BasicScheme.authenticate(credentials, "UTF-8");
+        return setBasicAuthorization(authorization);
     }
 
     public HttpRequestDetailsBuilder setContentType(final String contentType) {
