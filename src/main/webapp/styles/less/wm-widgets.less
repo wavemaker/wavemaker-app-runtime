@@ -737,10 +737,10 @@ html, body {
 @app-input-bg-gradient-end-color: #EAEAEA;
 .form-group {
   /*supporting the old projects*/
-  .form-control-static + .app-chips li:last-child  {
+  .form-control-static + .app-chips .app-chip-search  {
     width: 100%;
   }
-  .form-control-static + .form-control, .form-control-static + .form-control + .help-block, .form-control-static + li:last-child > .app-chip-input, .form-control-static + .input-group  {
+  .form-control-static + .form-control, .form-control-static + .form-control + .help-block, .form-control-static + .app-chip-search > .app-chip-input, .form-control-static + .input-group  {
     width: 75%;
     margin: 0;
   }
@@ -952,15 +952,34 @@ html, body {
   }
 }
 /**app chips ***/
-.nav.app-chips {
+.nav.app-chips  {
   position: relative;
   min-height: 20px;
   > li {
     position: relative;
-    padding: 0 0 2px 0;
+    margin: 2px 0;
     &.disabled {
       cursor: not-allowed;
       pointer-events: none;
+    }
+    &.app-chip-search {
+      display: inline-block;
+      width: 180px;
+      &.full-width {
+        display: block;
+        width: 100%;
+      }
+      .app-chip-input {
+        border-color: transparent;
+        box-shadow: none;
+        background-color: transparent;
+        padding-top: 3px;
+        outline: 0;
+        float: left;
+        .app-textbox {
+          height: 28px;
+        }
+      }
     }
     .app-chip {
       background-color: rgba(0, 0, 0, 0.1);
@@ -997,13 +1016,6 @@ html, body {
         }
       }
     }
-    .app-chip-input {
-        border-color: transparent;
-        box-shadow: none;
-        background-color: transparent;
-        padding-top: 3px;
-        outline: 0;
-    }
     .dropdown-menu {
       font-size: 0.9em;
       img {
@@ -1013,6 +1025,7 @@ html, body {
     }
   }
 }
+
 
 /**toggle-button**/
 .app-switch {
