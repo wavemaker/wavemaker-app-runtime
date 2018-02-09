@@ -2528,7 +2528,7 @@ WM.module('wm.widgets.table')
                     $is.onSelect({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     $is.onRowclick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     // For backward compatibility.
-                    if (WM.isDefined($is.onClick)) {
+                    if (WM.isDefined($is.onClick) && !$is.widgetid) {
                         $is.onClick({$data: rowData, $event: e, $rowData: rowData, $isolateScope: $is});
                     }
                     if (WM.isDefined($is.onTap)) {
