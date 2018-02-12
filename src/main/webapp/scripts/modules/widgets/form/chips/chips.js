@@ -4,9 +4,8 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chips.html',
-            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" listen-property="dataset"' +
-                ' title="{{hint}}" ' +
-                ' ng-model="_model_">' +
+            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" listen-property="dataset" ng-model="_model_"' +
+                ' title="{{hint}}">' +
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
                         '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && onChipClick($event)" ' +
                             'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && (item.active=true)" ' +
@@ -18,16 +17,18 @@ WM.module('wm.widgets.form')
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="item.edit" ng-keydown="handleEnterKeyPressEvent($event, item)" ng-model="item.fullvalue"/>' +
                     '</li>' +
-                    '<li>' +
-                        '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
-                            'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
-                            'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
-                            'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}"' +
-                            'on-focus="onFocus({$event: $event})" on-blur="onBlur({$event: $event})">' +
-                        '</wm-search>' +
-                        '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
-                    '</li>' +
             '</ul>'
+            );
+        $templateCache.put('template/widget/form/chips-search.html',
+            '<li class="app-chip-search" ng-class="{\'full-width\': inputwidth === \'full\'}">' +
+                '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
+                    'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
+                    'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
+                    'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}"' +
+                    'on-focus="onFocus({$event: $event})" on-blur="onBlur({$event: $event})">' +
+                    '</wm-search>' +
+                '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
+            '</li>'
             );
     }])
     .directive('wmChips', [
@@ -39,7 +40,8 @@ WM.module('wm.widgets.form')
         '$rootScope',
         '$timeout',
         '$parse',
-        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs, $timeout, $parse) {
+        '$templateCache',
+        function (PropertiesFactory, WidgetUtilService, Utils, FormWidgetUtils, LiveWidgetUtils, $rs, $timeout, $parse, $tc) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.chips', ['wm.base', 'wm.base.editors.dataseteditors','wm.base.events.focus']),
                 notifyFor   = {
@@ -255,12 +257,13 @@ WM.module('wm.widgets.form')
                     'helper'      : 'clone',
                     'zIndex'      : 1050,
                     'tolerance'   : 'pointer',
+                    'items'       : '> li:not(.app-chip-search)',
                     'start'       : function (evt, ui) {
                         var helper = ui.helper;
                         // increasing the width of the dragged item by 1
                         helper.width(helper.width() + 1);
                         ui.placeholder.height(ui.item.height());
-                        WM.element(this).data('oldIndex', ui.item.index());
+                        WM.element(this).data('oldIndex', ui.item.index() - ($is.inputposition === 'first' ? 1 : 0));
                     },
                     'update'      : function (evt, ui) {
                         var changedItem = {},
@@ -270,7 +273,7 @@ WM.module('wm.widgets.form')
                             allowReorder = true;
 
                         $dragEl     = WM.element(this);
-                        newIndex    = ui.item.index();
+                        newIndex    = ui.item.index() - ($is.inputposition === 'first' ? 1 : 0);
                         oldIndex    = $dragEl.data('oldIndex');
 
                         newIndex = $is.selectedChips.length === newIndex ? newIndex - 1 : newIndex;
@@ -713,6 +716,7 @@ WM.module('wm.widgets.form')
                 switch (key) {
                 case 'dataset':
                     $s.displayOptions = extractDataObjects($s.dataset, $s, $el) || $s.displayOptions;
+                    $s.canUpdateDefaultModel = true;
                     updateSelectedChips($s, $el);
                     break;
                 case 'displayfield':
@@ -765,8 +769,17 @@ WM.module('wm.widgets.form')
                     'dataoptions': '=?'
                 },
                 'replace' : true,
-                'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/chips.html'),
-                'link'    : {
+                'template' : function ($el, attrs) {
+                    var $searchTemplate = WM.element($tc.get('template/widget/form/chips-search.html'));
+                    $el.append(WM.element($tc.get('template/widget/form/chips.html')));
+                    if(attrs.inputposition === 'first') {
+                        $el.find('ul.app-chips').prepend($searchTemplate);
+                    } else {
+                        $el.find('ul.app-chips').append($searchTemplate);
+                    }
+                    return $el.html();
+                },
+                'link' : {
                     'pre' : function ($is, $el, attrs) {
                         $is.showsearchicon = false;
                         $is.widgetProps   = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
