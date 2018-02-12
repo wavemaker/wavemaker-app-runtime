@@ -55,5 +55,7 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
 
+    Entity refresh(Entity entity);
+
     <T> T execute(HibernateCallback<T> callback);
 }
