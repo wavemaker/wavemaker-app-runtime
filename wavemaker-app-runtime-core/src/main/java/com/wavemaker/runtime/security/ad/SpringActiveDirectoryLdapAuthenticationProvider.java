@@ -314,7 +314,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        String bindPrincipal = createPrincipal(username);
+        String bindPrincipal = createSearchUser(username);
 
         String searchRoot = rootDn != null ? rootDn : searchRootFromPrincipal(bindPrincipal);
 
@@ -333,6 +333,18 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     }
 
     private String createPrincipal(String username) {
+        if (StringUtils.hasText(domain)) {
+            return createBindPrincipal(username);
+        } else if (StringUtils.hasText(rootDn)){
+            String[] dns = rootDn.split(",");
+            String domain = dns[0].split("=")[1];
+            return domain.concat("\\").concat(username);
+        } else {
+            return username;
+        }
+    }
+
+    private String createSearchUser(String username) {
         return StringUtils.hasText(domain) ? createBindPrincipal(username) : username;
     }
 
@@ -361,8 +373,8 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         return root.toString();
     }
 
-    String createBindPrincipal(String username) {
-        if (domain == null || username.toLowerCase().endsWith(domain)) {
+    private String createBindPrincipal(String username) {
+        if (username.toLowerCase().endsWith(domain)) {
             return username;
         }
 
