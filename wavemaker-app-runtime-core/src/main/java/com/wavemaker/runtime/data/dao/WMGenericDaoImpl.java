@@ -88,14 +88,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
         getTemplate().flush();
-        getTemplate().refresh(entity);
         return entity;
     }
 
     public void update(Entity entity) {
         getTemplate().update(entity);
         getTemplate().flush();
-        getTemplate().refresh(entity);
     }
 
     public void delete(Entity entity) {
@@ -207,6 +205,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
         return new DownloadResponse(is, exportType.getContentType(),
                 entityClass.getSimpleName() + exportType.getExtension());
+    }
+
+    @Override
+    public Entity refresh(final Entity entity) {
+        getTemplate().refresh(entity);
+        return entity;
     }
 
     @Override
