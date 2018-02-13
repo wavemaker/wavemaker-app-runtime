@@ -104,6 +104,7 @@ WM.module('wm.widgets.form')
                 break;
             case 'selectedvalues':
                 scope._model_ = newVal;
+                scope._ngModelOldVal = newVal;
                 break;
             case 'disabled':
                 element.find('input[type="checkbox"]').attr('disabled', newVal);
