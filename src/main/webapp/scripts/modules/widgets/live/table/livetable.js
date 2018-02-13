@@ -126,6 +126,7 @@ WM.module('wm.widgets.live')
                                 scope.grid.newcolumns = scope.newcolumns;
                                 /* check whether any row selected or not and set the flag in grid form widget */
                                 scope.grid.$watch('selectedItems', function (newValue) {
+                                    var rowData;
                                     if (!(scope.grid && scope.gridform && (scope.grid.variableName === scope.gridform.variableName))) {
                                         return;
                                     }
@@ -137,10 +138,12 @@ WM.module('wm.widgets.live')
                                      * Since both the grid & gridform are associated with the same "parentgrid", match the same*/
                                     if (newValue && newValue.length > 0) {
                                         if (scope.grid.multiselect) {
-                                            scope.gridform.rowdata = newValue[0];
+                                            rowData = newValue[0];
                                         } else {
-                                            scope.gridform.rowdata = newValue[newValue.length - 1];
+                                            rowData = newValue[newValue.length - 1];
                                         }
+
+                                        scope.gridform.rowdata = Utils.getClonedObject(rowData);
                                         /*If the form is already in update mode, call the form update function*/
                                         if (scope.gridform.isUpdateMode) {
                                             scope.gridform.edit();
