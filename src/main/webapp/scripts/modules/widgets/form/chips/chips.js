@@ -349,7 +349,7 @@ WM.module('wm.widgets.form')
                     $s._model_ = [model];
                     return;
                 }
-                model = _.uniqWith(model, _.isEqual);
+                model = _.without(_.uniqWith(model, _.isEqual), undefined, null, '');
                 if ($s._model_.length !== model.length) {
                     $s._proxyModel = model;
                 }
