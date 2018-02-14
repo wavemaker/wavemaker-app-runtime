@@ -557,48 +557,4 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }
-    
-    private static class TestRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                    System.out.println("test method");
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-        }
-    }
-
-    private static class TestRunnable2 implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                    System.out.println("test method");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private static class TestRunnable3 implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                    System.out.println("test method");
-                } catch (Throwable e) {
-                }
-            }
-        }
-    }
 }
