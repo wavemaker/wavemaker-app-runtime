@@ -491,7 +491,9 @@ WM.module('wm.widgets.basic')
                 }
 
                 // trigger callback to event to modify input fields
-                $is.onBeforeservicecall({$scope: $is, inputData: inputFields});
+                if ($is.onBeforeservicecall) {
+                    $is.onBeforeservicecall({$scope: $is, inputData: inputFields});
+                }
 
                 return requestParams;
             }

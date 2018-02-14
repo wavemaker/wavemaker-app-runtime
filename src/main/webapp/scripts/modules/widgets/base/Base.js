@@ -834,7 +834,8 @@ WM.module('wm.widgets.base', [])
                         "onReorder" : {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "autofocus": {"type": "boolean", "value": false },
                         "onFocus": {"show": false},
-                        "onBlur": {"show": false}
+                        "onBlur": {"show": false},
+                        "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
 
