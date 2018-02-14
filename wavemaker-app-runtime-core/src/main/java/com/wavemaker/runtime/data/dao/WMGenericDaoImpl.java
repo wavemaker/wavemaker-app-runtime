@@ -214,6 +214,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
+    public void evict(final Entity entity) {
+        getTemplate().evict(entity);
+    }
+
+    @Override
     public <T> T execute(final HibernateCallback<T> callback) {
         return getTemplate().execute(callback);
     }

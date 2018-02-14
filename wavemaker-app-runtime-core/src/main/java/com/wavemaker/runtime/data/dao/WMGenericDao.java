@@ -57,5 +57,7 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Entity refresh(Entity entity);
 
+    void evict(Entity entity);
+
     <T> T execute(HibernateCallback<T> callback);
 }
