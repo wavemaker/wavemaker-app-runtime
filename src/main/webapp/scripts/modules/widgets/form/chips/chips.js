@@ -4,7 +4,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chips.html',
-            '<ul class="app-chips nav nav-pills list-inline" init-widget has-model apply-styles role="input" listen-property="dataset" ng-model="_model_"' +
+            '<ul class="app-chips nav nav-pills list-inline" ng-class="{readonly: readonly}" init-widget has-model apply-styles role="input" listen-property="dataset" ng-model="_model_"' +
                 ' title="{{hint}}">' +
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
                         '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && onChipClick($event)" ' +
@@ -258,11 +258,11 @@ WM.module('wm.widgets.form')
                     'zIndex'      : 1050,
                     'tolerance'   : 'pointer',
                     'items'       : '> li:not(.app-chip-search)',
+                    'placeholder' : 'chip-placeholder',
                     'start'       : function (evt, ui) {
                         var helper = ui.helper;
                         // increasing the width of the dragged item by 1
                         helper.width(helper.width() + 1);
-                        ui.placeholder.height(ui.item.height());
                         WM.element(this).data('oldIndex', ui.item.index() - ($is.inputposition === 'first' ? 1 : 0));
                     },
                     'update'      : function (evt, ui) {
@@ -289,7 +289,7 @@ WM.module('wm.widgets.form')
                         }
                         changedItem.item = $is.selectedChips[oldIndex];
                         if ($is.onBeforereorder) {
-                            allowReorder = $is.onBeforereorder({$event: evt, $isolateScope: $is, $changedItem: changedItem});
+                            allowReorder = $is.onBeforereorder({$event: evt, $data: $is.selectedChips, $changedItem: changedItem});
                             if(getBooleanValue(allowReorder) === false) {
                                 resetReorder($ulEle, $dragEl);
                                 return;
@@ -531,7 +531,7 @@ WM.module('wm.widgets.form')
                 if (getBooleanValue(allowRemove) === false) {
                     return;
                 }
-
+                $s._ngModelOldVal = Utils.getClonedObject($s._model_);
                 _.pullAt($s._model_, indexes);
                 items = _.pullAt($s.selectedChips, indexes);
 
@@ -685,6 +685,7 @@ WM.module('wm.widgets.form')
                     if (_.isObject(chipObj.datavalue) && _.isEmpty(chipObj.datavalue)) {
                         return;
                     }
+                    $s._ngModelOldVal = Utils.getClonedObject($s._model_);
                     $s.selectedChips.push(chipObj);
                     $s._model_.push(chipObj.datavalue);
                     if ($s.onAdd) {
@@ -829,7 +830,7 @@ WM.module('wm.widgets.form')
 
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         $s.searchScope.tabindex = $s.tabindex;
-
+                        $s.searchScope.minLength = $s.minlength;
                         if (!attrs.widgetid) {
                             //Form and filter usecase where scopedataset is updated programatically
                             if( attrs.scopedataset) {

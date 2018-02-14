@@ -981,6 +981,12 @@ html, body {
         }
       }
     }
+    &.chip-placeholder {
+      border : 2px dotted #ccc;
+      border-radius: 16px;
+      height: 31px;
+      width: 50px
+    }
     .app-chip {
       background-color: rgba(0, 0, 0, 0.1);
       border-radius: 500px;
@@ -3150,6 +3156,11 @@ If the height and width are not specified the video takes the height of the post
           }
         }
       }
+    }
+  }
+  .app-liveform, .app-livefilter, .app-form {
+    .app-chips.readonly .app-chip-search {
+        display: none;
     }
   }
 }
