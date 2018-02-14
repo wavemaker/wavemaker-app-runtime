@@ -25,7 +25,8 @@ WM.module('wm.widgets.form')
                     'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                     'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
                     'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}"' +
-                    'on-focus="onFocus({$event: $event})" on-blur="onBlur({$event: $event})">' +
+                    'on-focus="onFocus({$event: $event})" on-blur="onBlur({$event: $event})"' +
+                    'on-beforeservicecall="onBeforeservicecall({$isolateScope: $isolateScope, inputData: inputData})">' +
                     '</wm-search>' +
                 '<input type="text" class="form-control" ng-if="isWidgetInsideCanvas" ng-attr-placeholder="{{placeholder}}">' +
             '</li>'
