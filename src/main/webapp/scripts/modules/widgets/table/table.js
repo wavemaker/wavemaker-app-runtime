@@ -2657,8 +2657,8 @@ WM.module('wm.widgets.table')
                 },
                 searchHandler: handleOperation,
                 sortHandler: handleOperation,
-                timeoutCall: function (fn) {
-                    $timeout(fn, undefined, false);
+                timeoutCall: function (fn, delay) {
+                    $timeout(fn, delay, false);
                 },
                 safeApply: function () {
                     $rs.$safeApply($is);
