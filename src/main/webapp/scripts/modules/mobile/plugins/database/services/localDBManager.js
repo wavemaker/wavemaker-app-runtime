@@ -229,6 +229,22 @@ wm.plugins.database.services.LocalDBManager = [
             };
         }
 
+        //get the params of the query or procedure.
+        function extractQueryParams(query) {
+            var params, aliasParams;
+            aliasParams = query.match(/[^"'\w\\]:\s*\w+\s*/g) || [];
+            if (aliasParams.length) {
+                params = aliasParams.map(
+                    function (x) {
+                        return (/[=|\W]/g.test(x)) ? x.replace(/\W/g, '').trim() : x.trim();
+                    }
+                );
+            } else {
+                params = null;
+            }
+            return params;
+        }
+
         //Loads necessary details of queries
         function compactQueries(queriesByDB) {
             var queries = {};
@@ -236,10 +252,8 @@ wm.plugins.database.services.LocalDBManager = [
                 var query, params;
                 if (queryData.nativeSql && !queryData.update) {
                     query = queryData.queryString;
-                    params = _.map(query.match(/:[a-zA-Z0-9_]+\s?/g), function (p) {
-                        var paramObj;
-                        p = _.trim(p.substring(1));
-                        paramObj = _.find(queryData.parameters, {'name' : p});
+                    params = _.map(extractQueryParams(query), function (p) {
+                        var paramObj = _.find(queryData.parameters, {'name' : p});
                         return {
                             'name' : paramObj.name,
                             'type' : paramObj.type,
