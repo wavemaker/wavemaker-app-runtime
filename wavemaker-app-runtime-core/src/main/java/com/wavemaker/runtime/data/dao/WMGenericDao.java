@@ -32,6 +32,8 @@ public interface WMGenericDao<Entity, Identifier> {
 
     void update(Entity entity);
 
+    Entity createOrUpdate(Entity entity);
+
     void delete(Entity entity);
 
     Entity findById(Identifier entityId);
