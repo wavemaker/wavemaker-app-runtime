@@ -877,6 +877,7 @@ $.widget('wm.datatable', {
     /* Inserts a new blank row in the table. */
     addNewRow: function (skipFocus, alwaysNewRow) {
         var rowId = this.gridBody.find('tr:visible').length || 99999, //Dummy value if rows are not there
+            self = this,
             rowData = {},
             $row,
             $gridBody,
@@ -931,7 +932,9 @@ $.widget('wm.datatable', {
 
             this.updateSelectAllCheckboxState();
             this.addOrRemoveScroll();
-            this.setColGroupWidths();
+            this.options.timeoutCall(function () {
+                self.setColGroupWidths();
+            }, 100);
         }
     },
 
