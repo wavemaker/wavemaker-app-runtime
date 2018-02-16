@@ -7,8 +7,8 @@ WM.module('wm.widgets.form')
             '<ul class="app-chips nav nav-pills list-inline" ng-class="{readonly: readonly}" init-widget has-model apply-styles role="input" listen-property="dataset" ng-model="_model_"' +
                 ' title="{{hint}}">' +
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
-                        '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && onChipClick($event)" ' +
-                            'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && (item.active=true)" ' +
+                        '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && _onChipClick($event, item)" ' +
+                            'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && _onChipFocus($event, item)" ' +
                             'data-ng-blur="!readonly && (item.active=false)" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
@@ -378,6 +378,10 @@ WM.module('wm.widgets.form')
                         model = _.reduce(_.cloneDeep(model), function (result, value) {
                             var index,
                                 customObj;
+                            // filter out empty values.
+                            if(_.isEmpty(value)) {
+                                return result;
+                            }
                             // if default value is not object, make custom object and update the model.
                             if(!_.isObject(value)) {
                                 index = $s._model_.indexOf(value);
@@ -620,8 +624,15 @@ WM.module('wm.widgets.form')
                 }
             }
 
-            function onChipClick($event) {
+            function onChipClick($s, $event, chip) {
                 $event.currentTarget.focus();
+                Utils.triggerFn($s.onChipclick, {$event: $event, $item: chip});
+            }
+
+            function onChipFocus($s, $event, chip) {
+                chip.active=true;
+                Utils.triggerFn($s.onFocus, {$event: $event});
+                Utils.triggerFn($s.onChipselect, {$event: $event, $item: chip});
             }
 
             //Update the chip which are in edit mode
@@ -826,12 +837,13 @@ WM.module('wm.widgets.form')
                             $s.reset                     = reset.bind(undefined, $s);
                             $s.updateStates              = updateStates.bind(undefined, $s);
                             $s.maxSizeReached            = 'Max size reached';
-                            $s.onChipClick               = onChipClick;
+                            $s._onChipFocus              = onChipFocus.bind(undefined, $s);
+                            $s._onChipClick              = onChipClick.bind(undefined, $s);
                         }
 
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
                         $s.searchScope.tabindex = $s.tabindex;
-                        $s.searchScope.minLength = $s.minlength;
+                        $s.searchScope.minLength = $s.minchars;
                         if (!attrs.widgetid) {
                             //Form and filter usecase where scopedataset is updated programatically
                             if( attrs.scopedataset) {
