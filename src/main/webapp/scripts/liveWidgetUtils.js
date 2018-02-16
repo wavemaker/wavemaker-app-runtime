@@ -257,6 +257,7 @@ WM.module('wm.widgets.live')
                 case 'GRID':
                     defaultButtons = [
                         {
+                            'widgetType' : 'button',
                             'key'        : 'addNewRow',
                             'displayName': 'New',
                             'iconclass'  : 'wi wi-plus',

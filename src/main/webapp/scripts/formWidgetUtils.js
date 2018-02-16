@@ -210,6 +210,7 @@ WM.module('wm.widgets.form')
                 if (!scope._isChangedManually && WM.isDefined(scope._model_) && (WM.isUndefined(selectedCheckboxValue) || (_.isArray(selectedCheckboxValue) && !selectedCheckboxValue.length))) {
                     scope._dataVal = scope._model_;
                     scope.datavalue = selectedCheckboxValue;
+                    scope._ngModelOldVal = scope._dataVal;
 
                     if (scope._onChange) {
                         scope._onChange();
