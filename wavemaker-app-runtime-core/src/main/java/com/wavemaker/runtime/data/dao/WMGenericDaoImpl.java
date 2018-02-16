@@ -96,13 +96,6 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         getTemplate().flush();
     }
 
-    @Override
-    public Entity createOrUpdate(final Entity entity) {
-        getTemplate().saveOrUpdate(entity);
-        getTemplate().flush();
-        return entity;
-    }
-
     public void delete(Entity entity) {
         getTemplate().delete(entity);
     }
