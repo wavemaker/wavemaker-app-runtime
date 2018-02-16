@@ -98,6 +98,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint {
                 appUrl = appUrl.concat("#").concat(redirectPage);
             }
             profileOptions.setRelayState(appUrl);
+            webSSOProfileOptions.setRelayState(appUrl);
         } catch (MalformedURLException e) {
             logger.error("Invalid URL {}", requestURL.toString(), e);
             throw new WMRuntimeException(e);
