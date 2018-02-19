@@ -158,6 +158,7 @@ WM.module('wm.widgets.form')
                     $el.parent().trigger('click');
                     $is.isDateOpen = !dateOpen;
                     $is.isTimeOpen = false;
+                    _onClick($is, evt);
                 });
             }
 
@@ -169,6 +170,7 @@ WM.module('wm.widgets.form')
                     $el.parent().trigger('click');
                     $is.isTimeOpen = !TimeOpen;
                     $is.isDateOpen = false;
+                    _onClick($is, evt);
                 });
             }
 

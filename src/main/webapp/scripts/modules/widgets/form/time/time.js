@@ -105,6 +105,7 @@ WM.module('wm.widgets.form')
                 $timeout(function () {
                     $el.parent().trigger('click');
                     $is.isOpen = !timeOpen;
+                    _onClick($is, evt);
                 });
             }
 
