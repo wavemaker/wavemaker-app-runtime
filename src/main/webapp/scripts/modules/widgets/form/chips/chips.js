@@ -9,7 +9,7 @@ WM.module('wm.widgets.form')
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
                         '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && _onChipClick($event, item)" ' +
                             'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && _onChipFocus($event, item)" ' +
-                            'data-ng-blur="!readonly && (item.active=false)" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
+                            'data-ng-blur="!readonly && (item.active=false || onBlur({$event: $event}))" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
                             '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
