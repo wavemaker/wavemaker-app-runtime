@@ -2852,6 +2852,40 @@ WM.module('wm.utils', [])
             });
         }
 
+        /**
+         * This function sets session storage item based on the project ID
+         * @param key string
+         * @param value string
+         */
+        function setSessionStorageItem(key, value) {
+            var sessionStorageObj = window.sessionStorage.getItem($rootScope.project.id);
+
+            if (sessionStorageObj) {
+                sessionStorageObj = JSON.parse(sessionStorageObj);
+            } else {
+                sessionStorageObj = {};
+            }
+            sessionStorageObj[key] = value;
+
+            window.sessionStorage.setItem($rootScope.project.id, JSON.stringify(sessionStorageObj));
+        }
+
+        /**
+         * This function gets session storage item based on the project ID
+         * @param key string
+         */
+        function getSessionStorageItem(key) {
+            var sessionStorageObj = window.sessionStorage.getItem($rootScope.project.id);
+
+            if (sessionStorageObj) {
+                sessionStorageObj = JSON.parse(sessionStorageObj);
+                return sessionStorageObj[key];
+            }
+            return;
+        }
+
+        this.setSessionStorageItem      = setSessionStorageItem;
+        this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
