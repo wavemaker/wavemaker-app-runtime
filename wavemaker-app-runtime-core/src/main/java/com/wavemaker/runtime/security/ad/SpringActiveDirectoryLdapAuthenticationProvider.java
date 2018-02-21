@@ -338,7 +338,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         } else if (StringUtils.hasText(rootDn)){
             String[] dns = rootDn.split(",");
             String domain = dns[0].split("=")[1];
-            if (username.toLowerCase().contains("@".concat(domain))) {
+            if (username.toLowerCase().contains("@")) {
                 return username;
             } else {
                 return domain.concat("\\").concat(username);
