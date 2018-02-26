@@ -293,7 +293,7 @@ WM.module('wm.widgets.basic')
 
                     } else if (WM.isString(dataSet) && dataSet.trim()) {
                         // make the string an array, for ex. => if dataSet is 1,2,3 then make it [1,2,3]
-                        setDataSet(_.split(dataSet, ','), $is, element);
+                        setDataSet(_.map(_.split(dataSet, ','), _.trim), $is, element);
                         return;
                     } else if (WM.isObject(dataSet)) {
                         setDataSet(_.join(Object.keys(dataSet), ','), $is, element);

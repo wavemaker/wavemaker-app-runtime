@@ -134,6 +134,30 @@ WM.module('wm.widgets.form')
             }
 
             /**
+             * Exteacts display options form the dataset and adds them to the displayOptions array.
+             * Makes sure that the display options are unique.
+             * @param $s : scope of the widget
+             * @param $el :  scope of the element.
+             * @param dataset : dataset
+             * @param isModel : boolean value.
+             */
+            function addDatasetToDisplayOptions($s, $el, dataset, isModel) {
+                var parsedDataset = extractDataObjects(dataset, $s, $el, isModel);
+                $s.displayOptions = $s.displayOptions || [];
+                _.forEach(parsedDataset, function (object) {
+                    if($s.datafield === 'All Fields') {
+                        if(_.findIndex($s.displayOptions, function (option) {return _.isEqual(option.dataObject, object.dataObject);}) === -1) {
+                            $s.displayOptions.push(object);
+                        }
+                    } else {
+                        if(!_.find($s.displayOptions, ['key', object.key])) {
+                            $s.displayOptions.push(object);
+                        }
+                    }
+                });
+            }
+
+            /**
              * Fetch data form the live variable bound to the widget.
              * can send multiple queries at once
              * @param $s: widget scope
@@ -150,7 +174,7 @@ WM.module('wm.widgets.form')
                 $s.searchScope.fetchVariableData($s,  $searchEl, query, $el.scope()).then(function (value) {
                     value = value.length ? value : ($s.allowonlyselect ? value : _.head(query));
                     if(value.length) {
-                        $s.displayOptions = _.concat($s.displayOptions || [], extractDataObjects(value, $s, $el, true));
+                        addDatasetToDisplayOptions($s, $el, value, true);
                     }
                     _.forEach(query, function (val) {
                        if(_.indexOf($s._model_, val) === -1) {
@@ -186,29 +210,16 @@ WM.module('wm.widgets.form')
                     return;
                 }
 
-                // if allow only select is true
-                if($s.allowonlyselect) {
-                    // group all the models which are not available in display options
-                    _.forEach(model, function (query) {
-                        if(!FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, query)) {
-                            searchQuery.push(query);
-                        }
-                    });
-                    if(searchQuery.length) {
-                        fetchVariableData($s, $searchEl, searchQuery, $el);
-                    } else {
-                        updateSelectedChips($s, $el);
+                // group all the models which are not available in display options
+                _.forEach(model, function (query) {
+                    if(!FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, query)) {
+                        searchQuery.push(query);
                     }
+                });
+                if(searchQuery.length) {
+                    fetchVariableData($s, $searchEl, searchQuery, $el);
                 } else {
-                    // if allowonly select is false then make individual quries to fetch the data.
-                    _.forEach(model ,function (query) {
-                        if(!FormWidgetUtils.getSelectedObjFromDisplayOptions($s.displayOptions, $s.datafield, query)) {
-                            fetchVariableData($s, $searchEl, query, $el);
-                        } else {
-                            $s.canUpdateDefaultModel = false;
-                            updateSelectedChips($s, $el);
-                        }
-                    });
+                    updateSelectedChips($s, $el);
                 }
             }
 
@@ -238,17 +249,33 @@ WM.module('wm.widgets.form')
                 return customObj;
             }
 
-            function reorderData(data, newIndex, oldIndex) {
-                var draggedItem = _.pullAt(data, oldIndex)[0];
+            /**
+             * Swaps items in an array if provided with indexes.
+             * @param data : array to be swapped
+             * @param newIndex : new index for the element to be placed
+             * @param currentIndex : current index of the element.
+             */
+            function swapElementsInArray(data, newIndex, currentIndex) {
+                var draggedItem = _.pullAt(data, currentIndex)[0];
                 data.splice(newIndex, 0, draggedItem);
             }
 
+            /**
+             * Cancels the reorder by reseting the elements to the original position.
+             * @param $ulEle : The set of the elements that are reordable.
+             * @param $dragEl : The dragged element.
+             */
             function resetReorder($ulEle, $dragEl) {
                 // cancel the sort even. as the data model is changed Angular will render the list.
                 $ulEle.sortable("cancel");
                 $dragEl.removeData('oldIndex');
             }
 
+            /**
+             * Configures the reordable frature in chips widgets.
+             * @param $el : Widget's JQuery elememt.
+             * @param $is : Widget's scope.
+             */
             function configureDnD($el, $is) {
                 var $ulEle = $el;
                 $ulEle.sortable({
@@ -267,7 +294,7 @@ WM.module('wm.widgets.form')
                         WM.element(this).data('oldIndex', ui.item.index() - ($is.inputposition === 'first' ? 1 : 0));
                     },
                     'update'      : function (evt, ui) {
-                        var changedItem = {},
+                        var changedItem,
                             newIndex,
                             oldIndex,
                             $dragEl,
@@ -297,8 +324,8 @@ WM.module('wm.widgets.form')
                             }
                         }
 
-                        reorderData($is.selectedChips, newIndex, oldIndex);
-                        reorderData($is._model_, newIndex, oldIndex);
+                        swapElementsInArray($is.selectedChips, newIndex, oldIndex);
+                        swapElementsInArray($is._model_, newIndex, oldIndex);
 
                         changedItem.item = $is.selectedChips[newIndex];
 
@@ -320,6 +347,25 @@ WM.module('wm.widgets.form')
                     return true;
                 }
                 return false;
+            }
+
+            /**
+             * this function checks whether the all the resources are available for the chip construction.
+             * @param $s : widget scope.
+             * @param $el : widget's JQuery object
+             * @returns {boolean}
+             */
+            function canUpdateChips($s, $el) {
+                // return false if not bound to live variable and display options length is 0
+                // live variables can make calls to fetch default values data
+                if (!boundToLiveVariable($s, $el) && !$s.displayOptions.length) {
+                    return false;
+                }
+                // check if search scope is availabel on scope
+                if(!$s.searchScope) {
+                    return false;
+                }
+                return true;
             }
 
             /**
@@ -359,11 +405,7 @@ WM.module('wm.widgets.form')
                     $s._proxyModel = _.slice($s._model_, 0, parseInt($s.maxsize, 10));
                 }
 
-                if (!boundToLiveVariable($s, $el) && (WM.isUndefined($s.displayOptions) || !$s.displayOptions.length)) {
-                    return;
-                }
-
-                if(!$s.searchScope) {
+                if(!canUpdateChips($s, $el)) {
                     return;
                 }
 
@@ -728,14 +770,14 @@ WM.module('wm.widgets.form')
                 //Monitoring changes for properties and accordingly handling respective changes
                 switch (key) {
                 case 'dataset':
-                    $s.displayOptions = extractDataObjects($s.dataset, $s, $el) || $s.displayOptions;
-                    $s.canUpdateDefaultModel = true;
+                    $s.displayOptions = $s.displayOptions.length ? [] : $s.displayOptions;
+                    addDatasetToDisplayOptions($s, $el, $s.dataset);
                     updateSelectedChips($s, $el);
                     break;
                 case 'displayfield':
                 case 'datafield':
                     if ($s.widgetid) {
-                        $s.displayOptions = extractDataObjects($s.dataset, $s, $el);
+                        addDatasetToDisplayOptions($s, $el, $s.dataset);
                         $s.canUpdateDefaultModel = true;
                         updateSelectedChips($s, $el);
                     }
@@ -856,7 +898,7 @@ WM.module('wm.widgets.form')
                             //In run mode, If widget is bound to selecteditem subset, fetch the data dynamically
                             if(_.includes($s.binddataset, 'selecteditem.')) {
                                 LiveWidgetUtils.fetchDynamicData($s, $el.scope(), function (data) {
-                                    $s.displayOptions = extractDataObjects(data, $s, $el) || $s.displayOptions;
+                                    addDatasetToDisplayOptions($s, $el, data);
                                     updateSelectedChips($s, $el);
                                 });
                             }
