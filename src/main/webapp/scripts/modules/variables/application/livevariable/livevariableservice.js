@@ -489,36 +489,55 @@ wm.variables.services.$liveVariable = [
                 }
                 return WM.isDefined(param) ? param : '';
             },
+            getSearchField = function (fieldValue, ignoreCase, skipEncode) {
+                var fieldName = fieldValue.attributeName,
+                    value = fieldValue.attributeValue,
+                    filterCondition = fieldValue.filterCondition,
+                    isValArray = _.isArray(value),
+                    dbModes = DB_CONSTANTS.DATABASE_MATCH_MODES,
+                    matchModeExpr,
+                    paramValue;
+                // If value is an empty array, do not generate the query
+                // If values is NaN and number type, do not generate query for this field
+                if ((isValArray && _.isEmpty(value)) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
+                    return;
+                }
+                if (isValArray) {
+                    //If array is value and mode is between, pass between. Else pass as in query
+                    filterCondition = filterCondition === dbModes.between ? filterCondition : dbModes.in;
+                    fieldValue.filterCondition = filterCondition;
+                }
+                matchModeExpr = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
+                paramValue = getParamValue(value, fieldValue, ignoreCase, skipEncode);
+                fieldName = wrapInLowerCase(fieldName, fieldValue, ignoreCase, true);
+                return Utils.replace(matchModeExpr, [fieldName, paramValue]);
+            },
+
             //Generate the search query based on the filter options
             getSearchQuery = function (filterOptions, operator, ignoreCase, skipEncode) {
                 var query,
                     params = [];
                 _.forEach(filterOptions, function (fieldValue) {
-                    var fieldName       = fieldValue.attributeName,
-                        value           = fieldValue.attributeValue,
-                        filterCondition = fieldValue.filterCondition,
-                        isValArray      = _.isArray(value),
-                        dbModes         = DB_CONSTANTS.DATABASE_MATCH_MODES,
-                        matchModeExpr,
-                        paramValue;
-                    // If value is an empty array, do not generate the query
-                    // If values is NaN and number type, do not generate query for this field
-                    if ((isValArray && _.isEmpty(value)) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
-                        return;
-                    }
-                    if (isValArray) {
-                        //If array is value and mode is between, pass between. Else pass as in query
-                        filterCondition            = filterCondition === dbModes.between ? filterCondition : dbModes.in;
-                        fieldValue.filterCondition = filterCondition;
-                    }
-                    matchModeExpr  = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
-                    paramValue     = getParamValue(value, fieldValue, ignoreCase, skipEncode);
-                    fieldName      = wrapInLowerCase(fieldName, fieldValue, ignoreCase, true);
-                    params.push(Utils.replace(matchModeExpr, [fieldName, paramValue]));
+                    params.push(getSearchField(fieldValue, ignoreCase, skipEncode));
                 });
                 query = _.join(params, operator); //empty space added intentionally around OR
                 return query;
             },
+
+            generateSearchQuery = function (rules, condition, ignoreCase, skipEncode) {
+                var params = [];
+                _.forEach(rules, function (rule) {
+                    if(rule) {
+                        if (rule.rules) {
+                            params.push('(' + generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode) + ')');
+                        } else {
+                            params.push(getSearchField(rule, ignoreCase, skipEncode));
+                        }
+                    }
+                });
+                return _.join(params, ' ' + condition + ' ');
+            },
+
             //Get the related field name for the field given
             getAttributeName = function (variable, fieldName) {
                 var attrName = fieldName;
@@ -543,6 +562,84 @@ wm.variables.services.$liveVariable = [
                 }
                 return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
             },
+            getFilterOption = function (variable, fieldOptions, options) {
+                var attributeName,
+                    matchModes = DB_CONSTANTS.DATABASE_MATCH_MODES,
+                    fieldName = fieldOptions.fieldName,
+                    fieldValue = fieldOptions.value,
+                    fieldType = getSQLFieldType(variable, fieldOptions),
+                    filterCondition = matchModes[fieldOptions.filterCondition],
+                    filterOption;
+
+                fieldOptions.type = fieldType;
+
+                if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                    attributeName = getAttributeName(variable, fieldName);
+                    //For non string types empty match modes are not supported, so convert them to null match modes.
+                    if (fieldType && !isStringType(fieldType)) {
+                        filterCondition = DB_CONSTANTS.DATABASE_NULL_EMPTY_MATCH[filterCondition];
+                    }
+                    filterOption = {
+                        'attributeName': attributeName,
+                        'attributeValue': '',
+                        'attributeType': _.toUpper(fieldType),
+                        'filterCondition': filterCondition
+                    };
+                    if (options.searchWithQuery) {
+                        filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                    }
+                    return filterOption;
+                }
+
+                if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
+                    /*Based on the sqlType of the field, format the value & set the filter condition.*/
+                    if (fieldType) {
+                        switch (fieldType) {
+                            case 'integer':
+                                fieldValue = WM.isArray(fieldValue) ? _.reduce(fieldValue, function (result, value) {
+                                    value = parseInt(value, 10);
+                                    if(!_.isNaN(value)) {
+                                        result.push(value);
+                                    }
+                                    return result;
+                                },[]) : parseInt(fieldValue, 10);
+                                filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                break;
+                            case 'date':
+                            case 'datetime':
+                            case 'timestamp':
+                                fieldValue = Utils.formatDate(fieldValue, fieldType);
+                                filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                break;
+                            case 'text':
+                            case 'string':
+                                if (WM.isArray(fieldValue)) {
+                                    filterCondition = matchModes['exact'];
+                                } else {
+                                    filterCondition = filterCondition || matchModes['anywhere'];
+                                }
+                                break;
+                            default:
+                                filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
+                                break;
+                        }
+                    } else {
+                        filterCondition = _.isString(fieldValue) ? matchModes['anywhere'] : matchModes['exact'];
+                    }
+                    attributeName = getAttributeName(variable, fieldName);
+                    filterOption = {
+                        'attributeName': attributeName,
+                        'attributeValue': fieldValue,
+                        'attributeType': _.toUpper(fieldType),
+                        'filterCondition': filterCondition
+                    };
+                    if (options.searchWithQuery) {
+                        filterOption.isVariableFilter = fieldOptions.isVariableFilter;
+                    }
+                    return filterOption;
+                }
+            },
+
             /**
              * Transform the filter fields with valid value and filter condition
              * @param variable Variable object
@@ -551,90 +648,45 @@ wm.variables.services.$liveVariable = [
              * @returns {Array} transformed filter options
              */
             getFilterOptions = function (variable, filterFields, options) {
-                var filterOptions = [],
-                    matchModes    = DB_CONSTANTS.DATABASE_MATCH_MODES;
+                var filterOptions = [];
                 _.each(filterFields, function (fieldOptions) {
-                    var attributeName,
-                        fieldName       = fieldOptions.fieldName,
-                        fieldValue      = fieldOptions.value,
-                        fieldType       = getSQLFieldType(variable, fieldOptions),
-                        filterCondition = fieldOptions.filterCondition,
-                        filterOption;
-
-                    fieldOptions.type = fieldType;
-                    /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
-                    if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
-                        _.forEach(fieldValue, function (subFieldValue, subFieldName) {
-                            if (subFieldValue && !WM.isObject(subFieldValue)) {
-                                filterOptions.push(fieldName + '.' + subFieldName + '=' + subFieldValue);
-                            }
-                        });
-                    } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
-                        /*Based on the sqlType of the field, format the value & set the filter condition.*/
-                        if (fieldType) {
-                            switch (fieldType) {
-                                case 'integer':
-                                    fieldValue = WM.isArray(fieldValue) ? _.reduce(fieldValue, function (result, value) {
-                                            value = parseInt(value, 10);
-                                            if(!_.isNaN(value)) {
-                                                result.push(value);
-                                            }
-                                            return result;
-                                        },[]) : parseInt(fieldValue, 10);
-                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                                    break;
-                                case 'date':
-                                case 'datetime':
-                                case 'timestamp':
-                                    fieldValue = Utils.formatDate(fieldValue, fieldType);
-                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                                    break;
-                                case 'text':
-                                case 'string':
-                                    if (WM.isArray(fieldValue)) {
-                                        filterCondition = matchModes['exact'];
-                                    } else {
-                                        filterCondition = filterCondition || matchModes['anywhere'];
-                                    }
-                                    break;
-                                default:
-                                    filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
-                                    break;
-                            }
-                        } else {
-                            filterCondition = _.isString(fieldValue) ? matchModes['anywhere'] : matchModes['exact'];
-                        }
-                        attributeName = getAttributeName(variable, fieldName);
-                        filterOption  = {
-                            'attributeName'   : attributeName,
-                            'attributeValue'  : fieldValue,
-                            'attributeType'   : _.toUpper(fieldType),
-                            'filterCondition' : filterCondition
-                        };
-                        if (options.searchWithQuery) {
-                            filterOption.isVariableFilter = fieldOptions.isVariableFilter;
-                        }
-                        filterOptions.push(filterOption);
-                    } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
-                        attributeName = getAttributeName(variable, fieldName);
-                        //For non string types empty match modes are not supported, so convert them to null match modes.
-                        if (fieldType && !isStringType(fieldType)) {
-                            filterCondition = DB_CONSTANTS.DATABASE_NULL_EMPTY_MATCH[filterCondition];
-                        }
-                        filterOption = {
-                            'attributeName'   : attributeName,
-                            'attributeValue'  : '',
-                            'attributeType'   : _.toUpper(fieldType),
-                            'filterCondition' : filterCondition
-                        };
-                        if (options.searchWithQuery) {
-                            filterOption.isVariableFilter = fieldOptions.isVariableFilter;
-                        }
-                        filterOptions.push(filterOption);
-                    }
+                    filterOptions.push(getFilterOption(variable, fieldOptions, options));
                 });
                 return filterOptions;
             },
+
+            /**
+             * creating the proper values from the actual object like for between,in matchModes value has to be an array like [1,2]
+             * @param rules recursive filterexpressions object
+             * @param variable variable object
+             * @param options options
+             */
+            processFilterFields = function (rules, variable, options) {
+                _.remove(rules, function (rule) {
+                    return WM.isString(rule.value) && rule.value.indexOf("bind:") === 0;
+                });
+
+                _.forEach(rules, function (rule, index) {
+                    if(rule) {
+                        if (rule.rules) {
+                            processFilterFields(rule.rules, variable, options);
+                        } else {
+                            var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
+                                ? [rule.value, rule.secondvalue]
+                                : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
+                                    ? rule.value.split(",")
+                                    : rule.value);
+                            rules[index] = getFilterOption(variable, {
+                                'fieldName': rule.target,
+                                'type': rule.type,
+                                'value': value,
+                                'filterCondition': rule.matchMode || options.matchMode || variable.matchMode
+                            }, options);
+                        }
+                    }
+                });
+            },
+
             /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options, clonedFields) {
                 if (_.isUndefined(options.searchWithQuery)) {
@@ -645,6 +697,7 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions,
                     query,
+                    clonedObj = Utils.getClonedObject(variable.filterExpressions || {}),
                     optionsQuery;
                 clonedFields  = clonedFields || variable.filterFields;
                     /*get the filter fields from the variable*/
@@ -658,6 +711,44 @@ wm.variables.services.$liveVariable = [
                         filterFields.push(value);
                     }
                 });
+
+                //if filterexpression from live filter is present use it to query
+                if(options.filterExpr && !_.isEmpty(options.filterExpr)) {
+                    clonedObj = options.filterExpr;
+                }
+                //merge live filter runtime values
+                var filterRules = {};
+                if (CONSTANTS.isRunMode && options.filterExpr && !_.isEmpty(options.filterExpr)) {
+                    if(!_.isEmpty(options.filterFields)) {
+                        filterRules = {'condition': 'AND', 'rules': []};
+                        _.forEach(options.filterFields, function (filterObj, filterName) {
+                            var ruleObj = {
+                                'target': filterName,
+                                'type': filterObj.type,
+                                'matchMode': filterObj.matchMode || "exact",
+                                'value': filterObj.value
+
+                            }
+                            filterRules.rules.push(ruleObj);
+                        })
+                    }
+                }
+                if(!_.isEmpty(clonedObj)) {
+                    if(!_.isEmpty(filterRules)) {
+                        clonedObj.rules.push(filterRules);
+                    }
+                } else {
+                    clonedObj = filterRules;
+                }
+
+                if((variable.operation === "read" && variable["filterExpressions"])
+                    || (options.filterExpr && !_.isEmpty(options.filterExpr))
+                    || (CONSTANTS.isRunMode && options.filterExpr && !_.isEmpty(options.filterExpr))) {
+
+                    processFilterFields(clonedObj.rules, variable, options);
+                    query = generateSearchQuery(clonedObj.rules, clonedObj.condition, variable.ignoreCase, options.skipEncode);
+                }
+
                 /*get the filter fields from the options*/
                 _.forEach(options.filterFields, function (value, key) {
                     value.fieldName = key;
@@ -680,6 +771,7 @@ wm.variables.services.$liveVariable = [
                         query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
                     }
                 }
+
                 orderByFields = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy);
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
@@ -744,7 +836,11 @@ wm.variables.services.$liveVariable = [
                 if (CONSTANTS.isRunMode) {
                     clonedFields = Utils.getClonedObject(variable.filterFields);
                     // EVENT: ON_BEFORE_UPDATE
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields);
+                    if(variable.category === "wm.LiveVariable" && variable.operation === "read") {
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions);
+                    } else {
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields);
+                    }
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
@@ -1687,10 +1783,24 @@ wm.variables.services.$liveVariable = [
                     _.forEach(options.filterFields, function (value, key) {
                         value.fieldName = key;
                         value.type      = getFieldType(columnName, variable, key);
+                        /**
+                         * for 'in' mode we are taking the input as comma separated values and for between in ui there are two different fields
+                         * but these are processed and merged into a single value with comma as separator. For these conditions like 'in' and 'between',
+                         * for building the query, the function expects the values to be an array
+                         */
+                        if(value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase() || value.filterCondition === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()) {
+                            value.value = value.value.split(",");
+                        }
                         filterFields.push(value);
                     });
-                    filterOptions = getFilterOptions(variable, filterFields, options);
-                    query         = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
+                    if(options.filterExpr) {
+                        var _clonedFields = _.isObject(options.filterExpr) ? options.filterExpr : JSON.parse(options.filterExpr);
+                        processFilterFields(_clonedFields.rules, variable, options);
+                        query = generateSearchQuery(_clonedFields.rules, _clonedFields.condition, variable.ignoreCase, options.skipEncode);
+                    } else {
+                        filterOptions = getFilterOptions(variable, filterFields, options);
+                        query = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
+                    }
                     query         = query ? ('q=' + query) : '';
                     action        = 'searchTableDataWithQuery';
                     orderBy       = _.isEmpty(options.orderBy) ? '' : 'sort=' + options.orderBy;
