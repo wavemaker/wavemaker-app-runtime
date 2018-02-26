@@ -603,6 +603,47 @@ wm.variables.services.Variables = [
             },
 
             /**
+             * This traverses the filterexpressions object recursively and process the bind string if any in the object
+             * @param variable variable object
+             * @param name name of the variable
+             * @param scope scope of the variable
+             */
+            processFilterExpBindNode = function(scope, filterExpressions, success) {
+                var bindFilExpObj = function(obj, targetNodeKey) {
+                    if (Utils.stringStartsWith(obj.value, "bind:")) {
+                        BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
+                            if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && !WM.isUndefined(oldVal))) {
+                                return;
+                            }
+                            //Skip cloning for blob column
+                            if (!_.includes(['blob', 'file'], obj.type)) {
+                                newVal = Utils.getClonedObject(newVal);
+                            }
+                            //setting value to the root node
+                            if (obj) {
+                                obj[targetNodeKey] = newVal;
+                            }
+
+                            Utils.triggerFn(success, filterExpressions, newVal);
+                        }, {'deepWatch': true});
+                    }
+                };
+
+                var traverseFilterExpressions = function(filterExpressions) {
+                    if (filterExpressions.rules) {
+                        _.forEach(filterExpressions.rules, function (filExpObj, i) {
+                            if (filExpObj.rules) {
+                                traverseFilterExpressions(filExpObj);
+                            } else {
+                                bindFilExpObj(filExpObj, "value");
+                            }
+                        });
+                    }
+                };
+                traverseFilterExpressions(filterExpressions);
+            },
+
+            /**
              * Old Implementation (DataBinding Recursive Structure)
              * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
              * @param node binding node object
@@ -795,6 +836,28 @@ wm.variables.services.Variables = [
 
                 /* update variable bindings */
                 updateVariableBinding(variable, name, scope);
+
+                /* update variable bindings in case of live Variables */
+                if (variable.operation == "read" && !_.isNil(variable.filterExpressions) && _.isObject(variable.filterExpressions)) {
+                    /* un-register previous watchers, if any */
+                    watchers[scope.$id][name] = watchers[scope.$id][name] || [];
+                    watchers[scope.$id][name].forEach(Utils.triggerFn);
+
+                    var onSuccess = function (filterExpressions, newVal) {
+                        if (variable.operation === 'read') {
+                            /* if auto-update set for the variable with read operation only, get its data */
+                            if (variable.autoUpdate && !WM.isUndefined(newVal) && WM.isFunction(variable.update)) {
+                                _invoke(variable, 'update');
+                            }
+                        } else {
+                            /* if auto-update set for the variable with read operation only, get its data */
+                            if (variable.autoUpdate && !WM.isUndefined(newVal) && WM.isFunction(variable[variable.operation + 'Record'])) {
+                                _invoke(variable, variable.operation + 'Record');
+                            }
+                        }
+                    };
+                    processFilterExpBindNode(scope, variable.filterExpressions, onSuccess);
+                }
 
                 /*iterating over the collection to update the variables appropriately.*/
                 if (variable.category === "wm.Variable") {
@@ -1634,6 +1697,7 @@ wm.variables.services.Variables = [
 
                 if (variableObj.category === 'wm.LiveVariable') {
                     variableObj._isNew = true;
+                    variableObj["filterExpressions"] = {};
                 }
 
                 /* if app level variable make it available in the active page scope */
@@ -2788,7 +2852,15 @@ wm.variables.services.Variables = [
              * @params {string} varOrder variable order by
              * @params {string} optionsOrder options order by
              */
-            getEvaluatedOrderBy: getEvaluatedOrderBy
+            getEvaluatedOrderBy: getEvaluatedOrderBy,
+
+            /**
+             * This traverses the filterexpressions object recursively and process the bind string if any in the object
+             * @param variable variable object
+             * @param name name of the variable
+             * @param scope scope of the variable
+             */
+            processFilterExpBindNode: processFilterExpBindNode
         };
 
         return returnObject;

@@ -194,7 +194,7 @@ WM.module('wm.widgets.live')
                                 return;
                             }
                         }
-                        /* Construct the formFields Variable to send it to the queryBuilder */
+
                         WM.forEach($scope.formFields, function (filterField) {
                             var fieldValue,
                                 matchMode,
@@ -259,6 +259,7 @@ WM.module('wm.widgets.live')
                                     }
                                     formFields[colName].value     = fieldValue;
                                     formFields[colName].logicalOp = 'AND';
+                                    formFields[colName].type = filterField.type;
                                 }
                             }
                         });
@@ -644,7 +645,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "WidgetUtilService", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils, WidgetUtilService) {
+    .directive("wmFilterField", ["$rootScope", "$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "Variables", "WidgetUtilService", function ($rs, $compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils, Variables, WidgetUtilService) {
         'use strict';
         return {
             "restrict": 'E',
@@ -743,7 +744,11 @@ WM.module('wm.widgets.live')
                                 /*If dataset is undefined, fetch the default values for field*/
                                 columnsDef.isDataSetBound = true;
                             } else {
-                                LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget', LiveWidgetUtils.getEnableEmptyFilter(parentIsolateScope.enableemptyfilter));
+                                var callbackFn = function(filterexpressions) {
+                                    columnsDef.filterexpressions = filterexpressions;
+                                    LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget', LiveWidgetUtils.getEnableEmptyFilter(parentIsolateScope.enableemptyfilter));
+                                };
+                                LiveWidgetUtils.interpolateBindExpressions(parentIsolateScope, columnsDef.filterexpressions, callbackFn);
                             }
                         }
                         scope.fieldDefConfig = columnsDef;

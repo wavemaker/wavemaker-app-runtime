@@ -698,7 +698,7 @@ $.widget('wm.datatable', {
         }
     },
     /* Prepares the grid header data by adding custom column definitions if needed. */
-    _prepareHeaderData: function () {
+     _prepareHeaderData: function () {
         this.preparedHeaderData = [];
 
         $.extend(this.preparedHeaderData, this.options.colDefs);
