@@ -568,9 +568,13 @@ wm.variables.services.$liveVariable = [
                         if (fieldType) {
                             switch (fieldType) {
                                 case 'integer':
-                                    fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
-                                            return parseInt(value, 10);
-                                        }) : parseInt(fieldValue, 10);
+                                    fieldValue = WM.isArray(fieldValue) ? _.reduce(fieldValue, function (result, value) {
+                                            value = parseInt(value, 10);
+                                            if(!_.isNaN(value)) {
+                                                result.push(value);
+                                            }
+                                            return result;
+                                        },[]) : parseInt(fieldValue, 10);
                                     filterCondition = filterCondition ? getFilterCondition(filterCondition) : matchModes['exact'];
                                     break;
                                 case 'date':
