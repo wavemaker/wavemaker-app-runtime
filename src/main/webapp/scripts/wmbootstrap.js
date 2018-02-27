@@ -1,4 +1,4 @@
-/*global WM, window, device, _, _WM_APP_PROPERTIES, navigator, document*/
+/*global WM, window, device, _, _WM_APP_PROPERTIES, navigator, document, setTimeout*/
 
 WM.element.holdReady(true);
 document.addEventListener('DOMContentLoaded', function () {
@@ -546,15 +546,16 @@ Application
                 function initI18nService(supportedLocale, defaultLocale) {
                     var _acceptLang = getAcceptedLanguages(),
                         _sl         = supportedLocale,
-                        _dl;
+                        _dl,
+                    preselectedLocale = Utils.getSessionStorageItem('selectedLocale');
                     _acceptLang.push(defaultLocale);
 
-                    _dl = _.intersection(_acceptLang, _sl)[0] || 'en';
+                    // check for the session storage to load any pre-requested locale
+                    _dl = preselectedLocale || _.intersection(_acceptLang, _sl)[0] || 'en';
 
                     // if the supportedLocale is not available set it to defaultLocale
                     _sl = _sl || [_dl];
                     i18nService.init(_sl, _dl, APP_LOCALE_PATH, NG_LOCALE_PATH, MOMENT_LOCALE_PATH);
-                    i18nService.setSelectedLocale(_dl);
                 }
 
                 // Compile the contents of the common page
@@ -930,6 +931,9 @@ Application
                 $rs.isApplicationType       = appProperties.type === 'APPLICATION';
                 $rs.isTemplateBundleType    = appProperties.type === 'TEMPLATEBUNDLE';
 
+                /* Name-spaced Utils Object on rootScope for the developer to access App related functionality */
+                $rs.AppUtils                = {};
+
 
                 dateFormat = appProperties.dateFormat;
                 timeFormat = appProperties.timeFormat;
@@ -948,8 +952,31 @@ Application
                     'deployedUrl' : ProjectService.getDeployedUrl()
                 };
 
-                $rs.changeLocale = function ($is) {
-                    i18nService.setSelectedLocale($is.datavalue);
+                function changeAppLocale($is) {
+                    var selectedLocale = WM.isObject($is) ? $is.datavalue : $is;
+                    // do not engage if the locale is already selected
+                    if (selectedLocale === $rs.selectedLocale) {
+                        return;
+                    }
+
+                    Utils.setSessionStorageItem('selectedLocale', selectedLocale);
+                    setTimeout(function () {
+                        // check if window reload is in progress in order to avoid the cancelled network calls queue
+                        if ($rs.reloadInProgress) {
+                            return;
+                        }
+                        i18nService.setSelectedLocale(selectedLocale);
+                    }, 80);
+                }
+
+                // Backward support of old method
+                $rs.changeAppLocale = changeAppLocale;
+
+                $rs.AppUtils.changeAppLocale = changeAppLocale;
+
+                $rs.AppUtils.reloadApp = function () {
+                    $rs.reloadInProgress = true;
+                    window.location.reload();
                 };
 
                 if ($rs.isApplicationType || $rs.isPrefabType) {

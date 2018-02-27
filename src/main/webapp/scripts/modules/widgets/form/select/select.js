@@ -1,4 +1,4 @@
-/*global WM, _ */
+/*global WM, _, window */
 /*jslint nomen:true*/
 /*Directive for Select */
 
@@ -129,7 +129,11 @@ WM.module('wm.widgets.form')
 
                     // expose the `changeLocale` method defined on $rootScope as `changeAppLocale` on widget scope.
                     var scope = element.scope();
-                    scope.changeAppLocale = scope.$root.changeLocale;
+
+                    // if the widget is bound to the supportedLocale Variable then assign the default value from the selected locale of the app
+                    if (attrs.dataset === 'bind:Variables.supportedLocale.dataSet') {
+                        iScope.datavalue = scope.selectedLocale;
+                    }
 
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
