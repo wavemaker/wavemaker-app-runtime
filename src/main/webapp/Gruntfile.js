@@ -215,8 +215,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     '<%= config.tmp %>/scripts/wm-application-libs.min.js': ['<%= config.tmp %>/scripts/wm-application-libs.min.js'],
-                    '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': ['<%= config.tmp %>/scripts/wm-mobile-libs.min.js'],
-                    '<%= config.application %>/scripts/placeholders.min.js': ['<%= config.application %>/scripts/placeholders.min.js']
+                    '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': ['<%= config.tmp %>/scripts/wm-mobile-libs.min.js']
                 }
             },
             'min-mangle-false-studio' : {
@@ -259,9 +258,6 @@ module.exports = function (grunt) {
             'wm-loader': {
                 nonull: true,
                 files: {
-                    '<%= config.application %>/scripts/placeholders.min.js': [
-                        '<%= config.components %>/placeholders/js/placeholders.js'
-                    ],
                     '<%= config.application %>/scripts/wm-loader.min.js': [
                         '<%= config.editor %>/application/scripts/runtimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'

@@ -65,7 +65,7 @@ WM.module('wm.layouts.page')
                          */
                         pageName = $s.prefabname
                                         || ($rs.isPrefabTemplate && 'Main')
-                                        || attrs.ngController.replace('PageController', '');
+                                        || $s.$root._toBeActivatedPage;
 
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
 
@@ -280,7 +280,7 @@ WM.module('wm.layouts.page')
                             count = 0,
                             hasLazyWidgets;
 
-                        pageName      = attrs.ngController.replace('PageController', '');
+                        pageName      = $s.partialname;
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
 
                         if (CONSTANTS.isRunMode) {

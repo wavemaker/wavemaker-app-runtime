@@ -1691,8 +1691,6 @@ WM.module('wm.utils', [])
                         WM.element(document.head).append($styles);
                     }
                 }
-
-                WM.element(document.head).append(pageDom.find('script'));
             } catch (e) {
                 console.log(e.message);
             }

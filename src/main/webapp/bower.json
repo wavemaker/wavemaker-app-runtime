@@ -19,7 +19,6 @@
         "textAngular": "https://github.com/fraywing/textAngular.git#v1.5.16",
         "d3": "https://github.com/mbostock/d3.git#v3.5.17",
         "nvd3": "https://github.com/novus/nvd3.git#v1.8.4",
-        "placeholders": "4.0.1",
         "ocLazyLoad": "https://github.com/ocombe/ocLazyLoad.git#1.0.9",
         "lodash": "https://github.com/lodash/lodash.git#4.17.5",
         "hammerjs": "2.0.8",
@@ -74,9 +73,6 @@
         "font-awesome": {
             "css": "css/*.css",
             "fonts": "fonts/*"
-        },
-        "placeholders": {
-            "js": "lib/*.js"
         },
         "textAngular": {
             "js": [
