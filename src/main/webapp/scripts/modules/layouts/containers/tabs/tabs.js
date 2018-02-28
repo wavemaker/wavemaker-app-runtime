@@ -1,4 +1,4 @@
-/*global WM, $ */
+/*global WM, _, $ */
 /*jslint todo: true */
 /*Directive for tabs */
 
@@ -48,40 +48,45 @@ WM.module('wm.layouts.containers')
         }
 
         // This function adds swipe features on the element.
-        function addSwipee($scope, $ele) {
-            $ele.swipee({
+        function addSwipe($scope, $ele) {
+            var emptyEvents = {};
+
+            // set the bindEvents to empty array when gestures is off
+            if ($scope.gestures === 'off') {
+                emptyEvents = {'bindEvents': []};
+            }
+            $ele.swipeAnimation($.extend({
                 'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
-                //'threshold': 20,
-                'onSwipeStart': function (e, data) {
-                    data.totalTabs = this.find('>.tab-pane').length;
-                    data.tabLength = this.find('>.tab-pane:first').width();
-                    data.transformState = -$scope.activeTabIndex * data.tabLength;
-                    this.css({
-                        'transition': 'none'
-                    });
-                    $(this).addClass('swipee-transition');
+                'threshold': 5,
+                'bounds': function () {
+                    var w = this.find('>.tab-pane:first').width(),
+                        noOfTabs = this.find('>.tab-pane').length,
+                        centerVal = -1 * $scope.activeTabIndex * w,
+                        bounds;
+
+                    bounds = {
+                        'strict': false,
+                        'lower': $scope.activeTabIndex === noOfTabs - 1 ? 0 : -w,
+                        'center': centerVal,
+                        'upper': $scope.activeTabIndex === 0 ? centerVal : w
+                    };
+                    return bounds;
                 },
-                'onSwipe': function (e, data) {
-                    this.css({
-                        'transform': 'translate3d(' + (data.transformState + data.length) + 'px, 0, 0)'
-                    });
+                'context': function () {
+                    return {
+                        'w': this.width()
+                    };
                 },
-                'onSwipeEnd': function (e, data) {
-                    if (data.length < 0) {
-                        $scope.next();
-                    } else if (data.length > 0) {
-                        $scope.previous();
-                    }
-                    this.css({
-                        'transition': '',
-                        'transform': 'translate3d(' + -1 * ($scope.activeTabIndex * 100 / data.totalTabs) + '%, 0, 0)'
-                    });
-                    this.one('webkitTransitionEnd', function () {
-                        $(this).removeClass('swipee-transition');
-                        $timeout(WM.noop, 500);
-                    });
+                'animation': {
+                    'transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)'
+                },
+                'onLower': function () {
+                    $scope.next();
+                },
+                'onUpper': function () {
+                    $scope.previous();
                 }
-            });
+            }, emptyEvents));
         }
 
         // Calculates the tabs left position depending on no. of tabs.
@@ -391,13 +396,9 @@ WM.module('wm.layouts.containers')
                         });
 
                         // Adding swipe on tabs content
-                        if (element.hasClass('has-transition') && scope.gestures === 'on' && Utils.isMobile()) {
-                            element.addClass('has-transition');
-                            addSwipee(scope, content);
-                        }
-
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
+                            addSwipe(scope, content);
                         }
                     }
 

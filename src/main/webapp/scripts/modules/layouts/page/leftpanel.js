@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<aside data-role="page-left-panel" wm-gestures="{{gestures}}" wm-smoothscroll="{{smoothscroll}}" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
                 '       data-ng-class="[animation, expanded ? \'left-panel-expanded\' : \'left-panel-collapsed\']" ' +
                 '       apply-styles="container">' +
-                '   <div class="app-ng-transclude" wmtransclude page-container-target></div>' +
+                '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
     }])
@@ -20,178 +20,99 @@ WM.module('wm.layouts.page')
                 'animation': true
             };
 
-        function addSwipeeForSlideIn($ele, state, $s) {
-            $ele.swipee({
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
-                'threshold': 5,
-                'onSwipeStart': function (e, data) {
-                    state.isExpanded = $s.expanded;
-                    if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
-                        return false;
-                    }
-
-                    if (!state.leftPanelWidth) {
-                        state.leftPanelWidth = state.leftPanel.width();
-                        state.pageContainerWidth = state.pageContainer.width();
-                    }
-
-                    state.pageContainer.css({
-                        'transition': 'none'
-                    });
-
-                    // disable the iscroll to avoid scroll during swipe.
-                    if (state.leftPanel[0].iscroll) {
-                        state.leftPanel[0].iscroll.disable();
-                    }
-
-                    state.leftPanel.css({
-                        'opacity': 1,
-                        'transition': 'none',
-                        'z-index': 101,
-                        'transform': 'translate3d(-100%, 0, 0)',
-                        '-webkit-transform': 'translate3d(-100%, 0, 0)'
-                    });
-                },
-                'onSwipe': function (e, data) {
-                    var d = 0,
-                        maxX = (1 - state.colWidth / 12) * 100;
-
-                    if (state.isExpanded && data.length < 0) {
-                        d = (data.length / state.pageContainerWidth) * 100 + maxX;
-                    } else if (!state.isExpanded && data.length > 0) {
-                        d = (data.length / state.pageContainerWidth) * 100 + 10;
-                    }
-
-                    if (d > maxX) {
-                        d = maxX;
-                    } else if (d < 0) {
-                        d = 0;
-                    }
-                    state.pageContainer.css({
-                        'transform': 'translate3d(' + d + '%, 0, 0)'
-                    });
-
-                },
-                'onSwipeEnd': function (e, data) {
-                    if (data.length > 10) {
-                        if (state.leftPanel[0].iscroll) {
-                            state.leftPanel[0].iscroll.enable();
-                        }
-                        // expand the leftPanel
-                        $s.expand();
-
-                        state.isExpanded = true;
-                        state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
-                    } else if (data.length < 10) {
-                        // collapse the leftPanel
-                        $s.collapse();
-
-                        if (state.leftPanel[0].iscroll) {
-                            state.leftPanel[0].iscroll.disable();
-                        }
-                        state.isExpanded = false;
-                        state.leftPanel.addClass('left-panel-collapsed').removeClass('left-panel-expanded');
-                    }
-                    // reset the styles on pageContainer and leftPanel
-                    state.pageContainer.css({
-                        'transition': '',
-                        'transform': '',
-                        'left': ''
-                    });
-
-                    state.leftPanel.css({
-                        'transition': '',
-                        'transform': '',
-                        'left': '',
-                        'opacity': '',
-                        'z-index': ''
-                    });
-                }
+        function resetTransition($el) {
+            $el.css({
+                'transform': '',
+                'opacity': '',
+                'z-index': ''
             });
         }
 
-        function addSwipeeForSlideOver($ele, state, $s) {
-            $ele.swipee({
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
-                'threshold': 5,
-                'onSwipeStart': function (e, data) {
-                    state.isExpanded = $s.expanded;
-                    if ((!state.isExpanded && data.length < 0) || (state.isExpanded && data.length > 0)) {
-                        return false;
-                    }
 
-                    if (!state.leftPanelWidth) {
-                        state.leftPanelWidth = state.leftPanel.width();
-                    }
-
-                    // disable the iscroll to avoid scroll during swipe.
-                    if (state.leftPanel[0].iscroll) {
-                        state.leftPanel[0].iscroll.disable();
-                    }
-
-                    state.leftPanel.css({
-                        'opacity': 1,
-                        'transition': 'none',
-                        'z-index': 101
-                    });
-
-                    if (!state.isExpanded) {
-                        state.leftPanel.css({
+        // Returns the settings object that is used for s
+        function getAnimationProperty(state, $s) {
+            var styles,
+                $transitionEls = state.leftPanel;
+            if ($s.animation === 'slide-in') {
+                styles = [
+                    {
+                        'target': state.leftPanel,
+                        'css': {
                             'transform': 'translate3d(-100%, 0, 0)',
-                            '-webkit-transform': 'translate3d(-100%, 0, 0)'
-                        });
-                    }
-                },
-                'onSwipe': function (e, data) {
-                    var d = 0;
-                    if (state.isExpanded && data.length < 0) {
-                        d = (data.length / state.leftPanelWidth) * 100;
-                    } else if (!state.isExpanded && data.length > 0) {
-                        d = (data.length / state.leftPanelWidth) * 100 - 100;
-                    }
-                    if (d > 0) {
-                        d = 0;
-                    } else if (d < -100) {
-                        d = -100;
-                    }
-                    state.leftPanel.css({
-                        'transform': 'translate3d(' + d + '%, 0, 0)'
-                    });
-                },
-                'onSwipeEnd': function (e, data) {
-                    if (data.length > 10) {
-                        if (state.leftPanel[0].iscroll) {
-                            state.leftPanel[0].iscroll.enable();
+                            'opacity': 1,
+                            'z-index': 101
                         }
-                        // expand the leftPanel
-                        $s.expand();
-
-                        state.isExpanded = true;
-                        state.leftPanel.addClass('left-panel-expanded').removeClass('left-panel-collapsed');
-                    } else if (data.length < 10) {
-                        // collapse the leftPanel
-                        $s.collapse();
-
-                        if (state.leftPanel[0].iscroll) {
-                            state.leftPanel[0].iscroll.disable();
+                    },
+                    {
+                        'target': state.pageContainer,
+                        'css': {
+                            'transform': 'translate3d(${{ limit( 0, ((($D + $d) * 100 / w)), maxX ) + \'%\' }}, 0, 0)',
+                            'opacity': 1,
+                            'z-index': 101
                         }
-                        state.isExpanded = false;
-                        state.leftPanel.addClass('left-panel-collapsed').removeClass('left-panel-expanded');
+                    }];
+                $transitionEls = $transitionEls.add(state.pageContainer);
+            } else {
+                styles = {
+                    'transform': 'translate3d(${{ limit( -100, ((($D + $d) * 100 / w) - 100), 0 ) + \'%\'}}, 0, 0)',
+                    'opacity': 1,
+                    'z-index': 101
+                };
+            }
+
+
+            return {
+                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'threshold': 5,
+                'bounds': function () {
+                    if (!state.width) {
+                        state.pageContainerWidth = state.pageContainer.width();
+                        state.leftPanelWidth = state.leftPanel.width();
+                        state.maxX = state.leftPanelWidth / state.pageContainerWidth * 100;
+
+                        state.width = $s.animation === 'slide-in' ? state.pageContainerWidth : state.leftPanelWidth;
                     }
-                    $timeout(function () {
-                        // reset the styles on pageContainer and leftPanel
-                        state.leftPanel.css({
-                            'transition': '',
-                            'transform': '',
-                            'left': '',
-                            'opacity': '',
-                            'z-index': ''
-                        });
-                    });
+                    state.isExpanded = $s.expanded;
+
+                    if (state.isExpanded) {
+                        return {
+                            'center': state.leftPanelWidth,
+                            'lower': -state.leftPanelWidth
+                        };
+                    }
+                    return {
+                        'center': 0,
+                        'upper': state.leftPanelWidth
+                    };
+                },
+                'context': function () {
+                    return {
+                        'w': state.width,
+                        'maxX': state.maxX,
+                        'limit': function (min, v, max) {
+                            if (v < min) {
+                                return min;
+                            }
+                            if (v > max) {
+                                return max;
+                            }
+                            return v;
+                        }
+                    };
+                },
+                'animation': styles,
+                'onLower': function () {
+                    resetTransition($transitionEls);
+                    state.isExpanded = false;
+                    $s.collapse();
+                },
+                'onUpper': function () {
+                    resetTransition($transitionEls);
+                    state.isExpanded = true;
+                    $s.expand();
                 }
-            });
+            };
         }
-
 
         function setLeftPanelWidth(element, devices, newVal, oldVal) {
             _.forEach(devices, function (device) {
@@ -284,13 +205,21 @@ WM.module('wm.layouts.page')
 
                     'post': function (scope, element, attrs) {
                         var pageContainer,
-                            state;
+                            state,
+                            swipeSettingsObj,
+                            moveTo,
+                            appPage;
 
                         /*If columnwidth is passed set the appropriate class*/
                         if (scope.columnwidth) {
                             setLeftPanelWidth(element, ['md', 'sm'], scope.columnwidth);
                         }
                         scope.toggle = function () {
+                            moveTo = scope.expanded ? 'gotoLower' : 'gotoUpper';
+                            appPage = element.closest('.app-page');
+
+                            element.swipeAnimation(moveTo);
+
                             if (scope.expanded) {
                                 scope.collapse();
                             } else {
@@ -298,7 +227,7 @@ WM.module('wm.layouts.page')
                             }
                         };
                         scope.expand = function () {
-                            var appPage = element.closest('.app-page');
+                            appPage = element.closest('.app-page');
 
                             element.removeClass('swipee-transition');
 
@@ -316,7 +245,7 @@ WM.module('wm.layouts.page')
                             $rootScope.$safeApply(scope);
                         };
                         scope.collapse = function () {
-                            var appPage = element.closest('.app-page');
+                            appPage = element.closest('.app-page');
 
                             element.addClass('swipee-transition');
 
@@ -334,24 +263,21 @@ WM.module('wm.layouts.page')
                         pageContainer = element.closest('.app-page');
                         pageContainer.addClass('left-panel-collapsed-container');
 
-                        if (scope.gestures === 'on' && Utils.isMobile()) {
-                            state = {
-                                'isExpanded': false,
-                                'colWidth': scope.columnwidth,
-                                'leftPanel': element,
-                                'pageContainer': pageContainer,
-                                'leftPanelWidth': '',
-                                'pageContainerWidth': ''
-                            };
+                        state = {
+                            'colWidth': scope.columnwidth,
+                            'leftPanel': element,
+                            'pageContainer': pageContainer,
+                            'leftPanelWidth': '',
+                            'pageContainerWidth': ''
+                        };
+                        swipeSettingsObj = getAnimationProperty(state, scope);
 
-                            element.addClass('swipee-transition');
-                            // Apply swipe changes on mobile.
-                            if (scope.animation === 'slide-in') {
-                                addSwipeeForSlideIn(element, state, scope);
-                            } else {
-                                addSwipeeForSlideOver(element, state, scope);
-                            }
+                        // set the bindEvents to empty when gestures is off
+                        if (scope.gestures === 'off') {
+                            $.extend(swipeSettingsObj, {'bindEvents': []});
                         }
+
+                        element.swipeAnimation(swipeSettingsObj);
 
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);

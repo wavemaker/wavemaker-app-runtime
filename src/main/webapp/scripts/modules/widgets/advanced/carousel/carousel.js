@@ -51,12 +51,11 @@ WM.module('wm.widgets.advanced')
         'PropertiesFactory',
         '$templateCache',
         'CONSTANTS',
-        '$timeout',
         'WidgetUtilService',
         '$compile',
         'Utils',
 
-        function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout, WidgetUtilService, $compile, Utils) {
+        function ($interval, PropertiesFactory, $templateCache, CONSTANTS, WidgetUtilService, $compile, Utils) {
             'use strict';
 
             var widgetProps,
@@ -209,147 +208,85 @@ WM.module('wm.widgets.advanced')
                 handlers.forEach(Utils.triggerFn);
             }
 
-            // Adds swipe functionality on the element.
-            function addSwipee($scope, $ele) {
-                var state = {
-                    'activeItem': '',
-                    'leftItem': '',
-                    'rightItem': '',
-                    'follower': '',
-                    'noOfItems': ''
-                };
-                $ele.swipee({
-                    'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
-                    'onSwipeStart': function () {
-                        var items = this.find('.app-carousel-item');
-                        state.activeIndex = $scope.activeIndex;
-                        state.noOfItems = items.length;
-                        state.activeItem = items.eq(state.activeIndex);
-                        state.leftItem = items.eq((state.noOfItems + state.activeIndex - 1) % state.noOfItems);
-                        state.rightItem = items.eq((state.noOfItems + state.activeIndex + 1) % state.noOfItems);
-                        state.activeItem.css({
-                            'transition': 'none'
-                        });
-                        state.leftItem.css({
-                            'transition': 'none'
-                        });
-                        state.rightItem.css({
-                            'transition': 'none'
-                        });
-
-                        this.addClass('swipee-transition');
-                    },
-                    'onSwipe': function (e, data) {
-                        // assign the follower and translate depending on data.length
-                        if (state.follower !== state.leftItem && data.length > 0) {
-                            if (state.follower) {
-                                state.follower.css({
-                                    'transform': 'translate3d(0, 0, 0)'
-                                });
-                            }
-                            state.follower = state.leftItem;
-                        } else if (state.follower !== state.rightItem && data.length < 0) {
-                            if (state.follower) {
-                                state.follower.css({
-                                    'transform': 'translate3d(0, 0, 0)'
-                                });
-                            }
-                            state.follower = state.rightItem;
-                        }
-                        state.activeItem.css({
-                            'transform': 'translate3d(' + data.length + 'px, 0, 0)'
-                        });
-                        state.follower.css({
-                            'transform': 'translate3d(' + data.length + 'px, 0, 0)'
-                        });
-                    },
-                    'onSwipeEnd': function (e, data) {
-                        var index = state.activeIndex,
-                            ltr = false;
-
-                        this.removeClass('swipee-transition');
-
-                        // update the activeIndex depending on data.length and reset the styles.
-                        if (data.length > 50) {
-                            index--;
-                            ltr = true;
-                        } else if (-data.length > 50) {
-                            index++;
-                        }
-
-                        state.activeItem.css({
-                            'transition': '',
-                            'transform': ''
-                        });
-                        state.leftItem.css({
-                            'transition': '',
-                            'transform': ''
-                        });
-                        state.rightItem.css({
-                            'transition': '',
-                            'transform': ''
-                        });
-                        state = {};
-
-                        $scope.goTo(index, ltr);
-                    }
+            // Reset the css styles on the element.
+            function resetTransition($el) {
+                $el.css({
+                    '-webkit-transition': 'none',
+                    '-webkit-transform': '',
+                    'transition': 'none',
+                    'transform': ''
                 });
             }
 
-            // This function applies transition on the items.
-            function animate(items, from, to, ltr) {
-                var callback = {
-                        'success': WM.noop,
-                        'then': function (fn) {
-                            this.success = fn;
+            // Returns multiple elements as single jQuery element.
+            function getTarget(state) {
+                state.activeItem = state.items.eq(state.activeIndex);
+
+                state.noOfItems = state.items.length;
+                state.leftItem = state.items.eq((state.noOfItems + state.activeIndex - 1) % state.noOfItems);
+                state.rightItem = state.items.eq((state.noOfItems + state.activeIndex + 1) % state.noOfItems);
+
+                return state.activeItem.add(state.rightItem).add(state.leftItem);
+            }
+
+            // Adds swipe functionality on the element.
+            function addSwipe($scope, $ele) {
+                var emptyEvents = {},
+                    state = {
+                        'activeItem': '',
+                        'leftItem': '',
+                        'rightItem': '',
+                        'follower': '',
+                        'noOfItems': ''
+                    };
+
+                // set the bindEvents to empty array when gestures is off
+                if ($scope.gestures === 'off') {
+                    emptyEvents.bindEvents = [];
+                }
+
+                $ele.swipeAnimation($.extend({
+                    'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                    'threshold': 5,
+                    'bounds': function () {
+                        var items = this.find('.app-carousel-item');
+
+                        // initialise the state properties.
+                        state.activeIndex = $scope.activeIndex;
+                        state.items = items;
+
+                        if (!state.width) {
+                            state.width = items.width();
                         }
+
+                        // bounds: element can be swiped upto its width.
+                        return {
+                            'lower': -state.width,
+                            'center' : 0,
+                            'upper': state.width
+                        };
                     },
-                    tx = ltr ? 100 : -100,
-                    // item at from index
-                    item = items.eq((from + items.length) % items.length),
-                    // item at to index
-                    follower = items.eq((to + items.length) % items.length);
-                window.requestAnimationFrame(function () {
-                    if (from === to) {
-                        tx = 0;
-                    } else {
-                        if (ltr) {
-                            follower.addClass('left-item').removeClass('right-item');
-                        } else {
-                            follower.addClass('right-item').removeClass('left-item');
+                    'context': function () {
+                        return {
+                            'w': state.width
+                        };
+                    },
+                    'animation': [{
+                        'target': getTarget.bind(undefined, state),
+                        'css': {
+                            'transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)'
                         }
-                        item.removeClass('right-item left-item');
+                    }],
+                    'onLower': function () {
+                        resetTransition(getTarget(state));
+                        $scope.goTo($scope.activeIndex + 1);
+
+                    },
+                    'onUpper': function () {
+                        resetTransition(getTarget(state));
+                        $scope.goTo($scope.activeIndex - 1);
                     }
-                    item.css({
-                        '-webkit-transition': '-webkit-transform 0.1s linear',
-                        '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
-                        'transition': 'transform 0.1s linear',
-                        'transform': 'translate3d(' + tx + '%, 0, 0)'
-                    });
-                    follower.css({
-                        '-webkit-transition': '-webkit-transform 0.1s linear',
-                        '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
-                        'transition': 'transform 0.1s linear',
-                        'transform': 'translate3d(' + tx + '%, 0, 0)'
-                    });
-                });
-                $timeout(function () {
-                    item.css({
-                        '-webkit-transition': 'none',
-                        '-webkit-transform': '',
-                        'transition': 'none',
-                        'transform': ''
-                    });
-                    follower.css({
-                        '-webkit-transition': 'none',
-                        '-webkit-transform': '',
-                        'transition': 'none',
-                        'transform': ''
-                    });
-                    // execute the callback fn.
-                    callback.success();
-                }, 150);
-                return callback;
+                }, emptyEvents));
             }
 
             // Sets active item, leftItem, rightItem by removing / adding respective classes.
@@ -422,9 +359,8 @@ WM.module('wm.widgets.advanced')
                                 widgetProps.currentslide.show = false;
                             }
                             //function for slide  to move to a specific slide index
-                            $is.goTo = function (index, direction) {
-                                var ltr,
-                                    oldElement,
+                            $is.goTo = function (index) {
+                                var oldElement,
                                     newElement,
                                     oldIndex,
                                     content = $el.find('.carousel-inner'),
@@ -453,22 +389,13 @@ WM.module('wm.widgets.advanced')
                                 } else if (index !== $is.activeIndex && !isMoving) {
                                     isMoving = true;
                                     $is.stop();
-                                    if (direction === 'next') {
-                                        ltr = false;
-                                    } else if (direction === 'prev') {
-                                        ltr = true;
-                                    } else if (_.isBoolean(direction)) {
-                                        ltr = direction;
-                                    }
 
-                                    if (WM.isUndefined(ltr)) {
-                                        ltr = $is.activeIndex > index;
-                                    }
-                                    animate(items, $is.activeIndex, index, ltr).then(function () {
-                                        setActiveItem(items, oldIndex, index);
-                                        isMoving = false;
-                                    });
+                                    setActiveItem(items, oldIndex, index);
+                                    isMoving = false;
+
                                     $is.activeIndex  = index;
+                                    $is.$root.$safeApply($is);
+
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
@@ -481,16 +408,18 @@ WM.module('wm.widgets.advanced')
 
                             //function to move to next slide
                             $is.next = function () {
-                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
-                                    $is.goTo($is.activeIndex + 1, 'next');
-                                }
+                                var content = $el.find('.carousel-inner');
+                                content.swipeAnimation('gotoLower');
+
+                                $is.goTo($is.activeIndex + 1);
                             };
 
                             //function to move to previous slide
                             $is.prev = function () {
-                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
-                                    $is.goTo($is.activeIndex - 1, 'prev');
-                                }
+                                var content = $el.find('.carousel-inner');
+                                content.swipeAnimation('gotoUpper');
+
+                                $is.goTo($is.activeIndex - 1);
                             };
 
                             //function to move to first slide
@@ -568,11 +497,9 @@ WM.module('wm.widgets.advanced')
                             }
                         }
 
-                        // add swipe functionality on element for mobile device.
-                        if ($is.gestures === 'on' && Utils.isMobile()) {
-                            $el.addClass('swipee-carousel');
-                            addSwipee($is, content);
-                        }
+                        // add swipe functionality on element.
+                        $el.addClass('swipee-carousel');
+                        addSwipe($is, content);
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
@@ -690,7 +617,6 @@ WM.module('wm.widgets.advanced')
  * @requires PropertiesFactory
  * @requires $templateCache
  * @requires CONSTANTS
- * @requires $timeout
  * @requires WidgetUtilService
  * @requires $compile
  * @requires Utils
