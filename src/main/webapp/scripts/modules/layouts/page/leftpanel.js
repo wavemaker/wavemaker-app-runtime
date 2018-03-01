@@ -24,7 +24,8 @@ WM.module('wm.layouts.page')
             $el.css({
                 'transform': '',
                 'opacity': '',
-                'z-index': ''
+                'z-index': '',
+                'width': ''
             });
         }
 
@@ -52,6 +53,26 @@ WM.module('wm.layouts.page')
                         }
                     }];
                 $transitionEls = $transitionEls.add(state.pageContainer);
+
+                if ($rootScope.isTabletApplicationType) {
+                    styles = [
+                        {
+                            'target': state.leftPanel,
+                            'css': {
+                                'transform': 'translate3d(${{ limit(-100, -($d * 100 / leftW), 0) + \'%\' }}, 0, 0)'
+                            }
+                        },
+                        {
+                            'target': state.pageContainer,
+                            'css': {
+                                'transform': 'translate3d(${{ (($d) * 100 / pageW) + \'%\' }}, 0, 0)',
+                                'width': '${{ (pageW - $d) + \'px\' }}',
+                                'z-index': 101
+                            }
+                        }
+                    ];
+                }
+
             } else {
                 styles = {
                     'transform': 'translate3d(${{ limit( -100, ((($D + $d) * 100 / w) - 100), 0 ) + \'%\'}}, 0, 0)',
@@ -65,6 +86,7 @@ WM.module('wm.layouts.page')
                 'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'bounds': function () {
+                    var offset = 0;
                     if (!state.width) {
                         state.pageContainerWidth = state.pageContainer.width();
                         state.leftPanelWidth = state.leftPanel.width();
@@ -77,17 +99,22 @@ WM.module('wm.layouts.page')
                     if (state.isExpanded) {
                         return {
                             'center': state.leftPanelWidth,
-                            'lower': -state.leftPanelWidth
+                            'lower': -(state.leftPanelWidth - offset)
                         };
+                    }
+                    if ($rootScope.isTabletApplicationType) {
+                        offset = 53.32;
                     }
                     return {
                         'center': 0,
-                        'upper': state.leftPanelWidth
+                        'upper': state.leftPanelWidth - offset
                     };
                 },
                 'context': function () {
                     return {
                         'w': state.width,
+                        'pageW': state.pageContainerWidth,
+                        'leftW': state.leftPanelWidth,
                         'maxX': state.maxX,
                         'limit': function (min, v, max) {
                             if (v < min) {

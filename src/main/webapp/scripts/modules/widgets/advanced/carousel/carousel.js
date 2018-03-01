@@ -230,7 +230,7 @@ WM.module('wm.widgets.advanced')
             }
 
             // Adds swipe functionality on the element.
-            function addSwipe($scope, $ele) {
+            function addSwipee($scope, $ele) {
                 var emptyEvents = {},
                     state = {
                         'activeItem': '',
@@ -408,18 +408,14 @@ WM.module('wm.widgets.advanced')
 
                             //function to move to next slide
                             $is.next = function () {
-                                var content = $el.find('.carousel-inner');
+                                var content = $el.find('>.carousel-inner');
                                 content.swipeAnimation('gotoLower');
-
-                                $is.goTo($is.activeIndex + 1);
                             };
 
                             //function to move to previous slide
                             $is.prev = function () {
-                                var content = $el.find('.carousel-inner');
+                                var content = $el.find('>.carousel-inner');
                                 content.swipeAnimation('gotoUpper');
-
-                                $is.goTo($is.activeIndex - 1);
                             };
 
                             //function to move to first slide
@@ -498,8 +494,7 @@ WM.module('wm.widgets.advanced')
                         }
 
                         // add swipe functionality on element.
-                        $el.addClass('swipee-carousel');
-                        addSwipe($is, content);
+                        addSwipee($is, content);
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
