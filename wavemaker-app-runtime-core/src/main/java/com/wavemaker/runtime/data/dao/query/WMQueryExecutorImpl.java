@@ -152,6 +152,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     private Pageable getValidPageable(final Pageable pageable) {
-        return pageable == null ? new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE) : pageable;
+        return pageable == null ? PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE) : pageable;
     }
 }

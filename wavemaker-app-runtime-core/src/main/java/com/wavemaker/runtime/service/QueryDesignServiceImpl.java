@@ -57,7 +57,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
                 }
             });
         } else {
-            meta = testRunQuery(serviceId, query, new PageRequest(0, 5, null)).getReturnProperties();
+            meta = testRunQuery(serviceId, query, PageRequest.of(0, 5, null)).getReturnProperties();
         }
 
         return meta;

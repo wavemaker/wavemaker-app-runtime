@@ -91,7 +91,7 @@ public abstract class CriteriaUtils {
         if (pageable == null) {
             throw new RuntimeException("Pageable object cannot be null");
         }
-        criteria.setFirstResult(pageable.getOffset());
+        criteria.setFirstResult((int) pageable.getOffset());
         criteria.setMaxResults(pageable.getPageSize());
         if (pageable.getSort() != null) {
             for (final Sort.Order order : pageable.getSort()) {

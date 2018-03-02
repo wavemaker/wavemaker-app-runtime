@@ -59,7 +59,7 @@ public class HQLQueryUtils {
         Query hqlQuery = session.createQuery(queryInfo.getQuery());
 
         if (pageable != null) {
-            hqlQuery.setFirstResult(pageable.getOffset());
+            hqlQuery.setFirstResult((int) pageable.getOffset());
             hqlQuery.setMaxResults(pageable.getPageSize());
         }
         return new Tuple.Two<>(hqlQuery, queryInfo.getParameters());

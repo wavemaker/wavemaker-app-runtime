@@ -55,7 +55,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
     private static final String DEFAULT_PREFIX = "";
     private static final String DEFAULT_QUALIFIER_DELIMITER = "_";
     private static final int DEFAULT_MAX_PAGE_SIZE = 2000;
-    static final Pageable DEFAULT_PAGE_REQUEST = new PageRequest(0, 20);
+    static final Pageable DEFAULT_PAGE_REQUEST = PageRequest.of(0, 20);
 
     private Pageable fallbackPageable = DEFAULT_PAGE_REQUEST;
     private SortHandlerMethodArgumentResolver sortResolver;
@@ -256,7 +256,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
         // Default if necessary and default configured
         sort = sort == null && defaultOrFallback != null ? defaultOrFallback.getSort() : sort;
 
-        return new PageRequest(page, pageSize, sort);
+        return PageRequest.of(page, pageSize, sort);
     }
 
     /**
@@ -301,10 +301,10 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
         }
 
         if (defaults.sort().length == 0) {
-            return new PageRequest(defaultPageNumber, defaultPageSize);
+            return PageRequest.of(defaultPageNumber, defaultPageSize);
         }
 
-        return new PageRequest(defaultPageNumber, defaultPageSize, defaults.direction(), defaults.sort());
+        return PageRequest.of(defaultPageNumber, defaultPageSize, defaults.direction(), defaults.sort());
     }
 
     /**
