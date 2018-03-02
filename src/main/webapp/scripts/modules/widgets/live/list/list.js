@@ -459,7 +459,8 @@ WM.module('wm.widgets.live')
                     addListElements(_s, $el, $is, attrs, listCtrl);
                     if ($is.collapsible && _s.groupedData.length) {
                         // on groupby header click, collapse or expand the list-items.
-                        $el.on('click', 'li.app-list-item-header', function (e) {
+                        // Turn off the click event on header if already exists.
+                        $el.off('click', 'li.app-list-item-header').on('click', 'li.app-list-item-header', function (e) {
                             var selectedGroup   = WM.element(e.target).closest('.list-group'),
                                 selectedAppIcon = selectedGroup.find('li.app-list-item-header').find('.app-icon');
 
