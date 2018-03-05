@@ -45,7 +45,7 @@
 
         <guava.version>18.0</guava.version>
 
-        <fasterxml.json.version>2.9.4</fasterxml.json.version>
+        <fasterxml.json.version>2.6.3</fasterxml.json.version>
         <wm.jackson.databind.version>2.6.3.wm-1</wm.jackson.databind.version>
         <mimemagic.version>0.1.5</mimemagic.version>
 
