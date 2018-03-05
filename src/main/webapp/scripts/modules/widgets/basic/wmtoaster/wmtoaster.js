@@ -193,14 +193,19 @@ WM.module('wm.widgets.basic')
              * @param {method} onClickHandler handles the method of click on notification
              * @param {method} onHideCallback handles the method on hide of notification
              */
-            createCustomNotification: function (content, className, timeout, position, onClickHandler, onHideCallback, pScope) {
+            createCustomNotification: function (content, className, dataset, timeout, position, onClickHandler, onHideCallback, pScope) {
                 var templateUrl;
+                dataset = dataset || [];
                 if (toasterTemplates[content]) {
                     templateUrl = 'toasterTemplates/' + content;
                     renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
                 } else {
                     try { //might throw an error
-                        toasterTemplates[content] = '<wm-container content="' + content + '"></wm-container>';
+                        var templateContent = $('<wm-container content="' + content + '"></wm-container>');
+                        dataset.forEach(function (param) {
+                            templateContent.append('<wm-param name="' + param.target + '" value="' + param.value + '" type="' + param.type + '"></wm-param>');
+                        });
+                        toasterTemplates[content] = templateContent[0].outerHTML;
                         templateUrl = 'toasterTemplates/' + content;
                         $tc.put(templateUrl, toasterTemplates[content]);
                         renderNotification(templateUrl, className, timeout, position, onClickHandler, onHideCallback, pScope);
