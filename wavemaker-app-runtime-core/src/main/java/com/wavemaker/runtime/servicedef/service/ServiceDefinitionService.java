@@ -245,7 +245,9 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
             executor = Executors.newFixedThreadPool(2);
             loadServiceDefinitions(executor);
         } finally {
-            executor.shutdown();
+            if(executor != null) {
+                executor.shutdown();
+            }
         }
     }
 

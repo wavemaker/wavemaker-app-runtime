@@ -207,8 +207,9 @@ public class SecurityService {
         if (wmUserDetails != null) {
             return wmUserDetails.getUsername();
         }
-        if (getAuthenticatedAuthentication() != null) {
-            return getAuthenticatedAuthentication().getName();
+        final Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            return authentication.getName();
         }
         return null;
     }
@@ -223,8 +224,9 @@ public class SecurityService {
         if (wmUserDetails != null) {
             return wmUserDetails.getUserId();
         }
-        if (getAuthenticatedAuthentication() != null) {
-            return getAuthenticatedAuthentication().getName();
+        final Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            return authentication.getName();
         }
         return null;
     }

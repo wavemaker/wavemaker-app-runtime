@@ -40,6 +40,8 @@ public class ImageUtils {
 
     private static final int EMU_PER_MM = 36000;
 
+    private ImageUtils() {}
+
     public static void addImageToSheet(byte[] image, Cell cell) throws IOException, IllegalArgumentException {
         final Row row = cell.getRow();
         final Sheet sheet = row.getSheet(); // we always provide XSSFSheet
@@ -52,11 +54,13 @@ public class ImageUtils {
         ImageUnitsConverter.ClientAnchorDetail rowClientAnchorDetail = fitImageToRows(sheet, row.getRowNum(),
                 reqImageHeightMM, resizeBehaviour);
 
-        ClientAnchor anchor = getClientAnchor(sheet, colClientAnchorDetail, rowClientAnchorDetail);
+        if(colClientAnchorDetail != null && rowClientAnchorDetail != null) {
+            ClientAnchor anchor = getClientAnchor(sheet, colClientAnchorDetail, rowClientAnchorDetail);
 
-        int index = sheet.getWorkbook().addPicture(image, Workbook.PICTURE_TYPE_JPEG);
-        final Drawing drawing = sheet.createDrawingPatriarch();
-        drawing.createPicture(anchor, index);
+            int index = sheet.getWorkbook().addPicture(image, Workbook.PICTURE_TYPE_JPEG);
+            final Drawing drawing = sheet.createDrawingPatriarch();
+            drawing.createPicture(anchor, index);
+        }
     }
 
     private static ImageUnitsConverter.ClientAnchorDetail fitImageToColumns(
