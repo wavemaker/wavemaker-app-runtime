@@ -1,4 +1,6 @@
 # WaveMaker App Runtime
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fwavemaker%2Fwavemaker-app-runtime.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fwavemaker%2Fwavemaker-app-runtime?ref=badge_shield)
+
 
 WaveMaker App Runtime is an application library packaged within every app built by WaveMaker RAD platform. App Runtime is open sourced under Apache 2.0 License, giving complete rights to App Developers to freely modify and distribute applications built using WaveMaker.
 
@@ -36,3 +38,6 @@ http://www.wavemaker.com/learn/app-development/widgets/widget-library/#mobile
  
 ## Licensing
 WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [License](/LICENSE) for full license text.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fwavemaker%2Fwavemaker-app-runtime.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fwavemaker%2Fwavemaker-app-runtime?ref=badge_large)
