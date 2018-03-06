@@ -92,7 +92,8 @@ public class LoadKeyStore {
                 if (MetadataSource.URL.name().equals(idpMetadatSource) && StringUtils.isNotBlank(idpMetadataUrl)) {
                     idpPublicKey = loadSAMLIdpMetadataFromUrl(idpMetadataUrl,
                             new File(getFileURI("/saml/metadata/" + SAMLConstants.IDP_METADATA_XML)).getAbsolutePath());
-                } else if (MetadataSource.FILE.name().equals(idpMetadatSource) && StringUtils.isNotBlank(idpMetadataFile)){
+                } else if (MetadataSource.FILE.name().equals(idpMetadatSource) && StringUtils
+                        .isNotBlank(idpMetadataFile)) {
                     idpPublicKey = loadSAMLIdpMetadataFromFile(idpMetadataFile);
                 }
                 if (idpPublicKey == null) {
@@ -143,7 +144,7 @@ public class LoadKeyStore {
         return readMetadataFile(idpMetadataFile);
     }
 
-    private String readMetadataFile(File idpMetadataFile){
+    private String readMetadataFile(File idpMetadataFile) {
         XMLObject metadata = null;
         FilesystemMetadataProvider fileSystemMetadataProvider = null;
         try {
@@ -157,13 +158,15 @@ public class LoadKeyStore {
             if (fileSystemMetadataProvider != null)
                 fileSystemMetadataProvider.destroy();
         }
-        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata).getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
+        final IDPSSODescriptor idpssoDescriptor = ((EntityDescriptorImpl) metadata)
+                .getIDPSSODescriptor(SAMLConstants.SAML_2_0_PROTOCOL);
         final List<KeyDescriptor> keyDescriptors = idpssoDescriptor.getKeyDescriptors();
         for (KeyDescriptor keyDescriptor : keyDescriptors) {
             if (UsageType.SIGNING == keyDescriptor.getUse()) {
                 final KeyInfo keyInfo = keyDescriptor.getKeyInfo();
                 final X509Data x509Data = keyInfo.getX509Datas().get(0);
-                final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates().get(0);
+                final org.opensaml.xml.signature.X509Certificate x509Certificate = x509Data.getX509Certificates()
+                        .get(0);
                 return com.wavemaker.commons.util.StringUtils.removeLineFeed(x509Certificate.getValue());
             }
         }
@@ -214,7 +217,7 @@ public class LoadKeyStore {
         }
     }
 
-    private URI getFileURI(String filePath){
+    private URI getFileURI(String filePath) {
         final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = contextClassLoader.getResource(filePath);
         URI uri = null;
@@ -222,9 +225,7 @@ public class LoadKeyStore {
             uri = resource.toURI();
             return uri;
         } catch (URISyntaxException e) {
-           new WMRuntimeException("File not found", e);
+            throw new WMRuntimeException("File not found", e);
         }
-        return uri;
     }
-
 }
