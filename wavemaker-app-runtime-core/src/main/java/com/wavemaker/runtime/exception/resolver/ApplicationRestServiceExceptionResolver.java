@@ -195,7 +195,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             }
             return getModelAndView(errorResponseList);
         } else {
-            return getModelAndView(Collections.EMPTY_LIST);
+            return getModelAndView(Collections.emptyList());
         }
     }
 

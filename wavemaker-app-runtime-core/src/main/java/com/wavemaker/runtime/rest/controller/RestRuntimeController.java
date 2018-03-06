@@ -49,13 +49,12 @@ public class RestRuntimeController {
         }
 
         try {
+
             restRuntimeService.executeRestCall(serviceId, operationId, httpServletRequest, httpServletResponse);
+        }catch (WMRuntimeException e) {
+            throw e;
         } catch (Throwable e) {
-            if (e instanceof WMRuntimeException) {
-                throw e;
-            } else {
-                throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);
-            }
+            throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, e);
         }
     }
 }

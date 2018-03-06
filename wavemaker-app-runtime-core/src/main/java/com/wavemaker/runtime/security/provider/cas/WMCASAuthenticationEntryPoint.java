@@ -45,6 +45,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
     @Qualifier("casServiceProperties")
     private ServiceProperties serviceProperties;
 
+    @Override
     protected String createServiceUrl(HttpServletRequest request, HttpServletResponse response) {
         if (serviceProperties.getService().equals("/")) {
             String serviceUrl = HttpRequestUtils.getServiceUrl(request);
@@ -64,6 +65,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
                 this.serviceProperties.getArtifactParameter(), true);
     }
 
+    @Override
     public final void commence(final HttpServletRequest servletRequest, final HttpServletResponse response,
                                final AuthenticationException authenticationException) throws IOException, ServletException {
         if (HttpRequestUtils.isAjaxRequest(servletRequest)) {

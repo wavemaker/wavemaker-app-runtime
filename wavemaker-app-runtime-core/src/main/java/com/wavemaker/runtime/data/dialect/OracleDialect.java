@@ -37,6 +37,7 @@ public class OracleDialect extends org.hibernate.dialect.OracleDialect {
         registerHibernateType( CommonConstants.TIMESTAMP_WITH_LOCAL_TIMEZONE_SQL_CODE, StandardBasicTypes.TIMESTAMP.getName() );
     }
 
+    @Override
     protected SqlTypeDescriptor getSqlTypeDescriptorOverride(int sqlCode) {
         SqlTypeDescriptor sqlTypeDescriptor = super.getSqlTypeDescriptorOverride(sqlCode);
         if(sqlCode == Types.BOOLEAN) {

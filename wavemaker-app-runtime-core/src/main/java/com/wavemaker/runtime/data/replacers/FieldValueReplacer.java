@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.replacers;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -24,7 +25,7 @@ import com.wavemaker.commons.WMRuntimeException;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/6/16
  */
-public class FieldValueReplacer {
+public class FieldValueReplacer implements Serializable {
 
     private final PropertyDescriptor descriptor;
     private final ValueProvider provider;

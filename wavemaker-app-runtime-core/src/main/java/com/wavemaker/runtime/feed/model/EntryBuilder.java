@@ -24,6 +24,8 @@ import com.sun.syndication.feed.synd.SyndEntry;
  */
 public class EntryBuilder {
 
+    private EntryBuilder(){}
+
     public static Entry getEntry(SyndEntry syndEntry) {
         Entry entry = new Entry();
         entry.setAuthor(syndEntry.getAuthor());

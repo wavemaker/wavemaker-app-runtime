@@ -31,6 +31,8 @@ import com.wavemaker.runtime.rest.model.HttpResponseDetails;
  */
 public class HttpResponseUtils {
 
+    private HttpResponseUtils(){}
+
     private static final String SET_COOKIE_HEADER="Set-Cookie";
 
     public static List<HttpCookie> getCookies(HttpResponseDetails httpResponseDetails) {

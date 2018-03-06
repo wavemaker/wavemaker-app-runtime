@@ -41,6 +41,7 @@ public class HttpRequestDetails {
     
     private boolean redirectEnabled = true;
 
+    //Needed for jackson deserialization
     public HttpRequestDetails() {
     }
 

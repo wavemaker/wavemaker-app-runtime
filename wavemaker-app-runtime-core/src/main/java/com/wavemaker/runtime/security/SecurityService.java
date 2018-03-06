@@ -311,7 +311,7 @@ public class SecurityService {
 
     public List<String> getRoles() {
         RolesConfig rolesConfig = wmAppSecurityConfig.getRolesConfig();
-        return (rolesConfig == null) ? Collections.EMPTY_LIST : new ArrayList<>(rolesConfig.getRoleMap().keySet());
+        return (rolesConfig == null) ? Collections.emptyList() : new ArrayList<>(rolesConfig.getRoleMap().keySet());
     }
 
     public SecurityInfo getSecurityInfo() {

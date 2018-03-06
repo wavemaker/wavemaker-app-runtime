@@ -43,6 +43,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.model.security.CSRFConfig;
@@ -67,8 +68,7 @@ public class HttpRequestUtils {
         String contextPath = request.getContextPath();
 
         String serviceHostUrl = requestURL.substring(0, requestURL.lastIndexOf(contextPath));
-        String serviceUrl = serviceHostUrl + contextPath;
-        return serviceUrl;
+        return serviceHostUrl + contextPath;
     }
     
     public static void writeResponse(HttpResponseDetails httpResponseDetails, HttpServletResponse httpServletResponse) throws IOException {
@@ -103,14 +103,14 @@ public class HttpRequestUtils {
 
     public static Message getJsonMessage(Object body) {
         if (body == null || "".equals(body)) {
-            throw new RuntimeException("object cannot be empty");
+            throw new WMRuntimeException("object cannot be empty");
         }
         Message message = new Message();
         message.setHttpHeaders(new HttpHeaders());
         try {
             message.setInputStream(org.apache.commons.io.IOUtils.toInputStream(JSONUtils.toJSON(body)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WMRuntimeException(e);
         }
         return message;
     }

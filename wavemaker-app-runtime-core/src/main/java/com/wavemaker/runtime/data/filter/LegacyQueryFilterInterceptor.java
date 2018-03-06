@@ -55,6 +55,7 @@ public class LegacyQueryFilterInterceptor implements QueryInterceptor {
                 case CONTAINING:
                     value = WILDCARD_ENTRY + matcher.group(VALUE) + WILDCARD_ENTRY;
                     break;
+                default:
             }
             matcher.appendReplacement(hqlQuery, matcher.group(FIELD_NAME) + " like " + "'" + value + "'");
         }

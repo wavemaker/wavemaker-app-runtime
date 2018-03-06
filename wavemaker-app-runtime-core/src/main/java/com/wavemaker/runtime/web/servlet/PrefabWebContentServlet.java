@@ -37,7 +37,7 @@ public class PrefabWebContentServlet extends HttpServlet {
             prefabResourcePath = prefabResourcePath.substring(1);
         }
 
-        int endIndex = prefabResourcePath.indexOf("/");
+        int endIndex = prefabResourcePath.indexOf('/');
         if (endIndex == -1) {
             writeErrorResponse(request, response, prefabResourcePath);
             return;

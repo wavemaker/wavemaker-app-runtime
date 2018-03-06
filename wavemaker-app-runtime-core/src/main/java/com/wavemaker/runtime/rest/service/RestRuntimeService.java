@@ -72,7 +72,7 @@ public class RestRuntimeService {
         return new RestConnector().invokeRestCall(httpRequestDetails);
     }
 
-    public void executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+    public void executeRestCall(String serviceId, String operationId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         HttpRequestData httpRequestData = constructRequestData(httpServletRequest);
         HttpRequestDataProcessorContext httpRequestDataProcessorContext = new HttpRequestDataProcessorContext(httpServletRequest, httpRequestData);
         List<HttpRequestDataProcessor> httpRequestDataProcessors = restRuntimeServiceCacheHelper.getHttpRequestDataProcessors(serviceId);
@@ -85,7 +85,7 @@ public class RestRuntimeService {
     }
 
     public void executeRestCall(String serviceId, String operationId, final HttpRequestData httpRequestData,
-                                final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) throws IOException {
+                                final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final String context) {
         HttpRequestDetails httpRequestDetails = constructHttpRequest(serviceId, operationId, httpRequestData);
         HttpRequestProcessorContext httpRequestProcessorContext = new HttpRequestProcessorContext(httpServletRequest, httpRequestDetails, httpRequestData);
         final RestRuntimeConfig restRuntimeConfig = restRuntimeServiceCacheHelper.getAppRuntimeConfig(serviceId);
@@ -190,8 +190,7 @@ public class RestRuntimeService {
         updateUrlWithQueryParameters(sb, queryParameters);
 
         StrSubstitutor strSubstitutor = new StrSubstitutor(pathParameters, "{", "}");
-        String endpointAddress = strSubstitutor.replace(sb.toString());
-        return endpointAddress;
+        return strSubstitutor.replace(sb.toString());
     }
 
     private void updateUrlWithQueryParameters(StringBuilder endpointAddressSb, Map<String, Object> queryParameters) {

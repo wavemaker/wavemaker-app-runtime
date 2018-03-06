@@ -262,8 +262,8 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadServiceDefinitions(ExecutorService executor) {
-        executor.execute(() -> loadServiceDefinitions());
-        executor.execute(() -> loadPrefabsServiceDefinitions());
+        executor.execute(this::loadServiceDefinitions);
+        executor.execute(this::loadPrefabsServiceDefinitions);
     }
 
 }

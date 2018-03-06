@@ -84,6 +84,7 @@ public class SSLSecureFilter extends GenericFilterBean {
         }
     }
 
+    @Override
     public void destroy() {
     }
 }

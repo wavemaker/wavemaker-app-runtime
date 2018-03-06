@@ -40,6 +40,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.HttpRequestUtils;
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
@@ -147,7 +148,7 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
         try {
             token = getQueryParamValue(request, wmTokenBasedAuthenticationService.getParameter());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new WMRuntimeException(e);
         }
 
         //extracting token from header

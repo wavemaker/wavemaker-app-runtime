@@ -84,10 +84,7 @@ public class XSSSecurityHandler {
     }
 
     private boolean matches(HttpServletRequest httpServletRequest, Pattern allowedMethods) {
-        if (allowedMethods.matcher(httpServletRequest.getMethod()).matches()) {
-            return false;
-        }
-        return true;
+        return !allowedMethods.matcher(httpServletRequest.getMethod()).matches();
     }
 
     private void initConfiguration() {

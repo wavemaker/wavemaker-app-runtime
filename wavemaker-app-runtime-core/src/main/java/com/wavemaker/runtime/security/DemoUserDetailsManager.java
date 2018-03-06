@@ -29,7 +29,7 @@ import com.wavemaker.commons.util.SystemUtils;
 public class DemoUserDetailsManager extends InMemoryUserDetailsManager {
 
     public DemoUserDetailsManager() {
-        super(Collections.EMPTY_LIST);
+        super(Collections.emptyList());
     }
 
     @Override

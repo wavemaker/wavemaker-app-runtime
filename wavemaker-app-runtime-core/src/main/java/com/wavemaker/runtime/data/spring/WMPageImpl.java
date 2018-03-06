@@ -33,6 +33,8 @@ public class WMPageImpl<T> extends PageImpl {
     public WMPageImpl(List content) {
         super(content);
     }
+
+    @Override
     public String toString(){
 
         String contentType = "UNKNOWN";

@@ -27,7 +27,7 @@ public class SystemPropertyInitiliazingBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         if (MapUtils.isNotEmpty(this.systemProperties)) {
-            systemProperties.forEach((key, value)->System.setProperty(key, value));
+            systemProperties.forEach(System::setProperty);
         }
     }
 

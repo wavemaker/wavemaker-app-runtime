@@ -49,6 +49,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         super();
     }
 
+    @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException,
             ServletException {
@@ -106,7 +107,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
         String targetUrl = super.determineTargetUrl(request, response);
         String redirectPage = request.getParameter("redirectPage");
         if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(targetUrl) && !StringUtils
-                .containsAny(targetUrl, new char[]{'#', '?'}) && StringUtils.endsWith(targetUrl, "/")) {
+                .containsAny(targetUrl, '#', '?') && StringUtils.endsWith(targetUrl, "/")) {
             targetUrl += "#" + redirectPage;
         }
         return targetUrl;

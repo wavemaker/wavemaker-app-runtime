@@ -42,6 +42,7 @@ public class WMSingleLogoutProfileImpl extends SingleLogoutProfileImpl {
     @Autowired
     private WebSSOProfileOptions webSSOProfileOptions;
 
+    @Override
     public void sendLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException, MetadataProviderException, MessageEncodingException {
         if (SAMLConfig.ValidateType.RELAXED == samlConfig.getValidateType()) {
             // setting appruntimePath only in the case of DEV mode.

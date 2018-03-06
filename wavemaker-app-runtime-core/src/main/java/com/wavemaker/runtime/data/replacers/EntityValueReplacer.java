@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.replacers;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ import java.util.Map;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 16/6/16
  */
-public class EntityValueReplacer {
+public class EntityValueReplacer implements Serializable {
 
     private final Map<String, PropertyDescriptor> propertyDescriptorMap;
     private final Map<Scope, List<FieldValueReplacer>> phaseVsOverridersMap;

@@ -94,7 +94,7 @@ public class WMSAMLEntryPoint extends SAMLEntryPoint {
 
             String redirectPage = request.getParameter("redirectPage");
             if (StringUtils.isNotEmpty(redirectPage) && StringUtils.isNotEmpty(appUrl) && !StringUtils
-                    .containsAny(appUrl, new char[]{'#', '?'})) {
+                    .containsAny(appUrl, '#', '?')) {
                 appUrl = appUrl.concat("#").concat(redirectPage);
             }
             profileOptions.setRelayState(appUrl);

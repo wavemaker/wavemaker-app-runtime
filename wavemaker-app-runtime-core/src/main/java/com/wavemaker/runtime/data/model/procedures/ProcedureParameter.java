@@ -28,6 +28,7 @@ public class ProcedureParameter extends QueryParameter {
     @NotNull
     private ProcedureParameterType parameterType;
 
+    // Needed for jackson deserialization
     public ProcedureParameter() {
     }
 

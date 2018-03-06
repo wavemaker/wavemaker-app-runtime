@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 
 
@@ -152,7 +153,7 @@ public class FileServiceManager {
      * This method is deprecated, instead use the method {@link FileServiceManager#deleteFile(String, String, File)}
      */
     @Deprecated
-    public boolean deleteFile(String file, File uploadDirectory) throws IOException {
+    public boolean deleteFile(String file, File uploadDirectory)  {
         return deleteFile(file, null, uploadDirectory);
     }
 
@@ -166,7 +167,7 @@ public class FileServiceManager {
      * RETURNS boolean to indicate if success or failure of operation.
      * **************************************************************************
      */
-    public boolean deleteFile(String file, String relativePath, File uploadDirectory) throws IOException {
+    public boolean deleteFile(String file, String relativePath, File uploadDirectory) {
         File relativeUploadDirectory = getRelativeUploadDirectory(uploadDirectory, relativePath);
 
         File f = (file.startsWith("/")) ? new File(file) : new File(relativeUploadDirectory, file);
@@ -174,7 +175,7 @@ public class FileServiceManager {
         // verify that the path specified by the server is a valid path, and not, say,
         // your operating system, or your .password file.
         if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0) {
-            throw new RuntimeException("Deletion of file at " + f.getAbsolutePath() + " is not allowed. ");
+            throw new WMRuntimeException("Deletion of file at " + f.getAbsolutePath() + " is not allowed. ");
         }
         return f.delete();
     }

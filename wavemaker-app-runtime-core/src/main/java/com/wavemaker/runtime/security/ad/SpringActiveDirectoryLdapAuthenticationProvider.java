@@ -143,7 +143,6 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     public SpringActiveDirectoryLdapAuthenticationProvider(String domain, String url, String rootDn) {
         Assert.isTrue(StringUtils.hasText(url), "Url cannot be empty");
         this.domain = StringUtils.hasText(domain) ? domain.toLowerCase() : null;
-        //this.url = StringUtils.hasText(url) ? url : null;
         this.url = url;
         if (!StringUtils.hasText(rootDn)) {
             this.rootDn = this.domain == null ? null : rootDnFromDomain(this.domain);
@@ -289,6 +288,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
                 return "User must reset password";
             case ACCOUNT_LOCKED:
                 return "Account locked";
+            default:
         }
 
         return "Unknown (error code " + Integer.toHexString(code) +")";

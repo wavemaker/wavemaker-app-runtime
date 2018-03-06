@@ -120,6 +120,8 @@ public class RestConnector {
         httpHeaders.putAll(httpRequestDetails.getHeaders());
 
         WMRestTemplate wmRestTemplate = new WMRestTemplate() {
+
+            @Override
             protected <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
                 return (responseExtractor != null) ? responseExtractor : super.responseEntityExtractor(responseType);
             }

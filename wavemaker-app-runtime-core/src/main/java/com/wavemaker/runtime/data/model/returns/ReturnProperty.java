@@ -37,8 +37,10 @@ public class ReturnProperty {
     @NotNull
     private FieldType fieldType;
 
+    //Needed for jackson deserialization
     public ReturnProperty() {
     }
+
 
     public ReturnProperty(final String name, final FieldType fieldType) {
         this.name = name;

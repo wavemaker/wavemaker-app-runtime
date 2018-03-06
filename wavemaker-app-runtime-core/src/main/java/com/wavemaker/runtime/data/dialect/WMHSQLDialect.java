@@ -30,6 +30,7 @@ public class WMHSQLDialect extends HSQLDialect {
      *
      * @return The dialect's specific open quote character.
      */
+    @Override
     public char openQuote() {
         return EMPTY_CHAR;
     }
@@ -39,6 +40,7 @@ public class WMHSQLDialect extends HSQLDialect {
      *
      * @return The dialect's specific close quote character.
      */
+    @Override
     public char closeQuote() {
         return EMPTY_CHAR;
     }

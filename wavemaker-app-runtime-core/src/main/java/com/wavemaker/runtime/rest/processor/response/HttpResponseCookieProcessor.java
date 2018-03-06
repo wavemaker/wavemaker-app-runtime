@@ -54,10 +54,10 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
                 break;
             case USER_SESSION:
                 persistInUserSession(httpResponseProcessorContext, httpServletRequest, cookies);
-                HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
+                HttpResponseUtils.setCookies(httpResponseDetails, Collections.emptyList());
                 break;
             case NONE:
-                HttpResponseUtils.setCookies(httpResponseDetails, Collections.EMPTY_LIST);
+                HttpResponseUtils.setCookies(httpResponseDetails, Collections.emptyList());
                 break;
             default:
                 throw new WMRuntimeException("Unknown strategyType");
@@ -90,7 +90,7 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
             try {
                 url = new URL(httpResponseProcessorContext.getHttpRequestDetails().getEndpointAddress());
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw new WMRuntimeException(e);
             }
             String host = url.getHost();
             for (HttpCookie httpCookie : cookies) {

@@ -170,6 +170,7 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
         return getTokenValiditySeconds();
     }
 
+    @Override
     public String getParameter() {
         return REMEMBER_ME_PARAMETER;
     }

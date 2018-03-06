@@ -27,6 +27,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.wavemaker.commons.WMRuntimeException;
+
 /**
  * This code is taken from org.apache.poi.ss.examples
  *
@@ -55,7 +57,7 @@ public class CSVConverterUtil {
             convertToCSV();
             toCSV(outputStream);
         } catch (Exception e) {
-            throw new RuntimeException("Error while exporting data to CSV format", e);
+            throw new WMRuntimeException("Error while exporting data to CSV format", e);
         }
     }
 
@@ -78,13 +80,13 @@ public class CSVConverterUtil {
     }
 
     private void toCSV(OutputStream outStream) throws IOException {
-        StringBuffer buffer;
+        StringBuilder buffer;
         ArrayList<String> line;
         OutputStreamWriter osWriter = new OutputStreamWriter(outStream);
         String csvLineElement;
         try {
             for (int i = 0; i < this.csvData.size(); i++) {
-                buffer = new StringBuffer();
+                buffer = new StringBuilder();
                 line = this.csvData.get(i);
                 for (int j = 0; j < this.maxRowWidth; j++) {
                     if (line.size() > j) {
@@ -112,21 +114,21 @@ public class CSVConverterUtil {
     }
 
     private String escapeEmbeddedCharacters(String field) {
-        StringBuffer buffer;
+        StringBuilder builder;
 
         if (field.contains("\"")) {
-            buffer = new StringBuffer(field.replaceAll("\"", "\\\"\\\""));
-            buffer.insert(0, "\"");
-            buffer.append("\"");
+            builder = new StringBuilder(field.replaceAll("\"", "\\\"\\\""));
+            builder.insert(0, "\"");
+            builder.append("\"");
         } else {
-            buffer = new StringBuffer(field);
-            if ((buffer.indexOf(this.separator)) > -1 ||
-                    (buffer.indexOf("\n")) > -1) {
-                buffer.insert(0, "\"");
-                buffer.append("\"");
+            builder = new StringBuilder(field);
+            if ((builder.indexOf(this.separator)) > -1 ||
+                    (builder.indexOf("\n")) > -1) {
+                builder.insert(0, "\"");
+                builder.append("\"");
             }
         }
-        return (buffer.toString().trim());
+        return (builder.toString().trim());
     }
 
 

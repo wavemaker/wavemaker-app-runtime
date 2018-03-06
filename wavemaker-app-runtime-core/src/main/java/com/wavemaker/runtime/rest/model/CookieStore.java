@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.rest.model;
 
+import java.io.Serializable;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.springframework.util.MultiValueMap;
 /**
  * Created by srujant on 5/6/17.
  */
-public class CookieStore {
+public class CookieStore implements Serializable {
 
     private MultiValueMap<String, HttpCookie> hostVsCookieList = new LinkedMultiValueMap<>();
 

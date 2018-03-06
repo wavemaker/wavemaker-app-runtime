@@ -37,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.dao.generators.EntityQueryGenerator;
 import com.wavemaker.runtime.data.dao.generators.SimpleEntitiyQueryGenerator;
 import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvider;
@@ -74,7 +75,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @PostConstruct
     public void init() {
         if (getTemplate() == null) {
-            throw new RuntimeException("hibernate template is not set.");
+            throw new WMRuntimeException("hibernate template is not set.");
         }
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();

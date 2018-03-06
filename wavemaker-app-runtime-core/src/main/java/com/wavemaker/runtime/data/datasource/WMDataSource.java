@@ -38,9 +38,6 @@ public class WMDataSource extends DelegatingDataSource {
     @Autowired
     private ApplicationContext context;
 
-    public WMDataSource() {
-    }
-
     public DataSourceType getDataSourceType() {
         return dataSourceType;
     }

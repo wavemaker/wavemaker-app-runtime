@@ -61,9 +61,7 @@ public class RequestDataBuilder {
 
     private MultiValueMap<String, String> getQueryParameters(HttpServletRequest httpServletRequest) throws URISyntaxException {
         String fullUrl = getFullURL(httpServletRequest);
-        MultiValueMap<String, String> queryParameters =
-                UriComponentsBuilder.fromUri(new URI(fullUrl)).build().getQueryParams();
-        return queryParameters;
+        return UriComponentsBuilder.fromUri(new URI(fullUrl)).build().getQueryParams();
     }
 
     private Map<String, String> getPathVariablesMap(HttpServletRequest httpServletRequest) {

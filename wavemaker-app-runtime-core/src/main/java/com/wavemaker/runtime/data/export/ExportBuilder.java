@@ -58,7 +58,7 @@ public class ExportBuilder {
             autoSizeAllColumns(workbook);
             return workbook;
         } catch (Exception e) {
-            throw new RuntimeException("Exception while building report", e);
+            throw new WMRuntimeException("Exception while building report", e);
         }
     }
 
