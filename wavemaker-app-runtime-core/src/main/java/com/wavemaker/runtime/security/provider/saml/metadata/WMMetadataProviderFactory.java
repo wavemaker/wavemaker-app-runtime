@@ -51,7 +51,7 @@ public class WMMetadataProviderFactory implements FactoryBean<AbstractMetadataPr
                 }
             }
         } catch (MetadataProviderException | URISyntaxException e) {
-            new WMRuntimeInitException("Failed to create MetadataProvider bean", e.getMessage(), e);
+            throw new WMRuntimeInitException("Failed to create MetadataProvider bean", e.getMessage(), e);
         }
 
         return null;

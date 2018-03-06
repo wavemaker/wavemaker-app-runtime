@@ -151,16 +151,15 @@ public class RestConnector {
 
 
     private CloseableHttpClient getHttpClient() {
-        if (defaultHttpClient == null) {
-            synchronized (RestConnector.class) {
-                if (defaultHttpClient == null) {
-                    defaultHttpClient = HttpClients.custom()
-                            .setDefaultCredentialsProvider(getCredentialProvider())
-                            .setConnectionManager(getConnectionManager())
-                            .build();
-                }
+        synchronized (RestConnector.class) {
+            if (defaultHttpClient == null) {
+                defaultHttpClient = HttpClients.custom()
+                        .setDefaultCredentialsProvider(getCredentialProvider())
+                        .setConnectionManager(getConnectionManager())
+                        .build();
             }
         }
+
         return defaultHttpClient;
     }
 

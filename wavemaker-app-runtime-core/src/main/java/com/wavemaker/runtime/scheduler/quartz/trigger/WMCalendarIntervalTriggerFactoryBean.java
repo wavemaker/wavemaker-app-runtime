@@ -141,7 +141,9 @@ public class WMCalendarIntervalTriggerFactoryBean implements FactoryBean<Calenda
         WMCalendarIntervalTriggerImpl calendarIntervalTriggerImpl = new WMCalendarIntervalTriggerImpl();
         calendarIntervalTriggerImpl.setName(name);
         calendarIntervalTriggerImpl.setGroup(group);
-        calendarIntervalTriggerImpl.setJobKey(jobDetail.getKey());
+        if(jobDetail != null) {
+            calendarIntervalTriggerImpl.setJobKey(jobDetail.getKey());
+        }
         calendarIntervalTriggerImpl.setJobDataMap(jobDataMap);
         calendarIntervalTriggerImpl.setStartTime(startTimestamp);
         calendarIntervalTriggerImpl.setRepeatCount(repeatCount);

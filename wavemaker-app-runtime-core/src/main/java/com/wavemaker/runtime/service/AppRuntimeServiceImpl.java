@@ -2,11 +2,8 @@ package com.wavemaker.runtime.service;
 
 import java.io.InputStream;
 import java.util.Properties;
-
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -24,11 +21,8 @@ import com.wavemaker.runtime.util.MultipartQueryUtils;
  */
 public class AppRuntimeServiceImpl implements AppRuntimeService {
 
-    private String applicationType = null;
     private static final String APP_PROPERTIES = ".wmproject.properties";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppRuntimeServiceImpl.class);
-
+    private String applicationType = null;
     @Autowired
     private QueryDesignService queryDesignService;
 
@@ -39,20 +33,20 @@ public class AppRuntimeServiceImpl implements AppRuntimeService {
     private AppFileSystem appFileSystem;
 
     public String getApplicationType() {
-        if (applicationType == null) {
-            synchronized (this) {
-                if (applicationType == null) {
-                    InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
-                    Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
-                    applicationType = properties.getProperty("type");
-                }
+
+        synchronized (this) {
+            if (applicationType == null) {
+                InputStream inputStream = appFileSystem.getClasspathResourceStream(APP_PROPERTIES);
+                Properties properties = PropertiesFileUtils.loadFromXml(inputStream);
+                applicationType = properties.getProperty("type");
             }
         }
         return applicationType;
     }
 
     @Override
-    public DesignServiceResponse testRunQuery(String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
+    public DesignServiceResponse testRunQuery(
+            String serviceId, MultipartHttpServletRequest request, Pageable pageable) {
         RuntimeQuery query = MultipartQueryUtils.readContent(request, RuntimeQuery.class);
         MultipartQueryUtils.setMultiparts(query.getParameters(), request.getMultiFileMap());
         return queryDesignService.testRunQuery(serviceId, query, pageable);

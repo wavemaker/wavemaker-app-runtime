@@ -137,7 +137,9 @@ public class WMCronTriggerFactoryBean implements FactoryBean<CronTrigger>, BeanN
         WMCronTriggerImpl wmCronTriggerImpl = new WMCronTriggerImpl();
         wmCronTriggerImpl.setName(name);
         wmCronTriggerImpl.setGroup(group);
-        wmCronTriggerImpl.setJobKey(jobDetail.getKey());
+        if(jobDetail != null) {
+            wmCronTriggerImpl.setJobKey(jobDetail.getKey());
+        }
         wmCronTriggerImpl.setJobDataMap(jobDataMap);
         wmCronTriggerImpl.setStartTime(startTimestamp);
         wmCronTriggerImpl.setCronExpression(cronExpression);

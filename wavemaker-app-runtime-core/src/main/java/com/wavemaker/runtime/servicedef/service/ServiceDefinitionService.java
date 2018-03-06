@@ -105,7 +105,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadServiceDefinitions() {
-        if (authExpressionVsServiceDefinitions == null) {
+
             synchronized (this) {
                 if (authExpressionVsServiceDefinitions == null) {
                     Map<String, ServiceDefinition> serviceDefinitionsCache = new HashMap<>();
@@ -131,7 +131,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                     });
                 }
             }
-        }
     }
 
     //TODO find a better way to fix it, read intercept urls from json instead of from spring xml
@@ -179,7 +178,7 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
     }
 
     private void loadPrefabsServiceDefinitions() {
-        if (prefabServiceDefinitionsCache == null) {
+
             synchronized (this) {
                 if (prefabServiceDefinitionsCache == null) {
                     final Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache = new HashMap<>();
@@ -189,7 +188,6 @@ public class ServiceDefinitionService implements ApplicationListener<PrefabsLoad
                     this.prefabServiceDefinitionsCache = prefabServiceDefinitionsCache;
                 }
             }
-        }
     }
 
     private synchronized void loadPrefabServiceDefs(final Prefab prefab, Map<String, Map<String, ServiceDefinition>> prefabServiceDefinitionsCache) {

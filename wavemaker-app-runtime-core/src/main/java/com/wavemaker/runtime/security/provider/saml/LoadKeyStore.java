@@ -85,7 +85,7 @@ public class LoadKeyStore {
                 try {
                     resourceAsStream = new FileInputStream(keyStoreFile);
                 } catch (FileNotFoundException e) {
-                    new WMRuntimeException("File" + keyStoreFileName + "not found", e);
+                    throw new WMRuntimeException("File" + keyStoreFileName + "not found", e);
                 }
                 final KeyStore keyStore = load(resourceAsStream, keyStorePassword);
                 String idpPublicKey = null;
@@ -214,7 +214,7 @@ public class LoadKeyStore {
         }
     }
 
-    private URI getFileURI(String filePath) {
+    private URI getFileURI(String filePath){
         final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = contextClassLoader.getResource(filePath);
         URI uri = null;
@@ -222,7 +222,7 @@ public class LoadKeyStore {
             uri = resource.toURI();
             return uri;
         } catch (URISyntaxException e) {
-            new WMRuntimeException("File not found", e);
+           new WMRuntimeException("File not found", e);
         }
         return uri;
     }
