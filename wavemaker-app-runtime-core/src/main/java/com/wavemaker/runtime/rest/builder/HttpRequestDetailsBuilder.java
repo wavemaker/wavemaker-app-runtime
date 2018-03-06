@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,18 @@ package com.wavemaker.runtime.rest.builder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.BasicScheme;
+import org.apache.http.HttpRequest;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.message.BasicHttpRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
 import com.wavemaker.runtime.rest.model.Message;
@@ -82,7 +87,13 @@ public class HttpRequestDetailsBuilder {
 
     public HttpRequestDetailsBuilder setBasicAuthorization(String username, String password) {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-        String authorization = BasicScheme.authenticate(credentials, "UTF-8");
+        HttpRequest httpRequest = new BasicHttpRequest(httpRequestDetails.getMethod(), httpRequestDetails.getEndpointAddress());
+        String authorization = null;
+        try {
+            authorization = new BasicScheme(Charset.forName("UTF-8")).authenticate(credentials, httpRequest, null).getValue();
+        } catch (AuthenticationException e) {
+            throw new WMRuntimeException(e);
+        }
         return setBasicAuthorization(authorization);
     }
 
@@ -92,7 +103,7 @@ public class HttpRequestDetailsBuilder {
     }
 
     public HttpRequestDetails build() {
-        if(requestBody!=null) {
+        if (requestBody != null) {
             InputStream inputStream;
             if (requestBody instanceof byte[]) {
                 inputStream = new ByteArrayInputStream((byte[]) requestBody);
@@ -105,7 +116,7 @@ public class HttpRequestDetailsBuilder {
                     message = HttpRequestUtils.getFormMessage((Map) requestBody);
                 } else if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(contentType)) {
                     message = HttpRequestUtils.getMultipartMessage((Map) requestBody);
-                } else{
+                } else {
                     throw new IllegalStateException();
                 }
                 inputStream = message.getInputStream();
@@ -113,7 +124,7 @@ public class HttpRequestDetailsBuilder {
                 Message message = HttpRequestUtils.getJsonMessage(requestBody);
                 inputStream = message.getInputStream();
             }
-            httpRequestDetails.setBody(inputStream);            
+            httpRequestDetails.setBody(inputStream);
         }
         return httpRequestDetails;
     }

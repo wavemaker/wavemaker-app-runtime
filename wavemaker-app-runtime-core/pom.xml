@@ -223,6 +223,12 @@
         <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>antisamy</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Provided -->
@@ -246,11 +252,6 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
         </dependency>
 
         <dependency>
