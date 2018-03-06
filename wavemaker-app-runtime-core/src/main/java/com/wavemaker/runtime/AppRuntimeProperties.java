@@ -26,6 +26,8 @@ import com.wavemaker.commons.util.WMIOUtils;
  */
 public class AppRuntimeProperties {
 
+    private AppRuntimeProperties(){}
+
 
     private static Properties properties;
 

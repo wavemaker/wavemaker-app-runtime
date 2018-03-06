@@ -17,10 +17,8 @@ package com.wavemaker.runtime.data.spring;
 
 import java.util.Properties;
 import java.util.UUID;
-
 import javax.servlet.ServletContext;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.EnvironmentAware;
@@ -31,14 +29,14 @@ import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.commons.util.StringUtils;
 import com.wavemaker.commons.util.SystemUtils;
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
 
 /**
  * @author Simon Toens
  */
-public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements EnvironmentAware, ServletContextAware {
+public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements EnvironmentAware,
+        ServletContextAware {
 
     private static final String RANDOM_STRING = "{randomStr}";
     private static final String TMP_DIR = "{tmpDir}";
@@ -69,12 +67,10 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
             return SystemUtils.decrypt(value);
         }
 
-        if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
-            if (servletContext != null) {
-                String path = servletContext.getRealPath("/");
-                if (!org.apache.commons.lang3.StringUtils.isBlank(path)) {
-                    value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
-                }
+        if (servletContext != null && value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
+            String path = servletContext.getRealPath("/");
+            if (!org.apache.commons.lang3.StringUtils.isBlank(path)) {
+                value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
             }
         }
 
@@ -105,7 +101,7 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
 
     @Override
     protected void processProperties(
-            final ConfigurableListableBeanFactory beanFactoryToProcess, final Properties props) throws BeansException {
+            final ConfigurableListableBeanFactory beanFactoryToProcess, final Properties props) {
         super.processProperties(beanFactoryToProcess, props);
 
         if (environment instanceof ConfigurableEnvironment) {

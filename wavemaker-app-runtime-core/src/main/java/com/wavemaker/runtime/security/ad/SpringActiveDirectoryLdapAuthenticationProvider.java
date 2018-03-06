@@ -125,12 +125,6 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
 
     private static final Logger logger = LoggerFactory.getLogger(SpringActiveDirectoryLdapAuthenticationProvider.class);
 
-    /**
-     * @param domain the domain for which authentication should take place
-     */
-//    public ActiveDirectoryLdapAuthenticationProvider(String domain) {
-//        this (domain, null);
-//    }
 
     /**
      * @param domain the domain name (may be null or empty)

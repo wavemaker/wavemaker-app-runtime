@@ -8,8 +8,6 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.StreamUtils;
 
 import com.wavemaker.commons.rest.WmFileSystemResource;
@@ -27,7 +25,8 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
     }
 
     @Override
-    protected WmFileSystemResource readInternal(Class<? extends WmFileSystemResource> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected WmFileSystemResource readInternal(
+            Class<? extends WmFileSystemResource> clazz, HttpInputMessage inputMessage) throws IOException {
         return null;
     }
 
@@ -43,7 +42,7 @@ public class WmFileSystemResourceConverter extends AbstractHttpMessageConverter<
 
     @Override
     protected void writeInternal(WmFileSystemResource wmFileSystemResource, HttpOutputMessage outputMessage)
-            throws IOException, HttpMessageNotWritableException {
+            throws IOException {
 
         InputStream in = wmFileSystemResource.getInputStream();
         try {

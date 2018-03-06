@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
@@ -37,7 +36,7 @@ public class WMSAMLDatabaseUserDetailsService implements SAMLUserDetailsService 
     }
 
     @Override
-    public Object loadUserBySAML(final SAMLCredential credential) throws UsernameNotFoundException {
+    public Object loadUserBySAML(final SAMLCredential credential) {
         String username = credential.getNameID().getValue();
         Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
 

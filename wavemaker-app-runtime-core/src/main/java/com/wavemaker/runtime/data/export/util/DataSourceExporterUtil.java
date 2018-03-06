@@ -30,6 +30,8 @@ import com.wavemaker.commons.WMRuntimeException;
  */
 public class DataSourceExporterUtil {
 
+    private DataSourceExporterUtil(){}
+
 
     public static ResultSet constructResultSet(ScrollableResults scroll) {
         try {

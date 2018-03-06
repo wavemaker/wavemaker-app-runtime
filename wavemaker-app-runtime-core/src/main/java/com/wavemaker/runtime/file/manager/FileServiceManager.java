@@ -104,11 +104,11 @@ public class FileServiceManager {
     public File createUniqueFile(String originalFileName, File dir) {
     /* Create a file object that does not point to an existing file.
      * Loop through names until we find a filename not already in use */
-        boolean hasExtension = originalFileName.indexOf(".") != -1;
+        boolean hasExtension = originalFileName.indexOf('.') != -1;
         String name = (hasExtension) ?
-                originalFileName.substring(0, originalFileName.lastIndexOf(".")) : originalFileName;
+                originalFileName.substring(0, originalFileName.lastIndexOf('.')) : originalFileName;
         String ext = (hasExtension) ?
-                originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+                originalFileName.substring(originalFileName.lastIndexOf('.')) : "";
 
         File outputFile = new File(dir, originalFileName);
         for (int i = 0; i < 10000 && outputFile.exists(); i++) {
@@ -138,16 +138,7 @@ public class FileServiceManager {
         /*Get a list of files; ignore any filename starting with "." as these are
         typically private or temporary files not for users to interact with*/
         File[] files = relativeUploadDirectory.listFiles(
-                new java.io.FileFilter() {
-                    @Override
-                    public boolean accept(final File pathname) {
-                        if (pathname.isDirectory()) {
-                            return false;
-                        }
-                        return (pathname.getName().indexOf(".") != 0);
-                    }
-
-                });
+                pathname -> !pathname.isDirectory() && (pathname.getName().indexOf('.') != 0));
 
         if (files == null) {
             throw new FileNotFoundException("Given directory " + uploadDirectory + " does not exist.");

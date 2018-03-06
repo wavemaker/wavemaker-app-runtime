@@ -194,7 +194,7 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
      * @return the array of tokens.
      * @throws InvalidCookieException if the cookie was not base64 encoded.
      */
-    protected String[] decodeCookie(String cookieValue) throws InvalidCookieException {
+    protected String[] decodeCookie(String cookieValue)  {
         for (int j = 0; j < cookieValue.length() % 4; j++) {
             cookieValue = cookieValue + "=";
         }
@@ -299,12 +299,11 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
 
         String paramValue = request.getParameter(parameter);
 
-        if (paramValue != null) {
-            if (paramValue.equalsIgnoreCase("true") || paramValue.equalsIgnoreCase("on") ||
-                    paramValue.equalsIgnoreCase("yes") || paramValue.equals("1")) {
+            if (paramValue != null && (paramValue.equalsIgnoreCase("true") || paramValue.equalsIgnoreCase("on") ||
+                    paramValue.equalsIgnoreCase("yes") || paramValue.equals("1"))){
                 return true;
             }
-        }
+
 
         if (logger.isDebugEnabled()) {
             logger.debug("Did not send remember-me cookie (principal did not set parameter '" + parameter + "')");
@@ -327,7 +326,7 @@ public abstract class AbstractWMRememberMeServices implements RememberMeServices
      * (for example if the user has been removed from the system).
      */
     protected abstract UserDetails processAutoLoginCookie(String[] cookieTokens, HttpServletRequest request,
-            HttpServletResponse response) throws RememberMeAuthenticationException, UsernameNotFoundException;
+            HttpServletResponse response) ;
 
     /**
      * Sets a "cancel cookie" (with maxAge = 0) on the response to disable persistent logins.

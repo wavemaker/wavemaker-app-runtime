@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.wavemaker.runtime.security.WMUser;
 
@@ -45,7 +44,7 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
     private String roleAttributeName;
 
     @Override
-    public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
+    public UserDetails loadUserDetails(Authentication authentication) {
         if (StringUtils.isNotBlank(roleAttributeName)) {
             CasAssertionAuthenticationToken casAssertionAuthenticationToken = null;
             if (authentication instanceof CasAssertionAuthenticationToken) {
@@ -73,7 +72,8 @@ public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDet
             String userId = userDetails.getUserId();
             String password = userDetails.getPassword();
             long loginTime = System.currentTimeMillis();
-            return new WMUser(userId, username, password, username, 0, true, true, true, true, AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
+            return new WMUser(userId, username, password, username, 0, true, true, true, true,
+                    AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
                     loginTime);
         } else return userDetailsService.loadUserByUsername(authentication.getName());
     }

@@ -20,6 +20,8 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
  */
 public class CustomQueryAdapter {
 
+    private CustomQueryAdapter(){}
+
     private static Pattern QUERY_TYPE_PATTERN = Pattern.compile("^([^\\s]+)");
 
     public static RuntimeQuery adapt(CustomQuery query) {

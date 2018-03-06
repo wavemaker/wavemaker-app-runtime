@@ -30,7 +30,7 @@ public class SocialAuthenticationServiceBeanPostProcessor implements BeanPostPro
 	private SocialAuthenticationServiceRegistry socialAuthenticationServiceRegistry;
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName)  {
 		if (bean instanceof SocialAuthenticationService) {
 			SocialAuthenticationService socialAuthenticationService = (SocialAuthenticationService) bean;
 			socialAuthenticationServiceRegistry.addAuthenticationService(socialAuthenticationService);
@@ -39,7 +39,7 @@ public class SocialAuthenticationServiceBeanPostProcessor implements BeanPostPro
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName)  {
 		return bean;
 	}
 }

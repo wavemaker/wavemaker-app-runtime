@@ -3,7 +3,6 @@ package com.wavemaker.runtime.data.dao.callbacks;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
@@ -33,7 +32,7 @@ public class PaginatedQueryCallback<R> implements HibernateCallback<Page<R>> {
     }
 
     @Override
-    public Page<R> doInHibernate(final Session session) throws HibernateException {
+    public Page<R> doInHibernate(final Session session) {
         final Optional<Query<Number>> countQuery = queryProvider.getCountQuery(session, parametersProvider);
         long count = Integer.MAX_VALUE;
         if (countQuery.isPresent()) {

@@ -29,6 +29,8 @@ import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
  */
 public class DataExporter {
 
+    private DataExporter(){}
+
     public static ByteArrayOutputStream export(QueryExtractor extractor, ExportType exportType) {
         ExportBuilder exportBuilder = new ExportBuilder(extractor);
         final Workbook workbook = exportBuilder.build();

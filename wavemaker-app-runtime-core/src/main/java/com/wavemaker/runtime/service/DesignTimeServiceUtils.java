@@ -37,6 +37,8 @@ import com.wavemaker.runtime.data.util.DataServiceUtils;
  */
 public class DesignTimeServiceUtils {
 
+    private DesignTimeServiceUtils(){}
+
     public static boolean isDMLOrUpdateQuery(RuntimeQuery query) {
         return query.getType() != QueryType.SELECT && DataServiceUtils.isDML(query.getQueryString());
     }

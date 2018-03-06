@@ -22,8 +22,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,8 +44,6 @@ import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WMQueryExecutorImpl.class);
 
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 20;

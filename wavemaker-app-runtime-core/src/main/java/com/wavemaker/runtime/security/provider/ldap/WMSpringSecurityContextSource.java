@@ -14,7 +14,7 @@ public class WMSpringSecurityContextSource extends DefaultSpringSecurityContextS
     private static final String READ_TIMEOUT_ENV_PROPERTY = "com.sun.jndi.ldap.read.timeout";
     private static final String URL_SEPARATOR = " ";
 
-    private final String DEFAULT_TIME_OUT = "30000";
+    private static final String DEFAULT_TIME_OUT = "30000";
 
     public WMSpringSecurityContextSource(String providerUrl) {
         super(providerUrl);

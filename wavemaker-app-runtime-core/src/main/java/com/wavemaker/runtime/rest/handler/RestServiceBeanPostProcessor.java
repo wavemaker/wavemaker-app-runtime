@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,10 @@ package com.wavemaker.runtime.rest.handler;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -60,49 +58,56 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
 
     @PostConstruct
     private void init() {
-        Map<String, RequestMappingHandlerMapping> beans = applicationContext.getBeansOfType(RequestMappingHandlerMapping.class);
+        Map<String, RequestMappingHandlerMapping> beans = applicationContext
+                .getBeansOfType(RequestMappingHandlerMapping.class);
         if (beans == null || beans.size() == 0) {
-            throw new WMRuntimeException("No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+            throw new WMRuntimeException(
+                    "No beans of type RequestMappingHandlerMapping found in " + applicationContext);
         } else {
-            for (RequestMappingHandlerMapping bean : beans.values() ) {
+            for (RequestMappingHandlerMapping bean : beans.values()) {
                 if (bean.getApplicationContext() == applicationContext) {
                     requestMappingHandlerMapping = bean;
                     break;
                 }
             }
             if (requestMappingHandlerMapping == null) {
-                throw new WMRuntimeException("No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+                throw new WMRuntimeException(
+                        "No beans of type RequestMappingHandlerMapping found in " + applicationContext);
             }
         }
     }
 
 
     private static final Method HANDLE_REQUEST_METHOD;
+
     static {
         try {
-            HANDLE_REQUEST_METHOD = RestRuntimeController.class.getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
+            HANDLE_REQUEST_METHOD = RestRuntimeController.class
+                    .getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
         } catch (NoSuchMethodException e) {
             throw new WMRuntimeException("Couldn't find handleRequestInternal method in RestRuntimeController", e);
         }
     }
 
     @Override
-    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
         if (bean instanceof RestServiceInfoBean) {
             RestServiceInfoBean restServiceInfoBean = (RestServiceInfoBean) bean;
             RequestMappingInfo requestMappingInfo = getRequestMappingInfo(restServiceInfoBean);
-            requestMappingHandlerMapping.registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
+            requestMappingHandlerMapping
+                    .registerMapping(requestMappingInfo, restRuntimeController, HANDLE_REQUEST_METHOD);
         }
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         return bean;
     }
 
     private RequestMappingInfo getRequestMappingInfo(RestServiceInfoBean restServiceInfoBean) {
-        RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(RequestMethod.valueOf(restServiceInfoBean.getHttpMethod()));
+        RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
+                RequestMethod.valueOf(restServiceInfoBean.getHttpMethod()));
         PatternsRequestCondition patterns = new PatternsRequestCondition(restServiceInfoBean.getUrl());
         ParamsRequestCondition params = new ParamsRequestCondition();
         HeadersRequestCondition headers = new HeadersRequestCondition();

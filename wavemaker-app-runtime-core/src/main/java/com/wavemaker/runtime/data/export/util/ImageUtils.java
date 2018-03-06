@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.data.export.util;
 
-import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -42,7 +41,7 @@ public class ImageUtils {
 
     private ImageUtils() {}
 
-    public static void addImageToSheet(byte[] image, Cell cell) throws IOException, IllegalArgumentException {
+    public static void addImageToSheet(byte[] image, Cell cell) {
         final Row row = cell.getRow();
         final Sheet sheet = row.getSheet(); // we always provide XSSFSheet
 

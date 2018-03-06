@@ -39,11 +39,6 @@ import static com.wavemaker.runtime.security.provider.saml.SAMLHttpServletReques
 
 public class WMSAMLLogoutProcessingFilter extends SAMLLogoutProcessingFilter {
 
-    /**
-     * Class logger.
-     */
-    private static final Logger log = LoggerFactory.getLogger(WMSAMLLogoutProcessingFilter.class);
-
     @Autowired
     private SAMLConfig samlConfig;
 

@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.interceptors;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +26,7 @@ import com.wavemaker.runtime.data.replacers.EntityValueReplacerBuilder;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 22/6/16
  */
-public class InterceptorContext {
+public class InterceptorContext implements Serializable {
 
     private Map<Class<?>, EntityValueReplacer> typeVsValueOverrider;
 

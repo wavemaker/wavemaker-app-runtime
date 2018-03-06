@@ -47,6 +47,8 @@ import com.wavemaker.commons.WMRuntimeException;
  */
 public class WMRuntimeUtils {
 
+    private WMRuntimeUtils(){}
+
     private static boolean romePresent =
             ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRuntimeUtils.class.getClassLoader());
 
@@ -129,7 +131,7 @@ public class WMRuntimeUtils {
         sb.append("?file=").append(file.getName());
         if (StringUtils.isNotBlank(relativePath)) {
             sb.append("&relativePath=").append(relativePath);
-        };
+        }
         sb.append("&returnName=").append(file.getName());
         return sb.toString();
     }

@@ -23,13 +23,15 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public class ConverterUtil {
 
+    private ConverterUtil(){
+
+    }
+
     public static Object toLongIfPossible(final Object fromValue) {
         Object value = fromValue;
-        if (fromValue instanceof String) {
-            if (NumberUtils.isNumber(((String) value))) {
+            if (fromValue instanceof String && NumberUtils.isNumber(((String) value))) {
                 value = Long.valueOf(((String) value));
             }
-        }
         return value;
     }
 }

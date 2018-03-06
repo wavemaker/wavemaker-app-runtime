@@ -22,6 +22,8 @@ import com.wavemaker.runtime.data.model.queries.QueryParameter;
  */
 public class MultipartQueryUtils {
 
+    private MultipartQueryUtils(){}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipartQueryUtils.class);
 
     public static <T> T readContent(MultipartHttpServletRequest request, Class<T> type) {

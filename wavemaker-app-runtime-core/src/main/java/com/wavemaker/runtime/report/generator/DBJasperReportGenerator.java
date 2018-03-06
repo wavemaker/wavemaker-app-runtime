@@ -87,7 +87,7 @@ public class DBJasperReportGenerator extends AbstractJasperReportGenerator {
             parameters.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, session);
             return buildReport(reportContext);
         } finally {
-            if (session != null && !((SessionImpl) session).isClosed()) {
+            if (!((SessionImpl) session).isClosed()) {
                 session.close();
             }
         }
@@ -111,7 +111,7 @@ public class DBJasperReportGenerator extends AbstractJasperReportGenerator {
             } catch (SQLException e) {
                 LOGGER.error("Failed to close db the connection for {} ", reportContext.getReportName(), e);
             }
-            if (session != null && !((SessionImpl) session).isClosed()) {
+            if (!((SessionImpl) session).isClosed()) {
                 session.close();
             }
         }

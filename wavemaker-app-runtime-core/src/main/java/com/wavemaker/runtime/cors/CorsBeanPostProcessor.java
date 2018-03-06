@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +32,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
     private ApplicationContext applicationContext;
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName)  {
         if (bean instanceof CorsConfig) {
             CorsConfig corsConfig = (CorsConfig) bean;
             if (corsConfig.isEnabled()) {
@@ -85,7 +84,7 @@ public class CorsBeanPostProcessor implements BeanPostProcessor {
 
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
         return bean;
     }
 }

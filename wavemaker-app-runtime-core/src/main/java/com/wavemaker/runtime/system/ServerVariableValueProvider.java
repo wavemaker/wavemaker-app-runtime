@@ -29,13 +29,13 @@ public class ServerVariableValueProvider implements VariableValueProvider {
         this.securityService = securityService;
         keyVsValueMap = new LinkedCaseInsensitiveMap<>();
 
-        keyVsValueMap.put("date", (key) -> new Date(Calendar.getInstance().getTime().getTime()));
-        keyVsValueMap.put("time", (key) -> new Time(Calendar.getInstance().getTime().getTime()));
-        keyVsValueMap.put("date_time", (key) -> LocalDateTime.now()); // use java LocalDateTime
-        keyVsValueMap.put("timestamp", (key) -> new Timestamp(Calendar.getInstance().getTime().getTime()));
+        keyVsValueMap.put("date", key -> new Date(Calendar.getInstance().getTime().getTime()));
+        keyVsValueMap.put("time", key -> new Time(Calendar.getInstance().getTime().getTime()));
+        keyVsValueMap.put("date_time", key -> LocalDateTime.now()); // use java LocalDateTime
+        keyVsValueMap.put("timestamp", key -> new Timestamp(Calendar.getInstance().getTime().getTime()));
 
-        keyVsValueMap.put("user_id", (key) -> securityService.getUserId());
-        keyVsValueMap.put("user_name", (key) -> securityService.getUserName());
+        keyVsValueMap.put("user_id", key -> securityService.getUserId());
+        keyVsValueMap.put("user_name", key -> securityService.getUserName());
     }
 
     @Override

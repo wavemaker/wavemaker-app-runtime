@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -80,13 +79,12 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
         HttpSession httpSession = httpServletRequest.getSession(false);
         if (httpSession != null) {
             CookieStore cookieStore = (CookieStore) httpSession.getAttribute("wm.cookieStore");
-            if (cookieStore == null) {
-                synchronized (httpSession) {
-                    if (cookieStore == null) {
-                        cookieStore = new CookieStore();
-                        httpSession.setAttribute("wm.cookieStore", cookieStore);
-                    }
+            synchronized (httpSession) {
+                if (cookieStore == null) {
+                    cookieStore = new CookieStore();
+                    httpSession.setAttribute("wm.cookieStore", cookieStore);
                 }
+
             }
             URL url = null;
             try {

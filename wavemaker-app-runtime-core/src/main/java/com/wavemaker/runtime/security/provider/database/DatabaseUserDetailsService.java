@@ -48,7 +48,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) {
         UserDetails user = userProvider.loadUser(username);
 
         if (user == null) {
@@ -60,7 +60,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
         if (enableAuthorities) {
             dbAuthsSet.addAll(authoritiesProvider.loadUserAuthorities(user.getUsername()));
-            if (dbAuthsSet.size() == 0) {
+            if (dbAuthsSet.isEmpty()) {
                 logger.debug("User '" + username + "' has no authorities and will be treated as 'not found'");
                 throw new UsernameNotFoundException("User" + username + "has no GrantedAuthority");
             }

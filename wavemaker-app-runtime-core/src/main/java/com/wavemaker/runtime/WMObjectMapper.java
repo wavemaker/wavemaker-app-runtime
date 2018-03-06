@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,13 +29,19 @@ import java.util.Date;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -71,17 +77,17 @@ public class WMObjectMapper extends ObjectMapper {
      * JSON output, written to File provided.
      */
     public void writeValue(File resultFile, Object value)
-            throws IOException, JsonGenerationException, JsonMappingException {
+            throws IOException {
         writeMapper.writeValue(resultFile, value);
     }
 
     public void writeValue(OutputStream out, Object value)
-            throws IOException, JsonGenerationException, JsonMappingException {
+            throws IOException {
         writeMapper.writeValue(out, value);
     }
 
     public void writeValue(Writer w, Object value)
-            throws IOException, JsonGenerationException, JsonMappingException {
+            throws IOException {
         writeMapper.writeValue(w, value);
     }
 
@@ -96,17 +102,17 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     @Override
-    public void writeTree(JsonGenerator jgen, TreeNode rootNode) throws IOException, JsonProcessingException {
-         writeMapper.writeTree(jgen, rootNode);
+    public void writeTree(JsonGenerator jgen, TreeNode rootNode) throws IOException {
+        writeMapper.writeTree(jgen, rootNode);
     }
 
     @Override
-    public void writeValue(JsonGenerator jgen, Object value) throws IOException, JsonGenerationException, JsonMappingException {
+    public void writeValue(JsonGenerator jgen, Object value) throws IOException {
         writeMapper.writeValue(jgen, value);
     }
 
     @Override
-    public void writeTree(JsonGenerator jgen, JsonNode rootNode) throws IOException, JsonProcessingException {
+    public void writeTree(JsonGenerator jgen, JsonNode rootNode) throws IOException {
         writeMapper.writeValue(jgen, rootNode);
     }
 
@@ -126,106 +132,109 @@ public class WMObjectMapper extends ObjectMapper {
     }
 
     public <T> T readValue(File src, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(File src, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     public <T> T readValue(File src, JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(URL src, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
 
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(URL src, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     public <T> T readValue(URL src, JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(String content, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(content, valueType);
     }
 
     public <T> T readValue(String content, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(content, valueTypeRef);
     }
 
     public <T> T readValue(String content, JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(content, valueType);
     }
 
     public <T> T readValue(Reader src, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(Reader src, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     public <T> T readValue(Reader src, JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(InputStream src, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
     public <T> T readValue(InputStream src, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
     public <T> T readValue(byte[] src, Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
-    public <T> T readValue(byte[] src, int offset, int len,
-                           Class<T> valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+    public <T> T readValue(
+            byte[] src, int offset, int len,
+            Class<T> valueType)
+            throws IOException {
         return readMapper.readValue(src, offset, len, valueType);
     }
 
     public <T> T readValue(byte[] src, TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueTypeRef);
     }
 
-    public <T> T readValue(byte[] src, int offset, int len,
-                           TypeReference valueTypeRef)
-            throws IOException, JsonParseException, JsonMappingException {
+    public <T> T readValue(
+            byte[] src, int offset, int len,
+            TypeReference valueTypeRef)
+            throws IOException {
         return readMapper.readValue(src, offset, len, valueTypeRef);
     }
 
     public <T> T readValue(byte[] src, JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+            throws IOException {
         return readMapper.readValue(src, valueType);
     }
 
-    public <T> T readValue(byte[] src, int offset, int len,
-                           JavaType valueType)
-            throws IOException, JsonParseException, JsonMappingException {
+    public <T> T readValue(
+            byte[] src, int offset, int len,
+            JavaType valueType)
+            throws IOException {
         return readMapper.readValue(src, offset, len, valueType);
     }
 
@@ -240,7 +249,7 @@ public class WMObjectMapper extends ObjectMapper {
 
     @Override
     public ObjectReader reader() {
-       return readMapper.reader();
+        return readMapper.reader();
     }
 
     public void registerReaderModule(final Module mapperModule) {
@@ -308,7 +317,8 @@ public class WMObjectMapper extends ObjectMapper {
             return getPossibleFieldName(method, defaultName, POSSIBLE_SET_METHOD_START_NAMES);
         }
 
-        private String getPossibleFieldName(AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
+        private String getPossibleFieldName(
+                AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
             String name = method.getName();
             for (String possibleStartName : possibleMethodStartNames) {
                 if (name.startsWith(possibleStartName)) {

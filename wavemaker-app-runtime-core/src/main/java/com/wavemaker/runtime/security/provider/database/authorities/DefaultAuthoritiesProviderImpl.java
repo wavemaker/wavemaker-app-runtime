@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,15 +17,11 @@ package com.wavemaker.runtime.security.provider.database.authorities;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Session;
-import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
 
@@ -79,21 +75,8 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     }
 
     public List<GrantedAuthority> loadUserAuthorities(final String username) {
-        final List<GrantedAuthority> execute = getTransactionTemplate().execute(
-                new TransactionCallback<List<GrantedAuthority>>() {
-                    @Override
-                    public List<GrantedAuthority> doInTransaction(final TransactionStatus status) {
-                        final List<GrantedAuthority> grantedAuthorities = getHibernateTemplate()
-                                .execute(new HibernateCallback<List<GrantedAuthority>>() {
-                                    @Override
-                                    public List<GrantedAuthority> doInHibernate(Session session) {
-                                        return getGrantedAuthorities(session, username);
-                                    }
-                                });
-                        return grantedAuthorities;
-                    }
-                });
-        return execute;
+        return getTransactionTemplate()
+                .execute(status -> getHibernateTemplate().execute(session -> getGrantedAuthorities(session, username)));
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
@@ -101,23 +84,25 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         if (!isHql()) {
             return getGrantedAuthoritiesByNativeSql(session, authoritiesByUsernameQuery, username);
         } else {
-            return getGrantedAuthoritiesByHQL(session, authoritiesByUsernameQuery,username);
+            return getGrantedAuthoritiesByHQL(session, authoritiesByUsernameQuery, username);
         }
     }
 
-    private List<GrantedAuthority> getGrantedAuthoritiesByHQL(Session session, String authoritiesByUsernameQuery, String username) {
+    private List<GrantedAuthority> getGrantedAuthoritiesByHQL(
+            Session session, String authoritiesByUsernameQuery, String username) {
         final List list = session.createQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 
-    private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(Session session, String authoritiesByUsernameQuery, String username) {
+    private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(
+            Session session, String authoritiesByUsernameQuery, String username) {
         final List list = session.createNativeQuery(authoritiesByUsernameQuery).setParameter(USERNAME, username).list();
         return getAuthorities(list);
     }
 
     private List<GrantedAuthority> getAuthorities(List<Object> content) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        if (content.size() > 0) {
+        if (!content.isEmpty()) {
             for (Object o : content) {
                 Object role = null;
                 if (o instanceof Object[]) {

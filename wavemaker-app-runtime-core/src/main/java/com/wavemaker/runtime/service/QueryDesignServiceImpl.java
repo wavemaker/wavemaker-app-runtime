@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,6 @@ import org.hibernate.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.StringTemplate;
@@ -50,12 +48,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
         if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
             meta = DesignTimeServiceUtils.getMetaForDML();
         } else if (!query.isNativeSql()) {
-            meta = executeInTransaction(serviceId, new TransactionCallback<List<ReturnProperty>>() {
-                @Override
-                public List<ReturnProperty> doInTransaction(final TransactionStatus status) {
-                    return extractMetaForHql(serviceId, query);
-                }
-            });
+            meta = executeInTransaction(serviceId, status -> extractMetaForHql(serviceId, query));
         } else {
             meta = testRunQuery(serviceId, query, PageRequest.of(0, 5, null)).getReturnProperties();
         }

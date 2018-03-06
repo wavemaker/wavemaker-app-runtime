@@ -43,12 +43,12 @@ public class ServiceBasedPageableHandlerMethodArgumentResolver extends WMPageabl
         HttpServletRequest servletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         String pathInfo = servletRequest.getPathInfo();
         String serviceId = null;
-        if (pathInfo.indexOf("/") != -1) {
+        if (pathInfo.indexOf('/') != -1) {
             String temp = pathInfo.substring(1);
-            if (temp.indexOf("/") == -1) {
+            if (temp.indexOf('/') == -1) {
                 serviceId = temp;
             } else {
-                serviceId = temp.substring(0, temp.indexOf("/"));
+                serviceId = temp.substring(0, temp.indexOf('/'));
             }
         }
         if (StringUtils.isNotBlank(serviceId)) {

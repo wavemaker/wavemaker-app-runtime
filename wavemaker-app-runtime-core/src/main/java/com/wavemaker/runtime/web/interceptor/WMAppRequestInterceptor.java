@@ -36,7 +36,7 @@ public class WMAppRequestInterceptor implements HandlerInterceptor{
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            if (handlerMethod != null && handlerMethod.getMethod().getAnnotations() != null) {
+            if (handlerMethod.getMethod().getAnnotations() != null) {
                 for (Annotation annotation : handlerMethod.getMethod().getAnnotations()) {
                     if(annotation instanceof WMAccessVisibility && ((WMAccessVisibility)annotation).value().equals(AccessSpecifier.UNAVAILABLE)){
                         throw new WMRuntimeException("Access denied for this method " + handlerMethod.getMethod().getName());

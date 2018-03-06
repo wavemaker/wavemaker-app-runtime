@@ -22,6 +22,8 @@ package com.wavemaker.runtime.server;
  */
 public class ServerConstants {
 
+    private ServerConstants(){}
+
     public static final String SERVICE_JSON_RPC = "JSON-RPC";
 
     public static final String ID = "id";

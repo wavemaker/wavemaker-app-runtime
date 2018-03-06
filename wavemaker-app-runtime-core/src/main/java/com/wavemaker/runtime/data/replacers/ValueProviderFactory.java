@@ -30,6 +30,8 @@ import com.wavemaker.runtime.data.replacers.providers.VariableDefinedPropertyPro
  */
 public class ValueProviderFactory {
 
+    private ValueProviderFactory(){}
+
     private static Map<Class<? extends Annotation>, ValueProviderBuilder> annotationValueProviderBuilderMap;
 
     static {

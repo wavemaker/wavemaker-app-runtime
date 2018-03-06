@@ -23,6 +23,8 @@ package com.wavemaker.runtime.data.export.util;
  */
 public class ImageUnitsConverter {
 
+    private ImageUnitsConverter(){}
+
     public static final int TOTAL_COLUMN_COORDINATE_POSITIONS = 1023; // MB
     public static final int TOTAL_ROW_COORDINATE_POSITIONS = 255;     // MB
     public static final int PIXELS_PER_INCH = 96;                     // MB
@@ -31,10 +33,9 @@ public class ImageUnitsConverter {
     public static final double CELL_BORDER_WIDTH_MILLIMETRES = 2.0D;  // MB
     public static final short EXCEL_COLUMN_WIDTH_FACTOR = 256;
     public static final int UNIT_OFFSET_LENGTH = 7;
-    public static final int[] UNIT_OFFSET_MAP = new int[]
+    private static final int[] UNIT_OFFSET_MAP = new int[]
             {0, 36, 73, 109, 146, 182, 219};
 
-    private static final int EMU_PER_MM = 36000;
 
     public static short pixel2WidthUnits(int pxs) {
         short widthUnits = (short) (EXCEL_COLUMN_WIDTH_FACTOR *

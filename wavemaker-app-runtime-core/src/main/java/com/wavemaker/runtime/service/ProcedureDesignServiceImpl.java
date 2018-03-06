@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,6 @@ package com.wavemaker.runtime.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import com.wavemaker.commons.util.StringTemplate;
 import com.wavemaker.runtime.WMAppContext;
@@ -43,17 +40,14 @@ public class ProcedureDesignServiceImpl extends AbstractDesignService implements
     public DesignServiceResponse testRunProcedure(final String serviceId, final RuntimeProcedure procedure) {
         final Map<String, String> map = getStringTemplateMap(serviceId);
         final String procedureExecutorBeanName = PROCEDURE_EXECUTOR_BEAN_ST.substitute(map);
-        return executeInTransaction(serviceId, new TransactionCallback<DesignServiceResponse>() {
-            @Override
-            public DesignServiceResponse doInTransaction(final TransactionStatus status) {
-                final WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance()
-                        .getSpringBean(procedureExecutorBeanName);
+        return executeInTransaction(serviceId, status -> {
+            final WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance()
+                    .getSpringBean(procedureExecutorBeanName);
 
-                final Object result = wmProcedureExecutor.executeRuntimeProcedure(procedure);
-                final List<ReturnProperty> properties = extractMetaFromResults(Collections.singleton(result));
+            final Object result = wmProcedureExecutor.executeRuntimeProcedure(procedure);
+            final List<ReturnProperty> properties = extractMetaFromResults(Collections.singleton(result));
 
-                return new DesignServiceResponse(result, properties);
-            }
+            return new DesignServiceResponse(result, properties);
         });
     }
 }

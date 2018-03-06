@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +17,12 @@ package com.wavemaker.runtime.security.provider.database.users;
 
 import java.math.BigInteger;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Session;
-import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.WMUserDetails;
@@ -51,26 +46,17 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
         this.usersByUsernameQuery = usersByUsernameQuery;
     }
 
-    public UserDetails loadUser(final String username) throws UsernameNotFoundException {
-        final WMUser wmUser = getTransactionTemplate().execute(new TransactionCallback<WMUser>() {
-            @Override
-            public WMUser doInTransaction(final TransactionStatus status) {
-                WMUser wmUser = getHibernateTemplate().execute(new HibernateCallback<WMUser>() {
-                    @Override
-                    public WMUser doInHibernate(Session session) {
-                        return getWmUser(session, username);
-                    }
-                });
-                return wmUser;
-            }
-        });
-        return wmUser;
+    public UserDetails loadUser(final String username) {
+        return getTransactionTemplate()
+                .execute(status -> getHibernateTemplate().execute(session -> getWmUser(session, username)));
     }
 
-    public UserDetails createUserDetails(String username, UserDetails userDetails,
+    public UserDetails createUserDetails(
+            String username, UserDetails userDetails,
             List<GrantedAuthority> combinedAuthorities) {
         WMUserDetails wmUserDetails = (WMUserDetails) userDetails;
-        return new WMUser(wmUserDetails.getUserId(),  wmUserDetails.getUsername(), wmUserDetails.getPassword(), wmUserDetails.getUserLongName(),
+        return new WMUser(wmUserDetails.getUserId(), wmUserDetails.getUsername(), wmUserDetails.getPassword(),
+                wmUserDetails.getUserLongName(),
                 wmUserDetails.getTenantId(), wmUserDetails.isEnabled(), true, true, true, combinedAuthorities,
                 wmUserDetails.getLoginTime());
     }
@@ -87,7 +73,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
     }
 
     private WMUser getWmUser(List<Object> content) {
-        if (content.size() > 0) {
+        if (!content.isEmpty()) {
             Object[] resultMap = (Object[]) content.get(0);
             String userId = String.valueOf(resultMap[0]);
             String password = String.valueOf(resultMap[1]);

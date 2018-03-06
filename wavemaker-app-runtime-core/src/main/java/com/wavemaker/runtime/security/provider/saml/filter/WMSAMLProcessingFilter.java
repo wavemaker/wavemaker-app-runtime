@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@ import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLProcessingFilter;
 import org.springframework.security.saml.context.SAMLMessageContext;
 
@@ -44,8 +43,7 @@ public class WMSAMLProcessingFilter extends SAMLProcessingFilter {
     private SAMLConfig samlConfig;
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
         if (SAMLConfig.ValidateType.RELAXED == samlConfig.getValidateType()) {
             final SAMLMessageContext context;

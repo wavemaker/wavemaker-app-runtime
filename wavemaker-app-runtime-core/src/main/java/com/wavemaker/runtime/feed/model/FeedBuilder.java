@@ -27,6 +27,8 @@ import com.sun.syndication.feed.synd.SyndFeed;
  */
 public class FeedBuilder {
 
+    private FeedBuilder(){}
+
     public static Feed getFeed(SyndFeed syndFeed) {
         Feed feed = new Feed();
         feed.setAuthor(syndFeed.getAuthor());

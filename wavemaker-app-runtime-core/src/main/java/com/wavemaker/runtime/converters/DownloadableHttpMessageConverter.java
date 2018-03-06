@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package com.wavemaker.runtime.converters;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +24,6 @@ import org.apache.tika.Tika;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpResponse;
 
 import com.wavemaker.commons.WMRuntimeException;
@@ -42,18 +39,20 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
     public DownloadableHttpMessageConverter() {
         super(MediaType.ALL);
     }
+
     @Override
     protected boolean supports(Class<?> clazz) {
-       return Downloadable.class.isAssignableFrom(clazz);
+        return Downloadable.class.isAssignableFrom(clazz);
     }
 
     @Override
-    protected DownloadResponse readInternal(Class<? extends Downloadable> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-       throw new WMRuntimeException("Does not support DownloadResponse de-serialization");
+    protected DownloadResponse readInternal(
+            Class<? extends Downloadable> clazz, HttpInputMessage inputMessage) throws IOException {
+        throw new WMRuntimeException("Does not support DownloadResponse de-serialization");
     }
 
     @Override
-    protected void writeInternal(Downloadable downloadable, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(Downloadable downloadable, HttpOutputMessage outputMessage) throws IOException {
         ServletServerHttpResponse servletServerHttpResponse = (ServletServerHttpResponse) outputMessage;
         HttpServletResponse httpServletResponse = servletServerHttpResponse.getServletResponse();
         writeMessage(downloadable, httpServletResponse);
@@ -65,7 +64,8 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
             contents = downloadable.getContents();
             if (contents != null) {
                 String fileName = downloadable.getFileName();
-                String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable.getContentType() : new Tika().detect(fileName);
+                String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable
+                        .getContentType() : new Tika().detect(fileName);
                 if (downloadable.isInline()) {
                     httpServletResponse.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
                 } else {

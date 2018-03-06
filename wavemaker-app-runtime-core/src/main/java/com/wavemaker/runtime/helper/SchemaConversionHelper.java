@@ -29,6 +29,8 @@ import com.wavemaker.commons.util.Tuple;
  */
 public class SchemaConversionHelper {
 
+    private SchemaConversionHelper(){}
+
     /**
      * returns a tuple consisting of xml root element name and converted json object
      * @param xmlContent

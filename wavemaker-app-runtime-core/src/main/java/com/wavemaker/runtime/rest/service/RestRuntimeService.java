@@ -123,7 +123,6 @@ public class RestRuntimeService {
                 return null;
             }
         });
-        ;
     }
 
     private HttpRequestData constructRequestData(HttpServletRequest httpServletRequest) {

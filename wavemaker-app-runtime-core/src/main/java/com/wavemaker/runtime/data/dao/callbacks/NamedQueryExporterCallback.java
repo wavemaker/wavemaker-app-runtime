@@ -18,7 +18,6 @@ package com.wavemaker.runtime.data.dao.callbacks;
 import java.io.ByteArrayOutputStream;
 import java.sql.ResultSet;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
@@ -62,7 +61,7 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArra
 
 
     @Override
-    public ByteArrayOutputStream doInHibernate(final Session session) throws HibernateException {
+    public ByteArrayOutputStream doInHibernate(final Session session) {
         QueryExtractor queryExtractor;
         Query namedQuery = queryProvider.getQuery(session, pageable, parametersProvider);
         final boolean isNative = namedQuery instanceof NativeQuery;

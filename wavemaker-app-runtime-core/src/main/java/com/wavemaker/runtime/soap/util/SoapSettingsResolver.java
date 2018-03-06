@@ -34,6 +34,8 @@ import com.wavemaker.runtime.soap.SoapServiceSettings;
  */
 public class SoapSettingsResolver {
 
+    private SoapSettingsResolver(){}
+
     @SuppressWarnings("unchecked")
     public static void setBindingProperties(BindingProvider service, SoapServiceSettings bindingProperties) {
         if (bindingProperties != null) {

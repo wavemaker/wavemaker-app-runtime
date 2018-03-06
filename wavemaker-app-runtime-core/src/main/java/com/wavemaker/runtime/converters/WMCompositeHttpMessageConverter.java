@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,6 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.wavemaker.commons.WMRuntimeException;
 
@@ -70,7 +68,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
     }
 
     @Override
-    public T read(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    public T read(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException {
         for (WMCustomHttpMessageConverter httpMessageConverter : httpMessageConverterList) {
             if (httpMessageConverter.supportsClazz(clazz)) {
                 return (T) httpMessageConverter.read(clazz, inputMessage);
@@ -81,7 +79,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
 
     @Override
     public void write(T t, MediaType contentType, HttpOutputMessage outputMessage)
-            throws IOException, HttpMessageNotWritableException {
+            throws IOException {
         for (WMCustomHttpMessageConverter httpMessageConverter : httpMessageConverterList) {
             if (httpMessageConverter.supportsClazz(t.getClass())) {
                 httpMessageConverter.write(t, null, outputMessage);

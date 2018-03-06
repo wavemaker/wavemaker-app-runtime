@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -29,8 +27,8 @@ import com.wavemaker.runtime.security.provider.database.authorities.AuthoritiesP
 /**
  * Created by ArjunSahasranam on 15/3/16.
  */
-public class LdapDatabaseAuthoritiesPopulator implements org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator {
-    private static final Logger logger = LoggerFactory.getLogger(LdapDatabaseAuthoritiesPopulator.class);
+public class LdapDatabaseAuthoritiesPopulator implements
+        org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator {
 
     private AuthoritiesProvider authoritiesProvider;
 

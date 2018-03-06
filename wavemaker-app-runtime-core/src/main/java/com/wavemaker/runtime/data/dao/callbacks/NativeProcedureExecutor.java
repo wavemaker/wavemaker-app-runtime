@@ -45,6 +45,8 @@ import com.wavemaker.runtime.data.util.JDBCUtils;
  */
 public class NativeProcedureExecutor {
 
+    private NativeProcedureExecutor(){ }
+
     public static final String CONTENT_FIELD = "content";
 
     public static <T> T execute(

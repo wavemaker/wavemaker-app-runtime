@@ -19,6 +19,8 @@ import com.wavemaker.runtime.data.replacers.providers.VariableType;
 // TODO Redundant class, remove
 public class ParametersConfigurator {
 
+    private ParametersConfigurator(){}
+
     public static <R> Query<R> configure(Query<R> query, Map<String, Object> parameters) {
         return configure(query, parameters, new HqlParameterTypeResolver());
     }

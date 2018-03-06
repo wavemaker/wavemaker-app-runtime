@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateCallback;
@@ -23,7 +22,7 @@ public class UpdateQueryCallback implements HibernateCallback<Integer> {
     }
 
     @Override
-    public Integer doInHibernate(final Session session) throws HibernateException {
+    public Integer doInHibernate(final Session session) {
         final Query<Integer> query = queryProvider.getQuery(session, parametersProvider);
         return query.executeUpdate();
     }

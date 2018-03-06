@@ -6,8 +6,6 @@ import java.util.Date;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
@@ -28,7 +26,7 @@ public class DateHttpMessageConverter extends WMCustomAbstractHttpMessageConvert
     }
 
     @Override
-    protected Date readInternal(Class<? extends Date> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected Date readInternal(Class<? extends Date> clazz, HttpInputMessage inputMessage) throws IOException {
         String date = WMIOUtils.toString(inputMessage.getBody());
         Date dateObj;
         if (clazz.equals(java.sql.Date.class)) {
@@ -40,7 +38,7 @@ public class DateHttpMessageConverter extends WMCustomAbstractHttpMessageConvert
     }
 
     @Override
-    protected void writeInternal(Date date, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(Date date, HttpOutputMessage outputMessage) throws IOException {
         outputMessage.getBody().write(date.toString().getBytes());
     }
 

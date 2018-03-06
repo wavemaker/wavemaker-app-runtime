@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import com.wavemaker.commons.util.SystemUtils;
@@ -34,11 +33,12 @@ public class DemoUserDetailsManager extends InMemoryUserDetailsManager {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         UserDetails userDetails = super.loadUserByUsername(username);
         String userDetailsUsername = userDetails.getUsername();
         String password = SystemUtils.decryptIfEncrypted(userDetails.getPassword());
-        return new WMUser(userDetailsUsername, userDetailsUsername, password, userDetailsUsername, 1, true, true, true, true, userDetails.getAuthorities(), System.currentTimeMillis());
+        return new WMUser(userDetailsUsername, userDetailsUsername, password, userDetailsUsername, 1, true, true, true,
+                true, userDetails.getAuthorities(), System.currentTimeMillis());
     }
 
     public void setUsers(List<WMUser> users) {

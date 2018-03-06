@@ -38,7 +38,7 @@ public class WMPageImpl<T> extends PageImpl {
         String contentType = "UNKNOWN";
         List<T> content = getContent();
 
-        if (content.size() > 0 && content.get(0) != null) {
+        if ((!content.isEmpty()) && content.get(0) != null) {
             contentType = content.get(0).getClass().getName();
         }
 

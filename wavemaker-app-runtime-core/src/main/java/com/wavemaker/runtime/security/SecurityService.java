@@ -80,11 +80,10 @@ public class SecurityService {
      */
     public static int getTenantId() {
         Authentication authentication = getAuthenticatedAuthentication();
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof WMUserDetails) {
+
+            if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
                 WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
                 return principal.getTenantId();
-            }
         }
         return 0;
     }
@@ -148,12 +147,11 @@ public class SecurityService {
     
     public Map<String, Object> getCustomAttributes() {
         Authentication authentication = getAuthenticatedAuthentication();
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof WMUserDetails) {
+
+            if (authentication != null && authentication.getPrincipal() instanceof WMUserDetails) {
                 WMUserDetails wmUserDetails = (WMUserDetails) authentication.getPrincipal();
                 return wmUserDetails.getCustomAttributes();
             }
-        }
         return null;
     }
 

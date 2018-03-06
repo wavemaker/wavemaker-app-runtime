@@ -42,6 +42,8 @@ import com.wavemaker.runtime.data.transform.WMResultTransformer;
 
 public class QueryHelper {
 
+    private QueryHelper(){}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
 
     private static final String EMPTY_SPACE = " ";

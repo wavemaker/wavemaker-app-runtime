@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package com.wavemaker.runtime.security.social;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.social.security.SocialUser;
@@ -35,20 +34,22 @@ public class OAuthAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         Assert.isInstanceOf(SocialAuthenticationToken.class, authentication, "unsupported authentication type");
         Assert.isTrue(!authentication.isAuthenticated(), "already authenticated");
         SocialAuthenticationToken socialAuthenticationToken = (SocialAuthenticationToken) authentication;
 
         OAuthAuthenticationRequestContext oAuthAuthenticationRequestContext = new OAuthAuthenticationRequestContext();
         oAuthAuthenticationRequestContext.setSocialAuthenticationToken(socialAuthenticationToken);
-        OAuthAuthenticationResponse oAuthAuthenticationResponse = oAuthUserDetailsProvider.getOAuthAuthenticationDetails(oAuthAuthenticationRequestContext);
+        OAuthAuthenticationResponse oAuthAuthenticationResponse = oAuthUserDetailsProvider
+                .getOAuthAuthenticationDetails(oAuthAuthenticationRequestContext);
 
         if (oAuthAuthenticationResponse == null) {
             throw new UsernameNotFoundException("Not a valid user");
         }
         SocialUser socialUser = oAuthAuthenticationResponse.getSocialUser();
-        return new SocialAuthenticationToken(socialAuthenticationToken.getConnection(), socialUser, socialAuthenticationToken.getProviderAccountData(), socialUser.getAuthorities());
+        return new SocialAuthenticationToken(socialAuthenticationToken.getConnection(), socialUser,
+                socialAuthenticationToken.getProviderAccountData(), socialUser.getAuthorities());
     }
 
     @Override

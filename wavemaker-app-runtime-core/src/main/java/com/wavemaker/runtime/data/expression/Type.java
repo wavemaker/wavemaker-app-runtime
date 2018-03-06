@@ -58,7 +58,7 @@ public enum Type implements Criteria {
             Criterion criterion;
             if (value instanceof Collection) {
                 final Collection values = (Collection) value;
-                if (values.size() == 0) {
+                if (values.isEmpty()) {
                     throw new IllegalArgumentException("Equals expression should have a collection/array of values with at-least one entry.");
                 }
                 criterion = Restrictions.in(name, values);

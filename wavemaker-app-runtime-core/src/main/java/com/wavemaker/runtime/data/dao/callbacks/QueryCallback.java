@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateCallback;
@@ -26,7 +25,7 @@ public class QueryCallback<R> implements HibernateCallback<R> {
     }
 
     @Override
-    public R doInHibernate(final Session session) throws HibernateException {
+    public R doInHibernate(final Session session) {
         final Query<R> query = queryProvider.getQuery(session, parametersProvider);
         return query.uniqueResultOptional()
                 .orElseThrow(() -> new EntityNotFoundException("No row exists"));
