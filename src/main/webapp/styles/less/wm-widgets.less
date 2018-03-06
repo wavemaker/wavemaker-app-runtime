@@ -1673,6 +1673,9 @@ body.modal-open {
         color: inherit;
       }
     }
+    ul.dropdown-menu a i {
+      font-size: inherit;
+    }
   }
   .thumbnail{
     margin-bottom: 0;
@@ -1924,6 +1927,9 @@ If the height and width are not specified the video takes the height of the post
       }
     }
   }
+  &[navigation="Pager"] {
+    overflow: hidden;
+  }
 }
 /********************************************************************************
 *********************************Grid classes **********************************
@@ -1958,10 +1964,21 @@ If the height and width are not specified the video takes the height of the post
       width: auto;
     }
   }
+  &[spacing="condensed"] {
+    .app-datagrid-actions .app-anchor {
+      font-size: 13px;
+    }
+  }
   .app-datagrid-actions {
     text-align: right;
     display: table-cell;
     vertical-align: top;
+    .app-anchor {
+      font-size: 15px;
+      .app-icon, .anchor-caption {
+        vertical-align: baseline;
+      }
+    }
     > .btn, .app-anchor {
       margin: 0.33em;
       &.disabled-new {
