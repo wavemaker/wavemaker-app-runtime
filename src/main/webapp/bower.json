@@ -5,15 +5,15 @@
     "dependencies": {
         "jquery": "2.2.3",
         "jquery-ui": "1.11.4",
-        "angular": "1.6.5",
-        "angular-animate": "1.6.5",
+        "angular": "1.6.9",
+        "angular-animate": "1.6.9",
         "bootstrap": "3.3.6",
         "font-awesome": "4.7.0",
-        "angular-sanitize": "1.6.5",
+        "angular-sanitize": "1.6.9",
         "angular-bootstrap-colorpicker": "https://github.com/buberdds/angular-bootstrap-colorpicker.git#v3.0.31",
-        "angular-route": "1.6.5",
-        "angular-scenario": "1.6.5",
-        "angular-cookies": "1.6.5",
+        "angular-route": "1.6.9",
+        "angular-scenario": "1.6.9",
+        "angular-cookies": "1.6.9",
         "angular-ui-bootstrap": "https://github.com/angular-ui/bootstrap-bower.git#v2.5.0",
         "angular-toaster": "https://github.com/jirikavi/AngularJS-Toaster.git#2.1.0",
         "textAngular": "https://github.com/fraywing/textAngular.git#v1.5.1",
@@ -21,7 +21,7 @@
         "nvd3": "https://github.com/novus/nvd3.git#v1.8.4",
         "placeholders": "4.0.1",
         "ocLazyLoad": "https://github.com/ocombe/ocLazyLoad.git#1.0.9",
-        "lodash": "https://github.com/lodash/lodash.git#4.17.4",
+        "lodash": "https://github.com/lodash/lodash.git#4.17.5",
         "hammerjs": "2.0.8",
         "animate.css": "4.0.0.alpha-1",
         "fullcalendar": "3.0.1",
@@ -35,7 +35,7 @@
     },
     "resolutions": {
         "d3": "v3.5.17",
-        "angular": "1.6.5",
+        "angular": "1.6.9",
         "fullcalendar": "3.0.1"
     },
     "exportsOverride": {
@@ -118,6 +118,9 @@
         },
         "ng-cordova-oauth": {
             ".": ["dist/ng-cordova-oauth.min.js"]
+        },
+        "lodash": {
+            ".": ["dist/lodash.js", "dist/lodash.min.js"]
         }
     }
 }
