@@ -200,7 +200,7 @@ public class ImageUtils {
         anchor.setCol2(colClientAnchorDetail.getToIndex());
         anchor.setRow2(rowClientAnchorDetail.getToIndex());
 
-        anchor.setAnchorType(ClientAnchor.MOVE_AND_RESIZE);
+        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
         return anchor;
     }
 

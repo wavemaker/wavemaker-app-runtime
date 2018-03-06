@@ -19,7 +19,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -135,7 +134,7 @@ public class ExportBuilder {
     private CellStyle columnHeaderStyle(Workbook workbook) {
         CellStyle columnNameStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setFontHeightInPoints((short) COLUMN_HEADER_FONT_SIZE);
         columnNameStyle.setWrapText(true);
         columnNameStyle.setFont(font);
