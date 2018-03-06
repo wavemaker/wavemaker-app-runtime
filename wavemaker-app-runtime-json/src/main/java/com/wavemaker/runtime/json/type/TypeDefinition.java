@@ -24,8 +24,7 @@ package com.wavemaker.runtime.json.type;
 public interface TypeDefinition {
 
     /**
-     * Checks if the TypeDefinition can be accessed through the {@link com.wavemaker.runtime.service.LiveDataService}
-     * APIs.
+     * Checks if the TypeDefinition can be accessed
      * 
      * @return True iff this type can be accessed through the LiveService interface.
      */
