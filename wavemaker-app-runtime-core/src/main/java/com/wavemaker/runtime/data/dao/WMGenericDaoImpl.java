@@ -241,10 +241,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 if (attributeValue instanceof Collection) {
                     Collection collection = (Collection) attributeValue;
                     Object[] objects = collection.toArray(new Object[collection.size()]);
-                    queryFilter.setAttributeValue(Arrays.asList(updateObjectsArray(objects, attributeType)));
+                    updateObjectsArray(objects, attributeType);
+                    queryFilter.setAttributeValue(Arrays.asList(objects));
                 } else if (attributeValue.getClass().isArray()) {
                     Object[] objects = (Object[]) attributeValue;
-                    objects = updateObjectsArray(objects, attributeType);
+                    updateObjectsArray(objects, attributeType);
                     queryFilter.setAttributeValue(objects);
                 } else {
                     queryFilter.setAttributeValue(getUpdatedAttributeValue(attributeValue, attributeType));
@@ -253,11 +254,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         }
     }
 
-    private Object[] updateObjectsArray(Object[] objects, AttributeType attributeType) {
+    private void updateObjectsArray(Object[] objects, AttributeType attributeType) {
         for (int i = 0; i < objects.length; i++) {
             objects[i] = getUpdatedAttributeValue(objects[i], attributeType);
         }
-        return objects;
     }
 
     private Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {

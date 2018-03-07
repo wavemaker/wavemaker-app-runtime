@@ -25,9 +25,9 @@ import java.net.URLConnection;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,7 +67,7 @@ public class WMMultipartUtils {
 
     public static final String WM_DATA_JSON = "wm_data_json";
 
-    public static final String BYTE_ARRAY = "byte[]";
+    private static final String BYTE_ARRAY = "byte[]";
 
     public static final String BLOB = "Blob";
 
@@ -91,7 +91,7 @@ public class WMMultipartUtils {
                 t = toObject(multipartFile, instance);
             }
             setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t, serviceId);
-        } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException | SQLException e) {
+        } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException e) {
             LOGGER.error("Exception while creating a new Instance with information: {}", t);
             throw new WMRuntimeException("Exception while preparing multipart request", e);
         }
@@ -125,12 +125,12 @@ public class WMMultipartUtils {
             if (BYTE_ARRAY.equals(type) || BLOB.equals(type)) {
                 String getMethodName = "get" + StringUtils.capitalize(field.getName());
                 try {
-                    Method getMethod = newInstance.getClass().getMethod(getMethodName, new Class<?>[]{});
-                    Object object = getMethod.invoke(newInstance, new Object[]{});
+                    Method getMethod = newInstance.getClass().getMethod(getMethodName);
+                    Object object = getMethod.invoke(newInstance);
                     if (object == null || (object instanceof byte[] && ((byte[]) object).length == 0)) {
                         String setMethodName = "set" + StringUtils.capitalize(field.getName());
                         Method setMethod = newInstance.getClass().getMethod(setMethodName, field.getType());
-                        Object oldObject = getMethod.invoke(oldInstance, new Object[]{});
+                        Object oldObject = getMethod.invoke(oldInstance);
                         setMethod.invoke(newInstance, oldObject);
                     }
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -144,7 +144,7 @@ public class WMMultipartUtils {
 
     private static <T> T setMultipartsToObject(
             Map<String, MultipartFile> multiparts, T instance,
-            String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
+            String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class aClass = instance.getClass();
         for (String part : multiparts.keySet()) {
             if (!part.equals(WM_DATA_JSON)) {
@@ -161,25 +161,19 @@ public class WMMultipartUtils {
 
     private static <T> T invokeMethod(
             T instance, InputStream inputStream, Method method, Field field,
-            String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
+            String serviceId) throws IOException, IllegalAccessException, InvocationTargetException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
             String content = WMIOUtils.toString(inputStream);
             method.invoke(instance, content);
-        } else if (BYTE_ARRAY.equals(field.getType().getSimpleName())) {
+        } else if (Objects.equals(BYTE_ARRAY, field.getType().getSimpleName())) {
             method.invoke(instance, byteArray);
-        } else if (BLOB.equals(field.getType().getSimpleName())) {
+        } else if (Objects.equals(BLOB, field.getType().getSimpleName())) {
             SessionFactory sessionFactory = WMAppContext.getInstance().getSpringBean(serviceId + "SessionFactory");
-            Session session = sessionFactory.openSession();
-            try {
-                session = sessionFactory.openSession();
+            try (Session session = sessionFactory.openSession()) {
                 Blob blob = Hibernate.getLobCreator(session)
                         .createBlob(new ByteArrayInputStream(byteArray), byteArray.length);
                 method.invoke(instance, blob);
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
             }
         } else {
             LOGGER.error("Casting multipart {} to {} is not supported", field.getName(),
@@ -305,14 +299,14 @@ public class WMMultipartUtils {
         String methodName = "get" + StringUtils.capitalize(fieldName);
         Method method = instance.getClass().getMethod(methodName);
         byte[] bytes = null;
-        if (BLOB.equals(method.getReturnType().getSimpleName())) {
+        if (Objects.equals(BLOB, method.getReturnType().getSimpleName())) {
             Blob blob = (Blob) method.invoke(instance);
             try {
                 bytes = (blob != null) ? IOUtils.toByteArray(blob.getBinaryStream()) : null;
             } catch (SQLException e) {
                 throw new WMRuntimeException("Failed to cast Blob content ", e);
             }
-        } else if (BYTE_ARRAY.equals(method.getReturnType().getSimpleName())) {
+        } else if (Objects.equals(BYTE_ARRAY, method.getReturnType().getSimpleName())) {
             bytes = (byte[]) method.invoke(instance);
         }
         if (bytes == null) {

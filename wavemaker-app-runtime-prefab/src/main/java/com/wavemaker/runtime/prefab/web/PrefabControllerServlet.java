@@ -16,7 +16,6 @@
 package com.wavemaker.runtime.prefab.web;
 
 import java.util.Map;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -89,7 +88,7 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
 @SuppressWarnings("serial")
 public class PrefabControllerServlet extends DispatcherServlet {
 
-    private UrlPathHelper urlPathHelper = new UrlPathHelper();
+    private final UrlPathHelper urlPathHelper = new UrlPathHelper();
     
     @Autowired
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;

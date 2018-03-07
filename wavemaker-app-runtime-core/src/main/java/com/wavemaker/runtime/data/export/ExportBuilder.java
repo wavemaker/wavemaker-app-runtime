@@ -16,7 +16,9 @@
 package com.wavemaker.runtime.data.export;
 
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -49,13 +51,15 @@ public class ExportBuilder {
         this.queryExtractor = queryExtractor;
     }
 
-    public Workbook build() {
+    public ByteArrayOutputStream build(
+            ExportType exportType, BiFunction<Workbook, ExportType, ByteArrayOutputStream> mappingFunction) {
         try {
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            Sheet spreadSheet = workbook.createSheet("Data");
-            fillSheet(spreadSheet);
-            autoSizeAllColumns(workbook);
-            return workbook;
+            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+                Sheet spreadSheet = workbook.createSheet("Data");
+                fillSheet(spreadSheet);
+                autoSizeAllColumns(workbook);
+                return mappingFunction.apply(workbook, exportType);
+            }
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while building report", e);
         }

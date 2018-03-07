@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,9 +20,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -112,8 +112,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 resolvableParams.add(new RuntimeParameter(parameter, params));
             }
 
-            return NativeProcedureExecutor.execute(template.getSessionFactory().openSession(),
-                    procedure.getProcedureString(), resolvableParams, type);
+            try (Session session = template.getSessionFactory().openSession()) {
+                return NativeProcedureExecutor.execute(session, procedure.getProcedureString(), resolvableParams, type);
+            }
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to execute Named Procedure", e);
         }

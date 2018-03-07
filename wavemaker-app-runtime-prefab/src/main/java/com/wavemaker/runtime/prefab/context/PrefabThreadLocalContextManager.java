@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrefabThreadLocalContextManager {
 
-    private ThreadLocal<ApplicationContext> activeContext = new ThreadLocal();
+    private ThreadLocal<ApplicationContext> activeContext = new ThreadLocal<>();
     
     public ApplicationContext getContext() {
         return activeContext.get();

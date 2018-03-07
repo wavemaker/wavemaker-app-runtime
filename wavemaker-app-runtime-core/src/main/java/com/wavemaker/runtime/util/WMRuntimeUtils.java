@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,20 +49,20 @@ public class WMRuntimeUtils {
 
     private WMRuntimeUtils(){}
 
-    private static boolean romePresent =
+    private static final boolean ROME_PRESENT =
             ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRuntimeUtils.class.getClassLoader());
 
-    private static final boolean jaxb2Present =
+    private static final boolean JAXB_2_PRESENT =
             ClassUtils.isPresent("javax.xml.bind.Binder", WMRuntimeUtils.class.getClassLoader());
 
-    private static final boolean jackson2Present =
+    private static final boolean JACKSON_2_PRESENT =
             ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRuntimeUtils.class.getClassLoader()) &&
                     ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", WMRuntimeUtils.class.getClassLoader());
 
-    private static final boolean jackson2XmlPresent =
+    private static final boolean JACKSON_2_XML_PRESENT =
             ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", WMRuntimeUtils.class.getClassLoader());
 
-    private static final boolean gsonPresent =
+    private static final boolean GSON_PRESENT =
             ClassUtils.isPresent("com.google.gson.Gson", WMRuntimeUtils.class.getClassLoader());
 
     private static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
@@ -79,19 +79,19 @@ public class WMRuntimeUtils {
         messageConverters.add(new SourceHttpMessageConverter<>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
         messageConverters.add(new FormHttpMessageConverter());
-        if (romePresent) {
+        if (ROME_PRESENT) {
             messageConverters.add(new AtomFeedHttpMessageConverter());
             messageConverters.add(new RssChannelHttpMessageConverter());
         }
-        if (jackson2XmlPresent) {
+        if (JACKSON_2_XML_PRESENT) {
             messageConverters.add(new MappingJackson2XmlHttpMessageConverter());
         }
-        if (jaxb2Present) {
+        if (JAXB_2_PRESENT) {
             messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
         }
-        if (jackson2Present) {
+        if (JACKSON_2_PRESENT) {
             messageConverters.add(new MappingJackson2HttpMessageConverter());
-        } else if (gsonPresent) {
+        } else if (GSON_PRESENT) {
             messageConverters.add(new GsonHttpMessageConverter());
         }
     }
@@ -101,16 +101,14 @@ public class WMRuntimeUtils {
     }
 
     public static boolean isLob(Class instance, String field) {
-        Field declaredField = null;
+        Field declaredField;
         try {
             declaredField = instance.getDeclaredField(field);
         } catch (NoSuchFieldException e) {
             throw new WMRuntimeException("Filed " + field + " does not exist in class " + instance.getName(), e);
         }
-        if (declaredField != null && (BYTE_ARRAY.equals(declaredField.getType().getSimpleName()) || BLOB.equals(declaredField.getType().getSimpleName()))) {
-            return true;
-        }
-        return false;
+        return declaredField != null && (Objects.equals(BYTE_ARRAY, declaredField.getType().getSimpleName())
+                || Objects.equals(BLOB, declaredField.getType().getSimpleName()));
     }
 
     public static String getContextRelativePath(File file, HttpServletRequest request) {

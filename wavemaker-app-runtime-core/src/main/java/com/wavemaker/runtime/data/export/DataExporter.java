@@ -29,12 +29,12 @@ import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
  */
 public class DataExporter {
 
-    private DataExporter(){}
+    private DataExporter() {
+    }
 
     public static ByteArrayOutputStream export(QueryExtractor extractor, ExportType exportType) {
         ExportBuilder exportBuilder = new ExportBuilder(extractor);
-        final Workbook workbook = exportBuilder.build();
-        return exportWorkbook(workbook, exportType);
+        return exportBuilder.build(exportType, DataExporter::exportWorkbook);
     }
 
     protected static ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
@@ -43,8 +43,8 @@ public class DataExporter {
             if (exportType == ExportType.EXCEL) {
                 workbook.write(outputStream);
             } else if (exportType == ExportType.CSV) {
-                CSVConverterUtil CSVConverterUtil = new CSVConverterUtil(workbook);
-                CSVConverterUtil.convert(outputStream);
+                CSVConverterUtil csvConverterUtil = new CSVConverterUtil(workbook);
+                csvConverterUtil.convert(outputStream);
             }
             return outputStream;
         } catch (IOException e) {
