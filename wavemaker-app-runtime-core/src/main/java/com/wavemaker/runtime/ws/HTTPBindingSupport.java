@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,10 +51,11 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.ReflectionUtils;
 
-import com.sun.xml.ws.developer.JAXWSProperties;
-import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.JAXBUtils;
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
@@ -155,7 +157,29 @@ public class HTTPBindingSupport {
                 throw new WebServiceException(e);
             }
         }
-        return XMLMessage.createDataSource(contentType, is);
+
+        String className = "com.sun.xml.internal.ws.encoding.xml.XMLMessage";
+        try {
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+            }
+            if (klass != null) {
+                Method method = ReflectionUtils.findMethod(klass, "createDataSource", new Class[]{String.class, InputStream.class});
+                if (method != null) {
+                    method.setAccessible(true);
+                    DataSource dataSource = (DataSource) ReflectionUtils.invokeMethod(method, null, contentType, is);
+                    return dataSource;
+                }
+                logger.error("Method {} not found in class {}", "createDataSource", klass.getName());
+                throw new WMRuntimeException("Failed to create DataSource for content-type " + contentType);
+            }
+            logger.error("Class {} not found in classloader {}", className, Thread.currentThread().getContextClassLoader());
+            throw new WMRuntimeException("Failed to create DataSource for content-type " + contentType);
+        } catch (Throwable e) {
+            logger.error("Class {} not found in classloader {}", className, Thread.currentThread().getContextClassLoader(), e);
+            throw new WMRuntimeException("Failed to create DataSource for contentType " + contentType, e);
+        }
     }
 
     @SuppressWarnings("unchecked")
