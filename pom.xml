@@ -59,7 +59,7 @@
         <poi.ooxml.version>3.17</poi.ooxml.version>
         <quartz.version>2.2.3</quartz.version>
         <antisamy.version>1.4</antisamy.version>
-        <jasperreports.version>6.4.1</jasperreports.version>
+        <jasperreports.version>6.5.1</jasperreports.version>
     </properties>
 
     <modules>
@@ -760,6 +760,12 @@
             </dependency>
 
             <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-wsdlto-frontend-jaxws</artifactId>
                 <version>${cxf-tools-wsdlto-frontend-jaxws.version}</version>
@@ -788,18 +794,15 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
-            <dependency>
-                <groupId>commons-validator</groupId>
-                <artifactId>commons-validator</artifactId>
-                <version>${commons.validator.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.springframework.security.extensions</groupId>
                 <artifactId>spring-security-saml2-core</artifactId>
                 <version>1.0.2.RELEASE</version>
                 <exclusions>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>xerces</groupId>
                         <artifactId>xercesImpl</artifactId>
@@ -835,6 +838,12 @@
                 <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports</artifactId>
                 <version>${jasperreports.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Start: Quartz framework -->
