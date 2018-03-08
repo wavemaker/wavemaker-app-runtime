@@ -625,7 +625,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
                 if (params.error && params.error.type === ERR_TYPE_NO_ACCESSTOKEN) {
                     oAuthProviderService.performAuthorization(undefined, params.securityDefnObj[OAUTH_PROVIDER_KEY], getDataInRun.bind(undefined, variable, options, success, errorCB));
-                    processErrorResponse(variable, params.error.message, errorCB, options.xheObj, true, true);
+                    processErrorResponse(variable, params.error.message, errorCB, options.xhrObj, true, true);
                     return;
                 }
                 if (params.error && params.error.message) {
