@@ -17,6 +17,7 @@ package com.wavemaker.runtime.web.filter;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,11 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.sun.syndication.feed.impl.ToStringBean;
-import com.sun.xml.bind.v2.ClassFactory;
-import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 
 /**
@@ -66,14 +66,18 @@ public class WMRequestFilter extends GenericFilterBean {
 
     private void cleanClassFactoryCache() {
         try {
-            String className = "com.sun.xml.bind.v2.ClassFactory";
+            String className = "com.sun.xml.internal.bind.v2.ClassFactory";
             Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
             if (klass == null) {
                 klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }
             if (klass != null) {
-                logger.debug("Calling cleanCache of {}", ClassFactory.class);
-                ClassFactory.cleanCache();
+                logger.debug("Calling cleanCache of com.sun.xml.internal.bind.v2.ClassFactory");
+                Method cleanCacheMethod = ReflectionUtils.findMethod(klass, "cleanCache");
+                if (cleanCacheMethod != null) {
+                    cleanCacheMethod.setAccessible(true);
+                    cleanCacheMethod.invoke(null, null);
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to clean ClassFactory Cache", e);
@@ -82,8 +86,8 @@ public class WMRequestFilter extends GenericFilterBean {
 
     private void clearThreadLocalServiceInterceptorFactory() {
         try {
-            String className = "com.sun.xml.ws.api.client.ServiceInterceptorFactory";
-            Class klass = ClassLoaderUtils.findLoadedClass(ServiceInterceptorFactory.class.getClassLoader(), className);
+            String className = "com.sun.xml.internal.ws.api.client.ServiceInterceptorFactory";
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
             if (klass == null) {
                 klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }

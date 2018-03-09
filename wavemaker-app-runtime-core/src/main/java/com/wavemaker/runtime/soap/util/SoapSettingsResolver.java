@@ -26,8 +26,8 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.xml.ws.developer.JAXWSProperties;
 import com.wavemaker.runtime.soap.SoapServiceSettings;
+import com.wavemaker.runtime.ws.JAXWSProperties;
 
 /**
  * @author Frankie Fu
