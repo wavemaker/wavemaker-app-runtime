@@ -780,7 +780,7 @@ wm.variables.services.$liveVariable = [
 
                     processBlobColumns(response.content, variable);
                     dataObj.data = response.content;
-                    dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults, "currentPage": response ? (response.number + 1) : null};
+                    dataObj.pagingOptions = {"dataSize": response.totalElements, "maxResults": variable.maxResults, "currentPage": response ? (response.number + 1) : null};
 
                     if (!options.skipDataSetUpdate) {
                         /* get the callback scope for the variable based on its owner */
@@ -1099,7 +1099,7 @@ wm.variables.services.$liveVariable = [
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                            prevCompositeKeysData = prevData || options.rowData || rowObject;
+                            prevCompositeKeysData = _.isEmpty(prevData) ? (options.rowData || rowObject) : prevData;
                             compositeKeysData = rowObject;
                         } else {
                             primaryKey.forEach(function (key) {
@@ -1544,7 +1544,7 @@ wm.variables.services.$liveVariable = [
                         });
 
                         /* if callback function is provided, send the data to the callback */
-                        Utils.triggerFn(success, response.content, undefined, {}, {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults});
+                        Utils.triggerFn(success, response.content, undefined, {}, {"dataSize": response.totalElements, "maxResults": variable.maxResults});
 
                     }, function (errorMsg) {
                         Utils.triggerFn(error, errorMsg);

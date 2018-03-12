@@ -1812,7 +1812,7 @@ $.widget('wm.datatable', {
                     template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
                     $el.html(template);
                 } else {
-                    $el.html(originalValue || '');
+                    $el.html(originalValue);
                 }
             }
         });
@@ -1861,7 +1861,7 @@ $.widget('wm.datatable', {
                     template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef, true);
                     $el.html(template);
                 } else {
-                    $el.html(originalValue || '');
+                    $el.html(originalValue);
                 }
             }
         });

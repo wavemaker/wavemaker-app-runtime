@@ -721,11 +721,6 @@ WM.module('wm.widgets.form')
                     option = {key: customObj || queryModel, value: queryModel, iscustom: true};
                 }
 
-                if(!option) {
-                    resetSearchModel($s, $event);
-                    return;
-                }
-
                 chipObj = $s.constructChip(option);
 
                 if (chipObj) {

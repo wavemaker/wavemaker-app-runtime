@@ -2713,7 +2713,7 @@ WM.module('wm.widgets.base', [])
                             $el.addClass(_.join(newClasses, ' '));
                         } else if (ov) {
                             isArray    = WM.isArray(ov);
-                            oldClasses = isArray ? ov : arrayClasses(ov, $el);
+                            oldClasses = isArray ? ov : arrayClasses(ov);
 
                             //update classes if old and nv value are different
                             updateClasses(oldClasses, newClasses, $el);

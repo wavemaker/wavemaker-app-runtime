@@ -2279,7 +2279,7 @@ WM.module('wm.utils', [])
             } else if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
                 downloadThroughAnchor(requestParams, success, error);
             } else {
-                downloadThroughIframe(requestParams, success, error);
+                downloadThroughIframe(requestParams, success);
             }
         }
 

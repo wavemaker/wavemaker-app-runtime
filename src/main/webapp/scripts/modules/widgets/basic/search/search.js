@@ -343,7 +343,7 @@ WM.module('wm.widgets.basic')
                     $is.query = inputVal;
 
                     if (_action === 'ENTER') {
-                        onsearchSubmit($navbarElScope, element);
+                        onsearchSubmit($navbarElScope);
                         $is.result = [];
                     }
                 }
@@ -410,7 +410,7 @@ WM.module('wm.widgets.basic')
                     /*listening on 'active' property, as losing the properties during page switch
                      if studio-mode, then update the displayField & dataField in property panel*/
                     if ($is.widgetid && newVal) {
-                        updatePropertyPanelOptions($is.dataset, $is, element);
+                        updatePropertyPanelOptions($is.dataset, $is);
                     }
                     break;
                 case 'type':
@@ -623,7 +623,7 @@ WM.module('wm.widgets.basic')
                         /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
                          with which we are resolving the promise
                          */
-                        setDataSet(data, $is, el, $s);
+                        setDataSet(data, $is, el);
                         // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
                         if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
                             deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));

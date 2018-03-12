@@ -213,7 +213,7 @@ WM.module('wm.widgets.live')
                     var widgetName                      = _.split($is.binddataset, '.')[1],
                         isBoundToLiveVariable           = (variableObj.category === 'wm.LiveVariable'),
                         isBoundToWidget                 = _.startsWith($is.binddataset, 'bind:Widgets.'),
-                        isBoundToFilter                 = _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter' || _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter',
+                        isBoundToFilter                 = _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter',
                         isBoundToQueryServiceVariable   = (variableObj.category === 'wm.ServiceVariable') && (variableObj.serviceType === 'DataService') && (variableObj.controller === 'QueryExecution');
                     // Make the "pageSize" property hidden so that no editing is possible for live and query service variables
                     $is.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable) || (isBoundToWidget ? !isBoundToFilter : false);

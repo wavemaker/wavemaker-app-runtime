@@ -2882,7 +2882,7 @@ WM.module('wm.widgets.live')
                 });
             },
             performOperation = function (operation, options) {
-                var fn,
+                var fn = WM.noop,
                     scope = options.scope,
                     successHandler = function (response) {
                         Utils.triggerFn(scope.liveActionSuccess, operation, response);

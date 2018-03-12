@@ -241,7 +241,7 @@ WM.module('wm.widgets.advanced')
             if (scope.widgetid) {
                 WidgetUtilService.updatePropertyPanelOptions(scope);
             }
-            createRatingOptions(scope.scopedataset, scope, element);
+            createRatingOptions(scope.scopedataset, scope);
         }
 
 

@@ -679,7 +679,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         processErrorResponse(variable, WS_CONSTANTS.HTTP_STATUS_CODE_MESSAGES[WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE], errorCB, xhrObj, options.skipNotification);
                     } else {
                         options.xhrObj = xhrObj;
-                        processSuccessResponse(response, variable, options, success, errorCB);
+                        processSuccessResponse(response, variable, options, success);
                     }
                 }, function (errorMsg, details, xhrObj) {
                     if (_.get(details, 'status') === WS_CONSTANTS.HTTP_STATUS_CODE.CORS_FAILURE) {

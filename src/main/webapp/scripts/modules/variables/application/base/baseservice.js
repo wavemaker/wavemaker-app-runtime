@@ -1149,7 +1149,7 @@ wm.variables.services.Variables = [
                 self.variableCollection = self.variableCollection || {};
 
                 /* get application level variables */
-                getAppVariables(activePage, function (appVariables, freshVariables) {
+                getAppVariables(function (appVariables, freshVariables) {
                     /*if the file is empty, initialize the collection to empty object*/
                     if (typeof appVariables !== 'object') {
                         appVariables = {};
@@ -2123,10 +2123,8 @@ wm.variables.services.Variables = [
              * Gets variables for specified contextx
              */
             'getByContext': function (pages) {
-                if (pages) {
-                    pages = pages || _.keys(pageScopeMap);
-                    return _.pick(self.variableCollection, pages);
-                }
+                pages = pages || _.keys(pageScopeMap);
+                return _.pick(self.variableCollection, pages);
             },
             /**
              * @ngdoc method
@@ -2148,7 +2146,6 @@ wm.variables.services.Variables = [
              */
             'getStudioCopy': function (pages) {
                 if (pages && pages.length) {
-                    pages = pages || _.keys(pageScopeMap);
                     return _.pick(self.studioCopy, pages);
                 }
                 return self.studioCopy;

@@ -191,7 +191,7 @@ WM.module('wm.widgets.advanced')
                 if (parentDataSet) {
                     Utils.updateTmplAttrs($tmpl, parentDataSet, attrs.name);
                 }
-                $tmpl = applyWrapper($tmpl, attrs);
+                $tmpl = applyWrapper($tmpl);
                 return $tmpl;
             }
 

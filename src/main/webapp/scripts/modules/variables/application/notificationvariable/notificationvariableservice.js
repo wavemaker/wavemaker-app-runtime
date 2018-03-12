@@ -57,7 +57,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     //check for the older projects not having content property in the variable
                     if (variable.dataBinding.content && variable.dataBinding.content === 'page') {
                         if (content) {
-                            wmToaster.createCustomNotification(content, variableName, variable.dataSet, timeout, positionClass, customNotificationOnClick, customNotificationOnHide, scope);
+                            wmToaster.createCustomNotification(content, variableName, variable.dataSet, timeout, positionClass, customNotificationOnClick, customNotificationOnHide);
                         }
                     } else {
                         wmToaster.show(type, "", body, timeout, undefined, customNotificationOnClick, customNotificationOnHide);
