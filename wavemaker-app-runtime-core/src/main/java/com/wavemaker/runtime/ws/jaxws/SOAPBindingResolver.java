@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.Objects;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 
@@ -95,12 +95,10 @@ public class SOAPBindingResolver {
             String wsBindingsProviderClassName = "com.sun.xml.internal.ws.developer.WSBindingProvider";
             Class<?>[] interfaces = ClassUtils.getAllInterfaces(service);
             for (Class interfaceClazz : interfaces) {
-                if (wsBindingsProviderClassName.equals(interfaceClazz.getName())) {
+                if (Objects.equals(wsBindingsProviderClassName, interfaceClazz.getName())) {
                     Method method = ReflectionUtils.findMethod(interfaceClazz, "setOutboundHeaders", List.class);
-                    if (method != null) {
-                        method.setAccessible(true);
-                        ReflectionUtils.invokeMethod(method, service, soapHeaders.toArray(new Object[soapHeaders.size()]));
-                    }
+                    method.setAccessible(true);
+                    ReflectionUtils.invokeMethod(method, service, soapHeaders.toArray(new Object[soapHeaders.size()]));
                     break;
                 }
             }
