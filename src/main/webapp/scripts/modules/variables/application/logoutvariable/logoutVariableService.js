@@ -51,9 +51,9 @@ wm.variables.services.LogoutVariableService = ['Variables',
                 handleError = function (msg) {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, msg);
+                        initiateCallback("onError", variable, msg || logoutErrorMessage, options);
                     }
-                    Utils.triggerFn(error, msg);
+                    Utils.triggerFn(error, msg || logoutErrorMessage);
                 };
 
                 $rootScope.$emit('toggle-variable-state', variable, true);
