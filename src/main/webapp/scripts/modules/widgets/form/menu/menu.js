@@ -63,7 +63,7 @@ WM.module('wm.widgets.form')
         function getMenuItems(newVal, scope) {
             var menuItems = [],
                 iconField     = scope.itemicon     || 'icon',
-                classField     = scope.itemicon    || 'class',
+                classField    = scope.itemclass    || 'class',
                 labelField    = scope.itemlabel    || 'label',
                 linkField     = scope.itemlink     || 'link',
                 actionField   = scope.itembadge    || 'action',
