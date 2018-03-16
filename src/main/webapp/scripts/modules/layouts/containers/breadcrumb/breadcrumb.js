@@ -63,7 +63,7 @@ WM.module('wm.layouts.containers')
                 iconField     = scope.itemicon     || 'icon',
                 labelField    = scope.itemlabel    || 'label',
                 linkField     = scope.itemlink     || 'link',
-                classField    = scope.itemlink     || 'class',
+                classField    = scope.itemclass    || 'class',
                 itemIdField   = scope.itemid       || 'itemid';
             _.forEach(newVal, function (item) {
                 nodes.push({
