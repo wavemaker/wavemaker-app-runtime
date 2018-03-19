@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -499,15 +498,7 @@ public class CleanupListener implements ServletContextListener {
                 }
             }
             if (!runningThreads.isEmpty()) {
-                logger.info("Waiting for interrupted threads to be finished in max of {} ms before it will be force killed", waitTimeOutInMillis);
                 join(runningThreads, waitTimeOutInMillis);
-                for (Thread thread : runningThreads) {
-                    if (thread.isAlive()) {
-                        logger.info("Force stopping thread {} as it is still alive", thread);
-                        thread.stop();
-                    }
-                }
-                join(runningThreads, 500);
                 for (Thread thread : runningThreads) {
                     if (thread.isAlive()) {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
@@ -533,7 +524,7 @@ public class CleanupListener implements ServletContextListener {
         return thread.isAlive() && thread != Thread.currentThread();
     }
 
-    private static final synchronized void join(List<Thread> threads, long millis) throws InterruptedException {
+    private static synchronized void join(List<Thread> threads, long millis) throws InterruptedException {
         if (millis < 0) {
             throw new IllegalArgumentException("timeout value is negative");
         } else if (millis == 0) {
