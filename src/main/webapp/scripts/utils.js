@@ -38,8 +38,8 @@ WM.module('wm.utils', [])
                 PAGE_RESOURCE_PATH: /^\/pages\/.*\.(js|css|html|json)$/,
                 MIN_PAGE_RESOURCE_PATH: /.*(page.min.html)$/,
                 VALID_EMAIL: /^[a-zA-Z][\w.+]+@[a-zA-Z_]+?\.[a-zA-Z.]{1,4}[a-zA-Z]$/,
-                VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
-                VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
+                VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //url-regex-validation
+                VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //WebSocket url-regex-validation
                 REPLACE_PATTERN: /\$\{([^\}]+)\}/g,
                 ZIP_FILE: /\.zip$/i,
                 EXE_FILE: /\.exe$/i,
@@ -528,7 +528,6 @@ WM.module('wm.utils', [])
         /*function to check if fn is a function and then execute*/
         function triggerFn(fn) {
             /* Use of slice on arguments will make this function not optimizable
-            * https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
             * */
 
             var start = 1, len = arguments.length, args = new Array(len - start);

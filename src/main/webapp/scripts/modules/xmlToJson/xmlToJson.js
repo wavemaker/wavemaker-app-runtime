@@ -146,7 +146,7 @@
         }
 
         function fromXmlDateTime(prop) {
-            // Implementation based up on http://stackoverflow.com/questions/8178598/xml-datetime-to-javascript-date-object
+            // converting XML DateTime to Javascript Date Object
             // Improved to support full spec and optional parts
             var bits = prop.split(/[-T:+Z]/g);
 
