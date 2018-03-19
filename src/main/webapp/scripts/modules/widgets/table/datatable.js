@@ -438,15 +438,15 @@ $.widget('wm.datatable', {
     _getCheckboxTemplate: function (row, isMultiSelectCol) {
         var checked        = row.checked ? ' checked' : '',
             disabled       = row.disabed ? ' disabled' : '',
-            chkBoxName     = isMultiSelectCol ? 'rowMultiSelectInput' : '';
-        return '<input ' + chkBoxName + ' type="checkbox"' + checked + disabled + '/>';
+            chkBoxName     = isMultiSelectCol ? 'gridMultiSelect' : '';
+        return '<input name="' + chkBoxName + '" type="checkbox"' + checked + disabled + '/>';
     },
 
     /* Returns the radio template. */
     _getRadioTemplate: function (row) {
         var checked = row.checked ? ' checked' : '',
             disabled = row.disabed ? ' disabled' : '';
-        return '<input type="radio" rowSelectInput name="" value=""' + checked + disabled + '/>';
+        return '<input type="radio" name="" value=""' + checked + disabled + '/>';
     },
 
     /* Returns the table cell template. */
@@ -1277,12 +1277,12 @@ $.widget('wm.datatable', {
             $row.removeClass('active');
         }
         if (this.options.showRadioColumn) {
-            $radio = $row.find('td input[rowSelectInput]:radio:not(:disabled)');
+            $radio = $row.find('td input:radio:not(:disabled)');
             $radio.prop('checked', selected);
             this.preparedData[rowId].checked = selected;
         }
         if (this.options.multiselect) {
-            $checkbox = $row.find('td input[rowMultiSelectInput]:checkbox:not(:disabled)');
+            $checkbox = $row.find('td input[name="gridMultiSelect"]:checkbox:not(:disabled)');
             $checkbox.prop('checked', selected);
             this.preparedData[rowId].checked = selected;
             this.updateSelectAllCheckboxState();
@@ -1300,7 +1300,7 @@ $.widget('wm.datatable', {
         this.__setStatus();
         var $headerCheckbox = this.gridHeader.find('th.app-datagrid-header-cell input:checkbox'),
             $tbody = this.gridElement.find('tbody'),
-            checkedItemsLength = $tbody.find('tr:visible input[rowMultiSelectInput]:checkbox:checked').length,
+            checkedItemsLength = $tbody.find('tr:visible input[name="gridMultiSelect"]:checkbox:checked').length,
             visibleRowsLength = $tbody.find('tr:visible').length;
 
         if (!visibleRowsLength) {
@@ -1946,7 +1946,7 @@ $.widget('wm.datatable', {
             var id = $(this).attr('data-row-id'),
                 preparedData = self.preparedData[id];
             if (id !== rowId && preparedData) {
-                $(this).find('input[rowSelectInput]:radio').prop('checked', false);
+                $(this).find('input:radio').prop('checked', false);
                 preparedData.selected = preparedData.checked = false;
                 $(this).removeClass('active');
             }
@@ -2427,7 +2427,7 @@ $.widget('wm.datatable', {
         }
         $header   = headerTemplate.header;
         function toggleSelectAll(e) {
-            var $checkboxes = $('tbody tr:visible td input[rowMultiSelectInput]:checkbox', self.gridElement),
+            var $checkboxes = $('tbody tr:visible td input[name="gridMultiSelect"]:checkbox', self.gridElement),
                 checked = this.checked;
             $checkboxes.prop('checked', checked);
             $checkboxes.each(function () {
