@@ -21,7 +21,6 @@ WM.module('wm.layouts.containers')
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
-                    'itemclass'    : true,
                     'itemicon'     : true,
                     'itemlabel'    : true,
                     'itemlink'     : true,
@@ -51,7 +50,6 @@ WM.module('wm.layouts.containers')
                     $is.newcolumns   = false;
                     $is.itemlabel    = '';
                     $is.itemchildren = '';
-                    $is.itemclass    = '';
                     $is.itemicon     = '';
                     $is.itemlink     = '';
 
@@ -59,7 +57,6 @@ WM.module('wm.layouts.containers')
                         'itemlabel'   : $is.itemlabel,
                         'itemchildren': $is.itemchildren,
                         'itemicon'    : $is.itemicon,
-                        'itemclass'   : $is.itemclass,
                         'itemlink'    : $is.itemlink
                     });
                 }
@@ -75,34 +72,30 @@ WM.module('wm.layouts.containers')
 
                 if ($is.nodes && $is.nodes.length) {
                     var iconField     = $is.itemicon     || 'icon',
-                        classField    = $is.itemclass    || 'class',
                         labelField    = $is.itemlabel    || 'label',
                         itemField     = $is.itemlink     || 'link',
-                        badgeField    = $is.itembadge    || 'badge',
-                        actionField   = $is.itembadge    || 'action',
                         childrenField = $is.itemchildren || 'children',
                         userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
                         if (Utils.validateAccessRoles(node[userRole])) {
                             result.push(node);
-                            var $a            = WM.element('<a class="app-anchor"></a>'),
-                                $a_caption    = WM.element('<span class="anchor-caption"></span>'),
-                                $li           = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
-                                $i            = WM.element('<i class="app-nav-icon"></i>'),
-                                $badge        = WM.element('<span class="badge"></span>'),
-                                itemLabel     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlabel'})    || node[labelField],
-                                itemClass     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemclass'})   || node[classField],
-                                itemIconClass = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemicon'}) || node[iconField],
-                                itemLink      = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'})     || node[itemField],
-                                itemBadge     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itembadge'})    || node[badgeField],
-                                itemAction    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'})   || node[actionField],
-                                itemChildren  = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node[childrenField],
+                            var $a           = WM.element('<a class="app-anchor"></a>'),
+                                $a_caption   = WM.element('<span class="anchor-caption"></span>'),
+                                $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
+                                $i           = WM.element('<i class="app-nav-icon"></i>'),
+                                $badge       = WM.element('<span class="badge"></span>'),
+                                itemLabel    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlabel'}) || node.label,
+                                itemClass    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemicon'}) || node.icon,
+                                itemLink     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}) || node.link,
+                                itemBadge    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itembadge'}) || node.badge,
+                                itemAction   = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'}) || node.action,
+                                itemChildren = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node.children,
                                 $menu;
 
                             // menu widget expects data as an array.
                             // push the current object as an array into the internal array
-                            $is._nodes[index] = _.get(node, childrenField);
+                            $is._nodes[index] = node[childrenField];
                             //itemLink can be #/routeName or #routeName
                             if (WidgetUtilService.isActiveNavItem(itemLink, $routeParams.name)) {
                                 $li.addClass('active');
@@ -119,24 +112,23 @@ WM.module('wm.layouts.containers')
                                     'itemlink'    : $is.binditemlink || itemField,
                                     'itemaction'  : itemAction,
                                     'itemicon'    : $is.binditemicon || iconField,
-                                    'itemclass'   : $is.binditemclass || classField,
                                     'itemchildren': $is.binditemchildren || childrenField,
                                     'userrole'    : $is.binduserrole || userRole,
                                     'type'        : 'anchor',
-                                    'iconclass'   : itemIconClass || '',
+                                    'iconclass'   : itemClass || '',
                                     'on-select'   : '_onMenuItemSelect($event, $item)',
                                     'autoclose'   : $is.autoclose
                                 });
 
-                                $li.addClass(itemClass).append($menu);
+                                $li.append($menu);
                                 $el.append($li);
                             } else {
-                                $i.addClass(itemIconClass);
+                                $i.addClass(itemClass);
                                 $a.append($a_caption.html(itemLabel)).prepend($i);
                                 if (itemBadge) {
                                     $a.append($badge.html(itemBadge));
                                 }
-                                $li.addClass(itemClass).append($a);
+                                $li.append($a);
                                 $el.append($li);
                             }
                         }
@@ -168,7 +160,6 @@ WM.module('wm.layouts.containers')
                     }
                     break;
                 case 'itemicon':
-                case 'itemclass':
                 case 'itemlabel':
                 case 'itemlink':
                 case 'itemchildren':
