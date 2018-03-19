@@ -249,7 +249,7 @@ WM.module('wm.widgets.advanced')
                     'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
                     'threshold': 5,
                     'bounds': function () {
-                        var items = this.find('.app-carousel-item');
+                        var items = this.find('>.app-carousel-item');
 
                         // initialise the state properties.
                         state.activeIndex = $scope.activeIndex;
@@ -274,7 +274,8 @@ WM.module('wm.widgets.advanced')
                     'animation': [{
                         'target': getTarget.bind(undefined, state),
                         'css': {
-                            'transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)'
+                            'transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)',
+                            '-webkit-transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)'
                         }
                     }],
                     'onLower': function () {
@@ -363,8 +364,9 @@ WM.module('wm.widgets.advanced')
                                 var oldElement,
                                     newElement,
                                     oldIndex,
-                                    content = $el.find('.carousel-inner'),
-                                    items = content.find('.app-carousel-item');
+                                    content = $el.find('>.carousel-inner'),
+                                    items = content.find('>.app-carousel-item'),
+                                    elScope;
 
                                 index = (items.length + index) % items.length;
 
@@ -401,7 +403,10 @@ WM.module('wm.widgets.advanced')
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
                                     $el.find('.ng-isolate-scope')
                                         .each(function () {
-                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                            elScope = WM.element(this).isolateScope();
+                                            if (elScope) {
+                                                Utils.triggerFn(elScope.redraw);
+                                            }
                                         });
                                 }
                             };
@@ -483,7 +488,7 @@ WM.module('wm.widgets.advanced')
                                 }));
                                 $is.noWrapSlides = false;
                                 $is.onSwipe = function (direction) {
-                                    $innerCarousel = $el.find('.carousel-inner').scope();
+                                    $innerCarousel = $el.find('>.carousel-inner').scope();
                                     if (direction === 'left') {
                                         $innerCarousel.next();
                                     } else {

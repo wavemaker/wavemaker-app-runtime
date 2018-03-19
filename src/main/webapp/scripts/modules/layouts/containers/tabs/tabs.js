@@ -78,7 +78,8 @@ WM.module('wm.layouts.containers')
                     };
                 },
                 'animation': {
-                    'transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)'
+                    'transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)',
+                    '-webkit-transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)'
                 },
                 'onLower': function () {
                     $scope.next();

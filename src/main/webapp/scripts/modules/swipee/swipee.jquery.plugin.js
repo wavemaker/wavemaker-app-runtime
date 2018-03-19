@@ -231,6 +231,7 @@ window.requestAnimationFrame = (function () {
         settings.swipeTarget.addEventListener('mousemove', swipeHandler);
         settings.swipeTarget.addEventListener('touchmove', swipeHandler);
         document.addEventListener('mouseup', swipeEndHandler);
+        document.addEventListener('touchcancel', swipeEndHandler);
         document.addEventListener('touchend', swipeEndHandler);
         // remove if there are any destroyListeners already present on setting object.
         settings.destroyListeners && settings.destroyListeners();
@@ -238,6 +239,7 @@ window.requestAnimationFrame = (function () {
             settings.swipeTarget.removeEventListener('mousemove', swipeHandler);
             settings.swipeTarget.removeEventListener('touchmove', swipeHandler);
             document.removeEventListener('mouseup', swipeEndHandler);
+            document.removeEventListener('touchcancel', swipeEndHandler);
             document.removeEventListener('touchend', swipeEndHandler);
             settings.destroyListeners = $.noop;
         };
@@ -273,6 +275,7 @@ window.requestAnimationFrame = (function () {
             settings.swipeTarget.removeEventListener('mousemove', passiveSwipeHandler);
             settings.swipeTarget.removeEventListener('touchmove', passiveSwipeHandler);
             document.removeEventListener('mouseup', destroyListeners);
+            document.removeEventListener('touchcancel', destroyListeners);
             document.removeEventListener('touchend', destroyListeners);
             settings.scrollObserver = null;
         };
@@ -285,6 +288,7 @@ window.requestAnimationFrame = (function () {
         settings.swipeTarget.addEventListener('mousemove', passiveSwipeHandler);
         settings.swipeTarget.addEventListener('touchmove', passiveSwipeHandler);
         document.addEventListener('mouseup', destroyListeners);
+        document.addEventListener('touchcancel', destroyListeners);
         document.addEventListener('touchend', destroyListeners);
     }
 
