@@ -31,7 +31,7 @@ WM.module('wm.widgets.form')
                 '</ul>'
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
-                '<li ng-class="[item.class, {\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}]">' +
+                '<li ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
                     '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}">' +
                     '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '<i class="app-icon {{item.icon}}"></i>' +
@@ -62,13 +62,6 @@ WM.module('wm.widgets.form')
 
         function getMenuItems(newVal, scope) {
             var menuItems = [],
-                iconField     = scope.itemicon     || 'icon',
-                classField     = scope.itemicon    || 'class',
-                labelField    = scope.itemlabel    || 'label',
-                linkField     = scope.itemlink     || 'link',
-                actionField   = scope.itembadge    || 'action',
-                childrenField = scope.itemchildren || 'children',
-                userField     = scope.userrole     || 'role',
                 transformFn;
             if (WM.isString(newVal)) {
                 menuItems = newVal.split(',').map(function (item) {
@@ -82,19 +75,18 @@ WM.module('wm.widgets.form')
                 newVal = FormWidgetUtils.getOrderedDataSet(newVal, scope.orderby);
                 if (WM.isObject(newVal[0])) {
                     transformFn = function (result, item) {
-                        var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item[childrenField]);
+                        var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item.children);
 
                         if (Utils.validateAccessRoles(item[scope.userrole])) {
                             result.push({
-                                'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'})  || item[labelField],
-                                'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})   || item[iconField],
-                                'class'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'})  || item[classField],
+                                'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
+                                'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
                                 'disabled'  : item.disabled,
-                                'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})   || item[linkField],
+                                'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link,
                                 'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
                                 'children'  : (WM.isArray(children) ? children : []).reduce(transformFn, []),
-                                'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
-                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'})   || item[userField]
+                                'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item.action,
+                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'})
                             });
                         }
 
