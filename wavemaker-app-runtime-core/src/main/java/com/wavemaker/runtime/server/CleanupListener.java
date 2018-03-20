@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import javax.management.InstanceNotFoundException;
@@ -56,8 +55,6 @@ import com.sun.jndi.ldap.Connection;
 import com.sun.jndi.ldap.LdapClient;
 import com.sun.jndi.ldap.LdapPoolManager;
 import com.sun.naming.internal.ResourceManager;
-import com.sun.org.apache.xml.internal.resolver.Catalog;
-import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -126,7 +123,6 @@ public class CleanupListener implements ServletContextListener {
             deRegisterOracleDiagnosabilityMBean();
             typeFactoryClearTypeCache();
             resourceManagerClearPropertiesCache();
-            clearReaderArrCatalogManager();
             //clearCacheSourceAbstractClassGenerator();
             clearThreadConnections();
             cleanupMBeanNotificationListeners();
@@ -355,25 +351,6 @@ public class CleanupListener implements ServletContextListener {
             } catch (Throwable e) {
                 logger.warn("Failed to Clear TypeCache from {}", className, e);
             }
-        }
-    }
-
-    /**
-     * Added by akritim
-     * To clear ReaderArr in CatalogManager
-     */
-    private void clearReaderArrCatalogManager() {
-        try {
-            logger.info("Attempt to clear readerArr field of type Vector from class {}", Catalog.class);
-            Catalog catalog = CatalogManager.getStaticManager().getCatalog();
-            Field readerArrField = Catalog.class.getDeclaredField("readerArr");
-            readerArrField.setAccessible(true);
-            Vector reader = (Vector) readerArrField.get(catalog);
-            if (reader != null) {
-                reader.clear();
-            }
-        } catch (Throwable e) {
-            logger.warn("Failed to clear readArr from catalog", e);
         }
     }
 
