@@ -559,12 +559,6 @@
                 <artifactId>cglib</artifactId>
                 <version>3.1</version>
             </dependency>
-
-            <dependency>
-                <groupId>com.sun.org.apache.xml.internal</groupId>
-                <artifactId>resolver</artifactId>
-                <version>20050927</version>
-            </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
