@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'Utils', '$location', 'CONSTANTS', '$rootScope', function (PropertiesFactory, WidgetUtilService, Utils, $location, CONSTANTS, $rs) {
+    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'Utils', '$location', 'CONSTANTS', '$rootScope', '$timeout', function (PropertiesFactory, WidgetUtilService, Utils, $location, CONSTANTS, $rs, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.containers', 'wm.menu.dataProps']),
             notifyFor = {
@@ -64,14 +64,16 @@ WM.module('wm.layouts.containers')
                 labelField    = scope.itemlabel    || 'label',
                 linkField     = scope.itemlink     || 'link',
                 classField    = scope.itemclass    || 'class',
+                actionField   = scope.itemaction   || 'action',
                 itemIdField   = scope.itemid       || 'itemid';
             _.forEach(newVal, function (item) {
                 nodes.push({
                     'id'       : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemid'})    || item[itemIdField],
-                    'link'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})  || item[linkField],
                     'icon'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})  || item[iconField],
                     'class'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'}) || item[classField],
-                    'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item[labelField]
+                    'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item[labelField],
+                    'action'   : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
+                    'link'     : Utils.getHref(scope, item, WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}), scope.hasOnBeforeNavigate, item.action, linkField)
                 });
             });
             return nodes;
@@ -138,7 +140,7 @@ WM.module('wm.layouts.containers')
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
                     '<li ng-repeat="item in nodes track by $index" ng-class="[item.class, {\'active\':$last}]">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" href="javascript:void(0)" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
+                        '<a title="{{item.label}}" ng-href="{{item.link || \'javascript:void(0)\'}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',
@@ -155,6 +157,8 @@ WM.module('wm.layouts.containers')
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, $el, attrs);
 
+                    //Set hasOnBeforeNavigate only when there is onBeforenavigate event on the widget
+                    scope.hasOnBeforeNavigate = !!attrs.onBeforenavigate;
                     if (!attrs.widgetid && attrs.scopedataset) {
                         scope.$watch('scopedataset', function (newVal) {
                             onPropertyChange('scopedataset', newVal);
@@ -162,6 +166,14 @@ WM.module('wm.layouts.containers')
                     }
 
                     if (CONSTANTS.isRunMode) {
+                        $timeout(function() {
+                            $el.find('a').each(function(i, el){
+                                if (el.href === 'javascript:void(0)') {
+                                    //Disable right click on the element when link is empty
+                                    Utils.disableRightClick(WM.element(el));
+                                }
+                            });
+                        });
                         scope.onItemClick = function ($item) {
                             var link = $item.link || '',
                                 navFn = scope.onBeforenavigate,

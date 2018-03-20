@@ -61,7 +61,26 @@ Application
         'DATEPICKER_DROPDOWN_OPTIONS' : {
             'BUTTON': 'button',
             'DEFAULT': 'default'
-}
+        },
+        'KEYBOARD_MOVEMENTS' : {
+            'MOVE_UP'    : 'UP-ARROW',
+            'MOVE_LEFT'  : 'LEFT-ARROW',
+            'MOVE_RIGHT' : 'RIGHT-ARROW',
+            'MOVE_DOWN'  : 'DOWN-ARROW',
+            'ON_ENTER'   : 'ENTER',
+            'ON_TAB'     : 'TAB'
+        },
+        'MENU_LAYOUT_TYPE': {
+            'HORIZONTAL': 'horizontal',
+            'VERTICAL': 'vertical'
+        },
+        'MENU_POSITION': {
+            'UP_LEFT': 'up,left',
+            'UP_RIGHT': 'up,right',
+            'DOWN_LEFT': 'down,left',
+            'DOWN_RIGHT':'down,right',
+            'INLINE': 'inline'
+        }
     })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(
@@ -79,6 +98,8 @@ Application
                 Application.$controller = $controllerProvider.register;
                 Application.$directive  = $compileProvider.directive;
                 Application.$filter     = $filterProvider.register;
+
+                $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|javascript):/);
 
                 $httpProvider.useApplyAsync(true);
                 $controllerProvider.allowGlobals();

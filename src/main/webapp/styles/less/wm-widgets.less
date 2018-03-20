@@ -466,7 +466,7 @@ html, body {
         display: table-cell;
       }
       //Sub menu position
-      .dropdown-submenu:hover {
+      .dropdown-submenu:hover, .dropdown-submenu.open {
         > .dropdown-menu {
           left: 0;
           top: 100%;
@@ -505,7 +505,7 @@ html, body {
       position: relative;
     }
   }
-  .dropdown-submenu:hover {
+  .dropdown-submenu:hover, .dropdown-submenu.open {
     > .dropdown-menu{
       &.pull-right{
         float: right;
@@ -532,7 +532,7 @@ html, body {
         }
     }
   }
-  &.dropup .dropdown-submenu:hover{
+  &.dropup .dropdown-submenu:hover, &.dropup .dropdown-submenu.open{
     > .dropdown-menu{
         display: block;
         left: 100%;
