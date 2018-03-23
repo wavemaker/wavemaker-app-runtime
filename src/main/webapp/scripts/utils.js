@@ -2635,7 +2635,7 @@ WM.module('wm.utils', [])
             }
             var jsonVal = getValidJSON(val);
             if (jsonVal && jsonVal instanceof Object) {
-                val = new Blob([jsonVal], {type: valContentType || 'application/json'});
+                val = new Blob([WM.toJson(jsonVal)], {type: valContentType || 'application/json'});
             } else {
                 val = new Blob([val], {type: valContentType || 'text/plain'});
             }
