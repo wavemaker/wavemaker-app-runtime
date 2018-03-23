@@ -2549,6 +2549,19 @@ WM.module('wm.utils', [])
             loadStyleSheet(getProjectResourcePath($rootScope.project.id) + 'themes/' + themeName + '/style.css', {name: "theme", value: "wmtheme"});
         }
 
+        //returns true if there are any conflicts in the project and they need to be resolved first
+        function isResolveConflictsExists(actionResponse) {
+            var conflictsFlag = false,
+                actionsInfo;
+            if (!_.isEmpty(actionResponse)) {
+                actionsInfo = _.groupBy(actionResponse, 'type');
+                if (actionsInfo.RESOLVE_CONFLICTS) {
+                    conflictsFlag = true;
+                }
+            }
+            return conflictsFlag;
+        }
+
         // returns false if the application is served on https and the requested url is not secure
         function isInsecureContentRequest(url) {
 
@@ -3012,6 +3025,7 @@ WM.module('wm.utils', [])
         this.convertToArray             = convertToArray;
         this.pluginConfig               = pluginConfig;
         this.loadActiveTheme            = loadActiveTheme;
+        this.isResolveConflictsExists   = isResolveConflictsExists;
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
