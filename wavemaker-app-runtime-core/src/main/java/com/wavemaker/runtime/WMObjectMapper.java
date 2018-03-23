@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -54,6 +55,7 @@ import com.wavemaker.commons.json.deserializer.WMDateDeSerializer;
 import com.wavemaker.commons.json.deserializer.WMSqlDateDeSerializer;
 import com.wavemaker.commons.json.serializer.NoOpByteArraySerializer;
 import com.wavemaker.commons.json.serializer.WMLocalDateTimeSerializer;
+import com.wavemaker.runtime.mixins.SliceMixin;
 
 public class WMObjectMapper extends ObjectMapper {
 
@@ -311,6 +313,8 @@ public class WMObjectMapper extends ObjectMapper {
             configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
             setConfig(getSerializationConfig().withView(Object.class));
 
+            // mixing to ignore pageable field from page response.
+            addMixIn(Slice.class, SliceMixin.class);
 
             Hibernate5Module hibernate5Module = new Hibernate5Module();
             hibernate5Module.disable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
