@@ -176,7 +176,7 @@ WM.module('wm.layouts.containers')
                     }
 
                     if (tab) {
-                        tabContent =  $element.find('.tab-content');
+                        tabContent =  $element.find('>.tab-content');
                         hasSwipeTransition = tabContent.hasClass('swipee-transition');
 
                         // add left position only when element is not having swipe.
@@ -196,15 +196,17 @@ WM.module('wm.layouts.containers')
 
                 // This function assigns the width and transform values on the tab content.
                 this.setTabsLeftAndWidth = function (activeIndex) {
-                    var content = $element.find('.tab-content'),
-                        noOfTabs = content.find('.tab-pane').length;
+                    var content = $element.find(' > .tab-content'),
+                        $childEls = content.find('>.tab-pane'),
+                        noOfTabs = $childEls.length;
 
                     // set width on the tab-content
                     content.css({
                         'max-width': noOfTabs * 100 + '%',
                         'width': noOfTabs * 100 + '%'
                     });
-                    content.find('.tab-pane').css({
+
+                    $childEls.css({
                         'width': 100 / noOfTabs + '%'
                     });
 
@@ -242,7 +244,7 @@ WM.module('wm.layouts.containers')
                         tab,
                         $li,
                         $ul = element.find('> ul'),
-                        content = element.find('.tab-content'),
+                        content = element.find('>.tab-content'),
                         transition = attrs.transition || scope.transition,
                         tabsPosition =  attrs.tabsposition || scope.tabsposition;
 
@@ -496,7 +498,10 @@ WM.module('wm.layouts.containers')
                             /* some widgets like charts needs to be redrawn when a tab becomes active for the first time */
                             element.find('.ng-isolate-scope')
                                 .each(function () {
-                                    Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                    var elScope = WM.element(this).isolateScope();
+                                    if (elScope) {
+                                        Utils.triggerFn(elScope.redraw);
+                                    }
                                 });
                             scope.isActive = true;
 

@@ -220,9 +220,11 @@ window.requestAnimationFrame = (function(callback) {
             return false;
         }
         swipeHandler = function(em) {
+            em.preventDefault();
             onActiveSwipe(em, settings);
         };
         swipeEndHandler = function(ee) {
+            ee.preventDefault();
             onActiveSwipeEnd(ee, settings);
         };
         SwipeTracer.onSwipeStart(event, settings.data);
@@ -252,18 +254,29 @@ window.requestAnimationFrame = (function(callback) {
         return abs(distance) > settings.threshold;
     }
 
+    function getAndroidVersion() {
+        var match = (navigator.userAgent.toLowerCase()).match(/android\s([0-9\.]*)/);
+        return match ? match[1] : false;
+    }
+
     function listenPassiveSwipe(touch, settings) {
         var passiveSwipeHandler,
             destroyListeners;
         settings.scrollObserver = new ScrollObserver(event.currentTarget, event.target, settings.direction);
         discardSwipe = 0;
         passiveSwipeHandler = function(em) {
+            em.preventDefault();
             var distance;
             if (discardSwipe) {
                 destroyListeners();
             } else if (isThresholdReached(getTouchEvent(em), settings)) {
                 if (settings.scrollObserver.hasSrcolled() || listenActiveSwipe(em, settings)) {
                     discardSwipe = 1;
+                    // check for kitkat version.
+                    if (parseInt(getAndroidVersion(), 10) === 4) {
+                        settings.data.length = settings.data.length * 100;
+                        onActiveSwipeEnd(em, settings);
+                    }
                 }
             }
         };

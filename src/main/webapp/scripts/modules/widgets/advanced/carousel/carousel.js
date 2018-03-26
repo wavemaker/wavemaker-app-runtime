@@ -63,8 +63,7 @@ WM.module('wm.widgets.advanced')
                 directiveDefn,
                 notifyFor,
                 slideTemplateWrapper,
-                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'},
-                isMoving = false;
+                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
 
             widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
             notifyFor = CONSTANTS.isStudioMode ? {
@@ -221,7 +220,7 @@ WM.module('wm.widgets.advanced')
                 $ele.swipee({
                     'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
                     'onSwipeStart': function () {
-                        var items = this.find('.app-carousel-item');
+                        var items = this.find('>.app-carousel-item');
                         state.activeIndex = $scope.activeIndex;
                         state.noOfItems = items.length;
                         state.activeItem = items.eq(state.activeIndex);
@@ -321,15 +320,15 @@ WM.module('wm.widgets.advanced')
                         item.removeClass('right-item left-item');
                     }
                     item.css({
-                        '-webkit-transition': '-webkit-transform 0.1s linear',
+                        '-webkit-transition': '-webkit-transform 1s linear',
                         '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
-                        'transition': 'transform 0.1s linear',
+                        'transition': 'transform 1s linear',
                         'transform': 'translate3d(' + tx + '%, 0, 0)'
                     });
                     follower.css({
-                        '-webkit-transition': '-webkit-transform 0.1s linear',
+                        '-webkit-transition': '-webkit-transform 1s linear',
                         '-webkit-transform': 'translate3d(' + tx + '%, 0, 0)',
-                        'transition': 'transform 0.1s linear',
+                        'transition': 'transform 1s linear',
                         'transform': 'translate3d(' + tx + '%, 0, 0)'
                     });
                 });
@@ -348,7 +347,7 @@ WM.module('wm.widgets.advanced')
                     });
                     // execute the callback fn.
                     callback.success();
-                }, 150);
+                }, 1500);
                 return callback;
             }
 
@@ -422,14 +421,18 @@ WM.module('wm.widgets.advanced')
                             if (attrs.widgetid) {
                                 widgetProps.currentslide.show = false;
                             }
+
+                            $is.isMoving = false;
+
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index, direction) {
                                 var ltr,
                                     oldElement,
                                     newElement,
                                     oldIndex,
-                                    content = $el.find('.carousel-inner'),
-                                    items = content.find('.app-carousel-item');
+                                    content = $el.find('>.carousel-inner'),
+                                    items = content.find('>.app-carousel-item'),
+                                    elScope;
 
                                 index = (items.length + index) % items.length;
 
@@ -451,8 +454,8 @@ WM.module('wm.widgets.advanced')
                                     newElement.addClass('active');
                                     $is.activeIndex  = index;
                                     setActiveItem(items, oldIndex, index);
-                                } else if (index !== $is.activeIndex && !isMoving) {
-                                    isMoving = true;
+                                } else if (index !== $is.activeIndex && !$is.isMoving) {
+                                    $is.isMoving = true;
                                     $is.stop();
                                     if (direction === 'next') {
                                         ltr = false;
@@ -467,29 +470,32 @@ WM.module('wm.widgets.advanced')
                                     }
                                     animate(items, $is.activeIndex, index, ltr).then(function () {
                                         setActiveItem(items, oldIndex, index);
-                                        isMoving = false;
+                                        $is.isMoving = false;
                                     });
                                     $is.activeIndex  = index;
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
-                                    $el.find('.ng-isolate-scope')
+                                    $el.find('>.ng-isolate-scope')
                                         .each(function () {
-                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                            elScope = WM.element(this).isolateScope();
+                                            if (elScope) {
+                                                Utils.triggerFn(elScope.redraw);
+                                            }
                                         });
                                 }
                             };
 
                             //function to move to next slide
                             $is.next = function () {
-                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
+                                if (!$el.find('>.carousel-inner').hasClass('swipee-transition')) {
                                     $is.goTo($is.activeIndex + 1, 'next');
                                 }
                             };
 
                             //function to move to previous slide
                             $is.prev = function () {
-                                if (!$el.find('.carousel-inner').hasClass('swipee-transition')) {
+                                if (!$el.find('>.carousel-inner').hasClass('swipee-transition')) {
                                     $is.goTo($is.activeIndex - 1, 'prev');
                                 }
                             };
@@ -559,7 +565,7 @@ WM.module('wm.widgets.advanced')
                                 }));
                                 $is.noWrapSlides = false;
                                 $is.onSwipe = function (direction) {
-                                    $innerCarousel = $el.find('.carousel-inner').scope();
+                                    $innerCarousel = $el.find('>.carousel-inner').scope();
                                     if (direction === 'left') {
                                         $innerCarousel.next();
                                     } else {
