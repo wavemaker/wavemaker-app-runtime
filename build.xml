@@ -31,9 +31,15 @@
 
     <target name="run-js-commands-production">
 
+        <!--<antcall target="cmd-template">-->
+            <!--<param name="cmd.name" value="npm-cache"/>-->
+            <!--<param name="cmd.arg" value="install &#45;&#45;noArchive npm bower &#45;&#45;allow-root"/>-->
+            <!--<param name="cmd.executable.dir" value="src/main/webapp"/>-->
+        <!--</antcall>-->
+
         <antcall target="cmd-template">
-            <param name="cmd.name" value="npm-cache"/>
-            <param name="cmd.arg" value="install --noArchive npm bower --allow-root"/>
+            <param name="cmd.name" value="npm"/>
+            <param name="cmd.arg" value="install"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
 
