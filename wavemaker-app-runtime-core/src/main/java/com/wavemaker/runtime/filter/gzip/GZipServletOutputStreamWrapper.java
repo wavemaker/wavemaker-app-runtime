@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 import org.springframework.http.HttpHeaders;
 
@@ -72,4 +73,13 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
         headersAdded = true;
     }
 
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
+    @Override
+    public void setWriteListener(WriteListener writeListener) {
+
+    }
 }
