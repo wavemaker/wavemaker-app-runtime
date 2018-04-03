@@ -83,7 +83,12 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
                     // destroy the existing iscroll on the element
                     iScroll.destroy();
                     // Removing if any styles are added on scroller element.
-                    WM.element(iScroll.scroller).attr('style', '');
+                    WM.element(iScroll.scroller).css({
+                        'transition-timing-function': '',
+                        'transition-duration': '',
+                        'transform': ''
+                    });
+
                     iScroll = null;
                     delete $el[0].iscroll;
                     removeWatcher();
@@ -104,7 +109,12 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
             iScroll: iScroll,
             destroy: function () {
                 iScroll.destroy();
-                WM.element(iScroll.scroller).attr('style', '');
+                WM.element(iScroll.scroller).css({
+                    'transition-timing-function': '',
+                    'transition-duration': '',
+                    'transform': ''
+                });
+
                 iScroll = null;
                 delete $el[0].iscroll;
                 removeWatcher();
