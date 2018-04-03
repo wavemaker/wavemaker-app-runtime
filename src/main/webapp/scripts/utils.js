@@ -1595,7 +1595,6 @@ WM.module('wm.utils', [])
                 'last'            : true,
                 'number'          : 0,
                 'numberOfElements': 10,
-                'pageable'        : {},
                 'size'            : 20,
                 'sort'            : null,
                 'totalElements'   : 10,
