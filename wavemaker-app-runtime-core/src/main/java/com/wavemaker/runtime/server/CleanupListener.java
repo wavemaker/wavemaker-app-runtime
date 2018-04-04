@@ -202,7 +202,7 @@ public class CleanupListener implements ServletContextListener {
                 try {
                     deRegisterOracleDiagnosabilityMBean(mBeanName);
                 } catch (InstanceNotFoundException e1) {
-                    logger.debug("Oracle OracleDiagnosabilityMBean {} also not found", mBeanName, e);
+                    logger.debug("Oracle OracleDiagnosabilityMBean {} also not found", mBeanName);
                 }
             }
         } catch (Throwable e) {
@@ -461,6 +461,7 @@ public class CleanupListener implements ServletContextListener {
     }
     
     private void deregisterSecurityProviders() {
+        logger.info("Attempting to deregister any security providers registered by webapp");
         Provider[] providers = Security.getProviders();
         for (Provider provider : providers) {
             if (provider.getClass().getClassLoader() == getAppClassLoader()) {
