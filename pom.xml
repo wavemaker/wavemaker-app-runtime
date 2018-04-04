@@ -48,10 +48,6 @@
         <wm.jackson.databind.version>2.6.3.wm-1</wm.jackson.databind.version>
         <mimemagic.version>0.1.5</mimemagic.version>
 
-        <cxf-tools-wsdlto-databinding-jaxb.version>3.2.2</cxf-tools-wsdlto-databinding-jaxb.version>
-        <cxf-tools-wsdlto-frontend-jaxws.version>3.2.2</cxf-tools-wsdlto-frontend-jaxws.version>
-        <cxf-tools-common.version>3.2.2</cxf-tools-common.version>
-
         <hikaricp.version>2.7.7</hikaricp.version>
 
         <jsoup.version>1.11.2</jsoup.version>
@@ -560,11 +556,6 @@
                 <version>3.1</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>2.2.5.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.sun.xml.fastinfoset</groupId>
                 <artifactId>FastInfoset</artifactId>
                 <version>1.2.9</version>
@@ -700,21 +691,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-common</artifactId>
-                <version>${cxf-tools-common.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-wsdlto-frontend-jaxws</artifactId>
-                <version>${cxf-tools-wsdlto-frontend-jaxws.version}</version>
             </dependency>
 
             <dependency>
@@ -723,11 +702,6 @@
                 <version>2.1.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-wsdlto-databinding-jaxb</artifactId>
-                <version>${cxf-tools-wsdlto-databinding-jaxb.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.security.extensions</groupId>
                 <artifactId>spring-security-saml2-core</artifactId>
