@@ -65,6 +65,7 @@ public class LoggingInitializationListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         if (RuntimeEnvironment.isTestRunEnvironment()) {
             try {
+                System.out.println("Reinitializing log4j configuration");
                 initLog4jLogging();
             } catch (Exception e) {
                 e.printStackTrace();
