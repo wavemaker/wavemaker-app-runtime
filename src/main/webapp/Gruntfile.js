@@ -52,6 +52,12 @@ module.exports = function (grunt) {
             for_runtime_application_folder: {
                 files: [
                     {
+                        cwd: '<%= config.components %>/summernote/dist/font',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/css/font'
+                    },
+                    {
                         src: '<%= config.styles %>/images/spinner-small.gif',
                         dest: '<%= config.application %>/styles/images/spinner-small.gif'
                     },
