@@ -1382,6 +1382,8 @@ WM.module('wm.widgets.table')
                     'caption'   : _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'iconClass' : 'wi wi-delete fa-lg',
                     'content'   : $is.confirmdelete,
+                    'oktext'    : $is.deleteoktext,
+                    'canceltext': $is.deletecanceltext,
                     'resolve'   : {
                         'confirmActionOk': function () {
                             return deleteFn;

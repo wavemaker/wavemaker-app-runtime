@@ -2868,6 +2868,8 @@ WM.module('wm.widgets.live')
                 DialogService._showAppConfirmDialog({
                     'caption'   :  _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'content'   : confirmMsg,
+                    'oktext'    : options.scope.deleteoktext,
+                    'canceltext': options.scope.deletecanceltext,
                     'iconClass' : 'wi wi-delete fa-lg',
                     'resolve'   : {
                         'confirmActionOk': function () {
