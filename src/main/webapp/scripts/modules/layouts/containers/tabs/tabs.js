@@ -48,7 +48,7 @@ WM.module('wm.layouts.containers')
         }
 
         // This function adds swipe features on the element.
-        function addSwipee($scope, $ele) {
+        function addSwipey($scope, $ele) {
             var emptyEvents = {};
 
             // set the bindEvents to empty array when gestures is off
@@ -56,7 +56,7 @@ WM.module('wm.layouts.containers')
                 emptyEvents = {'bindEvents': []};
             }
             $ele.swipeAnimation($.extend({
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'bounds': function () {
                     var w = this.find('>.tab-pane:first').width(),
@@ -399,7 +399,7 @@ WM.module('wm.layouts.containers')
                         // Adding swipe on tabs content
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
-                            addSwipee(scope, content);
+                            addSwipey(scope, content);
                         }
                     }
 
@@ -496,7 +496,7 @@ WM.module('wm.layouts.containers')
                             }
 
                             /* some widgets like charts needs to be redrawn when a tab becomes active for the first time */
-                            element.find('.ng-isolate-scope')
+                            element.find('>.ng-isolate-scope')
                                 .each(function () {
                                     Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                 });

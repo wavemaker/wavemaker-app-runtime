@@ -83,7 +83,7 @@ WM.module('wm.layouts.page')
 
 
             return {
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'bounds': function () {
                     var offset = 0;

@@ -62,8 +62,7 @@ WM.module('wm.widgets.advanced')
                 directiveDefn,
                 notifyFor,
                 slideTemplateWrapper,
-                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'},
-                isMoving = false;
+                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
 
             widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
             notifyFor = CONSTANTS.isStudioMode ? {
@@ -230,7 +229,7 @@ WM.module('wm.widgets.advanced')
             }
 
             // Adds swipe functionality on the element.
-            function addSwipee($scope, $ele) {
+            function addSwipey($scope, $ele) {
                 var emptyEvents = {},
                     state = {
                         'activeItem': '',
@@ -246,7 +245,7 @@ WM.module('wm.widgets.advanced')
                 }
 
                 $ele.swipeAnimation($.extend({
-                    'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                    'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                     'threshold': 5,
                     'bounds': function () {
                         var items = this.find('>.app-carousel-item');
@@ -355,6 +354,7 @@ WM.module('wm.widgets.advanced')
                         if (!attrs.type) {
                             $is.contents    = [];
                             $is.activeIndex = 0;
+                            $is.isMoving = false;
                             //static carousel don't have current slide.
                             if (attrs.widgetid) {
                                 widgetProps.currentslide.show = false;
@@ -388,12 +388,12 @@ WM.module('wm.widgets.advanced')
                                     newElement.addClass('active');
                                     $is.activeIndex  = index;
                                     setActiveItem(items, oldIndex, index);
-                                } else if (index !== $is.activeIndex && !isMoving) {
-                                    isMoving = true;
+                                } else if (index !== $is.activeIndex && !$is.isMoving) {
+                                    $is.isMoving = true;
                                     $is.stop();
 
                                     setActiveItem(items, oldIndex, index);
-                                    isMoving = false;
+                                    $is.isMoving = false;
 
                                     $is.activeIndex  = index;
                                     $is.$root.$safeApply($is);
@@ -401,7 +401,7 @@ WM.module('wm.widgets.advanced')
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
-                                    $el.find('.ng-isolate-scope')
+                                    $el.find('>.ng-isolate-scope')
                                         .each(function () {
                                             elScope = WM.element(this).isolateScope();
                                             if (elScope) {
@@ -499,7 +499,7 @@ WM.module('wm.widgets.advanced')
                         }
 
                         // add swipe functionality on element.
-                        addSwipee($is, content);
+                        addSwipey($is, content);
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);

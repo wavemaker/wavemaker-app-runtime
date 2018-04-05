@@ -1,4 +1,4 @@
-/*global WM, document, window, _ */
+/*global WM, document, window, _ , $ */
 /*jslint todo: true */
 
 /* adding events and event options as constants*/
@@ -22,6 +22,11 @@ WM.module('wm.widgets.base', [])
             'ONDEMAND' : 'On-Demand'
         }
     })
+    .run(['$parse', function ($parse) { // Swipey Plugin: $parse service is used as expressionEvaluator
+        'use strict';
+
+        $.fn.swipeAnimation.expressionEvaluator = $parse;
+    }])
 
     /**
      * @ngdoc service
