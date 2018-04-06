@@ -119,19 +119,16 @@ public class CleanupListener implements ServletContextListener {
             /**
              * De registering it at the start so that preceding clean up tasks may clean any references created by loading unwanted classes by this call.
              */
-            deregisterDrivers();
-            //Release references that are not being closed automatically by libraries
-            shutDownHSQLTimerThreadIfAny();
-            shutDownMySQLThreadIfAny();
-            deRegisterOracleDiagnosabilityMBean();
-            typeFactoryClearTypeCache();
+            deregisterDrivers(getAppClassLoader());
+            deRegisterOracleDiagnosabilityMBean(getAppClassLoader());
+            typeFactoryClearTypeCache(getAppClassLoader());
             resourceManagerClearPropertiesCache();
             //clearCacheSourceAbstractClassGenerator();
-            clearThreadConnections();
-            cleanupMBeanNotificationListeners();
-            cleanupJULIReferences();
-            deregisterSecurityProviders();
-            stopRunningThreads(MAX_WAIT_TIME_FOR_RUNNING_THREADS);
+            clearLdapThreadConnections(getAppClassLoader());
+            cleanupMBeanNotificationListeners(getAppClassLoader());
+            cleanupJULIReferences(getAppClassLoader());
+            deregisterSecurityProviders(getAppClassLoader());
+            stopRunningThreads(getAppClassLoader(), MAX_WAIT_TIME_FOR_RUNNING_THREADS);
             //Release all open references for logging
             LogFactory.release(getAppClassLoader());
 
@@ -147,11 +144,11 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To stop HSQL timer thread, if any
      */
-    private void shutDownHSQLTimerThreadIfAny() {
+    private static void shutDownHSQLTimerThreadIfAny(ClassLoader classLoader) {
         String className = "org.hsqldb.DatabaseManager";
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(getAppClassLoader(), className);
-            if (klass != null && klass.getClassLoader() == getAppClassLoader()) {
+            Class klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
+            if (klass != null && klass.getClassLoader() == classLoader) {
                 //Shutdown the thread only if the class is loaded by web-app
                 final Class<?> databaseManagerClass = ClassUtils.getClass("org.hsqldb.DatabaseManager");
                 final Class<?> hsqlTimerClass = ClassUtils.getClass("org.hsqldb.lib.HsqlTimer");
@@ -172,11 +169,11 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To stop mysql thread, if any and resolve issue of "Abandoned connection cleanup thread" not stopping
      */
-    private void shutDownMySQLThreadIfAny() {
+    private static void shutDownMySQLThreadIfAny(ClassLoader classLoader) {
         String className = "com.mysql.jdbc.AbandonedConnectionCleanupThread";
         try {
-            Class<?> klass = ClassLoaderUtils.findLoadedClass(getAppClassLoader(), className);
-            if (klass != null && klass.getClassLoader() == getAppClassLoader()) {
+            Class<?> klass = ClassLoaderUtils.findLoadedClass(classLoader, className);
+            if (klass != null && klass.getClassLoader() == classLoader) {
                 //Shutdown the thread only if the class is loaded by web-app
                 logger.info("Shutting down mysql AbandonedConnectionCleanupThread");
                 klass.getMethod("shutdown").invoke(null);
@@ -189,16 +186,15 @@ public class CleanupListener implements ServletContextListener {
     /**
      * De Registers the mbean registered by the oracle driver
      */
-    private void deRegisterOracleDiagnosabilityMBean() {
-        final ClassLoader cl = getAppClassLoader();
-        String mBeanName = cl.getClass().getName() + "@" + Integer.toHexString(cl.hashCode());
+    public static void deRegisterOracleDiagnosabilityMBean(ClassLoader classLoader) {
+        String mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode());
         try {
             try {
                 deRegisterOracleDiagnosabilityMBean(mBeanName);
             } catch (InstanceNotFoundException e) {
                 logger.debug("Oracle OracleDiagnosabilityMBean {} not found", mBeanName, e);
                 //Trying with different mBeanName as some versions of oracle driver uses the second formula for mBeanName
-                mBeanName = cl.getClass().getName() + "@" + Integer.toHexString(cl.hashCode()).toLowerCase();
+                mBeanName = classLoader.getClass().getName() + "@" + Integer.toHexString(classLoader.hashCode()).toLowerCase();
                 try {
                     deRegisterOracleDiagnosabilityMBean(mBeanName);
                 } catch (InstanceNotFoundException e1) {
@@ -210,8 +206,8 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private void deRegisterOracleDiagnosabilityMBean(
-            String nameValue) throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
+    private static void deRegisterOracleDiagnosabilityMBean(String nameValue) 
+            throws InstanceNotFoundException, MBeanRegistrationException, MalformedObjectNameException {
         final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         final Hashtable<String, String> keys = new Hashtable<>();
         keys.put("type", "diagnosability");
@@ -222,26 +218,25 @@ public class CleanupListener implements ServletContextListener {
 
     /**
      * Clears any notification listeners registered with memory mx bean
+     * For example Oracle's BlockSource creates an mbean listener which needs to be deregistered
      */
-    private void cleanupMBeanNotificationListeners() {
-        cleanupNotificationListener(ManagementFactory.getMemoryMXBean());
+    public static void cleanupMBeanNotificationListeners(ClassLoader classLoader) {
+        cleanupNotificationListener(classLoader, ManagementFactory.getMemoryMXBean());
         List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
-            cleanupNotificationListener(garbageCollectorMXBean);
+            cleanupNotificationListener(classLoader, garbageCollectorMXBean);
         }
     }
 
-    private void cleanupNotificationListener(PlatformManagedObject platformManagedObject) {
+    private static void cleanupNotificationListener(ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
             Field listenerListField = ReflectionUtils.findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
-                throw new WMRuntimeException(
-                        "Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
+                throw new WMRuntimeException("Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
             }
             listenerListField.setAccessible(true);
-            List listenerInfoList = (List) listenerListField
-                    .get(notificationEmitter);//This object would be List<ListenerInfo>
+            List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = o.getClass().getDeclaredField("listener");
                 if (listenerListField == null) {
@@ -249,10 +244,8 @@ public class CleanupListener implements ServletContextListener {
                 }
                 listenerField.setAccessible(true);
                 NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
-                if (notificationListener.getClass().getClassLoader() == Thread.currentThread()
-                        .getContextClassLoader()) {
-                    logger.info("Removing registered mBean notification listener {}",
-                            notificationListener.getClass().getName());
+                if (notificationListener.getClass().getClassLoader() == classLoader) {
+                    logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
                     notificationEmitter.removeNotificationListener(notificationListener);
                 }
             }
@@ -260,29 +253,26 @@ public class CleanupListener implements ServletContextListener {
             String className = "oracle.jdbc.driver.BlockSource";
             Class loadedClass = null;
             try {
-                loadedClass = ClassLoaderUtils.findLoadedClass(getAppClassLoader(), className);
+                loadedClass = ClassLoaderUtils.findLoadedClass(classLoader, className);
             } catch (Exception e1) {
                 logger.warn("Failed to find loaded class for class {}", className, e1);
             }
             if (loadedClass == null) {
-                logger.info(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
+                logger.info("MBean clean up is not successful, any uncleared notification listeners might create a memory leak");
                 logger.trace("Exception Stack trace", e);
             } else {
-                logger.warn(
-                        "MBean clean up is not successful, any uncleared notification listeners might create a memory leak",
-                        e);
+                logger.warn("MBean clean up is not successful, any uncleared notification listeners might create a memory leak", e);
             }
         }
     }
 
     /**
-     * Clears up the references for the TCL in java.util.Logging.Level$KnownLevel class
+     * Clears up the juli references for the given class loader
      */
-    private void cleanupJULIReferences() {
+    public static void cleanupJULIReferences(ClassLoader classLoader) {
         String className = "java.util.logging.Level$KnownLevel";
         try {
-            Class klass = Class.forName(className, true, getAppClassLoader());
+            Class klass = Class.forName(className, true, classLoader);
             Field nameToKnownLevelsField = klass.getDeclaredField("nameToLevels");
             Field intToKnownLevelsField = klass.getDeclaredField("intToLevels");
             Field levelObjectField = klass.getDeclaredField("levelObject");
@@ -293,10 +283,10 @@ public class CleanupListener implements ServletContextListener {
             mirroredLevelField.setAccessible(true);
             synchronized (klass) {
                 Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
-                removeTCLKnownLevels(nameToKnownLevels, levelObjectField, mirroredLevelField);
+                removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
 
                 Map<Object, List> intToKnownLevels = (Map<Object, List>) intToKnownLevelsField.get(null);
-                removeTCLKnownLevels(intToKnownLevels, levelObjectField, mirroredLevelField);
+                removeTCLKnownLevels(classLoader, intToKnownLevels, levelObjectField, mirroredLevelField);
 
             }
         } catch (Exception e) {
@@ -304,8 +294,7 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private void removeTCLKnownLevels(
-            Map<Object, List> nameToKnownLevels, Field levelObjectField,
+    private static void removeTCLKnownLevels(ClassLoader classLoader, Map<Object, List> nameToKnownLevels, Field levelObjectField,
             Field mirroredLevelField) throws NoSuchFieldException, IllegalAccessException {
         Set<Map.Entry<Object, List>> entrySet = nameToKnownLevels.entrySet();
         Iterator<Map.Entry<Object, List>> mapEntryIterator = entrySet.iterator();
@@ -317,7 +306,7 @@ public class CleanupListener implements ServletContextListener {
             while (iterator.hasNext()) {
                 Object knownLevelObject = iterator.next();
                 Object levelObject = levelObjectField.get(knownLevelObject);
-                if (levelObject.getClass().getClassLoader() == getAppClassLoader()) {
+                if (levelObject.getClass().getClassLoader() == classLoader) {
                     iterator.remove();
                     removableMirroredObjects.add(mirroredLevelField.get(knownLevelObject));
                 }
@@ -340,11 +329,11 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim
      * To clear TypeFactory's TypeCache
      */
-    private void typeFactoryClearTypeCache() {
+    private void typeFactoryClearTypeCache(ClassLoader classLoader) {
         if (isSharedLib()) {
             String className = "com.fasterxml.jackson.databind.type.TypeFactory";
             try {
-                Class klass = ClassLoaderUtils.findLoadedClass(getAppClassLoader().getParent(), className);
+                Class klass = ClassLoaderUtils.findLoadedClass(classLoader.getParent(), className);
                 if (klass != null) {
                     logger.info("Attempt to clear typeCache from {} class instance", klass);
                     TypeFactory.defaultInstance().clearCache();
@@ -397,8 +386,8 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }*/
-    private void clearThreadConnections() {
-        List<Thread> threads = getCCLThreads();
+    private void clearLdapThreadConnections(ClassLoader classLoader) {
+        List<Thread> threads = getThreads(classLoader);
         for (Thread thread : threads) {
             if (isAliveAndNotCurrentThread(thread)) {
                 try {
@@ -429,7 +418,7 @@ public class CleanupListener implements ServletContextListener {
      * de-registers the JDBC drivers registered visible to this class loader from DriverManager
      * Added by akritim
      */
-    private void deregisterDrivers() {
+    private void deregisterDrivers(ClassLoader classLoader) {
         try {
 
             /*
@@ -446,7 +435,7 @@ public class CleanupListener implements ServletContextListener {
             }
             while (drivers.hasMoreElements()) {
                 Driver driver = drivers.nextElement();
-                if (driver.getClass().getClassLoader() == getAppClassLoader()) {
+                if (driver.getClass().getClassLoader() == classLoader) {
                     logger.info("De Registering the driver {}", driver.getClass().getCanonicalName());
                     try {
                         DriverManager.deregisterDriver(driver);
@@ -460,12 +449,12 @@ public class CleanupListener implements ServletContextListener {
         }
     }
     
-    private void deregisterSecurityProviders() {
+    public static void deregisterSecurityProviders(ClassLoader classLoader) {
         logger.info("Attempting to deregister any security providers registered by webapp");
         Provider[] providers = Security.getProviders();
         for (Provider provider : providers) {
-            if (provider.getClass().getClassLoader() == getAppClassLoader()) {
-                logger.info("De registering security provider {} with name {} which is registered in the current class loader", provider, provider.getName());
+            if (provider.getClass().getClassLoader() == classLoader) {
+                logger.info("De registering security provider {} with name {} which is registered in the class loader", provider, provider.getName());
                 Security.removeProvider(provider.getName());
             }
         }
@@ -473,12 +462,14 @@ public class CleanupListener implements ServletContextListener {
     }
 
     /**
-     * Will interrupt all the running threads in the current context class loader except current thread.
-     * Post interrupt after a specific timeout if any threads are still alive
+     * Will interrupt all the running threads in the given class loader except current thread.
+     * Post interrupt after a specific timeout if any threads are still alive it logs a message
      */
-    public static void stopRunningThreads(long waitTimeOutInMillis) {
+    public static void stopRunningThreads(ClassLoader classLoader, long waitTimeOutInMillis) {
+        shutDownMySQLThreadIfAny(classLoader);
+        shutDownHSQLTimerThreadIfAny(classLoader);
         try {
-            List<Thread> threads = getCCLThreads();
+            List<Thread> threads = getThreads(classLoader);
             List<Thread> runningThreads = new ArrayList<>();
             for (Thread thread : threads) {
                 if (isAliveAndNotCurrentThread(thread)) {
@@ -505,10 +496,14 @@ public class CleanupListener implements ServletContextListener {
         }
     }
 
-    private static List<Thread> getCCLThreads() {
-        ClassLoader appContextClassLoader = getAppClassLoader();
+    /**
+     * returns threads running in the given in class loader context or whose class is loaded from given class loader 
+     * @param classLoader
+     * @return
+     */
+    private static List<Thread> getThreads(ClassLoader classLoader) {
         return Thread.getAllStackTraces().keySet().stream().filter(thread -> {
-            return thread.getContextClassLoader() == appContextClassLoader || thread.getClass().getClassLoader() == appContextClassLoader;
+            return thread.getContextClassLoader() == classLoader || thread.getClass().getClassLoader() == classLoader;
         }).collect(Collectors.toList());
     }
 
