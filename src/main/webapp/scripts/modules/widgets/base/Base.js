@@ -25,7 +25,9 @@ WM.module('wm.widgets.base', [])
     .run(['$parse', function ($parse) { // Swipey Plugin: $parse service is used as expressionEvaluator
         'use strict';
 
-        $.fn.swipeAnimation.expressionEvaluator = $parse;
+        if ($.fn.swipeAnimation) {
+            $.fn.swipeAnimation.expressionEvaluator = $parse;
+        }
     }])
 
     /**
