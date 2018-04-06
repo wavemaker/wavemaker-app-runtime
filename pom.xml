@@ -708,10 +708,6 @@
                 <version>1.0.2.RELEASE</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <groupId>xerces</groupId>
                         <artifactId>xercesImpl</artifactId>
                     </exclusion>
@@ -730,12 +726,6 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>antisamy</artifactId>
                 <version>${antisamy.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-httpclient</groupId>
-                        <artifactId>commons-httpclient</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -772,10 +762,6 @@
                 <version>1.0.0.BUILD-SNAPSHOT</version>
                 <scope>test</scope>
                 <exclusions>
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15</artifactId>
-                    </exclusion>
                     <exclusion>
                         <groupId>org.hamcrest</groupId>
                         <artifactId>hamcrest-library</artifactId>

@@ -203,12 +203,6 @@
             <type>jar</type>
             <classifier>jdk15</classifier>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
