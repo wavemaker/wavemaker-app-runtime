@@ -846,11 +846,6 @@ WM.module('wm.utils', [])
             return url;
         }
 
-        /* check for double slahes in the url other than at 'https://' and trimming them with single slash */
-        function removeExtraSlashes(url) {
-            return url.replace(new RegExp('((?<!(https:))\/(\/)+)', 'g'), '/');
-        }
-
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString, shouldEncode, defaultUrl) {
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
@@ -877,7 +872,6 @@ WM.module('wm.utils', [])
                 return urlString;
             }
 
-            urlString = removeExtraSlashes(urlString);
 
             return urlString;
         }
@@ -3003,7 +2997,6 @@ WM.module('wm.utils', [])
         this.prettifyLabel              = prettifyLabel;
         this.prettifyLabels             = prettifyLabels;
         this.getVariableName            = getVariableName;
-        this.removeExtraSlashes         = removeExtraSlashes;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
         this.encodeUrlParams            = encodeUrlParams;
