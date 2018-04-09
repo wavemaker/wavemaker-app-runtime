@@ -418,8 +418,8 @@ WM.module('wm.widgets.dialog')
             params.dialogId   = '_app-confirm-dialog';
             params.onOk       = 'confirmDialogActionOk()';
             params.onCancel   = 'confirmDialogActionCancel()';
-            params.oktext     = _.get($rootScope.appLocale, 'LABEL_OK') || 'Ok';
-            params.canceltext = _.get($rootScope.appLocale, 'LABEL_CANCEL') || 'Cancel';
+            params.oktext     = params.oktext || _.get($rootScope.appLocale, 'LABEL_OK') || 'Ok';
+            params.canceltext = params.canceltext || _.get($rootScope.appLocale, 'LABEL_CANCEL') || 'Cancel';
             showConfirmDialog(params);
         }
         /**
