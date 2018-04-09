@@ -24,11 +24,6 @@
             <artifactId>wavemaker-app-runtime-prefab</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wavemaker-app-runtime-json</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Logging Frameworks -->
         <dependency>

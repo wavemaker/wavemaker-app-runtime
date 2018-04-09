@@ -59,7 +59,6 @@
     </properties>
 
     <modules>
-        <module>wavemaker-app-runtime-json</module>
         <module>wavemaker-app-runtime-prefab</module>
         <module>wavemaker-app-runtime-core</module>
     </modules>
