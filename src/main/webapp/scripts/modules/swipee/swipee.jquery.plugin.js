@@ -34,12 +34,17 @@ window.requestAnimationFrame = (function () {
         touchEndListeners = [],
 
         onTouch = function (e) {
-            e.preventDefault();
+            if (touchMoveListeners.length) {
+                e.preventDefault();
+            }
             $.each(touchMoveListeners, function (i, fn) {
                 return fn(e);
             });
         },
         onTouchEnd = function (e) {
+            if (touchEndListeners.length) {
+                e.preventDefault();
+            }
             $.each(touchEndListeners, function (i, fn) {
                 return fn(e);
             });
@@ -246,11 +251,9 @@ window.requestAnimationFrame = (function () {
         }
         swipeMask.appendTo($('body'));
         swipeHandler = function(em) {
-            em.preventDefault();
             onActiveSwipe(em, settings);
         };
         swipeEndHandler = function(ee) {
-            ee.preventDefault();
             swipeMask.remove();
             onActiveSwipeEnd(ee, settings);
         };
