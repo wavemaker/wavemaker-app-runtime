@@ -17,8 +17,6 @@ package com.wavemaker.runtime.service.definition;
 
 import java.util.List;
 
-import com.wavemaker.runtime.json.type.FieldDefinition;
-
 /**
  * @author Matt Small
  */
