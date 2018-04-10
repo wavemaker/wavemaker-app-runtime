@@ -267,7 +267,7 @@ wm.plugins.database.services.LocalDBService = [
                             'content'         : data,
                             'first'           : (params.page === 1),
                             'last'            : (params.page === totalPages),
-                            'number'          : params.page,
+                            'number'          : (params.page - 1),
                             'numberOfElements': data.length,
                             'pageable'        : {},
                             'size'            : params.size,
