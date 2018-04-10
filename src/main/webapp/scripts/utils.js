@@ -846,6 +846,22 @@ WM.module('wm.utils', [])
             return url;
         }
 
+
+      /**
+       * This method removes double slashes in the url
+       * e.g. "https://abc.com/service//hrdb/employee//api" will be returned as "https://abc.com/service/hrdb/employee/api"
+
+       * Exceptions:
+       * if the url starts with //, https://, http://, wss://, ws:// etc ignore these double slashes
+       * if double slashes present in the url apart from the above places, replace the double slashes with single slash
+
+       * @param url, string URL where double slashes will be removed
+       * @returns {url}, sanitized url
+       */
+        function removeExtraSlashes(url) {
+            return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
+        }
+
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString, shouldEncode, defaultUrl) {
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
@@ -872,6 +888,8 @@ WM.module('wm.utils', [])
                 return urlString;
             }
 
+
+            urlString = removeExtraSlashes(urlString);
 
             return urlString;
         }
@@ -2997,6 +3015,7 @@ WM.module('wm.utils', [])
         this.prettifyLabel              = prettifyLabel;
         this.prettifyLabels             = prettifyLabels;
         this.getVariableName            = getVariableName;
+        this.removeExtraSlashes         = removeExtraSlashes;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
         this.encodeUrlParams            = encodeUrlParams;

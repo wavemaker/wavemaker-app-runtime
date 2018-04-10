@@ -105,6 +105,7 @@ wm.modules.wmCommon.services.BaseService = [
                         }
                     }
 
+                    config.url = Utils.removeExtraSlashes(config.url);
                     config.url = Utils.preventCachingOf(config.url);
 
                     /* check for data */
