@@ -20,7 +20,7 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
     private PrintWriter printWriter;
     private GZipFilterConfig filterConfig;
     private boolean compressionEnabled = true;
-    private int contentLength;
+    private int originalContentLength;
 
     public GZipServletResponseWrapper(GZipFilterConfig filterConfig, HttpServletResponse response) throws IOException {
         super(response);
@@ -31,8 +31,8 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
         return compressionEnabled;
     }
 
-    public int getContentLength() {
-        return contentLength;
+    public int getOriginalContentLength() {
+        return originalContentLength;
     }
 
     public void close() throws IOException {
@@ -107,7 +107,7 @@ public class GZipServletResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public void setContentLength(int len) {
         this.compressionEnabled = compressionEnabled && (len >= filterConfig.getMinCompressSize());
-        this.contentLength = len;
+        this.originalContentLength = len;
     }
 
     @Override

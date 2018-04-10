@@ -119,10 +119,10 @@
     </bean>
 
     <bean id="gzipFilterConfig" class="com.wavemaker.runtime.filter.gzip.GZipFilterConfig">
-        <property name="enableGZipCompression" value="${app.web.compress.enabled}"/>
-        <property name="minCompressSize" value="${app.web.compress.minsize}"/>
-        <property name="includeMimeTypes" value="${app.web.compress.mimetypes.include}"/>
-        <property name="excludeMimeTypes" value="${app.web.compress.mimetypes.exclude}"/>
+        <property name="enableGZipCompression" value="${app.web.compression.enabled}"/>
+        <property name="minCompressSize" value="${app.web.compression.minsize}"/>
+        <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
+        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
     </bean>
 
 

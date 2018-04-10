@@ -17,7 +17,6 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
     private GZipServletResponseWrapper responseWrapper;
     private OutputStream outputStream;
     private boolean streamInitialized = false;
-    private boolean headersAdded = false;
 
     public GZipServletOutputStreamWrapper(GZipServletResponseWrapper responseWrapper, OutputStream outputStream) throws IOException {
         this.responseWrapper = responseWrapper;
@@ -26,51 +25,44 @@ public class GZipServletOutputStreamWrapper extends ServletOutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        getOutputStream(true).write(b);
+        getOutputStream().write(b);
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-        getOutputStream(true).write(b);
+        getOutputStream().write(b);
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        getOutputStream(true).write(b, off, len);
+        getOutputStream().write(b, off, len);
     }
 
     @Override
     public void flush() throws IOException {
-        getOutputStream(false).flush();
+        getOutputStream().flush();
     }
 
     @Override
     public void close() throws IOException {
-        getOutputStream(false).close();
+        getOutputStream().close();
     }
 
-    private OutputStream getOutputStream(boolean withHeaders) throws IOException {
-        if (!streamInitialized && responseWrapper.isCompressionEnabled()) {
-            outputStream = new GZIPOutputStream(outputStream);
+    private OutputStream getOutputStream() throws IOException {
+        if (!streamInitialized) {
+            initStream();
         }
-        if (withHeaders) {
-            writeHeaders();
-        }
-        streamInitialized = true;
         return outputStream;
     }
 
-    private void writeHeaders() {
-        if (headersAdded) {
-            return;
-        }
-
+    private synchronized void initStream() throws IOException {
         if (responseWrapper.isCompressionEnabled()) {
             responseWrapper.setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
+            outputStream = new GZIPOutputStream(outputStream);
         } else {
-            responseWrapper.setContentLength(responseWrapper.getContentLength());
+            responseWrapper.setContentLength(responseWrapper.getOriginalContentLength());
         }
-        headersAdded = true;
+        streamInitialized = true;
     }
 
     @Override
