@@ -269,7 +269,6 @@ wm.plugins.database.services.LocalDBService = [
                             'last'            : (params.page === totalPages),
                             'number'          : (params.page - 1),
                             'numberOfElements': data.length,
-                            'pageable'        : {},
                             'size'            : params.size,
                             'sort'            : {
                                 'sorted' : !!sort,
