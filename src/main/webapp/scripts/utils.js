@@ -868,7 +868,9 @@ WM.module('wm.utils', [])
        * @returns {url}, sanitized url
        */
         function removeExtraSlashes(url) {
-            return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
+            if (_.isString(url)) {
+                return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
+            }
         }
 
         /*This function returns the url to the image after checking the validity of url*/
