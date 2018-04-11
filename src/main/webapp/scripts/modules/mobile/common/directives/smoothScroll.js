@@ -28,7 +28,10 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
             'scrollbars' : true,
             'preventDefault': false,
             'bounce': Utils.isIOS(),
-            'fadeScrollbars': false
+            'fadeScrollbars': false,
+            'disablePointer': true, // disable the pointer events as it causes lag in scrolling (jerky).
+            'disableTouch': false, // false to be usable with touch devices
+            'disableMouse': false // false to be usable with a mouse (desktop)
         };
 
         // Add fadeScrollbars options only when smoothscroll container is included, which means content is scrollable.
@@ -125,11 +128,12 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
     return {
         'restrict': 'A',
         'link': function ($s, $el, attrs) {
-            if (Utils.isMobile()) {
+            if (Utils.isMobile() && !Utils.isKitkatDevice()) {
                 var smoothScroll;
                 // observe the smoothscroll attr
                 attrs.$observe('wmSmoothscroll', function (nv) {
                     if (nv === 'true') {
+                        $el.addClass('smoothscroll-wrapper');
                         smoothScroll = createSmoothScroll($s, $el);
                     } else if (smoothScroll) {
                         smoothScroll.destroy();

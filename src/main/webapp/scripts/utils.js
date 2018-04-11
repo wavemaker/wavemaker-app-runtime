@@ -710,6 +710,15 @@ WM.module('wm.utils', [])
             return isAndroid() && (REGEX.MOBILE.test(userAgent));
         }
 
+        function getAndroidVersion() {
+            var match = (navigator.userAgent.toLowerCase()).match(/android\s([0-9\.]*)/);
+            return match ? match[1] : false;
+        }
+
+        function isKitkatDevice() {
+            return isAndroid() && parseInt(getAndroidVersion(), 10) === 4;
+        }
+
         function isIphone() {
             return (REGEX.IPHONE.test(userAgent));
         }
@@ -3027,6 +3036,7 @@ WM.module('wm.utils', [])
         this.deHyphenate                = deHyphenate;
         this.isAndroid                  = isAndroid;
         this.isAndroidPhone             = isAndroidPhone;
+        this.isKitkatDevice             = isKitkatDevice;
         this.isIphone                   = isIphone;
         this.isIpod                     = isIpod;
         this.isIpad                     = isIpad;

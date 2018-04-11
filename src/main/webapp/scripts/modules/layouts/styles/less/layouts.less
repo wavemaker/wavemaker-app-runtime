@@ -429,12 +429,6 @@ body {
 .wm-app {
   height: 100%;
   position: relative;
-  // Required for left panel swipe transition
-  &.wm-mobile-app {
-    #wm-app-content {
-      overflow: hidden;
-    }
-  }
   #wm-app-content , .app-page, .app-partial, .app-included-page {
     .width-height();
     position: relative;
@@ -1643,6 +1637,14 @@ body {
       margin-top: 5px;
     }
   }
+// styles for iscroll wrapper and scroller.
+  .smoothscroll-wrapper {
+    overflow: hidden;
+  }
+  .smoothscroll-container {
+    position: absolute;
+  }
+
   //Angular UI bootstrap 1.1.0 related styles.
   .ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left};
   .uib-datepicker .uib-title{width:100%;}
