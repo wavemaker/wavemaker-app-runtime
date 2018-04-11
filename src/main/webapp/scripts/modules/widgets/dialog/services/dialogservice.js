@@ -118,6 +118,8 @@ WM.module('wm.widgets.dialog')
             $uibModalInstances[dialogId].result.then(null,
                 /* called when dialog closes on backdrop click*/
                 function () {
+                    invokeOnClose(dialogId);
+
                     // destroy the scope of the dialog
                     if ($uibModalInstances[dialogId].scope) {
                         $uibModalInstances[dialogId].scope.$destroy();
@@ -178,8 +180,6 @@ WM.module('wm.widgets.dialog')
          * @param {string} dialogId id of the dialog to be closed
          */
         function hideDialog(dialogId) { /* to close the dialog, hideDialog MUST be used*/
-            var dialogIs;
-
             /* id must be provided to close the dialog*/
             if (!dialogId || ($uibModalInstances && !$uibModalInstances[dialogId])) {
                 return;
@@ -187,13 +187,7 @@ WM.module('wm.widgets.dialog')
             //remove the popovers in the page to avoid the overlap with dialog
             closePopover();
 
-            if (dialogId) {
-                dialogIs = WM.element('[name=' + dialogId + ']').length && WM.element('[name=' + dialogId + ']').isolateScope();
-
-                if (dialogIs && dialogIs._onCloseCallback) {
-                    dialogIs._onCloseCallback();
-                }
-            }
+            invokeOnClose(dialogId);
 
             $uibModalInstances[dialogId].close();
             // destroy the scope of the dialog
@@ -203,6 +197,18 @@ WM.module('wm.widgets.dialog')
             $uibModalInstances[dialogId] = null;
             /* to pop the dialog id from the openDialogIds array */
             _closeDialog(dialogId);
+        }
+
+        function invokeOnClose(dialogId) {
+            var dialogIs;
+
+            if (dialogId) {
+                dialogIs = WM.element('[name=' + dialogId + ']').length && WM.element('[name=' + dialogId + ']').isolateScope();
+
+                if (dialogIs && dialogIs._onCloseCallback) {
+                    dialogIs._onCloseCallback();
+                }
+            }
         }
 
         /**
