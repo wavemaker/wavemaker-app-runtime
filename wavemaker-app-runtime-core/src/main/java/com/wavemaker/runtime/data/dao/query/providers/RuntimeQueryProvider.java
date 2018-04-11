@@ -66,7 +66,7 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
     public Query<R> getQuery(final Session session, final Pageable pageable) {
         String sortedQuery = queryString;
 
-        if (pageable != null) {
+        if (pageable.getSort().isSorted()) {
             final WMResultTransformer transformer = Transformers.aliasToMappedClass(responseType);
             if (nativeSql) {
                 sortedQuery = QueryHelper.applySortingForNativeQuery(queryString, pageable.getSort(),
@@ -75,12 +75,11 @@ public class RuntimeQueryProvider<R> implements QueryProvider<R>, PaginatedQuery
                 sortedQuery = QueryHelper.applySortingForHqlQuery(queryString, pageable.getSort(), transformer);
             }
         }
+
         Query<R> hibernateQuery = createQuery(session, sortedQuery, responseType);
 
-        if (pageable != null) {
-            hibernateQuery.setFirstResult((int) pageable.getOffset());
-            hibernateQuery.setMaxResults(pageable.getPageSize());
-        }
+        hibernateQuery.setFirstResult((int) pageable.getOffset());
+        hibernateQuery.setMaxResults(pageable.getPageSize());
 
         return hibernateQuery;
     }

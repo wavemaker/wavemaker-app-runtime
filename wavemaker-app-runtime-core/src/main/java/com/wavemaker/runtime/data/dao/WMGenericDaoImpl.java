@@ -44,6 +44,7 @@ import com.wavemaker.runtime.data.dao.query.providers.AppRuntimeParameterProvide
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
+import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.export.DataExporter;
@@ -61,13 +62,13 @@ import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
-public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements
-        WMGenericDao<Entity, Identifier> {
+public abstract class WMGenericDaoImpl<E extends Serializable, I extends Serializable> implements
+        WMGenericDao<E, I> {
 
-    protected Class<Entity> entityClass;
-    protected EntityQueryGenerator<Entity, Identifier> queryGenerator;
+    protected Class<E> entityClass;
+    protected EntityQueryGenerator<E, I> queryGenerator;
 
-    private SortValidator sortValidator;
+    protected SortValidator sortValidator;
 
     public abstract HibernateTemplate getTemplate();
 
@@ -79,60 +80,62 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         }
 
         ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
-        this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
+        this.entityClass = (Class<E>) genericSuperclass.getActualTypeArguments()[0];
         this.sortValidator = new SortValidator();
 
         queryGenerator = new SimpleEntitiyQueryGenerator<>(entityClass);
     }
 
     @SuppressWarnings("unchecked")
-    public Entity create(Entity entity) {
-        Identifier identifier = (Identifier) getTemplate().save(entity);
+    public E create(E entity) {
+        getTemplate().save(entity);
         getTemplate().flush();
         return entity;
     }
 
-    public void update(Entity entity) {
+    public void update(E entity) {
         getTemplate().update(entity);
         getTemplate().flush();
     }
 
-    public void delete(Entity entity) {
+    public void delete(E entity) {
         getTemplate().delete(entity);
     }
 
-    public Entity findById(Identifier entityId) {
+    public E findById(I entityId) {
         final HqlQueryBuilder builder = queryGenerator.findById(entityId);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
     }
 
     @SuppressWarnings("unchecked")
-    public Entity findByUniqueKey(final Map<String, Object> fieldValueMap) {
+    public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
         final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
     }
 
     @Override
-    public Page<Entity> list(Pageable pageable) {
-        return search(null, pageable);
+    public Page<E> list(Pageable pageable) {
+        return search(null, PageUtils.defaultIfNull(pageable));
     }
 
     @SuppressWarnings("unchecked")
     public Page getAssociatedObjects(
             final Object value, final String fieldName, final String key, final Pageable pageable) {
-        this.sortValidator.validate(pageable, entityClass);
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+        this.sortValidator.validate(validPageable, entityClass);
         return getTemplate().execute(session -> {
             Criteria criteria = session.createCriteria(entityClass).createCriteria(fieldName);
             criteria.add(Restrictions.eq(key, value));
-            return CriteriaUtils.executeAndGetPageableData(criteria, pageable, null);
+            return CriteriaUtils.executeAndGetPageableData(criteria, validPageable, null);
         });
     }
 
     @SuppressWarnings("unchecked")
-    public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
-        this.sortValidator.validate(pageable, entityClass);
+    public Page<E> search(final QueryFilter[] queryFilters, final Pageable pageable) {
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+        this.sortValidator.validate(validPageable, entityClass);
         validateQueryFilters(queryFilters);
         return getTemplate().execute((HibernateCallback<Page>) session -> {
             Criteria criteria = session.createCriteria(entityClass);
@@ -148,17 +151,19 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     criteria.add(criterion);
                 }
             }
-            return CriteriaUtils.executeAndGetPageableData(criteria, pageable, aliases);
+            return CriteriaUtils.executeAndGetPageableData(criteria, validPageable, aliases);
         });
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
-        this.sortValidator.validate(pageable, entityClass);
+    public Page<E> searchByQuery(final String query, final Pageable pageable) {
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+
+        this.sortValidator.validate(validPageable, entityClass);
 
         final HqlQueryBuilder builder = queryGenerator.searchByQuery(query);
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, pageable);
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder, validPageable);
     }
 
     @Override
@@ -179,26 +184,30 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     @SuppressWarnings("unchecked")
     public Page<Map<String, Object>> getAggregatedValues(
             final AggregationInfo aggregationInfo, final Pageable pageable) {
-        this.sortValidator.validate(pageable, entityClass);
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+
+        this.sortValidator.validate(validPageable, entityClass);
 
         final HqlQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
-        final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, pageable);
+        final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, validPageable);
 
         return (Page<Map<String, Object>>) result;
     }
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        this.sortValidator.validate(pageable, entityClass);
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+
+        this.sortValidator.validate(validPageable, entityClass);
         ByteArrayOutputStream reportOutputStream = getTemplate()
                 .execute(session -> {
                     final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
-                    final RuntimeQueryProvider<Entity> queryProvider = RuntimeQueryProvider
+                    final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
                             .from(queryInfo, entityClass);
                     ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
                             HqlParameterTypeResolver());
 
-                    final Query<Entity> hqlQuery = queryProvider.getQuery(session, pageable, provider);
+                    final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
                     QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
 
                     return DataExporter.export(queryExtractor, exportType);
@@ -209,13 +218,13 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
-    public Entity refresh(final Entity entity) {
+    public E refresh(final E entity) {
         getTemplate().refresh(entity);
         return entity;
     }
 
     @Override
-    public void evict(final Entity entity) {
+    public void evict(final E entity) {
         getTemplate().evict(entity);
     }
 
@@ -224,7 +233,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().execute(callback);
     }
 
-    public Page<Entity> list() {
+    public Page<E> list() {
         return search(null, null);
     }
 
