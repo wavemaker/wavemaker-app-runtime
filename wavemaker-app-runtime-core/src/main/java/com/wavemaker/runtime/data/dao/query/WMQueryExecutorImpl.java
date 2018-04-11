@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -37,6 +36,7 @@ import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.providers.SessionBackedQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver;
 import com.wavemaker.runtime.data.dao.util.CustomQueryAdapter;
+import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
@@ -44,9 +44,6 @@ import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
-
-    private static final int DEFAULT_PAGE_NUMBER = 0;
-    private static final int DEFAULT_PAGE_SIZE = 20;
 
     private HibernateTemplate template;
     private SessionBackedParameterResolver parameterResolvers;
@@ -60,7 +57,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public Page<Object> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Pageable pageable) {
-        return executeNamedQuery(queryName, params, Object.class, pageable);
+        return executeNamedQuery(queryName, params, Object.class, PageUtils.defaultIfNull(pageable));
     }
 
     @Override
@@ -75,11 +72,11 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     public <T> Page<T> executeNamedQuery(
             final String queryName, final Map<String, Object> params, final Class<T> returnType,
             final Pageable pageable) {
-        final Pageable _pageable = getValidPageable(pageable);
         SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
 
         return template.execute(new PaginatedQueryCallback<>(queryProvider,
-                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName)), _pageable));
+                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName)),
+                PageUtils.defaultIfNull(pageable)));
     }
 
     @Override
@@ -96,7 +93,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         final RuntimeQueryProvider<Object> queryProvider = RuntimeQueryProvider.from(query, Object.class);
         final RuntimeParametersProvider parametersProvider = new RuntimeParametersProvider(query);
 
-        return template.execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
+        return template.execute(
+                new PaginatedQueryCallback<>(queryProvider, parametersProvider, PageUtils.defaultIfNull(pageable)));
     }
 
     @Override
@@ -119,16 +117,14 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public <T> Downloadable exportNamedQueryData(
             final String queryName, final Map<String, Object> params, final ExportType exportType,
-            Class<T> responseType,
-            final Pageable pageable) {
-        final Pageable _pageable = getValidPageable(pageable);
+            Class<T> responseType, final Pageable pageable) {
 
         SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, responseType);
         AppRuntimeParameterProvider parameterProvider = new AppRuntimeParameterProvider(params, parameterResolvers
                 .getResolver(queryName));
 
         NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
-                _pageable, exportType, responseType);
+                PageUtils.defaultIfNull(pageable), exportType, responseType);
         ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
 
         InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
@@ -138,16 +134,12 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
         final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
-        return executeRuntimeQuery(runtimeQuery, pageable);
+        return executeRuntimeQuery(runtimeQuery, PageUtils.defaultIfNull(pageable));
     }
 
     @Override
     public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
         final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
         return executeRuntimeQueryForUpdate(runtimeQuery);
-    }
-
-    private Pageable getValidPageable(final Pageable pageable) {
-        return pageable == null ? PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE) : pageable;
     }
 }
