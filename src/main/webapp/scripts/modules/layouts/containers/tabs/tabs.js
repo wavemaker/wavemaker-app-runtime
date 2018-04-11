@@ -496,7 +496,7 @@ WM.module('wm.layouts.containers')
                             }
 
                             /* some widgets like charts needs to be redrawn when a tab becomes active for the first time */
-                            element.find('>.ng-isolate-scope')
+                            element.find('.ng-isolate-scope')
                                 .each(function () {
                                     Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                 });
