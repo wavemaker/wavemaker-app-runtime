@@ -120,7 +120,6 @@ WM.module('wm.widgets.basic')
                     'displaylabel'   : true,
                     'dataset'        : true,
                     'displayimagesrc': true,
-                    'active'         : true,
                     'type'           : true,
                     'width'          : true,
                     'height'         : true,
@@ -247,7 +246,6 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                     //Selecting first option by default for displayValue if it is undefined
                     if (!$is.displaylabel && !$is.binddisplaylabel) {
                         defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
@@ -314,7 +312,6 @@ WM.module('wm.widgets.basic')
                 // assign all the keys to the options of the search widget
                 if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                 }
             }
 
@@ -405,13 +402,6 @@ WM.module('wm.widgets.basic')
                 case 'dataset':
                     // set the datatSet of the widget
                     setDataSet(newVal, $is, element);
-                    break;
-                case 'active':
-                    /*listening on 'active' property, as losing the properties during page switch
-                     if studio-mode, then update the displayField & dataField in property panel*/
-                    if ($is.widgetid && newVal) {
-                        updatePropertyPanelOptions($is.dataset, $is);
-                    }
                     break;
                 case 'type':
                     //To avoid overridding check for that attribute
@@ -775,8 +765,6 @@ WM.module('wm.widgets.basic')
                 updateResult($is, matches);
                 return matches;
             }
-
-
             return {
                 'restrict': 'E',
                 'replace': true,
@@ -855,6 +843,7 @@ WM.module('wm.widgets.basic')
                         $is.minLength  = 1;
                         $is.page       = 1;
                         $is.isLastPage = true;
+                        $is.getCutomizedOptions = LiveWidgetUtils.getCutomizedOptions;
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element, attrs), $is, notifyFor);
 

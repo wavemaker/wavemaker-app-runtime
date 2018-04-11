@@ -1190,6 +1190,7 @@ WM.module('wm.widgets.live')
                     "post": function (scope, element, attrs) {
                         scope.FieldDef = function () {};
                         scope.FieldDef.prototype = new wm.baseClasses.FieldDef();
+                        scope.getCutomizedOptions = LiveWidgetUtils.getCutomizedOptions;
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         var parentScope,

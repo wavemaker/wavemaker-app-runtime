@@ -22,7 +22,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/chips-search.html',
             '<li class="app-chip-search" ng-class="{\'full-width\': inputwidth === \'full\'}">' +
                 '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="bind:disabled || readonly || saturate" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
-                    'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
+                    'searchkey="{{searchkey}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                     'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
                     'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}"' +
                     'on-focus="onFocus({$event: $event})" on-blur="onBlur({$event: $event})"' +
@@ -187,10 +187,9 @@ WM.module('wm.widgets.form')
                 $s.limit = limit;
             }
 
-            function boundToLiveVariable($s, $el) {
-                return _.startsWith($s.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory($s, $s.widgetid ? $rs.domScope : $el.scope()) === 'wm.LiveVariable';
+            function boundVariable($s, $el) {
+                return _.startsWith($s.binddataset, 'bind:Variables.') && FormWidgetUtils.getBoundVariableCategory($s, $s.widgetid ? $rs.domScope : $el.scope());
             }
-
 
             /**
              * Triggered once when the dataset is changed.
@@ -200,7 +199,7 @@ WM.module('wm.widgets.form')
             function updateDefaultModel($s, $el) {
                 var model = $s._model_,
                     $searchEl = $el.find('.app-search.ng-isolate-scope'),
-                    isBoundToLiveVariable = boundToLiveVariable($s, $el),
+                    isBoundToLiveVariable = boundVariable($s, $el) === 'wm.LiveVariable',
                     searchQuery = [];
 
                 $s.canUpdateDefaultModel = false;
@@ -358,7 +357,7 @@ WM.module('wm.widgets.form')
             function canUpdateChips($s, $el) {
                 // return false if not bound to live variable and display options length is 0
                 // live variables can make calls to fetch default values data
-                if (!boundToLiveVariable($s, $el) && !$s.displayOptions.length) {
+                if (boundVariable($s, $el) !== 'wm.LiveVariable' && !$s.displayOptions.length) {
                     return false;
                 }
                 // check if search scope is availabel on scope
@@ -879,7 +878,8 @@ WM.module('wm.widgets.form')
                         }
 
                         $s.searchScope = $el.find('.app-search.ng-isolate-scope').isolateScope();
-                        $s.searchScope.tabindex = $s.tabindex;
+                        $s.getCutomizedOptions   = LiveWidgetUtils.getCutomizedOptions;
+                        $s.searchScope.tabindex  = $s.tabindex;
                         $s.searchScope.minLength = $s.minchars;
                         if (!attrs.widgetid) {
                             //Form and filter usecase where scopedataset is updated programatically

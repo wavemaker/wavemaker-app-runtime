@@ -830,7 +830,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
                         "minchars": {"type": "number", "value": "1"},
-                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "custom"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "enablereorder": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedataset": {"type": "string"},
@@ -1935,7 +1935,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "array", "value": [], "bindable": "out-bound", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
-                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "custom"},
                         "displaylabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "displayimagesrc": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
@@ -2580,8 +2580,8 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `WidgetUtilService` provides utility methods for the widgets
      */
-    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout',
-        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout) {
+    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout', '$q',
+        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout, $q) {
             'use strict';
 
             var deviceSizeArray = {
@@ -3287,14 +3287,16 @@ WM.module('wm.widgets.base', [])
                                 options = scope.getCutomizedOptions(scope, name, keys.terminals);
                                 break;
                             }
+                        }
+                        $q.when(options).then(function (options) {
                             if (prop.allfields) {
                                 options = [ALLFIELDS].concat(options);
                             }
                             if (!_.includes(checkboxsetTypeWidgets, prop.widget)) {
                                 options = [''].concat(options);
                             }
-                        }
-                        updateOptions(scope, name, prop, options);
+                            updateOptions(scope, name, prop, options);
+                        });
                     }
                 });
                 return keys;
