@@ -21,7 +21,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/chips-search.html',
             '<li class="app-chip-search" ng-class="{\'full-width\': inputwidth === \'full\'}">' +
-                '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="{{disabled || readonly || saturate}}" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
+                '<wm-search ng-show="!isWidgetInsideCanvas" name="app-chip-search" class="app-chip-input" disabled="bind:disabled || readonly || saturate" add-delay dataset="{{binddataset || dataset}}" orderby="{{orderby}}"' +
                     'searchkey="{{searchkey || displayfield}}" allowonlyselect="allowonlyselect" displaylabel="{{binddisplayexpression || displayfield || displaylabel}}" ' +
                     'displayimagesrc="{{displayimagesrc || binddisplayimagesrc}}" datafield="{{datafield}}" placeholder="{{saturate ? maxSizeReached : placeholder}}" on-select="addItem($event, $scope)" ' +
                     'on-keydown="handleKeyPressEvent($event, $scope)" ng-click="updateStates($event)" dataoptions="dataoptions" showsearchicon="{{showsearchicon}}"' +
