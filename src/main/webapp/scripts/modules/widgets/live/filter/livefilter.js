@@ -792,6 +792,7 @@ WM.module('wm.widgets.live')
 
                         //tabindex should be only on the input fields, remove tabindex on filter field
                         element.removeAttr('tabindex');
+                        scope.getCutomizedOptions = LiveWidgetUtils.getCutomizedOptions;
                     }
                 };
             }
