@@ -143,14 +143,14 @@ wm.variables.services.LoginVariableService = ['Variables',
                             }
                             $rootScope._noRedirect = undefined;
                         });
-                }, function (errorMsg) {
+                }, function (errorMsg, errorDetails, xhrObj) {
                     $rootScope.$emit('toggle-variable-state', variable, false);
                     errorMsg = errorMsg || "Invalid credentials.";
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, errorMsg);
+                        initiateCallback("onError", variable, errorMsg, xhrObj);
                     }
-                    Utils.triggerFn(error, errorMsg);
+                    Utils.triggerFn(error, errorMsg, xhrObj);
                 });
             },
             cancel: function (variable) {
