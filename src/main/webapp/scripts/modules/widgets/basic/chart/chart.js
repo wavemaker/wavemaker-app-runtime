@@ -214,7 +214,7 @@ WM.module('wm.widgets.basic')
         function getxAxisVal(scope, dataObj, xKey, index) {
             var value = _.get(dataObj, xKey);
             //If x axis is other than number type then add indexes
-            if (ChartService.isLineTypeChart(scope.type) && !Utils.isNumberType(scope.xAxisDataType)) {
+            if (ChartService.isLineTypeChart(scope.type) && !_.isNumber(scope.xAxisDataType)) {
                 //Verification to get the unique data keys
                 scope.xDataKeyArr.push(value);
                 return index;
