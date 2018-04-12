@@ -1,6 +1,8 @@
 package com.wavemaker.runtime.data.util;
 
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -33,7 +35,7 @@ public class HqlQueryHelper {
                 .execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider, pageable));
     }
 
-    public static <R> R execute(
+    public static <R> Optional<R> execute(
             HibernateTemplate template, Class<R> returnType, HqlQueryBuilder builder) {
 
         final WMQueryInfo queryInfo = builder.build();
