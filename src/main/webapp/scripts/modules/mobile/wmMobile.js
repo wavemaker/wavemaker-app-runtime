@@ -103,33 +103,12 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
 
                 // keyboard class is added when keyboard is open.
                 window.addEventListener('resize', function () {
-                    screenHeight = window.innerHeight;
-                    var scrollTop,
-                        iScrollEls,
-                        scrollContainer = WM.element(".smoothscroll-container"),
-                        hasKeyboard = screenHeight < initialScreenSize;
+                    var hasKeyboard = window.innerHeight < initialScreenSize;
 
                     if (hasKeyboard) {
                         $appEl.addClass('keyboard');
                     } else {
                         $appEl.removeClass('keyboard');
-                    }
-
-                    // Refresh all the iscrolls on resize.
-                    if (scrollContainer.length) {
-                        iScrollEls = scrollContainer.parent();
-
-                        _.forEach(iScrollEls, function (el) {
-                            var $iscrollEl = el.iscroll;
-                            $iscrollEl.indicatorRefresh();
-                        });
-                    }
-
-                    // Fix for issue: keyboard hides the input on focus.
-                    scrollTop = $(document.activeElement).offset().top;
-
-                    if ((scrollTop + document.activeElement.clientHeight) > screenHeight * 0.9) {
-                        document.activeElement.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
                     }
                 });
 

@@ -401,7 +401,7 @@ WM.module('wm.widgets.advanced')
                                     $is.play();
                                     Utils.triggerFn($is.onChange, {$isolateScope: $is, newIndex: index, oldIndex: oldIndex});
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
-                                    $el.find('>.ng-isolate-scope')
+                                    $el.find('.ng-isolate-scope')
                                         .each(function () {
                                             elScope = WM.element(this).isolateScope();
                                             if (elScope) {
