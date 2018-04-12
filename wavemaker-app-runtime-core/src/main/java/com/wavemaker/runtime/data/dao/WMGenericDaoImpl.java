@@ -47,6 +47,7 @@ import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
+import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
@@ -105,14 +106,17 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public E findById(I entityId) {
         final HqlQueryBuilder builder = queryGenerator.findById(entityId);
 
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
+                .orElseThrow(() -> new EntityNotFoundException("No entity exists for given id:" + entityId));
     }
 
     @SuppressWarnings("unchecked")
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
         final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
-        return HqlQueryHelper.execute(getTemplate(), entityClass, builder);
+        return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No entity found for given unique key values:" + fieldValueMap));
     }
 
     @Override

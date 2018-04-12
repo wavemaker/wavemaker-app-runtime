@@ -37,6 +37,7 @@ import com.wavemaker.runtime.data.dao.query.providers.SessionBackedQueryProvider
 import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver;
 import com.wavemaker.runtime.data.dao.util.CustomQueryAdapter;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
+import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
@@ -65,7 +66,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             final String queryName, final Map<String, Object> params, final Class<T> returnType) {
         SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
         return template.execute(new QueryCallback<>(queryProvider,
-                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))));
+                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))))
+                .orElseThrow(() -> new EntityNotFoundException("No row exists for given parameters:" + params));
     }
 
     @Override
