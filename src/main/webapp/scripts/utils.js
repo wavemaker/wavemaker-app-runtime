@@ -49,7 +49,8 @@ WM.module('wm.utils', [])
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
                 SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
                 APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/,
-                JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/
+                JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/,
+                MOBILE_APP_ID: /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9]*[A-Za-z0-9])$/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -986,6 +987,10 @@ WM.module('wm.utils', [])
         // Valid field name should not contain any special chars other than _ and $
         function isValidFieldName(fieldName) {
             return (/^[0-9a-zA-Z_\$]+$/.test(fieldName));
+        }
+
+        function isValidMobileAppId(appId) {
+            return !!REGEX.MOBILE_APP_ID.test(appId);
         }
 
         function getPropertyNode(prop) {
@@ -3171,4 +3176,5 @@ WM.module('wm.utils', [])
         this.retryIfFails               = retryIfFails;
         this.getAbortableDefer          = getAbortableDefer;
         this.executeDeferChain          = executeDeferChain;
+        this.isValidMobileAppId         = isValidMobileAppId;
     }]);
