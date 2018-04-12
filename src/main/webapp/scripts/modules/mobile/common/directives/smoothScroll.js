@@ -1,4 +1,4 @@
-/*global _, wm, WM, document, navigator, IScroll */
+/*global _, wm, WM, document, navigator, IScroll, $, window  */
 
 /**
  * @ngdoc directive
@@ -17,6 +17,48 @@
 wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function (Utils, $rs) {
     'use strict';
 
+    /**
+     * Iscroll indicator refresh
+     */
+    function recalculatePosition(iScroll) {
+        var scrollTop,
+            iScrollEls,
+            scrollContainer = WM.element(".smoothscroll-container"),
+            screenHeight = window.innerHeight;
+
+        // Fix for issue: keyboard hides the input on focus.
+        scrollTop = $(document.activeElement).offset().top;
+
+        // On input focus or window resize, keypad in device has to adjust.
+        if ((scrollTop + document.activeElement.clientHeight) > screenHeight * 0.9) {
+            document.activeElement.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
+        }
+
+        // refresh all the iscrolls in pagecontent.
+        if (!iScroll) {
+            if (scrollContainer.length) {
+                iScrollEls = scrollContainer.parent();
+
+                _.forEach(iScrollEls, function (el) {
+                    el.iscroll.indicatorRefresh();
+                    el.iscroll.refresh();
+                });
+            }
+            return;
+        }
+
+        // refresh specify iscroll on change.
+        if (iScroll.indicatorRefresh) {
+            iScroll.indicatorRefresh();
+        }
+        if (iScroll.refresh) {
+            iScroll.refresh();
+        }
+    }
+
+    // on window resize, recalculate the iscroll position and refresh scrollers.
+    window.addEventListener('resize', recalculatePosition);
+
     // Creates iScroll instance.
     function createSmoothScroll($s, $el, $events) {
         var options,
@@ -28,7 +70,7 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
             'scrollbars' : true,
             'preventDefault': false,
             'bounce': Utils.isIOS(),
-            'fadeScrollbars': false,
+            'mouseWheel': true, // for preview in browser support
             'disablePointer': true, // disable the pointer events as it causes lag in scrolling (jerky).
             'disableTouch': false, // false to be usable with touch devices
             'disableMouse': false // false to be usable with a mouse (desktop)
@@ -64,6 +106,15 @@ wm.modules.wmCommon.directive('wmSmoothscroll', ['Utils', '$rootScope', function
         };
 
         $el[0].iscroll = iScroll;
+
+        // Watching for maxScrollY value to identify the changes of content size in page.
+        $s.$watch(function () {
+            return $el[0].iscroll.maxScrollY;
+        }, function (nv, ov) {
+            if (nv !== ov) {
+                recalculatePosition(iScroll);
+            }
+        });
 
         /* This function gets called for every digest cycle.
          * When element has scroll (i.e. scrollHeight > clientHeight), a div with smoothscroll-container class will be added.
