@@ -49,6 +49,7 @@
   "LABEL_STARTS_WITH": "Starts with",
   "LABEL_TOTAL_RECORDS": "Total records",
   "MESSAGE_DELETE_RECORD": "Delete Record",
+  "MESSAGE_ERROR_CONTENT_DISPLAY": "Can not load insecure content for url: ",
   "MESSAGE_LOADING": "Loading ...",
   "MESSAGE_NO_CHANGES": "No changes detected",
   "MESSAGE_NO_DATA": "No data found",
