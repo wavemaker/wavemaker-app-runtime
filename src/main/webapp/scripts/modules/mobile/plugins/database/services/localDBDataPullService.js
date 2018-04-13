@@ -158,6 +158,19 @@ wm.plugins.database.services.LocalDBDataPullService = [
         }
 
         /**
+         * Executes DatabaseService.countTableDataWithQuery as a promise API.
+         * @param params
+         * @returns {*}
+         */
+        function executeDatabaseCountQuery(params) {
+            var defer = $q.defer();
+            DatabaseService.countTableDataWithQuery(params, function (response) {
+                defer.resolve(response);
+            }, defer.reject.bind(defer));
+            return defer.promise;
+        }
+
+        /**
          * Pulls data of the given entity from remote server.
          * @param db
          * @param entityName
@@ -206,10 +219,13 @@ wm.plugins.database.services.LocalDBDataPullService = [
          * @returns {*}
          */
         function getTotalRecordsToPull(db, entitySchema, filter, pullPromise) {
-            var dataModelName = db.schema.name,
-                countUrl = $rootScope.project.deployedUrl + '/services/' + dataModelName + '/' + entitySchema.entityName + '/count?' + filter;
+            var params = {
+                dataModelName: db.schema.name,
+                entityName: entitySchema.entityName,
+                data: filter
+            };
             return retryIfNetworkFails(function () {
-                return $http.post(countUrl).then(function (response) {
+                return executeDatabaseCountQuery(params).then(function (response) {
                     var totalRecordCount = response.data,
                         maxRecordsToPull = _.parseInt(entitySchema.pullConfig.maxNumberOfRecords);
                     if (_.isNaN(maxRecordsToPull) || maxRecordsToPull <= 0 || totalRecordCount < maxRecordsToPull) {
@@ -230,18 +246,26 @@ wm.plugins.database.services.LocalDBDataPullService = [
                 entitySchema = db.schema.entities[entityName],
                 isBundledEntity = LocalDBManager.isBundled(db.name, entityName);
             return $q.resolve().then(function () {
+                var hasNullAttributeValue = false;
                 if (isBundledEntity || _.isEmpty(entitySchema.pullConfig.query)) {
                     query = _.cloneDeep(entitySchema.pullConfig.filter);
                     query = _.map(query, function (v) {
                         v.attributeValue = evalIfBind(v.attributeValue);
+                        hasNullAttributeValue = hasNullAttributeValue || _.isNil(v.attributeValue);
                         return v;
                     });
+                    if (hasNullAttributeValue) {
+                        return $q.reject('Null criteria values are present');
+                    }
                     query = _.sortBy(query, 'attributeName');
                     query = $liveVariable.getSearchQuery(query, ' AND ', true);
                 } else {
                     query = evalIfBind(entitySchema.pullConfig.query);
                 }
-                return query;
+                if (_.isNil(query)) {
+                    return null;
+                }
+                return encodeURIComponent(query);
             });
         }
 
