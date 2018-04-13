@@ -287,6 +287,13 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "DELETE"
         },
+        countTableDataWithQuery : {
+            url: "/:service/:dataModelName/:entityName/count",
+            method: "POST",
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+        },
         searchTableData: {
             url: "/:service/:dataModelName/:entityName/search?page=:page&size=:size&:sort",
             method: "POST"
