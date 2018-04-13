@@ -112,7 +112,9 @@ wm.plugins.database.services.LocalDBService = [
                         if (NetworkService.isConnected() || params.onlyOnline || !isAllowedInOffline) {
                             remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback);
                         } else {
-                            localDBcall(operation, params, successCallback, failureCallback);
+                            localDBcall(operation, params, successCallback, function () {
+                                Utils.triggerFn(failureCallback, "Service call failed");
+                            });
                         }
                     };
                 }
@@ -135,8 +137,12 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.insertTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
+                var isPKAutoIncremented = (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity');
+                if (isPKAutoIncremented && params.data[store.primaryKeyName]) {
+                    delete params.data[store.primaryKeyName];
+                }
                 return store.add(params.data).then(function (localId) {
-                    if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
+                    if (isPKAutoIncremented) {
                         params.data[store.primaryKeyName] = localId;
                     }
                     successCallback(params.data);
