@@ -1027,9 +1027,10 @@ WM.module('wm.widgets.live')
              * This function gets the service query param of service variable bound to the widget
              * @param $is Widget scope.
              * @param variable : variable instance
+             * @param fields : dataset terminals
              * @returns : promise
              */
-            function getServiceParams($is, variable) {
+            function getServiceParams($is, variable, fields) {
                 var deferred             = $q.defer(),
                     queryParams          = [],
                     searchOptions        = [];
@@ -1041,7 +1042,7 @@ WM.module('wm.widgets.live')
                                 return value;
                             });
                         }
-                        deferred.resolve(searchOptions);
+                        deferred.resolve(searchOptions.length ? searchOptions : fields);
                     });
                 return deferred.promise;
             }
@@ -1061,7 +1062,7 @@ WM.module('wm.widgets.live')
                 if (prop === 'searchkey') {
                     // return service query param if bound to service variable.
                     if (isBoundToServiceVariable) {
-                        return getServiceParams($is, variable);
+                        return getServiceParams($is, variable, fields);
                     }
                     return fields;
                 }
