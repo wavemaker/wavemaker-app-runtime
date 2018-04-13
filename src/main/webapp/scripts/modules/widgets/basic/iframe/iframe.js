@@ -38,8 +38,8 @@ WM.module('wm.widgets.basic')
                     /* check for 'http' urls in studio mode of SAAS studio version */
                     if (Utils.isInsecureContentRequest(newVal)) {
                         scope.showContentLoadError = true;
-                        scope.errMsg = $rootScope.locale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
-                        scope.hintMsg = $rootScope.locale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
+                        scope.errMsg = $rootScope.appLocale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
+                        scope.hintMsg = $rootScope.appLocale.MESSAGE_ERROR_CONTENT_DISPLAY + newVal;
                     } else {
                         scope.showContentLoadError = false;
                     }

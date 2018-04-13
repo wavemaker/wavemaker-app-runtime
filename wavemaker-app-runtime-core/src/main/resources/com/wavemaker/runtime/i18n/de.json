@@ -49,6 +49,7 @@
   "LABEL_STARTS_WITH": "Beginnt mit",
   "LABEL_TOTAL_RECORDS": "Gesamtsätze",
   "MESSAGE_DELETE_RECORD": "Datensatz löschen",
+  "MESSAGE_ERROR_CONTENT_DISPLAY": "Inhalt kann nicht im Entwurfsmodus für angezeigt werden",
   "MESSAGE_LOADING": "Laden ...",
   "MESSAGE_NO_CHANGES": "Es wurden keine Änderungen festgestellt",
   "MESSAGE_NO_DATA": "Keine Daten gefunden",
