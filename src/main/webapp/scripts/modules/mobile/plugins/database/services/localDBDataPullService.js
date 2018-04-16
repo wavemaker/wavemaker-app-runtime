@@ -226,7 +226,7 @@ wm.plugins.database.services.LocalDBDataPullService = [
             };
             return retryIfNetworkFails(function () {
                 return executeDatabaseCountQuery(params).then(function (response) {
-                    var totalRecordCount = response.data,
+                    var totalRecordCount = response,
                         maxRecordsToPull = _.parseInt(entitySchema.pullConfig.maxNumberOfRecords);
                     if (_.isNaN(maxRecordsToPull) || maxRecordsToPull <= 0 || totalRecordCount < maxRecordsToPull) {
                         return totalRecordCount;
