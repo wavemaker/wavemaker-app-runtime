@@ -79,7 +79,7 @@ WM.module('wm.layouts.containers')
                         labelField    = $is.itemlabel    || 'label',
                         itemField     = $is.itemlink     || 'link',
                         badgeField    = $is.itembadge    || 'badge',
-                        actionField   = $is.itembadge    || 'action',
+                        actionField   = $is.itemaction   || 'action',
                         childrenField = $is.itemchildren || 'children',
                         userRole      = $is.userrole;
 
