@@ -429,6 +429,12 @@ body {
 .wm-app {
   height: 100%;
   position: relative;
+  // Required for left panel swipe transition
+  &.wm-mobile-app {
+    #wm-app-content {
+      overflow: hidden;
+    }
+  }
   #wm-app-content , .app-page, .app-partial, .app-included-page {
     .width-height();
     position: relative;
@@ -1643,6 +1649,7 @@ body {
   }
   .smoothscroll-container {
     position: absolute;
+    width: 100%;
   }
 
   //Angular UI bootstrap 1.1.0 related styles.
