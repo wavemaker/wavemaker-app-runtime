@@ -266,6 +266,21 @@ window.requestAnimationFrame = (function () {
         return true;
     }
 
+    // This function checks if touch positions are within +/- 20deg error in horizontal and 70deg in vertical direction.
+    function isThresholdAngleReached(startPoint, endPoint, direction) {
+        //tan20, tan(-20deg)
+        if (direction === DIRECTIONS.HORIZONTAL) {
+            if (Math.abs((endPoint.y - startPoint.y) / (endPoint.x - startPoint.x)) <= 0.36397023426) {
+                return true;
+            }
+        } else if (direction === DIRECTIONS.VERTICAL) { // between tan70 & tan110
+            if (Math.abs((endPoint.y - startPoint.y) / (endPoint.x - startPoint.x)) >= 2.74747741945) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function isThresholdReached(touch, settings) {
         var startPoint = settings.data.path[0],
             endPoint = {
@@ -273,7 +288,7 @@ window.requestAnimationFrame = (function () {
                 'y': touch.pageY
             },
             distance = computeDistance(startPoint, endPoint, settings.direction);
-        return abs(distance) > settings.threshold;
+        return (abs(distance) > settings.threshold) && isThresholdAngleReached(startPoint, endPoint, settings.direction);
     }
 
     function listenPassiveSwipe(touch, settings) {
