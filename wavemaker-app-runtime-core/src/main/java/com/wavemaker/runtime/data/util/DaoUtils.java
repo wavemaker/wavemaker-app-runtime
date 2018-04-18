@@ -25,7 +25,7 @@ public abstract class DaoUtils {
 
         final Root<T> root = query.from(entity);
 
-        if (filter.existingChildren.isEmpty()) {
+        if (!filter.existingChildren.isEmpty()) {
             query.select(root).where(builder.equal(root.get(filter.parentPropertyName), filter.parent),
                     builder.not(root.in(filter.existingChildren)));
         } else {
