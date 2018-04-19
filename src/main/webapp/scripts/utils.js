@@ -870,6 +870,10 @@ WM.module('wm.utils', [])
        */
         function removeExtraSlashes(url) {
             if (_.isString(url)) {
+                //support for mobile apps having local file path url starting with file:///
+                if (_.startsWith(url, 'file:///')) {
+                    return url;
+                }
                 return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
             }
         }
