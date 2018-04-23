@@ -101,8 +101,7 @@ public class CleanupListener implements ServletContextListener {
                 try {
                     Thread.currentThread().setContextClassLoader(XSSFPicture.class.getClassLoader());
                     logger.info("warming up poi prototype field");
-                    final Method prototype = XSSFPicture.class.getDeclaredMethod("prototype");
-                    prototype.setAccessible(true);
+                    final Method prototype = findMethod(XSSFPicture.class, "prototype");
                     prototype.invoke(null);
                 } finally {
                     Thread.currentThread().setContextClassLoader(currentCL);
@@ -231,18 +230,16 @@ public class CleanupListener implements ServletContextListener {
     private static void cleanupNotificationListener(ClassLoader classLoader, PlatformManagedObject platformManagedObject) {
         try {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
-            Field listenerListField = ReflectionUtils.findField(notificationEmitter.getClass(), "listenerList");
+            Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
                 throw new WMRuntimeException("Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
             }
-            listenerListField.setAccessible(true);
             List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
-                Field listenerField = o.getClass().getDeclaredField("listener");
+                Field listenerField = findField(o.getClass(), "listener");
                 if (listenerListField == null) {
                     throw new WMRuntimeException("Unrecognized ListenerInfo class " + o.getClass().getName());
                 }
-                listenerField.setAccessible(true);
                 NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
                 if (notificationListener.getClass().getClassLoader() == classLoader) {
                     logger.info("Removing registered mBean notification listener {}", notificationListener.getClass().getName());
@@ -273,14 +270,10 @@ public class CleanupListener implements ServletContextListener {
         String className = "java.util.logging.Level$KnownLevel";
         try {
             Class klass = Class.forName(className, true, classLoader);
-            Field nameToKnownLevelsField = klass.getDeclaredField("nameToLevels");
-            Field intToKnownLevelsField = klass.getDeclaredField("intToLevels");
-            Field levelObjectField = klass.getDeclaredField("levelObject");
-            Field mirroredLevelField = klass.getDeclaredField("mirroredLevel");
-            nameToKnownLevelsField.setAccessible(true);
-            intToKnownLevelsField.setAccessible(true);
-            levelObjectField.setAccessible(true);
-            mirroredLevelField.setAccessible(true);
+            Field nameToKnownLevelsField = findField(klass, "nameToLevels");
+            Field intToKnownLevelsField = findField(klass, "intToLevels");
+            Field levelObjectField = findField(klass, "levelObject");
+            Field mirroredLevelField = findField(klass, "mirroredLevel");
             synchronized (klass) {
                 Map<Object, List> nameToKnownLevels = (Map<Object, List>) nameToKnownLevelsField.get(null);
                 removeTCLKnownLevels(classLoader, nameToKnownLevels, levelObjectField, mirroredLevelField);
@@ -351,8 +344,7 @@ public class CleanupListener implements ServletContextListener {
     private void resourceManagerClearPropertiesCache() {
         Class<ResourceManager> klass = ResourceManager.class;
         try {
-            Field propertiesCache = klass.getDeclaredField("propertiesCache");
-            propertiesCache.setAccessible(true);
+            Field propertiesCache = findField(klass, "propertiesCache");
             WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
                     .get(null);
             if (!map.isEmpty()) {
@@ -363,45 +355,21 @@ public class CleanupListener implements ServletContextListener {
             logger.warn("Failed to clear propertiesCache from {}", klass, e);
         }
     }
-
-    /**
-     * Added by akritim
-     * To clear cache from AbtractClassGenerator's Source
-     */
-    /*private void clearCacheSourceAbstractClassGenerator() {
-        if (isSharedLib()) {
-            try {
-                String className = "org.springframework.cglib.core.AbstractClassGenerator$Source";
-                logger.info("Attempt to clear cache field from class {}", className);
-                Field SOURCE = Enhancer.class.getDeclaredField("SOURCE");
-                SOURCE.setAccessible(true);
-                SOURCE.get(null);
-                Field cache = org.springframework.cglib.core.AbstractClassGenerator.class.getClassLoader()
-                        .loadClass(className).getDeclaredField("cache");
-                cache.setAccessible(true);
-                Map map = (Map) cache.get(SOURCE.get(null));
-                map.remove(CleanupListener.class.getClassLoader());
-            } catch (Throwable e) {
-                logger.warn("Failed to Clear Cache from Source", e);
-            }
-        }
-    }*/
+    
     private void clearLdapThreadConnections(ClassLoader classLoader) {
         List<Thread> threads = getThreads(classLoader);
         for (Thread thread : threads) {
             if (isAliveAndNotCurrentThread(thread)) {
                 try {
                     if (thread.getName().startsWith("Thread-")) {
-                        Field targetField = Thread.class.getDeclaredField("target");
-                        targetField.setAccessible(true);
+                        Field targetField = findField(Thread.class, "target");
                         Runnable runnable = (Runnable) targetField.get(thread);
                         if (runnable != null && runnable instanceof Connection) {
                             logger.info("Interrupting LDAP connection thread");
                             Connection conn = (Connection) runnable;
                             WMIOUtils.closeSilently(conn.inStream);
                             WMIOUtils.closeSilently(conn.outStream);
-                            Field parent = Connection.class.getDeclaredField("parent");
-                            parent.setAccessible(true);
+                            Field parent = findField(Connection.class, "parent");
                             LdapClient ldapClient = (LdapClient) parent.get(conn);
                             ldapClient.closeConnection();
                             LdapPoolManager.expire(3000);
@@ -477,6 +445,7 @@ public class CleanupListener implements ServletContextListener {
                     thread.interrupt();
                     runningThreads.add(thread);
                 }
+                stopTimerThread(thread);
             }
             if (!runningThreads.isEmpty()) {
                 logger.info("Waiting for interrupted threads to be finished in max of {} ms", waitTimeOutInMillis);
@@ -484,7 +453,7 @@ public class CleanupListener implements ServletContextListener {
                 for (Thread thread : runningThreads) {
                     if (thread.isAlive()) {
                         StackTraceElement[] stackTrace = thread.getStackTrace();
-                        Throwable throwable = new IllegalThreadStateException("Thread " + thread.getName() + "Still running");
+                        Throwable throwable = new IllegalThreadStateException("Thread [" + thread.getName() + "] is Still running");
                         throwable.setStackTrace(stackTrace);
                         logger.warn("Thread {} is still alive after waiting for {} and will mostly probably create a memory leak", thread.getName(), 
                                 waitTimeOutInMillis, throwable);
@@ -494,6 +463,33 @@ public class CleanupListener implements ServletContextListener {
         } catch (Exception e) {
             logger.warn("Failed in stopRunningThreads", e);
         }
+    }
+
+    private static void stopTimerThread(Thread thread) {
+        if (!thread.getClass().getName().startsWith("java.util.Timer")) {
+            return;
+        }
+        logger.info("Stopping Timer thread {}", thread);
+        Field newTasksMayBeScheduled = findField(thread.getClass(), "newTasksMayBeScheduled");
+        Field queueField = findField(thread.getClass(), "queue");
+        if (queueField != null && newTasksMayBeScheduled != null) {
+            try {
+                Object queue = queueField.get(thread);
+                newTasksMayBeScheduled.set(thread, false);
+                Method clearMethod = findMethod(queue.getClass(), "clear");
+                synchronized (queue) {
+                    clearMethod.invoke(queue);
+                    newTasksMayBeScheduled.set(thread, false);
+                    queue.notify();
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to stop timer thread {}", thread, e);
+            }
+        } else {
+            logger.warn("Couldn't stop timer thread {} as one of newTasksMayBeScheduled/queue fields are not present in the class {}", thread, thread
+                    .getClass().getName());
+        }
+        
     }
 
     /**
@@ -538,5 +534,21 @@ public class CleanupListener implements ServletContextListener {
     
     private static ClassLoader getAppClassLoader() {
         return Thread.currentThread().getContextClassLoader();
+    }
+    
+    private static Field findField(Class klass, String name) {
+        Field field = ReflectionUtils.findField(klass, name);
+        if (field != null) {
+            field.setAccessible(true);
+        }
+        return field;
+    }
+
+    private static Method findMethod(Class klass, String name, Class... paramTypes) {
+        Method method = ReflectionUtils.findMethod(klass, name, paramTypes);
+        if (method != null) {
+            method.setAccessible(true);
+        }
+        return method;
     }
 }
