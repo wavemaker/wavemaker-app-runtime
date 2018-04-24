@@ -1884,6 +1884,15 @@ If the height and width are not specified the video takes the height of the post
             }
           }
         }
+        //IE11 issue with navigation on pseudo classes
+        &.disabled a {
+          &[disabled] {
+            pointer-events: none;
+            &:before {
+              display: inline-block;
+            }
+          }
+        }
       }
       .pagination-prev, .pagination-next, .pagination-first, .pagination-last {
         a {
