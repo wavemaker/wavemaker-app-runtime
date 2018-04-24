@@ -62,6 +62,7 @@ WM.module('wm.layouts.containers')
             'link': {
                 'pre': function (scope, $el, attrs) {
                     scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                    $el.removeAttr('title');
                 },
 
                 'post': function (scope, element, attrs) {

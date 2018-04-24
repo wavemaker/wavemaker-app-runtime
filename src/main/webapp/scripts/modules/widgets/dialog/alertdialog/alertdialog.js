@@ -98,6 +98,7 @@ WM.module('wm.widgets.dialog')
                             }
                         });
                     }
+                    element.removeAttr('title');
                 },
                 "post": function (scope, element, attrs, dialogCtrl) {
                     var modalWindowElScope = element.closest('[uib-modal-window]').isolateScope(),

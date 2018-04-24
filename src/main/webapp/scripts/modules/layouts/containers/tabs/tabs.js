@@ -460,6 +460,8 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         scope.$lazyLoad = WM.noop;
+
+                        element.removeAttr('title');
                     },
                     'post': function (scope, element, attrs, ctrl) {
 
