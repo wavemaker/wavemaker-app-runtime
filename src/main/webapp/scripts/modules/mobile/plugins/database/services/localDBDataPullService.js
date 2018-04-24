@@ -82,8 +82,8 @@ wm.plugins.database.services.LocalDBDataPullService = [
                     'databases' : [],
                     'totalRecordsToPull' : 0,
                     'totalPulledRecordCount' : 0,
-                    'startTime' : 0,
-                    'endTime' : info.dbSeedCreatedOn
+                    'startTime' : new Date(0),
+                    'endTime' : new Date(info.dbSeedCreatedOn)
                 });
             }
         });
@@ -281,24 +281,29 @@ wm.plugins.database.services.LocalDBDataPullService = [
         function addDeltaCriteria(db, entityName, query) {
             var entitySchema = db.schema.entities[entityName],
                 isBundledEntity = LocalDBManager.isBundled(db.schema.name, entityName),
-                deltaFieldName = entitySchema.pullConfig.deltaFieldName;
+                deltaFieldName = entitySchema.pullConfig.deltaFieldName,
+                deltaField = _.find(entitySchema.columns, {'fieldName' : deltaFieldName}) || {};
             if (!_.isEmpty(deltaFieldName)) {
                 return getLastPullInfo().then(function (lastPullInfo) {
                     var lastPullTime = (lastPullInfo && lastPullInfo.startTime && lastPullInfo.startTime.getTime()),
                         lastPullDBInfo = _.find(lastPullInfo && lastPullInfo.databases, {'name' : db.schema.name}),
-                        lastPullEntityInfo = _.find(lastPullDBInfo && lastPullDBInfo.entities, {'entityName' : entityName});
+                        lastPullEntityInfo = _.find(lastPullDBInfo && lastPullDBInfo.entities, {'entityName' : entityName}) || {};
                     if (!lastPullTime && isBundledEntity) {
                         //For bundled entity when there is no last pull, fetch records that got modified after db creation.
                         lastPullTime = (lastPullInfo && lastPullInfo.endTime && lastPullInfo.endTime.getTime());
                         lastPullEntityInfo.query = query;
                     }
-                    if (lastPullEntityInfo && lastPullEntityInfo.query === query && lastPullTime > 0) {
+                    if (lastPullEntityInfo.query === query && lastPullTime > 0) {
                         if (_.isEmpty(query)) {
                             query = '';
                         } else {
                             query += ' AND ';
                         }
-                        query += deltaFieldName + ' > wm_ts(\'' + lastPullTime + '\')';
+                        if (deltaField.sqlType === 'datetime') {
+                            query += deltaFieldName + ' > wm_dt(\'' + moment(lastPullTime).utc().format('YYYY-MM-DDTHH:mm:ss') + '\')';
+                        } else {
+                            query += deltaFieldName + ' > wm_ts(\'' + lastPullTime + '\')';
+                        }
                     }
                     return query;
                 }, $q.resolve.bind($q, query));
