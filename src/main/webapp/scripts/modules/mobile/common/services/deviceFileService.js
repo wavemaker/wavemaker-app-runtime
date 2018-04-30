@@ -456,6 +456,24 @@ wm.modules.wmCommon.services.DeviceFileService = [
             return uploadDir;
         };
 
+        /**
+         * This function returns the mime type of the file.
+         * @param filePath file path
+         * @returns {*} promise
+         */
+        this.getMimeType = function (filePath) {
+            var deferred = $q.defer();
+
+            // find the mime type of the file
+            $cordovaFile.checkFile(filePath, '').then(function (entry) {
+                entry.file(function (data) {
+                    deferred.resolve(data.type);
+                });
+            }, deferred.reject);
+
+            return deferred.promise;
+        };
+
         if (window.cordova && window.cordova.file) {
             /**
              * Default READ_CHUNK_SIZE is 256 Kb. But with that setting readJson method is failing. This is an issue

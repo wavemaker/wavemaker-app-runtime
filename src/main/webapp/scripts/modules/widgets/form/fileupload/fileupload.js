@@ -358,26 +358,29 @@ WM.module('wm.widgets.form')
         /* this function uploads the validfiles */
         function uploadFiles($files, scope, uploadOptions) {
             var config = getUrlAndParamName(scope.uploadUrl, scope.service, scope.operation, scope.destination);
-            scope.fileTransfers = FileUploadService.upload($files, config, uploadOptions);
-            scope.uploadedFiles = [];
-            _.map(scope.fileTransfers, function (ft) {
-                ft.then(onUploadSuccess.bind(undefined, scope),
-                    onUploadError.bind(undefined, scope),
-                    onUploadProgress.bind(undefined, scope));
-            });
+            FileUploadService.upload($files, config, uploadOptions)
+                .then(function (fileTransfers) {
+                    scope.fileTransfers = fileTransfers;
+                    scope.uploadedFiles = [];
+                    _.map(scope.fileTransfers, function (ft) {
+                        ft.then(onUploadSuccess.bind(undefined, scope),
+                            onUploadError.bind(undefined, scope),
+                            onUploadProgress.bind(undefined, scope));
+                    });
 
-            if (scope.fileTransfers.length) {
-                //show success toaster after all file transfers are successful
-                $q.all(scope.fileTransfers).then(function () {
-                    if (!scope._hasOnSuccessEvt) {
-                        wmToaster.show('success', $rootScope.appLocale.MESSAGE_FILE_UPLOAD_SUCCESS);
-                    }
-                }, function () {
-                    if (!scope._hasOnErrorEvt) {
-                        wmToaster.show('error', $rootScope.appLocale.MESSAGE_FILE_UPLOAD_ERROR);
+                    if (scope.fileTransfers.length) {
+                        //show success toaster after all file transfers are successful
+                        $q.all(scope.fileTransfers).then(function () {
+                            if (!scope._hasOnSuccessEvt) {
+                                wmToaster.show('success', $rootScope.appLocale.MESSAGE_FILE_UPLOAD_SUCCESS);
+                            }
+                        }, function () {
+                            if (!scope._hasOnErrorEvt) {
+                                wmToaster.show('error', $rootScope.appLocale.MESSAGE_FILE_UPLOAD_ERROR);
+                            }
+                        });
                     }
                 });
-            }
         }
 
         /*Overwrite the caption only if they are default*/
