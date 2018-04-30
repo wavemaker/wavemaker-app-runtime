@@ -869,9 +869,13 @@ WM.module('wm.utils', [])
        * @returns {url}, sanitized url
        */
         function removeExtraSlashes(url) {
-            if (_.isString(url)) {
-                //support for mobile apps having local file path url starting with file:///
-                if (_.startsWith(url, 'file:///')) {
+          var base64regex = /^data:image\/([a-z]{2,});base64,/;
+          if (_.isString(url)) {
+                /*
+                * support for mobile apps having local file path url starting with file:/// and
+                * support for base64 format
+                * */
+                if (_.startsWith(url, 'file:///') || base64regex.test(url)) {
                     return url;
                 }
                 return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
