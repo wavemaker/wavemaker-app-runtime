@@ -468,7 +468,7 @@ wm.modules.wmCommon.services.DeviceFileService = [
             $cordovaFile.checkFile(filePath, '').then(function (entry) {
                 entry.file(function (data) {
                     deferred.resolve(data.type);
-                });
+                }, deferred.reject);
             }, deferred.reject);
 
             return deferred.promise;
