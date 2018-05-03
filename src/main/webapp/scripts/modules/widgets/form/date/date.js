@@ -17,8 +17,8 @@ WM.module('wm.widgets.form')
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
                     ' ng-required="required" ' +
                     ' accesskey="{{::shortcutkey}}"' +
-                    ' ng-change="_onChange({$event: $event, $scope: this})"' +
-                    ' ng-keyup="_onKeyUp($event)"' +
+                    ' ng-change="onDateChange()"' +
+                    ' ng-keydown="_onKeyDown($event)"' +
                     ' autocomplete="off">' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
@@ -34,7 +34,7 @@ WM.module('wm.widgets.form')
             ' ng-readonly="readonly" ' +
             ' ng-required="required" ' +
             ' ng-disabled="disabled" ' +
-            ' ng-change="updateModel();_onChange({$event: $event, $scope: this});" ng-model-options="{ updateOn: \'change\' }"> '
+            ' ng-change="updateModel();onDateChange();" ng-model-options="{ updateOn: \'change\' }"> '
             );
     }])
     .directive('wmDate', [
@@ -47,14 +47,16 @@ WM.module('wm.widgets.form')
         '$timeout',
         'CONSTANTS',
         'Utils',
+        'DateTimeWidgetUtils',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, Utils) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils, $timeout, CONSTANTS, Utils, DateTimeWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
                 notifyFor   = {
                     'readonly' : CONSTANTS.isRunMode,
                     'disabled' : CONSTANTS.isRunMode,
+                    'autofocus': true,
                     'timestamp': true,
                     'showweeks': true,
                     'mindate'  : true,
@@ -73,9 +75,12 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                     inputEl.attr(key, newVal);
                 case 'disabled':
-                    isDisabled = scope.readonly || scope.disabled;
+                    isDisabled = scope.readonly || WM.isDefined(scope.disabled);
                     inputEl.attr('disabled', isDisabled);
                     buttonEl.attr('disabled', isDisabled);
+                    break;
+                case 'autofocus':
+                    inputEl.first().attr(key, newVal);
                     break;
                 case 'timestamp':
                     /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
@@ -121,13 +126,23 @@ WM.module('wm.widgets.form')
             }
 
             function _onClick(scope, evt) {
-                if ($(evt.target).is('input') && !Utils.showDropDownOnInput(scope.showdropdownon)) {
+                if ($(evt.target).is('input') && !DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput(scope.showdropdownon)) {
                     return false;
                 }
+                DateTimeWidgetUtils.setFocusOnDateOrTimePicker(scope, true);
                 scope.isOpen = !scope.isOpen;
                 if (scope.onClick) {
                     scope.onClick({$event: evt, $scope: scope});
                 }
+            }
+
+            function onDateChange(scope, evt) {
+                //after selecting the date, setting the focus back to input and triggering the _onChange
+                scope._onChange({$event: evt, $scope: scope});
+                /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
+                $timeout(function() {
+                    DateTimeWidgetUtils.setFocusOnElement(scope);
+                });
             }
 
             return {
@@ -229,6 +244,7 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
                         $is._onClick = _onClick.bind(undefined, $is);
+                        $is.onDateChange = onDateChange.bind(undefined, $is);
 
                         /*update the model when the device date is changed*/
                         $is.updateModel = function () {
@@ -270,13 +286,19 @@ WM.module('wm.widgets.form')
                             $is.$watch('isOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListener, true);
+                                    DateTimeWidgetUtils.setDatePickerKeyboardEvents($is);
                                 }
                             });
 
-                            $is._onKeyUp = function ($event) {
-                                //On tab in, open the date popup
-                                if (Utils.showDropDownOnInput($is.showdropdownon) && $event.keyCode === 9) {
+                            $is._onKeyDown = function ($event) {
+                                //On Enter, open the date popup
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon) && (Utils.getActionFromKey($event) === 'ENTER' || Utils.getActionFromKey($event) === 'DOWN-ARROW')) {
+                                    $event.preventDefault();
                                     $is.isOpen = true;
+                                    DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                } else {
+                                    $is.isOpen = false;
+                                    $event.stopPropagation();
                                 }
                             };
 
