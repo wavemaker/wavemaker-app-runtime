@@ -20,9 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -52,12 +51,11 @@ import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
-import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
 import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
+import com.wavemaker.runtime.data.util.DaoUtils;
 import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.model.DownloadResponse;
@@ -110,6 +108,13 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
                 .orElseThrow(() -> new EntityNotFoundException("No entity exists for given id:" + entityId));
     }
 
+    @Override
+    public List<E> findByMultipleIds(final List<I> ids, final boolean orderedReturn) {
+        return getTemplate().execute(session -> session.byMultipleIds(entityClass)
+                .enableOrderedReturn(orderedReturn)
+                .multiLoad(ids));
+    }
+
     @SuppressWarnings("unchecked")
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
         final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
@@ -140,7 +145,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     public Page<E> search(final QueryFilter[] queryFilters, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
         this.sortValidator.validate(validPageable, entityClass);
-        validateQueryFilters(queryFilters);
+        DaoUtils.validateQueryFilters(queryFilters);
         return getTemplate().execute((HibernateCallback<Page>) session -> {
             Criteria criteria = session.createCriteria(entityClass);
             Set<String> aliases = new HashSet<>();
@@ -235,45 +240,5 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @Override
     public <T> T execute(final HibernateCallback<T> callback) {
         return getTemplate().execute(callback);
-    }
-
-    public Page<E> list() {
-        return search(null, null);
-    }
-
-
-    private void validateQueryFilters(QueryFilter[] queryFilters) {
-        if (ArrayUtils.isNotEmpty(queryFilters)) {
-            for (QueryFilter queryFilter : queryFilters) {
-                Object attributeValue = queryFilter.getAttributeValue();
-                if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL) {
-                    continue;
-                }
-
-                AttributeType attributeType = queryFilter.getAttributeType();
-                if (attributeValue instanceof Collection) {
-                    Collection collection = (Collection) attributeValue;
-                    Object[] objects = collection.toArray(new Object[collection.size()]);
-                    updateObjectsArray(objects, attributeType);
-                    queryFilter.setAttributeValue(Arrays.asList(objects));
-                } else if (attributeValue.getClass().isArray()) {
-                    Object[] objects = (Object[]) attributeValue;
-                    updateObjectsArray(objects, attributeType);
-                    queryFilter.setAttributeValue(objects);
-                } else {
-                    queryFilter.setAttributeValue(getUpdatedAttributeValue(attributeValue, attributeType));
-                }
-            }
-        }
-    }
-
-    private void updateObjectsArray(Object[] objects, AttributeType attributeType) {
-        for (int i = 0; i < objects.length; i++) {
-            objects[i] = getUpdatedAttributeValue(objects[i], attributeType);
-        }
-    }
-
-    private Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {
-        return attributeType.toJavaType(attributeValue);
     }
 }

@@ -1,7 +1,6 @@
 package com.wavemaker.runtime.data.dao.generators;
 
 import java.sql.Timestamp;
-import java.util.Map;
 
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.model.AggregationInfo;
@@ -21,19 +20,6 @@ public class TemporalQueryGenerator<Entity, Identifier> extends QueryGeneratorDe
             final TableTemporal.TemporalType type) {
         super(delegate);
         this.type = type;
-    }
-
-    @Override
-    public HqlQueryBuilder findById(final Identifier identifier) {
-        return super.findById(identifier)
-                .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
-    }
-
-    @Override
-    public HqlQueryBuilder findBy(
-            final Map<String, Object> fieldValueMap) {
-        return super.findBy(fieldValueMap)
-                .withPeriodClause(new AsOfClause(type, new Timestamp(System.currentTimeMillis())));
     }
 
     @Override

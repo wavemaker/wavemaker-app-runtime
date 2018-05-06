@@ -1,12 +1,19 @@
 package com.wavemaker.runtime.data.util;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Session;
+
+import com.wavemaker.runtime.data.expression.AttributeType;
+import com.wavemaker.runtime.data.expression.QueryFilter;
+import com.wavemaker.runtime.data.expression.Type;
 
 /**
  * @author Dilip Kumar
@@ -33,6 +40,41 @@ public abstract class DaoUtils {
         }
 
         return session.createQuery(query).list();
+    }
+
+    public static void validateQueryFilters(QueryFilter[] queryFilters) {
+        if (ArrayUtils.isNotEmpty(queryFilters)) {
+            for (QueryFilter queryFilter : queryFilters) {
+                Object attributeValue = queryFilter.getAttributeValue();
+                if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL) {
+                    continue;
+                }
+
+                AttributeType attributeType = queryFilter.getAttributeType();
+                if (attributeValue instanceof Collection) {
+                    Collection collection = (Collection) attributeValue;
+                    Object[] objects = collection.toArray();
+                    updateObjectsArray(objects, attributeType);
+                    queryFilter.setAttributeValue(Arrays.asList(objects));
+                } else if (attributeValue.getClass().isArray()) {
+                    Object[] objects = (Object[]) attributeValue;
+                    updateObjectsArray(objects, attributeType);
+                    queryFilter.setAttributeValue(objects);
+                } else {
+                    queryFilter.setAttributeValue(getUpdatedAttributeValue(attributeValue, attributeType));
+                }
+            }
+        }
+    }
+
+    private static void updateObjectsArray(Object[] objects, AttributeType attributeType) {
+        for (int i = 0; i < objects.length; i++) {
+            objects[i] = getUpdatedAttributeValue(objects[i], attributeType);
+        }
+    }
+
+    private static Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {
+        return attributeType.toJavaType(attributeValue);
     }
 
     public static class ChildrenFilter<T> {

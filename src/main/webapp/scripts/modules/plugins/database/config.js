@@ -55,7 +55,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         reImportDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/reimport?retainDraft=:retainDraft",
+            url: "services/projects/:projectID/database/services/:serviceId/sources/update",
             method: "POST"
         },
         exportDB: {
