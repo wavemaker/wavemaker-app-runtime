@@ -6,13 +6,17 @@ WM.module('wm.layouts.containers')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navbar', ['wm.base']),
             notifyFor = {
-                'imgsrc': true
+                'imgsrc': true,
+                'homelink'  : true
             };
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'imgsrc':
                 scope.imagesrc = Utils.getImageUrl(newVal);
+                break;
+            case 'homelink':
+                scope._homelink = Utils.getResourceUrl(newVal);
                 break;
             }
         }
@@ -50,7 +54,7 @@ WM.module('wm.layouts.containers')
                                 '<span class="sr-only">Toggle navigation</span>' +
                                 '<i class="{{menuiconclass}}"></i>' +
                             '</button>' +
-                            '<a class="navbar-brand" href="#/" ng-if="title || imagesrc">' +
+                            '<a class="navbar-brand" ng-href="{{_homelink || \'/#\'}}" ng-if="title || imagesrc">' +
                                 '<img data-identifier="img" class="brand-image" alt="{{title}}" height="20" ng-if="imgsrc" ng-src="{{imagesrc}}"/>' +
                                 ' <span class="title">{{title}}</span>' +
                             '</a>' +
