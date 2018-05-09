@@ -13,7 +13,6 @@
                 http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="config.xml"/>
-    <import resource="servicetypes.xml"/>
     <import resource="springapp-mvc.xml"/>
     
     <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext" lazy-init="false"/>
