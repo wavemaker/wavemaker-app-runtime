@@ -36,6 +36,8 @@ import com.wavemaker.runtime.file.model.Downloadable;
  */
 public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessageConverter<Downloadable> {
 
+    public static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
+
     public DownloadableHttpMessageConverter() {
         super(MediaType.ALL);
     }
@@ -54,6 +56,7 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
     @Override
     protected void writeInternal(Downloadable downloadable, HttpOutputMessage outputMessage) throws IOException {
         ServletServerHttpResponse servletServerHttpResponse = (ServletServerHttpResponse) outputMessage;
+        outputMessage.getHeaders().remove(CONTENT_DISPOSITION_HEADER); // removing if any
         HttpServletResponse httpServletResponse = servletServerHttpResponse.getServletResponse();
         writeMessage(downloadable, httpServletResponse);
     }
@@ -67,9 +70,9 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
                 String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable
                         .getContentType() : new Tika().detect(fileName);
                 if (downloadable.isInline()) {
-                    httpServletResponse.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
+                    httpServletResponse.setHeader(CONTENT_DISPOSITION_HEADER, "inline;filename=\"" + fileName + "\"");
                 } else {
-                    httpServletResponse.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+                    httpServletResponse.setHeader(CONTENT_DISPOSITION_HEADER, "attachment;filename=\"" + fileName + "\"");
                 }
                 httpServletResponse.setContentType(contentType);
                 if (downloadable.getContentLength() != null) {

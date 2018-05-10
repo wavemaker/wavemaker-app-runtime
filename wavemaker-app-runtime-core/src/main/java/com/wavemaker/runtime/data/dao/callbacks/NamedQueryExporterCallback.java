@@ -27,6 +27,7 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import com.wavemaker.runtime.data.dao.query.providers.PaginatedQueryProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.export.DataExporter;
+import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
@@ -71,7 +72,7 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArra
         } else {
             queryExtractor = new HqlQueryExtractor(namedQuery.scroll());
         }
-        return DataExporter.export(queryExtractor, exportType);
+        return DataExporter.export(queryExtractor, new ExportOptions(exportType), responseType);
     }
 }
 

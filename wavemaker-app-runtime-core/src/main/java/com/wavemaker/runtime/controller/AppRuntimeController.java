@@ -15,6 +15,8 @@
  */
 package com.wavemaker.runtime.controller;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,11 +31,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.validations.DbValidationsConstants;
 import com.wavemaker.commons.wrapper.StringWrapper;
 import com.wavemaker.runtime.data.model.DesignServiceResponse;
 import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
+import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.service.AppRuntimeService;
 
@@ -47,6 +51,9 @@ public class AppRuntimeController {
 
     @Autowired
     private AppRuntimeService appRuntimeService;
+
+    @Autowired
+    private ExportedFileManager exportedFileManager;
 
     @RequestMapping(value = "/application/type", method = RequestMethod.GET)
     public StringWrapper getApplicationType() {
@@ -79,6 +86,12 @@ public class AppRuntimeController {
         DownloadResponse downloadResponse = new DownloadResponse(inputStream, MediaType.APPLICATION_JSON_VALUE, DbValidationsConstants.DB_VALIDATIONS_JSON_FILE);
         downloadResponse.setInline(true);
         return downloadResponse;
+    }
+
+    @RequestMapping(value = "/files/exported/{fileName:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public DownloadResponse getExportedFile(@PathVariable("fileName") String fileName, HttpServletResponse response) throws IOException {
+        InputStream is = new DeleteTempFileOnCloseInputStream(exportedFileManager.getFile(fileName));
+        return new DownloadResponse(is, MediaType.APPLICATION_OCTET_STREAM_VALUE, fileName);
     }
 }
 
