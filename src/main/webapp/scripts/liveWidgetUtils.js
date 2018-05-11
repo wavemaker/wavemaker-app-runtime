@@ -18,8 +18,9 @@ WM.module('wm.widgets.live')
         'Variables',
         '$timeout',
         'WIDGET_CONSTANTS',
-
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout, WIDGET_CONSTANTS) {
+        '$servicevariable',
+        '$q',
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout, WIDGET_CONSTANTS, $servicevariable, $q) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
@@ -1022,12 +1023,54 @@ WM.module('wm.widgets.live')
                 return scope.formWidget;
             }
 
+            /**
+             * This function gets the service query param of service variable bound to the widget
+             * @param $is Widget scope.
+             * @param variable : variable instance
+             * @param fields : dataset terminals
+             * @returns : promise
+             */
+            function getServiceParams($is, variable, fields) {
+                var deferred             = $q.defer(),
+                    queryParams          = [],
+                    searchOptions        = [];
+                    $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
+                        queryParams = Variables.getMappedServiceQueryParams(serviceOperationInfo.parameters);
+                        // don't update search options if there is no query service param
+                        if (queryParams && queryParams.length > 0) {
+                            searchOptions = _.map(queryParams, function (value) {
+                                return value;
+                            });
+                        }
+                        deferred.resolve(searchOptions.length ? searchOptions : fields);
+                    });
+                return deferred.promise;
+            }
+
+            /**
+             * To show custom options for the widget property in the properties panel.
+             * @param $el : widget element
+             * @param $is : widget scope
+             * @param prop : property name
+             * @param fields : terminals.
+             * @returns {*}
+             */
+            function getCutomizedOptions($is, prop, fields) {
+                var parts    = _.split($is.binddataset, /\W/),
+                    variable = Variables.getVariableByName(parts[2]),
+                    isBoundToServiceVariable = variable && variable.category === 'wm.ServiceVariable';
+                if (prop === 'searchkey') {
+                    // return service query param if bound to service variable.
+                    if (isBoundToServiceVariable) {
+                        return getServiceParams($is, variable, fields);
+                    }
+                    return fields;
+                }
+            }
+
             //function to update datafield, display field in the property panel
             function updatePropertyPanelOptions(scope) {
                 WidgetUtilService.updatePropertyPanelOptions(scope);
-                if (scope.widget === 'autocomplete') {
-                    FormWidgetUtils.updatePropertyOptionsWithParams(scope); //update searchkey options in case of service variables
-                }
             }
 
             /**
@@ -2780,6 +2823,7 @@ WM.module('wm.widgets.live')
             this.getFieldLayoutConfig       = getFieldLayoutConfig;
             this.getDefaultViewModeWidget   = getDefaultViewModeWidget;
             this.getDisplayExpr             = getDisplayExpr;
+            this.getCutomizedOptions        = getCutomizedOptions;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', 'DialogService', function (Utils, wmToaster, $rs, DialogService) {
@@ -2868,6 +2912,8 @@ WM.module('wm.widgets.live')
                 DialogService._showAppConfirmDialog({
                     'caption'   :  _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'content'   : confirmMsg,
+                    'oktext'    : options.scope.deleteoktext,
+                    'canceltext': options.scope.deletecanceltext,
                     'iconClass' : 'wi wi-delete fa-lg',
                     'resolve'   : {
                         'confirmActionOk': function () {
@@ -2882,7 +2928,7 @@ WM.module('wm.widgets.live')
                 });
             },
             performOperation = function (operation, options) {
-                var fn,
+                var fn = WM.noop,
                     scope = options.scope,
                     successHandler = function (response) {
                         Utils.triggerFn(scope.liveActionSuccess, operation, response);

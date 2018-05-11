@@ -14,14 +14,12 @@ WM.module('wm.widgets.advanced')
                                 '<div class="modal-header clearfix">' +
                                     '<h4 class="modal-title pull-left">' +
                                         '<span ng-click="onFileClick(directory.parent)" ng-show="directory.parent">' +
-                                            '<i class="wi wi-back"></i>' +
+                                            '<i class="wi wi-long-arrow-left"></i>' +
                                         '</span>' +
                                         ' {{directory.name}}' +
                                     '</h4>' +
-                                    '<div ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">' +
-                                        '<i class="wi wi-file" ng-show="selectedFiles.length == 1"></i>' +
-                                        '<i class="fa fa-files-o" ng-show="selectedFiles.length > 1"></i>' +
-                                        ' {{selectedFiles.length}}' +
+                                    '<div class="selected-file-button pull-right" ng-click="refreshDirectory()">' +
+                                        '<i class="wi wi-refresh"></i>' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="modal-body">' +
@@ -34,7 +32,9 @@ WM.module('wm.widgets.advanced')
                                     '</div>' +
                                 '</div>' +
                                 '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-primary" ng-show="selectedFiles && selectedFiles.length > 0" ng-click="submit()">Done</button>' +
+                                    '<button type="button" class="btn btn-primary" ng-show="selectedFiles && selectedFiles.length > 0" ng-click="submit()">' +
+                                        'Done <span class="badge badge-light">{{selectedFiles.length}}</span>' +
+                                    '</button>' +
                                     '<button type="button" class="btn btn-default" ng-click="show = false;">Close</button>' +
                                 '</div>' +
                             '</div>' +
@@ -43,7 +43,7 @@ WM.module('wm.widgets.advanced')
                 '</div>'
             );
     }])
-    .directive('wmMobileFileBrowser', [ '$templateCache', 'CONSTANTS', 'DeviceService', function ($templateCache, CONSTANTS, DeviceService) {
+    .directive('wmMobileFileBrowser', [ '$q', '$templateCache', 'CONSTANTS', 'DeviceService', 'Utils', function ($q, $templateCache, CONSTANTS, DeviceService, Utils) {
         'use strict';
         function loadFileSize(files, onComplete, index) {
             index = index || 0;
@@ -56,11 +56,31 @@ WM.module('wm.widgets.advanced')
                 onComplete && onComplete(files);
             }
         }
+        function loadDirectory(directory, fileTypeToSelect) {
+            var fileTypeToShow,
+                d = $q.defer();
+            directory.createReader().readEntries(function (entries) {
+                if (!_.isEmpty(fileTypeToSelect)) {
+                    fileTypeToShow = _.split(fileTypeToSelect, ',');
+                    entries = _.filter(entries, function (e) {
+                        return !e.isFile || _.findIndex(fileTypeToShow, function (ext) {
+                            return _.endsWith(e.name, '.' + ext);
+                        }) >= 0;
+                    });
+                }
+                d.resolve(_.sortBy(entries, function (e) {
+                    return (e.isFile ? '1_' : '0_') + e.name.toLowerCase();
+                }));
+            }, d.reject);
+            return d.promise;
+        }
         return {
             'restrict' : 'E',
             'replace'  : true,
             'template' : $templateCache.get('template/widget/advanced/mobileFileBrowser.html'),
-            'scope'    : {'onSelect' : '&'},
+            'scope'    : {
+                'onSelect' : '&'
+            },
             'link'     : function (scope) {
                 var backButtonListenerDeregister;
 
@@ -68,14 +88,10 @@ WM.module('wm.widgets.advanced')
                     return;
                 }
 
-                backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
-                    if (scope.show) {
-                        scope.show = false;
-                        return false;
-                    }
-                });
                 scope.$on('$destroy', function () {
-                    backButtonListenerDeregister();
+                    if (backButtonListenerDeregister) {
+                        backButtonListenerDeregister();
+                    }
                 });
                 scope.selectedFiles = [];
                 scope.directory = undefined;
@@ -109,16 +125,20 @@ WM.module('wm.widgets.advanced')
                         scope.goToDirectory(file);
                     }
                 };
+                scope.refreshDirectory = function () {
+                    return loadDirectory(scope.directory, scope.fileTypeToSelect)
+                        .then(function (files) {
+                            scope.directory.files = files;
+                        });
+                };
                 scope.goToDirectory = function (directory) {
                     if (!directory.files) {
-                        directory.createReader().readEntries(function (entries) {
-                            directory.files = _.sortBy(entries, function (e) {
-                                return (e.isFile ? '1_' : '0_') + e.name.toLowerCase();
+                        loadDirectory(directory, scope.fileTypeToSelect)
+                            .then(function (files) {
+                                directory.files = files;
+                                directory.parent = scope.directory;
+                                scope.directory = directory;
                             });
-                            directory.parent = scope.directory;
-                            scope.directory = directory;
-                            scope.$apply();
-                        });
                     } else {
                         scope.directory = directory;
                     }
@@ -138,10 +158,28 @@ WM.module('wm.widgets.advanced')
                     });
                 };
                 scope.$watch('show', function () {
-                    if (scope.show && !scope.directory) {
-                        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (root) {
-                            scope.goToDirectory(root);
+                    var rootDir = cordova.file.externalRootDirectory;
+                    if (scope.show) {
+                        if (!scope.directory) {
+                            if (Utils.isIOS()) {
+                                rootDir = cordova.file.documentsDirectory;
+                            }
+                            window.resolveLocalFileSystemURL(rootDir, function (root) {
+                                scope.goToDirectory(root);
+                            });
+                        }
+                        backButtonListenerDeregister = DeviceService.onBackButtonTap(function () {
+                            if (scope.show) {
+                                if (scope.directory.parent) {
+                                    scope.onFileClick(scope.directory.parent);
+                                } else {
+                                    scope.show = false;
+                                }
+                                return false;
+                            }
                         });
+                    } else if (backButtonListenerDeregister) {
+                        backButtonListenerDeregister();
                     }
                 });
             }

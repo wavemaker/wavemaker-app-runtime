@@ -54,23 +54,35 @@
   .modal-backdrop{
     z-index: 10000;
   }
+  .modal .modal-dialog{
+    margin: 0;
+  }
   .modal-dialog {
     height: 100%;
 
     .modal-content {
-      height: 95%;
+      height: 100%;
+      border-radius: 0;
 
       .modal-header {
         height : 4em;
+        padding: 5px;
+        box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.5);
+        .modal-title {
+          padding: 10px;
+        }
       }
       .modal-body {
         .calc('height', ~"calc(100% - 9em)");
         overflow-x: hidden;
         overflow-y: auto;
         width: 100%;
+        padding: 0;
+        margin : 0;
       }
       .modal-footer {
         height : 5em;
+        box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.5);
       }
     }
   }
@@ -80,28 +92,18 @@
   }
 
   .file-info-box {
-    width: 25%;
-    display: inline-block;
-    padding: 5px;
-    height: 7em;
-    overflow: hidden;
-
+    border-bottom: 1px solid #ddd;
     .file-info {
-      overflow: hidden;
-      padding: 5px;
-      text-align: center;
-
       .file-icon {
-        display: block;
-        text-align: center;
         font-size: 4em;
+        padding : 5px;
       }
       .file-name {
-        padding-left: 10px;
         font-size: 0.9em;
-        height: 3.2em;
-        overflow: hidden;
-        display: block;
+        width: 240px;
+        word-wrap: break-word;
+        display: inline-block;
+        vertical-align: middle;
       }
     }
   }
@@ -170,6 +172,7 @@
   position: fixed;
   bottom: 0;
   width: 100%;
+  z-index: 100000;
   &.ng-hide-add{
     transition: transform 200ms linear;
     transform: translate3d(0, 0, 0);

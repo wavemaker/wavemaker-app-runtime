@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
                     '</div>' +
                     '<div class="panel-actions" ng-if="actions">' +
-                        '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
+                        '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" title="{{::$root.appLocale.LABEL_ACTIONS}}" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemclass="{{binditemclass || itemclass}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                     '</div>' +
                 '</div>' +
                 '<div class="app-card-image" ng-if="bindpicturesource || picturesource" ng-style="{\'max-height\':imageheight}">' +

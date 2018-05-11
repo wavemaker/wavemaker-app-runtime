@@ -48,10 +48,6 @@
         <wm.jackson.databind.version>2.6.3.wm-1</wm.jackson.databind.version>
         <mimemagic.version>0.1.5</mimemagic.version>
 
-        <cxf-tools-wsdlto-databinding-jaxb.version>3.2.2</cxf-tools-wsdlto-databinding-jaxb.version>
-        <cxf-tools-wsdlto-frontend-jaxws.version>3.2.2</cxf-tools-wsdlto-frontend-jaxws.version>
-        <cxf-tools-common.version>3.2.2</cxf-tools-common.version>
-
         <hikaricp.version>2.7.7</hikaricp.version>
 
         <jsoup.version>1.11.2</jsoup.version>
@@ -59,11 +55,10 @@
         <poi.ooxml.version>3.17</poi.ooxml.version>
         <quartz.version>2.2.3</quartz.version>
         <antisamy.version>1.4</antisamy.version>
-        <jasperreports.version>6.4.1</jasperreports.version>
+        <jasperreports.version>6.5.1</jasperreports.version>
     </properties>
 
     <modules>
-        <module>wavemaker-app-runtime-json</module>
         <module>wavemaker-app-runtime-prefab</module>
         <module>wavemaker-app-runtime-core</module>
     </modules>
@@ -559,22 +554,6 @@
                 <artifactId>cglib</artifactId>
                 <version>3.1</version>
             </dependency>
-
-            <dependency>
-                <groupId>com.sun.org.apache.xml.internal</groupId>
-                <artifactId>resolver</artifactId>
-                <version>20050927</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>2.2.5.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>2.2.5</version>
-            </dependency>
             <dependency>
                 <groupId>com.sun.xml.fastinfoset</groupId>
                 <artifactId>FastInfoset</artifactId>
@@ -587,30 +566,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-rt</artifactId>
-                <version>2.1.7</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-tools</artifactId>
-                <version>2.1.7</version>
-            </dependency>
-            <dependency>
                 <groupId>com.thoughtworks.paranamer</groupId>
                 <artifactId>paranamer</artifactId>
                 <version>2.8</version>
-            </dependency>
-            <dependency>
-                <groupId>dom4j</groupId>
-                <artifactId>dom4j</artifactId>
-                <version>1.6.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>javax.activation</groupId>
@@ -622,12 +580,6 @@
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>1.4.01</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xmlParserAPIs</artifactId>
-                <version>2.0.2</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -667,11 +619,6 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>jdom</groupId>
-                <artifactId>jdom</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
                 <groupId>net.java.dev.vcc.thirdparty</groupId>
                 <artifactId>collection-setter-injector</artifactId>
                 <version>0.5.0-1</version>
@@ -690,11 +637,6 @@
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>woodstox-core-asl</artifactId>
                 <version>4.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>20090211</version>
             </dependency>
             <dependency>
                 <groupId>rome</groupId>
@@ -724,7 +666,7 @@
             <dependency>
                 <groupId>org.apache.tika</groupId>
                 <artifactId>tika-core</artifactId>
-                <version>1.4</version>
+                <version>1.17</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -748,27 +690,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-common</artifactId>
-                <version>${cxf-tools-common.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-wsdlto-frontend-jaxws</artifactId>
-                <version>${cxf-tools-wsdlto-frontend-jaxws.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-core</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
             </dependency>
 
             <dependency>
@@ -778,28 +702,18 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-tools-wsdlto-databinding-jaxb</artifactId>
-                <version>${cxf-tools-wsdlto-databinding-jaxb.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-validator</groupId>
-                <artifactId>commons-validator</artifactId>
-                <version>${commons.validator.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springframework.security.extensions</groupId>
                 <artifactId>spring-security-saml2-core</artifactId>
                 <version>1.0.2.RELEASE</version>
                 <exclusions>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xalan</groupId>
+                        <artifactId>xalan</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>xml-apis</groupId>
                         <artifactId>xml-apis</artifactId>
@@ -811,18 +725,18 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>antisamy</artifactId>
                 <version>${antisamy.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-httpclient</groupId>
-                        <artifactId>commons-httpclient</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports</artifactId>
                 <version>${jasperreports.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Start: Quartz framework -->
@@ -832,7 +746,6 @@
                 <version>${quartz.version}</version>
             </dependency>
             <!-- End: Quartz framework -->
-
 
 
             <!-- Test Dependencies -->
@@ -848,10 +761,6 @@
                 <version>1.0.0.BUILD-SNAPSHOT</version>
                 <scope>test</scope>
                 <exclusions>
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15</artifactId>
-                    </exclusion>
                     <exclusion>
                         <groupId>org.hamcrest</groupId>
                         <artifactId>hamcrest-library</artifactId>

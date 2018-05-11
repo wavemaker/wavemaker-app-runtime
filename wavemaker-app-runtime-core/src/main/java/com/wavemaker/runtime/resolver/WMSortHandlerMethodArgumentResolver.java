@@ -33,7 +33,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class WMSortHandlerMethodArgumentResolver extends SortHandlerMethodArgumentResolver {
 
     private static final String DEFAULT_PROPERTY_DELIMITER = ",";
-    public static final String DEFAULT_PROPERTY_KEY_VALUE_DELIMITER = " ";
+    private static final String DEFAULT_PROPERTY_KEY_VALUE_DELIMITER = " ";
 
     private String propertyDelimiter = DEFAULT_PROPERTY_DELIMITER;
     private String propertyKeyValueDelimiter = DEFAULT_PROPERTY_KEY_VALUE_DELIMITER;
@@ -45,13 +45,13 @@ public class WMSortHandlerMethodArgumentResolver extends SortHandlerMethodArgume
         String[] directionParameter = webRequest.getParameterValues(getSortParameter(parameter));
 
         if (directionParameter != null && directionParameter.length != 0) {
-            return parseParameterIntoSort(directionParameter, propertyDelimiter);
+            return parseParametersIntoSort(directionParameter, propertyDelimiter);
         } else {
             return super.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
         }
     }
 
-    protected Sort parseParameterIntoSort(String[] source, String delimiter) {
+    protected Sort parseParametersIntoSort(String[] source, String delimiter) {
 
         List<Sort.Order> allOrders = new ArrayList<>();
 

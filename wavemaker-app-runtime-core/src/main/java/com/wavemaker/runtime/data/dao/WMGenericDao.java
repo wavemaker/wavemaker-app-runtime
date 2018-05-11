@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -26,26 +27,32 @@ import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.file.model.Downloadable;
 
-public interface WMGenericDao<Entity, Identifier> {
+public interface WMGenericDao<E, I> {
 
-    Entity create(Entity entity);
+    E create(E entity);
 
-    void update(Entity entity);
+    void update(E entity);
 
-    void delete(Entity entity);
+    void delete(E entity);
 
-    Entity findById(Identifier entityId);
+    E findById(I entityId);
 
-    Entity findByUniqueKey(final Map<String, Object> fieldValueMap);
+    default List<E> findByMultipleIds(List<I> ids) {
+        return findByMultipleIds(ids, true);
+    }
 
-    Page<Entity> list(Pageable pageable);
+    List<E> findByMultipleIds(List<I> ids, boolean orderedReturn);
+
+    E findByUniqueKey(final Map<String, Object> fieldValueMap);
+
+    Page<E> list(Pageable pageable);
 
     @Deprecated
     Page getAssociatedObjects(Object value, String entityName, String key, Pageable pageable);
 
-    Page<Entity> search(QueryFilter queryFilters[], Pageable pageable);
+    Page<E> search(QueryFilter[] queryFilters, Pageable pageable);
 
-    Page<Entity> searchByQuery(String query, Pageable pageable);
+    Page<E> searchByQuery(String query, Pageable pageable);
 
     long count();
 
@@ -55,9 +62,9 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
 
-    Entity refresh(Entity entity);
+    E refresh(E entity);
 
-    void evict(Entity entity);
+    void evict(E entity);
 
     <T> T execute(HibernateCallback<T> callback);
 }

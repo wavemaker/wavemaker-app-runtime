@@ -74,6 +74,8 @@ WM.module('wm.widgets.live')
                             'caption'   :  _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                             'iconClass' : 'wi wi-delete fa-lg',
                             'content'   : $scope.grid.confirmdelete,
+                            'oktext'    : $scope.grid.deleteoktext,
+                            'canceltext': $scope.grid.deletecanceltext,
                             'resolve'   : {
                                 'confirmActionOk': function () {
                                     return okCallBack;

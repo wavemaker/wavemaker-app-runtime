@@ -2049,6 +2049,26 @@ wm.plugins.database.services.DatabaseService = [
 
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#countTableDataWithQuery
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to count the number of records that match the given criteria.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the table.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+            countTableDataWithQuery: function (params, successCallback, failureCallback) {
+                return initiateAction('countTableDataWithQuery', params, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#searchTableData
              * @methodOf wm.database.$DatabaseService
              * @function

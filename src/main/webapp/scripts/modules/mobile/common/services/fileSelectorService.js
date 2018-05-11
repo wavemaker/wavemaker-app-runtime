@@ -1,17 +1,20 @@
-/*global WM,LocalFileSystem, _*/
-/*jslint sub: true */
-/*global window*/
+/*global wm, WM, window*/
 /*Directive for fileupload */
 
 wm.modules.wmCommon.services.FileSelectorService = ['$compile', '$rootScope', 'Utils', '$q',
     function ($compile, $rootScope, Utils, $q) {
-        var ele = $compile('<wm-mobile-file-browser/>')($rootScope.$new()),
-            fileSelector = ele.isolateScope();
+        "use strict";
+        var ele, fileSelector;
 
-        WM.element('body:first').append(ele);
         this.open = function (config, onSelect) {
+            if (!fileSelector) {
+                ele = $compile('<wm-mobile-file-browser/>')($rootScope.$new());
+                fileSelector = ele.isolateScope();
+                WM.element('body:first').append(ele);
+            }
             config = WM.extend({ multiple : false }, config);
             fileSelector.multiple = config.multiple || false;
+            fileSelector.fileTypeToSelect = config.type;
             fileSelector.onSelect = function (result) {
                 var selectedFiles = result.files,
                     $promisesList,

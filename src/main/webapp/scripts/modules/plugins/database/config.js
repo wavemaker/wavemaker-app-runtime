@@ -55,7 +55,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         reImportDB: {
-            url: "services/projects/:projectID/database/services/:serviceId/reimport?retainDraft=:retainDraft",
+            url: "services/projects/:projectID/database/services/:serviceId/sources/update",
             method: "POST"
         },
         exportDB: {
@@ -286,6 +286,13 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         deleteCompositeTableData: {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "DELETE"
+        },
+        countTableDataWithQuery : {
+            url: "/:service/:dataModelName/:entityName/count",
+            method: "POST",
+            headers: {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
         },
         searchTableData: {
             url: "/:service/:dataModelName/:entityName/search?page=:page&size=:size&:sort",

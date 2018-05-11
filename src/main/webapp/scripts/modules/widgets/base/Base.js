@@ -1,4 +1,4 @@
-/*global WM, document, window, _ */
+/*global WM, document, window, _ , $ */
 /*jslint todo: true */
 
 /* adding events and event options as constants*/
@@ -22,6 +22,13 @@ WM.module('wm.widgets.base', [])
             'ONDEMAND' : 'On-Demand'
         }
     })
+    .run(['$parse', function ($parse) { // Swipey Plugin: $parse service is used as expressionEvaluator
+        'use strict';
+
+        if ($.fn.swipeAnimation) {
+            $.fn.swipeAnimation.expressionEvaluator = $parse;
+        }
+    }])
 
     /**
      * @ngdoc service
@@ -464,6 +471,7 @@ WM.module('wm.widgets.base', [])
                     "wm.menu.dataProps": {
                         "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemclass": {"type": "string", "show": false},
                         "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "objects"},
                         "itemaction": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
@@ -822,7 +830,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
                         "minchars": {"type": "number", "value": "1"},
-                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "custom"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "enablereorder": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedataset": {"type": "string"},
@@ -1165,6 +1173,7 @@ WM.module('wm.widgets.base', [])
                         "menuiconclass": {"type": "string", "widget": "select-icon", "pattern": classRegex, "value": "wi wi-more-vert"},
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "imgsrc": {"type": "string", "bindable": "in-bound"},
+                        "homelink": {"type": "string", "bindable": "in-bound"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -1285,7 +1294,7 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.card': {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "iconurl": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "margin": {"type": "string", "widget": "box-model"},
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
@@ -1438,7 +1447,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "widget": "string", "bindable": "in-bound"},
                         "captionsize": {"type": "string", "show": false},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "formdata": {"type": "object", "bindable": "in-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "messagelayout": {"type": "list", "options": ["Inline", "Toaster"], "value": "Inline", "showindesigner": true},
@@ -1496,9 +1505,9 @@ WM.module('wm.widgets.base', [])
                         "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "novalidate": {"type": "boolean", "showindesigner": false, "show": false},
                         "validationtype": {"type": "select-by-object", "options": [{"label": "Default", "value": "default"}, {"label": "HTML", "value": "html"}, {"label": "No Validations", "value": "none"}], "value": "default", "displayfield": "label", "datafield": "value", "showindesigner": true},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false},
-                        "defaultmode": {"type": "toggle", "options": {"onLabel": "READ ONLY", "onValue": "View", "offLabel": "EDITABLE", "offValue": "Edit"}, "value": "View", "showindesigner": true},
+                        "defaultmode": {"type": "toggle", "options": {"onLabel": "READONLY", "onValue": "View", "offLabel": "EDITABLE", "offValue": "Edit"}, "value": "View", "showindesigner": true},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "messagelayout": {"type": "list", "options": ["Inline", "Toaster"], "value": "Toaster", "showindesigner": true},
                         "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-bound", "showindesigner": true},
@@ -1575,10 +1584,12 @@ WM.module('wm.widgets.base', [])
                         "errormessage": {"type": "string", "value": "", "bindable": "in-bound", "showindesigner": true},
                         "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-bound", "showindesigner": true},
                         "updatemessage": {"type": "string", "value": "Record updated successfully", "bindable": "in-bound", "showindesigner": true},
+                        "deleteoktext": {"type": "string", "value": "bind:appLocale.LABEL_OK", "bindable": "in-bound", "showindesigner": true},
+                        "deletecanceltext": {"type": "string", "value": "bind:appLocale.LABEL_CANCEL", "bindable": "in-bound", "showindesigner": true},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset", "getIsListFrom": "expr:multiselect"},
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
                         "exportformat": {"type": "list", "widget": "select-all", "options": ["EXCEL", "CSV"], "showindesigner": true},
                         "exportdatasize": {"type": "number",  "value": 100, "showindesigner": true},
@@ -1717,7 +1728,7 @@ WM.module('wm.widgets.base', [])
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "value": "Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
                         "badgetype": {"type": "string", "widget": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "number", "value": "0"},
@@ -1768,7 +1779,7 @@ WM.module('wm.widgets.base', [])
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "title": {"type": "string", "value": "Tab Title", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound", "show": false}, //Deprecated property
                         "tabindex": {"type": "number", "value": "0"},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound", "showPrettyExprInDesigner": true},
@@ -1794,7 +1805,7 @@ WM.module('wm.widgets.base', [])
                         "disabledone": {"type": "boolean", "value": false, "show": false},
                         "enabledone": {"type": "boolean", "value": false, "show": false},
                         "enableskip": {"type": "boolean", "value": false, "bindable": "in-bound"},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "onNext": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPrev": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1853,7 +1864,7 @@ WM.module('wm.widgets.base', [])
                         "onPaginationchange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"], "bindable": "in-bound"},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "navigation": {"type": "select-by-object", "options": [{'value': 'Basic', 'label': 'Basic'}, {'value': 'Pager', 'label': 'Pager'}, {'value': 'Classic', 'label': 'Classic'}, {'value': 'Scroll', 'label': 'Infinite Scroll'}, {'value': 'Inline', 'label': 'Horizontal Slider'}, {'value': 'None', 'label': 'None'}, {'value': 'On-Demand', 'label': 'On Demand'}], "value": "None"},
                         "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "value": "left"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -1900,7 +1911,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "object", "bindable": "out-bound", "isList": true, "widget": "string", "show": "false", "getTypeFrom": "dataset"},
                         "pagesize": {"type": "number", "value": 20},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons-align", "show": false},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "wi wi-filter-list", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "value": "wi wi-filter-list", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "autoupdate":  {"type": "boolean", "showindesigner": true},
                         /* Events */
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1925,7 +1936,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "array", "value": [], "bindable": "out-bound", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
-                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "string", "widget": "select-all", "datasetfilter" : "custom"},
                         "displaylabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "displayimagesrc": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
@@ -1961,7 +1972,7 @@ WM.module('wm.widgets.base', [])
                     "wm.chart": {
                         "title": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
                         "subheading": {"type": "string", "bindable": "in-bound", "showPrettyExprInDesigner": true},
-                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'Title Icon Class'},
+                        "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex, "label": 'LABEL_TITLEICONCLASS'},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "web-service"},
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -2132,7 +2143,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events", "iconClass":"wms wms-events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile", "iconClass":"wms wms-devices"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security", "iconClass":"wms wms-security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "maxplaceholder", "currency", "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "addchild", "badgevalue", "badgetype", "homelink"], "parent": "properties"},
                 {"name": "accessibility", "properties": ["hint", "tabindex", "shortcutkey", "helptext"], "parent": "properties"},
                 {"name": "captionforsteps", "properties": ["nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "picture", "properties": ["imageheight", "picturesource", "pictureplaceholder", "pictureaspect", "shape", "picturetitle"], "parent": "properties"},
@@ -2168,6 +2179,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "datacompletemsg", "postmessage"], "parent": "properties"},
+                {"name": "deletedialog", "properties": ["deleteoktext", "deletecanceltext"], "parent": "properties"},
                 {"properties": [ "class", "conditionalclass", "menuclass", "listclass", "itemclass", "chipclass", "paginationclass", "gridclass", "contentclass"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontstyle", "fontweight", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
@@ -2569,8 +2581,8 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `WidgetUtilService` provides utility methods for the widgets
      */
-    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout',
-        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout) {
+    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout', '$q',
+        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout, $q) {
             'use strict';
 
             var deviceSizeArray = {
@@ -2713,7 +2725,7 @@ WM.module('wm.widgets.base', [])
                             $el.addClass(_.join(newClasses, ' '));
                         } else if (ov) {
                             isArray    = WM.isArray(ov);
-                            oldClasses = isArray ? ov : arrayClasses(ov, $el);
+                            oldClasses = isArray ? ov : arrayClasses(ov);
 
                             //update classes if old and nv value are different
                             updateClasses(oldClasses, newClasses, $el);
@@ -3276,14 +3288,16 @@ WM.module('wm.widgets.base', [])
                                 options = scope.getCutomizedOptions(scope, name, keys.terminals);
                                 break;
                             }
+                        }
+                        $q.when(options).then(function (options) {
                             if (prop.allfields) {
                                 options = [ALLFIELDS].concat(options);
                             }
                             if (!_.includes(checkboxsetTypeWidgets, prop.widget)) {
                                 options = [''].concat(options);
                             }
-                        }
-                        updateOptions(scope, name, prop, options);
+                            updateOptions(scope, name, prop, options);
+                        });
                     }
                 });
                 return keys;

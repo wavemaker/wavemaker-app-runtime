@@ -40,7 +40,7 @@ wm.variables.services.$liveVariable = [
          * 1. In the RUN mode, project is deployed.
          * 2. In the STUDIO mode, project has to be explicitly deployed.*/
         var isProjectDeployed = (CONSTANTS.isRunMode),
-            DataModelDesignManager = CONSTANTS.isStudioMode && Utils.getService('DataModelDesignManager'),
+            DataModelDesignManager,
             isProjectDeployInProgress = false,
             projectDeployReqQueue,
             callbackParams = [],
@@ -161,12 +161,18 @@ wm.variables.services.$liveVariable = [
                     Variables.updateVariable(writableVariable.name, writableVariable);
                 }
             },
+            getDataModelDesignManager = function () {
+                if (!DataModelDesignManager) {
+                    DataModelDesignManager = CONSTANTS.isStudioMode && Utils.getService('DataModelDesignManager');
+                }
+                return DataModelDesignManager;
+            },
         /*Function to fetch the meta data for the table.*/
             getTableMetaData = function (projectID, variable, writableVariable, options, callback, success) {
                 var tableDetails = {};
 
                 /*Fetch the type nodes(consisting of the table & column details) for the database*/
-                DataModelDesignManager.getDataModel(projectID, variable.liveSource, false, function (database) {
+                getDataModelDesignManager().getDataModel(projectID, variable.liveSource, false, function (database) {
                     var variableTable,
                         variableType,
                         firstPrimaryKey,
@@ -780,7 +786,7 @@ wm.variables.services.$liveVariable = [
 
                     processBlobColumns(response.content, variable);
                     dataObj.data = response.content;
-                    dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults, "currentPage": response ? (response.number + 1) : null};
+                    dataObj.pagingOptions = {"dataSize": response.totalElements, "maxResults": variable.maxResults, "currentPage": response ? (response.number + 1) : null};
 
                     if (!options.skipDataSetUpdate) {
                         /* get the callback scope for the variable based on its owner */
@@ -1099,7 +1105,7 @@ wm.variables.services.$liveVariable = [
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                            prevCompositeKeysData = prevData || options.rowData || rowObject;
+                            prevCompositeKeysData = _.isEmpty(prevData) ? (options.rowData || rowObject) : prevData;
                             compositeKeysData = rowObject;
                         } else {
                             primaryKey.forEach(function (key) {
@@ -1544,7 +1550,7 @@ wm.variables.services.$liveVariable = [
                         });
 
                         /* if callback function is provided, send the data to the callback */
-                        Utils.triggerFn(success, response.content, undefined, {}, {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults});
+                        Utils.triggerFn(success, response.content, undefined, {}, {"dataSize": response.totalElements, "maxResults": variable.maxResults});
 
                     }, function (errorMsg) {
                         Utils.triggerFn(error, errorMsg);
@@ -1890,6 +1896,7 @@ wm.variables.services.$liveVariable = [
 
         return {
             reset                 : reset,
+            getSearchQuery        : getSearchQuery,
             getTableMetaData      : getTableMetaData,
             updateVariableDataset : updateVariableDataset
         };

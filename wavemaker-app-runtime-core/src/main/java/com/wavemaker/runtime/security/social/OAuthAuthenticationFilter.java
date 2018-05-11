@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,26 +30,22 @@ import org.springframework.social.security.SocialAuthenticationServiceLocator;
  */
 public class OAuthAuthenticationFilter extends SocialAuthenticationFilter {
 
-	public OAuthAuthenticationFilter(AuthenticationManager authManager, SocialAuthenticationServiceLocator authServiceLocator) {
-		this(authManager, null, authServiceLocator);
-	}
+    public OAuthAuthenticationFilter(
+            AuthenticationManager authManager, SocialAuthenticationServiceLocator authServiceLocator) {
+        this(authManager, null, authServiceLocator);
+    }
 
-	public OAuthAuthenticationFilter(AuthenticationManager authManager, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
-		super(authManager, null, usersConnectionRepository, authServiceLocator);
-		setUpdateConnections(false);
-	}
+    public OAuthAuthenticationFilter(
+            AuthenticationManager authManager, UsersConnectionRepository usersConnectionRepository,
+            SocialAuthenticationServiceLocator authServiceLocator) {
+        super(authManager, null, usersConnectionRepository, authServiceLocator);
+        setUpdateConnections(false);
+    }
 
-	@Override
-	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		Authentication auth = getAuthentication();
-		if (auth != null && auth.isAuthenticated()) {
-			return false;
-		}
-		return super.requiresAuthentication(request, response);
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth == null || !auth.isAuthenticated()) && super.requiresAuthentication(request, response);
 
-	}
-
-	private Authentication getAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
-	}
+    }
 }

@@ -1,4 +1,4 @@
-/*global $, window */
+/*global $, window, document */
 
 // Get a regular interval for drawing to the screen
 window.requestAnimationFrame = (function () {
@@ -8,10 +8,10 @@ window.requestAnimationFrame = (function () {
         window.mozRequestAnimationFrame ||
         window.oRequestAnimationFrame ||
         window.msRequestAnimaitonFrame ||
-        function (callback) {
+        function(callback) {
             window.setTimeout(callback, 1000 / 60);
         };
-})();
+}());
 (function ($) {
     'use strict';
     var DIRECTIONS = {
@@ -28,10 +28,39 @@ window.requestAnimationFrame = (function () {
         abs = Math.abs,
         max = Math.max,
         queue = [],
-        activeEventProcessor;
+        activeEventProcessor,
+        swipeMask = $('<div style="background-color:rgba(0, 0, 0, 0);position: fixed; top: 0;width:100vw; height: 100vh;z-index: 100000;"></div>'),
+        touchMoveListeners = [],
+        touchEndListeners = [],
+
+        onTouch = function (e) {
+            if (touchMoveListeners.length) {
+                e.preventDefault();
+            }
+            $.each(touchMoveListeners, function (i, fn) {
+                return fn(e);
+            });
+        },
+        onTouchEnd = function (e) {
+            if (touchEndListeners.length) {
+                e.preventDefault();
+            }
+            $.each(touchEndListeners, function (i, fn) {
+                return fn(e);
+            });
+            touchMoveListeners.length = 0;
+            touchEndListeners.length = 0;
+        };
+
+
+    document.addEventListener('mousemove', onTouch);
+    document.addEventListener('touchmove', onTouch);
+    document.addEventListener('mouseup', onTouchEnd);
+    document.addEventListener('touchcancel', onTouchEnd);
+    document.addEventListener('touchend', onTouchEnd);
 
     function ScrollObserver(parent, child, direction) {
-        var elementsToObserve = (function (array) {
+        var elementsToObserve = (function(array) {
             var iter = child;
             while (iter) {
                 array.push({
@@ -48,11 +77,11 @@ window.requestAnimationFrame = (function () {
 
         function isVerticalScroll() {
             var result;
-            $.each(elementsToObserve, function () {
+            $.each(elementsToObserve, function() {
                 if (this.$ele[0].iscroll) {
                     if (this.$ele[0].iscroll.y !== this.last.scrollTop) {
                         result = true;
-                }
+                    }
                 } else if (this.$ele[0].scrollTop !== this.last.scrollTop) {
                     result = true;
                 }
@@ -62,7 +91,7 @@ window.requestAnimationFrame = (function () {
 
         function isHorizontalScroll() {
             var result;
-            $.each(elementsToObserve, function () {
+            $.each(elementsToObserve, function() {
                 if (this.$ele[0].iscroll) {
                     if (this.$ele[0].iscroll.x !== this.last.scrollLeft) {
                         result = true;
@@ -73,7 +102,7 @@ window.requestAnimationFrame = (function () {
             });
             return result;
         }
-        this.hasSrcolled = function () {
+        this.hasSrcolled = function() {
             return isVerticalScroll() || isHorizontalScroll();
         };
     }
@@ -97,11 +126,11 @@ window.requestAnimationFrame = (function () {
             }
         }
 
-        this.push = function (fn) {
+        this.push = function(fn) {
             queue.push(fn);
         };
 
-        this.process = function () {
+        this.process = function() {
             if (!isProcessing) {
                 isProcessing = true;
                 //time = 0;
@@ -199,7 +228,6 @@ window.requestAnimationFrame = (function () {
             settings.onSwipeEnd.call(settings.target, event, settings.data);
         });
         activeEventProcessor.process();
-        settings.destroyListeners();
     }
 
     function listenActiveSwipe(event, settings) {
@@ -221,27 +249,36 @@ window.requestAnimationFrame = (function () {
         if (settings.onSwipeStart.call(settings.target, event, settings.data) === false) {
             return false;
         }
+        swipeMask.appendTo($('body'));
         swipeHandler = function(em) {
             onActiveSwipe(em, settings);
         };
         swipeEndHandler = function(ee) {
+            swipeMask.remove();
             onActiveSwipeEnd(ee, settings);
         };
+        touchMoveListeners = [];
+        touchMoveListeners.push(swipeHandler);
+
+        touchEndListeners = [];
+        touchEndListeners.push(swipeEndHandler);
         SwipeTracer.onSwipeStart(event, settings.data);
-        settings.swipeTarget.addEventListener('mousemove', swipeHandler);
-        settings.swipeTarget.addEventListener('touchmove', swipeHandler);
-        document.addEventListener('mouseup', swipeEndHandler);
-        document.addEventListener('touchend', swipeEndHandler);
-        // remove if there are any destroyListeners already present on setting object.
-        settings.destroyListeners && settings.destroyListeners();
-        settings.destroyListeners = function() {
-            settings.swipeTarget.removeEventListener('mousemove', swipeHandler);
-            settings.swipeTarget.removeEventListener('touchmove', swipeHandler);
-            document.removeEventListener('mouseup', swipeEndHandler);
-            document.removeEventListener('touchend', swipeEndHandler);
-            settings.destroyListeners = $.noop;
-        };
         return true;
+    }
+
+    // This function checks if touch positions are within +/- 20deg error in horizontal and 70deg in vertical direction.
+    function isThresholdAngleReached(startPoint, endPoint, direction) {
+        //tan20, tan(-20deg)
+        if (direction === DIRECTIONS.HORIZONTAL) {
+            if (Math.abs((endPoint.y - startPoint.y) / (endPoint.x - startPoint.x)) <= 0.36397023426) {
+                return true;
+            }
+        } else if (direction === DIRECTIONS.VERTICAL) { // between tan70 & tan110
+            if (Math.abs((endPoint.y - startPoint.y) / (endPoint.x - startPoint.x)) >= 2.74747741945) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function isThresholdReached(touch, settings) {
@@ -251,7 +288,7 @@ window.requestAnimationFrame = (function () {
                 'y': touch.pageY
             },
             distance = computeDistance(startPoint, endPoint, settings.direction);
-        return abs(distance) > settings.threshold;
+        return (abs(distance) > settings.threshold) && isThresholdAngleReached(startPoint, endPoint, settings.direction);
     }
 
     function listenPassiveSwipe(touch, settings) {
@@ -261,31 +298,19 @@ window.requestAnimationFrame = (function () {
         discardSwipe = 0;
         passiveSwipeHandler = function(em) {
             var distance;
-            if (discardSwipe) {
-                destroyListeners();
-            } else if (isThresholdReached(getTouchEvent(em), settings)) {
+            if (isThresholdReached(getTouchEvent(em), settings)) {
                 if (settings.scrollObserver.hasSrcolled() || listenActiveSwipe(em, settings)) {
-                    discardSwipe = 1;
+                    return false;
                 }
             }
         };
-        destroyListeners = function() {
-            settings.swipeTarget.removeEventListener('mousemove', passiveSwipeHandler);
-            settings.swipeTarget.removeEventListener('touchmove', passiveSwipeHandler);
-            document.removeEventListener('mouseup', destroyListeners);
-            document.removeEventListener('touchend', destroyListeners);
-            settings.scrollObserver = null;
-        };
+        touchMoveListeners.push(passiveSwipeHandler);
         settings.data = {
             path: [{
                 'x': touch.pageX,
                 'y': touch.pageY
             }]
         };
-        settings.swipeTarget.addEventListener('mousemove', passiveSwipeHandler);
-        settings.swipeTarget.addEventListener('touchmove', passiveSwipeHandler);
-        document.addEventListener('mouseup', destroyListeners);
-        document.addEventListener('touchend', destroyListeners);
     }
 
 
@@ -310,7 +335,7 @@ window.requestAnimationFrame = (function () {
             }
         });
     }
-    $.fn.swipee = function(settings) {
+    $.fn.swipey = function(settings) {
         this.each(function() {
             bind($.extend({
                 'direction': DIRECTIONS.NONE,
@@ -328,12 +353,12 @@ window.requestAnimationFrame = (function () {
 
     SwipeTracer = {
         'onSwipeStart': function(e, data) {
-            if ($.fn.swipee.trace) {
+            if ($.fn.swipey.trace) {
                 $('body').append('<svg height="100vh" width="100vw" ' +
-                '   style="position : fixed;top: 0;left: 0; width:100vw; height: 100vh; z-index:10000" id ="canvas">' +
-                '       <path stroke="rgba(0, 0, 0, 0.5)" stroke-linecap="round" stroke-width="20" fill-opacity="0" ' +
-                '           stroke-opacity="0.8" d="M' + data.path[0].x + ' ' + data.path[0].y + ' " />' +
-                '   </svg>');
+                    '   style="position : fixed;top: 0;left: 0; width:100vw; height: 100vh; z-index:10000" id ="canvas">' +
+                    '       <path stroke="rgba(0, 0, 0, 0.5)" stroke-linecap="round" stroke-width="20" fill-opacity="0" ' +
+                    '           stroke-opacity="0.8" d="M' + data.path[0].x + ' ' + data.path[0].y + ' " />' +
+                    '   </svg>');
                 data.tracer = {
                     pathd: $('#canvas path')
                 };
@@ -372,22 +397,36 @@ window.requestAnimationFrame = (function () {
             }
         }
     };
-    $.fn.swipee.DIRECTIONS = DIRECTIONS;
+    $.fn.swipey.DIRECTIONS = DIRECTIONS;
 })(jQuery);
 
 // Plugin extension for swipeAnimation.
-(function ($) {
+(function($) {
     var $parse,
         expressionRegex = /\$\{\{[a-zA-Z\+-/%\.\*\s\(\)\d,\\'"\$_]*\}\}/;
+
+    function getParseService() {
+        if ($.fn.swipeAnimation.expressionEvaluator) {
+            return $.fn.swipeAnimation.expressionEvaluator;
+        }
+        if (window.exprEval && window.exprEval.Parser) {
+            return function(exp) {
+                var parser = new exprEval.Parser().parse(exp);
+                return function(context) {
+                    return parser.evaluate(context);
+                };
+            };
+        }
+    }
 
     // Angular parser to parse the expression inside the interpolation
     function compile(script) {
         var tArr = [],
             match;
-        $parse = $parse || WM.element('body:first').injector().get('$parse');
+        $parse = $parse || getParseService();
         if (_.isFunction(script)) {
             return script;
-        } else {
+        } else if ($parse) {
             while ((match = expressionRegex.exec(script)) !== null) {
                 var expression = match[0],
                     prefix = script.substring(0, match.index);
@@ -407,9 +446,9 @@ window.requestAnimationFrame = (function () {
 
     }
 
-    function getObject(obj, $ele) {
+    function getObject(obj, $ele, args) {
         if (_.isFunction(obj)) {
-            return obj.apply($ele);
+            return obj.apply($ele, args);
         }
         return obj;
     }
@@ -427,9 +466,9 @@ window.requestAnimationFrame = (function () {
                     lastTime = currentTime;
                 }
                 if (v < 0) {
-                    v = Math.min(v, -3);
+                    v = Math.min(v, -1);
                 } else {
-                    v = Math.max(v, 3);
+                    v = Math.max(v, 1);
                 }
                 return this;
             },
@@ -448,9 +487,9 @@ window.requestAnimationFrame = (function () {
      * @param $el
      * @param settings
      */
-    function calculateBounds($el, settings) {
+    function calculateBounds($el, settings, args) {
         var centerVal = 0,
-            bounds = getObject(settings.bounds, $el);
+            bounds = getObject(settings.bounds, $el, args);
 
         if (!_.isUndefined(bounds.center)) {
             centerVal = bounds.center;
@@ -483,10 +522,10 @@ window.requestAnimationFrame = (function () {
      * @constructor
      */
     function SettingsProperty() {
-        this.setSettings = function (settings, $el) {
+        this.setSettings = function(settings, $el) {
             $el.data('swipeAnimationDefaults', settings);
         };
-        this.getSettings = function ($el) {
+        this.getSettings = function($el) {
             return $el.data('swipeAnimationDefaults');
         }
     }
@@ -500,9 +539,22 @@ window.requestAnimationFrame = (function () {
      */
     function animate(settings, metaData, time, $el) {
         _.forEach(settings.animation, function(a) {
-            a.target.css(_.mapValues(a.css, function(v, k) {
-                return v(metaData);
-            }));
+            if (!a.target) {
+                return;
+            }
+            if (a.target.length > 1) {
+                a.target.each(function(i) {
+                    metaData.$i = i;
+                    $(this).css(_.mapValues(a.css, function(v, k) {
+                        return v(metaData);
+                    }));
+                });
+            } else {
+                metaData.$i = 0;
+                a.target.css(_.mapValues(a.css, function(v, k) {
+                    return v(metaData);
+                }));
+            }
             a.target.css({
                 'transition': 'all ease-out ' + time + 'ms'
             });
@@ -513,21 +565,23 @@ window.requestAnimationFrame = (function () {
             });
         });
         setTimeout(function() {
-            if (metaData.$D === metaData.bounds.lower) {
-                settings.onLower.call($el);
-            } else if (metaData.$D === metaData.bounds.upper) {
-                settings.onUpper.call($el);
-            }
-            settings.onAnimation();
+            window.requestAnimationFrame(function () {
+                if (metaData.$D === metaData.bounds.lower) {
+                    settings.onLower.call($el);
+                } else if (metaData.$D === metaData.bounds.upper) {
+                    settings.onUpper.call($el);
+                }
+                settings.onAnimation();
+            });
         }, time);
     }
 
     var methods = {
-        'gotoUpper': function () {
+        'gotoUpper': function() {
             swipeToEnd(this, 'upper', arguments[1]);
         },
-        'gotoLower': function (time) {
-            swipeToEnd(this, 'lower',arguments[1]);
+        'gotoLower': function(time) {
+            swipeToEnd(this, 'lower', arguments[1]);
         }
     };
 
@@ -553,7 +607,7 @@ window.requestAnimationFrame = (function () {
     }
 
     // This function adds swipe functionality on the element.
-    function addSwipee($ele, settings) {
+    function addSwipey($ele, settings) {
         var state = {
             'max': Math.max,
             'min': Math.min,
@@ -577,7 +631,7 @@ window.requestAnimationFrame = (function () {
         });
         var settingsObj = new SettingsProperty();
         settingsObj.setSettings(settings, $ele);
-        $ele.swipee({
+        $ele.swipey({
             'direction': settings.direction,
             'threshold': settings.threshold,
             'bindEvents': settings.bindEvents,
@@ -585,7 +639,7 @@ window.requestAnimationFrame = (function () {
                 var cd;
                 state.$d = 0;
 
-                state.bounds = calculateBounds(this, settings);
+                state.bounds = calculateBounds(this, settings, [e, data.length]);
                 if (!_.isUndefined(state.bounds.center)) {
                     state.$D = state.bounds.center;
                 } else {
@@ -595,14 +649,15 @@ window.requestAnimationFrame = (function () {
                 cd = state.$D + data.length;
 
                 // by default strict is true
-                if (_.isUndefined(state.bounds.strict)) {
-                    state.bounds.strict = true;
-                }
+                state.bounds.strictLower = !(state.bounds.strict === false || state.bounds.strictLower === false);
+                state.bounds.strictUpper = !(state.bounds.strict === false || state.bounds.strictUpper === false);
 
-                if (state.bounds.strict && ((_.isUndefined(state.bounds.lower) && data.length < 0) ||
-                    (!_.isUndefined(state.bounds.lower) && state.bounds.lower > cd) ||
-                    (_.isUndefined(state.bounds.upper) && data.length > 0) ||
-                    (!_.isUndefined(state.bounds.upper) && state.bounds.upper < cd))) {
+                if ((state.bounds.strictLower &&
+                    ((_.isUndefined(state.bounds.lower) && data.length < 0) ||
+                    (!_.isUndefined(state.bounds.lower) && state.bounds.lower > cd))) ||
+                    (state.bounds.strictUpper &&
+                    ((_.isUndefined(state.bounds.upper) && data.length > 0) ||
+                    (!_.isUndefined(state.bounds.upper) && state.bounds.upper < cd)))) {
                     return false;
                 }
                 state.vc = VelocityComputator();
@@ -612,32 +667,44 @@ window.requestAnimationFrame = (function () {
                 retrieveTargets(settings);
 
                 _.forEach(settings.animation, function(a) {
-                    a.target.css({
-                        'transition': 'none'
-                    });
+                    if (a.target) {
+                        a.target.css({
+                            'transition': 'none'
+                        });
+                    }
                 });
             },
             'onSwipe': function(e, data) {
-                var localState = state.localState,
-                    cd = state.$D + data.length;
+                var localState = state.localState;
+                cd = state.$D + data.length;
 
                 localState.$d = data.length;
                 localState.$D = state.$D;
 
                 // only in strict mode, restrict the $d value to go beyond the bounds.
-                if (state.bounds.strict) {
-                    if (!_.isUndefined(state.bounds.lower) && state.bounds.lower > cd) {
-                        localState.$d = state.bounds.lower;
-                    } else if (!_.isUndefined(state.bounds.upper) && state.bounds.upper < cd) {
-                        localState.$d = state.bounds.upper;
-                    }
+                if (state.bounds.strictLower && !_.isUndefined(state.bounds.lower) && state.bounds.lower > cd) {
+                    localState.$d = (state.bounds.lower - state.$D);
+                } else if (state.bounds.strictUpper && !_.isUndefined(state.bounds.upper) && state.bounds.upper < cd) {
+                    localState.$d = (state.bounds.upper - state.$D);
                 }
 
                 state.vc.addDistance(data.length);
                 _.forEach(settings.animation, function(a) {
-                    a.target.css(_.mapValues(a.css, function(v, k) {
-                        return v(localState);
-                    }));
+                    if (a.target) {
+                        if (a.target.length > 1) {
+                            a.target.each(function(i) {
+                                localState.$i = i;
+                                $(this).css(_.mapValues(a.css, function(v, k) {
+                                    return v(localState);
+                                }));
+                            });
+                        } else {
+                            localState.$i = 0;
+                            a.target.css(_.mapValues(a.css, function(v, k) {
+                                return v(localState);
+                            }));
+                        }
+                    }
                 });
             },
             'onSwipeEnd': function(e, data) {
@@ -672,8 +739,8 @@ window.requestAnimationFrame = (function () {
             return methods[settings].apply(this, arguments);
         }
         this.each(function() {
-            addSwipee($(this), $.extend({
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+            addSwipey($(this), $.extend({
+                'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                 //'step': 10,
                 'threshold': 30,
                 'bindEvents': ['touch'],

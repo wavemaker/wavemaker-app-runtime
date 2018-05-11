@@ -2,7 +2,9 @@ package com.wavemaker.runtime.data.util;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.hibernate.HibernateException;
@@ -19,12 +21,19 @@ public class JavaTypeUtils {
 
     private static MultiValueMap<String, JavaType> classNameVsJavaTypeMap = new LinkedMultiValueMap<>();
 
+    private static final Set<String> BOOLEAN_TRUE_CASES = new HashSet<>();
+
     static {
         for (final JavaType javaType : JavaType.values()) {
             classNameVsJavaTypeMap.add(javaType.getClassName(), javaType);
             classNameVsJavaTypeMap.add(javaType.getPrimitiveClassName(), javaType);
         }
         classNameVsJavaTypeMap.add(Date.class.getCanonicalName(), JavaType.DATE);
+
+        BOOLEAN_TRUE_CASES.add("1");
+        BOOLEAN_TRUE_CASES.add("true");
+        BOOLEAN_TRUE_CASES.add("t");
+        BOOLEAN_TRUE_CASES.add("y");
     }
 
     public static Object convert(String toClass, Object value) {
@@ -57,5 +66,9 @@ public class JavaTypeUtils {
 
     public static boolean isNotCollectionType(final Class<?> typeClass) {
         return !Collection.class.isAssignableFrom(typeClass);
+    }
+
+    public static boolean isTrue(String booleanInString) {
+        return BOOLEAN_TRUE_CASES.contains(booleanInString.toLowerCase());
     }
 }

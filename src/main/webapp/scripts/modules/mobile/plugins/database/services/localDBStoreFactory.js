@@ -409,7 +409,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                                         "filterCondition" : '=',
                                         "attributeValue" : primaryKey,
                                         "attributeType": 'INTEGER' }];
-                return this.filter([filterCriteria]).then(function (obj) {
+                return this.filter(filterCriteria).then(function (obj) {
                     return obj && obj.length === 1 ? obj[0] : undefined;
                 });
             },

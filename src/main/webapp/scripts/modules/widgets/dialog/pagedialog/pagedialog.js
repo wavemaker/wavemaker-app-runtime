@@ -121,6 +121,7 @@ WM.module('wm.widgets.dialog')
         "link"      : {
             "pre": function (iScope, $el, attrs) {
                 iScope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                $el.removeAttr('title');
             },
             "post": function (scope, element, attrs, dialogCtrl) {
                 // handles ok button click

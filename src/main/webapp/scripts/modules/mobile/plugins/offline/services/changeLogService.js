@@ -33,7 +33,7 @@ wm.plugins.offline.services.ChangeLogService = [
             flushContext,
             services = {},
             callbacks = [],
-            flushInProgress = false,
+            deferredFlush = null,
             stats = {};
 
         function getService(serviceName) {
@@ -52,51 +52,22 @@ wm.plugins.offline.services.ChangeLogService = [
             return LocalDBManager.getStore('wavemaker', 'offlineChangeLog');
         }
 
-        /*
-         * Invokes the given list of functions sequentially with the given arguments. If a function returns a promise,
-         * then next function will be invoked only if the promise is resolved.
-         */
-        function executeDeferChain(fns, args, d, i) {
-            var returnObj;
-            d = d || $q.defer();
-            i = i || 0;
-            if (i === 0) {
-                fns = _.filter(fns, function (fn) {
-                    return !(_.isUndefined(fn) || _.isNull(fn));
-                });
-            }
-            if (fns && i < fns.length) {
-                try {
-                    returnObj = fns[i].apply(undefined, args);
-                    $q.when(returnObj, function () {
-                        executeDeferChain(fns, args, d, i + 1);
-                    }, d.reject);
-                } catch (e) {
-                    d.reject(e);
-                    $log.error(e.message);
-                }
-            } else {
-                d.resolve();
-            }
-            return d.promise;
-        }
-
         //Transform params to Map
         function transformParamsToMap(change) {
             var cbs = _.map(callbacks, "transformParamsToMap");
-            return executeDeferChain(cbs, [change]);
+            return Utils.executeDeferChain(cbs, [change]);
         }
 
         //Invokes PreCall callbacks
         function preCall(change) {
             var cbs = _.map(callbacks, "preCall");
-            return executeDeferChain(cbs, [change]);
+            return Utils.executeDeferChain(cbs, [change]);
         }
 
         //Transform params from Map to original form
         function transformParamsFromMap(change) {
             var cbs = _.map(callbacks, "transformParamsFromMap");
-            return executeDeferChain(cbs, [change]);
+            return Utils.executeDeferChain(cbs, [change]);
         }
 
         //Trigger the call
@@ -110,11 +81,11 @@ wm.plugins.offline.services.ChangeLogService = [
                     return operation(change.params, function () {
                         change.params = transformedParams;
                         defer.resolve.apply(defer, arguments);
+                    }, function () {
+                        change.params = transformedParams;
+                        defer.reject.apply(defer, arguments);
                     });
-                }).catch(function () {
-                    change.params = transformedParams;
-                    defer.reject.apply(defer, arguments);
-                });
+                }, defer.reject);
             } else {
                 defer.reject(change);
             }
@@ -125,92 +96,92 @@ wm.plugins.offline.services.ChangeLogService = [
         function postCallSuccess(change, response) {
             var cbs = _.map(callbacks, "postCallSuccess");
             cbs = _.reverse(cbs);
-            return executeDeferChain(cbs, [change, response]);
+            return Utils.executeDeferChain(cbs, [change, response]);
         }
 
         //Invokes post call error callbacks
         function postCallError(change, response) {
             var cbs = _.map(callbacks, "postCallError");
             cbs = _.reverse(cbs);
-            return executeDeferChain(cbs, [change, response]);
+            return Utils.executeDeferChain(cbs, [change, response]);
         }
 
-        function flushChange(change, onSuccess, onError) {
-            preCall(change)
+        function flushChange(change) {
+            return preCall(change)
                 .then(invokeService.bind(undefined, change))
                 .then(function () {
-                    postCallSuccess(change, arguments).then(onSuccess, onError);
+                    return postCallSuccess(change, arguments).then(function () {
+                        return change;
+                    });
                 }).catch(function () {
-                    postCallError(change, arguments).finally(onError.bind(undefined, arguments));
+                    if (NetworkService.isConnected()) {
+                        return postCallError(change, arguments).then(function () {
+                            return $q.reject(change);
+                        });
+                    }
+                    return $q.reject(change);
                 });
         }
 
         // Flushes the first registered change.
-        function flushNextChange(onSuccess, onError) {
+        function getNextChange() {
             var filterCriteria = [{
                 'attributeName' : 'hasError',
                 'attributeValue' : 0,
                 'attributeType' : 'NUMBER',
                 'filterCondition' : 'EQUALS'
             }];
-            getStore().filter(filterCriteria, 'id', {
+            return getStore().filter(filterCriteria, 'id', {
                 offset: 0,
                 limit: 1
             }).then(function (changes) {
-                var change = changes[0];
-                if (change) {
-                    change.params = JSON.parse(change.params);
-                    flushChange(change, onSuccess.bind(undefined, change), onError.bind(undefined, change));
-                } else {
-                    onSuccess();
-                }
+                return changes && changes[0];
             });
         }
 
         //Flushes the complete log one after another.
-        function flush(onComplete, onProgress) {
-            flushNextChange(function (change) {
-                Utils.triggerFn(onProgress, stats);
-                if (change) {
-                    getStore().delete(change.id);
-                    flush(onComplete, onProgress);
-                } else {
-                    onComplete();
-                }
-            }, function (change) {
-                NetworkService.isAvailable(true).then(function () {
-                    change.hasError = 1;
-                }, function () {
-                    //failed due to lack of network
-                    change.hasError = -1;
-                }).finally(function () {
-                    change.params = JSON.stringify(change.params);
-                    getStore().save(change);
-                    flush(onComplete, onProgress);
-                });
-            });
-        }
-
-        function resetNetworkFailures() {
-            return LocalDBManager.executeSQLQuery('wavemaker', 'UPDATE offlineChangeLog SET hasError = 0 WHERE hasError = -1');
-        }
-
-        function onFlushComplete(fn) {
-            return function () {
-                var cbs = _.reverse(_.map(callbacks, "postFlush"));
-                flushInProgress = false;
-                return resetNetworkFailures().then(function () {
-                    if (stats.failedTaskCount === 0) {
-                        return flushContext.clear().then(function () {
-                            flushContext = undefined;
+        function flush(defer) {
+            defer = defer || Utils.getAbortableDefer();
+            if (defer.isAborted) {
+                return $q.resolve();
+            }
+            getNextChange()
+                .then(function (change) {
+                    if (change) {
+                        change.params = JSON.parse(change.params);
+                        return flushChange(change);
+                    }
+                })
+                .then(function (change) {
+                    defer.notify(stats);
+                    if (change) {
+                        getStore().delete(change.id);
+                        flush(defer);
+                    } else {
+                        defer.resolve();
+                    }
+                }, function (change) {
+                    var connectPromise;
+                    if (NetworkService.isConnected()) {
+                        change.hasError = 1;
+                        change.params = JSON.stringify(change.params);
+                        getStore().save(change).then(function () {
+                            flush(defer);
+                        });
+                    } else {
+                        connectPromise = NetworkService.onConnect();
+                        defer.promise.catch(function () {
+                            if (connectPromise) {
+                                connectPromise.abort();
+                            }
+                        });
+                        connectPromise.then(function () {
+                            flush(defer);
+                            connectPromise = null;
                         });
                     }
-                }).then(function () {
-                    return executeDeferChain(cbs, [stats, flushContext]);
-                }).finally(function () {
-                    Utils.triggerFn(fn, stats);
                 });
-            };
+            return defer.promise;
         }
 
         function createContext() {
@@ -310,7 +281,7 @@ wm.plugins.offline.services.ChangeLogService = [
                 'hasError' : 0
             };
             return transformParamsToMap(change).then(function () {
-                return executeDeferChain(_.map(callbacks, "onAddCall"), [change]);
+                return Utils.executeDeferChain(_.map(callbacks, "onAddCall"), [change]);
             }).then(function () {
                 change.params = JSON.stringify(change.params);
                 return getStore().add(change);
@@ -405,25 +376,48 @@ wm.plugins.offline.services.ChangeLogService = [
          * @name  wm.plugins.offline.services.$ChangeLogService#getLogLength
          * @methodOf  wm.plugins.offline.services.$ChangeLogService
          * @description
-         * Flush the current log. If a flush is already running, then new flush cannot be started.
+         * Flush the current log. If a flush is already running, then the promise of that flush is returned back.
          */
-        this.flush = function (onComplete, onProgress) {
-            if (!flushInProgress) {
-                onComplete = onFlushComplete(onComplete);
-                flushInProgress = true;
+        this.flush = function () {
+            var flushPromise;
+            if (!deferredFlush) {
+                deferredFlush = Utils.getAbortableDefer();
                 SecurityService.onUserLogin()
                     .then(createContext)
                     .then(function (context) {
                         flushContext = context;
-                        return executeDeferChain(_.map(callbacks, "preFlush"), [flushContext]);
+                        return Utils.executeDeferChain(_.map(callbacks, "preFlush"), [flushContext]);
                     })
                     .then(function () {
-                        flush(onComplete, onProgress);
+                        flushPromise = flush();
+                        deferredFlush.onAbort = function () {
+                            flushPromise.abort();
+                        };
+                        return flushPromise;
                     })
-                    .catch(onComplete);
-            } else {
-                Utils.triggerFn(onComplete, stats);
+                    .finally(function () {
+                        $q.resolve().then(function () {
+                            if (stats.totalTaskCount === stats.completedTaskCount) {
+                                return flushContext.clear().then(function () {
+                                    flushContext = null;
+                                });
+                            }
+                        }).then(function () {
+                            if (stats.failedTaskCount > 0) {
+                                deferredFlush.reject(stats);
+                            } else {
+                                deferredFlush.resolve(stats);
+                            }
+                            deferredFlush = null;
+                        }).then(function () {
+                            var cbs = _.reverse(_.map(callbacks, "postFlush"));
+                            return Utils.executeDeferChain(cbs, [stats, flushContext]);
+                        });
+                    }, function () {
+                        deferredFlush.notify(stats);
+                    });
             }
+            return deferredFlush.promise;
         };
         /**
          * @ngdoc method
@@ -448,6 +442,52 @@ wm.plugins.offline.services.ChangeLogService = [
                 return info;
             });
         };
+
+        /**
+         * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#stop
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @description
+         * Stops the ongoing flush process.
+         *
+         * @returns {object} a promise that is resolved when the flush process is stopped.
+         */
+        this.stop = function () {
+            var d = $q.defer();
+            if (deferredFlush) {
+                deferredFlush.promise.finally(function () {
+                    d.resolve();
+                });
+                deferredFlush.promise.abort();
+            } else {
+                d.resolve();
+            }
+            return d.promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#isFlushInProgress
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @description
+         * Returns true, if a flush process is in progress. Otherwise, returns false.
+         *
+         * @returns {boolean} returns true, if a flush process is in progress. Otherwise, returns false.
+         */
+        this.isFlushInProgress = function () {
+            return !(_.isUndefined(deferredFlush) || _.isNull(deferredFlush));
+        };
+
+        /**
+         * @ngdoc method
+         * @name  wm.plugins.offline.services.$ChangeLogService#getStore
+         * @methodOf  wm.plugins.offline.services.$ChangeLogService
+         * @description
+         * Returns the store used by ChangeLogService.
+         *
+         * @returns {object} returns the store used by ChangeLogService.
+         */
+        this.getStore = getStore;
     }
 ];
 
@@ -489,11 +529,15 @@ wm.plugins.offline.run([
         function exchangeId(dataModelName, entityName, data, keyName) {
             var primaryKeyName = keyName || LocalDBManager.getStore(dataModelName, entityName).primaryKeyName,
                 localId,
-                remoteId;
+                remoteId,
+                entityIdStore = getEntityIdStore(dataModelName, entityName);
             if (data && primaryKeyName) {
                 localId = data[primaryKeyName];
-                remoteId = getEntityIdStore(dataModelName, entityName)[localId];
-                if (remoteId) {
+                remoteId = localId;
+                while (entityIdStore[remoteId]) {
+                    remoteId = entityIdStore[remoteId];
+                }
+                if (remoteId !== localId) {
                     data[primaryKeyName] = remoteId;
                     logResolution(entityName, localId, remoteId);
                 }
@@ -601,6 +645,15 @@ wm.plugins.offline.run([
             return false;
         }
 
+        //Removes entity identifier from error list.
+        function removeError(dataModelName, entityName, id) {
+            if (errorStore[dataModelName]
+                    && errorStore[dataModelName][entityName]
+                    && errorStore[dataModelName][entityName][id]) {
+                delete errorStore[dataModelName][entityName][id];
+            }
+        }
+
         //Save error entity identifier.
         function recordError(dataModelName, entityName, id) {
             errorStore[dataModelName] = errorStore[dataModelName] || {};
@@ -663,6 +716,19 @@ wm.plugins.offline.run([
                     case 'deleteTableData':
                         blockCall(change, dataModelName, entityName, change.params);
                         break;
+                    }
+                }
+            },
+            //store error entity id
+            'postCallSuccess' : function (change) {
+                var entityStore, entityName, dataModelName, id;
+                if (change && change.service === 'DatabaseService') {
+                    entityName = change.params.entityName;
+                    dataModelName = change.params.dataModelName;
+                    entityStore = LocalDBManager.getStore(dataModelName, entityName);
+                    id = change.dataLocalId || change.params.data[entityStore.primaryKeyName];
+                    if (!(_.isUndefined(id) || _.isNull(id))) {
+                        removeError(dataModelName, entityName, id);
                     }
                 }
             },
@@ -796,6 +862,159 @@ wm.plugins.offline.run([
                         break;
                     }
                 }
+            }
+        });
+    }]);
+/**
+ * 1) When db is exported, then export upload directory as well.
+ * 2) When a db is imported, then old upload directory needs to be updated with the current upload directory.
+ */
+wm.plugins.offline.run([
+    '$cordovaFile',
+    '$q',
+    '$rootScope',
+    'ChangeLogService',
+    'DeviceFileService',
+    'LocalDBManager',
+    function ($cordovaFile, $q, $rootScope, ChangeLogService, DeviceFileService, LocalDBManager) {
+        'use strict';
+        var uploadDir;
+
+        /**
+         * returns back the changes that were logged.
+         * @param page page number
+         * @param size size of page
+         * @returns {*}
+         */
+        function getChanges(page, size) {
+            var filterCriteria = [];
+            return ChangeLogService.getStore().filter(filterCriteria, 'id', {
+                offset: (page - 1) * size,
+                limit: size
+            });
+        }
+
+        /**
+         * If this is a database change, then it will replace old upload directory with the current upload directory
+         * and its corresponding owner object, if  it has primary key.
+         *
+         * @param change
+         * @param oldUploadDir
+         * @param uploadDir
+         * @returns {*}
+         */
+        function updateDBChange(change, oldUploadDir, uploadDir) {
+            var modifiedProperties = {},
+                entityName = change.params.entityName,
+                dataModelName = change.params.dataModelName,
+                store,
+                primaryKeyName,
+                primaryKey;
+            change.params.data = _.mapValues(change.params.data, function (v, k) {
+                var mv = v, isModified;
+                if (_.isString(v)) {
+                    mv = _.replace(v, oldUploadDir, uploadDir);
+                    isModified = !_.isEqual(mv, v);
+                } else if (_.isObject(v) && v.wmLocalPath) {
+                    //insertMultiPartData and updateMultiPartData
+                    mv = _.replace(v.wmLocalPath, oldUploadDir, uploadDir);
+                    isModified = !_.isEqual(mv, v.wmLocalPath);
+                }
+                if (isModified) {
+                    modifiedProperties[k] = mv;
+                }
+                return mv;
+            });
+            if (!_.isEmpty(modifiedProperties)) {
+                store = LocalDBManager.getStore(dataModelName, entityName);
+                return $q.resolve().then(function () {
+                    // If there is a primary for the entity, then update actual row with the modifications
+                    if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
+                        primaryKeyName = store.primaryKeyName;
+                        primaryKey = change.params.data[primaryKeyName];
+                        return store.get(primaryKey)
+                            .then(function (obj) {
+                                return store.save(_.assignIn(obj, modifiedProperties));
+                            });
+                    }
+                }).then(function () {
+                    change.params = JSON.stringify(change.params);
+                    return ChangeLogService.getStore().save(change);
+                });
+            }
+        }
+
+        /**
+         * This function check this change to update old upload directory path.
+         * 
+         * @param change
+         * @param metaInfo
+         * @returns {*}
+         */
+        function updateChange(change, metaInfo) {
+            change.params = JSON.parse(change.params);
+            if (change.service === 'OfflineFileUploadService'
+                    && change.operation === 'uploadToServer') {
+                change.params.file = _.replace(change.params.file, metaInfo.uploadDir, uploadDir);
+                change.params = JSON.stringify(change.params);
+                return ChangeLogService.getStore().save(change);
+            }
+            if (change.service === 'DatabaseService') {
+                return updateDBChange(change, metaInfo.uploadDir, uploadDir);
+            }
+        }
+
+        /**
+         * This function will visit all the changes and modify them, if necessary.
+         * @param metaInfo
+         * @param page
+         * @param defer
+         * @returns {*}
+         */
+        function updateChanges(metaInfo, page, defer) {
+            var size = 10;
+            page = page || 1;
+            defer = defer || $q.defer();
+            getChanges(page, size)
+                .then(function (changes) {
+                    return $q.all(_.map(changes, function (change) {
+                        return updateChange(change, metaInfo);
+                    }));
+                }).then(function (result) {
+                    if (result && result.length === size) {
+                        updateChanges(metaInfo, page + 1, defer);
+                    } else {
+                        defer.resolve();
+                    }
+                }, defer.reject);
+            return defer.promise;
+        }
+
+        LocalDBManager.registerCallback({
+            'preExport' : function (folderToExport, meta) {
+                //copy offline uploads
+                var uploadFullPath = DeviceFileService.getUploadDirectory(),
+                    lastIndexOfSep = uploadFullPath.lastIndexOf('/'),
+                    uploadParentDir = uploadFullPath.substring(0, lastIndexOfSep + 1),
+                    uploadDirName = uploadFullPath.substring(lastIndexOfSep + 1);
+                meta.uploadDir = uploadFullPath;
+                return $cordovaFile.copyDir(uploadParentDir, uploadDirName, folderToExport, 'uploads');
+            },
+            'postImport' : function (importedFolder, meta) {
+                var uploadFullPath = DeviceFileService.getUploadDirectory(),
+                    lastIndexOfSep = uploadFullPath.lastIndexOf('/'),
+                    uploadParentDir = uploadFullPath.substring(0, lastIndexOfSep + 1),
+                    uploadDirName = uploadFullPath.substring(lastIndexOfSep + 1);
+                uploadDir = uploadFullPath;
+                return $cordovaFile.checkDir(importedFolder, 'uploads')
+                    .then(function () {
+                        return DeviceFileService.removeDir(uploadFullPath)
+                            .then(function () {
+                                return $cordovaFile.copyDir(importedFolder, 'uploads', uploadParentDir, uploadDirName);
+                            }).then(function () {
+                                return updateChanges(meta);
+                            });
+                    }, $q.resolve.bind($q));
             }
         });
     }]);

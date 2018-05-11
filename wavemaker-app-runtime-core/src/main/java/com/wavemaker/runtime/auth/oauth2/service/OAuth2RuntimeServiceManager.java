@@ -15,13 +15,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.http.entity.ContentType;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.wavemaker.commons.InvalidInputException;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
@@ -69,20 +67,20 @@ public class OAuth2RuntimeServiceManager {
 
 
     public String getAuthorizationUrl(String providerId, String requestSourceType, String key, HttpServletRequest httpServletRequest) {
-        OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
-
-        String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
-        String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
-        String redirectUrl = getRedirectUrl(providerId, appPath);
         try {
-            JSONObject stateObject = new JSONObject();
+            OAuth2ProviderConfig oAuth2ProviderConfig = getOAuthProviderConfig(providerId);
+            String baseUrl = HttpRequestUtils.getBaseUrl(httpServletRequest);
+            String appPath = new StringBuilder(baseUrl).append(httpServletRequest.getContextPath()).toString();
+            String redirectUrl = getRedirectUrl(providerId, appPath);
+            Map<String, String> stateObject = new HashMap<>();
             stateObject.put("mode", "runtTime");
             stateObject.put("appPath", appPath);
             stateObject.put("key", key);
             stateObject.put(OAuth2Constants.REQUEST_SOURCE_TYPE, requestSourceType);
-            return OAuth2Helper.getAuthorizationUrl(oAuth2ProviderConfig, redirectUrl, stateObject);
-        } catch (JSONException e) {
-            throw new InvalidInputException("Invalid input to jsonObject", e);
+            String stateParameter = WMObjectMapper.getInstance().writeValueAsString(stateObject);
+            return OAuth2Helper.getAuthorizationUrl(oAuth2ProviderConfig, redirectUrl, stateParameter);
+        } catch (JsonProcessingException e) {
+            throw new WMRuntimeException(e);
         }
     }
 
@@ -127,9 +125,9 @@ public class OAuth2RuntimeServiceManager {
                 String requestSourceType = null;
 //                TODO Have to perform encryption on accessToken
                 if (state != null) {
-                    JSONObject jsonObject = OAuth2Helper.getStateObject(state);
-                    if (jsonObject.has(OAuth2Constants.REQUEST_SOURCE_TYPE)) {
-                        requestSourceType = jsonObject.getString(OAuth2Constants.REQUEST_SOURCE_TYPE);
+                    Map<String, String> jsonObject = OAuth2Helper.getStateObject(state);
+                    if (jsonObject.containsKey(OAuth2Constants.REQUEST_SOURCE_TYPE)) {
+                        requestSourceType = jsonObject.get(OAuth2Constants.REQUEST_SOURCE_TYPE);
                     }
                     if ("MOBILE".equalsIgnoreCase(requestSourceType) && customUrlScheme == null) {
                         setCustomUrlScheme();
@@ -142,8 +140,6 @@ public class OAuth2RuntimeServiceManager {
             }
         } catch (IOException e) {
             throw new WMRuntimeException("Failed to parse responseBody", e);
-        } catch (JSONException e) {
-            throw new WMRuntimeException("Failed to read accessToken param", e);
         }
     }
 
@@ -162,9 +158,9 @@ public class OAuth2RuntimeServiceManager {
             try {
                 AppFileSystem appFileSystem = WMAppContext.getInstance().getSpringBean(AppFileSystem.class);
                 inputStream = appFileSystem.getWebappResource("config.json");
-                JSONObject configJsonObject = JSONUtils.toJSONObject(inputStream);
-                customUrlScheme = configJsonObject.getString(OAuth2Constants.CUSTOM_URL_SCHEME);
-            } catch (JSONException e) {
+                Map<String, String> configJsonObject = JSONUtils.toObject(inputStream, Map.class);
+                customUrlScheme = configJsonObject.get(OAuth2Constants.CUSTOM_URL_SCHEME);
+            } catch (IOException e) {
                 throw new WMRuntimeException(e);
             } finally {
                 IOUtils.closeQuietly(inputStream);

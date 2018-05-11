@@ -1,7 +1,7 @@
 /*global wm, WM, FileTransfer, _, window, FormData, XMLHttpRequest, localStorage*/
 /*jslint sub: true */
 /*Service for uploading files to backend server.*/
-wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 'CONSTANTS', function ($rootScope, Utils, $q, CONSTANTS) {
+wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 'CONSTANTS', 'DeviceFileService', function ($rootScope, Utils, $q, CONSTANTS, DeviceFileService) {
     'use strict';
 
     var FILE_UPLOAD_STATUSES = {
@@ -64,6 +64,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
             ftOptions = {
                 'fileKey'   : options.paramName,
                 'fileName'  : file.name,
+                'mimeType'  : options.mimeType || 'image/jpeg',
                 'chunkedMode': false
             },
             transferFn;
@@ -162,14 +163,25 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
      */
     this.upload = function (files, config, options) {
         var fileTransfers = [],
-            url = config.uploadUrl;
+            url = config.uploadUrl,
+            promises = [],
+            defer = $q.defer();
         options = _.extend({
             'paramName' : config.fileParamName
         }, options);
 
         if (CONSTANTS.hasCordova) {
             _.forEach(files, function (file) {
-                fileTransfers.push(uploadWithFileTransfer(file, url, options));
+                var p = DeviceFileService.getMimeType(file.path)
+                    .then(function (type) {
+                        if (type) {
+                            options.mimeType = type;
+                        }
+                        fileTransfers.push(uploadWithFileTransfer(file, url, options));
+                    }).catch(function () {
+                        fileTransfers.push(uploadWithFileTransfer(file, url, options));
+                    });
+                promises.push(p);
             });
         } else if (window.FormData) {
             _.forEach(files, function (file) {
@@ -180,7 +192,12 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
                 fileTransfers.push(uploadWithIframe(file, url, options));
             });
         }
-        startFileTransfers(fileTransfers, 2);
-        return fileTransfers;
+
+        $q.all(promises).then(function () {
+            startFileTransfers(fileTransfers, 2);
+            return defer.resolve(fileTransfers);
+        });
+
+        return defer.promise;
     };
 }];

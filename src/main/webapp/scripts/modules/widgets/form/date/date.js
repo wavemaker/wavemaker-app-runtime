@@ -8,6 +8,9 @@ WM.module('wm.widgets.form')
             "<div class='app-date input-group' init-widget has-model role='input' apply-styles app-defaults='{\"datepattern\": \"dateFormat\"}'>" +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target ' +
                     ' uib-datepicker-popup="{{datepattern}}" show-button-bar="{{showbuttonbar}}" datepicker-options="_dateOptions" ' +
+                    ' current-text="{{$root.appLocale.LABEL_CALENDAR_TODAY}}"' +
+                    ' clear-text="{{$root.appLocale.LABEL_CLEAR}}"' +
+                    ' close-text="{{$root.appLocale.LABEL_DONE}}"' +
                     ' title="{{hint}}" ' +
                     ' on-open-focus="true" ' +
                     ' is-open=isOpen' +

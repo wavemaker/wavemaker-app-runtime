@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,35 +51,35 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
  * <br/>
  * &lt;servlet&gt;
  * <br/>
- *   &lt;servlet-name&gt;prefabs&lt;/servlet-name&gt;
+ * &lt;servlet-name&gt;prefabs&lt;/servlet-name&gt;
  * <br/>
- *   &lt;servlet-class&gt;com.wavemaker.runtime.prefab.web.PrefabControllerServlet&lt;/servlet-class&gt;
+ * &lt;servlet-class&gt;com.wavemaker.runtime.prefab.web.PrefabControllerServlet&lt;/servlet-class&gt;
  * <br/>
- *   &lt;init-param&gt;
+ * &lt;init-param&gt;
  * <br/>
- *       &lt;param-name&gt;contextClass&lt;/param-name&gt;
+ * &lt;param-name&gt;contextClass&lt;/param-name&gt;
  * <br/>
- *       &lt;param-value&gt;org.springframework.web.context.support.AnnotationConfigWebApplicationContext&lt;/param-value&gt;
+ * &lt;param-value&gt;org.springframework.web.context.support.AnnotationConfigWebApplicationContext&lt;/param-value&gt;
  * <br/>
- *   &lt;/init-param&gt;
+ * &lt;/init-param&gt;
  * <br/>
- *   &lt;init-param&gt;
+ * &lt;init-param&gt;
  * <br/>
- *       &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+ * &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
  * <br/>
- *       &lt;param-value&gt;com.wavemaker.runtime.prefab.PrefabServletConfig&lt;/param-value&gt;
+ * &lt;param-value&gt;com.wavemaker.runtime.prefab.PrefabServletConfig&lt;/param-value&gt;
  * <br/>
- *   &lt;/init-param&gt;
+ * &lt;/init-param&gt;
  * <br/>
- *   &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+ * &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
  * <br/>
  * &lt;/servlet&gt;
  * <br/>
  * &lt;servlet-mapping&gt;
  * <br/>
- *   &lt;servlet-name&gt;prefabs&lt;/servlet-name&gt;
+ * &lt;servlet-name&gt;prefabs&lt;/servlet-name&gt;
  * <br/>
- *   &lt;url-pattern&gt;/prefabs/*&lt;/url-pattern&gt;
+ * &lt;url-pattern&gt;/prefabs/*&lt;/url-pattern&gt;
  * &lt;/servlet-mapping&gt;
  * </code>
  *
@@ -89,10 +89,11 @@ import com.wavemaker.runtime.prefab.util.PrefabConstants;
 public class PrefabControllerServlet extends DispatcherServlet {
 
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
-    
+
     @Autowired
     private PrefabThreadLocalContextManager prefabThreadLocalContextManager;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
@@ -114,16 +115,15 @@ public class PrefabControllerServlet extends DispatcherServlet {
         ClassLoader previous = null;
         try {
             context = lookupContext(request);
-            HttpServletRequest updatedRequest = request;
-            if (context != null) {
-                prefabThreadLocalContextManager.setContext(context);
-                previous = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(context.getClassLoader());
-                updatedRequest = new PrefabAwareHttpRequestWrapper(request, context.getId());
-            }
+            prefabThreadLocalContextManager.setContext(context);
+
+            previous = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+            HttpServletRequest updatedRequest = new PrefabAwareHttpRequestWrapper(request, context.getId());
+
             super.doDispatch(updatedRequest, response);
         } finally {
-            if(context != null) {
+            if (context != null) {
                 Thread.currentThread().setContextClassLoader(previous);
             }
             prefabThreadLocalContextManager.clearContext();
@@ -138,26 +138,24 @@ public class PrefabControllerServlet extends DispatcherServlet {
      * @return
      */
     private String getServletPathWithPrefabName(String servletPath, String prefabName) {
-    	servletPath = (servletPath.endsWith("/") ? servletPath.substring(0, (servletPath.length() - 1)) : servletPath);
-    	prefabName = (prefabName.startsWith("/") ? servletPath.substring(1) : prefabName);
-    	return servletPath + "/" + prefabName;
+        servletPath = (servletPath.endsWith("/") ? servletPath.substring(0, (servletPath.length() - 1)) : servletPath);
+        prefabName = (prefabName.startsWith("/") ? servletPath.substring(1) : prefabName);
+        return servletPath + "/" + prefabName;
     }
 
     @Override
     protected HandlerExecutionChain getHandler(final HttpServletRequest request) throws Exception {
         ApplicationContext context = lookupContext(request);
 
-        if (context != null) {
-            Map<String, HandlerMapping> handlerMappingMap = context.getBeansOfType(HandlerMapping.class);
-            for (HandlerMapping hm : handlerMappingMap.values()) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
-                }
-                HandlerExecutionChain handler = hm.getHandler(request);
-                if (handler != null) {
-                    return handler;
-                }
+        Map<String, HandlerMapping> handlerMappingMap = context.getBeansOfType(HandlerMapping.class);
+        for (HandlerMapping hm : handlerMappingMap.values()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
+            }
+            HandlerExecutionChain handler = hm.getHandler(request);
+            if (handler != null) {
+                return handler;
             }
         }
 
@@ -166,42 +164,43 @@ public class PrefabControllerServlet extends DispatcherServlet {
 
     /**
      * Returns the prefab name from the lookupPath i.e uri path.
+     *
      * @param lookupPath
      * @return prefab name or null, if no prefab name specified.
      */
-	private String extractPrefabName(final String lookupPath) {
-		if (lookupPath != null && !(lookupPath.isEmpty() || lookupPath.equals("/"))) {
-			int startIndex = (lookupPath.startsWith("/") ? 1 : 0);
-			int endIndex = lookupPath.indexOf("/", startIndex);
-			if(endIndex != -1) {
-				return lookupPath.substring(startIndex, lookupPath.indexOf("/", startIndex));
-			} else {
-				return lookupPath.substring(startIndex);
-			}
-		}
+    private String extractPrefabName(final String lookupPath) {
+        if (lookupPath != null && !(lookupPath.isEmpty() || lookupPath.equals("/"))) {
+            int startIndex = (lookupPath.startsWith("/") ? 1 : 0);
+            int endIndex = lookupPath.indexOf('/', startIndex);
+            if (endIndex != -1) {
+                return lookupPath.substring(startIndex, lookupPath.indexOf('/', startIndex));
+            } else {
+                return lookupPath.substring(startIndex);
+            }
+        }
         return null;
-	}
+    }
 
     /**
      * Looks up applicable prefab context for the given request.
      *
-     *
      * @param request HTTP request object
      * @return prefab context or null, if no context is registered for the URL path
      */
-	private ApplicationContext lookupContext(final HttpServletRequest request) {
+    private ApplicationContext lookupContext(final HttpServletRequest request) {
         // checking if any already initialized prefab context is there.
-		ApplicationContext prefabContext = (ApplicationContext) request.getAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT);
-        if(prefabContext == null) {
+        ApplicationContext prefabContext = (ApplicationContext) request
+                .getAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT);
+        if (prefabContext == null) {
             String urlPath = urlPathHelper.getLookupPathForRequest(request);
             String prefabName = extractPrefabName(urlPath);
-            if(prefabName == null)
+            if (prefabName == null)
                 throw new WMRuntimeException("invalid url for accessing prefab : " + urlPath);
 
             PrefabRegistry prefabRegistry = getWebApplicationContext().getBean(PrefabRegistry.class);
             prefabContext = prefabRegistry.getPrefabContext(prefabName);
 
-            if(prefabContext == null) {
+            if (prefabContext == null) {
                 throw new WMRuntimeException(" prefab [" + prefabName + "] does not exist in the application");
             }
             // setting prefab name in request object
@@ -210,7 +209,7 @@ public class PrefabControllerServlet extends DispatcherServlet {
             request.setAttribute(PrefabConstants.REQUEST_PREFAB_CONTEXT, prefabContext);
         }
         return prefabContext;
-	}
+    }
 
     /**
      * Returns the {@link HandlerAdapter} from the prefab context.
@@ -221,7 +220,8 @@ public class PrefabControllerServlet extends DispatcherServlet {
      */
     @Override
     protected HandlerAdapter getHandlerAdapter(final Object handler) throws ServletException {
-        Map<String, HandlerAdapter> handlerAdapterMap = prefabThreadLocalContextManager.getContext().getBeansOfType(HandlerAdapter.class);
+        Map<String, HandlerAdapter> handlerAdapterMap = prefabThreadLocalContextManager.getContext()
+                .getBeansOfType(HandlerAdapter.class);
         for (HandlerAdapter ha : handlerAdapterMap.values()) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Testing handler adapter [" + ha + "]");
@@ -235,29 +235,30 @@ public class PrefabControllerServlet extends DispatcherServlet {
     }
 
     @Override
-    protected ModelAndView processHandlerException(final HttpServletRequest request, final HttpServletResponse response,
-                                                   final Object handler, final Exception ex) throws Exception {
-		ApplicationContext context = lookupContext(request);
+    protected ModelAndView processHandlerException(
+            final HttpServletRequest request, final HttpServletResponse response,
+            final Object handler, final Exception ex) throws Exception {
+        ApplicationContext context = lookupContext(request);
         ModelAndView exMv = null;
-        if (context != null) {
-            Map<String, HandlerExceptionResolver> handlerExceptionResolversMap = context.getBeansOfType(HandlerExceptionResolver.class);
-            for (HandlerExceptionResolver handlerExceptionResolver : handlerExceptionResolversMap.values()) {
-                exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
-                if (exMv != null) {
-                    break;
-                }
-            }
-            if (exMv != null) {
-                if (exMv.isEmpty()) {
-                    return null;
-                }
-                if (!exMv.hasView()) {
-                    exMv.setViewName(getDefaultViewName(request));
-                }
 
-                WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
-                return exMv;
+        Map<String, HandlerExceptionResolver> handlerExceptionResolversMap = context
+                .getBeansOfType(HandlerExceptionResolver.class);
+        for (HandlerExceptionResolver handlerExceptionResolver : handlerExceptionResolversMap.values()) {
+            exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
+            if (exMv != null) {
+                break;
             }
+        }
+        if (exMv != null) {
+            if (exMv.isEmpty()) {
+                return null;
+            }
+            if (!exMv.hasView()) {
+                exMv.setViewName(getDefaultViewName(request));
+            }
+
+            WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
+            return exMv;
         }
 
         throw ex;

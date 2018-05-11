@@ -62,8 +62,7 @@ WM.module('wm.widgets.advanced')
                 directiveDefn,
                 notifyFor,
                 slideTemplateWrapper,
-                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'},
-                isMoving = false;
+                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
 
             widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
             notifyFor = CONSTANTS.isStudioMode ? {
@@ -191,7 +190,7 @@ WM.module('wm.widgets.advanced')
                 if (parentDataSet) {
                     Utils.updateTmplAttrs($tmpl, parentDataSet, attrs.name);
                 }
-                $tmpl = applyWrapper($tmpl, attrs);
+                $tmpl = applyWrapper($tmpl);
                 return $tmpl;
             }
 
@@ -230,7 +229,7 @@ WM.module('wm.widgets.advanced')
             }
 
             // Adds swipe functionality on the element.
-            function addSwipee($scope, $ele) {
+            function addSwipey($scope, $ele) {
                 var emptyEvents = {},
                     state = {
                         'activeItem': '',
@@ -246,10 +245,10 @@ WM.module('wm.widgets.advanced')
                 }
 
                 $ele.swipeAnimation($.extend({
-                    'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                    'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                     'threshold': 5,
                     'bounds': function () {
-                        var items = this.find('.app-carousel-item');
+                        var items = this.find('>.app-carousel-item');
 
                         // initialise the state properties.
                         state.activeIndex = $scope.activeIndex;
@@ -274,7 +273,8 @@ WM.module('wm.widgets.advanced')
                     'animation': [{
                         'target': getTarget.bind(undefined, state),
                         'css': {
-                            'transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)'
+                            'transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)',
+                            '-webkit-transform': 'translate3d(${{ (($D + $d) / w) * 100 + \'%\'}}, 0, 0)'
                         }
                     }],
                     'onLower': function () {
@@ -354,6 +354,7 @@ WM.module('wm.widgets.advanced')
                         if (!attrs.type) {
                             $is.contents    = [];
                             $is.activeIndex = 0;
+                            $is.isMoving = false;
                             //static carousel don't have current slide.
                             if (attrs.widgetid) {
                                 widgetProps.currentslide.show = false;
@@ -363,8 +364,9 @@ WM.module('wm.widgets.advanced')
                                 var oldElement,
                                     newElement,
                                     oldIndex,
-                                    content = $el.find('.carousel-inner'),
-                                    items = content.find('.app-carousel-item');
+                                    content = $el.find('>.carousel-inner'),
+                                    items = content.find('>.app-carousel-item'),
+                                    elScope;
 
                                 index = (items.length + index) % items.length;
 
@@ -386,12 +388,12 @@ WM.module('wm.widgets.advanced')
                                     newElement.addClass('active');
                                     $is.activeIndex  = index;
                                     setActiveItem(items, oldIndex, index);
-                                } else if (index !== $is.activeIndex && !isMoving) {
-                                    isMoving = true;
+                                } else if (index !== $is.activeIndex && !$is.isMoving) {
+                                    $is.isMoving = true;
                                     $is.stop();
 
                                     setActiveItem(items, oldIndex, index);
-                                    isMoving = false;
+                                    $is.isMoving = false;
 
                                     $is.activeIndex  = index;
                                     $is.$root.$safeApply($is);
@@ -401,7 +403,10 @@ WM.module('wm.widgets.advanced')
                                     /* some widgets like charts needs to be redrawn when a carousel becomes active for the first time */
                                     $el.find('.ng-isolate-scope')
                                         .each(function () {
-                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                            elScope = WM.element(this).isolateScope();
+                                            if (elScope) {
+                                                Utils.triggerFn(elScope.redraw);
+                                            }
                                         });
                                 }
                             };
@@ -483,7 +488,7 @@ WM.module('wm.widgets.advanced')
                                 }));
                                 $is.noWrapSlides = false;
                                 $is.onSwipe = function (direction) {
-                                    $innerCarousel = $el.find('.carousel-inner').scope();
+                                    $innerCarousel = $el.find('>.carousel-inner').scope();
                                     if (direction === 'left') {
                                         $innerCarousel.next();
                                     } else {
@@ -494,7 +499,7 @@ WM.module('wm.widgets.advanced')
                         }
 
                         // add swipe functionality on element.
-                        addSwipee($is, content);
+                        addSwipey($is, content);
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);

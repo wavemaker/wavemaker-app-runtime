@@ -120,7 +120,6 @@ WM.module('wm.widgets.basic')
                     'displaylabel'   : true,
                     'dataset'        : true,
                     'displayimagesrc': true,
-                    'active'         : true,
                     'type'           : true,
                     'width'          : true,
                     'height'         : true,
@@ -247,7 +246,6 @@ WM.module('wm.widgets.basic')
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                     //Selecting first option by default for displayValue if it is undefined
                     if (!$is.displaylabel && !$is.binddisplaylabel) {
                         defaultLabel = _.get($is.widgetProps, ['displaylabel', 'options', 1]);
@@ -314,7 +312,6 @@ WM.module('wm.widgets.basic')
                 // assign all the keys to the options of the search widget
                 if (WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
-                    FormWidgetUtils.updatePropertyOptionsWithParams($is); //update searchkey options in case of service variables
                 }
             }
 
@@ -343,7 +340,7 @@ WM.module('wm.widgets.basic')
                     $is.query = inputVal;
 
                     if (_action === 'ENTER') {
-                        onsearchSubmit($navbarElScope, element);
+                        onsearchSubmit($navbarElScope);
                         $is.result = [];
                     }
                 }
@@ -405,13 +402,6 @@ WM.module('wm.widgets.basic')
                 case 'dataset':
                     // set the datatSet of the widget
                     setDataSet(newVal, $is, element);
-                    break;
-                case 'active':
-                    /*listening on 'active' property, as losing the properties during page switch
-                     if studio-mode, then update the displayField & dataField in property panel*/
-                    if ($is.widgetid && newVal) {
-                        updatePropertyPanelOptions($is.dataset, $is, element);
-                    }
                     break;
                 case 'type':
                     //To avoid overridding check for that attribute
@@ -623,7 +613,7 @@ WM.module('wm.widgets.basic')
                         /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
                          with which we are resolving the promise
                          */
-                        setDataSet(data, $is, el, $s);
+                        setDataSet(data, $is, el);
                         // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
                         if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
                             deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
@@ -775,8 +765,6 @@ WM.module('wm.widgets.basic')
                 updateResult($is, matches);
                 return matches;
             }
-
-
             return {
                 'restrict': 'E',
                 'replace': true,
@@ -855,6 +843,7 @@ WM.module('wm.widgets.basic')
                         $is.minLength  = 1;
                         $is.page       = 1;
                         $is.isLastPage = true;
+                        $is.getCutomizedOptions = LiveWidgetUtils.getCutomizedOptions;
                         // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, element, attrs), $is, notifyFor);
 

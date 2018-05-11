@@ -28,7 +28,7 @@ WM.module('wm.widgets.live')
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
-                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && (showNavigation || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && ((showNavigation && (isStudioMode || (dataNavigator.dataSize > pagesize))) || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
                         '<wm-pagination showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +
                         '<a ng-show="onDemandLoad" href="javascript:void(0);" ng-click="dataNavigator.navigatePage(\'next\', $event)" class="app-button btn btn-block {{paginationclass}}">{{ondemandmessage}}</a>' +
                     '</div>' +
@@ -213,7 +213,7 @@ WM.module('wm.widgets.live')
                     var widgetName                      = _.split($is.binddataset, '.')[1],
                         isBoundToLiveVariable           = (variableObj.category === 'wm.LiveVariable'),
                         isBoundToWidget                 = _.startsWith($is.binddataset, 'bind:Widgets.'),
-                        isBoundToFilter                 = _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter' || _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter',
+                        isBoundToFilter                 = _.get($is.Widgets, widgetName + '._widgettype') === 'wm-livefilter',
                         isBoundToQueryServiceVariable   = (variableObj.category === 'wm.ServiceVariable') && (variableObj.serviceType === 'DataService') && (variableObj.controller === 'QueryExecution');
                     // Make the "pageSize" property hidden so that no editing is possible for live and query service variables
                     $is.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable) || (isBoundToWidget ? !isBoundToFilter : false);

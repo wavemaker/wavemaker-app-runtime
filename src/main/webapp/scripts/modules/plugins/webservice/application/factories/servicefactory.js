@@ -194,21 +194,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         return responseObject.type;
                     }
                     /*In case of list type*/
-                    if (responseObject[IS_LIST_KEY]) {
-                        if (responseObject.items.type) {
-                            type = responseObject.items.type;
-                        } else {
-                            if (responseObject.items.$ref) {
-                                type = getFullyQualifiedName(responseObject.items.$ref, definitions);
-                            }
-                        }
+                    if (responseObject.items.type) {
+                        type = responseObject.items.type;
                     } else {
-                        if (responseObject.items.type) {
-                            type = responseObject.items.type;
-                        } else {
-                            if (responseObject.items.$ref) {
-                                type = getFullyQualifiedName(responseObject.items.$ref, definitions);
-                            }
+                        if (responseObject.items.$ref) {
+                            type = getFullyQualifiedName(responseObject.items.$ref, definitions);
                         }
                     }
                     return type;
@@ -574,7 +564,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     };
                     /*call web service to fetch the data*/
                     WebService.getServiceOperationParams(urlParams, function (response) {
-                        onOperationParamsFetch(response);
+                        onOperationParamsFetch();
                     }, function () {
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHOD_PARAMS_DESC"]);
                         onOperationParamsFetchError();

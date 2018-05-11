@@ -266,8 +266,8 @@ WM.module('wm.widgets.table')
                         '</h3>' +
                     '</div>' +
                     '<div class="app-datagrid"></div>' +
-                    '<div class="panel-footer clearfix" ng-show="shownavigation || _actions.footer.length">' +
-                        '<div class="app-datagrid-paginator" ng-show="(isStudioMode || dataNavigator.dataSize) && show && shownavigation">' +
+                    '<div class="panel-footer clearfix" ng-show="_actions.footer.length || (shownavigation && (isStudioMode || (dataNavigator.dataSize > pagesize)))">' +
+                        '<div class="app-datagrid-paginator" ng-show="(isStudioMode || (dataNavigator.dataSize && (dataNavigator.dataSize > pagesize))) && show && shownavigation">' +
                             '<wm-pagination show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" navigationsize="{{navigationSize}}" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" ng-if="_actions.footer.length">' +
@@ -1372,6 +1372,8 @@ WM.module('wm.widgets.table')
                     'caption'   : _.get($rs.appLocale, 'MESSAGE_DELETE_RECORD') || 'Delete Record',
                     'iconClass' : 'wi wi-delete fa-lg',
                     'content'   : $is.confirmdelete,
+                    'oktext'    : $is.deleteoktext,
+                    'canceltext': $is.deletecanceltext,
                     'resolve'   : {
                         'confirmActionOk': function () {
                             return deleteFn;

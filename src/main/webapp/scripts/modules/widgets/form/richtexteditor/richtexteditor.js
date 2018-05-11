@@ -618,7 +618,7 @@ WM.module('wm.widgets.form')
             var table = WM.element(control).find('table')[0],
                 x,
                 y,
-                focusCell,
+                focusCell = {},
                 cell,
                 active;
 

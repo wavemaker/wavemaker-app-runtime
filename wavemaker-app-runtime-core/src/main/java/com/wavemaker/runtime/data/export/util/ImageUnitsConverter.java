@@ -33,8 +33,7 @@ public class ImageUnitsConverter {
     public static final double CELL_BORDER_WIDTH_MILLIMETRES = 2.0D;  // MB
     public static final short EXCEL_COLUMN_WIDTH_FACTOR = 256;
     public static final int UNIT_OFFSET_LENGTH = 7;
-    private static final int[] UNIT_OFFSET_MAP = new int[]
-            {0, 36, 73, 109, 146, 182, 219};
+    private static final int[] UNIT_OFFSET_MAP = {0, 36, 73, 109, 146, 182, 219};
 
 
     public static short pixel2WidthUnits(int pxs) {
@@ -68,9 +67,9 @@ public class ImageUnitsConverter {
 
     public static class ClientAnchorDetail {
 
-        public int fromIndex = 0;
-        public int toIndex = 0;
-        public int inset = 0;
+        private int fromIndex = 0;
+        private int toIndex = 0;
+        private int inset = 0;
 
 
         public ClientAnchorDetail(int fromIndex, int toIndex, int inset) {

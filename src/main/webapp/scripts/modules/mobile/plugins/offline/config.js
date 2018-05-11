@@ -163,7 +163,7 @@ wm.plugins.offline.run([
                             }, onError);
                         } else {
                             Utils.triggerFn(onSuccess, {
-                                "totalPages": 1,
+                                "totalPages": rows && rows.length > 0 ? 1 : 0,
                                 "totalElements": rows.length,
                                 "first": true,
                                 "sort": null,

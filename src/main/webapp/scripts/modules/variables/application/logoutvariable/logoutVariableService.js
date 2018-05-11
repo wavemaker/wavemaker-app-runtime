@@ -42,18 +42,17 @@ wm.variables.services.LogoutVariableService = ['Variables',
         methods = {
             logout: function (variable, options, success, error) {
                 var variableEvents = VARIABLE_CONSTANTS.EVENTS,
-                    logoutErrorMessage = "No authenticated user to logout.",
                     handleError,
                     redirectPage,
                     appManager,
                     output;
 
-                handleError = function (msg) {
+                handleError = function (msg, details, xhrObj) {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, msg);
+                        initiateCallback("onError", variable, msg, xhrObj);
                     }
-                    Utils.triggerFn(error, msg);
+                    Utils.triggerFn(error, msg, xhrObj);
                 };
 
                 $rootScope.$emit('toggle-variable-state', variable, true);
@@ -97,11 +96,11 @@ wm.variables.services.LogoutVariableService = ['Variables',
                             Utils.triggerFn(success);
                         }, handleError);
                     } else {
-                        handleError();
+                        handleError("No authenticated user to logout.");
                     }
                 }, function () {
                     $rootScope.$emit('toggle-variable-state', variable, false);
-                    handleError(logoutErrorMessage);
+                    handleError();
                 });
             },
             cancel: function (variable) {

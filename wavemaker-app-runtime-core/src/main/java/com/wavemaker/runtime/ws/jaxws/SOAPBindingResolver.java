@@ -15,18 +15,21 @@
  */
 package com.wavemaker.runtime.ws.jaxws;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.Objects;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 
-import com.sun.xml.ws.developer.JAXWSProperties;
-import com.sun.xml.ws.developer.WSBindingProvider;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+
 import com.wavemaker.runtime.ws.BindingProperties;
+import com.wavemaker.runtime.ws.JAXWSProperties;
 
 /**
  * @author Frankie Fu
@@ -81,7 +84,7 @@ public class SOAPBindingResolver {
         setBindingProperties(service, bindingProperties);
     }
 
-    public static void setHeaders(WSBindingProvider service, Object... headers) {
+    public static void setHeaders(BindingProvider service, Object... headers) {
         List<Object> soapHeaders = new ArrayList<>();
         for (Object header : headers) {
             if (header != null) {
@@ -89,7 +92,16 @@ public class SOAPBindingResolver {
             }
         }
         if (!soapHeaders.isEmpty()) {
-            service.setOutboundHeaders(soapHeaders.toArray(new Object[soapHeaders.size()]));
+            String wsBindingsProviderClassName = "com.sun.xml.internal.ws.developer.WSBindingProvider";
+            Class<?>[] interfaces = ClassUtils.getAllInterfaces(service);
+            for (Class interfaceClazz : interfaces) {
+                if (Objects.equals(wsBindingsProviderClassName, interfaceClazz.getName())) {
+                    Method method = ReflectionUtils.findMethod(interfaceClazz, "setOutboundHeaders", List.class);
+                    method.setAccessible(true);
+                    ReflectionUtils.invokeMethod(method, service, soapHeaders.toArray(new Object[soapHeaders.size()]));
+                    break;
+                }
+            }
         }
     }
 }

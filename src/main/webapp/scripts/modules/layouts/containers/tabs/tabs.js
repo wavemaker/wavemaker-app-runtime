@@ -47,8 +47,14 @@ WM.module('wm.layouts.containers')
             }
         }
 
+        // Returns the active tab index from tabs having show as true.
+        function getActiveTabIndex($s) {
+            var visibleTabs = _.filter($s.tabs, 'show');
+            return _.findIndex(visibleTabs, {tabId: $s.activeTab.tabId});
+        }
+
         // This function adds swipe features on the element.
-        function addSwipee($scope, $ele) {
+        function addSwipey($scope, $ele) {
             var emptyEvents = {};
 
             // set the bindEvents to empty array when gestures is off
@@ -56,14 +62,17 @@ WM.module('wm.layouts.containers')
                 emptyEvents = {'bindEvents': []};
             }
             $ele.swipeAnimation($.extend({
-                'direction': $.fn.swipee.DIRECTIONS.HORIZONTAL,
+                'direction': $.fn.swipey.DIRECTIONS.HORIZONTAL,
                 'threshold': 5,
                 'bounds': function () {
                     var w = this.find('>.tab-pane:first').width(),
-                        noOfTabs = this.find('>.tab-pane').length,
-                        centerVal = -1 * $scope.activeTabIndex * w,
+                        noOfTabs = this.find('>.tab-pane:visible').length,
+                        centerVal,
                         bounds;
 
+                    $scope.activeTabIndex = getActiveTabIndex($scope);
+
+                    centerVal = -1 * $scope.activeTabIndex * w;
                     bounds = {
                         'strict': false,
                         'lower': $scope.activeTabIndex === noOfTabs - 1 ? 0 : -w,
@@ -78,7 +87,8 @@ WM.module('wm.layouts.containers')
                     };
                 },
                 'animation': {
-                    'transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)'
+                    'transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)',
+                    '-webkit-transform': 'translate3d(${{ ($D + $d)/w * 100 + \'%\'}}, 0, 0)'
                 },
                 'onLower': function () {
                     $scope.next();
@@ -156,6 +166,7 @@ WM.module('wm.layouts.containers')
                     var _tab = $scope.activeTab,
                         i,
                         tabContent,
+                        $childEls,
                         tabs = $scope.tabs;
                     if (!tab) {
                         return;
@@ -184,7 +195,8 @@ WM.module('wm.layouts.containers')
 
                         // add left position only when element is not having swipe.
                         if ($element.hasClass('has-transition')) {
-                            setTabsLeftPosition(tab.tabId, $scope.tabs.length, tabContent);
+                            $childEls = tabContent.find('>.tab-pane').not('.ng-hide');
+                            setTabsLeftPosition(getActiveTabIndex($scope), $childEls.length, tabContent);
                         }
 
                         tab._animateIn();
@@ -200,7 +212,7 @@ WM.module('wm.layouts.containers')
                 // This function assigns the width and transform values on the tab content.
                 this.setTabsLeftAndWidth = function (activeIndex) {
                     var content = $element.find(' > .tab-content'),
-                        $childEls = content.find('>.tab-pane'),
+                        $childEls = content.find('>.tab-pane').not('.ng-hide'),
                         noOfTabs = $childEls.length;
 
                     // set width on the tab-content
@@ -296,7 +308,17 @@ WM.module('wm.layouts.containers')
                      */
                     /*method exposed to move to next tab from current active tab*/
                     scope.next = function (onBeforeSwitchTab) {
-                        selectTab(tabs[scope.activeTabIndex + 1], onBeforeSwitchTab);
+                        var nextIndex = scope.activeTabIndex + 1,
+                            nextTab = tabs[nextIndex];
+
+                        // Check if nextTab is hidden, if hidden then select the next upper index
+                        if (nextTab) {
+                            while (!nextTab.show) {
+                                nextIndex = nextIndex + 1;
+                                nextTab = tabs[nextIndex];
+                            }
+                        }
+                        selectTab(nextTab, onBeforeSwitchTab);
                     };
 
                     /**
@@ -313,7 +335,17 @@ WM.module('wm.layouts.containers')
                      */
                     /*method exposed to move to previous tab from current active tab*/
                     scope.previous = function (onBeforeSwitchTab) {
-                        selectTab(tabs[scope.activeTabIndex - 1], onBeforeSwitchTab);
+                        var prevIndex = scope.activeTabIndex - 1,
+                            prevTab = tabs[prevIndex];
+
+                        // Check if prevTab is hidden, if hidden then select the next lower index
+                        if (prevTab) {
+                            while (!prevTab.show) {
+                                prevIndex = prevIndex - 1;
+                                prevTab = tabs[prevIndex];
+                            }
+                        }
+                        selectTab(prevTab, onBeforeSwitchTab);
                     };
                     /**
                      * @ngdoc function
@@ -398,7 +430,7 @@ WM.module('wm.layouts.containers')
                         // Adding swipe on tabs content
                         if (element.hasClass('has-transition')) {
                             scope.setTabsLeftAndWidth(scope.defaultpaneindex);
-                            addSwipee(scope, content);
+                            addSwipey(scope, content);
                         }
                     }
 
@@ -459,6 +491,8 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
 
                         scope.$lazyLoad = WM.noop;
+
+                        element.removeAttr('title');
                     },
                     'post': function (scope, element, attrs, ctrl) {
 

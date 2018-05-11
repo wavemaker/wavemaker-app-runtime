@@ -11,6 +11,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.wavemaker.runtime.data.annotations.TableTemporal;
 import com.wavemaker.runtime.data.dao.generators.TemporalQueryGenerator;
+import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.model.TemporalHistoryEntity;
 import com.wavemaker.runtime.data.periods.PeriodClause;
 import com.wavemaker.runtime.data.util.HqlQueryBuilder;
@@ -21,11 +22,10 @@ import com.wavemaker.runtime.data.util.Mappers;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 3/1/18
  */
-public abstract class WMGenericTemporalDaoImpl<Entity extends Serializable, Identifier extends Serializable>
-        extends WMGenericDaoImpl<Entity, Identifier>
-        implements WMGenericTemporalDao<Entity, Identifier> {
+public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends Serializable>
+        extends WMGenericDaoImpl<E, I> implements WMGenericTemporalDao<E, I> {
 
-    private Class<TemporalHistoryEntity<Entity>> historyClass;
+    private Class<TemporalHistoryEntity<E>> historyClass;
 
     @SuppressWarnings("unchecked")
     @PostConstruct
@@ -43,24 +43,27 @@ public abstract class WMGenericTemporalDaoImpl<Entity extends Serializable, Iden
                 queryGenerator = new TemporalQueryGenerator<>(queryGenerator, TableTemporal.TemporalType.APPLICATION);
             }
 
-            historyClass = (Class<TemporalHistoryEntity<Entity>>) temporal.historyClass();
+            historyClass = (Class<TemporalHistoryEntity<E>>) temporal.historyClass();
         }
     }
 
     protected abstract HibernateTemplate getHistoryTemplate();
 
     @Override
-    public Page<Entity> findHistory(
+    public Page<E> findHistory(
             final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+
+        sortValidator.validate(validPageable, historyClass);
 
         final HqlQueryBuilder builder = HqlQueryBuilder.newBuilder(historyClass)
                 .withFilter(query);
         periodClauses.forEach(builder::withPeriodClause);
 
-        final Page<TemporalHistoryEntity<Entity>> responsePage = HqlQueryHelper
-                .execute(getHistoryTemplate(), historyClass, builder, pageable);
+        final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
+                .execute(getHistoryTemplate(), historyClass, builder, validPageable);
 
-        return Mappers.map(responsePage, pageable, TemporalHistoryEntity::asParent);
+        return Mappers.map(responsePage, validPageable, TemporalHistoryEntity::asParent);
     }
 
 }

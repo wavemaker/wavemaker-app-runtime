@@ -338,8 +338,33 @@ Application
                         return _.join(params, '&');
                     }
 
-                    SecurityService.getConfig(function (config) {
+                    function handleSSOLogin(config) {
                         var pageParams;
+                        // do not provide redirectTo page if fetching HOME page resulted 401
+                        // on app load, by default Home page is loaded
+                        page = getRedirectPage(config);
+                        page = page ? '?redirectPage=' + encodeURIComponent(page) : '';
+                        pageParams = getQueryString($location.search());
+                        pageParams = pageParams ? '?' + encodeURIComponent(pageParams) : '';
+                        //showing a redirecting message
+                        document.body.textContent = 'Redirecting to sso login...';
+                        //appending redirect to page and page params
+                        ssoUrl = $rs.project.deployedUrl + SSO_URL + page + pageParams;
+                        /*
+                         * remove iFrame when redirected to IdP login page.
+                         * this is being done as IDPs do not allow to get themselves loaded into iFrames.
+                         * remove-toolbar has been assigned with a window name WM_PREVIEW_WINDOW, check if the iframe is our toolbar related and
+                         * safely change the location of the parent toolbar with current url.
+                         */
+                        if ($window.self !== $window.top && $window.parent.name === PREVIEW_WINDOW_NAME) {
+                            $window.parent.location.href = $window.self.location.href;
+                            $window.parent.name = '';
+                        } else {
+                            $window.location.href = ssoUrl;
+                        }
+                    }
+
+                    SecurityService.getConfig(function (config) {
                         loginConfig = config.loginConfig;
                         // if user found, 401 was thrown after session time
                         if (config.userInfo && config.userInfo.userName) {
@@ -348,19 +373,25 @@ Application
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
                             Utils.triggerFn($rs.onSessionTimeout);
                             $rs.$emit('on-sessionTimeout');
-                            if (sessionTimeoutMethod === LOGIN_METHOD.DIALOG) {
+                            switch (sessionTimeoutMethod) {
+                            case LOGIN_METHOD.DIALOG:
                                 if (page) {
                                     BaseService.pushToErrorCallStack(null, function () {
                                         _load(page, onSuccess, onError);
                                     }, WM.noop);
                                 }
                                 showLoginDialog();
-                            } else if (sessionTimeoutMethod === LOGIN_METHOD.PAGE) {
+                                break;
+                            case LOGIN_METHOD.PAGE:
                                 if (!page) {
                                     page = $location.path().replace('/', '');
                                 }
                                 $location.path(sessionTimeoutConfig.pageName);
                                 $location.search('redirectTo', page);
+                                break;
+                            case LOGIN_METHOD.SSO:
+                                handleSSOLogin(config);
+                                break;
                             }
                         } else {
                             // if no user found, 401 was thrown for first time login
@@ -385,28 +416,7 @@ Application
                                 $location.search('redirectTo', page);
                                 break;
                             case LOGIN_METHOD.SSO:
-                                // do not provide redirectTo page if fetching HOME page resulted 401
-                                // on app load, by default Home page is loaded
-                                page = getRedirectPage(config);
-                                page = page ? '?redirectPage=' + encodeURIComponent(page) : '';
-                                pageParams = getQueryString($location.search());
-                                pageParams = pageParams ? '?' + encodeURIComponent(pageParams) : '';
-                                //showing a redirecting message
-                                document.body.textContent = 'Redirecting to sso login...';
-                                //appending redirect to page and page params
-                                ssoUrl = $rs.project.deployedUrl + SSO_URL + page + pageParams;
-                                /*
-                                 * remove iFrame when redirected to IdP login page.
-                                 * this is being done as IDPs do not allow to get themselves loaded into iFrames.
-                                 * remove-toolbar has been assigned with a window name WM_PREVIEW_WINDOW, check if the iframe is our toolbar related and
-                                 * safely change the location of the parent toolbar with current url.
-                                 */
-                                if ($window.self !== $window.top && $window.parent.name === PREVIEW_WINDOW_NAME) {
-                                    $window.parent.location.href = $window.self.location.href;
-                                    $window.parent.name = '';
-                                } else {
-                                    $window.location.href = ssoUrl;
-                                }
+                                handleSSOLogin(config);
                                 break;
                             }
                         }

@@ -991,41 +991,6 @@ WM.module('wm.widgets.form')
                 }, 50));
             }
 
-
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#updatePropertyOptionsWithParams
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
-             * This function updates the property options for searchkey, in case of query service variable these options are
-             * updated by the input query params that query service variable is expecting.
-             *
-             * @param {$is} isolate scope of the widget
-             */
-            function updatePropertyOptionsWithParams($is) {
-                var isBoundVariable      = Utils.stringStartsWith($is.binddataset, 'bind:Variables.'),
-                    parts                = _.split($is.binddataset, /\W/),
-                    variable             = isBoundVariable && Variables.getVariableByName(parts[2]),
-                    queryParams          = [],
-                    searchOptions        = [];
-
-                if (variable && variable.category === 'wm.ServiceVariable') {
-                    $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
-                        queryParams = serviceOperationInfo.parameters;
-                    });
-                    queryParams = Variables.getMappedServiceQueryParams(queryParams);
-                    // don't update search options if there is no query service param
-                    if (queryParams && queryParams.length > 0) {
-                        searchOptions = _.map(queryParams, function (value) {
-                            return value;
-                        });
-                        _.set($is.widgetProps, 'searchkey.options', searchOptions);
-                    }
-                }
-            }
-
             //Format the date with given date format
             function filterDate(value, format, defaultFormat) {
                 if (format === 'timestamp') { //For timestamp format, return the epoch value
@@ -1279,7 +1244,6 @@ WM.module('wm.widgets.form')
             this.getSortedGroupedData            = getSortedGroupedData;
             this.getGroupDataFieldName           = getGroupDataFieldName;
             this.showOrHideMatchProperty         = showOrHideMatchProperty;
-            this.updatePropertyOptionsWithParams = updatePropertyOptionsWithParams;
             this.getSelectedObjFromDisplayOptions = getSelectedObjFromDisplayOptions;
         }
     ])

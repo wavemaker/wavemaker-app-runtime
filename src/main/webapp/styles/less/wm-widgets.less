@@ -2115,6 +2115,15 @@ If the height and width are not specified the video takes the height of the post
             }
           }
         }
+        //IE11 issue with navigation on pseudo classes
+        &.disabled a {
+          &[disabled] {
+            pointer-events: none;
+            &:before {
+              display: inline-block;
+            }
+          }
+        }
       }
       .pagination-prev, .pagination-next, .pagination-first, .pagination-last {
         a {
@@ -3545,6 +3554,45 @@ If the height and width are not specified the video takes the height of the post
         height: 100%;
         display: inline-block;
         vertical-align: middle;
+      }
+    }
+  }
+}
+
+.wm-app .app-global-progress-bar{
+  &.modal {
+    background: rgba(0, 0, 0, 0.5);
+    display: table;
+    width: 100%;
+    height: 100%;
+  }
+  .app-dialog {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+    padding: 10px;
+    .modal-content{
+      padding: 0;
+      max-width: 300pt;
+      margin: 0 auto;
+      .instance-list .instance-list-item {
+        border-bottom : 1px solid #ddd;
+        padding: 5px 10px;
+      }
+      .instance-list .instance-list-item:last-child{
+        border-bottom-width : 0;
+      }
+      .app-global-progress-bar-progress-label-col{
+        text-align: right;
+      }
+      .app-global-progress-bar-progress-label{
+        color: #aaa;
+      }
+      .app-progress {
+        margin : 0;
+      }
+      .stop-btn {
+        margin-top: 5px;
       }
     }
   }

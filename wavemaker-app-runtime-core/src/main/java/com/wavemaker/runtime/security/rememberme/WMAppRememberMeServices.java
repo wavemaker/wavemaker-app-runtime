@@ -24,6 +24,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
-import org.springframework.util.StringUtils;
 
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
@@ -66,34 +66,13 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
             String[] cookieTokens, HttpServletRequest request,
             HttpServletResponse response) {
 
-        if (cookieTokens.length != 3) {
-            throw new InvalidCookieException("Cookie token did not contain 3" +
-                    " tokens, but contained '" + Arrays.asList(cookieTokens) + "'");
-        }
-
-        long tokenExpiryTime;
-
-        try {
-            tokenExpiryTime = new Long(cookieTokens[1]);
-        } catch (NumberFormatException nfe) {
-            throw new InvalidCookieException("Cookie token[1] did not contain a valid number (contained '" +
-                    cookieTokens[1] + "')");
-        }
-
-        if (isTokenExpired(tokenExpiryTime)) {
-            throw new InvalidCookieException("Cookie token[1] has expired (expired on '"
-                    + new Date(tokenExpiryTime) + "'; current time is '" + new Date() + "')");
-        }
-
-
-        final String username = cookieTokens[0];
-        final String userSignature = cookieTokens[2];
-        final UserDetails userDetails = userDetailsCache.getAuthentication(new UniqueUserId(username, userSignature));
+        UniqueUserId uniqueUserId = getUniqueUserId(cookieTokens);
+        final UserDetails userDetails = userDetailsCache.getAuthentication(uniqueUserId);
 
         if (userDetails == null) {
             throw new InvalidCookieException(
-                    "Could not find user details with Cookie token[2] contained signature '" + userSignature
-                            + "' and ' user name " + username);
+                    "Could not find user details with Cookie token[2] contained signature '" + uniqueUserId.getUserSignature()
+                            + "' and ' user name " + uniqueUserId.getUsername());
         }
         return userDetails;
     }
@@ -133,7 +112,7 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
         if (rememberMeEnabled()) {
             String username = retrieveUserName(successfulAuthentication);
 
-            if (!StringUtils.hasLength(username)) {
+            if (!StringUtils.isNotEmpty(username)) {
                 logger.debug("Unable to retrieve username");
                 return;
             }
@@ -155,6 +134,17 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
                 logger.debug("Added remember-me cookie for user '" + username + "', expiry: '"
                         + new Date(expiryTime) + "'");
             }
+        }
+    }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        super.logout(request, response, authentication);
+        String rememberMeCookie = extractRememberMeCookie(request);
+        if (StringUtils.isNotBlank(rememberMeCookie)) {
+            String[] cookieTokens = decodeCookie(rememberMeCookie);
+            UniqueUserId uniqueUserId = getUniqueUserId(cookieTokens);
+            userDetailsCache.removeAuthentication(uniqueUserId);
         }
     }
 
@@ -182,6 +172,32 @@ public class WMAppRememberMeServices extends AbstractWMRememberMeServices {
 
     private boolean isInstanceOfUserDetails(Authentication authentication) {
         return authentication.getPrincipal() instanceof UserDetails;
+    }
+
+    private UniqueUserId getUniqueUserId(String[] cookieTokens) {
+        if (cookieTokens.length != 3) {
+            throw new InvalidCookieException("Cookie token did not contain 3" +
+                    " tokens, but contained '" + Arrays.asList(cookieTokens) + "'");
+        }
+
+        long tokenExpiryTime;
+
+        try {
+            tokenExpiryTime = new Long(cookieTokens[1]);
+        } catch (NumberFormatException nfe) {
+            throw new InvalidCookieException("Cookie token[1] did not contain a valid number (contained '" +
+                    cookieTokens[1] + "')");
+        }
+
+        if (isTokenExpired(tokenExpiryTime)) {
+            throw new InvalidCookieException("Cookie token[1] has expired (expired on '"
+                    + new Date(tokenExpiryTime) + "'; current time is '" + new Date() + "')");
+        }
+
+
+        final String username = cookieTokens[0];
+        final String userSignature = cookieTokens[2];
+        return new UniqueUserId(username, userSignature);
     }
 
     static class UniqueUserId {

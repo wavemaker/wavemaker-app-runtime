@@ -315,6 +315,7 @@ WM.module('wm.layouts.containers')
                 'link'      : {
                     'pre': function ($is, $el, attrs) {
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                        $el.removeAttr('title');
                     },
                     'post': function ($is, $el, attrs, ctrl) {
                         var $parentElement = $el.parent().closest('.app-wizard'),

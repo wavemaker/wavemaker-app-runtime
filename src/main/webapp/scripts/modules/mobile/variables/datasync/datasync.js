@@ -1,6 +1,6 @@
 /*global WM, _, window*/
-WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariableService', 'LocalDBDataPullService', 'NetworkService', 'SecurityService', 'VARIABLE_CONSTANTS',
-    function ($rootScope, ChangeLogService, DeviceVariableService, LocalDBDataPullService, NetworkService, SecurityService, VARIABLE_CONSTANTS) {
+WM.module('wm.variables').run(['$q', '$rootScope', 'ChangeLogService', 'DeviceVariableService', 'FileSelectorService', 'LocalDBDataPullService', 'LocalDBManager', 'NetworkService', 'ProgressBarService', 'SecurityService', 'VARIABLE_CONSTANTS',
+    function ($q, $rootScope, ChangeLogService, DeviceVariableService, FileSelectorService, LocalDBDataPullService, LocalDBManager, NetworkService, ProgressBarService, SecurityService, VARIABLE_CONSTANTS) {
         "use strict";
         var operations,
             dataChangeTemplate = {
@@ -33,7 +33,10 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     'errorMessage' : ''
                 }]
             },
-            OFFLINE_PLUGIN_NOT_FOUND = 'Offline DB Plugin is required, but missing.';
+            OFFLINE_PLUGIN_NOT_FOUND = 'Offline DB Plugin is required, but missing.',
+            APP_IS_OFFLINE = 'App is offline.',
+            ON_BEFORE_BLOCKED = 'onBefore callback returned false.',
+            REQUIRED_PLUGINS = ['OFFLINE_DB', 'NETWORK'];
 
         function generateChangeSet(changes) {
             var createChanges =  _.filter(changes, function (c) {
@@ -66,6 +69,23 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
             });
         }
 
+        function canExecute(variable) {
+            if (!window.SQLitePlugin) {
+                return $q.reject(OFFLINE_PLUGIN_NOT_FOUND);
+            }
+            if (!NetworkService.isConnected()) {
+                return $q.reject(APP_IS_OFFLINE);
+            }
+            return DeviceVariableService.initiateCallback('onBefore', variable)
+                .then(function (proceed) {
+                    if (proceed === false) {
+                        return $q.reject(ON_BEFORE_BLOCKED);
+                    }
+                    // If user is authenticated and online, then start the data pull process.
+                    return SecurityService.onUserLogin();
+                });
+        }
+
         /**
          * This function adds the old properties to the push dataSet to support old projects.
          * @param data
@@ -92,33 +112,42 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "startUpdate", "type": "boolean", "hide" : false},
                     {"target": "onBefore", "hide" : false},
                     {"target": "onProgress", "hide" : false},
-                    {"target": "spinnerContext", "hide" : false},
-                    {"target": "spinnerMessage", "hide" : false}
+                    {"target": "showProgress", "hide": false}
                 ],
-                requiredCordovaPlugins: [],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
                 invoke: function (variable, options, success, error) {
-                    if (window.SQLitePlugin) {
-                        // If user is authenticated and online, then start the data pull process.
-                        SecurityService.onUserLogin()
-                            .then(function () {
-                                var clearData = variable.clearData === "true" || variable.clearData === true;
-                                if (NetworkService.isConnected()) {
-                                    DeviceVariableService.initiateCallback('onBefore', variable).then(function (proceed) {
-                                        if (proceed !== false) {
-                                            $rootScope.$emit('toggle-variable-state', variable, true);
-                                            LocalDBDataPullService.pullAllDbData(clearData).then(success, error, function (progress) {
-                                                variable.dataSet = progress;
-                                                DeviceVariableService.initiateCallback('onProgress', variable, progress);
-                                            }).finally(function () {
-                                                $rootScope.$emit('toggle-variable-state', variable, false);
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                    } else {
-                        error(OFFLINE_PLUGIN_NOT_FOUND);
-                    }
+                    var progressInstance;
+                    canExecute(variable)
+                        .then(function () {
+                            if (variable.showProgress) {
+                                return ProgressBarService.createInstance($rootScope.appLocale.LABEL_DATA_PULL_PROGRESS);
+                            }
+                        }).then(function (instance) {
+                            var clearData = variable.clearData === "true" || variable.clearData === true,
+                                pullPromise;
+                            progressInstance = instance;
+                            $rootScope.$emit('toggle-variable-state', variable, true);
+                            pullPromise = LocalDBDataPullService.pullAllDbData(clearData);
+                            if (progressInstance) {
+                                progressInstance.set('stopButtonLabel', $rootScope.appLocale.LABEL_DATA_PULL_PROGRESS_STOP_BTN);
+                                progressInstance.set('onStop', function () {
+                                    LocalDBDataPullService.cancel(pullPromise);
+                                });
+                            }
+                            return pullPromise;
+                        }).then(success, error, function (progress) {
+                            variable.dataSet = progress;
+                            DeviceVariableService.initiateCallback('onProgress', variable, progress);
+                            if (progressInstance) {
+                                progressInstance.set('max', progress.pullInfo.totalRecordsToPull);
+                                progressInstance.set('value', progress.pullInfo.totalPulledRecordCount);
+                            }
+                        }).finally(function () {
+                            $rootScope.$emit('toggle-variable-state', variable, false);
+                            if (progressInstance) {
+                                progressInstance.destroy();
+                            }
+                        });
                 }
             },
             lastPullInfo : {
@@ -141,7 +170,7 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "spinnerContext", "hide" : false},
                     {"target": "spinnerMessage", "hide" : false}
                 ],
-                requiredCordovaPlugins: [],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
                         $rootScope.$emit('toggle-variable-state', variable, true);
@@ -165,36 +194,57 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                 properties : [
                     {"target": "onBefore", "hide" : false},
                     {"target": "onProgress", "hide" : false},
-                    {"target": "spinnerContext", "hide" : false},
-                    {"target": "spinnerMessage", "hide" : false}
+                    {"target": "showProgress", "hide": false, "value": true}
                 ],
-                requiredCordovaPlugins: [],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
                 invoke: function (variable, options, success, error) {
-                    if (window.SQLitePlugin) {
-                        // If user is authenticated and online, then start the data push process.
-                        SecurityService.onUserLogin()
-                            .then(getOfflineChanges)
-                            .then(function (changes) {
-                                if (NetworkService.isConnected() && changes.pendingToSync.total > 0) {
-                                    DeviceVariableService.initiateCallback('onBefore', variable, changes).then(function (proceed) {
-                                        if (proceed !== false) {
-                                            $rootScope.$emit('toggle-variable-state', variable, true);
-                                            ChangeLogService.flush(function (stats) {
-                                                var eventName = stats.error > 0 ? 'onError' : 'onSuccess';
-                                                variable.dataSet = addOldPropertiesForPushData(stats);
-                                                $rootScope.$emit('toggle-variable-state', variable, false);
-                                                DeviceVariableService.initiateCallback(eventName, variable, stats);
-                                            }, function (stats) {
-                                                variable.dataSet = addOldPropertiesForPushData(stats);
-                                                DeviceVariableService.initiateCallback('onProgress', variable, stats);
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                    } else {
-                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    var progressInstance;
+                    if (ChangeLogService.isFlushInProgress()) {
+                        success();
+                        return;
                     }
+                    canExecute(variable)
+                        .then(function () {
+                            return getOfflineChanges();
+                        }).then(function (changes) {
+                            if (changes.pendingToSync.total <= 0) {
+                                return $q.reject();
+                            }
+                        }).then(function () {
+                            if (variable.showProgress) {
+                                return ProgressBarService.createInstance($rootScope.appLocale.LABEL_DATA_PUSH_PROGRESS);
+                            }
+                        }).then(function (instance) {
+                            var pushPromise = ChangeLogService.flush();
+                            $rootScope.$emit('toggle-variable-state', variable, true);
+                            if (instance) {
+                                progressInstance = instance;
+                                progressInstance.set('stopButtonLabel', $rootScope.appLocale.LABEL_DATA_PUSH_PROGRESS_STOP_BTN);
+                                progressInstance.set('onStop', function () {
+                                    ChangeLogService.stop();
+                                });
+                            }
+                            return pushPromise;
+                        }).then(function (stats) {
+                            success(stats);
+                            return stats;
+                        }, function (stats) {
+                            error(stats);
+                            return stats;
+                        }, function (stats) {
+                            variable.dataSet = addOldPropertiesForPushData(stats);
+                            DeviceVariableService.initiateCallback('onProgress', variable, stats);
+                            if (progressInstance) {
+                                progressInstance.set('max', stats.totalTaskCount);
+                                progressInstance.set('value', stats.completedTaskCount);
+                            }
+                        }).finally(function (stats) {
+                            variable.dataSet = addOldPropertiesForPushData(stats);
+                            $rootScope.$emit('toggle-variable-state', variable, false);
+                            if (progressInstance) {
+                                progressInstance.destroy();
+                            }
+                        });
                 }
             },
             lastPushInfo : {
@@ -212,7 +262,7 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "spinnerContext", "hide" : false},
                     {"target": "spinnerMessage", "hide" : false}
                 ],
-                requiredCordovaPlugins: [],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
                         $rootScope.$emit('toggle-variable-state', variable, true);
@@ -234,10 +284,63 @@ WM.module('wm.variables').run(['$rootScope', 'ChangeLogService', 'DeviceVariable
                     {"target": "startUpdate", "type": "boolean", "value": true, "hide" : true},
                     {"target": "autoUpdate", "type": "boolean", "value": true, "hide" : true}
                 ],
-                requiredCordovaPlugins: [],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
                 invoke: function (variable, options, success, error) {
                     if (window.SQLitePlugin) {
                         getOfflineChanges().then(success, error);
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
+                }
+            },
+            exportDB : {
+                model: {
+                    'path' : ''
+                },
+                properties : [
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
+                ],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
+                invoke: function (variable, options, success, error) {
+                    if (window.SQLitePlugin) {
+                        $rootScope.$emit('toggle-variable-state', variable, true);
+                        LocalDBManager.exportDB()
+                            .then(function (path) {
+                                variable.dataSet = {
+                                    'path' : path
+                                };
+                                success();
+                            }, error)
+                            .finally(function () {
+                                $rootScope.$emit('toggle-variable-state', variable, false);
+                            });
+                    } else {
+                        error(OFFLINE_PLUGIN_NOT_FOUND);
+                    }
+                }
+            },
+            importDB : {
+                model: {},
+                properties : [
+                    {"target": "spinnerContext", "hide" : false},
+                    {"target": "spinnerMessage", "hide" : false}
+                ],
+                requiredCordovaPlugins: REQUIRED_PLUGINS,
+                invoke: function (variable, options, success, error) {
+                    if (window.SQLitePlugin) {
+                        FileSelectorService.open({'type' : 'zip'}, function (files) {
+                            if (files && files.length) {
+                                $rootScope.$emit('toggle-variable-state', variable, true);
+                                LocalDBManager.importDB(files[0].path, true)
+                                    .then(function () {
+                                        success();
+                                    }, error)
+                                    .finally(function () {
+                                        $rootScope.$emit('toggle-variable-state', variable, false);
+                                    });
+                            }
+                        });
                     } else {
                         error(OFFLINE_PLUGIN_NOT_FOUND);
                     }

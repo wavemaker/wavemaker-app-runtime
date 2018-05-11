@@ -6,11 +6,13 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd">
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/util
+                http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="config.xml"/>
-    <import resource="servicetypes.xml"/>
     <import resource="springapp-mvc.xml"/>
     
     <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext" lazy-init="false"/>
@@ -42,6 +44,8 @@
             </map>
         </property>
     </bean>
+
+    <bean id="gzipCompressionFilter" class="com.wavemaker.runtime.filter.gzip.GZipCompressionFilter"/>
 
     <bean id="wmRequestFilter" class="com.wavemaker.runtime.web.filter.WMRequestFilter"/>
 
@@ -112,6 +116,14 @@
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
+
+    <bean id="gzipFilterConfig" class="com.wavemaker.runtime.filter.gzip.GZipFilterConfig">
+        <property name="enableGZipCompression" value="${app.web.compression.enabled}"/>
+        <property name="minCompressSize" value="${app.web.compression.minsize}"/>
+        <property name="includeMimeTypes" value="${app.web.compression.mimetypes.includePatterns}"/>
+        <property name="excludeMimeTypes" value="${app.web.compression.mimetypes.excludePatterns}"/>
+    </bean>
+
 
     <bean id="serverVariableValueProvider" class="com.wavemaker.runtime.system.ServerVariableValueProvider"/>
 

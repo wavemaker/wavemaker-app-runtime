@@ -1,4 +1,4 @@
-/*global wm, WM, _, window, moment*/
+/*global wm, WM, _, window, moment, Zeep*/
 /*jslint sub: true, unparam:true*/
 
 /**
@@ -8,6 +8,7 @@
  * The 'wm.plugins.database.services.$LocalDBManager' manages local Database.
  */
 wm.plugins.database.services.LocalDBManager = [
+    '$cordovaAppVersion',
     '$cordovaFile',
     '$cordovaSQLite',
     '$q',
@@ -22,7 +23,8 @@ wm.plugins.database.services.LocalDBManager = [
     'SecurityService',
     '$timeout',
     'Utils',
-    function ($cordovaFile,
+    function ($cordovaAppVersion,
+              $cordovaFile,
               $cordovaSQLite,
               $q,
               $rootScope,
@@ -43,7 +45,8 @@ wm.plugins.database.services.LocalDBManager = [
             dbInstallDirectory,
             dbInstallDirectoryName,
             databases,
-            systemProperties;
+            systemProperties,
+            callbacks = [];
         systemProperties = {
             'USER_ID' : {
                 'name' : 'USER_ID',
@@ -260,9 +263,12 @@ wm.plugins.database.services.LocalDBManager = [
                             'variableType' : paramObj.variableType
                         };
                     });
+                    _.forEach(params, function (p) {
+                        query = _.replace(query, ':' + p.name, '?');
+                    });
                     queries[queryData.name] = {
                         name: queryData.name,
-                        query: query.replace(/:[a-zA-Z0-9]+\s?/g, '? '),
+                        query: query,
                         params: params,
                         response : {
                             properties: _.map(queryData.response.properties, function (p) {
@@ -414,6 +420,17 @@ wm.plugins.database.services.LocalDBManager = [
         }
 
         /**
+         * Returns the timestamp when the seed db is created
+         * @returns {*}
+         */
+        function getDBSeedCreationTime() {
+            return $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', "config.json")
+                .then(function (appConfig) {
+                    return JSON.parse(appConfig).buildTime;
+                });
+        }
+
+        /**
          * When app is opened for first time  after a fresh install or update, then old databases are removed and 
          * new databases are created using bundled databases.
          *
@@ -421,20 +438,18 @@ wm.plugins.database.services.LocalDBManager = [
          * if existing databases are being used.
          */
         function setupDatabases() {
-            var appInfo, currentBuildTime;
-            return $cordovaFile.readAsText(cordova.file.applicationDirectory + 'www', "config.json")
-                .then(function (appConfig) {
-                    currentBuildTime = JSON.parse(appConfig).buildTime;
-                }).then(function () {
+            var appInfo;
+            return getDBSeedCreationTime()
+                .then(function (dbSeedCreationTime) {
                     return $cordovaFile.readAsText(cordova.file.dataDirectory, "app.info")
                         .then(function (content) {
                             appInfo = JSON.parse(content);
                         }, WM.noop)
                         .then(function () {
-                            if (!appInfo || appInfo.createdOn < currentBuildTime) {
+                            if (!appInfo || appInfo.createdOn < dbSeedCreationTime) {
                                 return cleanAndCopyDatabases().then(function () {
                                     appInfo = appInfo || {};
-                                    appInfo.createdOn = currentBuildTime || _.now();
+                                    appInfo.createdOn = dbSeedCreationTime || _.now();
                                     return $cordovaFile.writeFile(cordova.file.dataDirectory, "app.info", JSON.stringify(appInfo), true);
                                 }).then(function () {
                                     return true;
@@ -505,10 +520,32 @@ wm.plugins.database.services.LocalDBManager = [
             var closePromises = [];
             _.forEach(databases, function (database) {
                 var defer = $q.defer();
-                database.connection.close(defer.resolve, defer.reject);
+                database.connection.close(defer.resolve, defer.resolve);
                 closePromises.push(defer.promise);
             });
             return $q.all(closePromises);
+        }
+
+        /**
+         * Returns a promise that is resolved with application info such as packageName, appName, versionNumber, versionCode.
+         * @returns {*}
+         */
+        function getAppInfo() {
+            var appInfo = {};
+            return $cordovaAppVersion.getPackageName()
+                .then(function (packageName) {
+                    appInfo.packageName = packageName;
+                    return $cordovaAppVersion.getAppName();
+                }).then(function (appName) {
+                    appInfo.name = appName;
+                    return $cordovaAppVersion.getVersionNumber();
+                }).then(function (versionNumber) {
+                    appInfo.versionNumber = versionNumber;
+                    return $cordovaAppVersion.getVersionCode();
+                }).then(function (versionCode) {
+                    appInfo.versionCode = versionCode;
+                    return appInfo;
+                });
         }
 
         /**
@@ -568,6 +605,16 @@ wm.plugins.database.services.LocalDBManager = [
                         if (newDatabasesCreated) {
                             normalizeData().then(function () {
                                 return disableForeignKeys();
+                            }).then(function () {
+                                return getDBSeedCreationTime();
+                            }).then(function (dbSeedCreationTime) {
+                                //Invoke callbacks
+                                var cbs = _.map(callbacks, "onDbCreate");
+                                return Utils.executeDeferChain(cbs, [{
+                                    'databases' : databases,
+                                    'dbCreatedOn' : _.now(),
+                                    'dbSeedCreatedOn' : dbSeedCreationTime
+                                }]);
                             }).then(function () {
                                 d.resolve(databases);
                             });
@@ -673,7 +720,36 @@ wm.plugins.database.services.LocalDBManager = [
         this.isBundled = function (dataModelName, entityName) {
             var store = this.getStore(dataModelName, entityName);
             if (store) {
-                return store.schema.syncType === 'BUNDLED';
+                return store.schema.pullConfig.pullType === 'BUNDLED';
+            }
+            return false;
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#isOperationAllowed
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @param {string} dataModelName Name of the data model
+         * @param {string} entityName Name of the entity
+         * @param {string} operation Name of the operation (READ, INSERT, UPDATE, DELETE)
+         * @returns {boolean} returns true, if the given operation can be performed as per configuration.
+         */
+        this.isOperationAllowed = function (dataModelName, entityName, operation) {
+            var store = this.getStore(dataModelName, entityName);
+            if (!store) {
+                return false;
+            }
+            if (operation === 'READ') {
+                return store.schema.pushConfig.readEnabled;
+            }
+            if (operation === 'INSERT') {
+                return store.schema.pushConfig.insertEnabled;
+            }
+            if (operation === 'UPDATE') {
+                return store.schema.pushConfig.updateEnabled;
+            }
+            if (operation === 'DELETE') {
+                return store.schema.pushConfig.deleteEnabled;
             }
             return false;
         };
@@ -698,5 +774,183 @@ wm.plugins.database.services.LocalDBManager = [
                 }
             });
             return $q.all(promises);
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#exportDB
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @description
+         * This function will export the databases in a zip format.
+         *
+         * @returns {object} a promise that is resolved when zip is created.
+         */
+        this.exportDB = function () {
+            var folderToExport = 'offline_temp_' + _.now(),
+                folderToExportFullPath = cordova.file.cacheDirectory + folderToExport + '/',
+                zipDirectory,
+                zipFileName = '_offline_data.zip',
+                defer = $q.defer(),
+                metaInfo = {};
+            if (Utils.isIOS()) {
+                //In IOS, save zip to documents directory so that user can export the file from IOS devices using iTUNES.
+                zipDirectory = cordova.file.documentsDirectory;
+            } else {
+                //In Android, save zip to download directory.
+                zipDirectory = cordova.file.externalRootDirectory + 'Download/';
+            }
+            //Create a temporary folder to copy all the content to export
+            $cordovaFile.createDir(cordova.file.cacheDirectory, folderToExport)
+                .then(function () {
+                    //Copy databases to temporary folder for export
+                    return $cordovaFile.copyDir(dbInstallParentDirectory, dbInstallDirectoryName, folderToExportFullPath, 'databases')
+                        .then(function () {
+                            //Prepare meta info to identify the zip and other info
+                            return getAppInfo();
+                        }).then(function (appInfo) {
+                            metaInfo.app = appInfo;
+                            if (Utils.isIOS()) {
+                                metaInfo.OS = 'IOS';
+                            } else if (Utils.isAndroid()) {
+                                metaInfo.OS = 'ANDROID';
+                            }
+                            metaInfo.createdOn = _.now();
+                            return metaInfo;
+                        }).then(function () {
+                            // Invoke preExport callbacks
+                            var cbs = _.map(callbacks, "preExport");
+                            return Utils.executeDeferChain(cbs, [folderToExportFullPath, metaInfo]);
+                        }).then(function () {
+                            // Write meta data to META.json
+                            return $cordovaFile.writeFile(folderToExportFullPath, "META.json", JSON.stringify(metaInfo));
+                        });
+                }).then(function () {
+                    // Prepare name to use for the zip.
+                    var appName = metaInfo.app.name;
+                    appName = appName.replace(/\s+/g, '_');
+                    return DeviceFileService.newFileName(zipDirectory, appName + zipFileName)
+                        .then(function (fileName) {
+                            // Zip the temporary folder for export
+                            var zipDefer = $q.defer();
+                            Zeep.zip({
+                                from : folderToExportFullPath,
+                                to   : zipDirectory + fileName
+                            }, function () {
+                                zipDefer.resolve(zipDirectory + fileName);
+                            }, zipDefer.reject.bind(zipDefer));
+                            return zipDefer.promise;
+                        });
+                }).then(defer.resolve.bind(defer), defer.reject.bind(defer))
+                .finally(function () {
+                    // Remove temporary folder for export
+                    $cordovaFile.removeDir(cordova.file.cacheDirectory, folderToExport);
+                });
+            return defer.promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#importDB
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @description
+         * This function will replace the databases with the files provided in zip. If import gets failed,
+         * then app reverts back to use old databases.
+         *
+         * @param {string} zipPath location of the zip file.
+         * @param {boolean} revertIfFails If true, then a backup is created and when import fails, backup is reverted back.
+         * @returns {object} a promise that is resolved when zip is created.
+         */
+        this.importDB = function (zipPath, revertIfFails) {
+            var importFolder = 'offline_temp_' + _.now(),
+                importFolderFullPath = cordova.file.cacheDirectory + importFolder + '/',
+                defer = $q.defer(),
+                dbManager = this,
+                zipMeta;
+            //Create a temporary folder to unzip the contents of the zip.
+            $cordovaFile.createDir(cordova.file.cacheDirectory, importFolder)
+                .then(function () {
+                    // Unzip to temporary location
+                    var unzipDefer = $q.defer();
+                    Zeep.unzip({
+                        from: zipPath,
+                        to: importFolderFullPath
+                    }, unzipDefer.resolve.bind(unzipDefer), unzipDefer.reject.bind(unzipDefer));
+                    return unzipDefer.promise;
+                }).then(function () {
+                    /*
+                     * read meta data and allow import only package name of the app from which this zip is created
+                     * and the package name of this app are same.
+                     */
+                    return $cordovaFile.readAsText(importFolderFullPath, "META.json").then(function (text) {
+                        zipMeta = JSON.parse(text);
+                        return getAppInfo();
+                    }).then(function (appInfo) {
+                        if (!zipMeta.app) {
+                            return $q.reject('meta information is not found in zip');
+                        }
+                        if (zipMeta.app.packageName !== appInfo.packageName) {
+                            return $q.reject('database zip of app with same package name can only be imported');
+                        }
+                    });
+                }).then(function () {
+                    var backupZip;
+                    return dbManager.close()
+                        .then(function () {
+                            if (revertIfFails) {
+                                //create backup
+                                return dbManager.exportDB()
+                                    .then(function (zipPath) {
+                                        backupZip = zipPath;
+                                    });
+                            }
+                        }).then(function () {
+                            //delete existing databases
+                            return DeviceFileService.removeDir(dbInstallDirectory);
+                        }).then(function () {
+                            //copy imported databases
+                            return $cordovaFile.copyDir(importFolderFullPath, 'databases', dbInstallParentDirectory, dbInstallDirectoryName);
+                        }).then(function () {
+                            //reload databases
+                            databases = null;
+                            return dbManager.loadDatabases();
+                        }).then(function () {
+                            //Invoke callbacks
+                            var cbs = _.map(callbacks, "postImport");
+                            return Utils.executeDeferChain(cbs, [importFolderFullPath, zipMeta]);
+                        }).then(function () {
+                            //Remove backup
+                            if (backupZip) {
+                                return DeviceFileService.removeFile(backupZip);
+                            }
+                        }, function () {
+                            //When import is failed, then revert to old databases
+                            var reject = $q.reject.bind($q);
+                            if (backupZip) {
+                                return dbManager.importDB(backupZip)
+                                    .then(function () {
+                                        DeviceFileService.removeFile(backupZip);
+                                        reject();
+                                    }, reject);
+                            }
+                            return reject();
+                        });
+                }).then(defer.resolve.bind(defer), defer.reject.bind(defer))
+                .finally(function () {
+                    $cordovaFile.removeDir(cordova.file.cacheDirectory, importFolder);
+                });
+            return defer.promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name wm.plugins.database.services.$LocalDBManager#registerCallback
+         * @methodOf wm.plugins.database.services.$LocalDBManager
+         * @description
+         * using this function one can listen events such as 'preExport' and 'postImport'.
+         *
+         * @param {object} listeners an object with functions mapped to event names.
+         */
+        this.registerCallback = function (listeners) {
+            callbacks.push(listeners);
         };
     }];

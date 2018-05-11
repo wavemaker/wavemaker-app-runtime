@@ -10,6 +10,7 @@ WM.module('wm.layouts.containers')
                 'scopedataset': true,
                 'itemchildren': true,
                 'itemicon': true,
+                'itemclass': true,
                 'itemlabel': true,
                 'itemlink': true,
                 'itemid': true
@@ -58,13 +59,19 @@ WM.module('wm.layouts.containers')
          * @returns {Array} : return the node array which is used to construct the breadcrumb.
          */
         function constructNodes(scope, newVal) {
-            var nodes = [];
+            var nodes = [],
+                iconField     = scope.itemicon     || 'icon',
+                labelField    = scope.itemlabel    || 'label',
+                linkField     = scope.itemlink     || 'link',
+                classField    = scope.itemclass    || 'class',
+                itemIdField   = scope.itemid       || 'itemid';
             _.forEach(newVal, function (item) {
                 nodes.push({
-                    'id'       : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemid'})    || item.itemid,
-                    'link'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})  || item.link,
-                    'icon'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})  || item.icon,
-                    'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label
+                    'id'       : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemid'})    || item[itemIdField],
+                    'link'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})  || item[linkField],
+                    'icon'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})  || item[iconField],
+                    'class'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'}) || item[classField],
+                    'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item[labelField]
                 });
             });
             return nodes;
@@ -92,6 +99,7 @@ WM.module('wm.layouts.containers')
                     nodes = [{
                         'label'     : newVal[scope.itemlabel  || "label"],
                         'icon'      : newVal[scope.itemicon   || "icon"],
+                        'class'     : newVal[scope.itemclass  || "class"],
                         'link'      : newVal[scope.itemlink   || "link"],
                         'id'        : newVal[scope.itemid     || "itemid"]
                     }];
@@ -108,6 +116,7 @@ WM.module('wm.layouts.containers')
                 dataset = newVal;
                 //break statement is intentionally removed for the flow
             case 'itemicon':
+            case 'itemclass':
             case 'itemlabel':
             case 'itemlink':
             case 'itemid':
@@ -127,7 +136,7 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template':
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
-                    '<li ng-repeat="item in nodes track by $index" ng-class="{\'active\':$last}">' +
+                    '<li ng-repeat="item in nodes track by $index" ng-class="[item.class, {\'active\':$last}]">' +
                         '<i class="{{item.icon}}"></i> ' +
                         '<a title="{{item.label}}" href="javascript:void(0)" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +

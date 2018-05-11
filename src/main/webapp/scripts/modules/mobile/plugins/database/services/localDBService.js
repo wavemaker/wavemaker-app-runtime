@@ -22,28 +22,28 @@ wm.plugins.database.services.LocalDBService = [
         var self = this,
             supportedOperations = [{
                 'name' : 'insertTableData',
-                'update' : true
+                'type' : 'INSERT'
             }, {
                 'name' : 'insertMultiPartTableData',
-                'update' : true
+                'type' : 'INSERT'
             }, {
                 'name' : 'updateTableData',
-                'update' : true
+                'type' : 'UPDATE'
             }, {
                 'name' : 'updateMultiPartTableData',
-                'update' : true
+                'type' : 'UPDATE'
             }, {
                 'name' : 'deleteTableData',
-                'update' : true
+                'type' : 'DELETE'
             }, {
                 'name' : 'readTableData',
-                'update' : false
+                'type' : 'READ'
             }, {
                 'name' : 'searchTableData',
-                'update' : false
+                'type' : 'READ'
             }, {
                 'name' : 'searchTableDataWithQuery',
-                'update' : false
+                'type' : 'READ'
             }];
 
         function getStore(params) {
@@ -65,12 +65,14 @@ wm.plugins.database.services.LocalDBService = [
          */
         function localDBcall(operation, params, successCallback, failureCallback) {
             self[operation.name](params, function (response) {
-                if (operation.update) {
+                if (operation.type === 'READ') {
+                    Utils.triggerFn(successCallback, response);
+                } else {
+                    // add to change log
+                    params.onlyOnline = true;
                     ChangeLogService.add('DatabaseService', operation.name, params).then(function () {
                         Utils.triggerFn(successCallback, response);
                     }, failureCallback);
-                } else {
-                    Utils.triggerFn(successCallback, response);
                 }
             }, failureCallback);
         }
@@ -81,12 +83,14 @@ wm.plugins.database.services.LocalDBService = [
          */
         function remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback) {
             onlineHandler.call(DatabaseService, params, function (response) {
-                if (!(operation.update  || params.skipLocalDB)) {
-                    getStore(params).then(function (store) {
-                        store.saveAll(response.content);
-                    });
-                } else if (operation.name !== 'insertTableData' && operation.name !== 'insertMultiPartTableData') {
-                    self[operation.name](params, WM.noop, WM.noop);
+                if (!params.skipLocalDB) {
+                    if (operation.type === 'READ') {
+                        getStore(params).then(function (store) {
+                            store.saveAll(response.content);
+                        });
+                    } else if (operation.type !== 'INSERT') {
+                        self[operation.name](params, WM.noop, WM.noop);
+                    }
                 }
                 Utils.triggerFn(successCallback, response);
             }, failureCallback);
@@ -104,18 +108,13 @@ wm.plugins.database.services.LocalDBService = [
                 var onlineHandler = DatabaseService[operation.name];
                 if (onlineHandler) {
                     DatabaseService[operation.name] = function (params, successCallback, failureCallback) {
-                        var isBundleData = LocalDBManager.isBundled(params.dataModelName, params.entityName);
-                        if (isBundleData || (!NetworkService.isConnected() && !params.onlyOnline)) {
-                            if (isBundleData && operation.update) {
-                                Utils.triggerFn(failureCallback, "Data modification is not allowed on bundled data.");
-                            } else {
-                                localDBcall(operation, params, successCallback, function () {
-                                    remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback);
-                                });
-                            }
-
-                        } else {
+                        var isAllowedInOffline = LocalDBManager.isOperationAllowed(params.dataModelName, params.entityName, operation.type);
+                        if (NetworkService.isConnected() || params.onlyOnline || !isAllowedInOffline) {
                             remoteDBcall(operation, onlineHandler, params, successCallback, failureCallback);
+                        } else {
+                            localDBcall(operation, params, successCallback, function () {
+                                Utils.triggerFn(failureCallback, "Service call failed");
+                            });
                         }
                     };
                 }
@@ -138,8 +137,12 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.insertTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
+                var isPKAutoIncremented = (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity');
+                if (isPKAutoIncremented && params.data[store.primaryKeyName]) {
+                    delete params.data[store.primaryKeyName];
+                }
                 return store.add(params.data).then(function (localId) {
-                    if (store.primaryKeyField && store.primaryKeyField.generatorType === 'identity') {
+                    if (isPKAutoIncremented) {
                         params.data[store.primaryKeyName] = localId;
                     }
                     successCallback(params.data);
@@ -259,12 +262,27 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.readTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
-                store.filter(params.filterMeta, params.sort.split('=')[1], {
-                    offset: (params.page - 1) * params.size,
-                    limit: params.size
-                }).then(function (data) {
-                    successCallback({
-                        'content': data
+                return store.count(params.filterMeta).then(function (totalElements) {
+                    var sort = params.sort.split('=')[1];
+                    return store.filter(params.filterMeta, sort, {
+                        offset: (params.page - 1) * params.size,
+                        limit: params.size
+                    }).then(function (data) {
+                        var totalPages = Math.ceil(totalElements / params.size);
+                        successCallback({
+                            'content'         : data,
+                            'first'           : (params.page === 1),
+                            'last'            : (params.page === totalPages),
+                            'number'          : (params.page - 1),
+                            'numberOfElements': data.length,
+                            'size'            : params.size,
+                            'sort'            : {
+                                'sorted' : !!sort,
+                                'unsorted' : !sort
+                            },
+                            'totalElements'   : totalElements,
+                            'totalPages'      : totalPages
+                        });
                     });
                 });
             }).catch(failureCallback);

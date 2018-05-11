@@ -25,13 +25,13 @@ import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.procedures.ProcedureParameter;
 
 /**
- * @Author: sowmyad
+ * @author sowmyad
  */
 public class ProceduresUtils {
 
-    public static String PARAM = "{param}";
-    public static final String PROCEDURE_PARAM_PATTERN = "(\\:" + PARAM + ")([\\s*,]|[\\s*|,]|[\\s*\\)?]|[\\s*|\\)?]|$)";
-    public static final String PROCEDURE_PARAM_REPLACE_STRING = "?";
+    private static final String PARAM = "{param}";
+    private static final String PROCEDURE_PARAM_PATTERN = "(\\:" + PARAM + ")([\\s*,]|[\\s*|,]|[\\s*\\)?]|[\\s*|\\)?]|$)";
+    private static final String PROCEDURE_PARAM_REPLACE_STRING = "?";
 
     public static boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
         for (CustomProcedureParam customProcedureParam : customProcedureParams) {

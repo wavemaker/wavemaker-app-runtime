@@ -38,8 +38,8 @@ WM.module('wm.utils', [])
                 PAGE_RESOURCE_PATH: /^\/pages\/.*\.(js|css|html|json)$/,
                 MIN_PAGE_RESOURCE_PATH: /.*(page.min.html)$/,
                 VALID_EMAIL: /^[a-zA-Z][\w.+]+@[a-zA-Z_]+?\.[a-zA-Z.]{1,4}[a-zA-Z]$/,
-                VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
-                VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
+                VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //url-regex-validation
+                VALID_WEBSOCKET_URL: /^(ws[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9=:?\/\.\-]+(\.[a-zA-Z]{2,5}[\.]{0,1})?/,  //WebSocket url-regex-validation
                 REPLACE_PATTERN: /\$\{([^\}]+)\}/g,
                 ZIP_FILE: /\.zip$/i,
                 EXE_FILE: /\.exe$/i,
@@ -49,7 +49,8 @@ WM.module('wm.utils', [])
                 VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/,
                 SPECIAL_CHARACTERS: /[^A-Z0-9a-z_]+/i,
                 APP_SERVER_URL_FORMAT: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+([:]?[0-9]{2,5}|\.[a-zA-Z]{2,5}[\.]{0,1})\/+[^?#&=]+$/,
-                JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/
+                JSON_DATE_FORMAT: /\d{4}-[0-1]\d-[0-3]\d(T[0-2]\d:[0-5]\d:[0-5]\d.\d{1,3}Z$)?/,
+                MOBILE_APP_ID: /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9]*[A-Za-z0-9])$/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'long', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -171,7 +172,11 @@ WM.module('wm.utils', [])
                                      {'name' : 'cordova-plugin-media-capture', 'spec' : '1.4.3'}],
                 'CONTACTS'        : [{'name' : 'cordova-plugin-contacts', 'spec' : '2.3.1'}],
                 'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
-                'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.3'}, {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.3'}, {'name' : 'cordova-plugin-file-opener2', 'spec' : '2.0.19'}, {'name' : 'cordova-plugin-transport-security', 'spec': '0.1.2'}],
+                'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '4.3.3'},
+                                        {'name': 'cordova-plugin-file-transfer', 'spec': '1.6.3'},
+                                        {'name' : 'cordova-plugin-file-opener2', 'spec' : '2.0.19'},
+                                        {'name' : 'cordova-plugin-transport-security', 'spec': '0.1.2'},
+                                        {'name' : 'cordova-plugin-zeep', 'spec': '0.0.4'}],
                 'GEOLOCATION'     : [{'name' : 'cordova-plugin-geolocation', 'spec' : '2.4.3'}],
                 'NETWORK'         : [{'name' : 'cordova-plugin-network-information', 'spec' : '2.0.0'}],
                 'VIBRATE'         : [{'name' : 'cordova-plugin-vibration', 'spec' : '3.0.0'}],
@@ -528,7 +533,6 @@ WM.module('wm.utils', [])
         /*function to check if fn is a function and then execute*/
         function triggerFn(fn) {
             /* Use of slice on arguments will make this function not optimizable
-            * https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
             * */
 
             var start = 1, len = arguments.length, args = new Array(len - start);
@@ -707,6 +711,15 @@ WM.module('wm.utils', [])
             return isAndroid() && (REGEX.MOBILE.test(userAgent));
         }
 
+        function getAndroidVersion() {
+            var match = (navigator.userAgent.toLowerCase()).match(/android\s([0-9\.]*)/);
+            return match ? match[1] : false;
+        }
+
+        function isKitkatDevice() {
+            return isAndroid() && parseInt(getAndroidVersion(), 10) === 4;
+        }
+
         function isIphone() {
             return (REGEX.IPHONE.test(userAgent));
         }
@@ -843,6 +856,32 @@ WM.module('wm.utils', [])
             return url;
         }
 
+
+      /**
+       * This method removes double slashes in the url
+       * e.g. "https://abc.com/service//hrdb/employee//api" will be returned as "https://abc.com/service/hrdb/employee/api"
+
+       * Exceptions:
+       * if the url starts with //, https://, http://, wss://, ws:// etc ignore these double slashes
+       * if double slashes present in the url apart from the above places, replace the double slashes with single slash
+
+       * @param url, string URL where double slashes will be removed
+       * @returns {url}, sanitized url
+       */
+        function removeExtraSlashes(url) {
+          var base64regex = /^data:image\/([a-z]{2,});base64,/;
+          if (_.isString(url)) {
+                /*
+                * support for mobile apps having local file path url starting with file:/// and
+                * support for base64 format
+                * */
+                if (_.startsWith(url, 'file:///') || base64regex.test(url)) {
+                    return url;
+                }
+                return url.replace(new RegExp('([^:]\/)(\/)+', 'g'), '$1');
+            }
+        }
+
         /*This function returns the url to the image after checking the validity of url*/
         function getImageUrl(urlString, shouldEncode, defaultUrl) {
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
@@ -868,6 +907,9 @@ WM.module('wm.utils', [])
             if (stringStartsWith(urlString, 'services/prefabs')) {
                 return urlString;
             }
+
+
+            urlString = removeExtraSlashes(urlString);
 
             return urlString;
         }
@@ -953,6 +995,10 @@ WM.module('wm.utils', [])
         // Valid field name should not contain any special chars other than _ and $
         function isValidFieldName(fieldName) {
             return (/^[0-9a-zA-Z_\$]+$/.test(fieldName));
+        }
+
+        function isValidMobileAppId(appId) {
+            return !!REGEX.MOBILE_APP_ID.test(appId);
         }
 
         function getPropertyNode(prop) {
@@ -2277,7 +2323,7 @@ WM.module('wm.utils', [])
             } else if (!_.isEmpty(requestParams.headers) || isXsrfEnabled()) {
                 downloadThroughAnchor(requestParams, success, error);
             } else {
-                downloadThroughIframe(requestParams, success, error);
+                downloadThroughIframe(requestParams, success);
             }
         }
 
@@ -2548,6 +2594,19 @@ WM.module('wm.utils', [])
             loadStyleSheet(getProjectResourcePath($rootScope.project.id) + 'themes/' + themeName + '/style.css', {name: "theme", value: "wmtheme"});
         }
 
+        //returns true if there are any conflicts in the project and they need to be resolved first
+        function isResolveConflictsExists(actionResponse) {
+            var conflictsFlag = false,
+                actionsInfo;
+            if (!_.isEmpty(actionResponse)) {
+                actionsInfo = _.groupBy(actionResponse, 'type');
+                if (actionsInfo.RESOLVE_CONFLICTS) {
+                    conflictsFlag = true;
+                }
+            }
+            return conflictsFlag;
+        }
+
         // returns false if the application is served on https and the requested url is not secure
         function isInsecureContentRequest(url) {
 
@@ -2621,7 +2680,7 @@ WM.module('wm.utils', [])
             }
             var jsonVal = getValidJSON(val);
             if (jsonVal && jsonVal instanceof Object) {
-                val = new Blob([jsonVal], {type: valContentType || 'application/json'});
+                val = new Blob([WM.toJson(jsonVal)], {type: valContentType || 'application/json'});
             } else {
                 val = new Blob([val], {type: valContentType || 'text/plain'});
             }
@@ -2882,6 +2941,91 @@ WM.module('wm.utils', [])
             return;
         }
 
+        /**
+         * This function invokes the given the function (fn) until the function successfully executes or the maximum number
+         * of retries is reached or onBeforeRetry returns false.
+         *
+         * @param fn - a function that is needs to be invoked. The function can also return a promise as well.
+         * @param interval - minimum time gap between successive retries. This argument should be greater or equal to 0.
+         * @param maxRetries - maximum number of retries. This argument should be greater than 0. For all other values,
+         * maxRetries is infinity.
+         * @param onBeforeRetry - a callback function that will be invoked before re-invoking again. This function can
+         * return false or a promise that is resolved to false to stop further retry attempts.
+         * @returns {*} a promise that is resolved when fn is success (or) maximum retry attempts reached
+         * (or) onBeforeRetry returned false.
+         */
+        function retryIfFails(fn, interval, maxRetries, onBeforeRetry) {
+            var defer = $q.defer(),
+                retryCount = 0,
+                tryFn = function () {
+                    retryCount++;
+                    if (_.isFunction(fn)) {
+                        return fn();
+                    }
+                };
+            maxRetries = (_.isNumber(maxRetries) && maxRetries > 0 ? maxRetries : 0);
+            interval = (_.isNumber(interval) && interval > 0 ? interval : 0);
+            onBeforeRetry = _.isFunction(onBeforeRetry) ? onBeforeRetry : WM.noop;
+            function errorFn() {
+                var errArgs = arguments;
+                $timeout(function () {
+                    $q.when(onBeforeRetry(), function (retry) {
+                        if (retry !== false && (!maxRetries || retryCount <= maxRetries)) {
+                            $q.when(tryFn(), defer.resolve.bind(defer), errorFn, defer.notify.bind(defer));
+                        } else {
+                            defer.reject.apply(defer, errArgs);
+                        }
+                    }, function () {
+                        defer.reject.apply(defer, errArgs);
+                    });
+                }, interval);
+            }
+            $q.when(tryFn(), defer.resolve.bind(defer), errorFn, defer.notify.bind(defer));
+            return defer.promise;
+        }
+
+        /**
+         * Promise of a defer created using this function, has abort function that will reject the defer when called.
+         * @returns {*} angular defer object
+         */
+        function getAbortableDefer() {
+            var d = $q.defer();
+            d.promise.abort = function () {
+                triggerFn(d.onAbort);
+                d.reject('aborted');
+                d.isAborted = false;
+            };
+            return d;
+        }
+
+        /*
+         * Invokes the given list of functions sequentially with the given arguments. If a function returns a promise,
+         * then next function will be invoked only if the promise is resolved.
+         */
+        function executeDeferChain(fns, args, d, i) {
+            var returnObj;
+            d = d || $q.defer();
+            i = i || 0;
+            if (i === 0) {
+                fns = _.filter(fns, function (fn) {
+                    return !(_.isUndefined(fn) || _.isNull(fn));
+                });
+            }
+            if (fns && i < fns.length) {
+                try {
+                    returnObj = fns[i].apply(undefined, args);
+                    $q.when(returnObj, function () {
+                        executeDeferChain(fns, args, d, i + 1);
+                    }, d.reject);
+                } catch (e) {
+                    d.reject(e);
+                }
+            } else {
+                d.resolve();
+            }
+            return d.promise;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -2893,6 +3037,7 @@ WM.module('wm.utils', [])
         this.prettifyLabel              = prettifyLabel;
         this.prettifyLabels             = prettifyLabels;
         this.getVariableName            = getVariableName;
+        this.removeExtraSlashes         = removeExtraSlashes;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
         this.encodeUrlParams            = encodeUrlParams;
@@ -2904,6 +3049,7 @@ WM.module('wm.utils', [])
         this.deHyphenate                = deHyphenate;
         this.isAndroid                  = isAndroid;
         this.isAndroidPhone             = isAndroidPhone;
+        this.isKitkatDevice             = isKitkatDevice;
         this.isIphone                   = isIphone;
         this.isIpod                     = isIpod;
         this.isIpad                     = isIpad;
@@ -3011,6 +3157,7 @@ WM.module('wm.utils', [])
         this.convertToArray             = convertToArray;
         this.pluginConfig               = pluginConfig;
         this.loadActiveTheme            = loadActiveTheme;
+        this.isResolveConflictsExists   = isResolveConflictsExists;
         this.isInsecureContentRequest   = isInsecureContentRequest;
         this.isValidAppServerUrl        = isValidAppServerUrl;
         this.addDefaultHeaders          = addDefaultHeaders;
@@ -3032,4 +3179,8 @@ WM.module('wm.utils', [])
         this.isVariableOrActionEvent    = isVariableOrActionEvent;
         this.isFileSizeWithinLimit      = isFileSizeWithinLimit;
         this.isEqualWithFields          = isEqualWithFields;
+        this.retryIfFails               = retryIfFails;
+        this.getAbortableDefer          = getAbortableDefer;
+        this.executeDeferChain          = executeDeferChain;
+        this.isValidMobileAppId         = isValidMobileAppId;
     }]);

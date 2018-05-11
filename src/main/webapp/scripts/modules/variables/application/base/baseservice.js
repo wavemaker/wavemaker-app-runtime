@@ -510,6 +510,40 @@ wm.variables.services.Variables = [
                 processVariablePostBindUpdate(targetNodeKey, value, obj.type, variable, noUpdate);
             },
 
+            /**
+             * The model internalBoundNodeMap stores the reference to latest computed values against internal(nested) bound nodes
+             * This is done so that the internal node's computed value is not lost, once its parent node's value is computed at a later point
+             * E.g.
+             * Variable.employeeVar has following bindings
+             * "dataBinding": [
+                 {
+                     "target": "department.budget",
+                     "value": "bind:Variables.budgetVar.dataSet"
+                 },
+                 {
+                     "target": "department",
+                     "value": "bind:Variables.departmentVar.dataSet"
+                 }
+             ]
+             * When department.budget is computed, employeeVar.dataSet = {
+             *  "department": {
+             *      "budget": {"q1": 1111}
+             *  }
+             * }
+             *
+             * When department is computed
+             *  "department": {
+             *      "name": "HR",
+             *      "location": "Hyderabad"
+             *  }
+             * The budget field (computed earlier) is LOST.
+             *
+             * To avoid this, the latest values against internal nodes (in this case department.budget) are stored in a map
+             * These values are assigned back to internal fields if the parent is computed (in this case department)
+             * @param target
+             * @param root
+             * @param variable
+             */
             updateInternalNodes = function (target, root, variable) {
                 var boundInternalNodes = _.keys(_.get(internalBoundNodeMap, [variable.activeScope.$id, variable.name, root])),
                     targetNodeKey = getTargetNodeKey(target),
@@ -549,7 +583,7 @@ wm.variables.services.Variables = [
                         if (!_.includes(['blob', 'file'], obj.type)) {
                             newVal = Utils.getClonedObject(newVal);
                         }
-                        setValueToNode(target, obj, root, variable, newVal); // clonning newVal to keep the source clean
+                        setValueToNode(target, obj, root, variable, newVal); // cloning newVal to keep the source clean
 
                         if (runMode) {
                             /*set the internal bound node map with the latest updated value*/
@@ -1149,7 +1183,7 @@ wm.variables.services.Variables = [
                 self.variableCollection = self.variableCollection || {};
 
                 /* get application level variables */
-                getAppVariables(activePage, function (appVariables, freshVariables) {
+                getAppVariables(function (appVariables, freshVariables) {
                     /*if the file is empty, initialize the collection to empty object*/
                     if (typeof appVariables !== 'object') {
                         appVariables = {};
@@ -2123,10 +2157,8 @@ wm.variables.services.Variables = [
              * Gets variables for specified contextx
              */
             'getByContext': function (pages) {
-                if (pages) {
-                    pages = pages || _.keys(pageScopeMap);
-                    return _.pick(self.variableCollection, pages);
-                }
+                pages = pages || _.keys(pageScopeMap);
+                return _.pick(self.variableCollection, pages);
             },
             /**
              * @ngdoc method
@@ -2148,7 +2180,6 @@ wm.variables.services.Variables = [
              */
             'getStudioCopy': function (pages) {
                 if (pages && pages.length) {
-                    pages = pages || _.keys(pageScopeMap);
                     return _.pick(self.studioCopy, pages);
                 }
                 return self.studioCopy;
