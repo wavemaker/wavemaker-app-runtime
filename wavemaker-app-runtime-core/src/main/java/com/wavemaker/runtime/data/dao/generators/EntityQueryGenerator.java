@@ -2,20 +2,20 @@ package com.wavemaker.runtime.data.dao.generators;
 
 import java.util.Map;
 
+import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 import com.wavemaker.runtime.data.model.AggregationInfo;
-import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 29/11/17
  */
-public interface EntityQueryGenerator<Entity, Identifier> {
+public interface EntityQueryGenerator<E, I> {
 
-    HqlQueryBuilder findById(final Identifier identifier);
+    SelectQueryBuilder findById(final I identifier);
 
-    HqlQueryBuilder findBy(final Map<String, Object> fieldValueMap);
+    SelectQueryBuilder findBy(final Map<String, Object> fieldValueMap);
 
-    HqlQueryBuilder searchByQuery(final String query);
+    SelectQueryBuilder searchByQuery(final String query);
 
-    HqlQueryBuilder getAggregatedValues(final AggregationInfo aggregationInfo);
+    SelectQueryBuilder getAggregatedValues(final AggregationInfo aggregationInfo);
 }

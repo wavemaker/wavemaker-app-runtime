@@ -14,6 +14,7 @@ import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.dao.query.providers.RuntimeQueryProvider;
 import com.wavemaker.runtime.data.dao.query.types.HqlParameterTypeResolver;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 
 /**
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
@@ -22,7 +23,7 @@ import com.wavemaker.runtime.data.filter.WMQueryInfo;
 public class HqlQueryHelper {
 
     public static <R> Page<R> execute(
-            HibernateTemplate template, Class<R> returnType, HqlQueryBuilder builder,
+            HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder,
             Pageable pageable) {
 
         final WMQueryInfo queryInfo = builder.build();
@@ -36,7 +37,7 @@ public class HqlQueryHelper {
     }
 
     public static <R> Optional<R> execute(
-            HibernateTemplate template, Class<R> returnType, HqlQueryBuilder builder) {
+            HibernateTemplate template, Class<R> returnType, SelectQueryBuilder builder) {
 
         final WMQueryInfo queryInfo = builder.build();
 

@@ -28,7 +28,7 @@ public class FromToClause implements PeriodClause {
     public WMQueryInfo asWMQueryClause() {
         String var1Name = "wm_" + type.asHqlKeyword() + "_from_timestamp";
         String var2Name = "wm_" + type.asHqlKeyword() + "_to_timestamp";
-        String hql = "for " + type.asHqlKeyword() + " from :" + var1Name + " to :" + var2Name;
+        String hql = type.asHqlKeyword() + " from :" + var1Name + " to :" + var2Name;
 
         Map<String, Object> parameters = new HashMap<>(2);
         parameters.put(var1Name, from);
