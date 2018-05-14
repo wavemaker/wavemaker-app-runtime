@@ -16,6 +16,8 @@
 package com.wavemaker.runtime.data.export;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 9/5/16
@@ -39,5 +41,10 @@ public enum ExportType {
 
     public String getContentType() {
         return contentType;
+    }
+
+    @JsonCreator
+    public static ExportType fromValue(String type) {
+        return valueOf(type.toUpperCase());
     }
 }

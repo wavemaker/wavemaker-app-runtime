@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,6 +32,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
@@ -48,6 +50,7 @@ import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.export.DataExporter;
+import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
@@ -58,6 +61,7 @@ import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.DaoUtils;
 import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
+import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.file.model.Downloadable;
 
@@ -68,6 +72,9 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     protected EntityQueryGenerator<E, I> queryGenerator;
 
     protected SortValidator sortValidator;
+
+    @Autowired
+    private ExportedFileManager exportedFileManager;
 
     public abstract HibernateTemplate getTemplate();
 
@@ -205,6 +212,12 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
+        return new DownloadResponse(export(new ExportOptions(exportType), query, pageable), exportType.getContentType(),
+                entityClass.getSimpleName() + exportType.getExtension());
+    }
+
+    @Override
+    public InputStream export(ExportOptions options, String query, Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
 
         this.sortValidator.validate(validPageable, entityClass);
@@ -219,11 +232,9 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
                     final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
                     QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
 
-                    return DataExporter.export(queryExtractor, exportType);
+                    return DataExporter.export(queryExtractor, options, entityClass);
                 });
-        InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
-        return new DownloadResponse(is, exportType.getContentType(),
-                entityClass.getSimpleName() + exportType.getExtension());
+        return new ByteArrayInputStream(reportOutputStream.toByteArray());
     }
 
     @Override

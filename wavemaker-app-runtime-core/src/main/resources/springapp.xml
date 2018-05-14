@@ -6,15 +6,12 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd
-                http://www.springframework.org/schema/util
-                http://www.springframework.org/schema/util/spring-util.xsd">
+                http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="config.xml"/>
     <import resource="springapp-mvc.xml"/>
-    
+
     <bean id="wmAppContext" class="com.wavemaker.runtime.WMAppContext" lazy-init="false"/>
 
     <bean id="contentNegotiationManager"
@@ -97,7 +94,12 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
+    <bean id="ExportedFileManager" class="com.wavemaker.runtime.file.manager.ExportedFileManager">
+        <property name="exportsDir" value="${java.io.tmpdir}"/>
+    </bean>
+
     <bean id="oAuthServiceManager" class="com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager"/>
+
     <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.generator.DBJasperReportGenerator"/>
 
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
@@ -138,15 +140,18 @@
         </property>
     </bean>
 
-    <bean id="messageSourceResourceBundleLocator" class="org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator">
+    <bean id="messageSourceResourceBundleLocator"
+          class="org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator">
         <constructor-arg ref="messageSource"/>
     </bean>
 
-    <bean id="resourceBundleMessageInterpolator" class="org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator">
+    <bean id="resourceBundleMessageInterpolator"
+          class="org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator">
         <constructor-arg ref="messageSourceResourceBundleLocator"/>
     </bean>
 
-    <bean id="localeContextMessageInterpolator" class="org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator">
+    <bean id="localeContextMessageInterpolator"
+          class="org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator">
         <constructor-arg ref="resourceBundleMessageInterpolator"/>
     </bean>
 
@@ -155,12 +160,13 @@
         <!--property name="messageInterpolator" ref="localeContextMessageInterpolator"/-->
     </bean>
 
-    <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+    <bean id="methodValidationPostProcessor"
+          class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
         <property name="validator" ref="validator"/>
     </bean>
 
     <bean id="appSSLSocketFactory" class="com.wavemaker.runtime.ssl.SSLSocketFactoryFactoryBean"/>
-    
+
     <bean id="appHostnameVerifier" class="com.wavemaker.runtime.ssl.HostnameVerifierFactoryBean"/>
 
 </beans>

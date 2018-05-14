@@ -56,6 +56,8 @@
         <quartz.version>2.2.3</quartz.version>
         <antisamy.version>1.4</antisamy.version>
         <jasperreports.version>6.5.1</jasperreports.version>
+        <freemarker.version>2.3.23</freemarker.version>
+
     </properties>
 
     <modules>
@@ -738,6 +740,14 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <!--Used by  ExpressionFieldValueProvider class-->
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+
 
             <!-- Start: Quartz framework -->
             <dependency>

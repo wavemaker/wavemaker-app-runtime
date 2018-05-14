@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
+import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.model.AggregationInfo;
@@ -61,6 +63,8 @@ public interface WMGenericDao<E, I> {
     Page<Map<String, Object>> getAggregatedValues(final AggregationInfo aggregationInfo, Pageable pageable);
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
+
+    InputStream export(ExportOptions options, String query, Pageable pageable);
 
     E refresh(E entity);
 

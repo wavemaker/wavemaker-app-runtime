@@ -15,12 +15,10 @@
  */
 package com.wavemaker.runtime.data.export;
 
-import java.beans.PropertyDescriptor;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Field;
+import java.util.List;
 import java.util.function.BiFunction;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -29,11 +27,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.BeanUtils;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
-import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -46,19 +42,22 @@ public class ExportBuilder {
     private static final int COLUMN_HEADER_FONT_SIZE = 10;
 
     private QueryExtractor queryExtractor;
+    private ExportOptionsStrategy optionsStrategy;
+    private ExportOptions options;
 
-    public ExportBuilder(final QueryExtractor queryExtractor) {
+    public ExportBuilder(final QueryExtractor queryExtractor, ExportOptions options, final Class<?> entityClass) {
         this.queryExtractor = queryExtractor;
+        this.options = options;
+        optionsStrategy = new ExportOptionsStrategy(options, entityClass);
     }
 
-    public ByteArrayOutputStream build(
-            ExportType exportType, BiFunction<Workbook, ExportType, ByteArrayOutputStream> mappingFunction) {
+    public ByteArrayOutputStream build(BiFunction<Workbook, ExportType, ByteArrayOutputStream> mappingFunction) {
         try {
             try (XSSFWorkbook workbook = new XSSFWorkbook()) {
                 Sheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
                 autoSizeAllColumns(workbook);
-                return mappingFunction.apply(workbook, exportType);
+                return mappingFunction.apply(workbook, options.getExportType());
             }
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while building report", e);
@@ -93,47 +92,32 @@ public class ExportBuilder {
         final Class<?> dataClass = rowData.getClass();
         int rowNum = row.getRowNum();
         if (isFirstRow) {
-            fillHeader(dataClass, row, FIRST_COLUMN_NUMBER, "", true);
+            fillHeader(row, optionsStrategy.getDisplayNames());
             row = row.getSheet().createRow(++rowNum);
         }
-        fillData(rowData, dataClass, row, FIRST_COLUMN_NUMBER, true);
+        fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);
         return ++rowNum;
     }
 
-    private int fillHeader(final Class<?> dataClass, Row row, int colNum, String prefix, boolean includeChildren)
-            throws Exception {
-        for (final Field field : dataClass.getDeclaredFields()) {
-            String fieldName = field.getName();
-            final Class<?> type = field.getType();
-            if (JavaTypeUtils.isKnownType(type)) {
-                if (StringUtils.isNotBlank(prefix)) {
-                    fieldName = prefix + '.' + fieldName;
-                }
-                CellUtil.createCell(row, colNum, fieldName, columnHeaderStyle(row.getSheet().getWorkbook()));
-                colNum++;
-            } else if (includeChildren && JavaTypeUtils.isNotCollectionType(type)) {
-                colNum = fillHeader(Class.forName(type.getName()), row, colNum, fieldName, false);
-            }
+
+    private void fillHeader(Row row, List<String> fieldNames) {
+        int colNum = FIRST_COLUMN_NUMBER;
+        for (final String fieldName : fieldNames) {
+            CellUtil.createCell(row, colNum, fieldName, columnHeaderStyle(row.getSheet().getWorkbook()));
+            colNum++;
         }
-        return colNum;
     }
 
-    private int fillData(
-            Object rowData, final Class<?> dataClass, Row row, int colNum, boolean includeChildren) throws Exception {
-        for (final Field field : dataClass.getDeclaredFields()) {
-            PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(dataClass, field.getName());
-            Object value = (rowData == null) ? null : propertyDescriptor.getReadMethod().invoke(rowData);
-            final Class<?> type = field.getType();
-            if (JavaTypeUtils.isKnownType(type)) {
-                final Cell cell = row.createCell(colNum);
-                DataSourceExporterUtil.setCellValue(value, cell);
-                colNum++;
-            } else if (includeChildren && JavaTypeUtils.isNotCollectionType(type)) {
-                colNum = fillData(value, Class.forName(type.getName()), row, colNum, false);
-            }
+
+    private void fillData(List<Object> rowValues, Row row) {
+        int colNum = FIRST_COLUMN_NUMBER;
+        for (Object value : rowValues) {
+            final Cell cell = row.createCell(colNum);
+            DataSourceExporterUtil.setCellValue(value, cell);
+            colNum++;
         }
-        return colNum;
     }
+
 
     private CellStyle columnHeaderStyle(Workbook workbook) {
         CellStyle columnNameStyle = workbook.createCellStyle();

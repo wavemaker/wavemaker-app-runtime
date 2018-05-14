@@ -32,9 +32,9 @@ public class DataExporter {
     private DataExporter() {
     }
 
-    public static ByteArrayOutputStream export(QueryExtractor extractor, ExportType exportType) {
-        ExportBuilder exportBuilder = new ExportBuilder(extractor);
-        return exportBuilder.build(exportType, DataExporter::exportWorkbook);
+    public static ByteArrayOutputStream export(QueryExtractor extractor, ExportOptions options, Class<?> entityClass) {
+        ExportBuilder exportBuilder = new ExportBuilder(extractor, options, entityClass);
+        return exportBuilder.build(DataExporter::exportWorkbook);
     }
 
     protected static ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
