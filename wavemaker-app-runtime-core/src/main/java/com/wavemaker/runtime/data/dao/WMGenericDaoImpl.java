@@ -56,10 +56,10 @@ import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.DaoUtils;
-import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
@@ -109,7 +109,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     }
 
     public E findById(I entityId) {
-        final HqlQueryBuilder builder = queryGenerator.findById(entityId);
+        final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
                 .orElseThrow(() -> new EntityNotFoundException("No entity exists for given id:" + entityId));
@@ -124,7 +124,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @SuppressWarnings("unchecked")
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
-        final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
+        final SelectQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -178,7 +178,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         this.sortValidator.validate(validPageable, entityClass);
 
-        final HqlQueryBuilder builder = queryGenerator.searchByQuery(query);
+        final SelectQueryBuilder builder = queryGenerator.searchByQuery(query);
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder, validPageable);
     }
 
@@ -204,7 +204,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         this.sortValidator.validate(validPageable, entityClass);
 
-        final HqlQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
+        final SelectQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
         final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, validPageable);
 
         return (Page<Map<String, Object>>) result;

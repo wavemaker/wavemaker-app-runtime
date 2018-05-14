@@ -27,7 +27,7 @@ public class BetweenClause implements PeriodClause {
     public WMQueryInfo asWMQueryClause() {
         String var1Name = "wm_" + type.asHqlKeyword() + "_from_timestamp";
         String var2Name = "wm_" + type.asHqlKeyword() + "_and_timestamp";
-        String hql = "for " + type.asHqlKeyword() + " between :" + var1Name + " and :" + var2Name;
+        String hql = type.asHqlKeyword() + " between :" + var1Name + " and :" + var2Name;
 
         Map<String, Object> parameters = new HashMap<>(2);
         parameters.put(var1Name, from);
