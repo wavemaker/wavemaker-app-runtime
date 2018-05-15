@@ -89,7 +89,7 @@ public class AppRuntimeController {
     }
 
     @RequestMapping(value = "/files/exported/{fileName:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public DownloadResponse getExportedFile(@PathVariable("fileName") String fileName, HttpServletResponse response) throws IOException {
+    public DownloadResponse getExportedFile(@PathVariable("fileName") String fileName) throws IOException {
         InputStream is = new DeleteTempFileOnCloseInputStream(exportedFileManager.getFile(fileName));
         return new DownloadResponse(is, MediaType.APPLICATION_OCTET_STREAM_VALUE, fileName);
     }

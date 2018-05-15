@@ -17,8 +17,8 @@ package com.wavemaker.runtime.data.dao.query;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -127,10 +127,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
         NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
                 PageUtils.defaultIfNull(pageable), exportType, responseType);
-        ByteArrayOutputStream reportOutStream = template.executeWithNativeSession(callback);
-
-        InputStream is = new ByteArrayInputStream(reportOutStream.toByteArray());
-        return new DownloadResponse(is, exportType.getContentType(), queryName + exportType.getExtension());
+        ByteArrayOutputStream outputStream = template.executeWithNativeSession(callback);
+        return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(), queryName + exportType.getExtension());
     }
 
     @Override

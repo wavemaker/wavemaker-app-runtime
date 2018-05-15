@@ -17,7 +17,7 @@ package com.wavemaker.runtime.data.dao;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
@@ -212,29 +212,28 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        return new DownloadResponse(export(new ExportOptions(exportType), query, pageable), exportType.getContentType(),
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        export(new ExportOptions(exportType, query), pageable, outputStream);
+        return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
     @Override
-    public InputStream export(ExportOptions options, String query, Pageable pageable) {
+    public void export(ExportOptions options, Pageable pageable, OutputStream outputStream) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
-
         this.sortValidator.validate(validPageable, entityClass);
-        ByteArrayOutputStream reportOutputStream = getTemplate()
-                .execute(session -> {
-                    final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
-                    final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
-                            .from(queryInfo, entityClass);
-                    ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
-                            HqlParameterTypeResolver());
+        getTemplate().execute(session -> {
+            final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
+            final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
+                    .from(queryInfo, entityClass);
+            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
+                    HqlParameterTypeResolver());
 
-                    final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
-                    QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
-
-                    return DataExporter.export(queryExtractor, options, entityClass);
-                });
-        return new ByteArrayInputStream(reportOutputStream.toByteArray());
+            final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
+            QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
+            DataExporter.export(queryExtractor, options, entityClass, outputStream);
+            return null;
+        });
     }
 
     @Override

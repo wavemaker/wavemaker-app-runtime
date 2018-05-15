@@ -1,36 +1,21 @@
 package com.wavemaker.runtime.file.manager;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.function.Consumer;
 
-import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.commons.util.WMIOUtils;
-
-@Service
-public class ExportedFileManager {
-
-    private File exportsDir;
-
-    public File create(InputStream stream, String fileName, String extension) {
-        try {
-            File exportedFile = File.createTempFile(fileName, extension, exportsDir);
-            WMIOUtils.copy(stream, new FileOutputStream(exportedFile));
-            exportedFile.deleteOnExit();
-            return exportedFile;
-        } catch (IOException e) {
-            throw new WMRuntimeException("Exception while writing to export file.", e);
-        }
+public interface ExportedFileManager {
+    default String registerAndGetURL(String prefix, String suffix, Consumer<OutputStream> callback) {
+        String fileID = registerFile(prefix, suffix, callback);
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/services/files/exported/{path}")
+                .buildAndExpand(fileID)
+                .toUriString();
     }
 
-    public File getFile(String name) {
-        return new File(exportsDir.getAbsolutePath() + File.separator + name);
-    }
+    String registerFile(String prefix, String suffix, Consumer<OutputStream> callback);
 
-    public void setExportsDir(File exportsDir) {
-        this.exportsDir = exportsDir;
-    }
+    File getFile(String name);
 }
