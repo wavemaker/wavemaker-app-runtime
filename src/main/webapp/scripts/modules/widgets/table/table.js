@@ -2182,10 +2182,17 @@ WM.module('wm.widgets.table')
             //On click of item in export menu, download the file in respective format
             function exportData($item) {
                 var filterFields,
-                    variable    = $is.variable,
-                    sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
+                    variable = $is.variable,
+                    sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction,
+                    fields = [];
+                _.forEach($is.fieldDefs, function (field) {
+                    fields.push({
+                        'header': field.displayName,
+                        'field': field.field
+                    });
+                });
                 if ($is.isBoundToFilter) {
-                    $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize});
+                    $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize,'fields': fields});
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
                     variable.download({
@@ -2194,7 +2201,8 @@ WM.module('wm.widgets.table')
                         'orderBy'      : sortOptions,
                         'exportFormat' : $item.label,
                         'logicalOp'    : 'AND',
-                        'size'         : $is.exportdatasize
+                        'size'         : $is.exportdatasize,
+                        'fields'       : fields
                     }, function (errMsg) {
                         wmToaster.error('Error', errMsg);
                     });

@@ -1419,9 +1419,13 @@ wm.variables.services.$liveVariable = [
                 download: function (variable, options) {
                     var tableOptions,
                         dbOperation = 'exportTableData',
-                        projectID   = $rootScope.project.id || $rootScope.projectName;
+                        projectID   = $rootScope.project.id || $rootScope.projectName,
+                        data = {};
                     options.searchWithQuery = true; //For export, query api is used. So set this flag to true
                     tableOptions = prepareTableOptions(variable, options);
+                    data.q = tableOptions.query ? tableOptions.query : '';
+                    data.exportType = options.exportFormat;
+                    data.fields = options.fields;
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
                         'service'       : variable._prefabName ? '' : 'services',
@@ -1429,10 +1433,14 @@ wm.variables.services.$liveVariable = [
                         'entityName'    : variable.type,
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
-                        'data'          : tableOptions.query ? ('q=' + tableOptions.query) : '',
+                        'data'          : data,
                         'filterMeta'    : tableOptions.filter,
                         'exportFormat'  : options.exportFormat,
                         'size'          : options.size
+                    }, function (response) {
+                        window.location.href = response;
+                    },function (response) {
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj);
                     });
                 },
                 /*Function to get the distinct  data for specified field*/

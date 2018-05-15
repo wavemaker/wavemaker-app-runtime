@@ -178,11 +178,7 @@ wm.plugins.database.services.DatabaseService = [
                 if (headers) {
                     connectionParams.headers = headers;
                 }
-                if (action === 'exportTableData') {
-                    Utils.simulateFileDownload(BaseService.parseReplace(connectionParams), connectionParams.urlParams.entityName, connectionParams.urlParams.exportFormat);
-                } else {
-                    return BaseService.execute(connectionParams, successCallback, failureCallback);
-                }
+                return BaseService.execute(connectionParams, successCallback, failureCallback);
             }
         };
         /* APIs returned by the DatabaseService.*/
@@ -2141,8 +2137,8 @@ wm.plugins.database.services.DatabaseService = [
              *                 Object containing name of the project & details of the table.
              */
 
-            exportTableData: function (params) {
-                return initiateAction('exportTableData', params);
+            exportTableData: function (params, successCallback,failureCallback) {
+                return initiateAction('exportTableData', params, successCallback,failureCallback);
             },
 
             /**

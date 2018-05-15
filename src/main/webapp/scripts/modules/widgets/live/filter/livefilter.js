@@ -270,7 +270,8 @@ WM.module('wm.widgets.live')
                                 'orderBy'      : orderBy,
                                 'exportFormat' : options.exportFormat,
                                 'logicalOp'    : 'AND',
-                                'size'         : options.exportdatasize
+                                'size'         : options.exportdatasize,
+                                'fields'       : options.fields
                             });
                             return;
                         }
