@@ -551,6 +551,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
                         "tabindex": {"type": "number", "value": "0"},
+                        "showdropdownon": {"type": "select-by-object", "options": [{"label": "Default(Input & Button)", "value":"default"}, {"label": "Button Only", "value":"button"}], "value": "default"},
                         /* ---- styles ----*/
 
                         "margin": {"type": "string", "widget": "box-model"},
@@ -580,7 +581,8 @@ WM.module('wm.widgets.base', [])
                         "datepattern": {"show": false},
                         "excludedays": {"show": false},
                         "excludedates": {"show": false},
-                        "showweeks": {"show": false}
+                        "showweeks": {"show": false},
+                        "showdropdownon": {"show": false}
                     },
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -606,7 +608,8 @@ WM.module('wm.widgets.base', [])
                         "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "number", "value": "0"}
+                        "tabindex": {"type": "number", "value": "0"},
+                        "showdropdownon": {"show": false}
                     },
                     "wm.calendar.mobile": {
                         "view": {"type": "list", "options": ["day", "month", "year"], "value": "day"},
@@ -620,7 +623,8 @@ WM.module('wm.widgets.base', [])
                         "eventend": {"type": "list", "value": "end", "options": [""], "datasetfilter" : "terminals", "show": false },
                         "eventallday": {"type": "list", "value": "allday", "options": [""], "datasetfilter" : "terminals", "show": false},
                         "eventtitle": {"type": "list", "value": "title", "options": [""], "datasetfilter" : "terminals", "show": false},
-                        "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals", "show": false}
+                        "eventclass": {"type": "list", "value": "class", "options": [""], "datasetfilter" : "terminals", "show": false},
+                        "showdropdownon": {"show": false}
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time", "bindable": "in-bound"},
@@ -643,7 +647,9 @@ WM.module('wm.widgets.base', [])
                     "wm.time.mobile": {
                         "hourstep": {"type": "number", "value": 1, "show": false},
                         "minutestep": {"type": "number", "value": 15, "show": false},
-                        "timepattern": {"show": false}
+                        "timepattern": {"show": false},
+                        "showdropdownon": {"show": false}
+
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time", "bindable": "in-bound"},
@@ -673,7 +679,8 @@ WM.module('wm.widgets.base', [])
                         "minutestep": {"type": "number", "value": 15, "show": false},
                         "showweeks": {"show": false},
                         "excludedays": {"show": false},
-                        "excludedates": {"show": false}
+                        "excludedates": {"show": false},
+                        "showdropdownon": {"show": false}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -2163,7 +2170,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "yaxis", "properties": ["yaxisdatakey"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "validationmessage", "regexp", "mindate", "maxdate", "mintime", "maxtime", "excludedays", "excludedates", "novalidate", "validationtype", "maxchars", "minvalue", "maxvalue", "step"], "parent": "properties"},
-                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
+                {"name": "behavior", "properties": ["method", "action", "enctype", "target", "defaultview", "defaultmode", "defaultpaneindex", "pollinterval", "radiogroup", "viewgroup","showdropdownon", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "editmode", "scrolldelay", "scrollamount", "direction",
                     "multiple", "maxsize", "inputposition", "allowonlyselect", "enablereorder", "fileuploadmessage", "mode", "show", "deferload", "hideclose", "calendartype", "controls", "view", "disabled", "disableitem", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "showcount", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "disableprevious", "disabledone", "enabledone", "enableskip", "cancelable", "isdefaultpane", "autocomplete", "showpreview", "autoplay", "loop", "muted",

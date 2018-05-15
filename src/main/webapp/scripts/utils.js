@@ -3028,6 +3028,14 @@ WM.module('wm.utils', [])
             return d.promise;
         }
 
+        /**
+         * returns true if the input value is default (i.e open date picker on input click)
+         * @param1 dropdownvalue, user selected value (by default datepicker opens on input click)
+         * **/
+        function showDropDownOnInput(dropdownvalue) {
+            return dropdownvalue === CONSTANTS.DATEPICKER_DROPDOWN_OPTIONS.DEFAULT;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3185,4 +3193,5 @@ WM.module('wm.utils', [])
         this.getAbortableDefer          = getAbortableDefer;
         this.executeDeferChain          = executeDeferChain;
         this.isValidMobileAppId         = isValidMobileAppId;
+        this.showDropDownOnInput        = showDropDownOnInput;
     }]);

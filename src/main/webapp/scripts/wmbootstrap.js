@@ -57,7 +57,11 @@ Application
         'DATA_SEARCH_LIMIT' : 10,
         'IFRAME_WINDOW_NAME': 'WM_RUN_WINDOW',
         'WM_OAUTH_STATE': 'WMOAuthState',
-        'XSRF_COOKIE_NAME': 'wm_xsrf_token'
+        'XSRF_COOKIE_NAME': 'wm_xsrf_token',
+        'DATEPICKER_DROPDOWN_OPTIONS' : {
+            'BUTTON': 'button',
+            'DEFAULT': 'default'
+}
     })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(

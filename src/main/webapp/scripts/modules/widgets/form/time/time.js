@@ -91,7 +91,7 @@ WM.module('wm.widgets.form')
                     break;
                 }
             }
-
+            
             function _onClick($is, evt) {
                 evt.stopPropagation();
                 if ($is.onClick) {
@@ -101,6 +101,9 @@ WM.module('wm.widgets.form')
 
             function _onTimeClick($is, $el, evt) {
                 evt.stopPropagation();
+                if ($(evt.target).is('input') && !Utils.showDropDownOnInput($is.showdropdownon)) {
+                    return false;
+                }
                 var timeOpen = $is.isOpen;
                 $timeout(function () {
                     $el.parent().trigger('click');
@@ -343,7 +346,7 @@ WM.module('wm.widgets.form')
 
                             $is._onKeyUp = function ($event) {
                                 //On tab in, open the date popup
-                                if ($event.keyCode === 9) {
+                                if (Utils.showDropDownOnInput($is.showdropdownon) && $event.keyCode === 9) {
                                     $is.isOpen = true;
                                 }
                             };

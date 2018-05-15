@@ -121,6 +121,9 @@ WM.module('wm.widgets.form')
             }
 
             function _onClick(scope, evt) {
+                if ($(evt.target).is('input') && !Utils.showDropDownOnInput(scope.showdropdownon)) {
+                    return false;
+                }
                 scope.isOpen = !scope.isOpen;
                 if (scope.onClick) {
                     scope.onClick({$event: evt, $scope: scope});
@@ -272,7 +275,7 @@ WM.module('wm.widgets.form')
 
                             $is._onKeyUp = function ($event) {
                                 //On tab in, open the date popup
-                                if ($event.keyCode === 9) {
+                                if (Utils.showDropDownOnInput($is.showdropdownon) && $event.keyCode === 9) {
                                     $is.isOpen = true;
                                 }
                             };

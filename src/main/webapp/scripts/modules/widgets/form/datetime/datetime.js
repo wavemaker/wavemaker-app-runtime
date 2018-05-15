@@ -158,6 +158,9 @@ WM.module('wm.widgets.form')
             /*On click of date icon button, open the date picker popup*/
             function _onDateClick($is, $el, evt) {
                 evt.stopPropagation();
+                if ($(evt.target).is('input') && !Utils.showDropDownOnInput($is.showdropdownon)) {
+                    return false;
+                }
                 var dateOpen = $is.isDateOpen;
                 $timeout(function () {
                     $el.parent().trigger('click');
@@ -478,7 +481,7 @@ WM.module('wm.widgets.form')
 
                             $is._onKeyUp = function ($event) {
                                 //On tab in, open the date popup
-                                if ($event.keyCode === 9) {
+                                if (Utils.showDropDownOnInput($is.showdropdownon) && $event.keyCode === 9) {
                                     $is.isDateOpen = true;
                                 }
                             };
