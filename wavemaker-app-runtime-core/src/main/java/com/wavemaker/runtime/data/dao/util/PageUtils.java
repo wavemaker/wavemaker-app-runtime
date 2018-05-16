@@ -8,12 +8,12 @@ import org.springframework.data.domain.Sort;
  * @author Dilip Kumar
  * @since 11/4/18
  */
-public abstract class PageUtils {
+public interface PageUtils {
 
-    private static final int DEFAULT_PAGE_NUMBER = 0;
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    int DEFAULT_PAGE_NUMBER = 0;
+    int DEFAULT_PAGE_SIZE = 20;
 
-    public static Pageable defaultIfNull(Pageable pageable) {
+    static Pageable defaultIfNull(Pageable pageable) {
         if (pageable == null) {
             return PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
         } else if (pageable.getSort() == null) {
@@ -23,13 +23,13 @@ public abstract class PageUtils {
         }
     }
 
-    public static Pageable overrideExportSize(final Pageable pageable, final Integer exportSize) {
+    static Pageable overrideExportSize(final Pageable pageable, final Integer exportSize) {
         final Pageable validPageable;
         if (exportSize == null || exportSize <= 0) {
             if (pageable == null) {
-                validPageable = PageRequest.of(0, -1);
+                validPageable = new SortedUnPagedRequest(0, 0);
             } else {
-                validPageable = PageRequest.of(0, -1, pageable.getSort());
+                validPageable = new SortedUnPagedRequest(0, 0, pageable.getSort());
             }
         } else {
             if (pageable == null) {
