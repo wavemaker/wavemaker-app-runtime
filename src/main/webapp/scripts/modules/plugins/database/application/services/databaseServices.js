@@ -2137,8 +2137,8 @@ wm.plugins.database.services.DatabaseService = [
              *                 Object containing name of the project & details of the table.
              */
 
-            exportTableData: function (params, successCallback,failureCallback) {
-                return initiateAction('exportTableData', params, successCallback,failureCallback);
+            exportTableData: function (params, successCallback, failureCallback) {
+                return initiateAction('exportTableData', params, successCallback, failureCallback);
             },
 
             /**

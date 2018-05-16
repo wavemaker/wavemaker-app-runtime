@@ -263,14 +263,14 @@ WM.module('wm.widgets.live')
                             }
                         });
 
-                        if (options.exportFormat) {
+                        if (options.exportType) {
                             variable.download({
                                 'matchMode'    : 'anywhere',
                                 'filterFields' : formFields,
                                 'orderBy'      : orderBy,
-                                'exportFormat' : options.exportFormat,
+                                'exportType'   : options.exportType,
                                 'logicalOp'    : 'AND',
-                                'size'         : options.exportdatasize,
+                                'exportSize'   : options.exportSize,
                                 'fields'       : options.fields
                             });
                             return;

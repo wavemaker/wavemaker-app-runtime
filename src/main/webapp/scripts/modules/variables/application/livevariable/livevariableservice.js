@@ -1423,8 +1423,9 @@ wm.variables.services.$liveVariable = [
                         data = {};
                     options.searchWithQuery = true; //For export, query api is used. So set this flag to true
                     tableOptions = prepareTableOptions(variable, options);
-                    data.q = tableOptions.query ? tableOptions.query : '';
-                    data.exportType = options.exportFormat;
+                    data.query = tableOptions.query ? tableOptions.query : '';
+                    data.exportSize = options.exportSize;
+                    data.exportType = options.exportType;
                     data.fields = options.fields;
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
@@ -1434,12 +1435,10 @@ wm.variables.services.$liveVariable = [
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'data'          : data,
-                        'filterMeta'    : tableOptions.filter,
-                        'exportFormat'  : options.exportFormat,
-                        'size'          : options.size
+                        'filterMeta'    : tableOptions.filter
                     }, function (response) {
                         window.location.href = response;
-                    },function (response) {
+                    }, function (response, xhrObj) {
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj);
                     });
                 },

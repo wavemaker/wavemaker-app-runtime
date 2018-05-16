@@ -240,7 +240,8 @@ WM.module('wm.widgets.table')
                 'onSetrecord'       : '&',
                 'onDatarender'      : '&',
                 'onBeforedatarender': '&',
-                'onTap'             : '&'
+                'onTap'             : '&',
+                'onBeforeexport'    : '&'
             },
             'replace'    : true,
             'transclude' : false,
@@ -2184,7 +2185,9 @@ WM.module('wm.widgets.table')
                 var filterFields,
                     variable = $is.variable,
                     sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction,
-                    fields = [];
+                    fields = [],
+                    isValid,
+                    requestData;
                 _.forEach($is.fieldDefs, function (field) {
                     fields.push({
                         'header': field.displayName,
@@ -2192,20 +2195,27 @@ WM.module('wm.widgets.table')
                     });
                 });
                 if ($is.isBoundToFilter) {
-                    $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize,'fields': fields});
+                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'exportSize': $is.exportdatasize,'fields': fields};
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
-                    variable.download({
+                    requestData = {
                         'matchMode'    : 'anywhere',
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
-                        'exportFormat' : $item.label,
+                        'exportType'   : $item.label,
                         'logicalOp'    : 'AND',
-                        'size'         : $is.exportdatasize,
+                        'exportSize'   : $is.exportdatasize,
                         'fields'       : fields
-                    }, function (errMsg) {
-                        wmToaster.error('Error', errMsg);
-                    });
+                    };
+                }
+                isValid = $is.onBeforeexport({$data: requestData});
+                if(isValid === false){
+                    return;
+                }
+                if ($is.isBoundToFilter) {
+                    $is.Widgets[$is.widgetName].applyFilter(requestData);
+                } else if ($is.showExportOptions()) {
+                    variable.download(requestData);
                 }
             }
             //Populate the _actions based on the position property
