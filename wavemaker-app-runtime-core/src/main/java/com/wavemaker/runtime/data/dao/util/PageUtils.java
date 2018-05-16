@@ -22,4 +22,22 @@ public abstract class PageUtils {
             return pageable;
         }
     }
+
+    public static Pageable overrideExportSize(final Pageable pageable, final Integer exportSize) {
+        final Pageable validPageable;
+        if (exportSize == null || exportSize <= 0) {
+            if (pageable == null) {
+                validPageable = PageRequest.of(0, -1);
+            } else {
+                validPageable = PageRequest.of(0, -1, pageable.getSort());
+            }
+        } else {
+            if (pageable == null) {
+                validPageable = PageRequest.of(0, exportSize);
+            } else {
+                validPageable = PageRequest.of(pageable.getPageNumber(), exportSize, pageable.getSort());
+            }
+        }
+        return validPageable;
+    }
 }

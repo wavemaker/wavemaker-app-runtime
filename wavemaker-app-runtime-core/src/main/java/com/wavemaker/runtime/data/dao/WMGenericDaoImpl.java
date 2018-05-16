@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -213,15 +212,16 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        export(new ExportOptions(exportType, query), pageable, outputStream);
+        export(new ExportOptions(exportType, query, pageable.getPageSize()), pageable, outputStream);
         return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
     @Override
     public void export(ExportOptions options, Pageable pageable, OutputStream outputStream) {
-        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+        final Pageable validPageable = PageUtils.overrideExportSize(pageable, options.getExportSize());
         this.sortValidator.validate(validPageable, entityClass);
+
         getTemplate().execute(session -> {
             final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
             final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
