@@ -39,6 +39,7 @@ import com.wavemaker.runtime.data.model.procedures.RuntimeProcedure;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
+import com.wavemaker.runtime.file.model.ExportedFileContentWrapper;
 import com.wavemaker.runtime.service.AppRuntimeService;
 
 /**
@@ -54,6 +55,7 @@ public class AppRuntimeController {
 
     @Autowired
     private ExportedFileManager exportedFileManager;
+
 
     @RequestMapping(value = "/application/type", method = RequestMethod.GET)
     public StringWrapper getApplicationType() {
@@ -88,10 +90,10 @@ public class AppRuntimeController {
         return downloadResponse;
     }
 
-    @RequestMapping(value = "/files/exported/{fileName:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public DownloadResponse getExportedFile(@PathVariable("fileName") String fileName) throws IOException {
-        InputStream is = new DeleteTempFileOnCloseInputStream(exportedFileManager.getFile(fileName));
-        return new DownloadResponse(is, MediaType.APPLICATION_OCTET_STREAM_VALUE, fileName);
+    @RequestMapping(value = "/files/exported/{fileId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public DownloadResponse getExportedFile(@PathVariable("fileId") String fileId) throws IOException {
+        ExportedFileContentWrapper fileContents = exportedFileManager.getFileContent(fileId);
+        return new DownloadResponse(fileContents.getInputStream(), MediaType.APPLICATION_OCTET_STREAM_VALUE, fileContents.getFileName());
     }
 }
 

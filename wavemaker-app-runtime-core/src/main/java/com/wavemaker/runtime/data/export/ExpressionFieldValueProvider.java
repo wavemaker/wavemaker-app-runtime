@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.wavemaker.commons.WMRuntimeException;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
@@ -13,6 +16,7 @@ import freemarker.template.TemplateExceptionHandler;
 public class ExpressionFieldValueProvider implements FieldValueProvider {
 
     private final Template template;
+    private static final Logger logger = LoggerFactory.getLogger(ExpressionFieldValueProvider.class);
 
     public ExpressionFieldValueProvider(String expression) {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
@@ -44,7 +48,8 @@ public class ExpressionFieldValueProvider implements FieldValueProvider {
             template.process(object, writer);
             return writer.toString();
         } catch (Exception e) {
-            throw new WMRuntimeException("Unexpected Error while processing template", e);
+            logger.warn("Invalid expression: {}. Refer documentation for more information.", object);
+            return "";
         }
     }
 }
