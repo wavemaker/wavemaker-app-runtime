@@ -83,10 +83,13 @@ public class ExportBuilder {
 
     private void fillSheet(Sheet sheet) throws Exception {
         int rowNum = FIRST_ROW_NUMBER;
+        fillHeader(sheet.createRow(rowNum++), optionsStrategy.getDisplayNames());
         while (queryExtractor.next()) {
-            Row row = sheet.createRow(rowNum);
-            final Object dataObject = queryExtractor.getCurrentRow();
-            rowNum = fillRow(dataObject, row, queryExtractor.isFirstRow());
+            if (!queryExtractor.isFirstRow()) {
+                Row row = sheet.createRow(rowNum);
+                final Object dataObject = queryExtractor.getCurrentRow();
+                rowNum = fillRow(dataObject, row);
+            }
         }
     }
 
@@ -102,20 +105,15 @@ public class ExportBuilder {
         }
     }
 
-    private int fillRow(Object rowData, Row row, boolean isFirstRow) throws Exception {
+    private int fillRow(Object rowData, Row row) throws Exception {
         if (rowData == null) {
             throw new WMRuntimeException("Failed to generate report with null Object");
         }
         final Class<?> dataClass = rowData.getClass();
         int rowNum = row.getRowNum();
-        if (isFirstRow) {
-            fillHeader(row, optionsStrategy.getDisplayNames());
-            row = row.getSheet().createRow(++rowNum);
-        }
         fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);
         return ++rowNum;
     }
-
 
     private void fillHeader(Row row, List<String> fieldNames) {
         int colNum = FIRST_COLUMN_NUMBER;

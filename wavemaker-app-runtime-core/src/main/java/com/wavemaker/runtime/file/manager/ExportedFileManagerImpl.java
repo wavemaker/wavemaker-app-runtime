@@ -1,47 +1,42 @@
 package com.wavemaker.runtime.file.manager;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Consumer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.commons.WMRuntimeException;
+import com.wavemaker.commons.io.TempFilesStorageManager;
+import com.wavemaker.commons.util.WMIOUtils;
+import com.wavemaker.runtime.file.model.ExportedFileContentWrapper;
 
 @Service
 public class ExportedFileManagerImpl implements ExportedFileManager {
 
-    private File exportsDir;
+    @Autowired
+    private TempFilesStorageManager tempFilesStorageManager;
 
     @Override
-    public String registerFile(String prefix, String suffix, Consumer<OutputStream> consumer) {
+    public String registerFile(String fileName, Consumer<OutputStream> consumer) {
         OutputStream outputStream = null;
         try {
-            File exportedFile = File.createTempFile(prefix, suffix, exportsDir);
-            outputStream = new FileOutputStream(exportedFile);
+            String exportedFileId = tempFilesStorageManager.registerNewFile(fileName);
+            outputStream = tempFilesStorageManager.getFileOutputStream(exportedFileId);
             consumer.accept(outputStream);
-            return exportedFile.getName();
+            return exportedFileId;
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while writing to export file.", e);
         } finally {
-            try {
-                if(outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException e) {
-                throw new WMRuntimeException("Error while closing the output stream.", e);
-            }
+            WMIOUtils.closeSilently(outputStream);
         }
     }
 
     @Override
-    public File getFile(String name) {
-        return new File(exportsDir.getAbsolutePath() + File.separator + name);
-    }
-
-    public void setExportsDir(File exportsDir) {
-        this.exportsDir = exportsDir;
+    public ExportedFileContentWrapper getFileContent(String fileId) {
+        String fileName = tempFilesStorageManager.getFileName(fileId);
+        InputStream inputStream = tempFilesStorageManager.getFileInputStream(fileId);
+        return new ExportedFileContentWrapper(fileName, inputStream);
     }
 }
