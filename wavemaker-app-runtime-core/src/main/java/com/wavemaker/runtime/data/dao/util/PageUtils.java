@@ -27,9 +27,9 @@ public interface PageUtils {
         final Pageable validPageable;
         if (exportSize == null || exportSize <= 0) {
             if (pageable == null) {
-                validPageable = new SortedUnPagedRequest(0, 0);
+                validPageable = new SortedUnPagedRequest(0, -1);
             } else {
-                validPageable = new SortedUnPagedRequest(0, 0, pageable.getSort());
+                validPageable = new SortedUnPagedRequest(0, -1, pageable.getSort());
             }
         } else {
             if (pageable == null) {

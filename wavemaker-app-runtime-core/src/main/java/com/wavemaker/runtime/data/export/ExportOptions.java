@@ -8,7 +8,7 @@ public class ExportOptions {
     private List<FieldInfo> fields = new ArrayList<>();
     private ExportType exportType;
     private String query;
-    private Integer exportSize = 0;
+    private Integer exportSize = -1;
 
     public ExportOptions(ExportType exportType) {
         this.exportType = exportType;

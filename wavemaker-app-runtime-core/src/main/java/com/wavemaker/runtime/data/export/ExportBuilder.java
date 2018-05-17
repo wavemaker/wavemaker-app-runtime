@@ -87,7 +87,8 @@ public class ExportBuilder {
         while (queryExtractor.next()) {
             Row row = sheet.createRow(rowNum);
             final Object dataObject = queryExtractor.getCurrentRow();
-            rowNum = fillRow(dataObject, row);
+            fillRow(dataObject, row);
+            rowNum++;
         }
     }
 
@@ -103,14 +104,12 @@ public class ExportBuilder {
         }
     }
 
-    private int fillRow(Object rowData, Row row) throws Exception {
+    private void fillRow(Object rowData, Row row) throws Exception {
         if (rowData == null) {
             throw new WMRuntimeException("Failed to generate report with null Object");
         }
         final Class<?> dataClass = rowData.getClass();
-        int rowNum = row.getRowNum();
         fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);
-        return ++rowNum;
     }
 
     private void fillHeader(Row row, List<String> fieldNames) {
