@@ -310,7 +310,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         exportTableData: {
-            url: "/services/:dataModelName/:entityName/export?size=:size&:sort",
+            url: "/services/:dataModelName/:entityName/export?:sort",
             method: "POST"
         },
         readTableRelatedData: {

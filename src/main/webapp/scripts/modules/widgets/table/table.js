@@ -914,6 +914,7 @@ WM.module('wm.widgets.table')
                         'property': 'deleterow'
                     }
                 },
+                ROW_OPS_FIELD = "rowOperations",
                 isDataSetWidgets = Utils.getDataSetWidgets(),
                 OPERATION = {
                     'NEW': 'new',
@@ -1585,8 +1586,8 @@ WM.module('wm.widgets.table')
                 if (!$is.fieldDefs.length) {
                     return;
                 }
-                rowActionCol = _.find($is.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
-                _.remove($is.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
+                rowActionCol = _.find($is.fullFieldDefs, {'field': ROW_OPS_FIELD, type : 'custom'}); //Check if column is fetched from markup
+                _.remove($is.fieldDefs, {type : 'custom', field : ROW_OPS_FIELD});//Removing operations column
                 _.remove($is.headerConfig, {field : rowOperationsColumn.field});
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
@@ -2188,11 +2189,22 @@ WM.module('wm.widgets.table')
                     fields = [],
                     isValid,
                     requestData;
-                _.forEach($is.fieldDefs, function (field) {
-                    fields.push({
-                        'header': field.displayName,
-                        'field': field.field
-                    });
+                _.forEach($is.fieldDefs, function (fieldDef) {
+                    // Do not add the row operation actions column to the exported file.
+                    if(fieldDef.field === ROW_OPS_FIELD) {
+                        return;
+                    }
+                    var option = {
+                        'header': fieldDef.displayName
+                    };
+                    // If column has exportexpression, then send form the expression as required by backend.
+                    // otherwise send the field name.
+                    if (fieldDef.exportexpression) {
+                        option.expression = '${' + fieldDef.exportexpression + '}';
+                    } else {
+                        option.field = fieldDef.field;
+                    }
+                    fields.push(option);
                 });
                 if ($is.isBoundToFilter) {
                     requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'exportSize': $is.exportdatasize,'fields': fields};
@@ -2822,7 +2834,7 @@ WM.module('wm.widgets.table')
 
                 var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
                     'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue',
-                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern'];
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression'];
 
                 return {
                     'pre': function (scope, element, attrs) {
