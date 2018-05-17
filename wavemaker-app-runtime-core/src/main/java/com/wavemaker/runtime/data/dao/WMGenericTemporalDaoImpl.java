@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import org.hibernate.query.Query;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -70,6 +71,8 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
                         return optionalColumn.isPresent() && optionalColumn.get().updatable();
                     })
                     .map(PropertyDescription::getDescriptor)
+                    .map(PropertyDescriptor::getName)
+                    .map(name -> BeanUtils.getPropertyDescriptor(entityClass, name))
                     .collect(Collectors.toList());
         } else {
             throw new WMRuntimeException("Class " + entityClass.getName() + " should annotate with TableTemporal");
