@@ -85,11 +85,9 @@ public class ExportBuilder {
         int rowNum = FIRST_ROW_NUMBER;
         fillHeader(sheet.createRow(rowNum++), optionsStrategy.getDisplayNames());
         while (queryExtractor.next()) {
-            if (!queryExtractor.isFirstRow()) {
-                Row row = sheet.createRow(rowNum);
-                final Object dataObject = queryExtractor.getCurrentRow();
-                rowNum = fillRow(dataObject, row);
-            }
+            Row row = sheet.createRow(rowNum);
+            final Object dataObject = queryExtractor.getCurrentRow();
+            rowNum = fillRow(dataObject, row);
         }
     }
 
