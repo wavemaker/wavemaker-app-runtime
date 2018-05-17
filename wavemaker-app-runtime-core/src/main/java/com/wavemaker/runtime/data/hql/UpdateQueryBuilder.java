@@ -38,7 +38,7 @@ public class UpdateQueryBuilder extends QueryBuilder<UpdateQueryBuilder> {
         return (setters.entrySet().stream()
                 .map(entry -> new Tuple.Two<>(entry, "wm_setter_" + entry.getKey()))
                 .peek(tuple -> parameters.put(tuple.v2, tuple.v1.getValue()))
-                .map(tuple -> tuple.v1.getKey() + " = :" + tuple.v2)
+                .map(tuple -> "set " + tuple.v1.getKey() + " = :" + tuple.v2)
                 .collect(Collectors.joining(" ", " ", " ")));
     }
 
