@@ -92,8 +92,7 @@ wm.plugins.database.services.DatabaseService = [
                 relatedFieldName : params.relatedFieldName,
                 page             : params.page,
                 size             : params.size,
-                sort             : params.sort,
-                exportFormat     : params.exportFormat
+                sort             : params.sort
             };
             if (params.url && CONSTANTS.isStudioMode && !noproxy) {
 

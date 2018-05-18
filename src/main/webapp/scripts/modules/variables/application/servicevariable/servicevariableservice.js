@@ -1021,14 +1021,14 @@ wm.variables.services.$servicevariable = ['Variables',
                     methodInfo   = getMethodInfo(this, inputParams, options),
                     requestParams;
 
-                methodInfo.relativePath += '/export/' + options.exportFormat;
+                methodInfo.relativePath += '/export/' + options.exportType;
                 requestParams = constructRestRequestParams(methodInfo, this);
 
                 //If request params returns error then show an error toaster
                 if (_.hasIn(requestParams, 'error.message')) {
                     Utils.triggerFn(errorHandler, requestParams.error.message);
                 } else {
-                    Utils.simulateFileDownload(requestParams, this.name, options.exportFormat);
+                    Utils.simulateFileDownload(requestParams, this.name, options.exportType);
                 }
             },
             init: function () {
