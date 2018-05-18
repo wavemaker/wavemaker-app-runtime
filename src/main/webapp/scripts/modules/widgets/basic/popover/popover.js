@@ -22,7 +22,8 @@ WM.module('wm.widgets.basic')
                     'caption'         : true,
                     'iconposition'    : true,
                     'contentsource'   : true,
-                    'popoverplacement': CONSTANTS.isRunMode
+                    'popoverplacement': CONSTANTS.isRunMode,
+                    'hint'            : true
                 },
                 interaction = {
                     'click'   : {'outsideClick' : 'outsideClick'},
@@ -81,6 +82,9 @@ WM.module('wm.widgets.basic')
                         if (nv) {
                             $is._popoverOptions.placement = 'auto ' + nv;
                         }
+                        break;
+                    case 'hint':
+                        $el.attr('title', nv);
                         break;
                 }
             }
