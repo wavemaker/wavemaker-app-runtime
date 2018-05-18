@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/anchor.html',
-                '<a data-identifier="anchor" class="app-anchor" init-widget title="{{hint}}" apply-styles role="button" accesskey="{{::shortcutkey}}">' +
+                '<a data-identifier="anchor" class="app-anchor" init-widget apply-styles role="button" accesskey="{{::shortcutkey}}">' +
                     '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass"></i>' +
                     ' <span class="anchor-caption"></span>' +
@@ -22,7 +22,8 @@ WM.module('wm.widgets.basic')
                 'target'      : true,
                 'hyperlink'   : true,
                 'caption'     : true,
-                'iconposition': true
+                'iconposition': true,
+                'hint'        : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -49,6 +50,9 @@ WM.module('wm.widgets.basic')
                 break;
             case 'caption':
                 Utils.setNodeContent(element.children('.anchor-caption'), newVal);
+                break;
+            case 'hint':
+                element.attr('title', newVal);
                 break;
             }
 
