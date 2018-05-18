@@ -1424,7 +1424,7 @@ wm.variables.services.$liveVariable = [
                     options.searchWithQuery = true; //For export, query api is used. So set this flag to true
                     tableOptions = prepareTableOptions(variable, options);
                     data.query = tableOptions.query ? tableOptions.query : '';
-                    data.exportSize = options.exportSize;
+                    data.exportSize = options.size;
                     data.exportType = options.exportType;
                     data.fields = options.fields;
                     DatabaseService[dbOperation]({
