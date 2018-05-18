@@ -1145,7 +1145,7 @@ WM.module('wm.widgets.form')
                         concatStr = getTimeRolledUpString(concatStr, match, dateFormat);
                     }
 
-                    return _.toLower(concatStr);
+                    return concatStr;
                 }
 
                 if (!orderby) { //Apply implicit orderby on group by clause, if order by not specified
