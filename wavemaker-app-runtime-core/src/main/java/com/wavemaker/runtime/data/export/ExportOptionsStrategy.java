@@ -13,6 +13,7 @@ import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
 public class ExportOptionsStrategy {
     private ExportOptions options;
+
     public ExportOptionsStrategy(ExportOptions options, Class<?> entityClass) {
         this.options = options;
         setFieldsIfEmpty(entityClass);
@@ -20,13 +21,13 @@ public class ExportOptionsStrategy {
 
     public List<String> getDisplayNames() {
         List<String> fieldNames = new ArrayList<>();
-        for(FieldInfo field : options.getFields()) {
+        for (FieldInfo field : options.getFields()) {
             fieldNames.add(getDisplayName(field));
         }
         return fieldNames;
     }
 
-    public List<Object> getFilteredRowData(Class<?> dataClass, Object rowData) throws Exception{
+    public List<Object> getFilteredRowData(Class<?> dataClass, Object rowData) throws Exception {
         List<FieldInfo> fieldInfos = options.getFields();
         List<Object> rowValues = new ArrayList<>();
         for (final FieldInfo fieldInfo : fieldInfos) {
@@ -36,7 +37,7 @@ public class ExportOptionsStrategy {
     }
 
     private void setFieldsIfEmpty(Class<?> dataClass) {
-        if(options.getFields().isEmpty()) {
+        if (options.getFields().isEmpty()) {
             includeAllFields(dataClass, "", true);
         }
     }
@@ -62,7 +63,15 @@ public class ExportOptionsStrategy {
     }
 
     private String getDisplayName(FieldInfo fieldInfo) {
-        return fieldInfo.getHeader() != null ? fieldInfo.getHeader() : capitaliseFieldName(fieldInfo.getField());
+        if (StringUtils.isBlank(fieldInfo.getHeader())) {
+            if (StringUtils.isNotBlank(fieldInfo.getField())) {
+                return capitaliseFieldName(fieldInfo.getField());
+            } else {
+                return "";
+            }
+        } else {
+            return fieldInfo.getHeader();
+        }
     }
 
     private String capitaliseFieldName(String fieldName) {
@@ -70,7 +79,7 @@ public class ExportOptionsStrategy {
         StringBuilder displayName = new StringBuilder();
         for (int i = 0; i < nestedFieldNames.length; i++) {
             displayName.append(WordUtils.capitalize(nestedFieldNames[i]));
-            if(i != nestedFieldNames.length - 1) {
+            if (i != nestedFieldNames.length - 1) {
                 displayName.append(" ");
             }
         }
@@ -80,15 +89,13 @@ public class ExportOptionsStrategy {
     private Object getColumnValue(Class<?> dataClass, Object rowData, FieldInfo fieldInfo) throws Exception {
         Object value;
         FieldValueProvider provider;
-        if(fieldInfo.getField() != null) {
+        if (fieldInfo.getField() != null) {
             provider = new SimpleFieldValueProvider(fieldInfo.getField(), dataClass);
             value = provider.getValue(rowData);
-        }
-        else if(fieldInfo.getExpression() != null){
+        } else if (fieldInfo.getExpression() != null) {
             provider = new ExpressionFieldValueProvider(fieldInfo.getExpression());
             value = provider.getValue(rowData);
-        }
-        else {
+        } else {
             throw new WMRuntimeException("No Field name or Expression provided.");
         }
         return value;
