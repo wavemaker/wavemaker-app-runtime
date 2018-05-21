@@ -37,15 +37,15 @@ public class RestRuntimeController {
         String pathInfo = httpServletRequest.getPathInfo();
         String[] split = pathInfo.split("/");
         if (split.length < 3) {
-            throw new WMRuntimeException("Invalid Rest Service Url");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.rest.service.url"));
         }
         final String serviceId = split[1];
         if (StringUtils.isBlank(serviceId)) {
-            throw new WMRuntimeException("ServiceId is empty");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.serviceId"));
         }
         final String operationId = split[2];
         if (StringUtils.isBlank(operationId)) {
-            throw new WMRuntimeException("operationId is empty");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.operationId"));
         }
 
         try {

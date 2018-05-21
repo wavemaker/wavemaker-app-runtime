@@ -34,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.prefab.context.PrefabThreadLocalContextManager;
 import com.wavemaker.runtime.prefab.core.PrefabRegistry;
@@ -195,13 +196,13 @@ public class PrefabControllerServlet extends DispatcherServlet {
             String urlPath = urlPathHelper.getLookupPathForRequest(request);
             String prefabName = extractPrefabName(urlPath);
             if (prefabName == null)
-                throw new WMRuntimeException("invalid url for accessing prefab : " + urlPath);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.url.for.accessing.prefab"), urlPath);
 
             PrefabRegistry prefabRegistry = getWebApplicationContext().getBean(PrefabRegistry.class);
             prefabContext = prefabRegistry.getPrefabContext(prefabName);
 
             if (prefabContext == null) {
-                throw new WMRuntimeException(" prefab [" + prefabName + "] does not exist in the application");
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.prefab.not.found"), prefabName);
             }
             // setting prefab name in request object
             request.setAttribute(WebUtils.INCLUDE_SERVLET_PATH_ATTRIBUTE,

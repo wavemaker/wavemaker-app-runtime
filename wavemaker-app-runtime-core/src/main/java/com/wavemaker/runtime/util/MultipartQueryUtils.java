@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.commons.InvalidInputException;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.runtime.data.model.queries.QueryParameter;
@@ -34,14 +35,14 @@ public class MultipartQueryUtils {
                 final String wmJson = request.getParameter(WMMultipartUtils.WM_DATA_JSON);
                 if (StringUtils.isBlank(wmJson)) {
                     LOGGER.error("Request does not have wm_data_json multipart data");
-                    throw new InvalidInputException("Invalid Input : wm_data_json part can not be NULL or Empty");
+                    throw new InvalidInputException(MessageResource.create("com.wavemaker.runtime.invalid.wm_data_json"));
                 }
                 instance = JSONUtils.toObject(wmJson, type);
             } else {
                 instance = JSONUtils.toObject(multipartFile.getInputStream(), type);
             }
         } catch (IOException e) {
-            throw new WMRuntimeException("Error while reading wm data body", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.wm.data.body.read.error"), e);
         }
         return instance;
     }
@@ -55,8 +56,7 @@ public class MultipartQueryUtils {
                     try {
                         parameter.setTestValue(parts.getFirst(partName).getBytes());
                     } catch (IOException e) {
-                        throw new WMRuntimeException("Error while reading multipart request for parameter" + partName,
-                                e);
+                        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.multipart.request.read.error"), e, partName);
                     }
                 }
             }
@@ -69,6 +69,6 @@ public class MultipartQueryUtils {
                 return parameter;
             }
         }
-        throw new WMRuntimeException("Parameter found with name: " + name);
+        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.parameter.found"), name);
     }
 }

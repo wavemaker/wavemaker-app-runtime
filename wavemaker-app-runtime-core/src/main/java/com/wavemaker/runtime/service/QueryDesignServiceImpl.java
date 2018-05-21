@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.StringTemplate;
 import com.wavemaker.runtime.WMAppContext;
@@ -77,7 +78,7 @@ public class QueryDesignServiceImpl extends AbstractDesignService implements Que
     @Override
     public Object executeQuery(final String serviceId, final RuntimeQuery query, final Pageable pageable) {
         if (DesignTimeServiceUtils.isDMLOrUpdateQuery(query)) {
-            throw new WMRuntimeException("Update queries not allowed");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.update.query.not.allowed"));
         }
         return _runQuery(serviceId, query, pageable);
     }

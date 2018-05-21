@@ -22,6 +22,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.impl.triggers.CronTriggerImpl;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -45,9 +46,7 @@ public class WMCronTriggerImpl extends CronTriggerImpl{
      */
     public void setRepeatCount(int repeatCount) {
         if (repeatCount < 0 && repeatCount != REPEAT_INDEFINITELY) {
-            throw new WMRuntimeException(
-                    "Repeat count must be >= 0, use the "
-                            + "constant REPEAT_INDEFINITELY for infinite.");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.repeat.count.must.be.greater.than.zero"));
         }
 
         this.repeatCount = repeatCount;

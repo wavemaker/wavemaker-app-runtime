@@ -34,6 +34,7 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.controller.RestRuntimeController;
 import com.wavemaker.runtime.rest.model.RestServiceInfoBean;
@@ -61,8 +62,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
         Map<String, RequestMappingHandlerMapping> beans = applicationContext
                 .getBeansOfType(RequestMappingHandlerMapping.class);
         if (beans == null || beans.size() == 0) {
-            throw new WMRuntimeException(
-                    "No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.requestMappingHandlerMapping.not.found"), applicationContext);
         } else {
             for (RequestMappingHandlerMapping bean : beans.values()) {
                 if (bean.getApplicationContext() == applicationContext) {
@@ -71,8 +71,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
                 }
             }
             if (requestMappingHandlerMapping == null) {
-                throw new WMRuntimeException(
-                        "No beans of type RequestMappingHandlerMapping found in " + applicationContext);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.requestMappingHandlerMapping.not.found"), applicationContext);
             }
         }
     }
@@ -85,7 +84,7 @@ public class RestServiceBeanPostProcessor implements BeanPostProcessor {
             HANDLE_REQUEST_METHOD = RestRuntimeController.class
                     .getDeclaredMethod("handleRequest", HttpServletRequest.class, HttpServletResponse.class);
         } catch (NoSuchMethodException e) {
-            throw new WMRuntimeException("Couldn't find handleRequestInternal method in RestRuntimeController", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.method.not.found"), e);
         }
     }
 

@@ -30,6 +30,7 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.util.WMIOUtils;
 import com.wavemaker.runtime.data.dao.procedure.parameters.ResolvableParam;
@@ -59,7 +60,7 @@ public class NativeProcedureExecutor {
             Map<String, Object> result = getResultMap(statement, params, resultSetType, 0);
             return convert(result, type);
         } catch (SQLException e) {
-            throw new WMRuntimeException("Error while executing Procedure", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.executing.procedure"), e);
         } finally {
             WMIOUtils.closeSilently(connection);
         }
@@ -165,7 +166,7 @@ public class NativeProcedureExecutor {
                 }
             }
         } catch (SQLException e) {
-            throw new WMRuntimeException("Failed to process cursor ", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.executing.procedure"), e);
         }
 
         return result;

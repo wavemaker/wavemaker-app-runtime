@@ -23,6 +23,7 @@ import java.util.Map;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.replacers.EntityValueReplacer;
 import com.wavemaker.runtime.data.replacers.ListenerContext;
@@ -77,7 +78,7 @@ public class WMEntityInterceptor extends EmptyInterceptor {
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Error while loading entity", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.while.loading.entity"), e);
         }
 
         final boolean applied = valueReplacer.apply(new ListenerContext(entity, Scope.READ));
@@ -111,7 +112,7 @@ public class WMEntityInterceptor extends EmptyInterceptor {
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Error while updating state parameters", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.state.parameters.update.error"), e);
         }
     }
 }

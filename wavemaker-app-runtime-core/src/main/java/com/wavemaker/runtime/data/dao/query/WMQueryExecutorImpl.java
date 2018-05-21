@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.runtime.data.dao.callbacks.NamedQueryExporterCallback;
 import com.wavemaker.runtime.data.dao.callbacks.PaginatedQueryCallback;
 import com.wavemaker.runtime.data.dao.callbacks.QueryCallback;
@@ -61,8 +62,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
         return template.execute(new QueryCallback<>(queryProvider,
                 parametersProvider))
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "No row exists for given parameters:" + queryInput.getParameters()));
+                .orElseThrow(() -> new EntityNotFoundException(MessageResource.create("com.wavemaker.runtime.no.row.exists"), queryInput.getParameters()));
     }
 
     @Override

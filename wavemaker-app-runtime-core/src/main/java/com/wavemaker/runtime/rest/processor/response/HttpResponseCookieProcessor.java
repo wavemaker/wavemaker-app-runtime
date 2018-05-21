@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.CookieStore;
 import com.wavemaker.runtime.rest.model.HttpResponseDetails;
@@ -60,7 +61,7 @@ public class HttpResponseCookieProcessor extends AbstractHttpResponseProcessor {
                 HttpResponseUtils.setCookies(httpResponseDetails, Collections.emptyList());
                 break;
             default:
-                throw new WMRuntimeException("Unknown strategyType");
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unknown.strategytype"));
         }
     }
 

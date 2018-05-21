@@ -43,6 +43,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.io.DeleteTempFileOnCloseInputStream;
 import com.wavemaker.commons.json.JSONUtils;
@@ -103,7 +104,7 @@ public class HttpRequestUtils {
 
     public static Message getJsonMessage(Object body) {
         if (body == null || "".equals(body)) {
-            throw new WMRuntimeException("object cannot be empty");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.object"));
         }
         Message message = new Message();
         message.setHttpHeaders(new HttpHeaders());

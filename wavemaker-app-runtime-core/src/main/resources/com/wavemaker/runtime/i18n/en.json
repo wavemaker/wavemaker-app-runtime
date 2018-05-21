@@ -1,12 +1,5 @@
 {
   "COMMENT_SERVICE_ERROR_MESSAGES": "-----------Service Error Message Resources----------",
-  "com.wavemaker.runtime.$RestServiceInvokeFailed": "Error while invoking rest service, Check logs for more information",
-  "com.wavemaker.studio.json$AccessDenied": "Access Denied  \"${0}\"",
-  "com.wavemaker.studio.json$InvalidFieldValue": "Invalid Field value for the parameter \"${0}\", \"${1}\"",
-  "com.wavemaker.studio.json$InvalidJsonObject": "Incorrect Json Object \"${0}\"",
-  "com.wavemaker.studio.json$MessageNotReadable": "Message not readable",
-  "com.wavemaker.studio.json$UnexpectedError": "Unexpected error \"${0}\",please check server logs for more information",
-  "com.wavemaker.studio.json$UnrecognizedField": "Unrecognized field \"${0}\"",
   "LABEL_ACCESS_DENIED": "Access Denied",
   "LABEL_ACTIONS": "Actions",
   "LABEL_APPLICATION_NAME": "WaveMaker",

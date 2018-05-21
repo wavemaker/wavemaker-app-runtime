@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -34,7 +35,7 @@ public class CompositeIdentifierStrategy<Entity, Identifier> implements Identifi
             try {
                 valuesMap.put(idProperty.getName(), idProperty.getReadMethod().invoke(identifier));
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new WMRuntimeException("unable to get identifier property:" + idProperty.getName(), e);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unable.to.get.identifier.property"), e, idProperty.getName());
             }
         });
 

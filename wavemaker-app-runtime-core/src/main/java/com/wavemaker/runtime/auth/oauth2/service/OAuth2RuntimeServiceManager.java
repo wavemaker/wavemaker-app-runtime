@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.ResourceNotFoundException;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.auth.oauth2.OAuth2Constants;
@@ -136,10 +137,10 @@ public class OAuth2RuntimeServiceManager {
                 return OAuth2Helper.getCallbackResponse(providerId, accessToken, customUrlScheme, requestSourceType);
             } else {
                 logger.error("Failed to fetch access token, request made is {} and its response is {}", httpRequestDetails, httpResponseDetails);
-                throw new WMRuntimeException("Failed to fetch access token");
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.fetch.accessToken"));
             }
         } catch (IOException e) {
-            throw new WMRuntimeException("Failed to parse responseBody", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.parse.responseBody"), e);
         }
     }
 
@@ -149,7 +150,7 @@ public class OAuth2RuntimeServiceManager {
                 return oAuth2ProviderConfig;
             }
         }
-        throw new ResourceNotFoundException("No OAuth2ProviderConfig found for given providerId - " + providerId);
+        throw new ResourceNotFoundException(MessageResource.create("com.wavemaker.runtime.OAuth2ProviderConfig.not.found"), providerId);
     }
 
     private synchronized void setCustomUrlScheme() {

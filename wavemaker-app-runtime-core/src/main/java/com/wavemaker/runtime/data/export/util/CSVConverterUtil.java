@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -57,7 +58,7 @@ public class CSVConverterUtil {
             convertToCSV();
             toCSV(outputStream);
         } catch (Exception e) {
-            throw new WMRuntimeException("Error while exporting data to CSV format", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.data.exporting.csv.error"), e);
         }
     }
 

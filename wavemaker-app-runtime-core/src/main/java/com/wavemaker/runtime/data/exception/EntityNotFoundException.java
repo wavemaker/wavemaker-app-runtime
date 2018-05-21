@@ -15,23 +15,23 @@
  */
 package com.wavemaker.runtime.data.exception;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 public class EntityNotFoundException extends WMRuntimeException {
-	
+
 	private static final long serialVersionUID = 1L;
 
     public EntityNotFoundException() {
         super();
     }
 
-    public EntityNotFoundException(String message)
-	{
-		super(message);
-	}
+    public EntityNotFoundException(MessageResource resource) {
+        super(resource);
+    }
 
-	public EntityNotFoundException(String message, Exception e) {
-		super(message, e);
-	}
+    public EntityNotFoundException(MessageResource resource, Object... args) {
+        super(resource, args);
+    }
 
 }

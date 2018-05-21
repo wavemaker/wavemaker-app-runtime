@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.core.AuthenticationException;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.util.HttpRequestUtils;
 
@@ -58,7 +59,7 @@ public class WMCASAuthenticationEntryPoint extends SpringCasAuthenticationEntryP
             try {
                 service = service + "?redirectPage=" + URLEncoder.encode(redirectToPage, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                throw new WMRuntimeException("could not encode redirectPage", e);
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.could.not.encode.redirectpage"), e);
             }
         }
         return CommonUtils.constructServiceUrl(request, response, service, null, this.serviceProperties.getServiceParameter(),

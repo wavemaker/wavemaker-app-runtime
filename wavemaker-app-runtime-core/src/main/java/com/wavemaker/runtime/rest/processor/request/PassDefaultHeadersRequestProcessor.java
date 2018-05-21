@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.HttpHeaders;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.rest.model.HttpRequestData;
 import com.wavemaker.runtime.rest.model.HttpRequestDetails;
@@ -39,7 +40,7 @@ public class PassDefaultHeadersRequestProcessor extends AbstractHttpRequestProce
     @Override
     public void afterPropertiesSet() throws Exception {
         if (CollectionUtils.isEmpty(defaultHeaders)) {
-            throw new WMRuntimeException("defaultHeaders can't be empty");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.empty.default.headers"));
         }
 
     }

@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import org.springframework.beans.BeanUtils;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
@@ -37,7 +38,7 @@ public class SimpleFieldValueProvider implements FieldValueProvider {
             }
             return value;
         } catch (Exception e) {
-            throw new WMRuntimeException("Invalid field name", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.field.name"), e);
         }
     }
 }

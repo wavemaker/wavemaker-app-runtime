@@ -40,6 +40,7 @@ import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
 import com.wavemaker.commons.CommonConstants;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 
 /**
@@ -105,7 +106,7 @@ public class WMRuntimeUtils {
         try {
             declaredField = instance.getDeclaredField(field);
         } catch (NoSuchFieldException e) {
-            throw new WMRuntimeException("Filed " + field + " does not exist in class " + instance.getName(), e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.field.not.found"), e, field, instance.getName());
         }
         return declaredField != null && (Objects.equals(BYTE_ARRAY, declaredField.getType().getSimpleName())
                 || Objects.equals(BLOB, declaredField.getType().getSimpleName()));

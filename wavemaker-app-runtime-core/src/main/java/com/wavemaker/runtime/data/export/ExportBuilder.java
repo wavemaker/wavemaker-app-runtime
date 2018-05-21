@@ -29,6 +29,7 @@ import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
 import com.wavemaker.runtime.data.export.util.DataSourceExporterUtil;
@@ -64,7 +65,7 @@ public class ExportBuilder {
                 exportWorkbook(workbook, options.getExportType(), outputStream);
             }
         } catch (Exception e) {
-            throw new WMRuntimeException("Exception while building report", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.export.building.error"), e);
         }
     }
 
@@ -77,7 +78,7 @@ public class ExportBuilder {
                 csvConverterUtil.convert(outputStream);
             }
         } catch (IOException e) {
-            throw new WMRuntimeException("Error while exporting data", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.data.exporting.error"), e);
         }
     }
 
@@ -94,7 +95,7 @@ public class ExportBuilder {
 
     private void fillRow(Object rowData, Row row) throws Exception {
         if (rowData == null) {
-            throw new WMRuntimeException("Failed to generate report with null Object");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.report.generation.failed"));
         }
         final Class<?> dataClass = rowData.getClass();
         fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);

@@ -24,6 +24,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.tools.api.core.annotations.WMAccessVisibility;
 import com.wavemaker.tools.api.core.models.AccessSpecifier;
@@ -39,7 +40,7 @@ public class WMAppRequestInterceptor implements HandlerInterceptor{
             if (handlerMethod.getMethod().getAnnotations() != null) {
                 for (Annotation annotation : handlerMethod.getMethod().getAnnotations()) {
                     if(annotation instanceof WMAccessVisibility && ((WMAccessVisibility)annotation).value().equals(AccessSpecifier.UNAVAILABLE)){
-                        throw new WMRuntimeException("Access denied for this method " + handlerMethod.getMethod().getName());
+                        throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.methodAccessDenied"), handlerMethod.getMethod().getName());
                     }
                 }
             }

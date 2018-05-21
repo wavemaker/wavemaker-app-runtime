@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.json.JSONUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -85,8 +86,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 } else {
                     LOGGER.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId,
                             webAppClassLoader);
-                    throw new WMRuntimeException(
-                            serviceId + "-procedures.mappings.json file is not found in either of webAppClassLoader or contextClassLoader");
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.procedures.mappings.not.found"), serviceId);
                 }
             }
 
@@ -95,7 +95,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         } catch (WMRuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to map the procedures mapping file", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.mapping.procedures.mapping.file.failed"), e);
         } finally {
             WMIOUtils.closeSilently(resourceStream);
         }
@@ -116,7 +116,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 return NativeProcedureExecutor.execute(session, procedure.getProcedureString(), resolvableParams, type);
             }
         } catch (Exception e) {
-            throw new WMRuntimeException("Failed to execute Named Procedure", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.named.procedure.execution.failed"), e);
         }
     }
 

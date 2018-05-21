@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.util.JavaTypeUtils;
 
@@ -58,7 +59,7 @@ public class ExportOptionsStrategy {
                 }
             }
         } catch (Exception e) {
-            throw new WMRuntimeException("Unexpected Error during ExportOptions generation.", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unexpected.exportOptions.generation.error"), e);
         }
     }
 
@@ -96,7 +97,7 @@ public class ExportOptionsStrategy {
             provider = new ExpressionFieldValueProvider(fieldInfo.getExpression());
             value = provider.getValue(rowData);
         } else {
-            throw new WMRuntimeException("No Field name or Expression provided.");
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.no.fieldName.or.expression"));
         }
         return value;
     }

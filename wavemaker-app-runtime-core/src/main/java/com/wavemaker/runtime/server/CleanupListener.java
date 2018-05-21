@@ -58,6 +58,7 @@ import com.sun.jndi.ldap.Connection;
 import com.sun.jndi.ldap.LdapClient;
 import com.sun.jndi.ldap.LdapPoolManager;
 import com.sun.naming.internal.ResourceManager;
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.classloader.ClassLoaderUtils;
 import com.wavemaker.commons.util.WMIOUtils;
@@ -232,13 +233,13 @@ public class CleanupListener implements ServletContextListener {
             NotificationEmitter notificationEmitter = (NotificationEmitter) platformManagedObject;
             Field listenerListField = findField(notificationEmitter.getClass(), "listenerList");
             if (listenerListField == null) {
-                throw new WMRuntimeException("Unrecognized NotificationEmitter class " + notificationEmitter.getClass().getName());
+                throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognized.notificationEmitter"), notificationEmitter.getClass().getName());
             }
             List listenerInfoList = (List) listenerListField.get(notificationEmitter);//This object would be List<ListenerInfo>
             for (Object o : listenerInfoList) {
                 Field listenerField = findField(o.getClass(), "listener");
                 if (listenerListField == null) {
-                    throw new WMRuntimeException("Unrecognized ListenerInfo class " + o.getClass().getName());
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.unrecognizedListenerInfo"), o.getClass().getName());
                 }
                 NotificationListener notificationListener = (NotificationListener) listenerField.get(o);
                 if (notificationListener.getClass().getClassLoader() == classLoader) {

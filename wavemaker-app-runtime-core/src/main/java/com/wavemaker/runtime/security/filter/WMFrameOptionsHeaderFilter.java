@@ -35,6 +35,7 @@ import org.springframework.security.web.header.writers.frameoptions.StaticAllowF
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.FrameOptions;
 import com.wavemaker.commons.util.HttpRequestUtils;
@@ -69,7 +70,7 @@ public class WMFrameOptionsHeaderFilter extends GenericFilterBean {
                     URI uri = new URI(domain);
                     validDomains.put(domain, uri);
                 } catch (URISyntaxException e) {
-                    throw new WMRuntimeException("Invalid allow from url " + allowFromUrl, e);
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.invalid.allowFromUrl"), e, allowFromUrl);
                 }
             });
         }

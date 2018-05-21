@@ -48,6 +48,7 @@ import org.opensaml.xml.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wavemaker.commons.MessageResource;
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.commons.model.security.saml.MetadataSource;
 import com.wavemaker.commons.util.PropertiesFileUtils;
@@ -85,7 +86,7 @@ public class LoadKeyStore {
                 try {
                     resourceAsStream = new FileInputStream(keyStoreFile);
                 } catch (FileNotFoundException e) {
-                    throw new WMRuntimeException("File" + keyStoreFileName + "not found", e);
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.not.found"), e, keyStoreFileName);
                 }
                 final KeyStore keyStore = load(resourceAsStream, keyStorePassword);
                 String idpPublicKey = null;
@@ -97,7 +98,7 @@ public class LoadKeyStore {
                     idpPublicKey = loadSAMLIdpMetadataFromFile(idpMetadataFile);
                 }
                 if (idpPublicKey == null) {
-                    throw new WMRuntimeException("Could not find public key in " + keyStoreFile.getName());
+                    throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.publicKey.not.found"), keyStoreFile.getName());
                 }
 
                 final boolean success = importCertificate(keyStore, KEY, idpPublicKey);
@@ -119,7 +120,7 @@ public class LoadKeyStore {
             keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(keyStoreIS, password.toCharArray());
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
-            throw new WMRuntimeException("Error creating keystore", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.creating.keystore"), e);
         } finally {
             WMIOUtils.closeSilently(keyStoreIS);
         }
@@ -153,7 +154,7 @@ public class LoadKeyStore {
             fileSystemMetadataProvider.initialize();
             metadata = fileSystemMetadataProvider.getMetadata();
         } catch (MetadataProviderException e) {
-            throw new WMRuntimeException("Failed to read idp metadata ", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.failed.to.read.idp.metadata"), e);
         } finally {
             if (fileSystemMetadataProvider != null)
                 fileSystemMetadataProvider.destroy();
@@ -197,7 +198,7 @@ public class LoadKeyStore {
                 keystore.setCertificateEntry(keyAlias, cert);
             }
         } catch (CertificateException | KeyStoreException | IOException e) {
-            throw new WMRuntimeException("Error importing certificate to keystore", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.certificate.import.error"), e);
         } finally {
             WMIOUtils.closeSilently(certIn);
         }
@@ -211,7 +212,7 @@ public class LoadKeyStore {
             stream = new FileOutputStream(keyStoreFile);
             keyStore.store(stream, password.toCharArray());
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
-            throw new WMRuntimeException("Error saving keystore", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.error.saving.keystore"), e);
         } finally {
             WMIOUtils.closeSilently(stream);
         }
@@ -225,7 +226,7 @@ public class LoadKeyStore {
             uri = resource.toURI();
             return uri;
         } catch (URISyntaxException e) {
-            throw new WMRuntimeException("File not found", e);
+            throw new WMRuntimeException(MessageResource.create("com.wavemaker.runtime.file.not.found"), e, filePath);
         }
     }
 }
