@@ -75,7 +75,7 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                     inputEl.attr(key, newVal);
                 case 'disabled':
-                    isDisabled = scope.readonly || WM.isDefined(scope.disabled);
+                    isDisabled = scope.readonly || (WM.isDefined(scope.disabled) && scope.disabled);
                     inputEl.attr('disabled', isDisabled);
                     buttonEl.attr('disabled', isDisabled);
                     break;

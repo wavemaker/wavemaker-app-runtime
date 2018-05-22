@@ -78,7 +78,7 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                     inputEl.attr(key, nv);
                 case 'disabled':
-                    isDisabled = $is.readonly || WM.isDefined($is.disabled);
+                    isDisabled = $is.readonly || (WM.isDefined($is.disabled) && $is.disabled);
                     inputEl.attr('disabled', isDisabled);
                     buttonEl.attr('disabled', isDisabled);
                     break;
