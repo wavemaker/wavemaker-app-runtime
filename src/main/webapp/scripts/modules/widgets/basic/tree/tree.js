@@ -321,7 +321,7 @@ WM.module('wm.widgets.basic')
                     .each(function () {
                         var $current = WM.element(this),
                             $i       = $current.children('i.collapsed');
-                        toggleExpandCollapseNode($is, $i, $current);
+                        toggleExpandCollapseNode(evt, $is, $i, $current);
                     });
 
                 $is.selecteditem      = Utils.getClonedObject(data) || {};
