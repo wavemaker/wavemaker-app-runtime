@@ -2186,9 +2186,9 @@ WM.module('wm.widgets.table')
                 var filterFields,
                     variable = $is.variable,
                     sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction,
-                    fields = [],
                     isValid,
-                    requestData;
+                    requestData,
+                    columns = {};
                 _.forEach($is.fieldDefs, function (fieldDef) {
                     // Do not add the row operation actions column to the exported file.
                     if(fieldDef.field === ROW_OPS_FIELD) {
@@ -2200,14 +2200,14 @@ WM.module('wm.widgets.table')
                     // If column has exportexpression, then send form the expression as required by backend.
                     // otherwise send the field name.
                     if (fieldDef.exportexpression) {
-                        option.expression = '${' + fieldDef.exportexpression + '}';
+                        option.expression = fieldDef.exportexpression;
                     } else {
                         option.field = fieldDef.field;
                     }
-                    fields.push(option);
+                    columns[fieldDef.field] = option;
                 });
                 if ($is.isBoundToFilter) {
-                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'size': $is.exportdatasize,'fields': fields};
+                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'size': $is.exportdatasize,'columns': columns};
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
                     requestData = {
@@ -2217,13 +2217,14 @@ WM.module('wm.widgets.table')
                         'exportType'   : $item.label,
                         'logicalOp'    : 'AND',
                         'size'         : $is.exportdatasize,
-                        'fields'       : fields
+                        'columns'      : columns
                     };
                 }
                 isValid = $is.onBeforeexport({$data: requestData});
                 if(isValid === false){
                     return;
                 }
+                requestData.fields = _.values(requestData.columns);
                 if ($is.isBoundToFilter) {
                     $is.Widgets[$is.widgetName].applyFilter(requestData);
                 } else if ($is.showExportOptions()) {

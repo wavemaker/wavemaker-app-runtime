@@ -1315,6 +1315,19 @@ wm.variables.services.$liveVariable = [
                     }
                 }
             },
+            /**
+             * formatting the expression as required by backend which was enclosed by ${<expression>}.
+             * @param fieldDefs
+             * returns fieldDefs
+             */
+            formatExportExpression = function(fieldDefs) {
+                _.forEach(fieldDefs, function (fieldDef) {
+                    if (fieldDef.expression) {
+                        fieldDef.expression = '${' + fieldDef.expression + '}';
+                    }
+                });
+                return fieldDefs;
+            },
         /* properties of a basic variable - should contain methods applicable on this particular object */
             methods = {
                 /*Function to get the primary key of the specified variable.*/
@@ -1422,11 +1435,12 @@ wm.variables.services.$liveVariable = [
                         projectID   = $rootScope.project.id || $rootScope.projectName,
                         data = {};
                     options.searchWithQuery = true; //For export, query api is used. So set this flag to true
+                    options.skipEncode = true;
                     tableOptions = prepareTableOptions(variable, options);
                     data.query = tableOptions.query ? tableOptions.query : '';
                     data.exportSize = options.size;
                     data.exportType = options.exportType;
-                    data.fields = options.fields;
+                    data.fields = formatExportExpression(options.fields);
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
                         'service'       : variable._prefabName ? '' : 'services',
