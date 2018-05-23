@@ -1627,7 +1627,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBeforedatarender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onBeforeexport": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onBeforeexport": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},

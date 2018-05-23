@@ -606,6 +606,10 @@ WM.module('wm.widgets.table')
                                         });
                                     });
                                 }
+                                //showing onBeforeexport callback event when any of the export format is selected.
+                                if ($is.widgetid) {
+                                    wp.onBeforeexport.show = ($is.exportOptions.length > 0);
+                                }
                                 break;
                             case 'editmode':
                                 if ($is.widgetid) {
