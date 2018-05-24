@@ -59,8 +59,6 @@ public class ExportBuilder {
             try (SXSSFWorkbook workbook = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE)) {
                 SXSSFSheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
-                spreadSheet.trackAllColumnsForAutoSizing();
-                autoSizeAllColumns(workbook);
                 exportWorkbook(workbook, options.getExportType(), outputStream);
             }
         } catch (Exception e) {
@@ -83,24 +81,12 @@ public class ExportBuilder {
 
     private void fillSheet(Sheet sheet) throws Exception {
         int rowNum = FIRST_ROW_NUMBER;
-        fillHeader(sheet.createRow(rowNum++), optionsStrategy.getDisplayNames());
+        fillHeader(sheet.createRow(rowNum++), optionsStrategy.getDisplayNames(), sheet);
         while (queryExtractor.next()) {
             Row row = sheet.createRow(rowNum);
             final Object dataObject = queryExtractor.getCurrentRow();
             fillRow(dataObject, row);
             rowNum++;
-        }
-    }
-
-    private void autoSizeAllColumns(Workbook workbook) {
-        for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
-            Sheet sheet = workbook.getSheetAt(sheetIndex);
-            int firstRowNum = sheet.getFirstRowNum();
-            Row row = sheet.getRow(firstRowNum);
-            int lastCellNum = row.getLastCellNum();
-            for (int i = 0; i < lastCellNum; i++) {
-                sheet.autoSizeColumn(row.getCell(i).getColumnIndex());
-            }
         }
     }
 
@@ -112,10 +98,11 @@ public class ExportBuilder {
         fillData(optionsStrategy.getFilteredRowData(dataClass, rowData), row);
     }
 
-    private void fillHeader(Row row, List<String> fieldNames) {
+    private void fillHeader(Row row, List<String> fieldNames, Sheet sheet) {
         int colNum = FIRST_COLUMN_NUMBER;
         for (final String fieldName : fieldNames) {
             CellUtil.createCell(row, colNum, fieldName, columnHeaderStyle(row.getSheet().getWorkbook()));
+            sheet.setColumnWidth(colNum, 20 * 256);
             colNum++;
         }
     }
@@ -126,6 +113,7 @@ public class ExportBuilder {
         for (Object value : rowValues) {
             final Cell cell = row.createCell(colNum);
             DataSourceExporterUtil.setCellValue(value, cell);
+            cell.setCellStyle(columnDataStyle(row.getSheet().getWorkbook()));
             colNum++;
         }
     }
@@ -139,5 +127,11 @@ public class ExportBuilder {
         columnNameStyle.setWrapText(true);
         columnNameStyle.setFont(font);
         return columnNameStyle;
+    }
+
+    private CellStyle columnDataStyle(Workbook workbook) {
+        CellStyle dataStyle = workbook.createCellStyle();
+        dataStyle.setWrapText(true);
+        return dataStyle;
     }
 }
