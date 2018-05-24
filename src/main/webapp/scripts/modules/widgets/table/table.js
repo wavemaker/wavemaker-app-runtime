@@ -209,7 +209,8 @@ WM.module('wm.widgets.table')
         }
 
         function showExportOptions($is) {
-            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToDataServiceType && !$is.isBoundToProcedureServiceVariable && $is.variable && $is.variable.isList);
+            //showing export options in case of widget bound to live variables and query service variable.
+            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToQueryServiceVariable && $is.variable.isList);
         }
 
         return {
