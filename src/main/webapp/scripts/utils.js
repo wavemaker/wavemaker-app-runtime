@@ -3066,15 +3066,9 @@ WM.module('wm.utils', [])
          * @param linkField - the field which is selected as the link
          */
         function getHref($is, node, link, onSelect, action, linkField) {
-            var itemlink = link || node[linkField];
+            var itemlink = node.bindlinkitem ? link : node[linkField];
             if (onSelect || action || !itemlink) {
                 return "";
-            }
-            if (itemlink) {
-                /* removing spl characters from the beginning of the path.
-                 1. #/Main  -> Main
-                 2. .#/Main/abc -> Main/abc*/
-                itemlink = _.first(itemlink.match(/[\w]+.*/g));
             }
             return itemlink;
         }

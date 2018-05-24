@@ -1336,7 +1336,10 @@ WM.module('wm.widgets.form')
                     $('.uib-datepicker-popup').addClass('active');
                 }, 100);
             } else {
-                $('.uib-time.hours input').filter(':visible').focus();
+                /*$timeout is used so that by then time input has the updated value. focus is setting back to the input field*/
+                $timeout(function () {
+                    $('.uib-time.hours input').filter(':visible').focus();
+                });
             }
         }
 
@@ -1402,10 +1405,26 @@ WM.module('wm.widgets.form')
                         setIsTimeOpen($is, true);
                         setFocusOnElement($is, true);
                     } else if (Utils.getActionFromKey(evt) === 'ENTER') {
+                        evt.preventDefault();
                         evt.stopPropagation();
                         setIsDateOpen($is);
-                        setFocusOnElement($is, true);
+                        setIsTimeOpen($is, true);
+                        /*$timeout is used so that by then date/datetime input has the updated value. focus is setting back to the input field*/
+                        $timeout(function() {
+                            setFocusOnElement($is, true);
+                        });
                     }
+                });
+                datepickerEle.find('.uib-button-bar .uib-clear').on('keydown', function (evt) {
+                    /* clear the model and set focus back to input when Clear button is clicked.*/
+                   if (Utils.getActionFromKey(evt) === 'ENTER') {
+                       setIsDateOpen($is);
+                       $is._model_ = '';
+                       /*$timeout is used so that by then date/datetime input has the updated value. focus is setting back to the input field*/
+                       $timeout(function() {
+                           setFocusOnElement($is);
+                       });
+                   }
                 });
                 datepickerEle.find('.uib-datepicker').on('keydown', function (evt) {
                     if (Utils.getActionFromKey(evt) === 'SHIFT+TAB') {
@@ -1425,7 +1444,7 @@ WM.module('wm.widgets.form')
                             setFocusOnElement($is);
                         });
                     } else if (Utils.getActionFromKey(evt) === 'ENTER') {
-                        if (evt.target.closest('.uib-daypicker')) {
+                        if (evt.target.hasAttributes('uib-daypicker')) {
                             setIsDateOpen($is);
                             setIsTimeOpen($is, true);
                             setFocusOnElement($is, true);

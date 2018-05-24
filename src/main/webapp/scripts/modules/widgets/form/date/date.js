@@ -139,10 +139,13 @@ WM.module('wm.widgets.form')
             function onDateChange(scope, evt) {
                 //after selecting the date, setting the focus back to input and triggering the _onChange
                 scope._onChange({$event: evt, $scope: scope});
-                /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
-                $timeout(function() {
-                    DateTimeWidgetUtils.setFocusOnElement(scope);
-                });
+                //element will not be available in studio mode
+                if (CONSTANTS.isRunMode) {
+                    /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
+                    $timeout(function() {
+                        DateTimeWidgetUtils.setFocusOnElement(scope);
+                    });
+                }
             }
 
             return {
@@ -294,10 +297,13 @@ WM.module('wm.widgets.form')
                                 //On Enter, open the date popup
                                 if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon) && (Utils.getActionFromKey($event) === 'ENTER' || Utils.getActionFromKey($event) === 'DOWN-ARROW')) {
                                     $event.preventDefault();
+                                    //when datepicker is used in datatable/form, on enter record is getting inserted. To prevent record insertion stopPropagation is being used
+                                    $event.stopPropagation();
                                     $is.isOpen = true;
                                     DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
                                 } else {
                                     $is.isOpen = false;
+                                    //when datepicker is used in datatable/form, on keyboard enter/esc record is getting inserted. To prevent record insertion stopPropagation is being used
                                     $event.stopPropagation();
                                 }
                             };

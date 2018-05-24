@@ -90,7 +90,7 @@ WM.module('wm.widgets.form')
                                 'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})   || item[iconField],
                                 'class'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'})  || item[classField],
                                 'disabled'  : item.disabled,
-                                'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})   || item[linkField],
+                                'link'      : scope.binditemlink ? WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) : item[linkField],
                                 'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
                                 'children'  : (WM.isArray(children) ? children : []).reduce(transformFn, []),
                                 'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
@@ -408,7 +408,8 @@ WM.module('wm.widgets.form')
                                 KEY_MOVEMENTS.MOVE_DOWN = 'RIGHT-ARROW';
                             }
                         }
-                        if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ENTER || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
+                        if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ENTER && !(element.isolateScope() && element.isolateScope().item.link)) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
+                            //when there is no link for the menu, on enter open the inner child elements and focus the first element
                             evt.stopPropagation();
                             element.toggleClass('open');
                             element.children().find('li:first').find('a:first').focus();
@@ -435,14 +436,15 @@ WM.module('wm.widgets.form')
                             } else {
                                 element.closest('li').next().find('a').focus();
                             }
-                        } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_TAB) {
-                            if ($parent.children().last()[0] === element[0]) {
-                                evt.preventDefault();
-                                $rootel.isolateScope().isOpen = false;
-                                $rootel.isolateScope().$apply();
-                                $rootel.find('[uib-dropdown-toggle]').focus();
-                                $rootel.find('li').removeClass('open');
-                            }
+                        } else if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_TAB && $parent.children().last()[0] === element[0]) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ESCAPE) {
+                            /*closing all the children elements when
+                            * 1. Tab is clicked on the last element
+                            * 2. When Escape key is clicked*/
+                            evt.preventDefault();
+                            $rootel.isolateScope().isOpen = false;
+                            $rootel.isolateScope().$apply();
+                            $rootel.find('[uib-dropdown-toggle]').focus();
+                            $rootel.find('li').removeClass('open');
                         }
                     });
                 }
