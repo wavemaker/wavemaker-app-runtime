@@ -68,7 +68,8 @@ Application
             'MOVE_RIGHT' : 'RIGHT-ARROW',
             'MOVE_DOWN'  : 'DOWN-ARROW',
             'ON_ENTER'   : 'ENTER',
-            'ON_TAB'     : 'TAB'
+            'ON_TAB'     : 'TAB',
+            'ON_ESCAPE'  : 'ESC'
         },
         'MENU_LAYOUT_TYPE': {
             'HORIZONTAL': 'horizontal',
