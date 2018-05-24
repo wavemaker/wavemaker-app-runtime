@@ -82,7 +82,7 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     protected abstract HibernateTemplate getHistoryTemplate();
 
     @Override
-    public Page<E> findHistory(
+    public Page<E> findByPeriod(
             final List<PeriodClause> periodClauses, final String query, final Pageable pageable) {
         Pageable validPageable = PageUtils.defaultIfNull(pageable);
 
@@ -90,6 +90,23 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
 
         final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
                 .withFilter(query);
+        periodClauses.forEach(builder::withPeriodClause);
+
+        final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
+                .execute(getHistoryTemplate(), historyClass, builder, validPageable);
+
+        return responsePage.map(TemporalHistoryEntity::asParent);
+    }
+
+    @Override
+    public Page<E> findByIdAndPeriod(
+            final Map<String, Object> identifier, final List<PeriodClause> periodClauses, final Pageable pageable) {
+        Pageable validPageable = PageUtils.defaultIfNull(pageable);
+
+        sortValidator.validate(validPageable, historyClass);
+
+        final SelectQueryBuilder builder = new SelectQueryBuilder(historyClass)
+                .withFilterConditions(identifier);
         periodClauses.forEach(builder::withPeriodClause);
 
         final Page<TemporalHistoryEntity<E>> responsePage = HqlQueryHelper
@@ -119,10 +136,40 @@ public abstract class WMGenericTemporalDaoImpl<E extends Serializable, I extends
     }
 
     @Override
+    public int update(
+            final PeriodClause periodClause, final String filter, final E entity) {
+        UpdateQueryBuilder builder = new UpdateQueryBuilder(historyClass);
+
+        builder.withFilter(filter);
+        builder.withPeriodClause(periodClause);
+
+        updatableProperties.forEach(property -> {
+            try {
+                builder.withSetter(property.getName(),
+                        property.getReadMethod().invoke(entity));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new WMRuntimeException("Error while reading property: " + property.getName() + " value", e);
+            }
+        });
+
+        return executeUpdateDeleteQuery(builder.build());
+    }
+
+    @Override
     public int delete(final Map<String, Object> identifier, final PeriodClause periodClause) {
         DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass);
 
         builder.withFilterConditions(identifier);
+        builder.withPeriodClause(periodClause);
+
+        return executeUpdateDeleteQuery(builder.build());
+    }
+
+    @Override
+    public int delete(final PeriodClause periodClause, final String filter) {
+        DeleteQueryBuilder builder = new DeleteQueryBuilder(historyClass);
+
+        builder.withFilter(filter);
         builder.withPeriodClause(periodClause);
 
         return executeUpdateDeleteQuery(builder.build());

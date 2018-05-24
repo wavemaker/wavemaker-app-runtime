@@ -14,9 +14,15 @@ import com.wavemaker.runtime.data.periods.PeriodClause;
  */
 public interface WMGenericTemporalDao<E, I> extends WMGenericDao<E, I> {
 
-    Page<E> findHistory(List<PeriodClause> periodClauses, String query, Pageable pageable);
+    Page<E> findByPeriod(List<PeriodClause> periodClauses, String query, Pageable pageable);
 
-    int update(final Map<String, Object> identifier, PeriodClause periodClause, E entity);
+    Page<E> findByIdAndPeriod(Map<String, Object> identifier, List<PeriodClause> periodClauses, Pageable pageable);
+
+    int update(Map<String, Object> identifier, PeriodClause periodClause, E entity);
+
+    int update(PeriodClause periodClause, String filter, final E entity);
 
     int delete(Map<String, Object> identifier, PeriodClause periodClause);
+
+    int delete(PeriodClause periodClause, String filter);
 }

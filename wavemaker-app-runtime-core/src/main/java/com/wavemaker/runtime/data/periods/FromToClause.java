@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.data.periods;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,10 +14,10 @@ import com.wavemaker.runtime.data.filter.WMQueryInfo;
 public class FromToClause implements PeriodClause {
 
     private final TableTemporal.TemporalType type;
-    private final Timestamp from;
-    private final Timestamp to;
+    private final Date from;
+    private final Date to;
 
-    public FromToClause(final TableTemporal.TemporalType type, final Timestamp from, final Timestamp to) {
+    public FromToClause(final TableTemporal.TemporalType type, final Date from, final Date to) {
         this.type = type;
         this.from = from;
         this.to = to;
