@@ -839,7 +839,7 @@ wm.variables.services.$liveVariable = [
                     if(variable.category === "wm.LiveVariable" && variable.operation === "read") {
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions);
                     } else {
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields);
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields,options);
                     }
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
@@ -1122,7 +1122,7 @@ wm.variables.services.$liveVariable = [
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
                     clonedFields = Utils.getClonedObject(inputFields);
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields);
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields, options);
                     if (output === false) {
                         variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
                         processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData, options);
@@ -1283,6 +1283,11 @@ wm.variables.services.$liveVariable = [
                 * This handles cases such as "Delete" requests where data should not be passed.*/
                 if (WM.element.isEmptyObject(rowObject) && action === "deleteTableData") {
                     rowObject = undefined;
+                }
+
+                if ((action === 'updateCompositeTableData' || action === 'deleteCompositeTableData') && options.period) {
+                    //capitalize first character
+                    action = 'period' + action.charAt(0).toUpperCase() + action.substr(1);
                 }
 
                 promiseObj = DatabaseService[action]({
