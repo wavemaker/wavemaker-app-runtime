@@ -1289,7 +1289,11 @@ WM.module('wm.widgets.live')
                                     if (attrs.isRelated) {
                                         //Fetch the data for the related fields
                                         columnDef.isDataSetBound = true;
-                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, columnDef.key, 'All Fields', columnDef.widget, elScope, parentScope);
+                                        var callbackFn = function(filterexpressions) {
+                                            columnDef.filterexpressions = filterexpressions;
+                                            LiveWidgetUtils.fetchRelatedFieldData(columnDef, columnDef.key, 'All Fields', columnDef.widget, elScope, parentScope);
+                                        };
+                                        LiveWidgetUtils.interpolateBindExpressions(parentScope, columnDef.filterexpressions, callbackFn);
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'widget');
                                     }

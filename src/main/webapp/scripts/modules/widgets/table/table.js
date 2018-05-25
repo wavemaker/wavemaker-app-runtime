@@ -412,25 +412,6 @@ WM.module('wm.widgets.table')
                             }
                             $is.callDataGridMethod('saveRow');
                         }
-                        //Populate the filter options with localized messages
-                        function getMatchModeMsgs() {
-                            return {
-                                'start'            : $is.appLocale.LABEL_STARTS_WITH,
-                                'end'              : $is.appLocale.LABEL_ENDS_WITH,
-                                'anywhere'         : $is.appLocale.LABEL_CONTAINS,
-                                'exact'            : $is.appLocale.LABEL_IS_EQUAL_TO,
-                                'notequals'        : $is.appLocale.LABEL_IS_NOT_EQUAL_TO,
-                                'lessthan'         : $is.appLocale.LABEL_LESS_THAN,
-                                'lessthanequal'    : $is.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
-                                'greaterthan'      : $is.appLocale.LABEL_GREATER_THAN,
-                                'greaterthanequal' : $is.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
-                                'null'             : $is.appLocale.LABEL_IS_NULL,
-                                'isnotnull'        : $is.appLocale.LABEL_IS_NOT_NULL,
-                                'empty'            : $is.appLocale.LABEL_IS_EMPTY,
-                                'isnotempty'       : $is.appLocale.LABEL_IS_NOT_EMPTY,
-                                'nullorempty'      : $is.appLocale.LABEL_IS_NULL_OR_EMPTY
-                            };
-                        }
                         function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
                             Utils.triggerFn($is.navigatorResultWatch);
@@ -652,7 +633,7 @@ WM.module('wm.widgets.table')
                         $is.noModifyTitle     = attrs.noModifyTitle === 'true';
                         $is.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
                         $is.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
-                        $is.matchModeMsgs     = getMatchModeMsgs();
+                        $is.matchModeMsgs     = LiveWidgetUtils.getMatchModeMsgs($is.appLocale);
                         $is.gridElement       = element;
                         $is.gridColumnCount   = gridColumnCount;
                         $is.displayAllFields  = attrs.displayall === '';
@@ -729,7 +710,7 @@ WM.module('wm.widgets.table')
                         }));
                         handlers.push($rs.$on('locale-change', function () {
                             $is.appLocale     = $rs.appLocale;
-                            $is.matchModeMsgs = getMatchModeMsgs();
+                            $is.matchModeMsgs = LiveWidgetUtils.getMatchModeMsgs($is.appLocale);
                             $is.callDataGridMethod('option', 'messages.selectField', $rs.appLocale.MESSAGE_SELECT_FIELD);
                         }));
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
@@ -2840,7 +2821,7 @@ WM.module('wm.widgets.table')
 
                 var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
                     'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue',
-                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression'];
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression', 'filterexpressions'];
 
                 return {
                     'pre': function (scope, element, attrs) {
@@ -2944,7 +2925,8 @@ WM.module('wm.widgets.table')
                             'searchable'        : (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'limit'             : attrs.limit ? +attrs.limit : undefined,
-                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string')
+                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string'),
+                            'filterexpressions' : attrs.filterexpressions || '{}'
                         };
 
                         _.forEach(columnProperties, function (key) {
@@ -3016,7 +2998,12 @@ WM.module('wm.widgets.table')
                                         //Fetch the data for the related fields
                                         columnDef.isDataSetBound = true;
                                         bindings = _.split(columnDef.field, '.');
-                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
+                                        var eleScope = element.scope();
+                                        var callbackFn = function(filterexpressions) {
+                                            columnDef.filterexpressions = filterexpressions;
+                                            LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, eleScope, parentScope);
+                                        };
+                                        LiveWidgetUtils.interpolateBindExpressions(parentScope, columnDef.filterexpressions, callbackFn);
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
                                         if (columnDef.editWidgetType === 'autocomplete' && _.includes(parentScope.binddataset, 'bind:Variables.')) {
