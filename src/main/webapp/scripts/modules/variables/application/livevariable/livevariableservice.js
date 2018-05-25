@@ -839,7 +839,7 @@ wm.variables.services.$liveVariable = [
                     if(variable.category === "wm.LiveVariable" && variable.operation === "read") {
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions);
                     } else {
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields,options);
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields, options);
                     }
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
@@ -1284,7 +1284,7 @@ wm.variables.services.$liveVariable = [
                 if (WM.element.isEmptyObject(rowObject) && action === "deleteTableData") {
                     rowObject = undefined;
                 }
-
+                // checking for peroid property if it is true then calling temporal update and temporal delete API's.
                 if ((action === 'updateCompositeTableData' || action === 'deleteCompositeTableData') && options.period) {
                     //capitalize first character
                     action = 'period' + action.charAt(0).toUpperCase() + action.substr(1);
