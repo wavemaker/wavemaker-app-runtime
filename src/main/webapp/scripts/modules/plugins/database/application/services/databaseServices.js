@@ -2305,6 +2305,27 @@ wm.plugins.database.services.DatabaseService = [
 
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#periodupdateCompositeTableData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to update data in the specified temporal table.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & table data to be updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            periodUpdateCompositeTableData: function (params, successCallback, failureCallback) {
+                return initiateAction("periodUpdateCompositeTableData", params, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#deleteCompositeTableData
              * @methodOf wm.database.$DatabaseService
              * @function
@@ -2322,6 +2343,27 @@ wm.plugins.database.services.DatabaseService = [
 
             deleteCompositeTableData: function (params, successCallback, failureCallback) {
                 return initiateAction("deleteCompositeTableData", params, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#periodDeleteCompositeTableData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to delete data from the specified table.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & table data to be deleted.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            periodDeleteCompositeTableData: function (params, successCallback, failureCallback) {
+                return initiateAction("periodDeleteCompositeTableData", params, successCallback, failureCallback);
             },
 
             /*
