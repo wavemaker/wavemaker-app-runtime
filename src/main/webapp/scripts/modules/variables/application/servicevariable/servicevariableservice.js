@@ -556,7 +556,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
             // EVENT: ON_BEFORE_UPDATE
             if (CONSTANTS.isRunMode) {
-                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, inputFields);
+                output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, inputFields, options);
                 if (output === false) {
                     Utils.triggerFn(errorCB);
                     return;
