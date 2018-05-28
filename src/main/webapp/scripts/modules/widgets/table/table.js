@@ -2999,6 +2999,9 @@ WM.module('wm.widgets.table')
                                         columnDef.isDataSetBound = true;
                                         bindings = _.split(columnDef.field, '.');
                                         var eleScope = element.scope();
+                                        //now its an async all, by the time it fetches the data, datatable._getEditableTemplate renders the
+                                        // template seeing the isDefinedData value as undefined. to avoid that we are setting this to true before now
+                                        columnDef.isDefinedData = true;
                                         var callbackFn = function(filterexpressions) {
                                             columnDef.filterexpressions = filterexpressions;
                                             LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, eleScope, parentScope);
