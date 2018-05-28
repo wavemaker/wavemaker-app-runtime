@@ -27,7 +27,7 @@ public class AppFileSystem implements ServletContextAware {
     }
 
     public InputStream getClasspathResourceStream(String resourcePath) {
-        return context.getClass().getClassLoader().getResourceAsStream(resourcePath);
+        return context.getClassLoader().getResourceAsStream(resourcePath);
     }
 
     public InputStream getWebappResource(String resourcePath) {
