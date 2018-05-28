@@ -2260,7 +2260,6 @@ WM.module('wm.widgets.live')
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displayfield = (columnDef.displaylabel || displayField);
                 } else {
-                    columnDef.isDefinedData = true;
                     boundVariable.getRelatedTableData(relatedField, {
                         'pagesize': columnDef.limit,
                         'orderBy': columnDef.orderby ? _.replace(columnDef.orderby, /:/g, ' ') : '',
@@ -2928,6 +2927,7 @@ WM.module('wm.widgets.live')
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
+            this.isSearchWidgetType         = isSearchWidgetType;
             this.interpolateBindExpressions = interpolateBindExpressions;
             this.getQuery                   = getQuery;
             this.compute                    = compute;
