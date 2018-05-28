@@ -837,7 +837,7 @@ wm.variables.services.$liveVariable = [
                     clonedFields = Utils.getClonedObject(variable.filterFields);
                     // EVENT: ON_BEFORE_UPDATE
                     if(variable.category === "wm.LiveVariable" && variable.operation === "read") {
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions);
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions, options);
                     } else {
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields, options);
                     }
