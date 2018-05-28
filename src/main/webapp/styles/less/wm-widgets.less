@@ -1159,49 +1159,61 @@ html, body {
     }
   }
 }
-.app-datetime, .app-date {
-  .app-calendar-event {
-    .btn:after {
-      font-family: "FontAwesome";
-      font-size: 6px;
-      content: "\f111\00a0\f111\00a0\f111";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      color: rgba(0,0,0,0.2);
-      text-align: center;
-      line-height: 2px;
-    }
-    &.one {
+.wm-app {
+  .app-datetime,  .app-date {
+    .app-calendar-event {
       .btn:after {
-        content: "\f111";
+        font-family: "FontAwesome";
+        font-size: 6px;
+        content: "\f111\00a0\f111\00a0\f111";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        color: rgba(0,0,0,0.2);
+        text-align: center;
+        line-height: 2px;
       }
-    }
-    &.two {
-      .btn:after {
-        content: "\f111\00a0\f111";
+      &.one {
+        .btn:after {
+          content: "\f111";
+        }
       }
-    }
-  }
-  .uib-daypicker {
-    tbody{
-      .btn-default {
-        position: relative;
-        margin: 0;
-        &:after {
-          bottom: -1em;
+      &.two {
+        .btn:after {
+          content: "\f111\00a0\f111";
         }
       }
     }
-    table {
-      tbody {
-        tr.uib-weeks {
-          td:first-child {
-            width: auto;
+    .uib-daypicker {
+      tbody{
+        .btn-default {
+          position: relative;
+          margin: 0;
+          &:after {
+            bottom: -1em;
           }
         }
       }
+      table {
+        tbody {
+          tr.uib-weeks {
+            td:first-child {
+              width: auto;
+            }
+          }
+        }
+      }
+    }
+    tbody .btn.btn-default {
+      &:focus, &.active {
+        background-color: #bbb !important;
+        color: #333 !important;
+      }
+    }
+    //Focus styles for Date,DateTime input group buttons
+    .input-group-btn .btn:focus {
+      outline: 1px dotted !important;
     }
   }
 }
@@ -3409,7 +3421,10 @@ If the height and width are not specified the video takes the height of the post
     padding: 1em;
   }
 }
-
+//Focus styles for Menu in navbar
+.wm-app .app-navbar .navbar-nav ul.dropdown-menu li a:focus {
+  background-color: rgba(0,0,0,0.15);
+}
 .wm-app .popover.fade {
   &.bottom, &.top, &.left, &.right {
     >.arrow {
