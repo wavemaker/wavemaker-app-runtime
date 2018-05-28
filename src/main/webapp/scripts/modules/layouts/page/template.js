@@ -37,49 +37,49 @@ WM.module('wm.layouts.page')
 
         $templateCache.put('template/layouts/template.html',
                 '<div data-role="template" class="app-template app-page container" init-widget>' +
-                    '<header data-role="page-header" class="app-header clearfix" wm-template-container="{{header}}"></header>' +
-                    '<section data-role="page-topnav" class="app-top-nav" wm-template-container="{{topnav}}"></section>' +
+                    '<header data-role="page-header" class="app-header clearfix" wm-template-container="{{header"></header>' +
+                    '<section data-role="page-topnav" class="app-top-nav" wm-template-container="{{topnav"></section>' +
                     '<main  data-role="page-content" class="app-content clearfix">' +
                         '<div class="row app-content-row clearfix">' +
-                            '<aside data-role="page-left-panel" class="app-left-panel col-md-2 col-sm-2" wm-template-container="{{leftnav}}"></aside>' +
+                            '<aside data-role="page-left-panel" class="app-left-panel col-md-2 col-sm-2" wm-template-container="{{leftnav"></aside>' +
                             '<div class="app-page-content app-content-column">' +
                                 '<div class="app-ng-transclude" wmtransclude></div>' +
                             '</div>' +
-                            '<aside data-role="page-right-panel" class="app-right-panel col-md-2 col-sm-2" wm-template-container="{{rightnav}}"></aside>' +
+                            '<aside data-role="page-right-panel" class="app-right-panel col-md-2 col-sm-2" wm-template-container="{{rightnav"></aside>' +
                         '</div>' +
                     '</main>' +
-                    '<footer data-role="page-footer" class="app-footer clearfix" wm-template-container="{{footer}}"></footer>' +
+                    '<footer data-role="page-footer" class="app-footer clearfix" wm-template-container="{{footer"></footer>' +
                 '</div>'
             );
 
         $templateCache.put('template/dialog/common/confirm.html',
                 '<wm-view name="CommonConfirmDialogView" class="dialog-view">' +
-                    '<wm-confirmdialog name="CommonConfirmDialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" canceltext="{{notification.cancelButtonText}}"' +
-                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()">' +
+                    '<wm-confirmdialog name="CommonConfirmDialog" controller="NotificationDialogController" notificationdialog="confirm" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" canceltext="bind:notification.cancelButtonText"' +
+                        'on-ok="notification.onOk()" on-cancel="notification.onCancel()">' +
                     '</wm-confirmdialog>' +
                 '</wm-view>'
             );
 
         $templateCache.put('template/dialog/common/alert.html',
                 '<wm-view name="CommonAlertDialogView" class="dialog-view">' +
-                    '<wm-alertdialog name="CommonAlertDialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
-                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
+                    '<wm-alertdialog name="CommonAlertDialog" notificationdialog="alert" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" alerttype="bind:notification.alerttype"' +
+                        'on-ok="notification.onOk()" on-close="notification.onClose()()">' +
                     '</wm-alertdialog>' +
                 '</wm-view>'
             );
 
         $templateCache.put('template/dialog/page/alert.html',
                 '<wm-view name="notificationAlertDialogView" class="dialog-view">' +
-                    '<wm-alertdialog name="notificationalertdialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
-                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
+                    '<wm-alertdialog name="notificationalertdialog" controller="NotificationDialogController" notificationdialog="alert" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" alerttype="bind:notification.alerttype"' +
+                        'on-ok="notification.onOk()" on-close="notification.onClose()()">' +
                     '</wm-alertdialog>' +
                 '</wm-view>'
             );
 
         $templateCache.put('template/dialog/page/confirm.html',
                 '<wm-view name="notificationConfirmDialogView" class="dialog-view">' +
-                    '<wm-confirmdialog name="notificationconfirmdialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}"' +
-                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()" on-close="variableOnClose()">' +
+                    '<wm-confirmdialog name="notificationconfirmdialog" controller="NotificationDialogController" notificationdialog="confirm" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText"' +
+                        'on-ok="notification.onOk()" on-cancel="notification.onCancel()" on-close="notification.onClose()()">' +
                     '</wm-confirmdialog>' +
                 '</wm-view>'
             );
