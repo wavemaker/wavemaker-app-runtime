@@ -2177,7 +2177,8 @@ WM.module('wm.widgets.table')
                     columns = {};
                 _.forEach($is.fieldDefs, function (fieldDef) {
                     // Do not add the row operation actions column to the exported file.
-                    if(fieldDef.field === ROW_OPS_FIELD) {
+                    //Do not add the column with show property 'false' to the exported file.
+                    if(fieldDef.field === ROW_OPS_FIELD || !fieldDef.show) {
                         return;
                     }
                     var option = {
