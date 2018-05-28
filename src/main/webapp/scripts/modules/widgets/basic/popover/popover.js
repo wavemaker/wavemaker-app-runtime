@@ -182,6 +182,8 @@ WM.module('wm.widgets.basic')
                                 _scope  = $el.scope(); //scope inherited from controller's scope
 
                             $is.appLocale = _scope.appLocale;
+                            //Disable right click on the element, because there will be no link given for popover
+                            Utils.disableRightClick($el);
 
                             if (CONSTANTS.isRunMode) {
                                 $is._isFirstTime = true;

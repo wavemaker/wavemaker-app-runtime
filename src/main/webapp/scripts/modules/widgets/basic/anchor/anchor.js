@@ -75,6 +75,8 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         if (!attrs.hyperlink && !attrs.href) {
                             element.attr('href', 'javascript:void(0)');
+                            //Disable right click on the element when there is no link
+                            Utils.disableRightClick(element);
                         }
                     }
                 };
