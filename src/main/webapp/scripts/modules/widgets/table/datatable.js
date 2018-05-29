@@ -623,19 +623,19 @@ $.widget('wm.datatable', {
             break;
         case 'date':
             $el.addClass('datetime-wrapper');
-            template = '<wm-date ' + properties + ' placeholder="' + placeholder + '"></wm-date>';
+            template = '<wm-date ' + properties + ' placeholder="' + placeholder + '"' + 'showdropdownon="'+ colDef.showdropdownon + '"' + '></wm-date>';
             break;
         case 'time':
             $el.addClass('datetime-wrapper');
-            template = '<wm-time ' + properties + ' placeholder="' + placeholder + '"></wm-time>';
+            template = '<wm-time ' + properties + ' placeholder="' + placeholder + '"'  + 'showdropdownon="'+ colDef.showdropdownon + '"' + '></wm-time>';
             break;
         case 'datetime':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + properties + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"'  + 'showdropdownon="'+ colDef.showdropdownon + '"' + '></wm-datetime>';
             break;
         case 'timestamp':
             $el.addClass('datetime-wrapper');
-            template = '<wm-datetime ' + properties + ' placeholder="' + placeholder + '"></wm-datetime>';
+            template = '<wm-datetime ' + properties + ' placeholder="' + placeholder + '"'  + 'showdropdownon="'+ colDef.showdropdownon + '"' + '></wm-datetime>';
             break;
         case 'checkbox':
             checkedTmpl = colDef.checkedvalue ? ' checkedvalue="' + colDef.checkedvalue + '" ' : '';

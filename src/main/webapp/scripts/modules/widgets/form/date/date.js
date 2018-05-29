@@ -294,17 +294,20 @@ WM.module('wm.widgets.form')
                             });
 
                             $is._onKeyDown = function ($event) {
-                                //On Enter, open the date popup
-                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon) && (Utils.getActionFromKey($event) === 'ENTER' || Utils.getActionFromKey($event) === 'DOWN-ARROW')) {
-                                    $event.preventDefault();
+                                //If the showdropdown property is set to default(i.e open popup on input and button click), stop the propagtion
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
                                     //when datepicker is used in datatable/form, on enter record is getting inserted. To prevent record insertion stopPropagation is being used
                                     $event.stopPropagation();
-                                    $is.isOpen = true;
-                                    DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                    //On Enter, open the date popup
+                                    if (Utils.getActionFromKey($event) === 'ENTER' || Utils.getActionFromKey($event) === 'DOWN-ARROW') {
+                                        $event.preventDefault();
+                                        $is.isOpen = true;
+                                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                    } else {
+                                        $is.isOpen = false;
+                                    }
                                 } else {
                                     $is.isOpen = false;
-                                    //when datepicker is used in datatable/form, on keyboard enter/esc record is getting inserted. To prevent record insertion stopPropagation is being used
-                                    $event.stopPropagation();
                                 }
                             };
 

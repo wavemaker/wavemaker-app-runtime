@@ -350,16 +350,18 @@ WM.module('wm.widgets.form')
                             });
 
                             $is._onKeyDown = function ($event) {
-                                //when timepicker is used in datatable/form, on keyboard enter/esc record is getting inserted. To prevent record insertion stopPropagation is being used
-                                $event.stopPropagation();
-                                //On Enter, open the date popup
-                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon) && Utils.getActionFromKey($event) === 'ENTER') {
-                                    $event.preventDefault();
-                                    $is.isOpen = true;
-                                    /*$timeout is used so that by then $is.isOpen has the updated value and timepicker popup has been open. focus is setting on the timepicker*/
-                                    $timeout(function() {
-                                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
-                                    });
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                                    //when timepicker is used in datatable/form, on keyboard enter/esc record is getting inserted. To prevent record insertion stopPropagation is being used
+                                    $event.stopPropagation();
+                                    //On Enter, open the date popup
+                                    if (Utils.getActionFromKey($event) === 'ENTER') {
+                                        $event.preventDefault();
+                                        $is.isOpen = true;
+                                        /*$timeout is used so that by then $is.isOpen has the updated value and timepicker popup has been open. focus is setting on the timepicker*/
+                                        $timeout(function() {
+                                            DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
+                                        });
+                                    }
                                 }
                             };
                         }

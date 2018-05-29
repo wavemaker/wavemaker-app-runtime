@@ -500,11 +500,15 @@ WM.module('wm.widgets.form')
                             });
 
                             $is._onKeyDown = function ($event) {
-                                //On Enter, open the date popup
-                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon) && Utils.getActionFromKey($event) === 'ENTER') {
-                                    $event.preventDefault();
-                                    $is.isDateOpen = true;
-                                    DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                                    //when datepicker is used in datatable/form, on enter record is getting inserted. To prevent record insertion stopPropagation is being used
+                                    $event.stopPropagation();
+                                    //On Enter, open the date popup
+                                    if (Utils.getActionFromKey($event) === 'ENTER') {
+                                        $event.preventDefault();
+                                        $is.isDateOpen = true;
+                                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                    }
                                 }
                             };
                         }
