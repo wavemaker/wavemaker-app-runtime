@@ -1457,6 +1457,25 @@ WM.module('wm.widgets.form')
         }
 
         /**
+         * This function sets the events to given element
+         * @param $is - scope of the active element
+         * @param $el - element on which the event is added
+         * @keyCodeArray array of key codes, based on the code action is to be performed
+         * @stopPropagation boolean value decides whether to stop propagation or not
+         */
+        function addEventsOnTimePicker($is, $el, keyCodeArray, stopPropagation) {
+            $el.on('keydown', function (evt) {
+               if (_.includes(keyCodeArray, Utils.getActionFromKey(evt))) {
+                   setIsTimeOpen($is, false);
+                   setFocusOnElement($is);
+                   if (stopPropagation) {
+                       evt.stopPropagation();
+                   }
+               }
+            });
+        }
+
+        /**
          * This function sets the keyboard events to Timepicker popup
          * @param $is - scope of the active element
          */
@@ -1464,25 +1483,11 @@ WM.module('wm.widgets.form')
             $timeout(function () {
                 var timepickerEle = WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]');
                 timepickerEle.parent().addClass('app-datetime');
-                timepickerEle.on('keydown', function (evt) {
-                    if (Utils.getActionFromKey(evt) === 'ESC') {
-                        setIsTimeOpen($is, false);
-                        setFocusOnElement($is);
-                    }
-                });
-                timepickerEle.find('.uib-time.am-pm').on('keydown', function (evt) {
-                    if (Utils.getActionFromKey(evt) === 'TAB') {
-                        setIsTimeOpen($is, false);
-                        setFocusOnElement($is);
-                    }
-                });
-                timepickerEle.find('.uib-time.hours').on('keydown', function (evt) {
-                    if (Utils.getActionFromKey(evt) === 'SHIFT+TAB') {
-                        evt.stopPropagation();
-                        setIsTimeOpen($is, false);
-                        setFocusOnElement($is);
-                    }
-                });
+                addEventsOnTimePicker($is, timepickerEle, ['ESC'], false);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.am-pm'), ['TAB'], false);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.hours'), ['SHIFT+TAB', 'ENTER'], true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.minutes'), ['ENTER'], true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.seconds'), ['ENTER'], true);
             }, 0, false);
         }
 
