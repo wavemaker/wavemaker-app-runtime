@@ -5,14 +5,16 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/alertdialog.html",
-            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget apply-styles="container">' +
-                '<div class="modal-content">' +
-                    '<wm-dialogheader closable="{{closable}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
-                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                        '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
-                    '</div>' +
-                    '<div class="app-dialog-footer modal-footer">' +
-                        '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass apply-styles="container">' +
+                    '<div class="modal-content">' +
+                        '<wm-dialogheader closable="{{closable}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
+                        '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
+                            '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
+                        '</div>' +
+                        '<div class="app-dialog-footer modal-footer">' +
+                            '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>'
@@ -201,9 +203,7 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
-                <wm-view class="dialog-view">
                     <wm-alertdialog name="alertDialog"></wm-alertdialog>
-                </wm-view>
                 <button ng-click="showDialog()" class="btn-success">Show Dialog</button>
             </div>
         </file>

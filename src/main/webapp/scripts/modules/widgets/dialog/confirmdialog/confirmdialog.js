@@ -5,7 +5,8 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/confirmdialog.html",
-                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget apply-styles="container">' +
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass apply-styles="container">' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader closable="{{closable}}" caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
@@ -16,7 +17,8 @@ WM.module('wm.widgets.dialog')
                             '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                         '</div>' +
                     '</div>' +
-                '</div>'
+                '</div>' +
+            '</div>'
             );
     }]).directive('wmConfirmdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', 'DeviceService', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window, DeviceService) {
         'use strict';
@@ -217,13 +219,11 @@ WM.module('wm.widgets.dialog')
         <file name="index.html">
             <div ng-controller="Ctrl">
                 <wm-button on-click="showDialog()" caption="Show Dialog" class="btn-primary"></wm-button>
-                <wm-view class="dialog-view">
                     <wm-confirmdialog name="confirmDialog" controller="Ctrl"
                         iconclass="wi wi-warning" message="I am a confirm box"
                         oktext="Ok!!" canceltext="Close" on-ok="onOkCallBack()"
                         on-cancel="onCancelCallBack()" on-close="onCloseCallBack()">
                     </wm-confirmdialog>
-                </wm-view>
             </div>
         </file>
         <file name="script.js">

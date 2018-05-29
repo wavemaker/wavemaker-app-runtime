@@ -5,14 +5,16 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/iframedialog.html",
-            '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass init-widget>' +
-                '<div class="modal-content">' +
-                    '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}" ng-if="showheader"></wm-dialogheader>' +
-                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                        '<wm-iframe encodeurl="{{encodeurl}}" iframesrc="{{iframeurl}}" height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
-                    '</div>' +
-                    '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                        '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass>' +
+                    '<div class="modal-content">' +
+                        '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}" ng-if="showheader"></wm-dialogheader>' +
+                        '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
+                            '<wm-iframe encodeurl="{{encodeurl}}" iframesrc="{{iframeurl}}" height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
+                        '</div>' +
+                        '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
+                            '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>'
@@ -161,12 +163,10 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-iframedialog name="iframeDialog" url="//www.wavemaker.com"
                         controller="Ctrl" iconclass="globe" oktext="Close"
                         on-ok="onOkCallBack()">
                     </wm-iframedialog>
-                </wm-view>
                 <wm-button on-click="Widgets.iframeDialog.open()" caption="show dialog" class="btn-success"></wm-button>
             </div>
         </file>
