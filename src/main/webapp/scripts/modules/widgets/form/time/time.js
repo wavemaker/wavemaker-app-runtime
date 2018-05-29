@@ -113,7 +113,6 @@ WM.module('wm.widgets.form')
                 }
                 var timeOpen = $is.isOpen;
                 $timeout(function () {
-                    $el.parent().trigger('click');
                     $is.isOpen = !timeOpen;
                     _onClick($is, evt);
                 });

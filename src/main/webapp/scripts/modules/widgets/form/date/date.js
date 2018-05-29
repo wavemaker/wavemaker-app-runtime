@@ -141,10 +141,13 @@ WM.module('wm.widgets.form')
                 scope._onChange({$event: evt, $scope: scope});
                 //element will not be available in studio mode
                 if (CONSTANTS.isRunMode) {
-                    /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
-                    $timeout(function() {
-                        DateTimeWidgetUtils.setFocusOnElement(scope);
-                    });
+                    //if the model(date value) is removed, on input click the focus should set on the datepicker popup
+                    if (scope._model_) {
+                        /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
+                        $timeout(function() {
+                            DateTimeWidgetUtils.setFocusOnElement(scope);
+                        });
+                    }
                 }
             }
 

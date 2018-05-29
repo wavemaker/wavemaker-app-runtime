@@ -172,7 +172,6 @@ WM.module('wm.widgets.form')
                 }
                 var dateOpen = $is.isDateOpen;
                 $timeout(function () {
-                    $el.parent().trigger('click');
                     $is.isDateOpen = !dateOpen;
                     $is.isTimeOpen = false;
                     _onClick($is, evt);
