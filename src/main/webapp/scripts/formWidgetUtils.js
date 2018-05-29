@@ -1332,9 +1332,9 @@ WM.module('wm.widgets.form')
         function setFocusOnDateOrTimePicker(scope, isDatepicker) {
             if (isDatepicker) {
                 $timeout(function () {
-                    scope.$broadcast('uib:datepicker.focus');
                     $('.uib-datepicker-popup').addClass('active');
-                }, 100);
+                    scope.$broadcast('uib:datepicker.focus');
+                }, 300);
             } else {
                 /*$timeout is used so that by then time input has the updated value. focus is setting back to the input field*/
                 $timeout(function () {
@@ -1412,7 +1412,7 @@ WM.module('wm.widgets.form')
                         /*$timeout is used so that by then date/datetime input has the updated value. focus is setting back to the input field*/
                         $timeout(function() {
                             setFocusOnElement($is, true);
-                        });
+                        }, 100);
                     }
                 });
                 datepickerEle.find('.uib-button-bar .uib-clear').on('keydown', function (evt) {
@@ -1444,10 +1444,13 @@ WM.module('wm.widgets.form')
                             setFocusOnElement($is);
                         });
                     } else if (Utils.getActionFromKey(evt) === 'ENTER') {
-                        if (evt.target.hasAttributes('uib-daypicker')) {
+                        //if the focus is in monthpicker/yearpicker popup shouldn't be closed, on enter key (selecting the year and month) the focus should go back to daypicker
+                        if ($(evt.target).closest('.uib-daypicker')[0]) {
                             setIsDateOpen($is);
                             setIsTimeOpen($is, true);
-                            setFocusOnElement($is, true);
+                            $timeout(function() {
+                                setFocusOnElement($is, true);
+                            });
                         } else {
                             setFocusOnDateOrTimePicker($is, true);
                         }
