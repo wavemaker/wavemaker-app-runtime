@@ -47,6 +47,8 @@ public class ExportBuilder {
     private QueryExtractor queryExtractor;
     private ExportOptionsStrategy optionsStrategy;
     private ExportOptions options;
+    private CellStyle columnCellStyle;
+    private CellStyle headerCellStyle;
 
     public ExportBuilder(final QueryExtractor queryExtractor, ExportOptions options, final Class<?> entityClass) {
         this.queryExtractor = queryExtractor;
@@ -57,6 +59,7 @@ public class ExportBuilder {
     public void build(OutputStream outputStream) {
         try {
             try (SXSSFWorkbook workbook = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE)) {
+                initCellStyles(workbook);
                 SXSSFSheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
                 exportWorkbook(workbook, options.getExportType(), outputStream);
@@ -101,7 +104,7 @@ public class ExportBuilder {
     private void fillHeader(Row row, List<String> fieldNames, Sheet sheet) {
         int colNum = FIRST_COLUMN_NUMBER;
         for (final String fieldName : fieldNames) {
-            CellUtil.createCell(row, colNum, fieldName, columnHeaderStyle(row.getSheet().getWorkbook()));
+            CellUtil.createCell(row, colNum, fieldName, headerCellStyle);
             sheet.setColumnWidth(colNum, 20 * 256);
             colNum++;
         }
@@ -113,25 +116,27 @@ public class ExportBuilder {
         for (Object value : rowValues) {
             final Cell cell = row.createCell(colNum);
             DataSourceExporterUtil.setCellValue(value, cell);
-            cell.setCellStyle(columnDataStyle(row.getSheet().getWorkbook()));
+            cell.setCellStyle(columnCellStyle);
             colNum++;
         }
     }
 
+    private void initCellStyles(Workbook workbook) {
+        columnCellStyle = workbook.createCellStyle();
+        headerCellStyle = workbook.createCellStyle();
+        setHeaderCellStyle(workbook);
+        setColumnCellStyle();
+    }
 
-    private CellStyle columnHeaderStyle(Workbook workbook) {
-        CellStyle columnNameStyle = workbook.createCellStyle();
+    private void setColumnCellStyle() {
+        columnCellStyle.setWrapText(true);
+    }
+
+    private void setHeaderCellStyle(Workbook workbook) {
         Font font = workbook.createFont();
         font.setBold(true);
         font.setFontHeightInPoints((short) COLUMN_HEADER_FONT_SIZE);
-        columnNameStyle.setWrapText(true);
-        columnNameStyle.setFont(font);
-        return columnNameStyle;
-    }
-
-    private CellStyle columnDataStyle(Workbook workbook) {
-        CellStyle dataStyle = workbook.createCellStyle();
-        dataStyle.setWrapText(true);
-        return dataStyle;
+        headerCellStyle.setWrapText(true);
+        headerCellStyle.setFont(font);
     }
 }
