@@ -643,14 +643,19 @@ WM.module('wm.widgets.basic')
                         //If options are specified, make specifics calls to fetch the results
                         if ($is.dataoptions) {
                             if ($is.dataoptions.relatedField) { //Fetch the related field data
-                                variable.getRelatedTableData($is.dataoptions.relatedField, requestParams, handleQuerySuccess, handleQueryError);
+                                var callbackFn = function(filterexpressions) {
+                                    requestParams.filterExpr = $is.dataoptions.filterExpr = filterexpressions;
+                                    variable.getRelatedTableData.apply(variable,[$is.dataoptions.relatedField, requestParams, handleQuerySuccess, handleQueryError]);
+                                };
+                                LiveWidgetUtils.interpolateBindExpressions(el.scope().$parent, $is.dataoptions.filterExpr, callbackFn);
                             } else if ($is.dataoptions.distinctField) { //Fetch the distinct data
                                 variable.getDistinctDataByFields({
                                     'fields'        : $is.dataoptions.distinctField,
                                     'entityName'    : $is.dataoptions.tableName,
                                     'page'          : $is.page,
                                     'pagesize'      : $is.limit,
-                                    'filterFields'  : _.assign($is.dataoptions.filterFields, requestParams.filterFields)
+                                    'filterFields'  : _.assign($is.dataoptions.filterFields, requestParams.filterFields),
+                                    'filterExpr'    : Utils.getClonedObject($is.dataoptions.filterExpr || {})
                                 }, handleQuerySuccess, handleQueryError);
                             }
                             //Remove the dataset watcher as explicit calls are made to fetch data

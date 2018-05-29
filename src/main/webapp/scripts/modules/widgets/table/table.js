@@ -3005,11 +3005,7 @@ WM.module('wm.widgets.table')
                                         if (!LiveWidgetUtils.isSearchWidgetType(columnDef.editWidgetType)) {
                                             columnDef.isDefinedData = true;
                                         }
-                                        var callbackFn = function(filterexpressions) {
-                                            columnDef.filterexpressions = filterexpressions;
-                                            LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, eleScope, parentScope);
-                                        };
-                                        LiveWidgetUtils.interpolateBindExpressions(parentScope, columnDef.filterexpressions, callbackFn);
+                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, eleScope, parentScope);
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
                                         if (columnDef.editWidgetType === 'autocomplete' && _.includes(parentScope.binddataset, 'bind:Variables.')) {

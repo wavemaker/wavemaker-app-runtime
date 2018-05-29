@@ -744,11 +744,7 @@ WM.module('wm.widgets.live')
                                 /*If dataset is undefined, fetch the default values for field*/
                                 columnsDef.isDataSetBound = true;
                             } else {
-                                var callbackFn = function(filterexpressions) {
-                                    columnsDef.filterexpressions = filterexpressions;
-                                    LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget', LiveWidgetUtils.getEnableEmptyFilter(parentIsolateScope.enableemptyfilter));
-                                };
-                                LiveWidgetUtils.interpolateBindExpressions(parentIsolateScope, columnsDef.filterexpressions, callbackFn);
+                                LiveWidgetUtils.getDistinctValuesForField(parentIsolateScope, columnsDef, 'widget', LiveWidgetUtils.getEnableEmptyFilter(parentIsolateScope.enableemptyfilter));
                             }
                         }
                         scope.fieldDefConfig = columnsDef;
