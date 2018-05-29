@@ -352,7 +352,7 @@ WM.module('wm.widgets.live')
                         'number': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
                         'string': ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
                         'character': ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                        'date': ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty']
+                        'date': ['exact', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty']
                     },
                     matchModeTypesMap = {
                         'boolean'    : ['exact', 'null', 'isnotnull'],
@@ -2006,6 +2006,7 @@ WM.module('wm.widgets.live')
                     fieldColumn         = formField.lookupField;
                     props.distinctField = fieldColumn;
                     props.aliasColumn   = fieldColumn.replace('.', '$'); //For related fields, In response . is replaced by $
+                    props.filterExpr    = formField.filterexpressions ? (_.isObject(formField.filterexpressions) ? formField.filterexpressions : JSON.parse(formField.filterexpressions)) : {};
                 } else {
                     props.tableName     = variable.propertiesMap.entityName;
                     fieldColumn         = formField.field || formField.key;
@@ -2255,20 +2256,25 @@ WM.module('wm.widgets.live')
                 columnDef.displayfield = displayField = (columnDef.displayfield || displayField || columnDef._primaryKey);
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (isSearchWidgetType(widget)) {
-                    columnDef.dataoptions  = {'relatedField': relatedField};
+                    columnDef.dataoptions  = {'relatedField': relatedField, 'filterExpr': columnDef.filterexpressions ? columnDef.filterexpressions : {}};
                     columnDef.dataset      = parentScope.binddataset;
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displayfield = (columnDef.displaylabel || displayField);
                 } else {
-                    boundVariable.getRelatedTableData(relatedField, {
-                        'pagesize': columnDef.limit,
-                        'orderBy': columnDef.orderby ? _.replace(columnDef.orderby, /:/g, ' ') : '',
-                        'filterFields': {},
-                        'filterExpr': columnDef.filterexpressions ? columnDef.filterexpressions : {}
-                    }, function (response) {
-                        columnDef.dataset       = response;
-                        columnDef.displayfield  = columnDef.displayfield || _.head(_.keys(_.get(response, '[0]')));
-                    });
+                    var callbackFn = function(filterexpressions) {
+                        columnDef.filterexpressions = filterexpressions;
+                        boundVariable.getRelatedTableData(relatedField, {
+                            'pagesize': columnDef.limit,
+                            'orderBy': columnDef.orderby ? _.replace(columnDef.orderby, /:/g, ' ') : '',
+                            'filterFields': {},
+                            'filterExpr': columnDef.filterexpressions ? columnDef.filterexpressions : {}
+                        }, function (response) {
+                            columnDef.dataset       = response;
+                            columnDef.displayfield  = columnDef.displayfield || _.head(_.keys(_.get(response, '[0]')));
+                        });
+
+                    };
+                    interpolateBindExpressions(parentScope, columnDef.filterexpressions, callbackFn);
                 }
             }
 
@@ -2431,9 +2437,13 @@ WM.module('wm.widgets.live')
                     setDataFields(formField, widget, formField.dataoptions);
                     formField.dataset     = scope.binddataset;
                 } else {
-                    getDistinctValues(formField, widget, variable, function (formField, data, aliasColumn) {
-                        setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter);
-                    });
+                    var callbackFn = function(filterexpressions) {
+                        formField.filterexpressions = filterexpressions;
+                        getDistinctValues(formField, widget, variable, function (formField, data, aliasColumn) {
+                            setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter);
+                        });
+                    };
+                    interpolateBindExpressions(scope, formField.filterexpressions, callbackFn);
                 }
             }
 
