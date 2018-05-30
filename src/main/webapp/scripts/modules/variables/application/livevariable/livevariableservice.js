@@ -1948,6 +1948,53 @@ wm.variables.services.$liveVariable = [
                         /* set the value against the specified index */
                         data[item] = newItem;
                     }
+                },
+                /**
+                 * used in onBeforeUpdate call - called last in the function - used in old Variables using dataBinding.
+                 * This function migrates the old data dataBinding to filterExpressions equivalent format
+                 * @param variable
+                 * @param inputData
+                 * @private
+                 */
+                _upgradeInputDataToFilterExpressions: function (variable, inputData) {
+                    var rules = variable.filterExpressions.rules;
+                    _.forEach(inputData, function (valueObj, key) {
+                        if(key !== 'condition' && key !== 'rules') {
+                            var filteredObj = _.find(rules, function(o) { return o.target === key; });
+                            //if the key is found update the value, else create a new rule obj and add it to the existing rules
+                            if(filteredObj) {
+                                filteredObj.value = valueObj.value;
+                            } else {
+                                var columns = variable.propertiesMap.columns;
+                                var columnObj = _.find(columns, function(o) {return o.fieldName === key});
+                                rules.push({
+                                    'target': key,
+                                    "type": columnObj.type,
+                                    "matchMode": variable.matchMode,
+                                    'value': valueObj.value
+                                });
+                            }
+                            delete inputData[key];
+                        }
+                    });
+                },
+
+                /**
+                 * used in onBeforeUpdate call - called first in the function - used in old Variables using dataBinding.
+                 * This function migrates the filterExpressions object to flat map structure
+                 * @param variable
+                 * @param inputData
+                 * @private
+                 */
+                _downgradeFilterExpressionsToInputData: function (variable, inputData) {
+                    var rules = variable.filterExpressions.rules;
+                    _.forEach(rules, function(ruleObj) {
+                        if(!_.isEmpty(ruleObj.target) && _.isNil(ruleObj.target)) {
+                            inputData[ruleObj.target] = {
+                                'value': ruleObj.value
+                            }
+                        }
+                    });
                 }
             },
 
@@ -2067,6 +2114,12 @@ wm.variables.services.$liveVariable = [
                 },
                 removeItem: function (item) {
                     return methods.removeItem(this, item);
+                },
+                _upgradeInputData: function(inputData) {
+                    return methods._upgradeInputDataToFilterExpressions(this, inputData);
+                },
+                _downgradeInputData: function(inputData) {
+                    return methods._downgradeFilterExpressionsToInputData(this, inputData);
                 },
                 init: function () {
                     if (this.operation === 'read') {

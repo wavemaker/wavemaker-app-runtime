@@ -362,7 +362,7 @@ WM.module('wm.widgets.live')
 
                 if (multiMode) {
                     modes.number.push('in', 'between');
-                    modes.date.push('in', 'between');
+                    modes.date.push('between');
                     modes.string.push('in');
                     modes.character.push('in');
                 }
