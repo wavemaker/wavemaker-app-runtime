@@ -20,10 +20,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -116,9 +119,22 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public List<E> findByMultipleIds(final List<I> ids, final boolean orderedReturn) {
-        return getTemplate().execute(session -> session.byMultipleIds(entityClass)
+        final List<I> nonNullIds = ids.stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+        final List<E> result = getTemplate().execute(session -> session.byMultipleIds(entityClass)
                 .enableOrderedReturn(orderedReturn)
-                .multiLoad(ids));
+                .multiLoad(nonNullIds));
+
+        List<E> resultWithNulls = new ArrayList<>(ids.size());
+        int index = 0;
+        for (I id : ids) {
+            if (id == null) {
+                resultWithNulls.add(null);
+            } else {
+                resultWithNulls.add(result.get(index++));
+            }
+        }
+        return resultWithNulls;
     }
 
     @SuppressWarnings("unchecked")
