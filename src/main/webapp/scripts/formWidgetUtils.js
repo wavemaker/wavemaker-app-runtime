@@ -1486,7 +1486,7 @@ WM.module('wm.widgets.form')
             $timeout(function () {
                 var timepickerEle = WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]');
                 timepickerEle.parent().addClass('app-datetime');
-                addEventsOnTimePicker($is, timepickerEle, ['ESC'], false);
+                addEventsOnTimePicker($is, timepickerEle, ['ESC'], true);
                 addEventsOnTimePicker($is, timepickerEle.find('.uib-time.am-pm'), ['TAB'], false);
                 addEventsOnTimePicker($is, timepickerEle.find('.uib-time.hours'), ['SHIFT+TAB', 'ENTER'], true);
                 addEventsOnTimePicker($is, timepickerEle.find('.uib-time.minutes'), ['ENTER'], true);

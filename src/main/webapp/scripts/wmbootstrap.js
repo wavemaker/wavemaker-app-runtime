@@ -985,6 +985,7 @@ Application
                 $rs.project = {
                     'id'          : projectID,
                     'activeTheme' : appProperties.activeTheme,
+                    'homePage'    : appProperties.homePage,
                     'deployedUrl' : ProjectService.getDeployedUrl()
                 };
 

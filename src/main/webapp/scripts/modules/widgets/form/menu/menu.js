@@ -203,7 +203,7 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 
                         //Set hasOnSelect only when there is OnSelect event on the widget
-                        scope.hasOnSelect = Utils.getBooleanValue(attrs.hasonselect);
+                        scope.hasOnSelect = Utils.getBooleanValue(!!attrs.onSelect || attrs.hasOnSelect);
 
                         if (scope.type === 'anchor' && scope.$element) {
                             //Disable right click on the element when link is empty
@@ -353,7 +353,7 @@ WM.module('wm.widgets.form')
                 }
 
                 //Disable right click on the element when menuLink is empty
-                Utils.disableRightClick(element.find('a'), scope.item.onSelect, scope.item.action, menuLink);
+                Utils.disableRightClick(element.find('a'), scope.item.hasOnSelect, scope.item.action, menuLink);
 
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
@@ -411,12 +411,16 @@ WM.module('wm.widgets.form')
                         if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ENTER && !(element.isolateScope() && element.isolateScope().item.link)) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
                             //when there is no link for the menu, on enter open the inner child elements and focus the first element
                             evt.stopPropagation();
-                            element.toggleClass('open');
-                            element.children().find('li:first').find('a:first').focus();
+                            if (element.children().length > 1) {
+                                element.toggleClass('open');
+                                element.children().find('li:first').find('a:first').focus();
+                            } else {
+                                element.find('a:first').focus();
+                            }
                         } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_LEFT) {
                             if ($parent.children().first()[0] !== element[0]) {
                                 $el = element.closest('ul').parent();
-                                $el.siblings().removeClass('open');
+                                $el.find('li').removeClass('open');
                                 $el.toggleClass('open');
                                 $el.find('a:first').focus();
                                 evt.stopPropagation();
