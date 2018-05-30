@@ -3070,6 +3070,12 @@ WM.module('wm.utils', [])
             if (onSelect || action || !itemlink) {
                 return "";
             }
+            if ($is._widgettype === 'wm-breadcrumb' && itemlink) {
+                //If link starts with #, / or pageName, removing the special characters and appending with #/ to the link
+                itemlink = _.first(itemlink.match(/[\w]+.*/g));
+                itemlink = itemlink ? ('#/' + itemlink) : '';
+
+            }
             return itemlink;
         }
 
