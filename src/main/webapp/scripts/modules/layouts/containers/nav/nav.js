@@ -68,7 +68,7 @@ WM.module('wm.layouts.containers')
                 }
                 return nodes;
             }
-            function constructNav($el, $is) {
+            function constructNav($el, $is, attrs) {
                 $el.empty();
 
                 $is._nodes = [];
@@ -84,6 +84,7 @@ WM.module('wm.layouts.containers')
                         userRole      = $is.userrole;
 
                     $is.nodes = $is.nodes.reduce(function (result, node, index) {
+                        var menuAttrs = {}
                         if (Utils.validateAccessRoles(node[userRole])) {
                             result.push(node);
                             var $a            = WM.element('<a class="app-anchor"></a>'),
@@ -92,12 +93,12 @@ WM.module('wm.layouts.containers')
                                 $i            = WM.element('<i class="app-nav-icon"></i>'),
                                 $badge        = WM.element('<span class="badge"></span>'),
                                 itemLabel     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlabel'})    || node[labelField],
-                                itemClass     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemclass'})   || node[classField],
-                                itemIconClass = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemicon'}) || node[iconField],
-                                itemLink      = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'})     || node[itemField],
+                                itemClass     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemclass'})    || node[classField],
+                                itemIconClass = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemicon'})     || node[iconField],
                                 itemBadge     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itembadge'})    || node[badgeField],
                                 itemAction    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'})   || node[actionField],
                                 itemChildren  = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node[childrenField],
+                                itemLink      = Utils.getHref($is, node, WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}), attrs.onSelect, itemAction, itemField),
                                 $menu;
 
                             // menu widget expects data as an array.
@@ -111,8 +112,7 @@ WM.module('wm.layouts.containers')
                             if (itemChildren && WM.isArray(itemChildren)) {
 
                                 $menu = WM.element('<wm-menu>');
-
-                                $menu.attr({
+                                menuAttrs = {
                                     'caption'     : itemLabel,
                                     'dataset'     : 'bind:_nodes['+ index +']',
                                     'itemlabel'   : $is.binditemlabel || labelField,
@@ -126,13 +126,23 @@ WM.module('wm.layouts.containers')
                                     'iconclass'   : itemIconClass || '',
                                     'on-select'   : '_onMenuItemSelect($event, $item)',
                                     'autoclose'   : $is.autoclose
-                                });
+                                };
+                                //Set link only when there are no actions for the current node and when there is no OnSelect event on the widget
+                                if (!attrs.onSelect  && !itemAction) {
+                                    menuAttrs.link = itemLink || '';
+                                }
+                                menuAttrs.hasOnSelect = !!attrs.onSelect;
+                                $menu.attr(menuAttrs);
 
                                 $li.addClass(itemClass).append($menu);
                                 $el.append($li);
                             } else {
                                 $i.addClass(itemIconClass);
                                 $a.append($a_caption.html(itemLabel)).prepend($i);
+                                //Setting href attribute on the element to enable opening in new tabs, only when there are no actions for the current node and when there is no OnSelect event on the widget
+                                $a.attr('href', (attrs.onSelect || itemAction || !itemLink) ? 'javascript:void(0)' : itemLink);
+                                //Disable right click on the element when itemLink is empty
+                                Utils.disableRightClick($a, attrs.onSelect, itemAction, itemLink);
                                 if (itemBadge) {
                                     $a.append($badge.html(itemBadge));
                                 }
@@ -150,7 +160,7 @@ WM.module('wm.layouts.containers')
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($s, $is, $el, key, nv) {
+            function propertyChangeHandler($s, $is, $el, attrs, key, nv) {
                 var variable;
 
                 switch (key) {
@@ -162,7 +172,7 @@ WM.module('wm.layouts.containers')
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
                     $is.nodes = getNodes($is, nv);
-                    constructNav($el, $is);
+                    constructNav($el, $is, attrs);
                     if ($is.widgetid) {
                         $rs.$emit('nav-dataset-modified', {'widgetName': $is.name});
                     }
@@ -173,7 +183,7 @@ WM.module('wm.layouts.containers')
                 case 'itemlink':
                 case 'itemchildren':
                 case 'orderby':
-                    constructNav($el, $is);
+                    constructNav($el, $is, attrs);
                     break;
                 }
             }
@@ -220,7 +230,7 @@ WM.module('wm.layouts.containers')
                     },
 
                     'post': function ($is, $el, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, $el.scope(), $is, $el);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, $el.scope(), $is, $el, attrs);
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);

@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
-                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
+                    '<a title="{{hint}}" ng-href="{{link || \'javascript:void(0)\'}}" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
                         '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li ng-class="[item.class, {\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}]">' +
-                    '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}">' +
+                    '<a ng-href="{{item.link || \'javascript:void(0)\'}}" title="{{item.label}}">' +
                     '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '<i class="app-icon {{item.icon}}"></i>' +
                     '{{item.label}}' +
@@ -90,11 +90,12 @@ WM.module('wm.widgets.form')
                                 'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'})   || item[iconField],
                                 'class'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'})  || item[classField],
                                 'disabled'  : item.disabled,
-                                'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'})   || item[linkField],
+                                'link'      : scope.binditemlink ? WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) : item[linkField],
                                 'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
                                 'children'  : (WM.isArray(children) ? children : []).reduce(transformFn, []),
                                 'action'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
-                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'})   || item[userField]
+                                'role'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'userrole'})   || item[userField],
+                                'hasOnSelect' : scope.hasOnSelect
                             });
                         }
 
@@ -201,10 +202,49 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 
-                        /*Called from form reset when users clicks on form reset*/
+                        //Set hasOnSelect only when there is OnSelect event on the widget
+                        scope.hasOnSelect = Utils.getBooleanValue(!!attrs.onSelect || attrs.hasOnSelect);
+
+                        if (scope.type === 'anchor' && scope.$element) {
+                            //Disable right click on the element when link is empty
+                            Utils.disableRightClick(scope.$element.find('a'), scope.hasOnSelect, scope.action, scope.link);
+                        }
+                        /*Called from form reset when users  clicks on form reset*/
                         scope.reset = function () {
                             //TODO implement custom reset logic here
                         };
+                        if(CONSTANTS.isRunMode) {
+                            element.on('keydown', function (evt) {
+                                var KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS);
+                                if (scope.menuposition === CONSTANTS.MENU_POSITION.UP_RIGHT) {
+                                    KEY_MOVEMENTS.MOVE_UP = 'DOWN-ARROW';
+                                    KEY_MOVEMENTS.MOVE_DOWN = 'UP-ARROW';
+                                } else if (scope.menuposition === CONSTANTS.MENU_POSITION.UP_LEFT) {
+                                    KEY_MOVEMENTS.MOVE_UP = 'DOWN-ARROW';
+                                    KEY_MOVEMENTS.MOVE_DOWN = 'UP-ARROW';
+                                    KEY_MOVEMENTS.MOVE_LEFT = 'RIGHT-ARROW';
+                                    KEY_MOVEMENTS.MOVE_RIGHT = 'LEFT-ARROW';
+                                } else if (scope.menuposition === CONSTANTS.MENU_POSITION.DOWN_LEFT) {
+                                    KEY_MOVEMENTS.MOVE_LEFT = 'RIGHT-ARROW';
+                                    KEY_MOVEMENTS.MOVE_RIGHT = 'LEFT-ARROW';
+                                }
+                                if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_DOWN || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
+                                    scope.isOpen = true;
+                                    /*$timeout is used so that by then isOpen has the updated value.*/
+                                    $timeout(function() {
+                                        //Todo on open of dropdown first element should be focused
+                                        element.children().find('li a:first').focus();
+                                    });
+                                } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_UP || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_LEFT) {
+                                    scope.isOpen = false;
+                                    element.find('li').removeClass('open');
+                                    /*$timeout is used so that by then isOpen has the updated value. focus is setting back to the dropdown*/
+                                    $timeout(function() {
+                                        element.closest('.app-menu').find('[uib-dropdown-toggle]').focus();
+                                    });
+                                }
+                            });
+                        }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         if (!scope.widgetid && attrs.scopedataset) {
@@ -312,6 +352,9 @@ WM.module('wm.widgets.form')
                     menuLink = scope.item[menuScope.itemLink || 'link'];
                 }
 
+                //Disable right click on the element when menuLink is empty
+                Utils.disableRightClick(element.find('a'), scope.item.hasOnSelect, scope.item.action, menuLink);
+
                 //If nav item is menu then set it links active if route param is same as link
                 if (element.closest('.app-nav-item').length && menuLink) {
                     //menuLink can be #/routeName or #routeName
@@ -342,6 +385,73 @@ WM.module('wm.widgets.form')
                         openLink(menuLink, linkTarget);
                     }
                 };
+                if (CONSTANTS.isRunMode) {
+                    element.closest('.dropdown-menu > li').on("keydown", function (evt) {
+                        var $rootel =  element.closest('.app-menu'),
+                            $parent = element.closest('.app-menu > ul'),
+                            $el,
+                            $elescope = $rootel.isolateScope(),
+                            KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS);;
+                        if ($elescope.menulayout === CONSTANTS.MENU_LAYOUT_TYPE.HORIZONTAL) {
+                            KEY_MOVEMENTS.MOVE_UP = 'LEFT-ARROW';
+                            KEY_MOVEMENTS.MOVE_LEFT = 'UP-ARROW';
+                            KEY_MOVEMENTS.MOVE_RIGHT = 'DOWN-ARROW';
+                            KEY_MOVEMENTS.MOVE_DOWN = 'RIGHT-ARROW';
+                        } else {
+                            if ($elescope.menuposition === CONSTANTS.MENU_POSITION.DOWN_LEFT || $elescope.menuposition === CONSTANTS.MENU_POSITION.UP_LEFT) {
+                                KEY_MOVEMENTS.MOVE_LEFT = 'RIGHT-ARROW';
+                                KEY_MOVEMENTS.MOVE_RIGHT = 'LEFT-ARROW';
+                            } else if ($elescope.menuposition === 'inline') {
+                                KEY_MOVEMENTS.MOVE_UP = 'LEFT-ARROW';
+                                KEY_MOVEMENTS.MOVE_LEFT = 'UP-ARROW';
+                                KEY_MOVEMENTS.MOVE_RIGHT = 'DOWN-ARROW';
+                                KEY_MOVEMENTS.MOVE_DOWN = 'RIGHT-ARROW';
+                            }
+                        }
+                        if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ENTER && !(element.isolateScope() && element.isolateScope().item.link)) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
+                            //when there is no link for the menu, on enter open the inner child elements and focus the first element
+                            evt.stopPropagation();
+                            if (element.children().length > 1) {
+                                element.toggleClass('open');
+                                element.children().find('li:first').find('a:first').focus();
+                            } else {
+                                element.find('a:first').focus();
+                            }
+                        } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_LEFT) {
+                            if ($parent.children().first()[0] !== element[0]) {
+                                $el = element.closest('ul').parent();
+                                $el.find('li').removeClass('open');
+                                $el.toggleClass('open');
+                                $el.find('a:first').focus();
+                                evt.stopPropagation();
+                            }
+                        } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_UP) {
+                            if ($parent.children().first()[0] !== element[0]) {
+                                evt.stopPropagation();
+                                element.closest('li').prev().find('a:first').focus();
+                            }
+                        } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_DOWN) {
+                            evt.stopPropagation();
+                            if ($parent.children().last()[0] === element[0] && ($elescope.menulayout !== CONSTANTS.MENU_LAYOUT_TYPE.HORIZONTAL && $elescope.menuposition === CONSTANTS.MENU_POSITION.UP_RIGHT || $elescope.menuposition === CONSTANTS.MENU_POSITION.UP_LEFT)) {
+                                $rootel.isolateScope().isOpen = false;
+                                $rootel.isolateScope().$apply();
+                                $rootel.find('[uib-dropdown-toggle]').focus();
+                                $rootel.find('li').removeClass('open');
+                            } else {
+                                element.closest('li').next().find('a').focus();
+                            }
+                        } else if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_TAB && $parent.children().last()[0] === element[0]) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ESCAPE) {
+                            /*closing all the children elements when
+                            * 1. Tab is clicked on the last element
+                            * 2. When Escape key is clicked*/
+                            evt.preventDefault();
+                            $rootel.isolateScope().isOpen = false;
+                            $rootel.isolateScope().$apply();
+                            $rootel.find('[uib-dropdown-toggle]').focus();
+                            $rootel.find('li').removeClass('open');
+                        }
+                    });
+                }
             }
         };
     }]);

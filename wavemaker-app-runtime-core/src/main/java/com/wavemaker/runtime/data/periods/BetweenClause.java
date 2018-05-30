@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.data.periods;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +13,10 @@ import com.wavemaker.runtime.data.filter.WMQueryInfo;
  */
 public class BetweenClause implements PeriodClause {
     private final TableTemporal.TemporalType type;
-    private final Timestamp from;
-    private final Timestamp to;
+    private final Date from;
+    private final Date to;
 
-    public BetweenClause(final TableTemporal.TemporalType type, final Timestamp from, final Timestamp to) {
+    public BetweenClause(final TableTemporal.TemporalType type, final Date from, final Date to) {
         this.type = type;
         this.from = from;
         this.to = to;
@@ -27,7 +27,7 @@ public class BetweenClause implements PeriodClause {
     public WMQueryInfo asWMQueryClause() {
         String var1Name = "wm_" + type.asHqlKeyword() + "_from_timestamp";
         String var2Name = "wm_" + type.asHqlKeyword() + "_and_timestamp";
-        String hql = "for " + type.asHqlKeyword() + " between :" + var1Name + " and :" + var2Name;
+        String hql = type.asHqlKeyword() + " between :" + var1Name + " and :" + var2Name;
 
         Map<String, Object> parameters = new HashMap<>(2);
         parameters.put(var1Name, from);

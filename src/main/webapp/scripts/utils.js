@@ -1324,6 +1324,17 @@ WM.module('wm.utils', [])
             });
         }
 
+        //get the boolean value
+        function getBooleanValue(val) {
+            if (val === true || val === 'true') {
+                return true;
+            }
+            if (val === false || val === 'false') {
+                return false;
+            }
+            return val;
+        }
+
         /* returns the prefab names loaded in the markup of current page */
         function getLoadedPrefabNames() {
             return WM.element('[prefabname]').map(function () {return WM.element(this).attr('prefabname'); });
@@ -1541,6 +1552,8 @@ WM.module('wm.utils', [])
                 }
             } else if (shiftKey) {
                 switch (event.which) {
+                case 9:
+                    return 'SHIFT+TAB';
                 case 37:
                     return 'SHIFT+LEFT';
                 case 38:
@@ -3026,6 +3039,44 @@ WM.module('wm.utils', [])
             return d.promise;
         }
 
+        /**
+         * This function disables the right click on the element, when there is no link or if there is any action or events defined on the element
+         * @param $el - element
+         * @param event - events (like onSelect, onBeforeNavigate)
+         * @param action if there are any action on the element
+         * @param link
+         */
+        function disableRightClick($el, event, action, link) {
+            if (event || action || !link) {
+                $el.on("contextmenu", function(e) {
+                    return false;
+                });
+            }
+        }
+
+        /**
+         * This function sets the link based on the action and onSelect/onBeforeNavigate events,
+         * @param $is - scope of the element
+         * @param node/item
+         * @param link
+         * @param onSelect - events on the element
+         * @param action - action on the element
+         * @param linkField - the field which is selected as the link
+         */
+        function getHref($is, node, link, onSelect, action, linkField) {
+            var itemlink = node.bindlinkitem ? link : node[linkField];
+            if (onSelect || action || !itemlink) {
+                return "";
+            }
+            if ($is._widgettype === 'wm-breadcrumb' && itemlink) {
+                //If link starts with #, / or pageName, removing the special characters and appending with #/ to the link
+                itemlink = _.first(itemlink.match(/[\w]+.*/g));
+                itemlink = itemlink ? ('#/' + itemlink) : '';
+
+            }
+            return itemlink;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3093,6 +3144,7 @@ WM.module('wm.utils', [])
         this.isPageResource             = isPageResource;
         this.findValueOf                = findValueOf;
         this.replace                    = replace;
+        this.getBooleanValue            = getBooleanValue;
         this.removeStyleSheetLoaded     = removeStyleSheetLoaded;
         this.fileUploadFallback         = fileUploadFallback;
         this.getCurrentPage             = getCurrentPage;
@@ -3183,4 +3235,6 @@ WM.module('wm.utils', [])
         this.getAbortableDefer          = getAbortableDefer;
         this.executeDeferChain          = executeDeferChain;
         this.isValidMobileAppId         = isValidMobileAppId;
+        this.disableRightClick          = disableRightClick;
+        this.getHref                    = getHref;
     }]);

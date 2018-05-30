@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao;
 
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +64,7 @@ public interface WMGenericDao<E, I> {
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
 
-    InputStream export(ExportOptions options, String query, Pageable pageable);
+    void export(ExportOptions options, Pageable pageable, OutputStream outputStream);
 
     E refresh(E entity);
 

@@ -14,9 +14,9 @@ import com.wavemaker.commons.util.Tuple;
  * @author <a href="mailto:dilip.gundu@wavemaker.com">Dilip Kumar</a>
  * @since 30/11/17
  */
-public class AnnotationUtils {
+public interface AnnotationUtils {
 
-    public static List<PropertyDescriptor> findProperties(Class<?> type, Class<? extends Annotation> annotationType) {
+    static List<PropertyDescriptor> findProperties(Class<?> type, Class<? extends Annotation> annotationType) {
         return Arrays.stream(type.getDeclaredFields())
                 .map(field -> new Tuple.Two<>(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
                 .filter(tuple -> {
@@ -27,6 +27,12 @@ public class AnnotationUtils {
 
                     return found;
                 }).map(tuple -> tuple.v2)
+                .collect(Collectors.toList());
+    }
+
+    static List<PropertyDescription> findProperties(Class<?> type) {
+        return Arrays.stream(type.getDeclaredFields())
+                .map(field -> new PropertyDescription(field, BeanUtils.getPropertyDescriptor(type, field.getName())))
                 .collect(Collectors.toList());
     }
 }

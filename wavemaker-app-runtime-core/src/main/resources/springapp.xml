@@ -94,9 +94,9 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
-    <bean id="ExportedFileManager" class="com.wavemaker.runtime.file.manager.ExportedFileManager">
-        <property name="exportsDir" value="${java.io.tmpdir}"/>
-    </bean>
+    <bean id="exportedFileManager" class="com.wavemaker.runtime.file.manager.ExportedFileManagerImpl"/>
+
+    <bean id="tempFilesStorageManager" class="com.wavemaker.commons.io.TempFilesStorageManager"/>
 
     <bean id="oAuthServiceManager" class="com.wavemaker.runtime.auth.oauth2.service.OAuth2RuntimeServiceManager"/>
 

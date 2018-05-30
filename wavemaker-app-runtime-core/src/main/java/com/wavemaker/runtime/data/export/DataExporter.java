@@ -15,13 +15,7 @@
  */
 package com.wavemaker.runtime.data.export;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import org.apache.poi.ss.usermodel.Workbook;
-
-import com.wavemaker.commons.WMRuntimeException;
-import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -32,23 +26,8 @@ public class DataExporter {
     private DataExporter() {
     }
 
-    public static ByteArrayOutputStream export(QueryExtractor extractor, ExportOptions options, Class<?> entityClass) {
+    public static void export(QueryExtractor extractor, ExportOptions options, Class<?> entityClass, OutputStream outputStream) {
         ExportBuilder exportBuilder = new ExportBuilder(extractor, options, entityClass);
-        return exportBuilder.build(DataExporter::exportWorkbook);
-    }
-
-    protected static ByteArrayOutputStream exportWorkbook(final Workbook workbook, final ExportType exportType) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            if (exportType == ExportType.EXCEL) {
-                workbook.write(outputStream);
-            } else if (exportType == ExportType.CSV) {
-                CSVConverterUtil csvConverterUtil = new CSVConverterUtil(workbook);
-                csvConverterUtil.convert(outputStream);
-            }
-            return outputStream;
-        } catch (IOException e) {
-            throw new WMRuntimeException("Error while exporting data", e);
-        }
+        exportBuilder.build(outputStream);
     }
 }

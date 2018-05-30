@@ -284,7 +284,7 @@ WM.module('wm.widgets.live')
                     data = $scope.constructDataObject();
                     prevData = prevformFields ? $scope.constructDataObject(true) : data;
                     try {
-                        isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data});
+                        isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data, options: requestData});
                         if (isValid === false) {
                             return;
                         }
@@ -306,12 +306,10 @@ WM.module('wm.widgets.live')
 
                     resetFormState();
 
-                    requestData = {
-                        'row'              : data,
-                        'transform'        : true,
-                        'multipartData'    : $scope.multipartData,
-                        'skipNotification' : true
-                    };
+                    requestData.row = data;
+                    requestData.transform = true;
+                    requestData.multipartData = $scope.multipartData
+                    requestData.skipNotification = true
                     /*Pass in the prefab scope if the liveForm is present in a prefab, as the bound variable is available in the prefab scope only*/
                     if (elScope.prefabname) {
                         requestData.scope = elScope;
@@ -592,7 +590,8 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     $scope.formFields.forEach(function (column) {
-                        if (column.primaryKey && !column.isRelated) {
+                        column.readonly = column._readonly;
+                        if (column.primaryKey && !column.isRelated && !column.period) {
                             column.readonly = true;
                         }
                     });
@@ -1390,6 +1389,10 @@ WM.module('wm.widgets.live')
                         parentScope.formfields[columnDef.key] = columnDef;
                         //tabindex should be only on the input fields, remove tabindex on form field
                         element.removeAttr('tabindex');
+
+                        // Save the original readonly state
+                        columnDef._readonly = columnDef.readonly;
+
 
                         //Evaluate type for datavalue based on the dataset
                         if (scope.widgetid) {

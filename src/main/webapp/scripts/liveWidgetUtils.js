@@ -14,13 +14,14 @@ WM.module('wm.widgets.live')
         'PropertiesFactory',
         '$compile',
         'CONSTANTS',
+        "DB_CONSTANTS",
         'WidgetUtilService',
         'Variables',
         '$timeout',
         'WIDGET_CONSTANTS',
         '$servicevariable',
         '$q',
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, WidgetUtilService, Variables, $timeout, WIDGET_CONSTANTS, $servicevariable, $q) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, CONSTANTS, DB_CONSTANTS, WidgetUtilService, Variables, $timeout, WIDGET_CONSTANTS, $servicevariable, $q) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
                 definedEvents          = ['onBlur', 'onFocus', 'onChange'],
@@ -340,28 +341,60 @@ WM.module('wm.widgets.live')
              * @description
              * return the match modes based on the data type
              */
-            function getMatchModeTypesMap() {
-                var matchModeTypesMap = {
-                    'integer'    : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'big_integer': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'short'      : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'float'      : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'big_decimal': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'double'     : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'long'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'byte'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'string'     : ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                    'character'  : ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                    'text'       : ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                    'date'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'time'       : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'timestamp'  : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'datetime'   : ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                    'boolean'    : ['exact', 'null', 'isnotnull'],
-                    'clob'       : [],
-                    'blob'       : []
-                };
+            function getMatchModeTypesMap(multiMode) {
+                var typesMap = {
+                        'number': ['number', 'integer', 'big_integer', 'short', 'float', 'big_decimal', 'double', 'long', 'byte'],
+                        'string': ['string', 'text'],
+                        'character': ['character'],
+                        'date': ['date','time',  'timestamp', 'datetime']
+                    },
+                    modes = {
+                        'number': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
+                        'string': ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
+                        'character': ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
+                        'date': ['exact', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty']
+                    },
+                    matchModeTypesMap = {
+                        'boolean'    : ['exact', 'null', 'isnotnull'],
+                        'clob'       : [],
+                        'blob'       : []
+                    };
+
+                if (multiMode) {
+                    modes.number.push('in', 'between');
+                    modes.date.push('between');
+                    modes.string.push('in');
+                    modes.character.push('in');
+                }
+
+                _.forEach(typesMap, function (types, primType) {
+                    _.forEach(types, function (type) {
+                        matchModeTypesMap[type] = modes[primType];
+                    });
+                });
                 return matchModeTypesMap;
+            }
+
+            //Populate the filter options with localized messages
+            function getMatchModeMsgs(appLocale) {
+                return {
+                    'start'            : appLocale.LABEL_STARTS_WITH,
+                    'end'              : appLocale.LABEL_ENDS_WITH,
+                    'anywhere'         : appLocale.LABEL_CONTAINS,
+                    'exact'            : appLocale.LABEL_IS_EQUAL_TO,
+                    'notequals'        : appLocale.LABEL_IS_NOT_EQUAL_TO,
+                    'lessthan'         : appLocale.LABEL_LESS_THAN,
+                    'lessthanequal'    : appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
+                    'greaterthan'      : appLocale.LABEL_GREATER_THAN,
+                    'greaterthanequal' : appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
+                    'null'             : appLocale.LABEL_IS_NULL,
+                    'isnotnull'        : appLocale.LABEL_IS_NOT_NULL,
+                    'empty'            : appLocale.LABEL_IS_EMPTY,
+                    'isnotempty'       : appLocale.LABEL_IS_NOT_EMPTY,
+                    'nullorempty'      : appLocale.LABEL_IS_NULL_OR_EMPTY,
+                    'in'               : appLocale.LABEL_IN,
+                    'between'          : appLocale.LABEL_BETWEEN
+                };
             }
             function toBoolean(val, identity) {
                 return val === 'false' ? false : (val === 'true' || val === '' || val === identity || val);
@@ -379,7 +412,7 @@ WM.module('wm.widgets.live')
                 var columnDef    = {},
                     widgetType   = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
                     excludeKeys  = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value'],
-                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled', 'primaryKey'];
+                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled', 'primaryKey', 'period'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
                     if (_.includes(booleanAttrs, key)) {
@@ -843,6 +876,7 @@ WM.module('wm.widgets.live')
                             'show'          : true,
                             'primaryKey'    : fieldObj.isPrimaryKey,
                             'generator'     : fieldObj.generator,
+                            'period'        : fieldObj.period,
                             'key'           : fieldObj.fieldName,
                             'value'         : '',
                             'type'          : fieldObj.isRelated ? 'list' : fieldObj.fullyQualifiedType,
@@ -1775,7 +1809,8 @@ WM.module('wm.widgets.live')
                         data.relatedData[val.relatedEntityName] = {
                             columns: relatedTableColumns,
                             primaryKey: primaryKey,
-                            columnNameTypeMap: columnNameTypeMap
+                            columnNameTypeMap: columnNameTypeMap,
+                            columnObjs: val.columns
                         };
 
                         /* otherwise build object with required configuration */
@@ -1972,6 +2007,7 @@ WM.module('wm.widgets.live')
                     fieldColumn         = formField.lookupField;
                     props.distinctField = fieldColumn;
                     props.aliasColumn   = fieldColumn.replace('.', '$'); //For related fields, In response . is replaced by $
+                    props.filterExpr    = formField.filterexpressions ? (_.isObject(formField.filterexpressions) ? formField.filterexpressions : JSON.parse(formField.filterexpressions)) : {};
                 } else {
                     props.tableName     = variable.propertiesMap.entityName;
                     fieldColumn         = formField.field || formField.key;
@@ -2001,10 +2037,12 @@ WM.module('wm.widgets.live')
 
                 if (dataSetWidgetTypes[formField[widget]] && (!formField.isDataSetBound || widget === 'filterwidget')) {
                     props = getDistinctFieldProperties(variable, formField);
+
                     variable.getDistinctDataByFields({
                         'fields'        : props.distinctField,
                         'entityName'    : props.tableName,
-                        'pagesize'      : formField.limit
+                        'pagesize'      : formField.limit,
+                        'filterExpr'    : formField.filterexpressions ? JSON.parse(formField.filterexpressions) : {}
                     }, function (data) {
                         callBack(formField, data, props.aliasColumn);
                     });
@@ -2219,18 +2257,108 @@ WM.module('wm.widgets.live')
                 columnDef.displayfield = displayField = (columnDef.displayfield || displayField || columnDef._primaryKey);
                 //For autocomplete widget, set the dataset and  related field. Autocomplete widget will make the call to get related data
                 if (isSearchWidgetType(widget)) {
-                    columnDef.dataoptions  = {'relatedField': relatedField};
+                    columnDef.dataoptions  = {'relatedField': relatedField, 'filterExpr': columnDef.filterexpressions ? columnDef.filterexpressions : {}};
                     columnDef.dataset      = parentScope.binddataset;
                     columnDef.searchkey    = columnDef.searchkey || displayField;
                     columnDef.displaylabel = columnDef.displayfield = (columnDef.displaylabel || displayField);
                 } else {
-                    columnDef.isDefinedData = true;
-                    boundVariable.getRelatedTableData(relatedField, {
-                        'pagesize': columnDef.limit,
-                        'orderBy': columnDef.orderby ? _.replace(columnDef.orderby, /:/g, ' ') : '',
-                    }, function (response) {
-                        columnDef.dataset       = response;
-                        columnDef.displayfield  = columnDef.displayfield || _.head(_.keys(_.get(response, '[0]')));
+                    var callbackFn = function(filterexpressions) {
+                        columnDef.filterexpressions = filterexpressions;
+                        boundVariable.getRelatedTableData(relatedField, {
+                            'pagesize': columnDef.limit,
+                            'orderBy': columnDef.orderby ? _.replace(columnDef.orderby, /:/g, ' ') : '',
+                            'filterFields': {},
+                            'filterExpr': columnDef.filterexpressions ? columnDef.filterexpressions : {}
+                        }, function (response) {
+                            columnDef.dataset       = response;
+                            columnDef.displayfield  = columnDef.displayfield || _.head(_.keys(_.get(response, '[0]')));
+                        });
+
+                    };
+                    interpolateBindExpressions(parentScope, columnDef.filterexpressions, callbackFn);
+                }
+            }
+
+            /**
+             * utility method used for forming the sql query
+             * @param group
+             * @param i
+             * @returns {string}
+             */
+            function getMatchModeString(group, i) {
+                var matchModeMsgs = getMatchModeMsgs($rs.appLocale);
+
+                var matchMode = matchModeMsgs[group.rules[i].matchMode], matchModeVal;
+                switch (matchMode) {
+                    case 'In':
+                        matchModeVal = matchMode + " (" + group.rules[i].value + ")";
+                        break;
+                    case 'Between':
+                        matchModeVal = matchMode + " " + group.rules[i].value + " AND " + (group.rules[i].secondvalue ? group.rules[i].secondvalue : "");
+                        break;
+                    default:
+                        matchModeVal = matchMode + " " + group.rules[i].value;
+                }
+                return matchModeVal;
+            }
+
+            /**
+             * recursively traverses the filterexpressions object and forms the sql query
+             * @param group filterexpressions
+             * @returns {string} final sql query
+             */
+            function compute(group) {
+                if (!group) return "";
+                if(group.rules) {
+                    for (var str = "(", i = 0; i < group.rules.length; i++) {
+                        i > 0 && (str += " " + group.condition + " ");
+                        str += WM.isArray(group.rules[i].rules) ? compute(group.rules[i]) : group.rules[i].target + " " + getMatchModeString(group, i);
+                    }
+                    return str + ")";
+                }
+                return "";
+            }
+
+            /**
+             * used in liveform, livefilter, datatables(inline, quickedit) to show the saved query
+             */
+            function getQuery(filterExpressions) {
+                return compute(filterExpressions ? (_.isObject(filterExpressions) ? filterExpressions : JSON.parse(filterExpressions)) : {});
+            }
+
+            /**
+             * used to interpolate the bind expression for keys in the query builder
+             * @param scope where we find the variable obj
+             * @param filterexpressions - obj containing all the rule objs
+             * @param callbackFn - function to be called with the new replaced values if any in the filterexpressions object
+             */
+            function interpolateBindExpressions(scope, filterexpressions, callbackFn) {
+                var debouncedFn = _.debounce(function () {
+                    if (_.isFunction(callbackFn)) {
+                        callbackFn(filterexpressions);
+                    }
+                }, 300);
+
+                var onSuccess = function (filterExpressions, newVal) {
+                    filterexpressions = JSON.stringify(filterExpressions);
+                    debouncedFn();
+                };
+
+                var onreadyFunction = function() {
+                    /**
+                     * calling the debounced function first for the case where if there is any filterexpression without the bindedvariables.
+                     * without this it will never be called. processFilterExpBindNode will be called only for the binded variable expressions.
+                     */
+                    debouncedFn();
+                    var filterExpressions = filterexpressions ? (_.isObject(filterexpressions) ? filterexpressions : JSON.parse(filterexpressions)) : {};
+                    Variables.processFilterExpBindNode(scope, filterExpressions, onSuccess);
+                };
+
+                if ($rs._pageReady) {
+                    onreadyFunction();
+                } else {
+                    $rs.$on('page-ready', function (e, pageName) {
+                        onreadyFunction();
                     });
                 }
             }
@@ -2310,9 +2438,13 @@ WM.module('wm.widgets.live')
                     setDataFields(formField, widget, formField.dataoptions);
                     formField.dataset     = scope.binddataset;
                 } else {
-                    getDistinctValues(formField, widget, variable, function (formField, data, aliasColumn) {
-                        setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter);
-                    });
+                    var callbackFn = function(filterexpressions) {
+                        formField.filterexpressions = filterexpressions;
+                        getDistinctValues(formField, widget, variable, function (formField, data, aliasColumn) {
+                            setFieldDataSet(formField, data, aliasColumn, widget, isEnableEmptyFilter);
+                        });
+                    };
+                    interpolateBindExpressions(scope, formField.filterexpressions, callbackFn);
                 }
             }
 
@@ -2788,6 +2920,7 @@ WM.module('wm.widgets.live')
             this.mergeDimension             = mergeDimension;
             this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
             this.getMatchModeTypesMap       = getMatchModeTypesMap;
+            this.getMatchModeMsgs           = getMatchModeMsgs;
             this.fieldPropertyChangeHandler = fieldPropertyChangeHandler;
             this.preProcessFields           = preProcessFields;
             this.setColumnConfig            = setColumnConfig;
@@ -2805,6 +2938,10 @@ WM.module('wm.widgets.live')
             this.getViewModeWidgets         = getViewModeWidgets;
             this.parseNgClasses             = parseNgClasses;
             this.fetchRelatedFieldData      = fetchRelatedFieldData;
+            this.isSearchWidgetType         = isSearchWidgetType;
+            this.interpolateBindExpressions = interpolateBindExpressions;
+            this.getQuery                   = getQuery;
+            this.compute                    = compute;
             this.getEditModeWidget          = getEditModeWidget;
             this.setFieldDataSet            = setFieldDataSet;
             this.fetchDistinctValues        = fetchDistinctValues;

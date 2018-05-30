@@ -369,6 +369,13 @@ html, body {
   min-width: 50px;
   min-height: 50px;
   padding: 0;
+  .popover-start, .popover-end {
+    width: 0;
+    padding: 0;
+    height: 0;
+    border:0;
+    position:absolute;
+  }
   .popover-content {
     .width-height(100%, 100%);
     overflow: auto;
@@ -466,7 +473,7 @@ html, body {
         display: table-cell;
       }
       //Sub menu position
-      .dropdown-submenu:hover {
+      .dropdown-submenu:hover, .dropdown-submenu.open {
         > .dropdown-menu {
           left: 0;
           top: 100%;
@@ -505,7 +512,7 @@ html, body {
       position: relative;
     }
   }
-  .dropdown-submenu:hover {
+  .dropdown-submenu:hover, .dropdown-submenu.open {
     > .dropdown-menu{
       &.pull-right{
         float: right;
@@ -532,7 +539,7 @@ html, body {
         }
     }
   }
-  &.dropup .dropdown-submenu:hover{
+  &.dropup .dropdown-submenu:hover, &.dropup .dropdown-submenu.open{
     > .dropdown-menu{
         display: block;
         left: 100%;
@@ -775,7 +782,6 @@ html, body {
     line-height: 2.5em;
     display: table;
     width: 100%;
-    text-transform: capitalize;
     .header-action {
       display: table-cell;
       span, i{
@@ -1153,49 +1159,63 @@ html, body {
     }
   }
 }
-.app-datetime, .app-date {
-  .app-calendar-event {
-    .btn:after {
-      font-family: "FontAwesome";
-      font-size: 6px;
-      content: "\f111\00a0\f111\00a0\f111";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      color: rgba(0,0,0,0.2);
-      text-align: center;
-      line-height: 2px;
-    }
-    &.one {
+.wm-app {
+  .app-datetime,  .app-date {
+    .app-calendar-event {
       .btn:after {
-        content: "\f111";
+        font-family: "FontAwesome";
+        font-size: 6px;
+        content: "\f111\00a0\f111\00a0\f111";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        color: rgba(0,0,0,0.2);
+        text-align: center;
+        line-height: 2px;
       }
-    }
-    &.two {
-      .btn:after {
-        content: "\f111\00a0\f111";
+      &.one {
+        .btn:after {
+          content: "\f111";
+        }
       }
-    }
-  }
-  .uib-daypicker {
-    tbody{
-      .btn-default {
-        position: relative;
-        margin: 0;
-        &:after {
-          bottom: -1em;
+      &.two {
+        .btn:after {
+          content: "\f111\00a0\f111";
         }
       }
     }
-    table {
-      tbody {
-        tr.uib-weeks {
-          td:first-child {
-            width: auto;
+    .uib-daypicker {
+      tbody{
+        .btn-default {
+          position: relative;
+          margin: 0;
+          &:after {
+            bottom: -1em;
           }
         }
       }
+      table {
+        tbody {
+          tr.uib-weeks {
+            td:first-child {
+              width: auto;
+            }
+          }
+        }
+      }
+    }
+    tbody .btn.btn-default {
+      &:focus, &.active {
+        background-color: #bbb !important;
+        color: #333 !important;
+      }
+    }
+  }
+  .app-datetime,  .app-date, .app-time {
+    //Focus styles for Date,DateTime input group buttons
+    .input-group-btn .btn:focus {
+      outline: 1px dotted !important;
     }
   }
   .model-holder[bsdatepicker] {
@@ -3634,7 +3654,10 @@ If the height and width are not specified the video takes the height of the post
     padding: 1em;
   }
 }
-
+//Focus styles for Menu in navbar
+.wm-app .app-navbar .navbar-nav ul.dropdown-menu li a:focus {
+  background-color: rgba(0,0,0,0.15);
+}
 .wm-app .popover.fade {
   &.bottom, &.top, &.left, &.right {
     >.arrow {

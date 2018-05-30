@@ -1145,7 +1145,7 @@ WM.module('wm.widgets.form')
                         concatStr = getTimeRolledUpString(concatStr, match, dateFormat);
                     }
 
-                    return _.toLower(concatStr);
+                    return concatStr;
                 }
 
                 if (!orderby) { //Apply implicit orderby on group by clause, if order by not specified
@@ -1314,4 +1314,189 @@ WM.module('wm.widgets.form')
         'autocomplete' : 'wm-search',
         'chips'        : 'wm-chips',
         'colorpicker'  : 'wm-colorpicker'
-    });
+    })
+    .service('DateTimeWidgetUtils', ['CONSTANTS', '$timeout', 'Utils', function (CONSTANTS, $timeout, Utils) {
+        /**
+         * returns true if the input value is default (i.e open date picker on input click)
+         * @param1 dropdownvalue, user selected value (by default datepicker opens on input click)
+         * **/
+        function isDropDownDisplayEnabledOnInput(dropdownvalue) {
+            return dropdownvalue === CONSTANTS.DATEPICKER_DROPDOWN_OPTIONS.DEFAULT;
+        }
+
+        /**
+         * This function sets the focus to Datepicker/TimePicker
+         * @param scope - scope of the active element
+         * @param isDatepicker - true if the element to be focused is DatePicker
+         */
+        function setFocusOnDateOrTimePicker(scope, isDatepicker) {
+            if (isDatepicker) {
+                $timeout(function () {
+                    $('.uib-datepicker-popup').addClass('active');
+                    scope.$broadcast('uib:datepicker.focus');
+                }, 300);
+            } else {
+                /*$timeout is used so that by then time input has the updated value. focus is setting back to the input field*/
+                $timeout(function () {
+                    $('.uib-time.hours input').filter(':visible').focus();
+                });
+            }
+        }
+
+        /**
+         * This function sets the focus to Datepicker/TimePicker Input when
+         * 1. the date/ time is set
+         * 2. on tab/shift+tab, focusing the input
+         * 3. focus the timepicker after selecting the date in case of DateTime Picker
+         * @param scope - scope of the active element
+         * @param focusTimepicker - true if the element to be focused is TimePicker
+         * * @param focusDatepicker - true if the element to be focused is DatePicker
+         */
+        function setFocusOnElement(scope, focusTimepicker) {
+            if (scope._widgettype === 'wm-date') {
+                scope.$element.find('.app-dateinput').focus();
+            } else if (scope._widgettype === 'wm-datetime') {
+                if (focusTimepicker) {
+                    setFocusOnDateOrTimePicker();
+                } else {
+                    scope.$element.find('.display-input').focus();
+                }
+            } else if (scope._widgettype === 'wm-time') {
+                scope.$element.find('.display-input').focus();
+            }
+
+        }
+
+        /**
+         * This function sets the value isOpen/isDateOpen (i.e when datepicker popup is closed) based on widget type(i.e Date, DateTime)
+         * @param $is - scope of the active element
+         */
+        function setIsDateOpen($is) {
+            if ($is._widgettype === 'wm-date') {
+                $is.isOpen = false;
+            } else if ($is._widgettype === 'wm-datetime') {
+                $is.isDateOpen = false;
+            }
+        }
+
+        /**
+         * This function sets the value isOpen/isTimeOpen (i.e when datepicker popup is closed) based on widget type(i.e  DateTime, Time)
+         * @param $is - scope of the active element
+         * @param val - isOpen/isTimeOpen is set based on the timepicker popup is open/closed
+         */
+        function setIsTimeOpen($is, val) {
+            if ($is._widgettype === 'wm-datetime') {
+                $is.isTimeOpen = val;
+            } else if ($is._widgettype === 'wm-time') {
+                $is.isOpen = val;
+            }
+        }
+
+        /**
+         * This function sets the keyboard events to Datepicker popup
+         * @param $is - scope of the active element
+         */
+        function setDatePickerKeyboardEvents($is) {
+            $timeout(function () {
+                var datepickerEle = WM.element('body').find('> [uib-datepicker-popup-wrap] .uib-datepicker-popup');
+                datepickerEle.find('.uib-button-bar .uib-close').on('keydown', function (evt) {
+                    if (Utils.getActionFromKey(evt) === 'TAB') {
+                        setIsDateOpen($is);
+                        setIsTimeOpen($is, true);
+                        setFocusOnElement($is, true);
+                    } else if (Utils.getActionFromKey(evt) === 'ENTER') {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        setIsDateOpen($is);
+                        setIsTimeOpen($is, true);
+                        /*$timeout is used so that by then date/datetime input has the updated value. focus is setting back to the input field*/
+                        $timeout(function() {
+                            setFocusOnElement($is, true);
+                        }, 100);
+                    }
+                });
+                datepickerEle.find('.uib-button-bar .uib-clear').on('keydown', function (evt) {
+                    /* clear the model and set focus back to input when Clear button is clicked.*/
+                   if (Utils.getActionFromKey(evt) === 'ENTER') {
+                       setIsDateOpen($is);
+                       $is._model_ = '';
+                       /*$timeout is used so that by then date/datetime input has the updated value. focus is setting back to the input field*/
+                       $timeout(function() {
+                           setFocusOnElement($is);
+                       });
+                   }
+                });
+                datepickerEle.find('.uib-datepicker').on('keydown', function (evt) {
+                    if (Utils.getActionFromKey(evt) === 'SHIFT+TAB') {
+                        setIsDateOpen($is);
+                        $timeout(function() {
+                            setFocusOnElement($is);
+                        });
+                    } else if (Utils.getActionFromKey(evt) === 'CTRL-UP-ARROW' || Utils.getActionFromKey(evt) === 'CTRL-DOWN-ARROW') {
+                        setFocusOnDateOrTimePicker($is, true);
+                    } else if (Utils.getActionFromKey(evt) === 'TAB' && !$is.showbuttonbar) {
+                        setIsDateOpen($is);
+                        setIsTimeOpen($is, true);
+                        setFocusOnElement($is, true);
+                    } else if (Utils.getActionFromKey(evt) === 'ESC') {
+                        setIsDateOpen($is);
+                        $timeout(function() {
+                            setFocusOnElement($is);
+                        });
+                    } else if (Utils.getActionFromKey(evt) === 'ENTER') {
+                        //if the focus is in monthpicker/yearpicker popup shouldn't be closed, on enter key (selecting the year and month) the focus should go back to daypicker
+                        if ($(evt.target).closest('.uib-daypicker')[0]) {
+                            setIsDateOpen($is);
+                            setIsTimeOpen($is, true);
+                            $timeout(function() {
+                                setFocusOnElement($is, true);
+                            });
+                        } else {
+                            setFocusOnDateOrTimePicker($is, true);
+                        }
+                    }
+                });
+            });
+        }
+
+        /**
+         * This function sets the events to given element
+         * @param $is - scope of the active element
+         * @param $el - element on which the event is added
+         * @keyCodeArray array of key codes, based on the code action is to be performed
+         * @stopPropagation boolean value decides whether to stop propagation or not
+         */
+        function addEventsOnTimePicker($is, $el, keyCodeArray, stopPropagation) {
+            $el.on('keydown', function (evt) {
+               if (_.includes(keyCodeArray, Utils.getActionFromKey(evt))) {
+                   setIsTimeOpen($is, false);
+                   setFocusOnElement($is);
+                   if (stopPropagation) {
+                       evt.stopPropagation();
+                   }
+               }
+            });
+        }
+
+        /**
+         * This function sets the keyboard events to Timepicker popup
+         * @param $is - scope of the active element
+         */
+        function setTimePickerKeyboardEvents($is) {
+            $timeout(function () {
+                var timepickerEle = WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]');
+                timepickerEle.parent().addClass('app-datetime');
+                addEventsOnTimePicker($is, timepickerEle, ['ESC'], true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.am-pm'), ['TAB'], false);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.hours'), ['SHIFT+TAB', 'ENTER'], true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.minutes'), ['ENTER'], true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.seconds'), ['ENTER'], true);
+            }, 0, false);
+        }
+
+        this.isDropDownDisplayEnabledOnInput = isDropDownDisplayEnabledOnInput;
+        this.setFocusOnElement               = setFocusOnElement;
+        this.setFocusOnDateOrTimePicker      = setFocusOnDateOrTimePicker;
+        this.setDatePickerKeyboardEvents     = setDatePickerKeyboardEvents;
+        this.setTimePickerKeyboardEvents     = setTimePickerKeyboardEvents;
+    }]);

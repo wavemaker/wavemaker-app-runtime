@@ -209,7 +209,8 @@ WM.module('wm.widgets.table')
         }
 
         function showExportOptions($is) {
-            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToDataServiceType && !$is.isBoundToProcedureServiceVariable && $is.variable && $is.variable.isList);
+            //showing export options in case of widget bound to live variables and query service variable.
+            return $is.isBoundToLiveVariable || $is.isBoundToFilter || ($is.isBoundToQueryServiceVariable && $is.variable.isList);
         }
 
         return {
@@ -240,7 +241,8 @@ WM.module('wm.widgets.table')
                 'onSetrecord'       : '&',
                 'onDatarender'      : '&',
                 'onBeforedatarender': '&',
-                'onTap'             : '&'
+                'onTap'             : '&',
+                'onBeforeexport'    : '&'
             },
             'replace'    : true,
             'transclude' : false,
@@ -409,25 +411,6 @@ WM.module('wm.widgets.table')
                                 return;
                             }
                             $is.callDataGridMethod('saveRow');
-                        }
-                        //Populate the filter options with localized messages
-                        function getMatchModeMsgs() {
-                            return {
-                                'start'            : $is.appLocale.LABEL_STARTS_WITH,
-                                'end'              : $is.appLocale.LABEL_ENDS_WITH,
-                                'anywhere'         : $is.appLocale.LABEL_CONTAINS,
-                                'exact'            : $is.appLocale.LABEL_IS_EQUAL_TO,
-                                'notequals'        : $is.appLocale.LABEL_IS_NOT_EQUAL_TO,
-                                'lessthan'         : $is.appLocale.LABEL_LESS_THAN,
-                                'lessthanequal'    : $is.appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
-                                'greaterthan'      : $is.appLocale.LABEL_GREATER_THAN,
-                                'greaterthanequal' : $is.appLocale.LABEL_GREATER_THAN_OR_EQUALS_TO,
-                                'null'             : $is.appLocale.LABEL_IS_NULL,
-                                'isnotnull'        : $is.appLocale.LABEL_IS_NOT_NULL,
-                                'empty'            : $is.appLocale.LABEL_IS_EMPTY,
-                                'isnotempty'       : $is.appLocale.LABEL_IS_NOT_EMPTY,
-                                'nullorempty'      : $is.appLocale.LABEL_IS_NULL_OR_EMPTY
-                            };
                         }
                         function onDestroy() {
                             handlers.forEach(Utils.triggerFn);
@@ -605,6 +588,10 @@ WM.module('wm.widgets.table')
                                         });
                                     });
                                 }
+                                //showing onBeforeexport callback event when any of the export format is selected.
+                                if ($is.widgetid) {
+                                    wp.onBeforeexport.show = ($is.exportOptions.length > 0);
+                                }
                                 break;
                             case 'editmode':
                                 if ($is.widgetid) {
@@ -636,7 +623,7 @@ WM.module('wm.widgets.table')
                         $is.noModifyTitle     = attrs.noModifyTitle === 'true';
                         $is.matchModeTypesMap = LiveWidgetUtils.getMatchModeTypesMap();
                         $is.emptyMatchModes   = ['null', 'empty', 'nullorempty', 'isnotnull', 'isnotempty'];
-                        $is.matchModeMsgs     = getMatchModeMsgs();
+                        $is.matchModeMsgs     = LiveWidgetUtils.getMatchModeMsgs($is.appLocale);
                         $is.gridElement       = element;
                         $is.gridColumnCount   = gridColumnCount;
                         $is.displayAllFields  = attrs.displayall === '';
@@ -713,7 +700,7 @@ WM.module('wm.widgets.table')
                         }));
                         handlers.push($rs.$on('locale-change', function () {
                             $is.appLocale     = $rs.appLocale;
-                            $is.matchModeMsgs = getMatchModeMsgs();
+                            $is.matchModeMsgs = LiveWidgetUtils.getMatchModeMsgs($is.appLocale);
                             $is.callDataGridMethod('option', 'messages.selectField', $rs.appLocale.MESSAGE_SELECT_FIELD);
                         }));
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
@@ -903,6 +890,7 @@ WM.module('wm.widgets.table')
                         'property': 'deleterow'
                     }
                 },
+                ROW_OPS_FIELD = "rowOperations",
                 isDataSetWidgets = Utils.getDataSetWidgets(),
                 OPERATION = {
                     'NEW': 'new',
@@ -1574,8 +1562,8 @@ WM.module('wm.widgets.table')
                 if (!$is.fieldDefs.length) {
                     return;
                 }
-                rowActionCol = _.find($is.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
-                _.remove($is.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
+                rowActionCol = _.find($is.fullFieldDefs, {'field': ROW_OPS_FIELD, type : 'custom'}); //Check if column is fetched from markup
+                _.remove($is.fieldDefs, {type : 'custom', field : ROW_OPS_FIELD});//Removing operations column
                 _.remove($is.headerConfig, {field : rowOperationsColumn.field});
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
@@ -2172,22 +2160,52 @@ WM.module('wm.widgets.table')
             //On click of item in export menu, download the file in respective format
             function exportData($item) {
                 var filterFields,
-                    variable    = $is.variable,
-                    sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction;
+                    variable = $is.variable,
+                    sortOptions = _.isEmpty($is.sortInfo) ? '' : $is.sortInfo.field + ' ' + $is.sortInfo.direction,
+                    isValid,
+                    requestData,
+                    columns = {};
+                _.forEach($is.fieldDefs, function (fieldDef) {
+                    // Do not add the row operation actions column to the exported file.
+                    //Do not add the column with show property 'false' to the exported file.
+                    if(fieldDef.field === ROW_OPS_FIELD || !fieldDef.show) {
+                        return;
+                    }
+                    var option = {
+                        'header': fieldDef.displayName
+                    };
+                    // If column has exportexpression, then send form the expression as required by backend.
+                    // otherwise send the field name.
+                    if (fieldDef.exportexpression) {
+                        option.expression = fieldDef.exportexpression;
+                    } else {
+                        option.field = fieldDef.field;
+                    }
+                    columns[fieldDef.field] = option;
+                });
                 if ($is.isBoundToFilter) {
-                    $is.Widgets[$is.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label, 'exportdatasize': $is.exportdatasize});
+                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'size': $is.exportdatasize,'columns': columns};
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
-                    variable.download({
+                    requestData = {
                         'matchMode'    : 'anywhere',
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
-                        'exportFormat' : $item.label,
+                        'exportType'   : $item.label,
                         'logicalOp'    : 'AND',
-                        'size'         : $is.exportdatasize
-                    }, function (errMsg) {
-                        wmToaster.error('Error', errMsg);
-                    });
+                        'size'         : $is.exportdatasize,
+                        'columns'      : columns
+                    };
+                }
+                isValid = $is.onBeforeexport({$data: requestData});
+                if(isValid === false){
+                    return;
+                }
+                requestData.fields = _.values(requestData.columns);
+                if ($is.isBoundToFilter) {
+                    $is.Widgets[$is.widgetName].applyFilter(requestData);
+                } else if ($is.showExportOptions()) {
+                    variable.download(requestData);
                 }
             }
             //Populate the _actions based on the position property
@@ -2793,8 +2811,8 @@ WM.module('wm.widgets.table')
             'compile': function (tElement) {
 
                 var columnProperties = ['generator', 'widgetType', 'datepattern', 'currencypattern', 'fractionsize', 'suffix', 'prefix', 'accessroles', 'dataset', 'datafield',
-                    'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue',
-                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern'];
+                    'placeholder', 'displaylabel', 'searchkey', 'displayfield', 'rowactionsposition', 'filterplaceholder', 'relatedEntityName', 'checkedvalue', 'uncheckedvalue', 'showdropdownon',
+                    'filterOn', 'filterdataset', 'filterdatafield', 'filterdisplayfield', 'filterdisplaylabel', 'filtersearchkey', 'filteronfilter', 'editdatepattern', 'exportexpression', 'filterexpressions'];
 
                 return {
                     'pre': function (scope, element, attrs) {
@@ -2898,7 +2916,8 @@ WM.module('wm.widgets.table')
                             'searchable'        : (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
                             'limit'             : attrs.limit ? +attrs.limit : undefined,
-                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string')
+                            'filterwidget'      : attrs.filterwidget || LiveWidgetUtils.getDataTableFilterWidget(attrs.type || 'string'),
+                            'filterexpressions' : attrs.filterexpressions || '{}'
                         };
 
                         _.forEach(columnProperties, function (key) {
@@ -2970,7 +2989,13 @@ WM.module('wm.widgets.table')
                                         //Fetch the data for the related fields
                                         columnDef.isDataSetBound = true;
                                         bindings = _.split(columnDef.field, '.');
-                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, element.scope(), parentScope);
+                                        var eleScope = element.scope();
+                                        //now its an async all, by the time it fetches the data, datatable._getEditableTemplate renders the
+                                        // template seeing the isDefinedData value as undefined. to avoid that we are setting this to true before now
+                                        if (!LiveWidgetUtils.isSearchWidgetType(columnDef.editWidgetType)) {
+                                            columnDef.isDefinedData = true;
+                                        }
+                                        LiveWidgetUtils.fetchRelatedFieldData(columnDef, _.head(bindings), _.last(bindings), columnDef.editWidgetType, eleScope, parentScope);
                                     } else {
                                         LiveWidgetUtils.getDistinctValuesForField(parentScope, columnDef, 'editWidgetType');
                                         if (columnDef.editWidgetType === 'autocomplete' && _.includes(parentScope.binddataset, 'bind:Variables.')) {

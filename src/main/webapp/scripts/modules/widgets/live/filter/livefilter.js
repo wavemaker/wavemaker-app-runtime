@@ -194,7 +194,7 @@ WM.module('wm.widgets.live')
                                 return;
                             }
                         }
-                        /* Construct the formFields Variable to send it to the queryBuilder */
+
                         WM.forEach($scope.formFields, function (filterField) {
                             var fieldValue,
                                 matchMode,
@@ -259,18 +259,20 @@ WM.module('wm.widgets.live')
                                     }
                                     formFields[colName].value     = fieldValue;
                                     formFields[colName].logicalOp = 'AND';
+                                    formFields[colName].type = filterField.type;
                                 }
                             }
                         });
 
-                        if (options.exportFormat) {
+                        if (options.exportType) {
                             variable.download({
                                 'matchMode'    : 'anywhere',
                                 'filterFields' : formFields,
                                 'orderBy'      : orderBy,
-                                'exportFormat' : options.exportFormat,
+                                'exportType'   : options.exportType,
                                 'logicalOp'    : 'AND',
-                                'size'         : options.exportdatasize
+                                'size'         : options.size,
+                                'fields'       : options.fields
                             });
                             return;
                         }
@@ -643,7 +645,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "WidgetUtilService", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils, WidgetUtilService) {
+    .directive("wmFilterField", ["$rootScope", "$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "Variables", "WidgetUtilService", function ($rs, $compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils, Variables, WidgetUtilService) {
         'use strict';
         return {
             "restrict": 'E',

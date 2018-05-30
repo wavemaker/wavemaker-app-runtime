@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             " app-defaults='{\"datepattern\": \"dateTimeFormat\"}' " +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keyup="_onKeyUp($event)" autocomplete="off">' +
+                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keydown="_onKeyDown($event)" autocomplete="off">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup ' +
                     ' datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen"' +
@@ -16,7 +16,7 @@ WM.module('wm.widgets.form')
                     ' clear-text="{{$root.appLocale.LABEL_CLEAR}}"' +
                     ' close-text="{{$root.appLocale.LABEL_DONE}}"' +
                     ' focus-target>' +
-                '<div uib-dropdown is-open="isTimeOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
+                '<div uib-dropdown is-open="isTimeOpen" on-toggle="toggleOpenClose()" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
                         '<div uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
                     '</div>' +
@@ -50,8 +50,9 @@ WM.module('wm.widgets.form')
         '$interval',
         'CONSTANTS',
         'Utils',
+        'DateTimeWidgetUtils',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $interval, CONSTANTS, Utils) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $interval, CONSTANTS, Utils, DateTimeWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.datetime', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
@@ -115,7 +116,7 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                     inputEl.attr(key, nv);
                 case 'disabled':
-                    isDisabled = $is.readonly || $is.disabled;
+                    isDisabled = $is.readonly || (WM.isDefined($is.disabled) && $is.disabled);
                     inputEl.attr('disabled', isDisabled);
                     buttonEl.attr('disabled', isDisabled);
                     break;
@@ -150,6 +151,14 @@ WM.module('wm.widgets.form')
 
             function _onClick($is, evt) {
                 evt.stopPropagation();
+                if ($is.isDateOpen) {
+                    DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                } else if ($is.isTimeOpen) {
+                    /*$timeout is used so that by then $is.istimeOpen has the updated value and timepicker popup has been open. focus is setting on the timepicker*/
+                    $timeout(function() {
+                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
+                    });
+                }
                 if ($is.onClick) {
                     $is.onClick({$event: evt, $scope: $is});
                 }
@@ -158,9 +167,11 @@ WM.module('wm.widgets.form')
             /*On click of date icon button, open the date picker popup*/
             function _onDateClick($is, $el, evt) {
                 evt.stopPropagation();
+                if ($(evt.target).is('input') && !DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                    return false;
+                }
                 var dateOpen = $is.isDateOpen;
                 $timeout(function () {
-                    $el.parent().trigger('click');
                     $is.isDateOpen = !dateOpen;
                     $is.isTimeOpen = false;
                     _onClick($is, evt);
@@ -190,6 +201,13 @@ WM.module('wm.widgets.form')
                     val = parseInt(val, 10);
                 }
                 return new Date(moment(val).valueOf());
+            }
+
+            //function is called when the datepicker/timepicker is opened/closed
+            function toggleOpenClose($is) {
+                if (!$is.isTimeOpen) {
+                    DateTimeWidgetUtils.setFocusOnElement($is);
+                }
             }
 
             return {
@@ -305,6 +323,7 @@ WM.module('wm.widgets.form')
                         $is._onClick = _onClick.bind(undefined, $is);
                         $is._onDateClick = _onDateClick.bind(undefined, $is, $el);
                         $is._onTimeClick = _onTimeClick.bind(undefined, $is, $el);
+                        $is.toggleOpenClose = toggleOpenClose.bind(undefined, $is);
 
                         /*
                          * Backward compatibility for ismeridian property which is deprecated.
@@ -324,6 +343,10 @@ WM.module('wm.widgets.form')
                                 });
                             }
                             $is.formatDateTime();
+                            //setting the focus on the timepicker after it is open
+                            $timeout(function() {
+                                DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
+                            });
                             $is._onChange({$event: event, $scope: $is});
                         };
                         $is.selectTime = function (event) {
@@ -459,6 +482,7 @@ WM.module('wm.widgets.form')
                             $is.$watch('isDateOpen', function (nv) {
                                 if (nv) {
                                     document.addEventListener('click', docClickListenerForDate, true);
+                                    DateTimeWidgetUtils.setDatePickerKeyboardEvents($is);
                                 }
                             });
 
@@ -468,18 +492,22 @@ WM.module('wm.widgets.form')
                                     document.addEventListener('click', docClickListenerForTime, true);
                                     //Add app-datetime class to the wrapper that are appended to body
                                     if (!isClassAdded) {
-                                        $timeout(function () {
-                                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
-                                        }, 0, false);
+                                        DateTimeWidgetUtils.setTimePickerKeyboardEvents($is);
                                         isClassAdded = true;
                                     }
                                 }
                             });
 
-                            $is._onKeyUp = function ($event) {
-                                //On tab in, open the date popup
-                                if ($event.keyCode === 9) {
-                                    $is.isDateOpen = true;
+                            $is._onKeyDown = function ($event) {
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                                    //when datepicker is used in datatable/form, on enter record is getting inserted. To prevent record insertion stopPropagation is being used
+                                    $event.stopPropagation();
+                                    //On Enter, open the date popup
+                                    if (Utils.getActionFromKey($event) === 'ENTER') {
+                                        $event.preventDefault();
+                                        $is.isDateOpen = true;
+                                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker($is, true);
+                                    }
                                 }
                             };
                         }

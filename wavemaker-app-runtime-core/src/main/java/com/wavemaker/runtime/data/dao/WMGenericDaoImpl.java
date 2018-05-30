@@ -17,14 +17,13 @@ package com.wavemaker.runtime.data.dao;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -56,10 +55,10 @@ import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.filter.WMQueryInfo;
+import com.wavemaker.runtime.data.hql.SelectQueryBuilder;
 import com.wavemaker.runtime.data.model.AggregationInfo;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.DaoUtils;
-import com.wavemaker.runtime.data.util.HqlQueryBuilder;
 import com.wavemaker.runtime.data.util.HqlQueryHelper;
 import com.wavemaker.runtime.file.manager.ExportedFileManager;
 import com.wavemaker.runtime.file.model.DownloadResponse;
@@ -109,7 +108,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     }
 
     public E findById(I entityId) {
-        final HqlQueryBuilder builder = queryGenerator.findById(entityId);
+        final SelectQueryBuilder builder = queryGenerator.findById(entityId);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
                 .orElseThrow(() -> new EntityNotFoundException("No entity exists for given id:" + entityId));
@@ -124,7 +123,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @SuppressWarnings("unchecked")
     public E findByUniqueKey(final Map<String, Object> fieldValueMap) {
-        final HqlQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
+        final SelectQueryBuilder builder = queryGenerator.findBy(fieldValueMap);
 
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -178,7 +177,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         this.sortValidator.validate(validPageable, entityClass);
 
-        final HqlQueryBuilder builder = queryGenerator.searchByQuery(query);
+        final SelectQueryBuilder builder = queryGenerator.searchByQuery(query);
         return HqlQueryHelper.execute(getTemplate(), entityClass, builder, validPageable);
     }
 
@@ -204,7 +203,7 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
         this.sortValidator.validate(validPageable, entityClass);
 
-        final HqlQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
+        final SelectQueryBuilder builder = queryGenerator.getAggregatedValues(aggregationInfo);
         final Page result = HqlQueryHelper.execute(getTemplate(), Map.class, builder, validPageable);
 
         return (Page<Map<String, Object>>) result;
@@ -212,29 +211,29 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        return new DownloadResponse(export(new ExportOptions(exportType), query, pageable), exportType.getContentType(),
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        export(new ExportOptions(exportType, query, pageable.getPageSize()), pageable, outputStream);
+        return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
     @Override
-    public InputStream export(ExportOptions options, String query, Pageable pageable) {
-        Pageable validPageable = PageUtils.defaultIfNull(pageable);
-
+    public void export(ExportOptions options, Pageable pageable, OutputStream outputStream) {
+        final Pageable validPageable = PageUtils.overrideExportSize(pageable, options.getExportSize());
         this.sortValidator.validate(validPageable, entityClass);
-        ByteArrayOutputStream reportOutputStream = getTemplate()
-                .execute(session -> {
-                    final WMQueryInfo queryInfo = queryGenerator.searchByQuery(query).build();
-                    final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
-                            .from(queryInfo, entityClass);
-                    ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
-                            HqlParameterTypeResolver());
 
-                    final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
-                    QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
+        getTemplate().execute(session -> {
+            final WMQueryInfo queryInfo = queryGenerator.searchByQuery(options.getQuery()).build();
+            final RuntimeQueryProvider<E> queryProvider = RuntimeQueryProvider
+                    .from(queryInfo, entityClass);
+            ParametersProvider provider = new AppRuntimeParameterProvider(queryInfo.getParameters(), new
+                    HqlParameterTypeResolver());
 
-                    return DataExporter.export(queryExtractor, options, entityClass);
-                });
-        return new ByteArrayInputStream(reportOutputStream.toByteArray());
+            final Query<E> hqlQuery = queryProvider.getQuery(session, validPageable, provider);
+            QueryExtractor queryExtractor = new HqlQueryExtractor(hqlQuery.scroll());
+            DataExporter.export(queryExtractor, options, entityClass, outputStream);
+            return null;
+        });
     }
 
     @Override

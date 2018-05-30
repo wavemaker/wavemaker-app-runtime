@@ -317,7 +317,7 @@ WM.module('wm.widgets.form')
                         changedItem.item = $is.selectedChips[oldIndex];
                         if ($is.onBeforereorder) {
                             allowReorder = $is.onBeforereorder({$event: evt, $data: $is.selectedChips, $changedItem: changedItem});
-                            if(getBooleanValue(allowReorder) === false) {
+                            if(Utils.getBooleanValue(allowReorder) === false) {
                                 resetReorder($ulEle, $dragEl);
                                 return;
                             }
@@ -470,21 +470,11 @@ WM.module('wm.widgets.form')
                 });
             }
 
-            //get the boolean value
-            function getBooleanValue(val) {
-                if (val === true || val === 'true') {
-                    return true;
-                }
-                if (val === false || val === 'false') {
-                    return false;
-                }
-                return val;
-            }
 
             //Handle editable state of chip
             function makeEditable($s, chip) {
                 //editable is internal property used in security owasp tab
-                $s.editable = getBooleanValue($s.editable);
+                $s.editable = Utils.getBooleanValue($s.editable);
                 //In case of readonly user cannot edit chips
                 if ($s.readonly || !chip.iscustom || $s.editable === false) {
                     return;
@@ -574,7 +564,7 @@ WM.module('wm.widgets.form')
                     allowRemove = $s.onBeforeremove({$event: $event, $isolateScope: $s, $item: items.length === 1 ? items[0] : items });
                 }
 
-                if (getBooleanValue(allowRemove) === false) {
+                if (Utils.getBooleanValue(allowRemove) === false) {
                     return;
                 }
                 $s._ngModelOldVal = Utils.getClonedObject($s._model_);
@@ -725,7 +715,7 @@ WM.module('wm.widgets.form')
                 if (chipObj) {
                     if ($s.onBeforeadd) {
                         allowAdd = $s.onBeforeadd({$event: $event, $isolateScope: $s, newItem: chipObj});
-                        if (getBooleanValue(allowAdd) === false || isDuplicate($s, chipObj.datavalue)) {
+                        if (Utils.getBooleanValue(allowAdd) === false || isDuplicate($s, chipObj.datavalue)) {
                             return;
                         }
                     }

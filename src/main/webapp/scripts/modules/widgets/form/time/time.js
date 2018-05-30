@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/time.html',
             '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input" title="{{hint}}"' +
             " app-defaults='{\"timepattern\": \"timeFormat\"}'>" +
-                '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel();_onChange({$event: $event, $scope: this})" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keyup="_onKeyUp($event)" autocomplete="off">' +
+                '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel();_onChange({$event: $event, $scope: this})" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keydown="_onKeyDown($event)" autocomplete="off">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
                         '<div uib-timepicker min="_minTime" max="_maxTime" ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
@@ -39,8 +39,9 @@ WM.module('wm.widgets.form')
         'Utils',
         '$interval',
         'CONSTANTS',
+        'DateTimeWidgetUtils',
 
-        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils, $interval, CONSTANTS) {
+        function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils, $interval, CONSTANTS, DateTimeWidgetUtils) {
 
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
@@ -77,7 +78,7 @@ WM.module('wm.widgets.form')
                 case 'readonly':
                     inputEl.attr(key, nv);
                 case 'disabled':
-                    isDisabled = $is.readonly || $is.disabled;
+                    isDisabled = $is.readonly || (WM.isDefined($is.disabled) && $is.disabled);
                     inputEl.attr('disabled', isDisabled);
                     buttonEl.attr('disabled', isDisabled);
                     break;
@@ -94,6 +95,12 @@ WM.module('wm.widgets.form')
 
             function _onClick($is, evt) {
                 evt.stopPropagation();
+                if ($is.isOpen) {
+                    /*$timeout is used so that by then $is.isOpen has the updated value and timepicker popup has been open. focus is setting on the timepicker*/
+                    $timeout(function() {
+                        DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
+                    });
+                }
                 if ($is.onClick) {
                     $is.onClick({$event: evt, $scope: $is});
                 }
@@ -101,9 +108,11 @@ WM.module('wm.widgets.form')
 
             function _onTimeClick($is, $el, evt) {
                 evt.stopPropagation();
+                if ($(evt.target).is('input') && !DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                    return false;
+                }
                 var timeOpen = $is.isOpen;
                 $timeout(function () {
-                    $el.parent().trigger('click');
                     $is.isOpen = !timeOpen;
                     _onClick($is, evt);
                 });
@@ -333,18 +342,25 @@ WM.module('wm.widgets.form')
                                     document.addEventListener('click', docClickListener, true);
                                     //Add app-datetime class to the wrapper that are appended to body
                                     if (!isClassAdded) {
-                                        $timeout(function () {
-                                            WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]').parent().addClass('app-datetime');
-                                        }, 0, false);
+                                        DateTimeWidgetUtils.setTimePickerKeyboardEvents($is);
                                         isClassAdded = true;
                                     }
                                 }
                             });
 
-                            $is._onKeyUp = function ($event) {
-                                //On tab in, open the date popup
-                                if ($event.keyCode === 9) {
-                                    $is.isOpen = true;
+                            $is._onKeyDown = function ($event) {
+                                if (DateTimeWidgetUtils.isDropDownDisplayEnabledOnInput($is.showdropdownon)) {
+                                    //when timepicker is used in datatable/form, on keyboard enter/esc record is getting inserted. To prevent record insertion stopPropagation is being used
+                                    $event.stopPropagation();
+                                    //On Enter, open the date popup
+                                    if (Utils.getActionFromKey($event) === 'ENTER') {
+                                        $event.preventDefault();
+                                        $is.isOpen = true;
+                                        /*$timeout is used so that by then $is.isOpen has the updated value and timepicker popup has been open. focus is setting on the timepicker*/
+                                        $timeout(function() {
+                                            DateTimeWidgetUtils.setFocusOnDateOrTimePicker();
+                                        });
+                                    }
                                 }
                             };
                         }

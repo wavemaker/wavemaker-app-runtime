@@ -22,13 +22,13 @@ public @interface TableTemporal {
     Class<? extends TemporalHistoryEntity> historyClass();
 
     enum TemporalType {
-        SYSTEM,
         APPLICATION {
             @Override
             public String asHqlKeyword() {
                 return "business_time";
             }
-        };
+        },
+        SYSTEM;
 
         public String asHqlKeyword() {
             return this.name().toLowerCase() + "_time";

@@ -118,11 +118,26 @@ WM.module('wm.widgets.basic')
                 }, 500, true);
             }
 
+            /**
+             * This function sets the focus to popover link when the popover is closed
+             * @param scope - scope of the popover element
+             * @param evt - keyboard event that is triggered
+             */
+            function setFocusToPopoverLink($is, evt) {
+                $is._popoverOptions.isOpen = false;
+                $is.$apply();
+                $is.$element.focus();
+                evt.preventDefault();
+            }
+
             return {
                 'restrict': 'E',
                 'replace': true,
                 'scope': {},
                 'template': function (tElement, tAttrs) {
+                    if (!tAttrs.hyperlink) {
+                        tAttrs.href = "javascript:void(0)";
+                    }
                     var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/anchor.html', tElement, tAttrs));
 
                     //Required in studio mode also to set partial params which is based on pageContainer and wmtransclude directives
@@ -163,9 +178,12 @@ WM.module('wm.widgets.basic')
                             var isInlineContent = attrs.contentsource === 'inline',
                                 popoverScope,
                                 $popoverEl,
+                                $popoverFirstEl,
                                 _scope  = $el.scope(); //scope inherited from controller's scope
 
                             $is.appLocale = _scope.appLocale;
+                            //Disable right click on the element, because there will be no link given for popover
+                            Utils.disableRightClick($el);
 
                             if (CONSTANTS.isRunMode) {
                                 $is._isFirstTime = true;
@@ -193,6 +211,9 @@ WM.module('wm.widgets.basic')
                                         if (nv || $is._isFirstTime) {
                                             //Add custom mouseenter, leave events on popover
                                             $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
+                                            //Two buttons are added to the popover before and after the content so as to focus the content on opening the popover
+                                            $('<button tabindex="0" class="popover-start"></button>').insertBefore('.popover-content');
+                                            $('<button tabindex="0" class="popover-end"></button>').insertAfter('.popover-content');
 
                                             if ($popoverEl.length && _.includes(['default', 'hover'], $is.interaction)) {
                                                 $popoverEl.on('mouseenter', function () {
@@ -216,6 +237,25 @@ WM.module('wm.widgets.basic')
                                             $timeout(function () {
                                                 //On Open trigger onShow event
                                                 if (nv) {
+                                                    $popoverFirstEl = $popoverEl.find('.popover-start');
+                                                    $popoverFirstEl.focus();
+                                                    $popoverEl.find('.popover-inner').on('keydown',function(evt){
+                                                        //On ESC, the popover should be closed and focusing the link
+                                                        if (Utils.getActionFromKey(evt) === 'ESC') {
+                                                            setFocusToPopoverLink($is,evt);
+                                                        }
+                                                    });
+                                                    $popoverFirstEl.on('keydown', function (evt) {
+                                                        if (Utils.getActionFromKey(evt) === 'SHIFT+TAB') {
+                                                            setFocusToPopoverLink($is,evt);
+                                                        }
+                                                    });
+                                                    $popoverEl.find('.popover-end').on('keydown', function (evt) {
+                                                        //the popover should be closed, when we move out of popover
+                                                        if (Utils.getActionFromKey(evt) === 'TAB') {
+                                                            setFocusToPopoverLink($is,evt);
+                                                        }
+                                                    });
                                                     if (!isInlineContent) {
 
                                                         if ($popoverEl.length) {

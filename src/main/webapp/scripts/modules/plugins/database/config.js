@@ -275,6 +275,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "PUT"
         },
+        periodUpdateCompositeTableData: {
+            url: "/:service/:dataModelName/:entityName/composite-id/periods?:id",
+            method: "PUT"
+        },
         updateMultiPartCompositeTableData: {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "POST",
@@ -285,6 +289,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
         deleteCompositeTableData: {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
+            method: "DELETE"
+        },
+        periodDeleteCompositeTableData: {
+            url: "/:service/:dataModelName/:entityName/composite-id/periods?:id",
             method: "DELETE"
         },
         countTableDataWithQuery : {
@@ -310,7 +318,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         exportTableData: {
-            url: "/:service/:dataModelName/:entityName/export/:exportFormat?size=:size&:sort",
+            url: "/services/:dataModelName/:entityName/export?:sort",
             method: "POST"
         },
         readTableRelatedData: {

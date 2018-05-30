@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.dao.callbacks;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 
 import org.hibernate.Session;
@@ -72,7 +73,9 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArra
         } else {
             queryExtractor = new HqlQueryExtractor(namedQuery.scroll());
         }
-        return DataExporter.export(queryExtractor, new ExportOptions(exportType), responseType);
+        OutputStream outputStream = new ByteArrayOutputStream();
+        DataExporter.export(queryExtractor, new ExportOptions(exportType), responseType, outputStream);
+        return (ByteArrayOutputStream)outputStream;
     }
 }
 
