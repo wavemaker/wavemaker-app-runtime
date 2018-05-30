@@ -412,7 +412,7 @@ WM.module('wm.widgets.live')
                 var columnDef    = {},
                     widgetType   = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
                     excludeKeys  = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value'],
-                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled', 'primaryKey'];
+                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled', 'primaryKey', 'period'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
                     if (_.includes(booleanAttrs, key)) {
@@ -876,6 +876,7 @@ WM.module('wm.widgets.live')
                             'show'          : true,
                             'primaryKey'    : fieldObj.isPrimaryKey,
                             'generator'     : fieldObj.generator,
+                            'period'        : fieldObj.period,
                             'key'           : fieldObj.fieldName,
                             'value'         : '',
                             'type'          : fieldObj.isRelated ? 'list' : fieldObj.fullyQualifiedType,

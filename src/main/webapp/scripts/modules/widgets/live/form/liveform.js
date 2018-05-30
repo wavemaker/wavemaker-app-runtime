@@ -590,7 +590,8 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     $scope.formFields.forEach(function (column) {
-                        if (column.primaryKey && !column.isRelated) {
+                        column.readonly = column._readonly;
+                        if (column.primaryKey && !column.isRelated && !column.period) {
                             column.readonly = true;
                         }
                     });
@@ -1388,6 +1389,10 @@ WM.module('wm.widgets.live')
                         parentScope.formfields[columnDef.key] = columnDef;
                         //tabindex should be only on the input fields, remove tabindex on form field
                         element.removeAttr('tabindex');
+
+                        // Save the original readonly state
+                        columnDef._readonly = columnDef.readonly;
+
 
                         //Evaluate type for datavalue based on the dataset
                         if (scope.widgetid) {
