@@ -13,7 +13,7 @@ WM.module('wm.widgets.basic')
                 '</a>'
             );
 
-    }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.anchor', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events', 'wm.base.events.focus']),
             notifyFor = {
@@ -41,6 +41,10 @@ WM.module('wm.widgets.basic')
                 /* if hyperlink starts with 'www.' append '//' in the beginning */
                 if (Utils.stringStartsWith(newVal, 'www.')) {
                     newVal =  '//' + newVal;
+                }
+                //If the hyperlink value is given from the script, rightclick should be enabled
+                if (newVal) {
+                    element.off('contextmenu');
                 }
                 attrs.$set('href', newVal);
                 break;
@@ -75,8 +79,10 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         if (!attrs.hyperlink && !attrs.href) {
                             element.attr('href', 'javascript:void(0)');
-                            //Disable right click on the element when there is no link
-                            Utils.disableRightClick(element);
+                            if (CONSTANTS.isRunMode) {
+                                //Disable right click on the element when there is no link
+                                Utils.disableRightClick(element);
+                            }
                         }
                     }
                 };

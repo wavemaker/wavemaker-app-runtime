@@ -202,8 +202,10 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 
-                        //Set hasOnSelect only when there is OnSelect event on the widget
-                        scope.hasOnSelect = Utils.getBooleanValue(!!attrs.onSelect || attrs.hasOnSelect);
+                        /**Set hasOnSelect, when there is
+                         * 1. OnSelect event on the nav widget (when menu widget is present in the nav)
+                         * 2. OnSelect event on the menu widget**/
+                        scope.hasOnSelect = attrs.hasonselect ? Utils.getBooleanValue(attrs.hasonselect) : Utils.getBooleanValue(!!attrs.onSelect);
 
                         if (scope.type === 'anchor' && scope.$element) {
                             //Disable right click on the element when link is empty
