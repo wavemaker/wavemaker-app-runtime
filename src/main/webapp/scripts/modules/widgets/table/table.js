@@ -615,17 +615,7 @@ WM.module('wm.widgets.table')
                                 break;
                             }
                         }
-                        /*
-                         * Extend the properties from the grid controller exposed to end user in page script
-                         * Kept in try/catch as the controller may not be available sometimes
-                         */
-                        if (CONSTANTS.isRunMode) {
-                            try {
-                                gridController = $is.name + 'Controller';
-                                $controller(gridController, {$scope: $is});
-                            } catch (ignore) {
-                            }
-                        }
+
                         /****condition for old property name for grid title*****/
                         if (attrs.gridcaption && !attrs.title) {
                             $is.title = $is.gridcaption;

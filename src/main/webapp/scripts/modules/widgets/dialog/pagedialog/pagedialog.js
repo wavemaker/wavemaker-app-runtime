@@ -5,12 +5,14 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/pagedialog.html",
-            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget page-container>' +
-                '<div class="modal-content">' +
-                    '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
-                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
-                    '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                        '<wm-button  class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+            '<div init-widget class="app-view dialog-view clearfix"  wm-navigable-element="true">' +
+                '<div class="app-dialog modal-dialog app-page-dialog" dialogclass page-container>' +
+                    '<div class="modal-content">' +
+                        '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
+                        '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
+                        '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
+                            '<wm-button  class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>'
@@ -203,12 +205,10 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-pagedialog name="pageDialog" controller="Ctrl" iconclass="wi wi-globe"
                         content="dropdownMenu"
                         oktext="OK" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
                     </wm-pagedialog>
-                </wm-view>
                 <wm-button on-click="showDialog()" caption="show dialog"></wm-button>
             </div>
         </file>

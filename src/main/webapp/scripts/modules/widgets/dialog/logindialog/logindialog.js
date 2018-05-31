@@ -5,12 +5,14 @@ WM.module('wm.widgets.dialog')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/dialog/logindialog.html',
-                '<div class="app-dialog modal-dialog app-login-dialog" ng-style="{width: width}" init-widget>' +
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="app-dialog modal-dialog app-login-dialog" ng-style="{width: width}">' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader closable="{{closable}}" iconclass="{{iconclass}}" caption="{{title}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" wmtransclude></div>' +
                     '</div>' +
-                '</div>'
+                '</div>' +
+            '</div>'
             );
         $templateCache.put('template/widget/dialog/logindialogcontainer.html', '<div wmtransclude></div>');
 
@@ -254,7 +256,6 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-logindialog modal="false" iconclass="wi wi-sign-in" title="Login" name="loginDialog" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
                         <wm-form>
                             <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true"></wm-message>
@@ -271,7 +272,6 @@ WM.module('wm.widgets.dialog')
                             <wm-button class="btn-primary" caption="Sign in"></wm-button>
                         </wm-dialogactions>
                     </wm-logindialog>
-                </wm-view>
                 <wm-button on-click="Widgets.loginDialog.open()" caption="Show Dialog" class="btn-primary"></wm-button>
             </div>
         </file>

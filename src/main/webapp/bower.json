@@ -26,6 +26,7 @@
         "fullcalendar": "3.0.1",
         "angular-ui-calendar": "1.0.1",
         "moment": "2.21.0",
+        "summernote": "0.8.10",
         "ngCordova":"v0.1.27-alpha",
         "ng-cordova-oauth":"0.2.10",
         "angular-websocket": "v2.0.0",

@@ -53,35 +53,27 @@ WM.module('wm.layouts.page')
             );
 
         $templateCache.put('template/dialog/common/confirm.html',
-                '<wm-view name="CommonConfirmDialogView" class="dialog-view">' +
-                    '<wm-confirmdialog name="CommonConfirmDialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" canceltext="{{notification.cancelButtonText}}"' +
-                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()">' +
-                    '</wm-confirmdialog>' +
-                '</wm-view>'
+                '<wm-confirmdialog name="CommonConfirmDialog" controller="NotificationDialogController" notificationdialog="confirm" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" canceltext="bind:notification.cancelButtonText"' +
+                    'on-ok="notification.onOk()" on-cancel="notification.onCancel()">' +
+                '</wm-confirmdialog>'
             );
 
         $templateCache.put('template/dialog/common/alert.html',
-                '<wm-view name="CommonAlertDialogView" class="dialog-view">' +
-                    '<wm-alertdialog name="CommonAlertDialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
-                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
-                    '</wm-alertdialog>' +
-                '</wm-view>'
+                '<wm-alertdialog name="CommonAlertDialog" notificationdialog="alert" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" alerttype="bind:notification.alerttype"' +
+                    'on-ok="notification.onOk()" on-close="notification.onClose()()">' +
+                '</wm-alertdialog>'
             );
 
         $templateCache.put('template/dialog/page/alert.html',
-                '<wm-view name="notificationAlertDialogView" class="dialog-view">' +
-                    '<wm-alertdialog name="notificationalertdialog" controller="NotificationDialogController" notificationdialog="alert" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}" alerttype="{{notification.alerttype}}"' +
-                        'on-ok="variableOnOk()" on-close="variableOnClose()">' +
-                    '</wm-alertdialog>' +
-                '</wm-view>'
-            );
+                '<wm-alertdialog name="notificationalertdialog" controller="NotificationDialogController" notificationdialog="alert" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText" alerttype="bind:notification.alerttype"' +
+                    'on-ok="notification.onOk()" on-close="notification.onClose()()">' +
+                '</wm-alertdialog>'
+                );
 
         $templateCache.put('template/dialog/page/confirm.html',
-                '<wm-view name="notificationConfirmDialogView" class="dialog-view">' +
-                    '<wm-confirmdialog name="notificationconfirmdialog" controller="NotificationDialogController" notificationdialog="confirm" message="{{notification.text}}" title="{{notification.title}}" oktext="{{notification.okButtonText}}"' +
-                        'on-ok="variableOnOk()" on-cancel="variableOnCancel()" on-close="variableOnClose()">' +
-                    '</wm-confirmdialog>' +
-                '</wm-view>'
+                '<wm-confirmdialog name="notificationconfirmdialog" controller="NotificationDialogController" notificationdialog="confirm" message="bind:notification.text" title="bind:notification.title" oktext="bind:notification.okButtonText"' +
+                    'on-ok="notification.onOk()" on-cancel="notification.onCancel()" on-close="notification.onClose()()">' +
+                '</wm-confirmdialog>'
             );
     }])
     .directive('wmTemplate', [

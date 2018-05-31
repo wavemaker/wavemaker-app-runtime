@@ -51,6 +51,12 @@
   clear: both;
 }
 
+.wm-app {
+  * [hidden] {
+    display: none !important;
+  }
+}
+
 @import (less) "../../components/jquery-ui/themes/core.css";
 @import (less) "../../components/jquery-ui/themes/datepicker.css";
 @import (less) "../../components/jquery-ui/themes/resizable.css";
@@ -60,6 +66,8 @@
 @import (less) "../../components/nvd3/nv.d3.css";
 @import (less) "../../components/animate.css/animate.min.css";
 @import (less) "../../components/fullcalendar/fullcalendar.css";
+@import (less) "../../components/summernote/dist/summernote-lite.css";
+
 /********************************************************************************************************************
   START - Declare all CSS imports
 *********************************************************************************************************************/

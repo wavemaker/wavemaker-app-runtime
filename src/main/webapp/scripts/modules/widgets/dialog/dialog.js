@@ -7,25 +7,27 @@ WM.module('wm.widgets.dialog')
             '<div tabindex="-1" role="dialog" class="modal default" ng-style="{display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
-            '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" >' +
-                '<div class="modal-content">' +
-                    '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
-                        '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
-                            '<span aria-hidden="true">&times;</span>' +
-                        '</button>' +
-                        '<h4 class="app-dialog-title modal-title">' +
-                            '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
-                            '<span class="dialog-heading" name="wm-{{dialogid}}-title" title="{{title}}">{{title}}</span>' +
-                            '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading" title="{{subheading}}">{{subheading}}</span>' +
-                        '</h4>' +
-                        '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
-                            '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
-                            '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
+            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
+                '<div class="modal-dialog app-dialog" ng-style="{width: dialogWidth}" >' +
+                    '<div class="modal-content">' +
+                        '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
+                            '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
+                                '<span aria-hidden="true">&times;</span>' +
+                            '</button>' +
+                            '<h4 class="app-dialog-title modal-title">' +
+                                '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                                '<span class="dialog-heading" name="wm-{{dialogid}}-title" title="{{title}}">{{title}}</span>' +
+                                '<span class="dialog-sub-heading" name="wm-{{dialogid}}-sub-heading" ng-if="subheading" title="{{subheading}}">{{subheading}}</span>' +
+                            '</h4>' +
+                            '<div class="wm-dialog-header-action" ng-if="actiontitle || actionlink">' +
+                                '<i title="{{actiontitle}}" class="wm-icon wms wms-help"></i>' +
+                                '<a ng-href="{{actionlink}}" target="_blank">Help</a>' +
+                            '</div>' +
                         '</div>' +
+                        '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
+                        '</div>' +
+                        '<div ng-transclude="footer"></div>' +
                     '</div>' +
-                    '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
-                    '</div>' +
-                    '<div ng-transclude="footer"></div>' +
                 '</div>' +
             '</div>'
             );
@@ -311,7 +313,7 @@ WM.module('wm.widgets.dialog')
                             onOpenedEventName,
                             parentElScope;
 
-                        parentEl = element.closest('.app-dialog');
+                        parentEl = element.closest('.dialog-view');
                         parentElScope = parentEl.isolateScope();
 
                         /* accessing the onClose from parent scope*/
@@ -422,7 +424,6 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-form>
                             <wm-composite widget="text">
@@ -434,7 +435,6 @@ WM.module('wm.widgets.dialog')
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
                     </wm-dialog>
-                </wm-view>
                 <wm-button on-click="showDialog()" caption="Show Dialog" class="btn-success"></wm-button>
             </div>
         </file>
@@ -502,7 +502,6 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-form>
                             <wm-composite widget="text">
@@ -514,7 +513,6 @@ WM.module('wm.widgets.dialog')
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
                     </wm-dialog>
-                </wm-view>
                 <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
             </div>
         </file>
@@ -560,7 +558,6 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-form>
                             <wm-composite widget="text">
@@ -572,7 +569,6 @@ WM.module('wm.widgets.dialog')
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
                     </wm-dialog>
-                </wm-view>
                 <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
             </div>
         </file>
@@ -617,7 +613,6 @@ WM.module('wm.widgets.dialog')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl">
-                <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-form>
                             <wm-composite widget="text">
@@ -629,7 +624,6 @@ WM.module('wm.widgets.dialog')
                             <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
                         </wm-dialogactions>
                     </wm-dialog>
-                </wm-view>
                 <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
             </div>
         </file>
