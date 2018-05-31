@@ -217,6 +217,8 @@ WM.module('wm.widgets.form')
                         };
                         if(CONSTANTS.isRunMode) {
                             element.on('keydown', function (evt) {
+                                //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
+                                evt.preventDefault();
                                 var KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS);
                                 if (scope.menuposition === CONSTANTS.MENU_POSITION.UP_RIGHT) {
                                     KEY_MOVEMENTS.MOVE_UP = 'DOWN-ARROW';
@@ -389,6 +391,8 @@ WM.module('wm.widgets.form')
                 };
                 if (CONSTANTS.isRunMode) {
                     element.closest('.dropdown-menu > li').on("keydown", function (evt) {
+                        //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
+                        evt.preventDefault();
                         var $rootel =  element.closest('.app-menu'),
                             $parent = element.closest('.app-menu > ul'),
                             $el,
