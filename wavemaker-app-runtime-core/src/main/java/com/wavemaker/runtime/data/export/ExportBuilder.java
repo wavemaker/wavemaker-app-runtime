@@ -26,8 +26,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.wavemaker.commons.WMRuntimeException;
 import com.wavemaker.runtime.data.export.util.CSVConverterUtil;
@@ -42,7 +42,6 @@ public class ExportBuilder {
     private static final int FIRST_ROW_NUMBER = 0;
     private static final int FIRST_COLUMN_NUMBER = 0;
     private static final int COLUMN_HEADER_FONT_SIZE = 10;
-    private static final int ROW_ACCESS_WINDOW_SIZE = 100;
 
     private QueryExtractor queryExtractor;
     private ExportOptionsStrategy optionsStrategy;
@@ -58,9 +57,9 @@ public class ExportBuilder {
 
     public void build(OutputStream outputStream) {
         try {
-            try (SXSSFWorkbook workbook = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE)) {
+            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
                 initCellStyles(workbook);
-                SXSSFSheet spreadSheet = workbook.createSheet("Data");
+                XSSFSheet spreadSheet = workbook.createSheet("Data");
                 fillSheet(spreadSheet);
                 exportWorkbook(workbook, options.getExportType(), outputStream);
             }
