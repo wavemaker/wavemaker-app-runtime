@@ -783,20 +783,9 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions,
                     query,
-                    clonedObj = Utils.getClonedObject(variable.filterExpressions || {}),
+                    clonedObj,
                     optionsQuery;
-                clonedFields  = clonedFields || variable.filterFields;
-                    /*get the filter fields from the variable*/
-                _.forEach(clonedFields, function (value, key) {
-                    if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
-                        value.fieldName = key;
-                        if (isStringType(getSQLFieldType(variable, value))) {
-                            value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || variable.matchMode];
-                        }
-                        value.isVariableFilter = true;
-                        filterFields.push(value);
-                    }
-                });
+                clonedObj  = clonedFields || variable.filterExpressions;
 
                 /*get the filter fields from the options*/
                 _.forEach(options.filterFields, function (value, key) {
@@ -890,13 +879,9 @@ wm.variables.services.$liveVariable = [
                     };
 
                 if (CONSTANTS.isRunMode) {
-                    clonedFields = Utils.getClonedObject(variable.filterFields);
+                    clonedFields = Utils.getClonedObject(variable.filterExpressions);
                     // EVENT: ON_BEFORE_UPDATE
-                    if(variable.category === "wm.LiveVariable" && variable.operation === "read") {
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, variable.filterExpressions, options);
-                    } else {
-                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields, options);
-                    }
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields, options);
                     if (output === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
@@ -1958,27 +1943,30 @@ wm.variables.services.$liveVariable = [
                  * @param inputData
                  * @private
                  */
-                _upgradeInputDataToFilterExpressions: function (variable, inputData) {
-                    var rules = variable.filterExpressions.rules;
+                _upgradeInputDataToFilterExpressions: function (variable, response, inputData) {
+                    if(_.isObject(response)) {
+                        inputData = response;
+                        inputData.condition = "AND";
+                        inputData.rules = [];
+                    }
                     _.forEach(inputData, function (valueObj, key) {
                         if(key !== 'condition' && key !== 'rules') {
-                            var filteredObj = _.find(rules, function(o) { return o.target === key; });
+                            var filteredObj = _.find(inputData.rules, function(o) { return o.target === key; });
                             //if the key is found update the value, else create a new rule obj and add it to the existing rules
                             if(filteredObj) {
                                 filteredObj.value = valueObj.value;
                             } else {
-                                var columns = variable.propertiesMap.columns;
-                                var columnObj = _.find(columns, function(o) {return o.fieldName === key});
-                                rules.push({
+                                inputData.rules.push({
                                     'target': key,
-                                    "type": columnObj.type,
-                                    "matchMode": variable.matchMode,
+                                    'type': '',
+                                    'matchMode': '',
                                     'value': valueObj.value
                                 });
                             }
                             delete inputData[key];
                         }
                     });
+                    return inputData;
                 },
 
                 /**
@@ -1989,14 +1977,14 @@ wm.variables.services.$liveVariable = [
                  * @private
                  */
                 _downgradeFilterExpressionsToInputData: function (variable, inputData) {
-                    var rules = variable.filterExpressions.rules;
-                    _.forEach(rules, function(ruleObj) {
+                    _.forEach(inputData.rules, function(ruleObj) {
                         if(!_.isEmpty(ruleObj.target) && _.isNil(ruleObj.target)) {
                             inputData[ruleObj.target] = {
                                 'value': ruleObj.value
                             }
                         }
                     });
+                    return inputData;
                 }
             },
 
@@ -2117,8 +2105,8 @@ wm.variables.services.$liveVariable = [
                 removeItem: function (item) {
                     return methods.removeItem(this, item);
                 },
-                _upgradeInputData: function(inputData) {
-                    return methods._upgradeInputDataToFilterExpressions(this, inputData);
+                _upgradeInputData: function(response, inputData) {
+                    return methods._upgradeInputDataToFilterExpressions(this, response, inputData);
                 },
                 _downgradeInputData: function(inputData) {
                     return methods._downgradeFilterExpressionsToInputData(this, inputData);
