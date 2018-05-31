@@ -1247,7 +1247,12 @@ wm.variables.services.$liveVariable = [
                         } else {
                             primaryKey.forEach(function (key) {
                                 compositeKeysData[key] = rowObject[key];
-                                prevCompositeKeysData[key] = prevData[key] || (options.rowData && options.rowData[key]) || rowObject[key];
+                                //In case of periodic update for Business temporal fields, passing updated field data.
+                                if(options.period) {
+                                    prevCompositeKeysData[key] = rowObject[key];
+                                } else {
+                                    prevCompositeKeysData[key] = prevData[key] || (options.rowData && options.rowData[key]) || rowObject[key];
+                                }
                             });
                         }
                         options.row = compositeKeysData;
