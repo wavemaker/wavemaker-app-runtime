@@ -120,7 +120,7 @@ WM.module('wm.widgets.basic')
 
             /**
              * This function sets the focus to popover link when the popover is closed
-             * @param scope - scope of the popover element
+             * @param $is - scope of the popover element
              * @param evt - keyboard event that is triggered
              */
             function setFocusToPopoverLink($is, evt) {
@@ -182,8 +182,10 @@ WM.module('wm.widgets.basic')
                                 _scope  = $el.scope(); //scope inherited from controller's scope
 
                             $is.appLocale = _scope.appLocale;
-                            //Disable right click on the element, because there will be no link given for popover
-                            Utils.disableRightClick($el);
+                            if (CONSTANTS.isRunMode) {
+                                //Disable right click on the element, because there will be no link given for popover
+                                Utils.disableRightClick($el);
+                            }
 
                             if (CONSTANTS.isRunMode) {
                                 $is._isFirstTime = true;
@@ -211,9 +213,11 @@ WM.module('wm.widgets.basic')
                                         if (nv || $is._isFirstTime) {
                                             //Add custom mouseenter, leave events on popover
                                             $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
-                                            //Two buttons are added to the popover before and after the content so as to focus the content on opening the popover
-                                            $('<button tabindex="0" class="popover-start"></button>').insertBefore('.popover-content');
-                                            $('<button tabindex="0" class="popover-end"></button>').insertAfter('.popover-content');
+                                            if (!$popoverEl.find('.popover-start').length) {
+                                                //Two buttons are added to the popover before and after the content so as to focus the content on opening the popover
+                                                $('<button tabindex="0" class="popover-start"></button>').insertBefore('.popover-content');
+                                                $('<button tabindex="0" class="popover-end"></button>').insertAfter('.popover-content');
+                                            }
 
                                             if ($popoverEl.length && _.includes(['default', 'hover'], $is.interaction)) {
                                                 $popoverEl.on('mouseenter', function () {
