@@ -1332,6 +1332,7 @@ wm.plugins.database.services.DatabaseService = [
                         relationName: encodeURIComponent(params.relationName)
                     },
                     data: {
+                        cascadeEnabled: params.data.cascadeEnabled,
                         cascadeOptions: params.data.cascadeOptions,
                         fetchOptions: params.data.fetchOptions,
                         parentFetchOptions: params.data.parentFetchOptions
