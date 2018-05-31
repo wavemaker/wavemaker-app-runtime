@@ -744,12 +744,14 @@ html, body {
 @app-input-bg-gradient-end-color: #EAEAEA;
 .form-group {
   /*supporting the old projects*/
-  .form-control-static + .app-chips .app-chip-search  {
-    width: 100%;
-  }
-  .form-control-static + .form-control, .form-control-static + .form-control + .help-block, .form-control-static + .app-chip-search > .app-chip-input, .form-control-static + .input-group  {
-    width: 75%;
-    margin: 0;
+  .form-control-static {
+    + .app-chips .app-chip-search  {
+      width: 100%;
+    }
+    + .form-control, + wm-input > .form-control, + wm-textarea > .form-control, + wm-select > .form-control, +.form-control + .help-block, + .app-chip-search > .app-chip-input, + .input-group {
+      width: 75%;
+      margin: 0;
+    }
   }
 }
 .app-textbox, .app-textarea, .app-select {
