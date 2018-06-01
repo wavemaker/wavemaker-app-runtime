@@ -15,10 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao.query;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Map;
-
+import java.io.OutputStream;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -38,11 +35,11 @@ import com.wavemaker.runtime.data.dao.query.types.SessionBackedParameterResolver
 import com.wavemaker.runtime.data.dao.util.CustomQueryAdapter;
 import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
-import com.wavemaker.runtime.data.export.ExportType;
+import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.QueryProcedureInput;
+import com.wavemaker.runtime.data.model.UpdatableQueryInput;
 import com.wavemaker.runtime.data.model.queries.RuntimeQuery;
-import com.wavemaker.runtime.file.model.DownloadResponse;
-import com.wavemaker.runtime.file.model.Downloadable;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 
@@ -56,38 +53,38 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     @Override
-    public Page<Object> executeNamedQuery(
-            final String queryName, final Map<String, Object> params, final Pageable pageable) {
-        return executeNamedQuery(queryName, params, Object.class, PageUtils.defaultIfNull(pageable));
-    }
+    public <T> T executeNamedQuery(final QueryProcedureInput<T> queryInput) {
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
+                queryInput.getResponseType());
+        AppRuntimeParameterProvider parametersProvider = new AppRuntimeParameterProvider(
+                queryInput.getParameters(), parameterResolvers.getResolver(queryInput.getName()));
 
-    @Override
-    public <T> T executeNamedQuery(
-            final String queryName, final Map<String, Object> params, final Class<T> returnType) {
-        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
         return template.execute(new QueryCallback<>(queryProvider,
-                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))))
-                .orElseThrow(() -> new EntityNotFoundException("No row exists for given parameters:" + params));
+                parametersProvider))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No row exists for given parameters:" + queryInput.getParameters()));
     }
 
     @Override
-    public <T> Page<T> executeNamedQuery(
-            final String queryName, final Map<String, Object> params, final Class<T> returnType,
-            final Pageable pageable) {
-        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, returnType);
+    public <T> Page<T> executeNamedQuery(final QueryProcedureInput<T> queryInput, final Pageable pageable) {
 
-        return template.execute(new PaginatedQueryCallback<>(queryProvider,
-                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName)),
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
+                queryInput.getResponseType());
+        AppRuntimeParameterProvider parametersProvider = new AppRuntimeParameterProvider(
+                queryInput.getParameters(), parameterResolvers.getResolver(queryInput.getName()));
+
+        return template.execute(new PaginatedQueryCallback<>(queryProvider, parametersProvider,
                 PageUtils.defaultIfNull(pageable)));
     }
 
     @Override
-    public int executeNamedQueryForUpdate(final String queryName, final Map<String, Object> params) {
-        SessionBackedQueryProvider<Integer> queryProvider = new SessionBackedQueryProvider<>(queryName, Integer.class);
+    public int executeNamedQuery(final UpdatableQueryInput queryInput) {
+        SessionBackedQueryProvider<Integer> queryProvider =
+                new SessionBackedQueryProvider<>(queryInput.getName(), Integer.class);
+        AppRuntimeParameterProvider parametersProvider = new AppRuntimeParameterProvider(
+                queryInput.getParameters(), parameterResolvers.getResolver(queryInput.getName()));
 
-        return template.execute(new UpdateQueryCallback(queryProvider,
-                new AppRuntimeParameterProvider(params, parameterResolvers.getResolver(queryName))));
-
+        return template.execute(new UpdateQueryCallback(queryProvider, parametersProvider));
     }
 
     @Override
@@ -107,30 +104,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new UpdateQueryCallback(queryProvider, parametersProvider));
     }
 
-    public HibernateTemplate getTemplate() {
-        return template;
-    }
-
-
-    public void setTemplate(HibernateTemplate template) {
-        this.template = template;
-    }
-
-    @Override
-    public <T> Downloadable exportNamedQueryData(
-            final String queryName, final Map<String, Object> params, final ExportType exportType,
-            Class<T> responseType, final Pageable pageable) {
-
-        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryName, responseType);
-        AppRuntimeParameterProvider parameterProvider = new AppRuntimeParameterProvider(params, parameterResolvers
-                .getResolver(queryName));
-
-        NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
-                PageUtils.defaultIfNull(pageable), exportType, responseType);
-        ByteArrayOutputStream outputStream = template.executeWithNativeSession(callback);
-        return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(), queryName + exportType.getExtension());
-    }
-
     @Override
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
         final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
@@ -141,5 +114,29 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
         final RuntimeQuery runtimeQuery = CustomQueryAdapter.adapt(customQuery);
         return executeRuntimeQueryForUpdate(runtimeQuery);
+    }
+
+    @Override
+    public <T> void exportNamedQueryData(
+            final QueryProcedureInput<T> queryInput, final ExportOptions exportOptions, final Pageable pageable,
+            final OutputStream outputStream) {
+        SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
+                queryInput.getResponseType());
+
+        AppRuntimeParameterProvider parameterProvider = new AppRuntimeParameterProvider(queryInput.getParameters(),
+                parameterResolvers.getResolver(queryInput.getName()));
+
+        NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
+                PageUtils.defaultIfNull(pageable), exportOptions, outputStream, queryInput.getResponseType());
+
+        template.executeWithNativeSession(callback);
+    }
+
+    public HibernateTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(HibernateTemplate template) {
+        this.template = template;
     }
 }
