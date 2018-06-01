@@ -51,8 +51,8 @@ import com.wavemaker.runtime.data.dao.util.PageUtils;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.dao.validators.SortValidator;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
+import com.wavemaker.runtime.data.export.DataExportOptions;
 import com.wavemaker.runtime.data.export.DataExporter;
-import com.wavemaker.runtime.data.export.ExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
@@ -228,13 +228,13 @@ public abstract class WMGenericDaoImpl<E extends Serializable, I extends Seriali
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        export(new ExportOptions(exportType, query, pageable.getPageSize()), pageable, outputStream);
+        export(new DataExportOptions(exportType, pageable.getPageSize(), query), pageable, outputStream);
         return new DownloadResponse(new ByteArrayInputStream(outputStream.toByteArray()), exportType.getContentType(),
                 entityClass.getSimpleName() + exportType.getExtension());
     }
 
     @Override
-    public void export(ExportOptions options, Pageable pageable, OutputStream outputStream) {
+    public void export(DataExportOptions options, Pageable pageable, OutputStream outputStream) {
         final Pageable validPageable = PageUtils.overrideExportSize(pageable, options.getExportSize());
         this.sortValidator.validate(validPageable, entityClass);
 
