@@ -239,6 +239,9 @@ WM.module('wm.widgets.form')
                         $is._onClick = _onClick.bind(undefined, $is);
                         $is._onTimeClick = _onTimeClick.bind(undefined, $is, $el);
 
+                        //When Date widget is inside the Datatable, Live Form, etc, on picker button click, stopping the propagation so that picker is opened instead of inserting the record
+                        DateTimeWidgetUtils.setKeydownEventOnPickerButtons($el.find('.btn-time'));
+
                         /*update the model for device time*/
                         $is.updateModel = function () {
                             $is._model_ = $is._proxyModel;

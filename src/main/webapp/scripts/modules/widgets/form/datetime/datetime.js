@@ -183,7 +183,6 @@ WM.module('wm.widgets.form')
                 evt.stopPropagation();
                 var TimeOpen = $is.isTimeOpen;
                 $timeout(function () {
-                    $el.parent().trigger('click');
                     $is.isTimeOpen = !TimeOpen;
                     $is.isDateOpen = false;
                     _onClick($is, evt);
@@ -325,6 +324,10 @@ WM.module('wm.widgets.form')
                         $is._onTimeClick = _onTimeClick.bind(undefined, $is, $el);
                         $is.toggleOpenClose = toggleOpenClose.bind(undefined, $is);
 
+                        //When Datetime widget is inside the Datatable, Live Form, etc, on picker button click, stopping the propagation so that picker is opened instead of inserting the record
+                        DateTimeWidgetUtils.setKeydownEventOnPickerButtons($el.find('.btn-date'));
+                        DateTimeWidgetUtils.setKeydownEventOnPickerButtons($el.find('.btn-time'));
+
                         /*
                          * Backward compatibility for ismeridian property which is deprecated.
                          * if ismeridian is false then time is set as 24hr clock format.
@@ -376,6 +379,7 @@ WM.module('wm.widgets.form')
                             } else {
                                 this._proxyModel = '';
                                 this.timestamp   = '';
+                                this._dateModel  = '';
                             }
                             $is._onChange({$event: e, $scope: $is});
                         };
