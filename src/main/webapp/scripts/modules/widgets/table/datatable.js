@@ -1318,7 +1318,6 @@ $.widget('wm.datatable', {
     /* Handles row selection. */
     rowSelectionHandler: function (e, $row, options) {
         options = options || {};
-        e.stopPropagation();
         var rowId,
             rowData,
             data,
@@ -2100,7 +2099,6 @@ $.widget('wm.datatable', {
             //Stop the enter keypress from submitting any parent form. If target is button, event should not be stopped as this stops click event on button
             if (!$target.is('button')) {
                 event.stopPropagation();
-                event.preventDefault();
             }
             return;
         }

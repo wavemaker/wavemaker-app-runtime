@@ -1353,16 +1353,19 @@ WM.module('wm.widgets.form')
          * * @param focusDatepicker - true if the element to be focused is DatePicker
          */
         function setFocusOnElement(scope, focusTimepicker) {
-            if (scope._widgettype === 'wm-date') {
-                scope.$element.find('.app-dateinput').focus();
-            } else if (scope._widgettype === 'wm-datetime') {
-                if (focusTimepicker) {
-                    setFocusOnDateOrTimePicker();
-                } else {
+            //$element is undefined in the studio mode
+            if (scope.$element) {
+                if (scope._widgettype === 'wm-date') {
+                    scope.$element.find('.app-dateinput').focus();
+                } else if (scope._widgettype === 'wm-datetime') {
+                    if (focusTimepicker) {
+                        setFocusOnDateOrTimePicker();
+                    } else {
+                        scope.$element.find('.display-input').focus();
+                    }
+                } else if (scope._widgettype === 'wm-time') {
                     scope.$element.find('.display-input').focus();
                 }
-            } else if (scope._widgettype === 'wm-time') {
-                scope.$element.find('.display-input').focus();
             }
 
         }
@@ -1494,9 +1497,24 @@ WM.module('wm.widgets.form')
             }, 0, false);
         }
 
+
+        /**
+         * This function sets the keyboard events to Date, Daettime Time picker button
+         * @param $el - element on which the event is to be added
+         */
+        function setKeydownEventOnPickerButtons($el) {
+            $el.on('keydown', function ($event) {
+                //When Date, Time, Datetime picker are inside the Datatable, Live Form, etc on Date picker button click stopping the propagation so that picker is opened instead of inserting the record
+                if (Utils.getActionFromKey($event) === 'ENTER') {
+                    $event.stopPropagation();
+                }
+            });
+        }
+
         this.isDropDownDisplayEnabledOnInput = isDropDownDisplayEnabledOnInput;
         this.setFocusOnElement               = setFocusOnElement;
         this.setFocusOnDateOrTimePicker      = setFocusOnDateOrTimePicker;
         this.setDatePickerKeyboardEvents     = setDatePickerKeyboardEvents;
         this.setTimePickerKeyboardEvents     = setTimePickerKeyboardEvents;
+        this.setKeydownEventOnPickerButtons  = setKeydownEventOnPickerButtons;
     }]);
