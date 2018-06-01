@@ -217,8 +217,6 @@ WM.module('wm.widgets.form')
                         };
                         if(CONSTANTS.isRunMode) {
                             element.on('keydown', function (evt) {
-                                //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
-                                evt.preventDefault();
                                 var KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS);
                                 if (scope.menuposition === CONSTANTS.MENU_POSITION.UP_RIGHT) {
                                     KEY_MOVEMENTS.MOVE_UP = 'DOWN-ARROW';
@@ -239,6 +237,8 @@ WM.module('wm.widgets.form')
                                         //Todo on open of dropdown first element should be focused
                                         element.children().find('li a:first').focus();
                                     });
+                                    //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
+                                    evt.preventDefault();
                                 } else if (Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_UP || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_LEFT) {
                                     scope.isOpen = false;
                                     element.find('li').removeClass('open');
@@ -246,6 +246,8 @@ WM.module('wm.widgets.form')
                                     $timeout(function() {
                                         element.closest('.app-menu').find('[uib-dropdown-toggle]').focus();
                                     });
+                                    //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
+                                    evt.preventDefault();
                                 }
                             });
                         }
@@ -391,13 +393,12 @@ WM.module('wm.widgets.form')
                 };
                 if (CONSTANTS.isRunMode) {
                     element.closest('.dropdown-menu > li').on("keydown", function (evt) {
-                        //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
-                        evt.preventDefault();
                         var $rootel =  element.closest('.app-menu'),
                             $parent = element.closest('.app-menu > ul'),
                             $el,
                             $elescope = $rootel.isolateScope(),
-                            KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS);;
+                            KEY_MOVEMENTS = Utils.getClonedObject(CONSTANTS.KEYBOARD_MOVEMENTS),
+                            ARROW_KEYS = ['LEFT-ARROW', 'RIGHT-ARROW', 'UP-ARROW', 'DOWN-ARROW'];
                         if ($elescope.menulayout === CONSTANTS.MENU_LAYOUT_TYPE.HORIZONTAL) {
                             KEY_MOVEMENTS.MOVE_UP = 'LEFT-ARROW';
                             KEY_MOVEMENTS.MOVE_LEFT = 'UP-ARROW';
@@ -413,6 +414,10 @@ WM.module('wm.widgets.form')
                                 KEY_MOVEMENTS.MOVE_RIGHT = 'DOWN-ARROW';
                                 KEY_MOVEMENTS.MOVE_DOWN = 'RIGHT-ARROW';
                             }
+                        }
+                        if (_.includes(ARROW_KEYS, Utils.getActionFromKey(evt))) {
+                            //preventing from page scroll when up/down arrow is pressed, in case of menu is opened.
+                            evt.preventDefault();
                         }
                         if ((Utils.getActionFromKey(evt) === KEY_MOVEMENTS.ON_ENTER && !(element.isolateScope() && element.isolateScope().item.link)) || Utils.getActionFromKey(evt) === KEY_MOVEMENTS.MOVE_RIGHT) {
                             //when there is no link for the menu, on enter open the inner child elements and focus the first element
