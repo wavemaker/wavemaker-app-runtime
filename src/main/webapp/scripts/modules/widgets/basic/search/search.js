@@ -360,8 +360,8 @@ WM.module('wm.widgets.basic')
                     $rs.$evalAsync(function () {
                         $is.showClosebtn = (inputVal !== '');
 
-                        // hide the keypad on submit.
-                        if (_action === 'ENTER') {
+                        // hide the keypad on submit in mobile view.
+                        if (isMobileAutoComplete($is.type) && _action === 'ENTER') {
                             element.find('input[uib-typeahead]').blur();
                         }
                     });
@@ -741,15 +741,25 @@ WM.module('wm.widgets.basic')
                  */
                 if (isBoundToVariable && isVariableUpdateRequired($is, $s)) {
                     return fetchVariableData($is, element, searchValue, $s).then(function (data) {
+                        var currentElementIndex, activeElementIndex;
+                        typeAheadInput    = element.find('input[uib-typeahead]');
+                        if (typeAheadInput.attr('typeahead-append-to-body') === 'true') {
+                            typeAheadDropDown = WM.element('body').find('> [uib-typeahead-popup]#' + typeAheadInput.attr('aria-owns'));
+                        } else {
+                            typeAheadDropDown = element.find('> [uib-typeahead-popup]');
+                        }
+                        // storing previous active element index.
+                        currentElementIndex = typeAheadDropDown.find('li.active').index();
+                        activeElementIndex = currentElementIndex < 0 ? 0 : currentElementIndex;
                         setLoadingItemsFlag($is, false);
                         $timeout(function () {
+                            //setting previous active element index.
+                            typeAheadDropDown.scope().activeIdx = activeElementIndex;
                             //In case of autocomplete in mobile, if records do not occupy full screen, scroll will not appear and scroll event will not be triggered
                             //To overcome this, till records occupy full screen fetch the next page records
                             if (!isMobileAutoComplete($is.type) || $is._loadingItems || $is.isLastPage || !element.hasClass('full-screen')) {
                                 return;
                             }
-                            typeAheadInput    = element.find('input[uib-typeahead]');
-                            typeAheadDropDown = element.find('> [uib-typeahead-popup]');
                             $lastItem = typeAheadDropDown.find('li').last();
                             //Check if last item is not below the full screen
                             if ($lastItem.length && typeAheadDropDown.length && (typeAheadDropDown.height() + typeAheadDropDown.position().top >  $lastItem.height() + $lastItem.position().top)) {
@@ -827,7 +837,9 @@ WM.module('wm.widgets.basic')
                                 // check if datavalue is null.
                                 if (!WM.isDefined(newVal) || newVal === '') {
                                     $is.queryModel = '';
-                                    $rs.$evalAsync($is.updateModel);
+                                    $rs.$evalAsync(function(){
+                                        $is.updateModel();
+                                    });
                                     return;
                                 }
                                 $is.queryModel = newVal; // set the default queryModel.
@@ -937,13 +949,13 @@ WM.module('wm.widgets.basic')
                                 typeAheadDropDown.append($compile('<div class="status" ng-show="isOpen && _loadingItems"><i class="fa fa-circle-o-notch fa-spin"></i><span>{{loadingdatamsg}}</span></div>' +
                                     '<div class="status" ng-show="isOpen && !_loadingItems && isPaginatedData && isLastPage"><span>{{datacompletemsg}}</span></div>')($is));
                                 //Attach the scroll event to the drop down
-                                typeAheadDropDown.bind('scroll', function () {
+                                typeAheadDropDown.bind('scroll', _.debounce(function () {
                                     var $item = WM.element(this);
                                     //If scroll is at the bottom and no request is in progress and next page records are available, fetch next page items.
                                     if (!$is._loadingItems && $is.isOpen && !$is.isLastPage && $item.height() && ($item.scrollTop() + $item.innerHeight() >= $item[0].scrollHeight)) {
                                         triggerSearch($is, typeAheadInput, true);
                                     }
-                                });
+                                },100));
                             });
                         }
                         //Close the full screen mode in mobile view of auto complete
