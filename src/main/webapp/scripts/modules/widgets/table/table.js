@@ -2205,7 +2205,7 @@ WM.module('wm.widgets.table')
                 if ($is.isBoundToFilter) {
                     $is.Widgets[$is.widgetName].applyFilter(requestData);
                 } else if ($is.showExportOptions()) {
-                    variable.download(requestData);
+                    variable.download({data: requestData});
                 }
             }
             //Populate the _actions based on the position property

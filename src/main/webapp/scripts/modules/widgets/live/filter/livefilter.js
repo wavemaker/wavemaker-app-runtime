@@ -266,13 +266,15 @@ WM.module('wm.widgets.live')
 
                         if (options.exportType) {
                             variable.download({
-                                'matchMode'    : 'anywhere',
-                                'filterFields' : formFields,
-                                'orderBy'      : orderBy,
-                                'exportType'   : options.exportType,
-                                'logicalOp'    : 'AND',
-                                'size'         : options.size,
-                                'fields'       : options.fields
+                                data: {
+                                    'matchMode'    : 'anywhere',
+                                    'filterFields' : formFields,
+                                    'orderBy'      : orderBy,
+                                    'exportType'   : options.exportType,
+                                    'logicalOp'    : 'AND',
+                                    'size'         : options.size,
+                                    'fields'       : options.fields
+                                }
                             });
                             return;
                         }
