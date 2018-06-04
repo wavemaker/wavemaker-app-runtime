@@ -639,9 +639,13 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_MATCH_MODES": {
         "like"             : "LIKE",
         "start"            : "STARTING_WITH",
+        "startignorecase"  : "STARTING_WITH_IGNORECASE",
         "end"              : "ENDING_WITH",
+        "endignorecase"    : "ENDING_WITH_IGNORECASE",
         "anywhere"         : "CONTAINING",
+        "anywhereignorecase": "CONTAINING_IGNORECASE",
         "exact"            : "EQUALS",
+        "exactignorecase"  : "EQUALS_IGNORECASE",
         "notequals"        : "NOT_EQUALS",
         "between"          : "BETWEEN",
         "in"               : "IN",
@@ -658,9 +662,13 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_MATCH_MODES_WITH_QUERY": {
         "LIKE"                   : "${0} like ${1}",
         "STARTING_WITH"          : "${0} like ${1}",
+        "STARTING_WITH_IGNORECASE": "${0} like ${1}",
         "ENDING_WITH"            : "${0} like ${1}",
+        "ENDING_WITH_IGNORECASE" : "${0} like ${1}",
         "CONTAINING"             : "${0} like ${1}",
+        "CONTAINING_IGNORECASE"  : "${0} like ${1}",
         "EQUALS"                 : "${0}=${1}",
+        "EQUALS_IGNORECASE"      : "${0}=${1}",
         "NOT_EQUALS"             : "${0}!=${1}",
         "BETWEEN"                : "${0} between ${1}",
         "IN"                     : "${0} in ${1}",
@@ -675,7 +683,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "NULL_OR_EMPTY"          : "${0} is null or ${0}=''"
     },
     "DATABASE_EMPTY_MATCH_MODES": ["NULL", "IS_NOT_NULL", "EMPTY", "IS_NOT_EMPTY", "NULL_OR_EMPTY"],
-    "DATABASE_STRING_MODES": ["LIKE", "STARTING_WITH", "ENDING_WITH", "CONTAINING", "EQUALS", "NOT_EQUALS"],
+    "DATABASE_STRING_MODES": ["LIKE", "STARTING_WITH", "STARTING_WITH_IGNORECASE", "ENDING_WITH", "ENDING_WITH_IGNORECASE", "CONTAINING", "CONTAINING_IGNORECASE", "EQUALS", "EQUALS_IGNORECASE", "NOT_EQUALS"],
     "DATABASE_NULL_EMPTY_MATCH": {
         "NULL"          : "NULL",
         "IS_NOT_NULL"   : "IS_NOT_NULL",

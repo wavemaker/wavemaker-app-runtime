@@ -350,7 +350,7 @@ WM.module('wm.widgets.live')
                     },
                     modes = {
                         'number': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                        'string': ['anywhere', 'start', 'end', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
+                        'string': ['anywhere', 'anywhereignorecase', 'start', 'startignorecase', 'end', 'endignorecase', 'exact', 'exactignorecase', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
                         'character': ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
                         'date': ['exact', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty']
                     },
@@ -379,9 +379,13 @@ WM.module('wm.widgets.live')
             function getMatchModeMsgs(appLocale) {
                 return {
                     'start'            : appLocale.LABEL_STARTS_WITH,
+                    'startignorecase'  : appLocale.LABEL_STARTS_WITH_IGNORECASE,
                     'end'              : appLocale.LABEL_ENDS_WITH,
+                    'endignorecase'    : appLocale.LABEL_ENDS_WITH_IGNORECASE,
                     'anywhere'         : appLocale.LABEL_CONTAINS,
+                    'anywhereignorecase': appLocale.LABEL_CONTAINS_IGNORECASE,
                     'exact'            : appLocale.LABEL_IS_EQUAL_TO,
+                    'exactignorecase'  : appLocale.LABEL_IS_EQUAL_TO__IGNORECASE,
                     'notequals'        : appLocale.LABEL_IS_NOT_EQUAL_TO,
                     'lessthan'         : appLocale.LABEL_LESS_THAN,
                     'lessthanequal'    : appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
