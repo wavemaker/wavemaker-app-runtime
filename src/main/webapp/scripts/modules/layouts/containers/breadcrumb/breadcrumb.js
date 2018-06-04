@@ -173,7 +173,7 @@ WM.module('wm.layouts.containers')
                                     Utils.disableRightClick(WM.element(el));
                                 }
                             });
-                        }, 100);
+                        }, 500);
                         scope.onItemClick = function ($item) {
                             var link = $item.link || '',
                                 navFn = scope.onBeforenavigate,
