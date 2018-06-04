@@ -456,18 +456,22 @@ wm.variables.services.$liveVariable = [
                     return '';
                 }
                 switch (filterCondition) {
+                case dbModes.startignorecase:
                 case dbModes.start:
                     param = encodeAndAddQuotes(value + '%', type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
+                case dbModes.endignorecase:
                 case dbModes.end:
                     param = encodeAndAddQuotes('%' + value, type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
+                case dbModes.anywhereignorecase:
                 case dbModes.anywhere:
                     param = encodeAndAddQuotes('%' + value + '%', type, skipEncode);
                     param = wrapInLowerCase(param, options, ignoreCase);
                     break;
+                case dbModes.exactignorecase:
                 case dbModes.exact:
                 case dbModes.notequals:
                     param = encodeAndAddQuotes(value, type, skipEncode);
@@ -529,6 +533,26 @@ wm.variables.services.$liveVariable = [
                 query = _.join(params, operator); //empty space added intentionally around OR
                 return query;
             },
+            /**
+             * this is used to identify whether to use ignorecase at each criteria level and not use the variable
+             * level isIgnoreCase flag and apply it to all the rules.
+             * Instead of adding an extra param to the criteria object, we have added few other matchmodes for string types like
+             * anywhere with anywhereignorecase, start with startignorecase, end with endignorecase, exact with exactignorecase,
+             * So while creating the criteria itseld user can choose whether to use ignore case or not for a particular column while querying
+             * @param matchMode
+             * @param ignoreCase
+             * @returns {*} boolean
+             */
+            getIgnoreCase = function(matchMode, ignoreCase) {
+                if(_.indexOf(['anywhere', 'start', 'end', 'exact'], matchMode) !== -1) {
+                    return false;
+                }
+                if(_.indexOf(['anywhereignorecase', 'startignorecase', 'endignorecase', 'exactignorecase'], matchMode) !== -1) {
+                    return true;
+                }
+                return ignoreCase;
+
+            },
 
             generateSearchQuery = function (rules, condition, ignoreCase, skipEncode) {
                 var params = [];
@@ -537,7 +561,7 @@ wm.variables.services.$liveVariable = [
                         if (rule.rules) {
                             params.push('(' + generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode) + ')');
                         } else {
-                            params.push(getSearchField(rule, ignoreCase, skipEncode));
+                            params.push(getSearchField(rule, getIgnoreCase(rule.matchMode, ignoreCase), skipEncode));
                         }
                     }
                 });
@@ -686,7 +710,7 @@ wm.variables.services.$liveVariable = [
              */
             processFilterFields = function (rules, variable, options) {
                 _.remove(rules, function (rule) {
-                    return WM.isString(rule.value) && rule.value.indexOf("bind:") === 0;
+                    return rule && WM.isString(rule.value) && rule.value.indexOf("bind:") === 0;
                 });
 
                 _.forEach(rules, function (rule, index) {
@@ -735,8 +759,8 @@ wm.variables.services.$liveVariable = [
                                     'target': filterName,
                                     'type': filterObj.type || getSqlType(variable, filterName),
                                     'matchMode': filterObj.matchMode || "exact",
-                                    'value': filterObj.value
-
+                                    'value': filterObj.value,
+                                    'required': filterObj.required || true
                                 };
                                 filterRules.rules.push(ruleObj);
                             }
@@ -835,6 +859,64 @@ wm.variables.services.$liveVariable = [
                 variable._options.orderBy = options && options.orderBy;
                 variable._options.filterFields = options && options.filterFields;
             },
+
+            traverseFilterExpressions = function(filterExpressions, traverseCallbackFn) {
+                if (filterExpressions.rules) {
+                    _.forEach(filterExpressions.rules, function(filExpObj, i){
+                        if(filExpObj.rules) {
+                            traverseFilterExpressions(filExpObj, traverseCallbackFn);
+                        } else {
+                            return Utils.triggerFn(traverseCallbackFn, filterExpressions, filExpObj);
+                        }
+                    });
+                }
+            },
+
+            /**
+             * Traverses recursively the filterExpressions object and if there is any required field present with no value,
+             * then we will return without proceeding further. Its upto the developer to provide the mandatory value,
+             * if he wants to assign it in teh onbefore<delete/insert/update>function then make that field in
+             * the filter query section as optional
+             * @param filterExpressions - recursive rule Object
+             * @returns {Object}
+             */
+            getFilterExprFields = function(filterExpressions) {
+                var isRequiredFieldAbsent = false;
+                var traverseCallbackFn = function (parentFilExpObj, filExpObj) {
+                    if (filExpObj
+                        && !filExpObj.required
+                        && ((_.indexOf(['null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'], filExpObj.matchMode) === -1) && filExpObj.value === "")) {
+                        isRequiredFieldAbsent = true;
+                        return false;
+                    }
+                };
+                traverseFilterExpressions(filterExpressions, traverseCallbackFn);
+                return isRequiredFieldAbsent ? !isRequiredFieldAbsent : filterExpressions;
+            },
+
+            getDataFilterObj = function(clonedFilterFields) {
+                return (function (clonedFields) {
+                    function getCriteria(filterField) {
+                        var criterian = [];
+                        traverseFilterExpressions(clonedFields, function(filterExpressions, criteria) {
+                            if(filterField === criteria.target) {
+                                criterian.push(criteria);
+                            }
+                        });
+                        return criterian;
+                    }
+
+                    function getFilterFields() {
+                        return clonedFields;
+                    }
+
+                    return {
+                        getFilterFields: getFilterFields,
+                        getCriteria: getCriteria
+                    }
+                }(clonedFilterFields));
+            },
+
         /*Function to fetch the data for the primary table.*/
             getPrimaryTableData = function (projectID, variable, options, success, error) {
 
@@ -852,7 +934,7 @@ wm.variables.services.$liveVariable = [
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, response, {'opType':'read'});
                         }
 
                         /* update the dataSet against the variable */
@@ -866,10 +948,10 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj, {'opType':'read'});
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, response, {'opType':'read'});
 
                                 /* process next requests in the queue */
                                 variableActive[variable.activeScope.$id][variable.name] = false;
@@ -879,15 +961,23 @@ wm.variables.services.$liveVariable = [
                     };
 
                 if (CONSTANTS.isRunMode) {
-                    clonedFields = Utils.getClonedObject(variable.filterExpressions);
-                    // EVENT: ON_BEFORE_UPDATE
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, clonedFields, options);
-                    if (output === false) {
+                    var abort = function() {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData, options);
                         $rootScope.$emit('toggle-variable-state', variable, false);
                         Utils.triggerFn(error);
                         return;
+                    };
+                    clonedFields = getFilterExprFields(Utils.getClonedObject(variable.filterExpressions));
+                    if(_.isBoolean(clonedFields) && clonedFields === false) {
+                        console.warn('Required filter field values are missing in the Filter Criteria for the [' + variable.name + '] variable.');
+                        abort();
+                        return false;
+                    }
+                    // EVENT: ON_BEFORE_UPDATE
+                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, getDataFilterObj(clonedFields), options);
+                    if (output === false) {
+                        abort();
                     }
                     variable.canUpdate = false;
                 }
@@ -940,9 +1030,9 @@ wm.variables.services.$liveVariable = [
 
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, dataObj.data);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, dataObj.data, {'opType':'read'});
                             // EVENT: ON_PREPARESETDATA
-                            newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, dataObj.data);
+                            newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, dataObj.data, {'opType':'read'});
                             if (newDataSet) {
                                 //setting newDataSet as the response to service variable onPrepareSetData
                                 dataObj.data = newDataSet;
@@ -955,10 +1045,10 @@ wm.variables.services.$liveVariable = [
                             setVariableOptions(variable, options);
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, dataObj.data);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, dataObj.data, {'opType':'read'});
                                 // EVENT: ON_CAN_UPDATE
                                 variable.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, dataObj.data);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, dataObj.data, {'opType':'read'});
                             });
                         }
                     }
@@ -1163,13 +1253,19 @@ wm.variables.services.$liveVariable = [
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
                     clonedFields = Utils.getClonedObject(inputFields);
-                    output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields, options);
-                    if (output === false) {
-                        variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
-                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData, options);
-                        $rootScope.$emit('toggle-variable-state', variableDetails, false);
-                        Utils.triggerFn(error);
-                        return;
+                    //call this ON_BEFORE_UPDATE function only if the operation of the variable is present the ON_BEFORE_UPDATE function name
+                    // ex: operation = read, then call onBeforeListRecords.
+                    //     operation = delete, then call onBeforeDeleteRecord
+                    // in other cases just ignore the callback function.
+                    if(variable.operation.indexOf(variable[VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE]) !== -1) {
+                        output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields, options);
+                        if (output === false) {
+                            variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
+                            processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData, options);
+                            $rootScope.$emit('toggle-variable-state', variableDetails, false);
+                            Utils.triggerFn(error);
+                            return;
+                        }
                     }
                     inputFields = _.isObject(output) ? output : clonedFields;
                     variableDetails.canUpdate = false;
@@ -1350,13 +1446,13 @@ wm.variables.services.$liveVariable = [
                         /* If in RUN mode trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'opType': action});
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error, xhrObj);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error, xhrObj, {'opType': action});
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error, {'opType': action});
                             }, null, false);
                         }
                         /* trigger error callback */
@@ -1364,10 +1460,10 @@ wm.variables.services.$liveVariable = [
                     } else {
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'opType': action});
                             if (variableDetails.operation !== "read") {
                                 // EVENT: ON_PREPARESETDATA
-                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, response);
+                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, response, {'opType': action});
                                 if (newDataSet) {
                                     //setting newDataSet as the response to service variable onPrepareSetData
                                     response = newDataSet;
@@ -1376,10 +1472,10 @@ wm.variables.services.$liveVariable = [
                             }
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, response, {'opType': action});
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'opType': action});
                             }, null, false);
                         }
                         Utils.triggerFn(success, response);
@@ -1388,16 +1484,16 @@ wm.variables.services.$liveVariable = [
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'opType': action});
 
                         $timeout(function () {
                             // EVENT: ON_ERROR
                             if (!options.skipNotification) {
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response, xhrObj);
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response, xhrObj, {'opType': action});
                             }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'opType': action});
                         }, null, false);
                     }
                     Utils.triggerFn(error, response);
@@ -1805,15 +1901,19 @@ wm.variables.services.$liveVariable = [
                         paramObj[key] = val;
                     }
 
-                    if (!variable.filterFields) {
-                        variable.filterFields = {};
+                    if (!variable.filterExpressions) {
+                        variable.filterExpressions = {'condition': 'AND', 'rules':[]};
                     }
-                    targetObj = variable.filterFields;
+                    targetObj = variable.filterExpressions;
 
                     _.forEach(paramObj, function (paramVal, paramKey) {
-                        targetObj[paramKey] = {
-                            "value": paramVal
-                        };
+                        targetObj.rules.push({
+                            target: paramKey,
+                            type: '',
+                            matchMode: '',
+                            value: paramVal,
+                            required: true
+                        });
                     });
 
                     return targetObj;
@@ -1965,7 +2065,8 @@ wm.variables.services.$liveVariable = [
                                     'target': key,
                                     'type': '',
                                     'matchMode': '',
-                                    'value': valueObj.value
+                                    'value': valueObj.value,
+                                    'required': true
                                 });
                             }
                             delete inputData[key];
@@ -1982,6 +2083,9 @@ wm.variables.services.$liveVariable = [
                  * @private
                  */
                 _downgradeFilterExpressionsToInputData: function (variable, inputData) {
+                    if(inputData.hasOwnProperty('getFilterFields')) {
+                        inputData = inputData.getFilterFields();
+                    }
                     _.forEach(inputData.rules, function(ruleObj) {
                         if(!_.isEmpty(ruleObj.target) && _.isNil(ruleObj.target)) {
                             inputData[ruleObj.target] = {

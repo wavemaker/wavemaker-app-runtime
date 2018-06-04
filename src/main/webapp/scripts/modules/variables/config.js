@@ -21,10 +21,14 @@ wm.variables.filter(wm.variables.filters);
 
 /* Defining route path constants for wmCoreModule application */
 wm.variables.constant('VARIABLE_CONSTANTS', {
-    EVENTS: ["onBefore", "onBeforeUpdate", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onProgress", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onBeforeClose", "onClose", "onTimerFire", "onSuccess", "onOnline", "onOffline"],
+    EVENTS: ["onBefore", "onBeforeUpdate", "onBeforeListRecords", "onBeforeDeleteRecord", "onBeforeInsertRecord", "onBeforeUpdateRecord", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onProgress", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onBeforeClose", "onClose", "onTimerFire", "onSuccess", "onOnline", "onOffline"],
     EVENT: {
         "CAN_UPDATE": "onCanUpdate",
         "BEFORE_UPDATE": "onBeforeUpdate",
+        "BEFORE_LIST_RECORDS": "onBeforeListRecords",
+        "BEFORE_DELETE_RECORD": "onBeforeDeleteRecord",
+        "BEFORE_INSERT_RECORD": "onBeforeInsertRecord",
+        "BEFORE_UPDATE_RECORD": "onBeforeUpdateRecord",
         "PREPARE_SETDATA": "onBeforeDatasetReady",
         "RESULT": "onResult",
         "ERROR": "onError",
