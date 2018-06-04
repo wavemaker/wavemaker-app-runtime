@@ -1566,19 +1566,7 @@ wm.variables.services.$liveVariable = [
                     }
                 }
             },
-            /**
-             * formatting the expression as required by backend which was enclosed by ${<expression>}.
-             * @param fieldDefs
-             * returns fieldDefs
-             */
-            formatExportExpression = function(fieldDefs) {
-                _.forEach(fieldDefs, function (fieldDef) {
-                    if (fieldDef.expression) {
-                        fieldDef.expression = '${' + fieldDef.expression + '}';
-                    }
-                });
-                return fieldDefs;
-            },
+
         /* properties of a basic variable - should contain methods applicable on this particular object */
             methods = {
                 /*Function to get the primary key of the specified variable.*/
@@ -1680,18 +1668,21 @@ wm.variables.services.$liveVariable = [
                     }
                 },
                 /*Function to download the data associated with the live variable*/
-                download: function (variable, options) {
+                download: function (variable, options, successHandler, errorHandler) {
                     var tableOptions,
                         dbOperation = 'exportTableData',
                         projectID   = $rootScope.project.id || $rootScope.projectName,
                         data = {};
-                    options.searchWithQuery = true; //For export, query api is used. So set this flag to true
-                    options.skipEncode = true;
-                    tableOptions = prepareTableOptions(variable, options);
+                    options.data.searchWithQuery = true; //For export, query api is used. So set this flag to true
+                    options.data.skipEncode = true;
+                    tableOptions = prepareTableOptions(variable, options.data);
                     data.query = tableOptions.query ? tableOptions.query : '';
-                    data.exportSize = options.size;
-                    data.exportType = options.exportType;
-                    data.fields = formatExportExpression(options.fields);
+                    data.exportSize = options.data.size;
+                    data.exportType = options.data.exportType;
+                    data.fields = Utils.formatExportExpression(options.data.fields);
+                    if(options.data.fileName) {
+                        data.fileName = options.data.fileName;
+                    }
                     DatabaseService[dbOperation]({
                         'projectID'     : projectID,
                         'service'       : variable._prefabName ? '' : 'services',
@@ -1703,8 +1694,10 @@ wm.variables.services.$liveVariable = [
                         'filterMeta'    : tableOptions.filter
                     }, function (response) {
                         window.location.href = response;
+                        Utils.triggerFn(successHandler, response);
                     }, function (response, xhrObj) {
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, response, xhrObj);
+                        Utils.triggerFn(errorHandler, response);
                     });
                 },
                 /*Function to get the distinct  data for specified field*/
@@ -2109,9 +2102,9 @@ wm.variables.services.$liveVariable = [
             liveVariableObj = {
                 update     : update,
                 listRecords: update,
-                download: function (options) {
+                download: function (options, successHandler, errorHandler) {
                     options = options || {};
-                    methods.download(this, options);
+                    methods.download(this, options, successHandler, errorHandler);
                 },
                 getDistinctDataByFields: function (options, success, error) {
                     options = options || {};

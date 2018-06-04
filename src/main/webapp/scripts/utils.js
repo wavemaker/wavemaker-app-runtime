@@ -3057,6 +3057,20 @@ WM.module('wm.utils', [])
         }
 
 
+        /**
+         * formatting the expression as required by backend which was enclosed by ${<expression>}.
+         * @param fieldDefs
+         * returns fieldDefs
+         */
+        function formatExportExpression(fieldDefs) {
+            _.forEach(fieldDefs, function (fieldDef) {
+                if (fieldDef.expression) {
+                    fieldDef.expression = '${' + fieldDef.expression + '}';
+                }
+            });
+            return fieldDefs;
+        }
+
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
         this.camelCase                  = WM.element.camelCase;
@@ -3216,4 +3230,5 @@ WM.module('wm.utils', [])
         this.executeDeferChain          = executeDeferChain;
         this.isValidMobileAppId         = isValidMobileAppId;
         this.disableRightClick          = disableRightClick;
+        this.formatExportExpression     = formatExportExpression;
     }]);

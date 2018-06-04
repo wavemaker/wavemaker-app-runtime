@@ -1016,19 +1016,39 @@ wm.variables.services.$servicevariable = ['Variables',
             setInput: function (key, val, options) {
                 return methods.setInput(this, key, val, options);
             },
-            download: function (options, errorHandler) {
+            download: function (options, successHandler, errorHandler) {
+                options = options || {};
                 var inputParams  = Utils.getClonedObject(this.dataBinding),
                     methodInfo   = getMethodInfo(this, inputParams, options),
-                    requestParams;
+                    requestParams,
+                    inputData = options.data || {};
 
-                methodInfo.relativePath += '/export/' + options.exportType;
+                methodInfo.relativePath += '/export';
                 requestParams = constructRestRequestParams(methodInfo, this);
+
+                requestParams.dataParams = inputData;
+                requestParams.dataParams.fields = Utils.formatExportExpression(inputData.fields || []);
+
+                // extra options provided, these may be used in future for integrating export feature with ext. services
+                requestParams.method = options.httpMethod || 'POST';
+                requestParams.url = options.url || requestParams.url;
 
                 //If request params returns error then show an error toaster
                 if (_.hasIn(requestParams, 'error.message')) {
                     Utils.triggerFn(errorHandler, requestParams.error.message);
                 } else {
-                    Utils.simulateFileDownload(requestParams, this.name, options.exportType);
+                    WebService.invokeJavaService(requestParams, function (response) {
+                        if(response && Utils.isValidWebURL(response.result)) {
+                            window.location.href = response.result;
+                            Utils.triggerFn(successHandler, response);
+                        } else {
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, this, response);
+                            Utils.triggerFn(errorHandler, response);
+                        }
+                    }, function (response, xhrObj) {
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, this, response, xhrObj);
+                        Utils.triggerFn(errorHandler, response);
+                    });
                 }
             },
             init: function () {
