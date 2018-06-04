@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.data.dao.callbacks;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 
@@ -29,7 +28,6 @@ import com.wavemaker.runtime.data.dao.query.providers.PaginatedQueryProvider;
 import com.wavemaker.runtime.data.dao.query.providers.ParametersProvider;
 import com.wavemaker.runtime.data.export.DataExporter;
 import com.wavemaker.runtime.data.export.ExportOptions;
-import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.export.QueryExtractor;
 import com.wavemaker.runtime.data.export.hqlquery.HqlQueryExtractor;
 import com.wavemaker.runtime.data.export.nativesql.NativeQueryExtractor;
@@ -40,30 +38,32 @@ import com.wavemaker.runtime.data.transform.Transformers;
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 16/11/16
  */
-public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArrayOutputStream> {
+public class NamedQueryExporterCallback<R> implements HibernateCallback<Void> {
 
     private final PaginatedQueryProvider<R> queryProvider;
     private final ParametersProvider parametersProvider;
     private final Pageable pageable;
 
-    private final ExportType exportType;
+    private final ExportOptions exportOptions;
+    private final OutputStream outputStream;
     private final Class<R> responseType;
 
     public NamedQueryExporterCallback(
             final PaginatedQueryProvider<R> queryProvider,
             final ParametersProvider parametersProvider, final Pageable pageable,
-            final ExportType exportType,
-            final Class<R> responseType) {
+            final ExportOptions exportOptions,
+            final OutputStream outputStream, final Class<R> responseType) {
         this.queryProvider = queryProvider;
         this.parametersProvider = parametersProvider;
         this.pageable = pageable;
-        this.exportType = exportType;
+        this.exportOptions = exportOptions;
+        this.outputStream = outputStream;
         this.responseType = responseType;
     }
 
 
     @Override
-    public ByteArrayOutputStream doInHibernate(final Session session) {
+    public Void doInHibernate(final Session session) {
         QueryExtractor queryExtractor;
         Query namedQuery = queryProvider.getQuery(session, pageable, parametersProvider);
         final boolean isNative = namedQuery instanceof NativeQuery;
@@ -73,9 +73,8 @@ public class NamedQueryExporterCallback<R> implements HibernateCallback<ByteArra
         } else {
             queryExtractor = new HqlQueryExtractor(namedQuery.scroll());
         }
-        OutputStream outputStream = new ByteArrayOutputStream();
-        DataExporter.export(queryExtractor, new ExportOptions(exportType), responseType, outputStream);
-        return (ByteArrayOutputStream)outputStream;
+        DataExporter.export(queryExtractor, exportOptions, responseType, outputStream);
+        return null;
     }
 }
 

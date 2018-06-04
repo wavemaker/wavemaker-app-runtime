@@ -23,7 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-import com.wavemaker.runtime.data.export.ExportOptions;
+import com.wavemaker.runtime.data.export.DataExportOptions;
 import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.model.AggregationInfo;
@@ -64,7 +64,7 @@ public interface WMGenericDao<E, I> {
 
     Downloadable export(ExportType exportType, String query, Pageable pageable);
 
-    void export(ExportOptions options, Pageable pageable, OutputStream outputStream);
+    void export(DataExportOptions options, Pageable pageable, OutputStream outputStream);
 
     E refresh(E entity);
 
