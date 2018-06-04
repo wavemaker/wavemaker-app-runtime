@@ -1468,8 +1468,9 @@ WM.module('wm.widgets.form')
          * @param $el - element on which the event is added
          * @keyCodeArray array of key codes, based on the code action is to be performed
          * @stopPropagation boolean value decides whether to stop propagation or not
+         * @preventDefault boolean value decides whether to prevent default behavior or not
          */
-        function addEventsOnTimePicker($is, $el, keyCodeArray, stopPropagation) {
+        function addEventsOnTimePicker($is, $el, keyCodeArray, stopPropagation, preventDefault) {
             $el.on('keydown', function (evt) {
                if (_.includes(keyCodeArray, Utils.getActionFromKey(evt))) {
                    setIsTimeOpen($is, false);
@@ -1477,9 +1478,14 @@ WM.module('wm.widgets.form')
                    if (stopPropagation) {
                        evt.stopPropagation();
                    }
+                   if (preventDefault) {
+                       //live form, after selecting the time on click of enter, time should be selected instead of inserting the record
+                       evt.preventDefault();
+                   }
                }
             });
         }
+
 
         /**
          * This function sets the keyboard events to Timepicker popup
@@ -1487,13 +1493,16 @@ WM.module('wm.widgets.form')
          */
         function setTimePickerKeyboardEvents($is) {
             $timeout(function () {
-                var timepickerEle = WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]');
+                var timepickerEle = WM.element('body').find('> [uib-dropdown-menu] > [uib-timepicker]'),
+                    timepickerElements = timepickerEle.find('.uib-time').not('.ng-hide'),
+                    $firstEl = $(timepickerElements[0]),
+                    $lastEl = $(timepickerElements[timepickerElements.length - 1]);
                 timepickerEle.parent().addClass('app-datetime');
                 addEventsOnTimePicker($is, timepickerEle, ['ESC'], true);
-                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.am-pm'), ['TAB'], false);
-                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.hours'), ['SHIFT+TAB', 'ENTER'], true);
-                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.minutes'), ['ENTER'], true);
-                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.seconds'), ['ENTER'], true);
+                addEventsOnTimePicker($is, $lastEl, ['TAB'], false);
+                addEventsOnTimePicker($is, $firstEl, ['SHIFT+TAB', 'ENTER'], true, true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.minutes'), ['ENTER'], true, true);
+                addEventsOnTimePicker($is, timepickerEle.find('.uib-time.seconds'), ['ENTER'], true, true);
             }, 0, false);
         }
 
