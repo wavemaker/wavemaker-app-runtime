@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             "<div class='app-date input-group' init-widget has-model role='input' apply-styles app-defaults='{\"datepattern\": \"dateFormat\"}'>" +
-                '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target ng-readonly="true"' +
                     ' uib-datepicker-popup="{{datepattern}}" show-button-bar="{{showbuttonbar}}" datepicker-options="_dateOptions" ' +
                     ' current-text="{{$root.appLocale.LABEL_CALENDAR_TODAY}}"' +
                     ' clear-text="{{$root.appLocale.LABEL_CLEAR}}"' +
