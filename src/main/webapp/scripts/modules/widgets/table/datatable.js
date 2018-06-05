@@ -1376,9 +1376,15 @@ $.widget('wm.datatable', {
             this.options.onRowDblClick(rowData, e);
         }
     },
+    closePopover: function() {
+        //removes all the popovers
+        $('.app-popover').remove();
+    },
     headerClickHandler: function (e) {
         var $th = $(e.target).closest('th.app-datagrid-header-cell'),
             id = $th.attr('data-col-id');
+        //Closing the popovers if any present when clicked on header or while sorting
+        this.closePopover();
         this.options.onHeaderClick(this.preparedHeaderData[id], e);
     },
     /* Handles column selection. */
@@ -1563,7 +1569,6 @@ $.widget('wm.datatable', {
             $originalElements   = $row.find('td.app-datagrid-cell'),
             rowId               = parseInt($row.attr('data-row-id'), 10),
             $editableElements;
-
         $originalElements.each(function () {
             var $el      = $(this),
                 cellText = $el.text(),
@@ -1609,6 +1614,8 @@ $.widget('wm.datatable', {
         if (e) {
             e.stopPropagation();
         }
+        //Closing the popovers if clicked on any row for Quick edit
+        this.closePopover();
         var $row = options.$row || $(e.target).closest('tr'),
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
