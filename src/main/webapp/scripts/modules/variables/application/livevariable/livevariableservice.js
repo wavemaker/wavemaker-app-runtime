@@ -544,10 +544,11 @@ wm.variables.services.$liveVariable = [
              * @returns {*} boolean
              */
             getIgnoreCase = function(matchMode, ignoreCase) {
-                if(_.indexOf(['anywhere', 'start', 'end', 'exact'], matchMode) !== -1) {
+                var matchModes = DB_CONSTANTS.DATABASE_MATCH_MODES;
+                if(_.indexOf([matchModes['anywhere'], matchModes['start'], matchModes['end'], matchModes['exact']], matchMode) !== -1) {
                     return false;
                 }
-                if(_.indexOf(['anywhereignorecase', 'startignorecase', 'endignorecase', 'exactignorecase'], matchMode) !== -1) {
+                if(_.indexOf([matchModes['anywhereignorecase'], matchModes['startignorecase'], matchModes['endignorecase'], matchModes['exactignorecase']], matchMode) !== -1) {
                     return true;
                 }
                 return ignoreCase;
@@ -561,7 +562,7 @@ wm.variables.services.$liveVariable = [
                         if (rule.rules) {
                             params.push('(' + generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode) + ')');
                         } else {
-                            params.push(getSearchField(rule, getIgnoreCase(rule.matchMode, ignoreCase), skipEncode));
+                            params.push(getSearchField(rule, getIgnoreCase(rule.filterCondition, ignoreCase), skipEncode));
                         }
                     }
                 });
@@ -597,6 +598,7 @@ wm.variables.services.$liveVariable = [
                     matchModes = DB_CONSTANTS.DATABASE_MATCH_MODES,
                     fieldName = fieldOptions.fieldName,
                     fieldValue = fieldOptions.value,
+                    fieldRequired = fieldOptions.required || false,
                     fieldType = getSQLFieldType(variable, fieldOptions),
                     filterCondition = matchModes[fieldOptions.matchMode] || matchModes[fieldOptions.filterCondition] || fieldOptions.filterCondition,
                     filterOption;
@@ -623,7 +625,8 @@ wm.variables.services.$liveVariable = [
                         'attributeName': attributeName,
                         'attributeValue': '',
                         'attributeType': _.toUpper(fieldType),
-                        'filterCondition': filterCondition
+                        'filterCondition': filterCondition,
+                        'required': fieldRequired
                     };
                     if (options.searchWithQuery) {
                         filterOption.isVariableFilter = fieldOptions.isVariableFilter;
@@ -671,7 +674,8 @@ wm.variables.services.$liveVariable = [
                         'attributeName': attributeName,
                         'attributeValue': fieldValue,
                         'attributeType': _.toUpper(fieldType),
-                        'filterCondition': filterCondition
+                        'filterCondition': filterCondition,
+                        'required': fieldRequired
                     };
                     if (options.searchWithQuery) {
                         filterOption.isVariableFilter = fieldOptions.isVariableFilter;
@@ -727,6 +731,7 @@ wm.variables.services.$liveVariable = [
                                 'fieldName': rule.target,
                                 'type': rule.type,
                                 'value': value,
+                                'required': rule.required,
                                 'filterCondition': rule.matchMode || options.matchMode || variable.matchMode
                             }, options);
                         }
@@ -878,13 +883,13 @@ wm.variables.services.$liveVariable = [
              * if he wants to assign it in teh onbefore<delete/insert/update>function then make that field in
              * the filter query section as optional
              * @param filterExpressions - recursive rule Object
-             * @returns {Object}
+             * @returns {Object} object or boolean. Object if everything gets validated or else just boolean indicating failure in the validations
              */
             getFilterExprFields = function(filterExpressions) {
                 var isRequiredFieldAbsent = false;
                 var traverseCallbackFn = function (parentFilExpObj, filExpObj) {
                     if (filExpObj
-                        && !filExpObj.required
+                        && filExpObj.required
                         && ((_.indexOf(['null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'], filExpObj.matchMode) === -1) && filExpObj.value === "")) {
                         isRequiredFieldAbsent = true;
                         return false;
