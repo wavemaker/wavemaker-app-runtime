@@ -237,7 +237,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
                 refKey   = _.last(_.split(refValue, '/'));
                 defObj   = definitions[refKey];
-                _.forEach(defObj.properties, function (value, key) {
+                _.forEach(defObj && defObj.properties, function (value, key) {
                     //Ignore readOnly params
                     if (value.readOnly) {
                         return;
