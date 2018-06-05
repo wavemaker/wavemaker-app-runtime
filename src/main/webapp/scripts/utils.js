@@ -3056,28 +3056,6 @@ WM.module('wm.utils', [])
             }
         }
 
-        /**
-         * This function sets the link based on the action and onSelect/onBeforeNavigate events,
-         * @param $is - scope of the element
-         * @param node/item
-         * @param link
-         * @param onSelect - events on the element
-         * @param action - action on the element
-         * @param linkField - the field which is selected as the link
-         */
-        function getHref($is, node, link, onSelect, action, linkField) {
-            var itemlink = node.bindlinkitem ? link : node[linkField];
-            if (onSelect || action || !itemlink) {
-                return "";
-            }
-            if ($is._widgettype === 'wm-breadcrumb' && itemlink) {
-                //If link starts with #, / or pageName, removing the special characters and appending with #/ to the link
-                itemlink = _.first(itemlink.match(/[\w]+.*/g));
-                itemlink = itemlink ? ('#/' + itemlink) : '';
-
-            }
-            return itemlink;
-        }
 
         this.setSessionStorageItem      = setSessionStorageItem;
         this.getSessionStorageItem      = getSessionStorageItem;
@@ -3238,5 +3216,4 @@ WM.module('wm.utils', [])
         this.executeDeferChain          = executeDeferChain;
         this.isValidMobileAppId         = isValidMobileAppId;
         this.disableRightClick          = disableRightClick;
-        this.getHref                    = getHref;
     }]);
