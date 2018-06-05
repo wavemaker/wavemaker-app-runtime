@@ -120,6 +120,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     public <T> void exportNamedQueryData(
             final QueryProcedureInput<T> queryInput, final ExportOptions exportOptions, final Pageable pageable,
             final OutputStream outputStream) {
+
+        final Pageable overridenPageable = PageUtils
+                .overrideExportSize(PageUtils.defaultIfNull(pageable), exportOptions.getExportSize());
+
         SessionBackedQueryProvider<T> queryProvider = new SessionBackedQueryProvider<>(queryInput.getName(),
                 queryInput.getResponseType());
 
@@ -127,7 +131,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                 parameterResolvers.getResolver(queryInput.getName()));
 
         NamedQueryExporterCallback<T> callback = new NamedQueryExporterCallback<>(queryProvider, parameterProvider,
-                PageUtils.defaultIfNull(pageable), exportOptions, outputStream, queryInput.getResponseType());
+                overridenPageable, exportOptions, outputStream, queryInput.getResponseType());
 
         template.executeWithNativeSession(callback);
     }
