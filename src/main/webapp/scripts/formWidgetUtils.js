@@ -1448,7 +1448,7 @@ WM.module('wm.widgets.form')
                         });
                     } else if (Utils.getActionFromKey(evt) === 'ENTER') {
                         //if the focus is in monthpicker/yearpicker popup shouldn't be closed, on enter key (selecting the year and month) the focus should go back to daypicker
-                        if ($(evt.target).closest('.uib-daypicker')[0]) {
+                        if ($(evt.target).closest('.uib-daypicker')[0] && $is._model) {
                             setIsDateOpen($is);
                             setIsTimeOpen($is, true);
                             $timeout(function() {
