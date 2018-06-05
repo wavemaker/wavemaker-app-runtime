@@ -52,6 +52,17 @@ WM.module('wm.layouts.containers')
             return path;
         }
 
+        //This function removes the special characters if any present in the link
+        function getHref(itemlink) {
+            if (itemlink) {
+                //If link starts with #, / or pageName, removing the special characters and appending with #/ to the link
+                itemlink = _.first(itemlink.match(/[\w]+.*/g));
+                itemlink = itemlink ? ('#/' + itemlink) : '';
+
+            }
+            return itemlink;
+        }
+
         /**
          * Constructs the node array where ecah object will have id, link, icon and label property.
          * @param scope : isolateScope of the widget
@@ -73,7 +84,7 @@ WM.module('wm.layouts.containers')
                     'class'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'}) || item[classField],
                     'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item[labelField],
                     'action'   : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
-                    'link'     : Utils.getHref(scope, item, WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}), scope.hasOnBeforeNavigate, item.action, linkField)
+                    'link'     : getHref(WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item[linkField])
                 });
             });
             return nodes;
@@ -140,7 +151,7 @@ WM.module('wm.layouts.containers')
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
                     '<li ng-repeat="item in nodes track by $index" ng-class="[item.class, {\'active\':$last}]">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" ng-href="{{item.link || \'javascript:void(0)\'}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
+                        '<a title="{{item.label}}" ng-href="{{hasOnBeforeNavigate ? \'javascript:void(0)\' : (item.link || \'javascript:void(0)\')}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',

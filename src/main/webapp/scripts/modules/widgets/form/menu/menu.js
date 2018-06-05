@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
-                    '<a title="{{hint}}" ng-href="{{link || \'javascript:void(0)\'}}" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
+                    '<a title="{{hint}}" ng-href="{{hasOnSelect ? \'javascript:void(0)\' : (link || \'javascript:void(0)\')}}" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
                         '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li ng-class="[item.class, {\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}]">' +
-                    '<a ng-href="{{item.link || \'javascript:void(0)\'}}" title="{{item.label}}">' +
+                    '<a ng-href="{{(item.hasOnSelect || item.action) ? \'javascript:void(0)\' : (item.link || \'javascript:void(0)\')}}" title="{{item.label}}">' +
                     '<span ng-if="item.children.length" class="pull-right fa caret" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                     '<i class="app-icon {{item.icon}}"></i>' +
                     '{{item.label}}' +

@@ -98,7 +98,7 @@ WM.module('wm.layouts.containers')
                                 itemBadge     = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itembadge'})    || node[badgeField],
                                 itemAction    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemaction'})   || node[actionField],
                                 itemChildren  = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemchildren'}) || node[childrenField],
-                                itemLink      = Utils.getHref($is, node, WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}), attrs.onSelect, itemAction, itemField),
+                                itemLink      = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'itemlink'}) || node[itemField],
                                 $menu;
 
                             // menu widget expects data as an array.
