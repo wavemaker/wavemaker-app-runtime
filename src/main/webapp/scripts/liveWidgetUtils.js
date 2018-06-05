@@ -280,7 +280,7 @@ WM.module('wm.widgets.live')
                             'iconclass'  : 'wi wi-pencil',
                             'show'       : 'true',
                             'class'      : 'btn-transparent',
-                            'action'     : 'editRow()'
+                            'action'     : 'editRow($event)'
                         },
                         {
                             'key'        : 'deleterow',
@@ -289,7 +289,7 @@ WM.module('wm.widgets.live')
                             'iconclass'  : 'wi wi-trash',
                             'show'       : 'true',
                             'class'      : 'btn-transparent',
-                            'action'     : 'deleteRow()'
+                            'action'     : 'deleteRow($event)'
                         }
                     ];
                     break;
