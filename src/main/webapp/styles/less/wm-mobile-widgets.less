@@ -168,11 +168,13 @@
 ******************************************************************************************************/
 .network-info-toaster {
   background: #000;
-  padding: 5pt 10pt;
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 100000;
+  .network-info-toaster-content{
+    padding: 5pt 10pt;
+  }
   &.ng-hide-add{
     transition: transform 200ms linear;
     transform: translate3d(0, 0, 0);
