@@ -2419,6 +2419,10 @@ $.widget('wm.datatable', {
         this.gridElement.parent().scroll(function () {
             self.gridHeaderElement.parent().prop('scrollLeft', this.scrollLeft);
         });
+        /*On scroll of header, the content table, scroll the header*/
+        this.gridHeaderElement.parent().scroll(function () {
+            self.gridElement.parent().prop('scrollLeft', this.scrollLeft);
+        });
         if (!this.options.showHeader) {
             this.gridHeaderElement.append($colgroup);
             this.gridElement.prepend($colgroup.clone());
