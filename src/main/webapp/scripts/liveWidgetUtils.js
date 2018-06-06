@@ -898,7 +898,7 @@ WM.module('wm.widgets.live')
                         if (fieldObj.defaultValue) {
                             column.defaultvalue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
-                        if (fieldObj.type === 'string' || fieldObj.type === 'character' || fieldObj.type === 'text' || fieldObj.type === 'blob' || fieldObj.type === 'clob') {
+                        if (fieldObj.length > 0 && (fieldObj.type === 'string' || fieldObj.type === 'character' || fieldObj.type === 'text' || fieldObj.type === 'blob' || fieldObj.type === 'clob')) {
                             column.maxchars = fieldObj.length;
                         }
                         if (fieldObj.isPrimaryKey) {
