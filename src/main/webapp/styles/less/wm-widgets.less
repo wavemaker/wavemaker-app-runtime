@@ -280,6 +280,23 @@ html, body {
       left: 0;
     }
   }
+
+  .visible-xs-block,
+  .visible-xs-inline,
+  .visible-xs-inline-block,
+  .visible-sm-block,
+  .visible-sm-inline,
+  .visible-sm-inline-block,
+  .visible-md-block,
+  .visible-md-inline,
+  .visible-md-inline-block,
+  .visible-lg-block,
+  .visible-lg-inline,
+  .visible-lg-inline-block {
+    &[hidden] {
+      display: none !important;
+    }
+  }
 }
 /*To override the bootstrap style to app-search class, specificity has been increased*/
 .wm-app .input-group.app-search {
