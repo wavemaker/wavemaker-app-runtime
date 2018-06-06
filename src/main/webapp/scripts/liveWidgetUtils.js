@@ -385,7 +385,7 @@ WM.module('wm.widgets.live')
                     'anywhere'         : appLocale.LABEL_CONTAINS,
                     'anywhereignorecase': appLocale.LABEL_CONTAINS_IGNORECASE,
                     'exact'            : appLocale.LABEL_IS_EQUAL_TO,
-                    'exactignorecase'  : appLocale.LABEL_IS_EQUAL_TO__IGNORECASE,
+                    'exactignorecase'  : appLocale.LABEL_IS_EQUAL_TO_IGNORECASE,
                     'notequals'        : appLocale.LABEL_IS_NOT_EQUAL_TO,
                     'lessthan'         : appLocale.LABEL_LESS_THAN,
                     'lessthanequal'    : appLocale.LABEL_LESS_THAN_OR_EQUALS_TO,
