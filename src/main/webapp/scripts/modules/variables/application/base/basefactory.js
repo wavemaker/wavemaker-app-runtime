@@ -78,8 +78,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"isprimary": true, "hide": false, "options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read", "widgettype": "typeahead", 'propertyName': ''},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"type": "number", "value": 10},
-                    "ignoreCase": {"type": "boolean", "value": true},
-                    "matchMode": {"type": "list", "options": matchModes, "value": "start"},
+                    "ignoreCase": {"hide": true, "type": "boolean", "value": true},
+                    "matchMode": {"hide": true, "type": "list", "options": matchModes, "value": "start"},
                     "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": false, "widgettype": "order-by", "order": "desc"},
                     "autoUpdate": {"value": true},
                     "startUpdate": {"value": true}
