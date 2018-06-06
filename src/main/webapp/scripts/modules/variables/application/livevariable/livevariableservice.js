@@ -765,7 +765,7 @@ wm.variables.services.$liveVariable = [
                                     'type': filterObj.type || getSqlType(variable, filterName),
                                     'matchMode': filterObj.matchMode || "exact",
                                     'value': filterObj.value,
-                                    'required': filterObj.required || true
+                                    'required': filterObj.required || false
                                 };
                                 filterRules.rules.push(ruleObj);
                             }
@@ -1262,7 +1262,7 @@ wm.variables.services.$liveVariable = [
                     // ex: operation = read, then call onBeforeListRecords.
                     //     operation = delete, then call onBeforeDeleteRecord
                     // in other cases just ignore the callback function.
-                    if(variable.operation.indexOf(variable[VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE]) !== -1) {
+                    if(variableDetails.operation.indexOf(variableDetails[VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE]) !== -1) {
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields, options);
                         if (output === false) {
                             variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
@@ -1917,7 +1917,7 @@ wm.variables.services.$liveVariable = [
                             type: '',
                             matchMode: '',
                             value: paramVal,
-                            required: true
+                            required: false
                         });
                     });
 
@@ -2071,7 +2071,7 @@ wm.variables.services.$liveVariable = [
                                     'type': '',
                                     'matchMode': '',
                                     'value': valueObj.value,
-                                    'required': true
+                                    'required': false
                                 });
                             }
                             delete inputData[key];
