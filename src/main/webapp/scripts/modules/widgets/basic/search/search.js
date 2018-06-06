@@ -123,7 +123,8 @@ WM.module('wm.widgets.basic')
                     'type'           : true,
                     'width'          : true,
                     'height'         : true,
-                    'show'           : true
+                    'show'           : true,
+                    'minchars'       : true
                 },
                 ALL_FIELDS = 'All Fields';
 
@@ -373,13 +374,7 @@ WM.module('wm.widgets.basic')
             }
             //Toggles search icon based on the type of search and dataset type
             function toggleSearchIcon($is, type) {
-                if (type === 'search') {
-                    $is.showsearchicon = true;
-                    $is.minLength      = 1;
-                } else {
-                    $is.showsearchicon = false;
-                    $is.minLength      = 0; //For autocomplete, set minlength as 0
-                }
+                $is.showsearchicon = type === 'search';
             }
             //Function to set the width pf typeahead dropdown, when dropdown is appended to body
             function setDropDownWidth($is, element) {
@@ -396,6 +391,16 @@ WM.module('wm.widgets.basic')
                     });
                 }
             }
+            /* Function to set typeahead minLength attribute value.*/
+            function setTypeAheadMinLengthValue($is) {
+                if($is.type === 'search') {
+                    // In case of search, search query is triggered after search key is entered, hence setting default minlength value to 1
+                    $is.minLength = $is.minchars || 1;
+                } else {
+                    // In case of autocomplete, search query is triggered when focus on input element, hence setting default minlength value to 0
+                    $is.minLength = $is.minchars || 0;
+                }
+            }
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, element, attrs, key, newVal) {
                 switch (key) {
@@ -408,6 +413,7 @@ WM.module('wm.widgets.basic')
                     if (!attrs.showsearchicon) {
                         toggleSearchIcon($is, newVal);
                     }
+                    setTypeAheadMinLengthValue($is);
                     break;
                 case 'width':
                 case 'height':
@@ -415,6 +421,9 @@ WM.module('wm.widgets.basic')
                     break;
                 case 'show':
                     setDropDownWidth($is, element);
+                    break;
+                case 'minchars':
+                    setTypeAheadMinLengthValue($is);
                     break;
                 }
             }
@@ -857,7 +866,6 @@ WM.module('wm.widgets.basic')
                         var searchItem,
                             typeAheadInput,
                             typeAheadDropDown;
-                        $is.minLength  = 1;
                         $is.page       = 1;
                         $is.isLastPage = true;
                         $is.getCutomizedOptions = LiveWidgetUtils.getCutomizedOptions;
