@@ -225,6 +225,7 @@ WM.module('wm.widgets.table')
                 'onShow'            : '&',
                 'onHide'            : '&',
                 'onBeforerowinsert' : '&',
+                'onBeforerowdelete' : '&',
                 'onRowinsert'       : '&',
                 'onBeforerowupdate' : '&',
                 'onRowupdate'       : '&',
@@ -1318,9 +1319,13 @@ WM.module('wm.widgets.table')
                 var el = WM.element(htm);
                 return $compile(el)($is);
             }
-            function deleteRecord(row, cancelRowDeleteCallback, evt, callBack) {
+            function deleteRecord(options) {
                 var variable,
                     variableType,
+                    row = options.row,
+                    cancelRowDeleteCallback = options.cancelRowDeleteCallback,
+                    evt = options.evt,
+                    callBack = options.callBack,
                     successHandler = function (success) {
                         /* check the response whether the data successfully deleted or not , if any error occurred show the
                          * corresponding error , other wise remove the row from grid */
@@ -1348,7 +1353,8 @@ WM.module('wm.widgets.table')
                                 'row'               : row,
                                 'transform'         : true,
                                 'scope'             : $is.gridElement.scope(),
-                                'skipNotification'  : true
+                                'skipNotification'  : true,
+                                'period'            : options.period
                             }, successHandler, function (error) {
                                 Utils.triggerFn(callBack, undefined, true);
                                 $is.onError({$event: evt, $isolateScope: $is, $operation: OPERATION.DELETE, $data: error});
@@ -1395,7 +1401,8 @@ WM.module('wm.widgets.table')
                         'row'              : options.row,
                         'transform'        : true,
                         'scope'            : $is.gridElement.scope(),
-                        'skipNotification' : true
+                        'skipNotification' : true,
+                        'period'           : options.period
                     },
                     successHandler = function (response) {
                         /*Display appropriate error message in case of error.*/
@@ -1442,7 +1449,8 @@ WM.module('wm.widgets.table')
                         'prevData'         : options.prevData,
                         'transform'        : true,
                         'scope'            : $is.gridElement.scope(),
-                        'skipNotification' : true
+                        'skipNotification' : true,
+                        'period'           : options.period
                     },
                     successHandler = function (response) {
                         /*Display appropriate error message in case of error.*/
@@ -2586,11 +2594,11 @@ WM.module('wm.widgets.table')
                     /* if onSort function is registered invoke it when the column header is clicked */
                     $is.onHeaderclick({$event: e, $data: col});
                 },
-                onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack) {
-                    deleteRecord(rowData, cancelRowDeleteCallback, e, callBack);
+                onRowDelete: function (rowData, cancelRowDeleteCallback, e, callBack,options) {
+                    deleteRecord(_.extend({}, options, {'row': rowData, 'cancelRowDeleteCallback': cancelRowDeleteCallback, 'evt': e, 'callBack': callBack}));
                 },
-                onRowInsert: function (rowData, e, callBack) {
-                    insertRecord({'row': rowData, event: e, 'callBack': callBack});
+                onRowInsert: function (rowData, e, callBack, options) {
+                    insertRecord(_.extend({}, options, {'row': rowData, event: e, 'callBack': callBack}));
                 },
                 beforeRowUpdate: function (rowData, e, eventName) {
                     $is.$emit('update-row', $is.widgetid, rowData, eventName);
@@ -2598,14 +2606,17 @@ WM.module('wm.widgets.table')
                     $rs.$safeApply($is);
                     $rs.$emit('wm-event', $is.widgetid, 'update');
                 },
-                afterRowUpdate: function (rowData, e, callBack) {
-                    updateRecord({'row': rowData, 'prevData': $is.prevData, 'event': e, 'callBack': callBack});
+                afterRowUpdate: function (rowData, e, callBack, options) {
+                    updateRecord(_.extend({}, options, {'row': rowData, 'prevData': $is.prevData, 'event': e, 'callBack': callBack}));
                 },
-                onBeforeRowUpdate: function (rowData, e) {
-                    return $is.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is});
+                onBeforeRowUpdate: function (rowData, e, options) {
+                    return $is.onBeforerowupdate({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is, options: options});
                 },
-                onBeforeRowInsert: function (rowData, e) {
-                    return $is.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is});
+                onBeforeRowInsert: function (rowData, e, options) {
+                    return $is.onBeforerowinsert({$event: e, $data: rowData, $rowData: rowData, $isolateScope: $is, options: options});
+                },
+                onBeforeRowDelete: function (rowData, e, options) {
+                    return $is.onBeforerowdelete({$event: e, $rowData: rowData, $isolateScope: $is, options: options});
                 },
                 onFormRender: function ($row, e, operation) {
                     $is.formWidgets = LiveWidgetUtils.getFormFilterWidgets($row, 'data-field-name');
@@ -2922,6 +2933,7 @@ WM.module('wm.widgets.table')
                             'formatpattern'     : attrs.formatpattern === 'toNumber' ? 'numberToString' : attrs.formatpattern,
                             'disabled'          : !attrs.disabled ? false : (attrs.disabled === 'true' || attrs.disabled),
                             'required'          : !attrs.required ? false : (attrs.required === 'true' || attrs.required),
+                            'period'            : !attrs.period ? false : attrs.period === 'true',
                             'sortable'          : attrs.sortable !== 'false',
                             'searchable'        : (attrs.type === 'blob' || attrs.type === 'clob') ? false : attrs.searchable !== 'false',
                             'show'              : attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),

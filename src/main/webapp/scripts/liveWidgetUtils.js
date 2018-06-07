@@ -1831,6 +1831,7 @@ WM.module('wm.widgets.live')
                     columns[columnName].type = val.type;
                     columns[columnName].isPrimaryKey = val.isPrimaryKey;
                     columns[columnName].generator = val.generator;
+                    columns[columnName].period = val.period;
                 });
                 return {
                     'columns'     : columns,

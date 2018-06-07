@@ -602,7 +602,7 @@ $.widget('wm.datatable', {
             dataValue     = (WM.isDefined(cellText) && cellText !== null) ? cellText : undefined,
             eventTemplate = this._getEventTemplate(colDef),
             dataFieldName = ' data-field-name="' + colDef.field + '" ',
-            disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned' && !colDef.relatedEntityName) ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
+            disabled      = (operation !== 'new' && colDef.primaryKey && colDef.generator === 'assigned' && !colDef.relatedEntityName && !colDef.period) ? true : colDef.disabled,//In edit mode, set disabled for assigned columns
             disabledTl    = disabled ? ' disabled="' + disabled + '" ' : '',
             required      = colDef.required ? ' required="' + colDef.required + '" ' : '',
             showdropdownonExpression= colDef.showdropdownon ? ' showdropdownon="' + colDef.showdropdownon + '" ' : '',
@@ -1761,20 +1761,20 @@ $.widget('wm.datatable', {
 
                     if (isNewRow) {
                         if ($.isFunction(this.options.onBeforeRowInsert)) {
-                            isValid = this.options.onBeforeRowInsert(rowData, e);
+                            isValid = this.options.onBeforeRowInsert(rowData, e, options);
                             if (isValid === false) {
                                 return;
                             }
                         }
-                        this.options.onRowInsert(rowData, e, onSaveSuccess);
+                        this.options.onRowInsert(rowData, e, onSaveSuccess, options);
                     } else {
                         if ($.isFunction(this.options.onBeforeRowUpdate)) {
-                            isValid = this.options.onBeforeRowUpdate(rowData, e);
+                            isValid = this.options.onBeforeRowUpdate(rowData, e, options);
                             if (isValid === false) {
                                 return;
                             }
                         }
-                        this.options.afterRowUpdate(rowData, e, onSaveSuccess);
+                        this.options.afterRowUpdate(rowData, e, onSaveSuccess, options);
                     }
                 } else {
                     this.cancelEdit($row);
@@ -1886,6 +1886,8 @@ $.widget('wm.datatable', {
             isNewRow = this._isNewRow($row),
             className,
             isActiveRow,
+            isValid,
+            options = {},
             self = this;
         if ($.isFunction(this.options.beforeRowDelete)) {
             this.options.beforeRowDelete(rowData, e);
@@ -1901,6 +1903,13 @@ $.widget('wm.datatable', {
             }
             this.addOrRemoveScroll();
             return;
+        }
+        /* calling onbeforerowDelete callback function.*/
+        if($.isFunction(this.options.onBeforeRowDelete)) {
+            isValid = this.options.onBeforeRowDelete(rowData, e, options);
+            if (isValid === false) {
+                return;
+            }
         }
         if ($.isFunction(this.options.onRowDelete)) {
             className = this.options.cssClassNames.deleteRow;
@@ -1934,7 +1943,7 @@ $.widget('wm.datatable', {
                     $nextRow = self.gridBody.find('tr[data-row-id="' + (rowID - 1)  + '"]');
                 }
                 $nextRow.trigger('click', [undefined, {action: 'edit', skipFocus: skipFocus}]);
-            });
+            }, options);
         }
     },
 
