@@ -1011,7 +1011,8 @@ WM.module('wm.utils', [])
                 'systemInserted'      : prop.systemInserted,
                 'relatedEntityName'   : prop.relatedEntityName,
                 'notNull'             : prop.notNull,
-                'defaultValue'        : prop.defaultValue
+                'defaultValue'        : prop.defaultValue,
+                'period'              : prop.period
             };
         }
 
