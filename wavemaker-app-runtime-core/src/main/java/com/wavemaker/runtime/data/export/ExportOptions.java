@@ -8,6 +8,7 @@ public class ExportOptions {
     private List<FieldInfo> fields = new ArrayList<>();
     private ExportType exportType;
     private Integer exportSize = -1;
+    private String fileName;
 
     public ExportOptions(ExportType exportType) {
         this.exportType = exportType;
@@ -43,5 +44,13 @@ public class ExportOptions {
 
     public void setExportSize(final Integer exportSize) {
         this.exportSize = exportSize;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
     }
 }
