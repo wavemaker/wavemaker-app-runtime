@@ -725,7 +725,7 @@ wm.variables.services.$liveVariable = [
                             var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
                                 ? [rule.value, rule.secondvalue]
                                 : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
-                                    ? rule.value.split(",")
+                                    ? (_.isArray(rule.value) ? rule.value : rule.value.split(","))
                                     : rule.value);
                             rules[index] = getFilterOption(variable, {
                                 'fieldName': rule.target,
@@ -739,15 +739,16 @@ wm.variables.services.$liveVariable = [
                 });
             },
 
-            prepareTableOptionsForFilterExps = function(variable, options) {
+            prepareTableOptionsForFilterExps = function(variable, options, clonedFields) {
                 if (_.isUndefined(options.searchWithQuery)) {
                     options.searchWithQuery = true;//Using query api instead of  search api
                 }
+
                 var filterOptions = [],
                     orderByFields,
                     orderByOptions,
                     query,
-                    clonedObj = {};
+                    clonedObj  = clonedFields || Utils.getClonedObject(variable.filterExpressions);
 
                 //if filterexpression from live filter is present use it to query
                 if(options.filterExpr && !_.isEmpty(options.filterExpr)) {
@@ -755,22 +756,21 @@ wm.variables.services.$liveVariable = [
                 }
                 //merge live filter runtime values
                 var filterRules = {};
-                if (CONSTANTS.isRunMode && options.filterExpr && !_.isEmpty(options.filterExpr)) {
-                    if(!_.isEmpty(options.filterFields)) {
-                        filterRules = {'condition': 'AND', 'rules': []};
-                        _.forEach(options.filterFields, function (filterObj, filterName) {
-                            if(!_.isNil(filterObj.value) && !_.isEmpty(filterObj.value)) {
-                                var ruleObj = {
-                                    'target': filterName,
-                                    'type': filterObj.type || getSqlType(variable, filterName),
-                                    'matchMode': filterObj.matchMode || "exact",
-                                    'value': filterObj.value,
-                                    'required': filterObj.required || false
-                                };
-                                filterRules.rules.push(ruleObj);
-                            }
-                        })
-                    }
+                if(!_.isEmpty(options.filterFields)) {
+                    filterRules = {'condition': 'AND', 'rules': []};
+                    _.forEach(options.filterFields, function (filterObj, filterName) {
+                        if(!_.isNil(filterObj.value) && filterObj.value !== "") {
+                            var type = filterObj.type || getSqlType(variable, filterName);
+                            var ruleObj = {
+                                'target': filterName,
+                                'type': type,
+                                'matchMode': filterObj.matchMode || (type === "string" ? "anywhere" : "exact"),
+                                'value': filterObj.value,
+                                'required': filterObj.required || false
+                            };
+                            filterRules.rules.push(ruleObj);
+                        }
+                    })
                 }
                 if(!_.isEmpty(clonedObj)) {
                     if(!_.isNil(filterRules.rules) && filterRules.rules.length) {
@@ -780,12 +780,8 @@ wm.variables.services.$liveVariable = [
                     clonedObj = filterRules;
                 }
 
-                if((options.filterExpr && !_.isEmpty(options.filterExpr))
-                    || (CONSTANTS.isRunMode && options.filterExpr && !_.isEmpty(options.filterExpr))) {
-
-                    processFilterFields(clonedObj.rules, variable, options);
-                    query = generateSearchQuery(clonedObj.rules, clonedObj.condition, variable.ignoreCase, options.skipEncode);
-                }
+                processFilterFields(clonedObj.rules, variable, options);
+                query = generateSearchQuery(clonedObj.rules, clonedObj.condition, variable.ignoreCase, options.skipEncode);
 
                 orderByFields = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy);
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
@@ -800,8 +796,8 @@ wm.variables.services.$liveVariable = [
             /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options, clonedFields) {
 
-                if(options.filterExpr) {
-                    return prepareTableOptionsForFilterExps(variable, options);
+                if(variable.operation == 'read') {
+                    return prepareTableOptionsForFilterExps(variable, options, clonedFields);
                 }
 
                 if (_.isUndefined(options.searchWithQuery)) {
@@ -812,10 +808,19 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions,
                     query,
-                    clonedObj,
                     optionsQuery;
-                clonedObj  = clonedFields || variable.filterExpressions;
-
+                clonedFields  = clonedFields || variable.filterFields;
+                /*get the filter fields from the variable*/
+                _.forEach(clonedFields, function (value, key) {
+                    if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
+                        value.fieldName = key;
+                        if (isStringType(getSQLFieldType(variable, value))) {
+                            value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || variable.matchMode];
+                        }
+                        value.isVariableFilter = true;
+                        filterFields.push(value);
+                    }
+                });
                 /*get the filter fields from the options*/
                 _.forEach(options.filterFields, function (value, key) {
                     value.fieldName = key;
@@ -825,27 +830,19 @@ wm.variables.services.$liveVariable = [
                 if (variable.operation === 'read' || options.operation === 'read') {
                     filterOptions = getFilterOptions(variable, filterFields, options);
                 }
-
-                if(variable.operation === "read" && variable["filterExpressions"]) {
-                    processFilterFields(clonedObj.rules, variable, options);
-                    query = generateSearchQuery(clonedObj.rules, clonedObj.condition, variable.ignoreCase, options.skipEncode);
-                } else {
-                    /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
-                     should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
-                     */
-                    if (options.searchWithQuery && filterOptions.length) {
-                        //Generate query for variable filter fields. This has AND logical operator
-                        query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ', variable.ignoreCase, options.skipEncode);
+                /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
+                 should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
+                 */
+                if (options.searchWithQuery && filterOptions.length) {
+                    //Generate query for variable filter fields. This has AND logical operator
+                    query = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': true}), ' AND ', variable.ignoreCase, options.skipEncode);
+                    //Generate query for option filter fields. This has default logical operator as OR
+                    optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase, options.skipEncode);
+                    if (optionsQuery) {
+                        //If both variable and option query are present, merge them with AND
+                        query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
                     }
                 }
-
-                //Generate query for option filter fields. This has default logical operator as OR
-                optionsQuery = getSearchQuery(_.filter(filterOptions, {'isVariableFilter': undefined}), ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase, options.skipEncode);
-                if (optionsQuery) {
-                    //If both variable and option query are present, merge them with AND
-                    query = query ? (query + ' AND ( ' + optionsQuery + ' )') : optionsQuery;
-                }
-
                 orderByFields = Variables.getEvaluatedOrderBy(variable.orderBy, options.orderBy);
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
@@ -1948,7 +1945,7 @@ wm.variables.services.$liveVariable = [
                     filterOptions = getFilterOptions(variable, filterFields, options);
                     query = getSearchQuery(filterOptions, ' ' + (options.logicalOp || 'AND') + ' ', variable.ignoreCase);
                     if(options.filterExpr) {
-                        var _clonedFields = _.isObject(options.filterExpr) ? options.filterExpr : JSON.parse(options.filterExpr);
+                        var _clonedFields = Utils.getClonedObject(_.isObject(options.filterExpr) ? options.filterExpr : JSON.parse(options.filterExpr));
                         processFilterFields(_clonedFields.rules, variable, options);
                         var filterExpQuery = generateSearchQuery(_clonedFields.rules, _clonedFields.condition, variable.ignoreCase, options.skipEncode);
                         if (query !== "") {
@@ -2088,7 +2085,7 @@ wm.variables.services.$liveVariable = [
                         inputData = inputData.getFilterFields();
                     }
                     _.forEach(inputData.rules, function(ruleObj) {
-                        if(!_.isEmpty(ruleObj.target) && _.isNil(ruleObj.target)) {
+                        if(!_.isNil(ruleObj.target) && ruleObj.target !== "") {
                             inputData[ruleObj.target] = {
                                 'value': ruleObj.value,
                                 'matchMode': ruleObj.matchMode
