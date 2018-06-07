@@ -2292,13 +2292,13 @@ WM.module('wm.widgets.live')
             function getMatchModeString(group, i) {
                 var matchModeMsgs = getMatchModeMsgs($rs.appLocale);
 
-                var matchMode = matchModeMsgs[group.rules[i].matchMode], matchModeVal;
+                var matchMode = matchModeMsgs[group.rules[i].matchMode].replace(/\s/ig, "_").toUpperCase(), matchModeVal;
                 switch (matchMode) {
-                    case 'In':
+                    case 'IN':
                         matchModeVal = matchMode + " (" + group.rules[i].value + ")";
                         break;
-                    case 'Between':
-                        matchModeVal = matchMode + " " + group.rules[i].value + " AND " + (group.rules[i].secondvalue ? group.rules[i].secondvalue : "");
+                    case 'BETWEEN':
+                        matchModeVal = matchMode + " " + group.rules[i].value + " <strong>AND</strong> " + (group.rules[i].secondvalue ? group.rules[i].secondvalue : "");
                         break;
                     default:
                         matchModeVal = matchMode + " " + group.rules[i].value;
@@ -2315,7 +2315,7 @@ WM.module('wm.widgets.live')
                 if (!group) return "";
                 if(group.rules) {
                     for (var str = "(", i = 0; i < group.rules.length; i++) {
-                        i > 0 && (str += " " + group.condition + " ");
+                        i > 0 && (str += " <strong>" + group.condition + "</strong> ");
                         str += WM.isArray(group.rules[i].rules) ? compute(group.rules[i]) : group.rules[i].target + " " + getMatchModeString(group, i);
                     }
                     return str + ")";
