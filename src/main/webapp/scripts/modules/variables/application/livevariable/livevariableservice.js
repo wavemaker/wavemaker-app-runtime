@@ -1245,6 +1245,9 @@ wm.variables.services.$liveVariable = [
                     columnName,
                     clonedFields,
                     output,
+                    // other than read, instead of just sending update, delete, insert we are using deleteTableData, updateTableData etc.
+                    // Just get the first part from these string and it to the callback handlers in options object
+                    variableOperation = action.split(/([A-Z])/)[0], // will return just update, delete, insert from the deleteTableData, updateTableData, insertTableData, updateMultiPartTableData
                     inputFields = options.inputFields || variableDetails.inputFields;
                 /* evaluate the callback scope */
                 /* get the callback scope for the variable based on its owner */
@@ -1262,7 +1265,7 @@ wm.variables.services.$liveVariable = [
                     // ex: operation = read, then call onBeforeListRecords.
                     //     operation = delete, then call onBeforeDeleteRecord
                     // in other cases just ignore the callback function.
-                    if(variableDetails.operation.indexOf(variableDetails[VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE]) !== -1) {
+                    if(variableOperation === variableDetails.operation) {
                         output = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, clonedFields, options);
                         if (output === false) {
                             variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
@@ -1451,13 +1454,13 @@ wm.variables.services.$liveVariable = [
                         /* If in RUN mode trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': action});
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': variableOperation});
                             $timeout(function () {
                                 // EVENT: ON_ERROR
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error, xhrObj, {'operation': action});
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response.error, xhrObj, {'operation': variableOperation});
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error, {'operation': action});
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response.error, {'operation': variableOperation});
                             }, null, false);
                         }
                         /* trigger error callback */
@@ -1465,10 +1468,10 @@ wm.variables.services.$liveVariable = [
                     } else {
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': action});
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': variableOperation});
                             if (variableDetails.operation !== "read") {
                                 // EVENT: ON_PREPARESETDATA
-                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, response, {'operation': action});
+                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, response, {'operation': variableOperation});
                                 if (newDataSet) {
                                     //setting newDataSet as the response to service variable onPrepareSetData
                                     response = newDataSet;
@@ -1477,10 +1480,10 @@ wm.variables.services.$liveVariable = [
                             }
                             $timeout(function () {
                                 // EVENT: ON_SUCCESS
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, response, {'operation': action});
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, response, {'operation': variableOperation});
                                 // EVENT: ON_CAN_UPDATE
                                 variableDetails.canUpdate = true;
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'operation': action});
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'operation': variableOperation});
                             }, null, false);
                         }
                         Utils.triggerFn(success, response);
@@ -1489,16 +1492,16 @@ wm.variables.services.$liveVariable = [
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': action});
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, response, {'operation': variableOperation});
 
                         $timeout(function () {
                             // EVENT: ON_ERROR
                             if (!options.skipNotification) {
-                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response, xhrObj, {'operation': action});
+                                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, response, xhrObj, {'operation': variableOperation});
                             }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
-                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'operation': action});
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, response, {'operation': variableOperation});
                         }, null, false);
                     }
                     Utils.triggerFn(error, response);
