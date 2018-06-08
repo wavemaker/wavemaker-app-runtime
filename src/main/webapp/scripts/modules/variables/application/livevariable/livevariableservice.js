@@ -505,7 +505,7 @@ wm.variables.services.$liveVariable = [
                     paramValue;
                 // If value is an empty array, do not generate the query
                 // If values is NaN and number type, do not generate query for this field
-                if ((isValArray && _.isEmpty(value)) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
+                if ((isValArray && _.isEmpty(value)) || (isValArray && _.some(value, function(val) {return (_.isNull(val) || _.isNaN(val) || val === "")})) || (!isValArray && isNaN(value) && Utils.isNumberType(fieldValue.attributeType))) {
                     return;
                 }
                 if (isValArray) {
@@ -562,7 +562,10 @@ wm.variables.services.$liveVariable = [
                         if (rule.rules) {
                             params.push('(' + generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode) + ')');
                         } else {
-                            params.push(getSearchField(rule, getIgnoreCase(rule.filterCondition, ignoreCase), skipEncode));
+                            var searchField = getSearchField(rule, getIgnoreCase(rule.filterCondition, ignoreCase), skipEncode);
+                            if(!_.isNil(searchField)) {
+                                params.push(searchField);
+                            }
                         }
                     }
                 });
@@ -714,7 +717,7 @@ wm.variables.services.$liveVariable = [
              */
             processFilterFields = function (rules, variable, options) {
                 _.remove(rules, function (rule) {
-                    return rule && WM.isString(rule.value) && rule.value.indexOf("bind:") === 0;
+                    return rule && (WM.isString(rule.value) && rule.value.indexOf("bind:") === 0 || (rule.matchMode === "between" ? (WM.isString(rule.secondvalue) && rule.secondvalue.indexOf("bind:") === 0) : false));
                 });
 
                 _.forEach(rules, function (rule, index) {

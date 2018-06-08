@@ -610,8 +610,8 @@ wm.variables.services.Variables = [
              */
             processFilterExpBindNode = function(scope, filterExpressions, success) {
                 var bindFilExpObj = function(obj, targetNodeKey) {
-                    if (Utils.stringStartsWith(obj.value, "bind:")) {
-                        BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
+                    if (Utils.stringStartsWith(obj[targetNodeKey], "bind:")) {
+                        BindingManager.register(scope, obj[targetNodeKey].replace("bind:", ""), function (newVal, oldVal) {
                             if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && !WM.isUndefined(oldVal))) {
                                 return;
                             }
@@ -635,6 +635,9 @@ wm.variables.services.Variables = [
                             if (filExpObj.rules) {
                                 traverseFilterExpressions(filExpObj);
                             } else {
+                                if(filExpObj.matchMode === "between") {
+                                    bindFilExpObj(filExpObj, "secondvalue");
+                                }
                                 bindFilExpObj(filExpObj, "value");
                             }
                         });
