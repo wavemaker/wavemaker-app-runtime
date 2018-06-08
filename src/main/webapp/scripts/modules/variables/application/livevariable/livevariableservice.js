@@ -1674,7 +1674,7 @@ wm.variables.services.$liveVariable = [
                     options.data.skipEncode = true;
                     tableOptions = prepareTableOptions(variable, options.data);
                     data.query = tableOptions.query ? tableOptions.query : '';
-                    data.exportSize = options.data.size;
+                    data.exportSize = options.data.exportSize;
                     data.exportType = options.data.exportType;
                     data.fields = Utils.formatExportExpression(options.data.fields);
                     if(options.data.fileName) {
