@@ -272,7 +272,7 @@ WM.module('wm.widgets.live')
                                     'orderBy'      : orderBy,
                                     'exportType'   : options.exportType,
                                     'logicalOp'    : 'AND',
-                                    'size'         : options.size,
+                                    'exportSize'   : options.exportSize,
                                     'fields'       : options.fields
                                 }
                             });
