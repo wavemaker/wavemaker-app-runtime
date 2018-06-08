@@ -722,18 +722,20 @@ wm.variables.services.$liveVariable = [
                         if (rule.rules) {
                             processFilterFields(rule.rules, variable, options);
                         } else {
-                            var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
-                                ? [rule.value, rule.secondvalue]
-                                : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
-                                    ? (_.isArray(rule.value) ? rule.value : rule.value.split(","))
-                                    : rule.value);
-                            rules[index] = getFilterOption(variable, {
-                                'fieldName': rule.target,
-                                'type': rule.type,
-                                'value': value,
-                                'required': rule.required,
-                                'filterCondition': rule.matchMode || options.matchMode || variable.matchMode
-                            }, options);
+                            if(!_.isNull(rule.target)) {
+                                var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
+                                    ? [rule.value, rule.secondvalue]
+                                    : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
+                                        ? (_.isArray(rule.value) ? rule.value : rule.value.split(","))
+                                        : rule.value);
+                                rules[index] = getFilterOption(variable, {
+                                    'fieldName': rule.target,
+                                    'type': rule.type,
+                                    'value': value,
+                                    'required': rule.required,
+                                    'filterCondition': rule.matchMode || options.matchMode || variable.matchMode
+                                }, options);
+                            }
                         }
                     }
                 });
@@ -764,7 +766,7 @@ wm.variables.services.$liveVariable = [
                             var ruleObj = {
                                 'target': filterName,
                                 'type': type,
-                                'matchMode': filterObj.matchMode || (type === "string" ? "anywhere" : "exact"),
+                                'matchMode': filterObj.matchMode || (type === "string" ? "startignorecase" : "exact"),
                                 'value': filterObj.value,
                                 'required': filterObj.required || false
                             };
@@ -1904,14 +1906,32 @@ wm.variables.services.$liveVariable = [
                     }
                     targetObj = variable.filterExpressions;
 
-                    _.forEach(paramObj, function (paramVal, paramKey) {
-                        targetObj.rules.push({
-                            target: paramKey,
-                            type: '',
-                            matchMode: '',
-                            value: paramVal,
-                            required: false
+                    // find the existing criteria if present or else return null. Find the first one and return.
+                    // If the user wants to set a different object, then he has to use the getCriteria API defined
+                    // on the dataFilter object passed to the onBeforeListRecords
+                    function getExistingCriteria(filterField) {
+                        var existingCriteria = null;
+                        traverseFilterExpressions(targetObj, function(filterExpressions, criteria) {
+                            if(filterField === criteria.target) {
+                                return existingCriteria = criteria;
+                            }
                         });
+                        return existingCriteria;
+                    }
+
+                    _.forEach(paramObj, function (paramVal, paramKey) {
+                        var existingCriteria = getExistingCriteria(paramKey);
+                        if(existingCriteria !== null) {
+                            existingCriteria.value = paramVal;
+                        } else {
+                            targetObj.rules.push({
+                                target: paramKey,
+                                type: '',
+                                matchMode: '',
+                                value: paramVal,
+                                required: false
+                            });
+                        }
                     });
 
                     return targetObj;
