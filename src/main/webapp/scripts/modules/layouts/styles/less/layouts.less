@@ -1321,6 +1321,10 @@ body {
     .item{
       overflow : hidden;
       height : 100%;
+      display: inline-block;
+      position: absolute;
+      width: 100%;
+
       img {
         width: 100%;
       }
@@ -1339,6 +1343,9 @@ body {
   }
   &.carousel {
     height: inherit;
+  }
+  .carousel {
+    height: 100%;
   }
   &.hide-navs, &.hide-both {
     .carousel-control {
@@ -1644,7 +1651,7 @@ body {
   }
 // styles for iscroll wrapper and scroller.
   .smoothscroll-wrapper {
-    overflow: hidden;
+    overflow: hidden !important;
   }
   .smoothscroll-container {
     position: absolute;
