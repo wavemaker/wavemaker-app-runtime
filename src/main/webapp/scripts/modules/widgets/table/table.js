@@ -2194,7 +2194,7 @@ WM.module('wm.widgets.table')
                     columns[fieldDef.field] = option;
                 });
                 if ($is.isBoundToFilter) {
-                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'size': $is.exportdatasize,'columns': columns};
+                    requestData = {'orderBy': sortOptions, 'exportType': $item.label, 'exportSize': $is.exportdatasize,'columns': columns};
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
                     requestData = {
@@ -2203,7 +2203,7 @@ WM.module('wm.widgets.table')
                         'orderBy'      : sortOptions,
                         'exportType'   : $item.label,
                         'logicalOp'    : 'AND',
-                        'size'         : $is.exportdatasize,
+                        'exportSize'   : $is.exportdatasize,
                         'columns'      : columns
                     };
                 }
