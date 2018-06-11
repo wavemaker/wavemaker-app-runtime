@@ -21,7 +21,7 @@ wm.variables.filter(wm.variables.filters);
 
 /* Defining route path constants for wmCoreModule application */
 wm.variables.constant('VARIABLE_CONSTANTS', {
-    EVENTS: ["onBefore", "onBeforeUpdate", "onBeforeListRecords", "onBeforeDeleteRecord", "onBeforeInsertRecord", "onBeforeUpdateRecord", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onProgress", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onBeforeClose", "onClose", "onTimerFire", "onSuccess", "onOnline", "onOffline"],
+    EVENTS: ["onAbort", "onBefore", "onBeforeUpdate", "onBeforeListRecords", "onBeforeDeleteRecord", "onBeforeInsertRecord", "onBeforeUpdateRecord", "onResult", "onBeforeOpen", "onOpen", "onBeforeMessageSend", "onMessageReceive", "onProgress", "onError", "onBeforeDatasetReady", "onCanUpdate", "onClick", "onHide", "onOk", "onCancel", "onBeforeClose", "onClose", "onTimerFire", "onSuccess", "onOnline", "onOffline"],
     EVENT: {
         "CAN_UPDATE": "onCanUpdate",
         "BEFORE_UPDATE": "onBeforeUpdate",
@@ -32,6 +32,8 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
         "PREPARE_SETDATA": "onBeforeDatasetReady",
         "RESULT": "onResult",
         "ERROR": "onError",
+        "PROGRESS": "onProgress",
+        "ABORT": "onAbort",
         'CLICK': 'onClick',
         'HIDE': 'onHide',
         "OK": "onOk",

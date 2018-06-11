@@ -1639,17 +1639,13 @@ WM.module('wm.widgets.base', [])
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}
                     },
                     'wm.fileupload': {
-                        "service": {"type": "list", "widget": "list"},
-                        "operation": {"type": "list", "widget": "list"},
                         "multiple": {"type": "boolean", "value": false},
-                        "contenttype": {"type": "list", "widget" : "list-picker", "options": ["image/*", "audio/*", "video/*", ".txt", ".zip", ".rar", ".js", ".json", ".xls", ".xlsx", ".pdf", ".csv", ".xml", ".doc", ".docx", ".log", ".rtf", ".bmp", ".gif", ".jpe", ".jpg", ".jpeg", ".tif", ".tiff", ".pbm", ".png", ".ico", "mp3", ".ogg", ".webm", ".wma", ".3gp", ".wav", "mp4", ".ogg", ".webm", ".wmv", ".mpeg", ".mpg", ".avi"]},
+                        "contenttype": {"type": "list", "bindable": "in-out-bound", "widget" : "list-picker", "options": ["image/*", "audio/*", "video/*", ".txt", ".zip", ".rar", ".js", ".json", ".xls", ".xlsx", ".pdf", ".csv", ".xml", ".doc", ".docx", ".log", ".rtf", ".bmp", ".gif", ".jpe", ".jpg", ".jpeg", ".tif", ".tiff", ".pbm", ".png", ".ico", "mp3", ".ogg", ".webm", ".wma", ".3gp", ".wav", "mp4", ".ogg", ".webm", ".wmv", ".mpeg", ".mpg", ".avi"]},
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "number", "value": "0"},
                         "uploadedFiles": {"type": "array", "isList": true, "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('uploadedFiles')"},
                         "selectedFiles": {"type": "array, file", "isList": true, "bindable": "in-out-bound", "show" : "false", "getTypeFrom": "expr:getPropertyType('selectedFiles')"},
-                        "mode": {"type": "list", "options": ["Upload", "Select"], "value": "Upload"},
-                        "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": "", "info": "/resources/uploads/"},
-                        "maxfilesize": {"type": "string", "widget": "fileupload-relativepath", "value": "",  "info": "size in MB"},
+                        "maxfilesize": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": "",  "info": "size in MB"},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "value" : "wi wi-file-upload", "pattern": classRegex},
@@ -1657,9 +1653,8 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["bg-primary", "bg-success", "bg-info", "bg-warning", "bg-danger"]},
 
                         /* ---- events ---- */
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onProgress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onAbort": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onBeforeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     'wm.fileupload.mobile': {
                         "fileuploadmessage": {"show": false},
@@ -2200,7 +2195,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "mouseevents", "properties": ["onClick", "onChipclick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
-                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onBeforeremove", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onChipselect", "onDeselect", "onViewrender", "onBeforerender",
+                {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onBeforeadd", "onAdd", "onBeforeremove", "onRemove", "onShow", "onHide", "onOk", "onBeforesubmit", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onBeforeselect", "onSelect", "onChipselect", "onDeselect", "onViewrender", "onBeforerender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onBeforeformrender", "onFormrender", "onBeforerowdelete", "onRowdelete", "onBeforerowinsert", "onRowinsert", "onBeforerowupdate", "onRowupdate", "onResult",  "onSuccess", "onError", "onBeforeservicecall", "onActionsclick",
                     "onBeforesegmentchange", "onSegmentchange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onBeforereorder", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone", "onBeforedatarender", "onDatarender", "onPaginationchange", "onSetrecord", "onBeforenavigate","onBeforeexport"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
