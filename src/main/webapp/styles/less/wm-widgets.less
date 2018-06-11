@@ -1212,6 +1212,9 @@ html, body {
           &:after {
             bottom: -1em;
           }
+          &[disabled="disabled"] {
+            color:#aaaaaa;
+          }
         }
       }
       table {
@@ -2161,6 +2164,10 @@ If the height and width are not specified the video takes the height of the post
         &.disabled a {
           &[disabled] {
             pointer-events: none;
+            display: inline-block;
+            padding-left: 0;
+            padding-right: 0;
+            text-align: center;
             &:before {
               display: inline-block;
             }

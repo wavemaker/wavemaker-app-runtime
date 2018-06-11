@@ -1377,8 +1377,11 @@ $.widget('wm.datatable', {
         }
     },
     closePopover: function() {
-        //removes all the popovers
-        $('.app-popover').remove();
+        //If the DataTable is in the popover, popover shouldn't be closed
+        if (!this.element.closest('.app-popover').length) {
+            //removes all the popovers
+            $('.app-popover').remove();
+        }
     },
     headerClickHandler: function (e) {
         var $th = $(e.target).closest('th.app-datagrid-header-cell'),
