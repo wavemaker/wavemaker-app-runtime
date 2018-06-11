@@ -2206,7 +2206,7 @@ WM.module('wm.widgets.table')
                 } else if ($is.showExportOptions()) {
                     filterFields = getFilterFields($is.filterInfo);
                     requestData = {
-                        'matchMode'    : 'anywhere',
+                        'matchMode'    : 'anywhereignorecase',
                         'filterFields' : filterFields,
                         'orderBy'      : sortOptions,
                         'exportType'   : $item.label,

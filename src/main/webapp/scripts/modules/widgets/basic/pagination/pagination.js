@@ -353,7 +353,7 @@ WM.module("wm.widgets.basic")
                                 "page": $scope.dn.currentPage,
                                 "filterFields": $scope.filterFields,
                                 'orderBy': $scope.sortOptions,
-                                "matchMode": 'anywhere',
+                                "matchMode": 'anywhereignorecase',
                                 "scope": $scope.navigatorElement.scope()
                             }, function (data, propertiesMap, pagingOptions) {
                                 /*Update the "result" in the scope so that widgets bound to the data-navigator are updated.*/
@@ -383,7 +383,7 @@ WM.module("wm.widgets.basic")
                                 "page": $scope.dn.currentPage,
                                 "filterFields": $scope.filterFields,
                                 "orderBy": $scope.sortOptions,
-                                "matchMode": 'anywhere',
+                                "matchMode": 'anywhereignorecase',
                                 "scope": $scope.navigatorElement.scope()
                             }, function (data) {
                                 $scope.result = data;

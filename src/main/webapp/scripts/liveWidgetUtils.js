@@ -350,9 +350,9 @@ WM.module('wm.widgets.live')
                     },
                     modes = {
                         'number': ['exact', 'notequals', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'isnotnull'],
-                        'string': ['anywhere', 'anywhereignorecase', 'start', 'startignorecase', 'end', 'endignorecase', 'exact', 'exactignorecase', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                        'character': ['exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
-                        'date': ['exact', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty']
+                        'string': ['anywhereignorecase', 'anywhere', 'startignorecase', 'start', 'endignorecase', 'end', 'exactignorecase', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
+                        'character': ['exactignorecase', 'exact', 'notequals', 'null', 'isnotnull', 'empty', 'isnotempty', 'nullorempty'],
+                        'date': ['exact', 'lessthan', 'lessthanequal', 'greaterthan', 'greaterthanequal', 'null', 'notequals', 'isnotnull']
                     },
                     matchModeTypesMap = {
                         'boolean'    : ['exact', 'null', 'isnotnull'],
@@ -2299,7 +2299,7 @@ WM.module('wm.widgets.live')
                         matchModeVal = matchMode + " (" + group.rules[i].value + ")";
                         break;
                     case 'BETWEEN':
-                        matchModeVal = matchMode + " " + group.rules[i].value + " <strong>AND</strong> " + (group.rules[i].secondvalue ? group.rules[i].secondvalue : "");
+                        matchModeVal = matchMode + " " + group.rules[i].value + " AND " + (group.rules[i].secondvalue ? group.rules[i].secondvalue : "");
                         break;
                     default:
                         matchModeVal = matchMode + " " + group.rules[i].value;

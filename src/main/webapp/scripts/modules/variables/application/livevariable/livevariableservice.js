@@ -407,7 +407,7 @@ wm.variables.services.$liveVariable = [
             },
             //Check if the type is string or text
             isStringType = function (type) {
-                return _.includes(['text', 'string'], _.toLower(type));
+                return _.includes(['text', 'string', 'character'], _.toLower(type));
             },
             //Wrap the field name and value in lower() in ignore case scenario
             //TODO: Change the function name to represent the added functionality of identifiers for datetime, timestamp and float types. Previously only lower was warapped.
@@ -662,7 +662,7 @@ wm.variables.services.$liveVariable = [
                                 if (WM.isArray(fieldValue)) {
                                     filterCondition = matchModes['exact'];
                                 } else {
-                                    filterCondition = filterCondition || matchModes['anywhere'];
+                                    filterCondition = filterCondition || matchModes['anywhereignorecase'];
                                 }
                                 break;
                             default:
@@ -670,7 +670,7 @@ wm.variables.services.$liveVariable = [
                                 break;
                         }
                     } else {
-                        filterCondition = _.isString(fieldValue) ? matchModes['anywhere'] : matchModes['exact'];
+                        filterCondition = _.isString(fieldValue) ? matchModes['anywhereignorecase'] : matchModes['exact'];
                     }
                     attributeName = getAttributeName(variable, fieldName);
                     filterOption = {
@@ -729,7 +729,7 @@ wm.variables.services.$liveVariable = [
                                 var value = rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.between.toLowerCase()
                                     ? (_.isArray(rule.value) ? rule.value : [rule.value, rule.secondvalue])
                                     : (rule.matchMode.toLowerCase() === DB_CONSTANTS.DATABASE_MATCH_MODES.in.toLowerCase()
-                                        ? (_.isArray(rule.value) ? rule.value : rule.value.split(","))
+                                        ? (_.isArray(rule.value) ? rule.value : (rule.value ? rule.value.split(",") : ''))
                                         : rule.value);
                                 rules[index] = getFilterOption(variable, {
                                     'fieldName': rule.target,
@@ -769,7 +769,7 @@ wm.variables.services.$liveVariable = [
                             var ruleObj = {
                                 'target': filterName,
                                 'type': type,
-                                'matchMode': filterObj.matchMode || (type === "string" ? "startignorecase" : "exact"),
+                                'matchMode': filterObj.matchMode || (isStringType(type) ? "startignorecase" : "exact"),
                                 'value': filterObj.value,
                                 'required': filterObj.required || false
                             };
