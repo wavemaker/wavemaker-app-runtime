@@ -1970,11 +1970,16 @@ WM.module('wm.utils', [])
         }
 
         function getMatchModes() {
+            //TODO: i18n Pending
             return {
-                'start'    : 'start',
-                'end'      : 'end',
-                'anywhere' : 'anywhere',
-                'exact'    : 'exact'
+                'startignorecase'    : 'Starts with ignore case',
+                'start'              : 'Starts with',
+                'endignorecase'      : 'Ends with ignore case',
+                'end'                : 'Ends with',
+                'anywhereignorecase' : 'Contains ignore case',
+                'anywhere'           : 'Contains',
+                'exact'              : 'Is equal to',
+                'exactignorecase'    : 'Is equal to ignore case'
             };
         }
 
