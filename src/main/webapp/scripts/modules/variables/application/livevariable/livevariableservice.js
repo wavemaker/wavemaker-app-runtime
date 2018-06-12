@@ -2075,12 +2075,20 @@ wm.variables.services.$liveVariable = [
                         inputData.condition = "AND";
                         inputData.rules = [];
                     }
+                    /**
+                     * if the user deletes a particular criteria, we need to remove this form our data aswell.
+                     * so we are keeping a copy of it and the emptying the existing object and now fill it with the
+                     * user set criteria. If its just modified, change the data and push it tohe rules or else just add a new criteria
+                     */
+                    var clonedRules = _.cloneDeep(inputData.rules);
+                    inputData.rules = [];
                     _.forEach(inputData, function (valueObj, key) {
                         if(key !== 'condition' && key !== 'rules') {
-                            var filteredObj = _.find(inputData.rules, function(o) { return o.target === key; });
+                            var filteredObj = _.find(clonedRules, function(o) { return o.target === key; });
                             //if the key is found update the value, else create a new rule obj and add it to the existing rules
                             if(filteredObj) {
                                 filteredObj.value = valueObj.value;
+                                inputData.rules.push(filteredObj);
                             } else {
                                 inputData.rules.push({
                                     'target': key,
