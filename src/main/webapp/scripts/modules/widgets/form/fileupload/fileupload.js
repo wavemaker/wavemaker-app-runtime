@@ -190,9 +190,7 @@ WM.module('wm.widgets.form')
                 'UPLOAD' : 'Upload'
             },
             DEFAULT_CAPTIONS = {
-                'MULTIPLE_UPLOAD'   : "Drop your files here to start uploading.",
                 'MULTIPLE_SELECT'   : "Drop your files here.",
-                'UPLOAD'            : 'Upload',
                 'SELECT'            : 'Select'
             },
             DEVICE_CONTENTTYPES = {
@@ -459,8 +457,7 @@ WM.module('wm.widgets.form')
 
                     post: function (scope, element, attrs) {
                         /*if the fileupload widget is inside prefab, then widget id will not be present.*/
-                        var isStudioMode = CONSTANTS.isStudioMode && scope.widgetid,
-                            parentPrefabScope = element.closest('.app-prefab').isolateScope(),
+                        var parentPrefabScope = element.closest('.app-prefab').isolateScope(),
                             CONSTANT_FILE_SERVICE = 'FileService';
                         scope.uploadData = {
                             file: undefined,
@@ -488,20 +485,6 @@ WM.module('wm.widgets.form')
                             }
                         };
                         scope.uploadUrl = (parentPrefabScope && parentPrefabScope.prefabname) ? ('prefabs/' + parentPrefabScope.prefabname) : 'services';
-                        /*fetching the list of the services only in studio mode for properties panel*/
-                        if (isStudioMode) {
-                            getAllServices(function (services) {
-                                scope.widgetProps.service.options = services;
-                            });
-                            $rootScope.$on('update-fileupload', function (event, widgetId, serviceId) {
-                                if (scope.widgetid === widgetId) {
-                                    scope.service = serviceId;
-                                    getAllServices(function (services) {
-                                        scope.widgetProps.service.options = services;
-                                    });
-                                }
-                            });
-                        }
                         /* BOYINA: Need to check why we need this.
                         scope.uploadData = _.map(files, function (f) {
                             return {
@@ -590,23 +573,6 @@ WM.module('wm.widgets.form')
                             case 'contenttype':
                                 scope.chooseFilter = newVal.split(" ").join(",");
                                 break;
-                            case 'service':
-                                if (isStudioMode && !$rootScope.isTemplateBundleType) {
-                                    if (scope.service === CONSTANT_FILE_SERVICE && !scope.operation) {
-                                        scope.operation = 'uploadFile';
-                                    }
-                                    ServiceFactory.getServiceOperations(scope.service, function (response) {
-                                        /*Pushing the operation options into the widget properties*/
-                                        scope.widgetProps.operation.options = _.map(response, 'name');
-                                    });
-                                }
-                                break;
-                            case 'operation':
-                                if (isStudioMode &&  scope.service && scope.operation) {
-                                    createVariable(scope.widgetid, scope.service, scope.operation);
-                                }
-                                break;
-                            case 'mode':
                             case 'multiple':
                                 scope.formName = scope.name + (scope.multiple ? '-multiple-fileupload' : '-single-fileupload');
                                 scope.caption = getCaption(scope.caption, scope.mode, scope.multiple, scope._isMobileType);
