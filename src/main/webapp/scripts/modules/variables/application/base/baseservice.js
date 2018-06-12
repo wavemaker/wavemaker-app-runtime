@@ -2619,7 +2619,7 @@ wm.variables.services.Variables = [
              * creates a service variable based on the specified details
              * @params {object} variable details
              */
-            createServiceVariable: function (variableDetails, overWrite) {
+            createServiceVariable: function (variableDetails, overWrite, createNewVariable) {
                 /* call base service function to create the variable */
                 var variableCategory = "wm.ServiceVariable",
                     defaultName = variableDetails.name || Utils.initCaps(variableDetails.service) + Utils.initCaps(variableDetails.operation),
@@ -2630,7 +2630,7 @@ wm.variables.services.Variables = [
 
                 /*If the default variable does not exist, create it.
                  * Else, simply return the variable name.*/
-                if (!isExists(defaultName) || overWrite) {
+                if (!isExists(defaultName) || overWrite || createNewVariable) {
                     createdVariable = create(variableCategory, {owner: variableDetails.owner || "Page"}, defaultName, overWrite);
                     variableName = createdVariable.name;
                     variableOwner = (createdVariable.owner === VARIABLE_CONSTANTS.OWNER.PAGE) ? $rootScope.activePageName : null;
