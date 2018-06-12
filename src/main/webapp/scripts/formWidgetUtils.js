@@ -1522,26 +1522,10 @@ WM.module('wm.widgets.form')
             });
         }
 
-        /**
-         * This function checks whether the entered date/time is valid and highlights the input if the value is invalid
-         * @param val - value enetered by the user
-         * @param minVal - minValue given for the widget(Date/ time cannot be accepted less than the minVal)
-         * @param maxVal - maxValue given for the widget(Date/ time cannot be accepted greater than the maxVal)
-         * @param $el - element on which the invalid class is to be added
-         */
-        function validateDateTime(val, minVal, maxVal, $el) {
-            if ((minVal && (val < moment(minVal).toDate().getTime())) || (maxVal && (val > moment(maxVal).toDate().getTime()))) {
-                $el.addClass('ng-invalid');
-            } else {
-                $el.removeClass('ng-invalid');
-            }
-        }
-
         this.isDropDownDisplayEnabledOnInput = isDropDownDisplayEnabledOnInput;
         this.setFocusOnElement               = setFocusOnElement;
         this.setFocusOnDateOrTimePicker      = setFocusOnDateOrTimePicker;
         this.setDatePickerKeyboardEvents     = setDatePickerKeyboardEvents;
         this.setTimePickerKeyboardEvents     = setTimePickerKeyboardEvents;
         this.setKeydownEventOnPickerButtons  = setKeydownEventOnPickerButtons;
-        this.validateDateTime                = validateDateTime;
     }]);

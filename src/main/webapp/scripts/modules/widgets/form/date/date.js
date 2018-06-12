@@ -18,7 +18,6 @@ WM.module('wm.widgets.form')
                     ' ng-required="required" ' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-change="onDateChange()"' +
-                    ' ng-model-options="{updateOn: \'blur\'}"' +
                     ' ng-keydown="_onKeyDown($event)"' +
                     ' autocomplete="off">' +
                 /*Holder for the model for submitting values in a form*/
@@ -67,7 +66,7 @@ WM.module('wm.widgets.form')
                 CURRENT_DATE     = 'CURRENT_DATE';
 
             function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-                var currentDate = moment(moment().format('MM/DD/YYYY')).toDate(),
+                var currentDate = moment().toDate(),
                     inputEl  = element.find('input'),
                     buttonEl = element.find('button'),
                     isDisabled;
@@ -144,14 +143,10 @@ WM.module('wm.widgets.form')
                 if (CONSTANTS.isRunMode) {
                     //if the model(date value) is removed, on input click the focus should set on the datepicker popup
                     if (scope._model_) {
-                        //Checking whether the given value is valid or not
-                        DateTimeWidgetUtils.validateDateTime(moment(scope._model_).toDate().getTime(), scope.mindate, scope.maxdate, scope.$element.find('.app-dateinput'));
-                        if (scope.isOpen) {
-                            /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
-                            $timeout(function() {
-                                DateTimeWidgetUtils.setFocusOnElement(scope);
-                            });
-                        }
+                        /*$timeout is used so that by then date input has the updated value. focus is setting back to the input field*/
+                        $timeout(function() {
+                            DateTimeWidgetUtils.setFocusOnElement(scope);
+                        });
                     }
                 }
             }

@@ -211,8 +211,6 @@ WM.module('wm.widgets.form')
                                     setTimeInterval();
                                 } else {
                                     dateTime = Utils.getValidDateObject(val);
-                                    //Checking whether the given value is valid or not
-                                    DateTimeWidgetUtils.validateDateTime(dateTime.getTime(), moment().format('YYYY-MM-DD') + ' ' + $is.mintime, moment().format('YYYY-MM-DD') + ' ' + $is.maxtime, $is.$element.find('.display-input'));
                                     $is._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
                                     setTimeInterval(true);
                                 }
@@ -255,7 +253,6 @@ WM.module('wm.widgets.form')
                                 setTimeModel($is);
                             } else {
                                 this._proxyModel = '';//setting to empty string so that the variable's watch gets updated
-                                $is.$element.addClass('ng-invalid');
                             }
                         };
                         /*Function to be called on click of time picker*/

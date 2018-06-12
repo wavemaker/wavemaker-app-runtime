@@ -300,8 +300,6 @@ WM.module('wm.widgets.form')
                                         setTimeInterval();
                                     } else {
                                         dateTime = parseDateTime(val);
-                                        //Checking whether the given value is valid or not
-                                        DateTimeWidgetUtils.validateDateTime(dateTime.getTime(), $is.mindate, $is.maxdate, $is.$element.find('.display-input'));
                                         if (dateTime.getTime()) {
                                             $is._proxyModel = $is._timeModel = dateTime.getTime();
                                             $is._dateModel = new Date($is._proxyModel);
@@ -343,7 +341,6 @@ WM.module('wm.widgets.form')
                             if (_.isNull($is._dateModel)) { //If date is cleared from datepicker, remove the time model also
                                 $is._timeModel = undefined;
                             } else if ($is.isDateOpen) {
-                                $is.$element.find('.display-input').removeClass('ng-invalid')
                                 $timeout(function () { //Open the time after the date is selected
                                     $is.isTimeOpen = true;
                                 });
@@ -380,7 +377,6 @@ WM.module('wm.widgets.form')
                             if (!isNaN(Date.parse($is._displayModel))) {
                                 setModels($is._displayModel);
                             } else {
-                                $is.$element.find('.display-input').addClass('ng-invalid');
                                 this._proxyModel = '';
                                 this.timestamp   = '';
                                 this._dateModel  = '';
