@@ -60,7 +60,7 @@ WM.module('wm.layouts.containers')
                 itemlink = itemlink ? ('#/' + itemlink) : '';
 
             }
-            return itemlink;
+            return itemlink || 'javascript:void(0)';
         }
 
         /**
@@ -84,7 +84,7 @@ WM.module('wm.layouts.containers')
                     'class'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemclass'}) || item[classField],
                     'label'    : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item[labelField],
                     'action'   : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemaction'}) || item[actionField],
-                    'link'     : getHref(WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item[linkField])
+                    'link'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item[linkField]
                 });
             });
             return nodes;
@@ -151,7 +151,7 @@ WM.module('wm.layouts.containers')
                 '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb" init-widget listen-property="dataset">' +
                     '<li ng-repeat="item in nodes track by $index" ng-class="[item.class, {\'active\':$last}]">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" ng-href="{{hasOnBeforeNavigate ? \'javascript:void(0)\' : (item.link || \'javascript:void(0)\')}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
+                        '<a title="{{item.label}}" ng-href="{{hasOnBeforeNavigate ? \'javascript:void(0)\' : getHref(item.link)}}" ng-click = onItemClick(item)  ng-if="!$last">{{item.label}}</a>' +
                         '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',
@@ -170,6 +170,7 @@ WM.module('wm.layouts.containers')
 
                     //Set hasOnBeforeNavigate only when there is onBeforenavigate event on the widget
                     scope.hasOnBeforeNavigate = !!attrs.onBeforenavigate;
+                    scope.getHref = getHref;
                     if (!attrs.widgetid && attrs.scopedataset) {
                         scope.$watch('scopedataset', function (newVal) {
                             onPropertyChange('scopedataset', newVal);
