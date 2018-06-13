@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" wm-gestures="{{gestures}}" wm-smoothscroll="{{smoothscroll}}" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
+                '<aside data-role="page-left-panel" role="complementary" wm-gestures="{{gestures}}" wm-smoothscroll="{{smoothscroll}}" page-container init-widget class = "app-left-panel" hm-swipe-left="collapse();" ' +
                 '       data-ng-class="[animation, expanded ? \'left-panel-expanded\' : \'left-panel-collapsed\']" ' +
                 '       apply-styles="container">' +
                 '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +

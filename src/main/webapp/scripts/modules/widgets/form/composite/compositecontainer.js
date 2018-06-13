@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/composite.html',
-                '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" role="input"' +
+                '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" role="group"' +
                 ' ng-class="{\'caption-left\': captionposition == \'left\',\'caption-right\': captionposition == \'right\',\'caption-top\': captionposition == \'top\'}"' +
                 ' title="{{hint}}"' +
                 ' wmtransclude></div>'

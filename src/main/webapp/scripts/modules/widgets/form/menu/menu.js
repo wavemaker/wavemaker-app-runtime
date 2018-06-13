@@ -6,23 +6,23 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
-                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles focus-target accesskey="{{::shortcutkey}}">' +
+                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" aria-haspopup="true" aria-expanded="false" uib-dropdown-toggle apply-styles focus-target accesskey="{{::shortcutkey}}">' +
                         '<i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
                         '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
                     '</button>' +
-                    '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
+                    '<wm-menu-dropdown menulayout="menulayout" aria-labelledby="dropdownmenu" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown is-open="isOpen" auto-close="{{autoclose}}" role="input" listen-property="dataset" tabindex="-1">' +
-                    '<a title="{{hint}}" ng-href="{{hasOnSelect ? \'javascript:void(0)\' : (link || \'javascript:void(0)\')}}" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
+                    '<a title="{{hint}}" ng-href="{{hasOnSelect ? \'javascript:void(0)\' : (link || \'javascript:void(0)\')}}" role="button" aria-haspopup="true" aria-expanded="false" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' <span class="caption">{{caption}}</span>' +
                         '<span wmtransclude></span>' +
                         '<span class="pull-right caret fa" ng-class="menuCaret"></span>' +
                     '</a>' +
-                    '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
+                    '<wm-menu-dropdown menulayout="menulayout" aria-labelledby="dropdownmenu" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',

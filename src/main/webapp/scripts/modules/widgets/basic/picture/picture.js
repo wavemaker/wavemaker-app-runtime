@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/picture.html',
-                '<img init-widget ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles>'
+                '<img init-widget ng-class="[imgClass]" alt="image" class="app-picture" ng-src="{{imagesource}}" apply-styles>'
             );
 
         $templateCache.put('template/mobile/widget/picture.html',

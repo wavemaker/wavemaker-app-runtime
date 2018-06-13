@@ -307,7 +307,7 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'scope'     : {},
                 'transclude': true,
-                'template'  : '<li init-widget listen-property="dataset" class="app-nav-item" apply-styles="container" wmtransclude></li>',
+                'template'  : '<li init-widget listen-property="dataset" class="app-nav-item" role="presentation" apply-styles="container" wmtransclude></li>',
                 'link'      : {
                     'pre': function ($is, $el, attrs) {
                         $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;

@@ -7,7 +7,7 @@ WM.module('wm.widgets.basic')
 
         $templateCache.put('template/widget/iframe.html',
                 '<div class="embed-responsive app-iframe" init-widget >' +
-                    '<iframe class="embed-responsive-item iframe-content" scrolling="auto" marginheight="0" marginwidth="0" frameborder="0" ' +
+                    '<iframe class="embed-responsive-item iframe-content" role="document" scrolling="auto" marginheight="0" marginwidth="0" frameborder="0" ' +
                         'title="{{hint}}" seamless="seamless">' +
                     '</iframe>' +
                     '<div class="wm-content-info {{class}} readonly-wrapper" ng-if="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +

@@ -5,8 +5,9 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<span class="app-icon-wrapper" apply-styles init-widget>' +
+            '<span class="app-icon-wrapper" aria-hidden="true" apply-styles init-widget>' +
                 '<i class="app-icon"></i> ' +
+                '<span class="sr-only" ng-if="iconclass">Icon</span> ' +
                 '<label class="app-label ng-hide"></label>' +
             '</span>'
             );

@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
                     ' autocomplete="autocomplete" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
-                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left"><i aria-hidden="true" class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +

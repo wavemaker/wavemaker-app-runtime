@@ -5,13 +5,13 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/layout/container/panel.html',
-            '<div page-container init-widget listen-property="actions" class="app-panel panel" ng-class="[helpClass, {\'fullscreen\':fullscreen}]" apply-styles="shell" wm-navigable-element="true">' +
+            '<div page-container init-widget listen-property="actions" class="app-panel panel" aria-label="panel" ng-class="[helpClass, {\'fullscreen\':fullscreen}]" apply-styles="shell" wm-navigable-element="true">' +
                 '<div class="panel-heading" ng-class="helpClass" ng-if="toggleHeader()">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="panel-toggle" ng-click="expandCollapsePanel()">' +
                             '<div class="pull-left">' +
                                 '<i class="app-icon panel-icon {{iconclass}}" ng-if="iconclass && !iconurl"></i>' +
-                                '<img data-identifier="img" class="panel-image-icon" ng-src="{{iconsrc}}"  ng-if="iconurl" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                                '<img data-identifier="img" title="iconurl" alt="Panel icon" class="panel-image-icon" ng-src="{{iconsrc}}"  ng-if="iconurl" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                             '</div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
                              '</div>' +
                         '</a>' +
                         '<div class="panel-actions">' +
-                            '<span ng-if="badgevalue" class="app-badge label label-{{badgetype}}">{{badgevalue}}</span>' +
+                            '<span ng-if="badgevalue" aria-label="badge" class="app-badge label label-{{badgetype}}">{{badgevalue}}</span>' +
                             '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemclass="{{binditemclass || itemclass}}" itemaction="{{binditemaction || itemaction}}" userrole="{{binduserrole || userrole}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                             '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" ng-if="helptext" ng-click="toggleHelp()"></button>' +
                             '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
@@ -34,7 +34,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>'
             );
-        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer clearfix" ng-show="footerExpanded" wmtransclude></div>');
+        $tc.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer clearfix" aria-label="panel footer" ng-show="footerExpanded" wmtransclude></div>');
     }])
     .directive('wmPanel', [
         'PropertiesFactory',

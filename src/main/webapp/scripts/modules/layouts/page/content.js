@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/content.html',
-                '<main  data-role="page-content" init-widget class="app-content clearfix" apply-styles>' +
+                '<main  data-role="page-content" role="main" init-widget class="app-content clearfix" apply-styles>' +
                     '<div class="row app-content-row clearfix" wmtransclude>' + '</div>' +
                 '</main>'
             );

@@ -9,17 +9,17 @@ WM.module('wm.layouts.containers')
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true" apply-styles="shell">' +
-                '<div class="panel-heading clearfix" ng-click="togglePane($event)" ng-class="{active: isActive}">' +
+                '<div class="panel-heading clearfix" role="tab" ng-click="togglePane($event)" ng-class="{active: isActive}">' +
                     '<h3 class="panel-title">' +
-                        '<a href="javascript:void(0);" class="accordion-toggle">' +
+                        '<a href="javascript:void(0);" role="button" aria-expanded="isActive" aria-controls="collapse-panel" class="accordion-toggle">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                             '<div class="pull-left"><div class="heading" ng-bind-html="title"></div>' +
                             '<div class="description" ng-bind-html="subheading"></div></div>' +
                         '</a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" aria-expanded="isActive" aria-controls="collapse-panel" class="app-icon wi panel-action" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>' +
-                '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'">' +
+                '<div class="panel-collapse collapse" role="tabpanel" aria-labelledby="panel description" ng-class="isActive ? \'collapse in\' : \'collapse\'">' +
                     '<div class="panel-body" wm-smoothscroll="{{smoothscroll}}" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
                 '</div>' +
             '</div>'

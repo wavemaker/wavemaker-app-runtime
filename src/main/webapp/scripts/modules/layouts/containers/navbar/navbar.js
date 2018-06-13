@@ -46,7 +46,7 @@ WM.module('wm.layouts.containers')
             'scope'     : {},
             'transclude': true,
             'template'  :
-                '<nav class="navbar navbar-default app-navbar" apply-styles="container" data-element-type="wmNavbar" init-widget>' +
+                '<nav class="navbar navbar-default app-navbar" role="navigation" apply-styles="container" data-element-type="wmNavbar" init-widget>' +
                     '<div class="container-fluid">' +
                     /* Brand and toggle get grouped for better mobile display */
                         '<div class="navbar-header"> ' +

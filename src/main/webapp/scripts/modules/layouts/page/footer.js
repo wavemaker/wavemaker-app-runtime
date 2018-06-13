@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/footer.html',
-                '<footer data-role="page-footer" page-container page-container-target init-widget class="app-footer clearfix" apply-styles="container" wmtransclude></footer>'
+                '<footer data-role="page-footer" role="contentinfo" page-container page-container-target init-widget class="app-footer clearfix" apply-styles="container" wmtransclude></footer>'
             );
     }])
     .directive('wmFooter', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils',  function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
