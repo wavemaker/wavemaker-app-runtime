@@ -5,9 +5,10 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/anchor.html',
-                '<a data-identifier="anchor" class="app-anchor" init-widget apply-styles role="button" accesskey="{{::shortcutkey}}">' +
-                    '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
-                    '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass"></i>' +
+                '<a data-identifier="anchor" class="app-anchor" init-widget apply-styles role="link" accesskey="{{::shortcutkey}}">' +
+                    '<img data-identifier="img" alt="Image" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                    '<i class="app-icon {{iconclass}}" aria-hidden="true" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass"></i>' +
+                    ' <span class="sr-only" ng-if="iconclass">Icon</span> ' +
                     ' <span class="anchor-caption"></span>' +
                     '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>'
