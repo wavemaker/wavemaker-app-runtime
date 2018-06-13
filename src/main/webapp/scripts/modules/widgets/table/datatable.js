@@ -1377,10 +1377,15 @@ $.widget('wm.datatable', {
         }
     },
     closePopover: function() {
-        //If the DataTable is in the popover, popover shouldn't be closed
-        if (!this.element.closest('.app-popover').length) {
-            //removes all the popovers
-            $('.app-popover').remove();
+        if ($('.app-popover').length) {
+            var $parentPopover = this.element.closest('.app-popover')[0];
+            _.forEach($('.app-popover'), function (popover) {
+                //If the DataTable is in the popover, popover shouldn't be closed
+               if (popover != $parentPopover) {
+                   //removes all other popovers
+                   $(popover).remove();
+               }
+            });
         }
     },
     headerClickHandler: function (e) {

@@ -217,7 +217,7 @@ WM.module('wm.widgets.basic')
                                         if (nv || $is._isFirstTime) {
                                             //Add custom mouseenter, leave events on popover
                                             $popoverEl = WM.element('.' + $is._popoverOptions.customclass);
-                                            if (!$popoverEl.find('.popover-start').length) {
+                                            if (nv) {
                                                 //Two buttons are added to the popover before and after the content so as to focus the content on opening the popover
                                                 $('<button tabindex="0" class="popover-start"></button>').insertBefore('.popover-content');
                                                 $('<button tabindex="0" class="popover-end"></button>').insertAfter('.popover-content');
