@@ -320,7 +320,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams', "WidgetUtilService", function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams, WidgetUtilService) {
+    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS', 'Utils', '$window', '$routeParams', "WidgetUtilService", "$timeout", function ($templateCache, $compile, CONSTANTS, Utils, $window, $routeParams, WidgetUtilService, $timeout) {
         'use strict';
         function openLink(link, target) {
             if (CONSTANTS.hasCordova && _.startsWith(link, '#')) {
@@ -365,8 +365,13 @@ WM.module('wm.widgets.form')
                 if (element.closest('.app-nav-item').length && menuLink) {
                     //menuLink can be #/routeName or #routeName
                     if (WidgetUtilService.isActiveNavItem(menuLink, $routeParams.name)) {
-                        element.addClass('active');
                         menuScope.isOpen = true;
+                        $timeout(function() {
+                            element.addClass('active');
+                            var $a = $("<a href='#'>link</a>");
+                            WM.element('body').prepend($a);
+                            $a.focus().remove();
+                        });
                     }
                 }
 
