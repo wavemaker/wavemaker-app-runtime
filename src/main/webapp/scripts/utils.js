@@ -182,7 +182,7 @@ WM.module('wm.utils', [])
                 'VIBRATE'         : [{'name' : 'cordova-plugin-vibration', 'spec' : '3.1.0'}],
                 'MEDIAPICKER'     : [{'name' : 'cordova-plugin-mediapicker', 'spec' : '1.0.1'}],
                 'MEDIASCANNER'    : [{'name' : 'cordova-plugin-mediascanner', 'spec' : '0.1.3'}],
-                'IMAGEPICKER'     : [/*{'name' : 'cordova-plugin-imagepicker', 'spec' : 'https://github.com/wymsee/cordova-imagePicker.git#5ffd706'}*/],
+                'IMAGEPICKER'     : [{'name' : 'cordova-plugin-imagepicker', 'spec' : 'https://github.com/wavemaker/cordova-imagePicker.git#023b98e'}],
                 'SPLASHSCREEN'    : [{'name' : 'cordova-plugin-splashscreen', 'spec' : '5.0.0'}],
                 'DEVICE'          : [{'name' : 'cordova-plugin-device', 'spec': '2.0.0'}],
                 'APPVERSION'      : [{'name' : 'cordova-plugin-app-version', 'spec': '0.1.9'}],
