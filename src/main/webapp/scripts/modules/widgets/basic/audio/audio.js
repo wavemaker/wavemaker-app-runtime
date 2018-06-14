@@ -6,7 +6,7 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/audio.html',
             '<div class="app-audio" init-widget alt="{{hint}}" title="{{hint}}" apply-styles>' +
-                '<audio preload="{{audiopreload}}" ng-src="{{mp3audioUrl}}">' +
+                '<audio preload="{{audiopreload}}" role="application" aria-describedby="recorded audio" ng-src="{{mp3audioUrl}}">' +
                     '<source type="audio/mp3" ng-src="{{mp3audioUrl}}">' +
                     '{{audiosupportmessage}}' +
                 '</audio>' +
