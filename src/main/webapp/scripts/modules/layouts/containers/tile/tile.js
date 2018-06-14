@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/tile/tile.html',
-            '<div init-widget class="app-tile" apply-styles="container" ng-style="{width:width}" wm-navigable-element="true" wmtransclude></div>');
+            '<div init-widget class="app-tile" aria-describedby="Tile" apply-styles="container" ng-style="{width:width}" wm-navigable-element="true" wmtransclude></div>');
     }])
     .directive('wmTile', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';

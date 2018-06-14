@@ -4,16 +4,17 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chips.html',
-            '<ul class="app-chips nav nav-pills list-inline" ng-class="{readonly: readonly}" init-widget has-model apply-styles role="input" listen-property="dataset" ng-model="_model_"' +
+            '<ul class="app-chips nav nav-pills list-inline" ng-class="{readonly: readonly}" init-widget has-model apply-styles role="button" listen-property="dataset" ng-model="_model_"' +
                 ' title="{{hint}}">' +
                     '<li class="chip-item" ng-repeat="item in selectedChips track by $index" ng-class="[{\'active\': item.active, \'disabled\': disabled}, _chipClass(this)]">' +
                         '<a class="app-chip" href="javascript:void(0);" tabindex="-1" data-ng-click="!readonly && _onChipClick($event, item)" ' +
                             'data-ng-keydown="!readonly && handleChipSelect($event, $index)" data-ng-focus="!readonly && _onChipFocus($event, item)" ' +
                             'data-ng-blur="!readonly && (item.active=false || onBlur({$event: $event}))" ng-if="!item.edit" ng-class="{\'chip-duplicate bg-danger\': item.isDuplicate, \'chip-picture\': item.imgsrc}">' +
-                            '<img data-identifier="img" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
+                            '<img data-identifier="img" alt="Chip Image" class="button-image-icon" ng-src="{{item.imgsrc}}"  ng-if="item.imgsrc"/>' +
                             '{{item.displayvalue}}' +
                              //type="button" need to be added since chips inside form is treated as submit hence on enter key press, ng-click is triggered
-                            '<button type="button" tabindex="-1" class="btn btn-transparent" ng-click="removeItem($event, $index); $event.stopPropagation();" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
+                            '<button type="button" tabindex="-1" aria-label="Clear Button" class="btn btn-transparent" ng-click="removeItem($event, $index); $event.stopPropagation();" ng-if="!readonly"><i class="app-icon wi wi-close"></i></button>' +
+
                         '</a>' +
                         '<input class="app-chip-input" type="text" ng-if="item.edit" ng-keydown="handleEnterKeyPressEvent($event, item)" ng-model="item.fullvalue"/>' +
                     '</li>' +

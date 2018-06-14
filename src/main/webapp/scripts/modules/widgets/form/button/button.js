@@ -6,9 +6,10 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/button.html',
-            '<button class="btn app-button" init-widget apply-styles role="input">' +
-                '<img data-identifier="img" class="button-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
-                '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" ng-if="showicon"></i> ' +
+            '<button class="btn app-button" init-widget apply-styles>' +
+                '<img data-identifier="img" alt="button image" class="button-image-icon" ng-src="{{iconsrc}}" ng-if="iconsrc" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                '<i class="app-icon {{iconclass}}" aria-hidden="true" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" ng-if="showicon"></i> ' +
+                '<span class="sr-only" ng-if="iconclass">Icon</span>' +
                 '<span class="btn-caption"></span>' +
                 '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
             '</button>'

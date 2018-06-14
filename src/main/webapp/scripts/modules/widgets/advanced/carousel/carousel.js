@@ -9,12 +9,14 @@ WM.module('wm.widgets.advanced')
                     '<ol class="carousel-indicators">' +
                         '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
-                    '<div class="carousel-inner" wmtransclude></div>' +
-                    '<a class="left carousel-control" ng-click="prev()">' +
-                        '<i class="wi wi-chevron-left"></i>' +
+                    '<div class="carousel-inner" role="listbox" wmtransclude></div>' +
+                    '<a class="left carousel-control" role="button" ng-click="prev()">' +
+                        '<i aria-hidden="true" class="wi wi-chevron-left"></i>' +
+                        '<span class="sr-only">{{$root.appLocale.LABEL_PREVIOUS}}</span>' +
                     '</a>' +
-                    '<a class="right carousel-control" ng-click="next()">' +
-                        '<i class="wi wi-chevron-right"></i>' +
+                    '<a class="right carousel-control" role="button" ng-click="next()">' +
+                        '<i aria-hidden="true" class="wi wi-chevron-right"></i>' +
+                        '<span class="sr-only">{{$root.appLocale.LABEL_NEXT}}</span>' +
                     '</a>' +
                 '</div>'
             );

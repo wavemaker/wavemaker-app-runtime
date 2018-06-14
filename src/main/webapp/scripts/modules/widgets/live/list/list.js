@@ -9,24 +9,24 @@ WM.module('wm.widgets.live')
                 '<div class="app-livelist app-panel" ng-class="navigation" init-widget live-actions apply-styles="shell" listen-property="dataset">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
-                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left"><i aria-hidden="true" class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
-                    '<nav class="app-datanavigator" ng-if="navigation === \'Inline\' && !noDataFound">' +
+                    '<nav class="app-datanavigator" aria-label="Page navigation" ng-if="navigation === \'Inline\' && !noDataFound">' +
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
-                            'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
+                            'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i aria-hidden="true" class="wi wi-chevron-left"></i><span class="sr-only">{{$root.appLocale.LABEL_PREVIOUS}}</span></a></li></ul>' +
                     '</nav>' +
                     '<ul data-identifier="list" tabindex="0" class="app-livelist-container clearfix" ng-show="!noDataFound" ng-class="listclass" wmtransclude apply-styles="scrollable-container">' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
-                    '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin"></i><span class="loading-text">{{loadingdatamsg}}</span></span></div>' +
+                    '<div class="loading-data-msg" ng-if="variableInflight"><span><i class="app-icon panel-icon {{loadingicon}} fa-spin" aria-hidden="true"></i><span class="sr-only">{{$root.appLocale.MESSAGE_LOADING}}</span><span class="loading-text">{{loadingdatamsg}}</span></span></div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\' && !noDataFound">' +
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
-                            'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
+                            'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i aria-hidden="true" class="wi wi-chevron-right"></i><span class="sr-only">{{$root.appLocale.LABEL_NEXT}}</span></a></li></ul>' +
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="(isStudioMode || dataNavigator.dataSize) && ((showNavigation && (isStudioMode || (dataNavigator.dataSize > pagesize))) || (onDemandLoad && !variableInflight && !dataNavigator.isLastPage()))">' +
                         '<wm-pagination showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navigation="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-pagination>' +

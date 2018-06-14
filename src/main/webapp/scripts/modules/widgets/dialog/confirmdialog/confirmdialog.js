@@ -9,11 +9,11 @@ WM.module('wm.widgets.dialog')
                     '<div class="modal-content">' +
                         '<wm-dialogheader closable="{{closable}}" caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                            '<p class="app-dialog-message {{messageclass}}"> {{message}}</p>' +
+                            '<p class="app-dialog-message {{messageclass}}" aria-describedby="{{message}}"> {{message}}</p>' +
                         '</div>' +
                         '<div class="app-dialog-footer modal-footer">' +
-                            '<wm-button class="btn-default btn-secondary cancel-action" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button>' +
-                            '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                            '<wm-button class="btn-default btn-secondary cancel-action" aria-label="Cancel button" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button>' +
+                            '<wm-button class="btn-primary ok-action" aria-label="Submit button" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                         '</div>' +
                     '</div>' +
                 '</div>'

@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livetable/livetable.html",
-                '<div class="app-livegrid" init-widget title="{{hint}}" apply-styles="container">' +
+                '<div class="app-livegrid" role="table" init-widget title="{{hint}}" apply-styles="container">' +
                     '<div wmtransclude></div>' +
                 '</div>'
             );

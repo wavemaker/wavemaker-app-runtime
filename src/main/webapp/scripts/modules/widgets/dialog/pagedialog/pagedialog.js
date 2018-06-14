@@ -10,7 +10,7 @@ WM.module('wm.widgets.dialog')
                     '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                     '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target wmtransclude></div>' +
                     '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                        '<wm-button  class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '<wm-button class="btn-primary ok-action" aria-label="Submit button" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                     '</div>' +
                 '</div>' +
             '</div>'

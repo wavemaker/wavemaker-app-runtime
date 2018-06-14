@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/time.html',
             '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input" title="{{hint}}"' +
             " app-defaults='{\"timepattern\": \"timeFormat\"}'>" +
-                '<input class="form-control app-textbox display-input" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel();_onChange({$event: $event, $scope: this})" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keydown="_onKeyDown($event)" autocomplete="off">' +
+                '<input class="form-control app-textbox display-input" aria-label="Set the time" ng-model="_timeModel" accesskey="{{::shortcutkey}}" ng-change="updateTimeModel();_onChange({$event: $event, $scope: this})" ng-model-options="{updateOn: \'blur\'}" ng-required="required" focus-target ng-keydown="_onKeyDown($event)" autocomplete="off">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown" dropdown-append-to-body="true" auto-close="outsideClick">' +
                     '<div uib-dropdown-menu>' +
                         '<div uib-timepicker min="_minTime" max="_maxTime" ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></div>' +
@@ -16,12 +16,12 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn dropdown-toggle">' +
-                    '<button type="button" class="btn btn-default btn-time" focus-target><i class="app-icon wi wi-access-time"></i></button>' +
+                    '<button type="button" aria-label="Select time" aria-haspopup="true" aria-expanded="false" class="btn btn-default btn-time" focus-target><i aria-hidden="true" class="app-icon wi wi-access-time"></i></button>' +
                 '</span>' +
             '</div>'
             );
         $templateCache.put('template/device/widget/form/time.html',
-            '<input type="time" class="form-control app-textbox" init-widget has-model role="input"' +
+            '<input type="time" class="form-control app-textbox" aria-label="Set the time" init-widget has-model ' +
             ' ng-model="_proxyModel" ' +
             ' ng-readonly="readonly" ' +
             ' ng-required="required" ' +

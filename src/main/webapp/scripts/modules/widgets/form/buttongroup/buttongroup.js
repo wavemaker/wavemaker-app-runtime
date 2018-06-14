@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/button-group.html',
-                '<div class="btn-group app-button-group" wmtransclude init-widget ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" role="input"></div>'
+                '<div class="btn-group app-button-group" role="group" aria-labelledby="button group" wmtransclude init-widget ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}"></div>'
             );
     }])
     .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, Utils) {

@@ -6,7 +6,7 @@ WM.module('wm.widgets.advanced')
         'use strict';
         var template;
         if (CONSTANTS.isStudioMode) {
-            template = '<div class="app-marquee app-container" title="{{hint}}" init-widget apply-styles wmtransclude></div>';
+            template = '<div class="app-marquee app-container" role="marquee" aria-live="off" title="{{hint}}" init-widget apply-styles wmtransclude></div>';
         } else {
             template = '<marquee class="app-marquee app-container" title="{{hint}}" init-widget apply-styles wmtransclude onmouseover="this.stop();" onmouseout="this.start();"></marquee>';
         }

@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             "<div class='app-date input-group' init-widget has-model role='input' apply-styles app-defaults='{\"datepattern\": \"dateFormat\"}'>" +
-                '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" focus-target ' +
+                '<input class="form-control app-textbox app-dateinput" aria-label="Select date" datepicker-append-to-body="true" focus-target ' +
                     ' uib-datepicker-popup="{{datepattern}}" show-button-bar="{{showbuttonbar}}" datepicker-options="_dateOptions" ' +
                     ' current-text="{{$root.appLocale.LABEL_CALENDAR_TODAY}}"' +
                     ' clear-text="{{$root.appLocale.LABEL_CLEAR}}"' +
@@ -23,12 +23,12 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-date" focus-target><i class="app-icon wi wi-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date" aria-haspopup="true" aria-expanded="false" focus-target><i aria-hidden="true" class="app-icon wi wi-calendar"></i></button>' +
                 '</span>' +
             '</div>'
             );
         $templateCache.put('template/device/widget/form/date.html',
-            '<input type="date" class="form-control app-textbox app-dateinput" init-widget has-model role="input"' +
+            '<input type="date" class="form-control app-textbox app-dateinput" init-widget has-model aria-label="datepicker dropdownmenu" aria-controls="date" ' +
             ' step="any" ' +
             ' ng-model="_proxyModel" ' +
             ' ng-readonly="readonly" ' +

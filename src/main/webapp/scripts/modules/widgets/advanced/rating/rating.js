@@ -6,10 +6,10 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div ng-model="_model_" class="app-ratings" init-widget has-model apply-styles role="input" listen-property="dataset" ng-focus="onFocus($event)">' +
+            '<div ng-model="_model_" class="app-ratings" init-widget has-model apply-styles role="radiogroup" listen-property="dataset" ng-focus="onFocus($event)">' +
                 '<div ng-if="!readonly" class="rating-style">' +
                     '<label ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" ng-mouseleave="onMouseleave($event, rate)" ng-mouseover="onMouseover($event, rate)" ng-style="{\'font-size\':iconsize, \'color\': rate.value <= datavalue && iconcolor}" ng-repeat="rate in range track by $index" title="{{rate.label || rate.value}}">' +
-                        '<input type="radio" id="{{$id}}+{{rate.value}}" ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
+                        '<input type="radio" id="{{$id}}+{{rate.value}}" aria-label="Rating Radio Buttons" aria-checked="false" aria-multiselectable="true" ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
                     '</label>' +
                 '</div>' +
                 '<div ng-if="readonly" ng-style="{\'font-size\':iconsize}" class="ratings-container disabled" >' +

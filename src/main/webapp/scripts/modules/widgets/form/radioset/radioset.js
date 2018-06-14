@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
-            '<ul class="app-radioset list-group" init-widget has-model apply-styles role="input" ng-required="required" listen-property="dataset"' +
+            '<ul class="app-radioset list-group" init-widget has-model apply-styles role="radiogroup" ng-required="required" listen-property="dataset"' +
                 ' title="{{hint}}" ng-model="_model_" ng-change="_onChange({$event: $event, $scope: this})">' +
             '</ul>'
             );

@@ -6,14 +6,14 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/slider.html',
                 '<div class="app-slider slider" init-widget has-model title="{{hint}}" apply-styles role="input">' +
-                    '<span class="app-slider-value">{{minvalue}}</span>' +
-                    '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
-                    '<input class="range-input" type="range" focus-target title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
+                    '<span class="app-slider-value" aria-valuemin={{minvalue}}>{{minvalue}}</span>' +
+                    '<span class="app-slider-value pull-right" aria-valuemax={{maxvalue}}>{{maxvalue}}</span>' +
+                    '<input class="range-input" type="range" aria-label="slider range" aria-orientation="horizontal" focus-target title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
                        ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                        ' ng-disabled="disabled"' +
                        ' accesskey="{{::shortcutkey}}"' +
                        ' ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
-                    '<div ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
+                    '<div ng-show="readonly || disabled" aria-readonly="true" class="readonly-wrapper"></div>' +
                 '</div>'
             );
     }])

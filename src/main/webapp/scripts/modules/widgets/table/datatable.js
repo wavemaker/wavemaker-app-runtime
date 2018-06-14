@@ -405,7 +405,7 @@ $.widget('wm.datatable', {
             rowNgClass      = gridOptions.rowNgClass,
             rowNgClassExpr  = rowNgClass ? 'ng-class="' + rowNgClass + '"' : '';
 
-        $htm = $('<tr tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.$$pk + '" ' + rowNgClassExpr + '></tr>');
+        $htm = $('<tr role="row" tabindex="0" class="' + gridOptions.cssClassNames.tableRow + ' ' + (gridOptions.rowClass || '') + '" data-row-id="' + row.$$pk + '" ' + rowNgClassExpr + '></tr>');
         this.preparedHeaderData.forEach(function (current, colIndex) {
             $htm.append(self._getColumnTemplate(row, colIndex, current));
         });
@@ -463,7 +463,7 @@ $.widget('wm.datatable', {
             datePattern     = colDef.datepattern,
             isRowCompiled   = !!this.options.rowNgClass;
 
-        $htm = $('<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"></td>');
+        $htm = $('<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';" role="cell"></td>');
 
         columnValue = _.get(row, colDef.field) ;
 

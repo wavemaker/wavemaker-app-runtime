@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                             '<div class="message">' +
                                 '<label ng-bind="caption" class="caption"></label>' +
                                 '<form class="form-horizontal" name="{{scope.formName}}">' +
-                                    '<input class="file-input" focus-target type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
+                                    '<input class="file-input" aria-label="Select File" focus-target type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
                                     '<a href="javascript:void(0);" class="app-anchor" ng-bind="fileuploadmessage"></a>' +
                                 '</form>' +
                             '</div>' +
@@ -27,7 +27,7 @@ WM.module('wm.widgets.form')
                             '<form class="form-horizontal" name="{{scope.formName}}">' +
                             /* support for file upload in Mobileapp in its runmode (Web) */
                                 '<input class="file-input" type="file" name="files" ng-if="multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled" multiple>' +
-                                '<input class="file-input" type="file" name="files" ng-if="!multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled">' +
+                                '<input class="file-input" aria-label="Select File" type="file" name="files" ng-if="!multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled">' +
                                 '<button focus-target class="app-button btn btn-default" apply-styles>' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span class="caption">{{caption}}</span>' +

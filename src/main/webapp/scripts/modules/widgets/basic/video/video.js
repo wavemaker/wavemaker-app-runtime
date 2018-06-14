@@ -6,7 +6,7 @@ WM.module('wm.widgets.basic')
         'use strict';
         $templateCache.put('template/widget/video.html',
             '<div init-widget class="app-video" alt="{{hint}}" title="{{hint}}" apply-styles>' +
-                '<video preload="{{videopreload}}" ng-attr-poster="{{postersource}}" ng-src="{{mp4videoUrl}}">' +
+                '<video preload="{{videopreload}}" role="application" ng-attr-poster="{{postersource}}" ng-src="{{mp4videoUrl}}">' +
                     '<source type="video/mp4" ng-src="{{mp4videoUrl}}" ng-if="mp4videoUrl">' +
                     '<source type="video/webm" ng-src="{{webmvideoUrl}}" ng-if="webmvideoUrl">' +
                     '<source type="video/ogg" ng-src="{{oggvideoUrl}}" ng-if="oggvideoUrl">' +

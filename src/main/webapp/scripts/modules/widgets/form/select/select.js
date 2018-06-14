@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/select.html',
-            '<select init-widget has-model listen-property="dataset" class="form-control app-select" apply-styles role="input" focus-target' +
+            '<select init-widget has-model listen-property="dataset" class="form-control app-select" apply-styles role="input" aria-haspopup="true" aria-expanded="false" focus-target' +
                 ' ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
                 ' ng-readonly="readonly" ' +

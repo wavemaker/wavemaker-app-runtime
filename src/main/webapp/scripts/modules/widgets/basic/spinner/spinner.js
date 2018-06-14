@@ -5,9 +5,9 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div ng-class="[size, spinnerclass]" init-widget title="{{hint}}" apply-styles no-animate class="app-spinner">' +
-                '<div class="spinner-message">' +
-                    '<span class="spinner-image animated infinite {{animation}}" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
+            '<div ng-class="[size, spinnerclass]" init-widget title="{{hint}}" role="loading" apply-styles no-animate class="app-spinner">' +
+                '<div class="spinner-message" aria-label="loading gif">' +
+                    '<span class="spinner-image animated infinite {{animation}}" aria-hidden="true" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
                     '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
                     '<span class="spinner-text" ng-bind-html="messageContent" ng-if="showCaption"></span>' +
                     '<div class="spinner-messages" ng-if="spinnerMessages"><p ng-repeat="(key, value) in spinnerMessages">{{value}}</p></div>' +

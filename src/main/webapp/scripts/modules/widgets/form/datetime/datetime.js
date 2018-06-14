@@ -5,10 +5,10 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
-            '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
+            '<div class="app-datetime input-group" init-widget has-model apply-styles ' +
             " app-defaults='{\"datepattern\": \"dateTimeFormat\"}' " +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keydown="_onKeyDown($event)" autocomplete="off">' +
+                '<input class="form-control app-textbox display-input" aria-label="Set the date and time" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel($event)" ng-model-options="{updateOn: \'blur\'}" ng-required="required" ng-keydown="_onKeyDown($event)" autocomplete="off">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-append-to-body="true" ng-change="selectDate($event)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup ' +
                     ' datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen"' +
@@ -24,13 +24,13 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-date" focus-target><i class="app-icon wi wi-calendar"></i></button>' +
-                    '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle" focus-target><i class="app-icon wi wi-access-time "></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date" aria-label="Select date" aria-haspopup="true" aria-expanded="false" focus-target><i aria-hidden="true" class="app-icon wi wi-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle" aria-label="Select time" aria-haspopup="true" aria-expanded="false" focus-target><i aria-hidden="true" class="app-icon wi wi-access-time "></i></button>' +
                 '</span>' +
             '</div>'
             );
         $templateCache.put('template/device/widget/form/datetime.html',
-            '<input type="datetime-local" class="form-control app-textbox app-dateinput" init-widget has-model role="input"' +
+            '<input type="datetime-local" class="form-control app-textbox app-dateinput" init-widget has-model aria-label="datepicker dropdownmenu" aria-controls="date" ' +
             ' step="any" ' +
             ' ng-model="_proxyModel" ' +
             ' ng-readonly="readonly" ' +

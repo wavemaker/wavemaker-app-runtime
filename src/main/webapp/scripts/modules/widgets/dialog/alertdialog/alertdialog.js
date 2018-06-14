@@ -5,14 +5,14 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/alertdialog.html",
-            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget apply-styles="container">' +
+            '<div class="app-dialog modal-dialog app-alert-dialog" role="alertdialog" ng-class="{type:type}" dialogclass init-widget apply-styles="container">' +
                 '<div class="modal-content">' +
                     '<wm-dialogheader closable="{{closable}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
                     '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                        '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
+                        '<p class="app-dialog-message aria-describedby="{{message}}" text-{{alerttype}}"> {{message}}</p>' +
                     '</div>' +
                     '<div class="app-dialog-footer modal-footer">' +
-                        '<wm-button class="btn-primary ok-action" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '<wm-button class="btn-primary ok-action" aria-label="Submit button" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                     '</div>' +
                 '</div>' +
             '</div>'

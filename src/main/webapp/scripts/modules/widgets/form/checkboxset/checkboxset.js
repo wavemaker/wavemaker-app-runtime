@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/checkboxset.html',
-            '<ul class="app-checkboxset list-group" init-widget has-model apply-styles role="input" listen-property="dataset"' +
+            '<ul class="app-checkboxset list-group" init-widget has-model apply-styles aria-label="checkbox group" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
                 ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' ng-change="_onChange({$event: $event, $scope: this})">' +
