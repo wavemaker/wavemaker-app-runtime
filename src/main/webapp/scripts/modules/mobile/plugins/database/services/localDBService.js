@@ -46,6 +46,24 @@ wm.plugins.database.services.LocalDBService = [
                 'type' : 'READ'
             }];
 
+        function escapeName(name) {
+            if (name) {
+                name = name.replace(/"/g, '""');
+                return '"' + name.replace(/\./g, '"."') + '"';
+            }
+        }
+
+        function convertFieldNameToColumnName(store, filterGroup) {
+            _.forEach(filterGroup.rules, function (rule) {
+                var childEntity, childEntityF;
+               if (rule.rules) {
+                   convertFieldNameToColumnName(store, rule);
+               } else {
+                   rule.target = escapeName(store.fieldToColumnMapping[rule.target]);
+               }
+            });
+        }
+
         function getStore(params) {
             var deferredStore = $q.defer(),
                 store = LocalDBManager.getStore(params.dataModelName, params.entityName);
@@ -262,9 +280,12 @@ wm.plugins.database.services.LocalDBService = [
          */
         this.readTableData = function (params, successCallback, failureCallback) {
             getStore(params).then(function (store) {
-                return store.count(params.filterMeta).then(function (totalElements) {
+                var filter = params.filter(function (filterGroup) {
+                    convertFieldNameToColumnName(store, filterGroup);
+                });
+                return store.count(filter).then(function (totalElements) {
                     var sort = params.sort.split('=')[1];
-                    return store.filter(params.filterMeta, sort, {
+                    return store.filter(filter, sort, {
                         offset: (params.page - 1) * params.size,
                         limit: params.size
                     }).then(function (data) {
