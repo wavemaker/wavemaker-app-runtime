@@ -321,4 +321,24 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
                 };
             }
         }
-    ]);
+    ]).run(['$cordovaSQLite', '$q', function($cordovaSQLite, $q) {
+        var original = $cordovaSQLite.execute;
+        $cordovaSQLite.execute = function(db, sql, params) {
+            var defer = $q.defer(),
+                timer = Date.now();
+            original.call($cordovaSQLite, db, sql, params).then(function(result) {
+                var objArr = [],
+                    rowCount = result.rows.length,
+                    i;
+                for (i = 0; i < rowCount; i++) {
+                    objArr.push(result.rows.item(i));
+                }
+                //console.debug('SQL "%s"  with params %O took [%d ms]. And the result is %O', sql, params, Date.now() - timer, objArr);
+                defer.resolve.apply(defer, arguments);
+            }, function(error) {
+                console.error('SQL "%s" with params %O failed with error message %s', sql, params, error.message);
+                defer.reject.apply(defer, arguments);
+            });
+            return defer.promise;
+        };
+    }]);
