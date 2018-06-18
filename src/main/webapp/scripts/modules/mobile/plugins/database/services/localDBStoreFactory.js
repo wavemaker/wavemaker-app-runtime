@@ -104,13 +104,26 @@ wm.plugins.database.services.LocalDBStoreFactory = [
         }
 
         function countQuery(schema) {
-            return 'SELECT COUNT(*) as count FROM ' + escapeName(schema.name);
+            var joins = [];
+            _.forEach(schema.columns, function (col) {
+                var childTableName;
+                if (col.targetEntity) {
+                    childTableName = col.sourceFieldName;
+                    joins.push(' LEFT JOIN ' + escapeName(col.targetTable) + ' ' + childTableName
+                        + ' ON ' + childTableName + '.' + escapeName(col.targetColumn)
+                        + ' = ' + escapeName(schema.name) + '.' +  escapeName(col.name));
+                }
+            });
+            return 'SELECT COUNT(*) as count FROM ' + escapeName(schema.name) + ' ' + joins.join(' ');
         }
 
         function generateWherClause(store, filterCriteria) {
             var conditions,
                 fieldToColumnMapping = store.fieldToColumnMapping,
                 tableName = store.schema.name;
+            if (_.isString(filterCriteria)) {
+                return ' WHERE ' + filterCriteria;
+            }
             conditions = _.map(filterCriteria, function (filterCriterion) {
                 var colName = fieldToColumnMapping[filterCriterion.attributeName],
                     condition = filterCriterion.filterCondition,
@@ -280,6 +293,9 @@ wm.plugins.database.services.LocalDBStoreFactory = [
                 self.fieldToColumnMapping[c.fieldName] = c.name;
                 if (c.targetPath) {
                     self.fieldToColumnMapping[c.targetPath] = c.name;
+                    _.forEach(c.dataMapper, function (childCol, childFieldName) {
+                        self.fieldToColumnMapping[childFieldName] = c.sourceFieldName + '.' + childCol.name;
+                    });
                 }
             });
         };

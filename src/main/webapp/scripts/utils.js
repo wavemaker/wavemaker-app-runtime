@@ -174,7 +174,7 @@ WM.module('wm.utils', [])
                 'COOKIE_MANAGER'  : [{'name' : 'cordova-cookie-emperor', 'spec' : 'https://github.com/RTK/cordova-cookie-emperor.git#3a73cfd'}],
                 'FILE'            : [{'name' : 'cordova-plugin-file', 'spec' : '6.0.1'},
                                         {'name': 'cordova-plugin-file-transfer', 'spec': '1.7.1'},
-                                        {'name' : 'cordova-plugin-file-opener2', 'spec' : 'https://github.com/wavemaker/cordova-plugin-file-opener2#b6dcf67'},
+                                        {'name' : 'cordova-plugin-file-opener2', 'spec' : 'https://github.com/wavemaker/cordova-plugin-file-opener2.git#b6dcf67'},
                                         {'name' : 'cordova-plugin-transport-security', 'spec': '0.1.2'},
                                         {'name' : 'cordova-plugin-zeep', 'spec': '0.0.4'}],
                 'GEOLOCATION'     : [{'name' : 'cordova-plugin-geolocation', 'spec' : '4.0.1'}],
@@ -190,7 +190,7 @@ WM.module('wm.utils', [])
                 'COMPAT'          : [{'name' : 'cordova-plugin-compat', 'spec': '1.2.0'}],
                 'INAPPBROWSER'    : [{'name' : 'cordova-plugin-inappbrowser', 'spec' : '3.0.0'}],
                 'STATUSBAR'       : [{'name' : 'cordova-plugin-statusbar', 'spec' : '2.4.2'}],
-                'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : 'https://github.com/wavemaker/Cordova-sqlite-storage#2cb6cd5'}],
+                'OFFLINE_DB'      : [{'name' : 'cordova-sqlite-storage', 'spec' : 'https://github.com/wavemaker/Cordova-sqlite-storage.git#2cb6cd5'}],
                 'CUSTOMURLSCHEME' : [{'name' : 'cordova-plugin-customurlscheme', 'spec' : '4.3.0', 'variables': [{ 'name': 'URL_SCHEME', 'value': ''}]}]
             },
             exportTypesMap   = { 'EXCEL' : '.xlsx', 'CSV' : '.csv'},

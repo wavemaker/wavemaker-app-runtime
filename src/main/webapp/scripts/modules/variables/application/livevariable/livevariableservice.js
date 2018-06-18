@@ -924,6 +924,24 @@ wm.variables.services.$liveVariable = [
                 }(clonedFilterFields));
             },
 
+            /**
+             *
+             * @param variable
+             * @param options
+             * @returns {function(*=): *} returns a function which should be called for the where clause.
+             * This return function can take a function as argument. This argument function can modify the filter fields
+             * before generating where clause.
+             */
+            getWhereClauseGenerator = function (variable, options) {
+                return function (modifier) {
+                    var clonedFields = getFilterExprFields(Utils.getClonedObject(variable.filterExpressions));
+                    if (modifier) {
+                        modifier(clonedFields);
+                    }
+                    return prepareTableOptions(variable, options, clonedFields).query;
+                };
+            },
+
         /*Function to fetch the data for the primary table.*/
             getPrimaryTableData = function (projectID, variable, options, success, error) {
 
@@ -1009,7 +1027,7 @@ wm.variables.services.$liveVariable = [
                     'size'          : options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
                     'sort'          : tableOptions.sort,
                     'data'          : requestData,
-                    'filterMeta'    : tableOptions.filter,
+                    'filter'        : getWhereClauseGenerator(variable, options),
                     'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl
                 }, function (response, xhrObj) {
 
@@ -1693,7 +1711,7 @@ wm.variables.services.$liveVariable = [
                         'sort'          : tableOptions.sort,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'data'          : data,
-                        'filterMeta'    : tableOptions.filter
+                        'filter'        : getWhereClauseGenerator(variable, options)
                     }, function (response) {
                         window.location.href = response;
                         Utils.triggerFn(successHandler, response);
@@ -1991,7 +2009,7 @@ wm.variables.services.$liveVariable = [
                         'size'          : options.pagesize || undefined,
                         'url'           : variable._prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable._prefabName) : $rootScope.project.deployedUrl,
                         'data'          : query || '',
-                        'filterMeta'    : filterOptions,
+                        'filter'        : getWhereClauseGenerator(variable, options),
                         'sort'          : orderBy
                     }, function (response) {
                         /*Remove the self related columns from the data. As backend is restricting the self related column to one level, In liveform select, dataset and datavalue object
