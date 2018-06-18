@@ -2106,6 +2106,7 @@ wm.variables.services.$liveVariable = [
                             //if the key is found update the value, else create a new rule obj and add it to the existing rules
                             if(filteredObj) {
                                 filteredObj.value = valueObj.value;
+                                filteredObj.matchMode = filteredObj.valueObj.matchMode || valueObj.filterCondition || '';
                                 inputData.rules.push(filteredObj);
                             } else {
                                 inputData.rules.push({
