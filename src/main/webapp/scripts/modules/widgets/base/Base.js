@@ -339,6 +339,7 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256, "showPrettyExprInDesigner": true},
                         "iconposition": {"type": "list", "options": ["left", "right"], "value": "left"},
                         "iconclass": {"type": "string", "value": "wi wi-star-border", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "animation": {"type": "list", "options": animationOptions},
                         "color": {"type": "string", "widget": "color"},
@@ -782,6 +783,7 @@ WM.module('wm.widgets.base', [])
                     "wm.checkbox": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "datavalue": {"type": "boolean, string", "bindable": "in-out-bound", "widget": "string"},
@@ -921,6 +923,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["img-responsive"]},
+                        "conditionalclass": {"bindable": "in-bound"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "border-style"},
