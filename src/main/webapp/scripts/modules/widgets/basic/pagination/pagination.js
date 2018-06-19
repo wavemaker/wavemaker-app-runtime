@@ -16,7 +16,7 @@ WM.module("wm.widgets.basic")
                     '<li ng-if="showrecordcount" class="totalcount disabled"><a>{{$root.appLocale.LABEL_TOTAL_RECORDS}}: {{dataSize}}</a></li>' +
                 '</ul>' +
                 '<ul class="pager {{navigationClass}}" ng-if="navcontrols === \'Pager\'">' +
-                    '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)" aria-label="Previous"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span><span class="sr-only">{{$root.appLocale.LABEL_PREVIOUS}}</span></a></li>' +
+                    '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)" aria-label="Previous"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span><span class="sr-only">{{$root.appLocale.LABEL_PREVIOUS}}</span>{{$root.appLocale.LABEL_PREVIOUS}}</a></li>' +
                     '<li class="next" ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" ng-click="navigatePage(\'next\', $event)" aria-label="Next">{{$root.appLocale.LABEL_NEXT}}<span aria-hidden="true"><i class="wi wi-chevron-right"></i></span><span class="sr-only">{{$root.appLocale.LABEL_NEXT}}</span></a></li>' +
                 '</ul>' +
                 '<ul uib-pagination class="basic pagination {{navigationClass}}" ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
