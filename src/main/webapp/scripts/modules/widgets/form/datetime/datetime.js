@@ -77,8 +77,10 @@ WM.module('wm.widgets.form')
                 if ($is._timeModel || $is._dateModel) {
                     if ($is._timeModel) {
                         time = new Date($is._timeModel);
-                    } else {
+                    } else if (!WM.isDefined($is._timeModel)) {
                         time = $is._timeModel = new Date();
+                    } else {
+                        time = $is._timeModel;
                     }
                     if ($is._dateModel) {
                         date = new Date($is._dateModel);
@@ -88,17 +90,23 @@ WM.module('wm.widgets.form')
                     }
                     dateString = $filter('date')(date, 'yyyy-MM-dd');
                     timeString = $filter('date')(time, 'HH:mm:ss');
-                    value = moment(dateString + ' ' + timeString).valueOf();
-                    $is.timestamp = value;
-                    if ($is.datepattern && $is.datepattern !== 'timestamp') {
-                        $is._displayModel = $filter('date')(value, $is.datepattern);
+                    if (timeString) {
+                        value = moment(dateString + ' ' + timeString).valueOf();
+                        $is.timestamp = value;
+                        if ($is.datepattern && $is.datepattern !== 'timestamp') {
+                            $is._displayModel = $filter('date')(value, $is.datepattern);
+                        } else {
+                            $is._displayModel = value;
+                        }
+                        if ($is.outputformat && $is.outputformat !== 'timestamp') {
+                            $is._proxyModel = $filter('date')(value, $is.outputformat);
+                        } else {
+                            $is._proxyModel = value;
+                        }
                     } else {
-                        $is._displayModel = value;
-                    }
-                    if ($is.outputformat && $is.outputformat !== 'timestamp') {
-                        $is._proxyModel = $filter('date')(value, $is.outputformat);
-                    } else {
-                        $is._proxyModel = value;
+                        $is._model_ = undefined;
+                        $is._displayModel = undefined;
+                        $is._proxyModel = undefined;
                     }
                 } else {
                     $is._displayModel = undefined;
