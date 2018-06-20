@@ -1318,27 +1318,28 @@ body {
   div.carousel-inner{
     height : 100%;
     white-space: nowrap;
-    .item{
-      overflow : hidden;
-      height : 100%;
-      display: inline-block;
-      position: absolute;
-      width: 100%;
 
-      img {
-        width: 100%;
-      }
-      &.left-item {
-        left: -100%;
-      }
-      &.right-item {
-        left: 100%;
-      }
-    }
     .app-carousel-item {
       display: inline-block;
       position: absolute;
       width: 100%;
+      &.item {
+        overflow : hidden;
+        height : 100%;
+        display: inline-block;
+        position: absolute;
+        width: 100%;
+
+        img {
+          width: 100%;
+        }
+        &.left-item {
+          left: -100%;
+        }
+        &.right-item {
+          left: 100%;
+        }
+      }
     }
   }
   &.carousel {
