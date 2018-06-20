@@ -372,6 +372,8 @@ WM.module('wm.widgets.live')
                         matchModeTypesMap[type] = modes[primType];
                     });
                 });
+                //this is used in filter criteria when the user types the column name manually and where we dont know the type of the column
+                matchModeTypesMap['default'] = _.union(modes['number'], modes['string'], modes['character'], modes['date'], modes['date']);
                 return matchModeTypesMap;
             }
 
