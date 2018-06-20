@@ -621,7 +621,23 @@ wm.variables.services.Variables = [
                             }
                             //setting value to the root node
                             if (obj) {
-                                obj[targetNodeKey] = newVal;
+                                //backward compatibility: where we are allowing the user to bind complete object
+                                if(obj.target === "dataBinding") {
+                                    //remove the existing databinding element
+                                    filterExpressions.rules = [];
+                                    //now add all the returned values
+                                    _.forEach(newVal, function(value, target) {
+                                        filterExpressions.rules.push({
+                                            'target': target,
+                                            'value': value,
+                                            'matchMode': obj.matchMode || 'startignorecase',
+                                            'required': false,
+                                            'type':''
+                                        })
+                                    });
+                                } else {
+                                    obj[targetNodeKey] = newVal;
+                                }
                             }
 
                             Utils.triggerFn(success, filterExpressions, newVal);
