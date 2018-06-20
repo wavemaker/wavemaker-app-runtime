@@ -560,7 +560,10 @@ wm.variables.services.$liveVariable = [
                 _.forEach(rules, function (rule) {
                     if(rule) {
                         if (rule.rules) {
-                            params.push('(' + generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode) + ')');
+                            var query = generateSearchQuery(rule.rules, rule.condition, ignoreCase, skipEncode);
+                            if(query !== "") {
+                                params.push('(' + query + ')');
+                            }
                         } else {
                             var searchField = getSearchField(rule, getIgnoreCase(rule.filterCondition, ignoreCase), skipEncode);
                             if(!_.isNil(searchField)) {
@@ -762,7 +765,7 @@ wm.variables.services.$liveVariable = [
                 //merge live filter runtime values
                 var filterRules = {};
                 if(!_.isEmpty(options.filterFields)) {
-                    filterRules = {'condition': 'AND', 'rules': []};
+                    filterRules = {'condition': options.logicalOp || 'AND', 'rules': []};
                     _.forEach(options.filterFields, function (filterObj, filterName) {
                         if(!_.isNil(filterObj.value) && filterObj.value !== "") {
                             var type = filterObj.type || getSqlType(variable, filterName);
@@ -779,7 +782,11 @@ wm.variables.services.$liveVariable = [
                 }
                 if(!_.isEmpty(clonedObj)) {
                     if(!_.isNil(filterRules.rules) && filterRules.rules.length) {
-                        clonedObj.rules.push(filterRules);
+                        //combine both the rules using 'AND'
+                        var tempRules = {'condition': 'AND', 'rules': []};
+                        tempRules.rules.push(Utils.getClonedObject(clonedObj));
+                        tempRules.rules.push(filterRules);
+                        clonedObj = tempRules;
                     }
                 } else {
                     clonedObj = filterRules;
@@ -1991,7 +1998,7 @@ wm.variables.services.$liveVariable = [
                         var filterExpQuery = generateSearchQuery(_clonedFields.rules, _clonedFields.condition, variable.ignoreCase, options.skipEncode);
                         if (query !== "") {
                             if (filterExpQuery !== "") {
-                                query = query + " AND ( " + filterExpQuery + " )";
+                                query = "(" + query + ") AND (" + filterExpQuery + ")";
                             }
                         } else if (filterExpQuery !== "") {
                             query = filterExpQuery;
@@ -2106,7 +2113,7 @@ wm.variables.services.$liveVariable = [
                             //if the key is found update the value, else create a new rule obj and add it to the existing rules
                             if(filteredObj) {
                                 filteredObj.value = valueObj.value;
-                                filteredObj.matchMode = filteredObj.valueObj.matchMode || valueObj.filterCondition || '';
+                                filteredObj.matchMode = valueObj.matchMode || valueObj.filterCondition || filteredObj.matchMode ||'';
                                 inputData.rules.push(filteredObj);
                             } else {
                                 inputData.rules.push({
