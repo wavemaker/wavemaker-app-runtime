@@ -1529,8 +1529,10 @@ WM.module('wm.widgets.live')
                     ngClasses.push(WM.copy(defaultNgClassesConfig));
                     return ngClasses;
                 }
-                /* Remove curly brackets and get each expression. */
-                conditionalClasses = classExpression.substring(1, classExpression.length - 1).split(',');
+                // Removing first occurance of "bind:"
+                // Removing curly brackets and get each expression.
+                classExpression = classExpression.substring(0, 5) === 'bind:' ? classExpression.substring(5) : classExpression;
+                conditionalClasses = classExpression.replace('bind:').substring(1, classExpression.length - 1).split(',');
                 /* Generate the config. */
                 _.each(conditionalClasses, function (conditionalClassConfig) {
                     var conditionalExpression = conditionalClassConfig.split(':'),
@@ -1559,7 +1561,7 @@ WM.module('wm.widgets.live')
                         ngClassExpression += "'" + config.className + "':" + config.condition;
                     }
                 });
-                return ngClassExpression.length ? '{' + ngClassExpression + '}' : ngClassExpression;
+                return ngClassExpression.length ? 'bind:' + ngClassExpression : ngClassExpression;
             }
 
             function setColumnCustomExpression(column) {
@@ -1567,35 +1569,35 @@ WM.module('wm.widgets.live')
                 switch (column.widgetType) {
                 case 'image':
                     if (column.type === 'blob') {
-                        column.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="{{columnValue}}" class="" data-ng-class=""></wm-picture>';
+                        column.customExpression = '<wm-picture ng-if="columnValue != null" width="48px" picturesource="bind:columnValue" class="" conditionalclass=""></wm-picture>';
                     } else {
                         column.customExpression = '<wm-picture picturesource="' + column.widgetConfig.src + '" hint="' + column.widgetConfig.src + '"' +
-                            ' class="' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-picture>';
+                            ' class="' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-picture>';
                     }
                     break;
                 case 'button':
                     column.customExpression = '<wm-button caption="' + column.widgetConfig.title + '" show="true" class="' + column.widgetConfig.class + '" iconclass="' +
-                        column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-button>';
+                        column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-button>';
                     break;
                 case 'checkbox':
-                    column.customExpression = '<wm-checkbox scopedatavalue="' + column.widgetConfig.model + '" disabled="' + column.widgetConfig.disabled + '" ' +
-                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-checkbox>';
+                    column.customExpression = '<wm-checkbox datavalue="' + column.widgetConfig.model + '" disabled="' + column.widgetConfig.disabled + '" ' +
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-checkbox>';
                     break;
                 case 'anchor':
                     column.customExpression = '<wm-anchor caption="' + column.widgetConfig.title + '" hyperlink="' + column.widgetConfig.hyperlink + '" ' +
-                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-anchor>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-anchor>';
                     break;
                 case 'label':
                     column.customExpression = '<wm-label caption="' + column.widgetConfig.title + '" ' +
-                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-label>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-label>';
                     break;
                 case 'icon':
                     column.customExpression = '<wm-icon caption="' + column.widgetConfig.title + '" iconclass="' + column.widgetConfig.icon + '" iconposition="' + column.widgetConfig.iconposition + '" ' +
-                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-icon>';
+                        'class = "' + column.widgetConfig.class + '" conditionalclass="' + widgetNgClassesExpression + '"></wm-icon>';
                     break;
                 default:
                     if (column.type === 'blob') {
-                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{columnValue}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
+                        column.customExpression = '<wm-anchor caption="" hyperlink="bind:columnValue" target="_blank" iconclass="wm-icon wm-icon24 wi wi-file" class="col-md-9" ng-if="columnValue != null"></wm-anchor>';
                     }
                 }
             }
@@ -1603,8 +1605,7 @@ WM.module('wm.widgets.live')
             function setDefaultWidgetConfig(column) {
                 var widgetType = column.widgetType,
                     field = column.field,
-                    val = column.widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}",
-                    defaultModel = "row['" + field + "']",
+                    val = column.widgetType === 'button' ? "bind:row.getProperty('" + field + "') || 'Button'" : "bind:row.getProperty('" + field + "')",
                     widgetNgClasses = [Utils.getClonedObject(defaultNgClassesConfig)];
                 /* Not storing widget config, it is only on for UI display. Only customExpression will be saved. */
                 column.widgetConfig = {};
@@ -1627,8 +1628,8 @@ WM.module('wm.widgets.live')
                     break;
                 case 'checkbox':
                     column.widgetConfig = {
-                        'model': defaultModel,
-                        'disabled': '{{colDef.readonly || !isGridEditMode}}',
+                        'model': val,
+                        'disabled': 'bind:colDef.readonly || !isGridEditMode',
                         'class': '',
                         'ngClasses': widgetNgClasses
                     };
@@ -1687,7 +1688,7 @@ WM.module('wm.widgets.live')
                 }
                 el = WM.element(customExpression);
                 widgetClass = el.attr('widget-class') || el.attr('class');
-                widgetNgClasses = parseNgClasses(el.attr('data-ng-class'));
+                widgetNgClasses = parseNgClasses(el.attr('conditionalclass'));
                 switch (widgetType) {
                 case 'image':
                     widgetSrc = el.attr('data-ng-src') || el.attr('picturesource');
@@ -1710,7 +1711,7 @@ WM.module('wm.widgets.live')
                     };
                     break;
                 case 'checkbox':
-                    widgetModel    = el.attr('ng-model') || el.attr('scopedatavalue');
+                    widgetModel    = el.attr('ng-model') || el.attr('datavalue');
                     widgetDisabled = el.attr('ng-disabled') || el.get(0).getAttribute('disabled');
                     column.widgetConfig = {
                         'model'     : widgetModel,
