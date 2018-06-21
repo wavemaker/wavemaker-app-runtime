@@ -2712,7 +2712,8 @@ WM.module('wm.widgets.base', [])
                     $hiddenEl,
                     studioModeHiddenWidgets,
                     $targetEl,
-                    $headerEl;
+                    $headerEl,
+                    dialogTypes = ['wm-alertdialog', 'wm-confirmdialog', 'wm-iframedialog', 'wm-pagedialog', 'wm-logindialog'];
 
                 if (key === 'placeholder' || key === 'type') {
                     if ($el.is('input') || $el.is('textarea')) {
@@ -2740,10 +2741,14 @@ WM.module('wm.widgets.base', [])
                         }
 
                     } else {
-                        if (ov) {
-                            $el.removeClass(ov).addClass(nv);
+                        if(!_.includes(dialogTypes,$is.widgettype)){
+                            if (ov) {
+                                $el.removeClass(ov).addClass(nv);
+                            } else {
+                                $el.addClass(nv);
+                            }
                         } else {
-                            $el.addClass(nv);
+                            $el.children().first().removeClass(ov).addClass(nv);
                         }
                     }
                 } else if (key === 'name') {
