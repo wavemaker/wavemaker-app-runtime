@@ -7,8 +7,7 @@ WM.module('wm.widgets.dialog')
             '<div tabindex="-1" role="dialog" class="modal default" ng-style="{display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
-            '<div init-widget class="app-view dialog-view clearfix" wm-navigable-element="true">' +
-                '<div class="modal-dialog app-dialog" ng-style="{width: dialogWidth}" >' +
+            '<div init-widget class="app-dialog modal-dialog clearfix" wm-navigable-element="true" ng-style="{width: dialogWidth}">' +
                     '<div class="modal-content">' +
                         '<div class="app-dialog-header modal-header" title="{{hint}}" ng-if="showheader">' +
                             '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="close()" title="Close">' +
@@ -27,7 +26,6 @@ WM.module('wm.widgets.dialog')
                         '<div class="app-dialog-body modal-body {{contentclass}}" wmtransclude apply-styles="scrollable-container" name="wm-{{dialogid}}-content">' +
                         '</div>' +
                         '<div ng-transclude="footer"></div>' +
-                    '</div>' +
                 '</div>' +
             '</div>'
             );
