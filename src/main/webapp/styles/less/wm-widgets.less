@@ -3685,6 +3685,15 @@ If the height and width are not specified the video takes the height of the post
   }
 }
 
+.bs-datepicker {
+  .bs-datepicker-body {
+    .disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
 .app-form {
   .overlay {
     background: rgba(255, 255, 255, 0.5);
@@ -3720,10 +3729,3 @@ If the height and width are not specified the video takes the height of the post
 @import (less) "../../components/angular-bootstrap-colorpicker/colorpicker.css";
 @import (less) "../../components/angular-toaster/toaster.css";
 
-/*This div was overlapping with the rest of the UI thereby blocking access to the content underneath it.
-Hence the height is set to 0. */
-.wm-app {
-  #wm-common-content {
-    height: 0;
-  }
-}
