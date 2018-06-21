@@ -121,7 +121,7 @@ wm.plugins.database.services.LocalDBStoreFactory = [
             var conditions,
                 fieldToColumnMapping = store.fieldToColumnMapping,
                 tableName = store.schema.name;
-            if (_.isString(filterCriteria)) {
+            if (!_.isEmpty(filterCriteria) && _.isString(filterCriteria)) {
                 return ' WHERE ' + filterCriteria;
             }
             conditions = _.map(filterCriteria, function (filterCriterion) {
