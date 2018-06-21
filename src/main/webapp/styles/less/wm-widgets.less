@@ -1,3 +1,6 @@
+/* variables */
+@app-date-border-color: #AAAAAA;
+
 /*Returns Width and Height of an element*/
 .width-height(@width: 100%, @height: 100%) {
   width: @width;
@@ -1245,6 +1248,34 @@ html, body {
     .input-group-btn .btn:focus {
       outline: 1px dotted !important;
     }
+    tr {
+        td {
+           .btn-default {
+              padding: 7px 12px;
+              border: 1px solid @app-date-border-color;
+           }
+           &.form-group .form-control {
+              border-right-width: 1px;
+              width: 50px;
+           }
+           &:first-child {
+              padding-left: 20px;
+           }
+           &:last-child {
+             padding-right: 20px;
+           }
+           a span {
+             display: inline-block;
+           }
+        }
+
+        &:first-child td {
+            padding-top: 15px;
+        }
+        &:last-child td {
+            padding-bottom: 15px;
+        }
+      }
   }
   .model-holder[bsdatepicker] {
     visibility: hidden;
@@ -1260,7 +1291,7 @@ bs-datepicker-container, bs-daterangepicker-container {
   align-items: stretch;
   flex-flow: row wrap;
   background: #fff;
-  box-shadow: 0 0 10px 0 #aaa;
+  box-shadow: 0 0 10px 0 @app-date-border-color;
   position: relative;
   z-index: 1;
   button, input {
@@ -1273,7 +1304,7 @@ bs-datepicker-container, bs-daterangepicker-container {
   }
 }
 .bs-datepicker-container {
-  padding: 15px;
+  //padding: 15px;
 }
 .bs-datepicker-head {
   min-width: 270px;
@@ -1310,10 +1341,16 @@ bs-datepicker-container, bs-daterangepicker-container {
         border-radius: 50%;
       }
     }
+    &.next {
+        float: right;
+    }
     &.current {
       border-radius: 15px;
       max-width: 155px;
       padding: 0 13px;
+    }
+    &:nth-child(2) {
+        margin-left: 3em;
     }
   }
 }
